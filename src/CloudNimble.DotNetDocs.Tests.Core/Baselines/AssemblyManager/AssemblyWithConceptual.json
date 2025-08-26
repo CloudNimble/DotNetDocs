@@ -1,0 +1,124 @@
+{
+  "assemblyName": "TestAssembly",
+  "namespaces": [
+    {
+      "name": "",
+      "usage": "",
+      "types": [
+        {
+          "name": "<Module>",
+          "usage": "",
+          "examples": "",
+          "bestPractices": "",
+          "patterns": "",
+          "considerations": "",
+          "relatedApis": [],
+          "members": []
+        }
+      ]
+    },
+    {
+      "name": "TestNamespace",
+      "usage": "",
+      "types": [
+        {
+          "name": "DerivedClass",
+          "usage": "A derived class.",
+          "examples": "",
+          "bestPractices": "",
+          "patterns": "",
+          "considerations": "",
+          "baseType": "TestClass",
+          "relatedApis": [
+            "System.IDisposable"
+          ],
+          "members": [
+            {
+              "name": ".ctor",
+              "kind": "Method",
+              "usage": "",
+              "examples": "",
+              "parameters": []
+            },
+            {
+              "name": "AdditionalMethod",
+              "kind": "Method",
+              "usage": "An additional method.",
+              "examples": "",
+              "parameters": []
+            }
+          ]
+        },
+        {
+          "name": "TestClass",
+          "usage": "This is conceptual usage documentation for TestClass.",
+          "examples": "This is conceptual examples documentation for TestClass.",
+          "bestPractices": "This is conceptual best practices for TestClass.",
+          "patterns": "This is conceptual patterns for TestClass.",
+          "considerations": "This is conceptual considerations for TestClass.",
+          "relatedApis": [
+            "System.IDisposable"
+          ],
+          "members": [
+            {
+              "name": ".ctor",
+              "kind": "Method",
+              "usage": "",
+              "examples": "",
+              "parameters": []
+            },
+            {
+              "name": "Dispose",
+              "kind": "Method",
+              "usage": "Disposes the object.",
+              "examples": "",
+              "parameters": []
+            },
+            {
+              "name": "DoSomething",
+              "kind": "Method",
+              "usage": "This is conceptual member usage for DoSomething.",
+              "examples": "This is conceptual member examples for DoSomething.",
+              "parameters": [
+                {
+                  "name": "input",
+                  "type": "string",
+                  "usage": "The input value.",
+                  "isParams": false
+                }
+              ]
+            },
+            {
+              "name": "get_TestProperty",
+              "kind": "Method",
+              "usage": "",
+              "examples": "",
+              "parameters": []
+            },
+            {
+              "name": "set_TestProperty",
+              "kind": "Method",
+              "usage": "",
+              "examples": "",
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": "string",
+                  "usage": "",
+                  "isParams": false
+                }
+              ]
+            },
+            {
+              "name": "TestProperty",
+              "kind": "Property",
+              "usage": "Gets or sets the test property.",
+              "examples": "",
+              "parameters": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

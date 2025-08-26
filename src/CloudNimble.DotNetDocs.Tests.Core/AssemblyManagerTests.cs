@@ -1,0 +1,622 @@
+using System;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Text.Encodings.Web;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Threading.Tasks;
+using CloudNimble.DotNetDocs.Core;
+using FluentAssertions;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+namespace CloudNimble.DotNetDocs.Tests.Core
+{
+
+    [TestClass]
+    public class AssemblyManagerTests
+    {
+
+        #region Fields
+
+        private string tempDirectory = null!;
+        private string testAssemblyPath = null!;
+        private string testXmlPath = null!;
+
+        #endregion
+
+        #region Public Methods
+
+        [TestCleanup]
+        public void Cleanup()
+        {
+            if (Directory.Exists(tempDirectory))
+            {
+                Directory.Delete(tempDirectory, true);
+            }
+        }
+
+        [TestMethod]
+        public void Constructor_WithNullAssemblyPath_ThrowsArgumentNullException()
+        {
+            Action act = () => new AssemblyManager(null!, "test.xml");
+
+            act.Should().Throw<ArgumentNullException>()
+                .WithParameterName("assemblyPath");
+        }
+
+        [TestMethod]
+        public void Constructor_WithNullXmlPath_ThrowsArgumentNullException()
+        {
+            Action act = () => new AssemblyManager("test.dll", null!);
+
+            act.Should().Throw<ArgumentNullException>()
+                .WithParameterName("xmlPath");
+        }
+
+        [TestMethod]
+        public void Constructor_WithNonExistentAssemblyFile_ThrowsFileNotFoundException()
+        {
+            Action act = () => new AssemblyManager("nonexistent.dll", "test.xml");
+
+            act.Should().Throw<FileNotFoundException>()
+                .WithMessage("Assembly file not found.");
+        }
+
+        [TestMethod]
+        public async Task Constructor_WithNonExistentXmlFile_ThrowsFileNotFoundException()
+        {
+            await CreateTestAssemblyAsync();
+
+            Action act = () => new AssemblyManager(testAssemblyPath, "nonexistent.xml");
+
+            act.Should().Throw<FileNotFoundException>()
+                .WithMessage("XML documentation file not found.");
+        }
+
+        [TestMethod]
+        public async Task DocumentAsync_WithValidFiles_ReturnsDocAssembly()
+        {
+            await CreateTestAssemblyAsync();
+            var manager = new AssemblyManager(testAssemblyPath, testXmlPath);
+
+            var result = await manager.DocumentAsync();
+
+            result.Should().NotBeNull();
+            result.Symbol.Should().NotBeNull();
+            result.Symbol.Name.Should().Be("TestAssembly");
+        }
+
+        [TestMethod]
+        public async Task DocumentAsync_ExtractsNamespaces()
+        {
+            await CreateTestAssemblyAsync();
+            var manager = new AssemblyManager(testAssemblyPath, testXmlPath);
+
+            var result = await manager.DocumentAsync();
+
+            result.Namespaces.Should().NotBeEmpty();
+            result.Namespaces.Should().Contain(ns => ns.Symbol.Name == "TestNamespace");
+        }
+
+        [TestMethod]
+        public async Task DocumentAsync_ExtractsTypes()
+        {
+            await CreateTestAssemblyAsync();
+            var manager = new AssemblyManager(testAssemblyPath, testXmlPath);
+
+            var result = await manager.DocumentAsync();
+
+            var testNamespace = result.Namespaces.FirstOrDefault(ns => ns.Symbol.Name == "TestNamespace");
+            testNamespace.Should().NotBeNull();
+            testNamespace!.Types.Should().NotBeEmpty();
+            testNamespace.Types.Should().Contain(t => t.Symbol.Name == "TestClass");
+        }
+
+        [TestMethod]
+        public async Task DocumentAsync_ExtractsTypeDocumentation()
+        {
+            await CreateTestAssemblyAsync();
+            var manager = new AssemblyManager(testAssemblyPath, testXmlPath);
+
+            var result = await manager.DocumentAsync();
+
+            var testType = result.Namespaces
+                .SelectMany(ns => ns.Types)
+                .FirstOrDefault(t => t.Symbol.Name == "TestClass");
+
+            testType.Should().NotBeNull();
+            testType!.Usage.Should().Contain("test class");
+            testType.BestPractices.Should().Contain("remarks about the class");
+            testType.Examples.Should().Contain("new TestClass()");
+        }
+
+        [TestMethod]
+        public async Task DocumentAsync_ExtractsMembers()
+        {
+            await CreateTestAssemblyAsync();
+            var manager = new AssemblyManager(testAssemblyPath, testXmlPath);
+
+            var result = await manager.DocumentAsync();
+
+            var testType = result.Namespaces
+                .SelectMany(ns => ns.Types)
+                .FirstOrDefault(t => t.Symbol.Name == "TestClass");
+
+            testType!.Members.Should().NotBeEmpty();
+            testType.Members.Should().Contain(m => m.Symbol.Name == "DoSomething");
+            testType.Members.Should().Contain(m => m.Symbol.Name == "TestProperty");
+        }
+
+        [TestMethod]
+        public async Task DocumentAsync_ExtractsMemberDocumentation()
+        {
+            await CreateTestAssemblyAsync();
+            var manager = new AssemblyManager(testAssemblyPath, testXmlPath);
+
+            var result = await manager.DocumentAsync();
+
+            var method = result.Namespaces
+                .SelectMany(ns => ns.Types)
+                .SelectMany(t => t.Members)
+                .FirstOrDefault(m => m.Symbol.Name == "DoSomething");
+
+            method.Should().NotBeNull();
+            method!.Usage.Should().Contain("Does something important");
+            method.Examples.Should().Contain("DoSomething(\"test\")");
+        }
+
+        [TestMethod]
+        public async Task DocumentAsync_ExtractsParameters()
+        {
+            await CreateTestAssemblyAsync();
+            var manager = new AssemblyManager(testAssemblyPath, testXmlPath);
+
+            var result = await manager.DocumentAsync();
+
+            var method = result.Namespaces
+                .SelectMany(ns => ns.Types)
+                .SelectMany(t => t.Members)
+                .FirstOrDefault(m => m.Symbol.Name == "DoSomething");
+
+            method!.Parameters.Should().NotBeEmpty();
+            var param = method.Parameters.FirstOrDefault(p => p.Symbol.Name == "input");
+            param.Should().NotBeNull();
+            param!.Usage.Should().Contain("input value");
+        }
+
+        [TestMethod]
+        public async Task DocumentAsync_ExtractsBaseType()
+        {
+            await CreateTestAssemblyAsync();
+            var manager = new AssemblyManager(testAssemblyPath, testXmlPath);
+
+            await manager.DocumentAsync();
+
+            var derivedType = manager.Document?.Namespaces
+                .SelectMany(ns => ns.Types)
+                .FirstOrDefault(t => t.Symbol.Name == "DerivedClass");
+
+            derivedType.Should().NotBeNull();
+            derivedType!.BaseType.Should().NotBeNull();
+            derivedType.BaseType!.Symbol.Name.Should().Be("TestClass");
+        }
+
+        [TestMethod]
+        public async Task DocumentAsync_ExtractsInterfaces()
+        {
+            await CreateTestAssemblyAsync();
+            var manager = new AssemblyManager(testAssemblyPath, testXmlPath);
+
+            var result = await manager.DocumentAsync();
+
+            var testType = result.Namespaces
+                .SelectMany(ns => ns.Types)
+                .FirstOrDefault(t => t.Symbol.Name == "TestClass");
+
+            testType!.RelatedApis.Should().Contain("System.IDisposable");
+        }
+
+        [TestMethod]
+        public async Task DocumentAsync_WithProjectContext_UsesReferences()
+        {
+            await CreateTestAssemblyAsync();
+            var manager = new AssemblyManager(testAssemblyPath, testXmlPath);
+            var context = new ProjectContext(typeof(object).Assembly.Location);
+
+            var result = await manager.DocumentAsync(context);
+
+            result.Should().NotBeNull();
+            // Verify that references were loaded (compilation should be more complete)
+            result.Symbol.Should().NotBeNull();
+        }
+
+        [TestMethod]
+        public async Task DocumentAsync_WithConceptualPath_LoadsConceptualContent()
+        {
+            await CreateTestAssemblyAsync();
+            await CreateConceptualContentAsync();
+
+            var manager = new AssemblyManager(testAssemblyPath, testXmlPath);
+            var context = new ProjectContext
+            {
+                ConceptualPath = Path.Combine(tempDirectory, "conceptual")
+            };
+
+            var result = await manager.DocumentAsync(context);
+
+            var testType = result.Namespaces
+                .SelectMany(ns => ns.Types)
+                .FirstOrDefault(t => t.Symbol.Name == "TestClass");
+
+            testType!.Usage.Should().Contain("This is conceptual usage documentation");
+            testType.Examples.Should().Contain("This is conceptual examples documentation");
+            testType.BestPractices.Should().Contain("This is conceptual best practices");
+            testType.Patterns.Should().Contain("This is conceptual patterns");
+            testType.Considerations.Should().Contain("This is conceptual considerations");
+        }
+
+        [TestMethod]
+        public async Task DocumentAsync_WithConceptualPath_LoadsMemberConceptualContent()
+        {
+            await CreateTestAssemblyAsync();
+            await CreateConceptualContentAsync();
+
+            var manager = new AssemblyManager(testAssemblyPath, testXmlPath);
+            var context = new ProjectContext
+            {
+                ConceptualPath = Path.Combine(tempDirectory, "conceptual")
+            };
+
+            var result = await manager.DocumentAsync(context);
+
+            var method = result.Namespaces
+                .SelectMany(ns => ns.Types)
+                .SelectMany(t => t.Members)
+                .FirstOrDefault(m => m.Symbol.Name == "DoSomething");
+
+            method!.Usage.Should().Contain("This is conceptual member usage");
+            method.Examples.Should().Contain("This is conceptual member examples");
+        }
+
+        [TestMethod]
+        public async Task DocumentAsync_ProducesConsistentBaseline()
+        {
+            await CreateTestAssemblyAsync();
+            var manager = new AssemblyManager(testAssemblyPath, testXmlPath);
+
+            var result = await manager.DocumentAsync();
+
+            // Serialize to JSON with deterministic settings
+            var json = SerializeToJson(result);
+
+            // Save or compare baseline
+            var baselineFile = Path.Combine("Baselines", "AssemblyManager", "BasicAssembly.json");
+            await SaveOrCompareBaseline(json, baselineFile);
+        }
+
+        [TestMethod]
+        public async Task DocumentAsync_WithConceptualPath_ProducesConsistentBaseline()
+        {
+            await CreateTestAssemblyAsync();
+            await CreateConceptualContentAsync();
+
+            var manager = new AssemblyManager(testAssemblyPath, testXmlPath);
+            var context = new ProjectContext
+            {
+                ConceptualPath = Path.Combine(tempDirectory, "conceptual")
+            };
+
+            var result = await manager.DocumentAsync(context);
+
+            // Serialize to JSON with deterministic settings
+            var json = SerializeToJson(result);
+
+            // Save or compare baseline
+            var baselineFile = Path.Combine("Baselines", "AssemblyManager", "AssemblyWithConceptual.json");
+            await SaveOrCompareBaseline(json, baselineFile);
+        }
+
+        [TestInitialize]
+        public void Setup()
+        {
+            tempDirectory = Path.Combine(Path.GetTempPath(), $"AssemblyManagerTests_{Guid.NewGuid()}");
+            Directory.CreateDirectory(tempDirectory);
+            testAssemblyPath = Path.Combine(tempDirectory, "TestAssembly.dll");
+            testXmlPath = Path.Combine(tempDirectory, "TestAssembly.xml");
+        }
+
+        #endregion
+
+        #region Private Methods
+
+        private async Task CreateConceptualContentAsync()
+        {
+            var conceptualPath = Path.Combine(tempDirectory, "conceptual");
+            Directory.CreateDirectory(conceptualPath);
+
+            var testClassPath = Path.Combine(conceptualPath, "TestClass");
+            Directory.CreateDirectory(testClassPath);
+
+            await File.WriteAllTextAsync(
+                Path.Combine(testClassPath, "usage.md"),
+                "This is conceptual usage documentation for TestClass."
+            );
+
+            await File.WriteAllTextAsync(
+                Path.Combine(testClassPath, "examples.md"),
+                "This is conceptual examples documentation for TestClass."
+            );
+
+            await File.WriteAllTextAsync(
+                Path.Combine(testClassPath, "best-practices.md"),
+                "This is conceptual best practices for TestClass."
+            );
+
+            await File.WriteAllTextAsync(
+                Path.Combine(testClassPath, "patterns.md"),
+                "This is conceptual patterns for TestClass."
+            );
+
+            await File.WriteAllTextAsync(
+                Path.Combine(testClassPath, "considerations.md"),
+                "This is conceptual considerations for TestClass."
+            );
+
+            // Create member-specific documentation
+            var memberPath = Path.Combine(testClassPath, "DoSomething");
+            Directory.CreateDirectory(memberPath);
+
+            await File.WriteAllTextAsync(
+                Path.Combine(memberPath, "usage.md"),
+                "This is conceptual member usage for DoSomething."
+            );
+
+            await File.WriteAllTextAsync(
+                Path.Combine(memberPath, "examples.md"),
+                "This is conceptual member examples for DoSomething."
+            );
+        }
+
+        private async Task CreateTestAssemblyAsync()
+        {
+            var source = """
+                using System;
+
+                namespace TestNamespace
+                {
+                    /// <summary>
+                    /// This is a test class.
+                    /// </summary>
+                    /// <remarks>
+                    /// These are remarks about the class.
+                    /// </remarks>
+                    /// <example>
+                    /// <code>
+                    /// var test = new TestClass();
+                    /// </code>
+                    /// </example>
+                    public class TestClass : IDisposable
+                    {
+                        /// <summary>
+                        /// Gets or sets the test property.
+                        /// </summary>
+                        public string TestProperty { get; set; }
+
+                        /// <summary>
+                        /// Does something important.
+                        /// </summary>
+                        /// <param name="input">The input value.</param>
+                        /// <returns>The result.</returns>
+                        /// <example>
+                        /// <code>
+                        /// var result = DoSomething("test");
+                        /// </code>
+                        /// </example>
+                        public string DoSomething(string input)
+                        {
+                            return input;
+                        }
+
+                        /// <summary>
+                        /// Disposes the object.
+                        /// </summary>
+                        public void Dispose()
+                        {
+                        }
+                    }
+
+                    /// <summary>
+                    /// A derived class.
+                    /// </summary>
+                    public class DerivedClass : TestClass
+                    {
+                        /// <summary>
+                        /// An additional method.
+                        /// </summary>
+                        public void AdditionalMethod()
+                        {
+                        }
+                    }
+                }
+                """;
+
+            var tree = CSharpSyntaxTree.ParseText(source);
+            var compilation = CSharpCompilation.Create("TestAssembly")
+                .AddSyntaxTrees(tree)
+                .AddReferences(MetadataReference.CreateFromFile(typeof(object).Assembly.Location))
+                .WithOptions(new CSharpCompilationOptions(
+                    OutputKind.DynamicallyLinkedLibrary,
+                    xmlReferenceResolver: null,
+                    sourceReferenceResolver: null,
+                    metadataReferenceResolver: null,
+                    assemblyIdentityComparer: null,
+                    strongNameProvider: null,
+                    publicSign: false,
+                    reportSuppressedDiagnostics: false
+                ));
+
+            using (var dllStream = new MemoryStream())
+            using (var xmlStream = new MemoryStream())
+            {
+                var emitResult = compilation.Emit(dllStream, xmlDocumentationStream: xmlStream);
+
+                if (!emitResult.Success)
+                {
+                    var errors = string.Join("\n", emitResult.Diagnostics.Select(d => d.ToString()));
+                    throw new InvalidOperationException($"Compilation failed: {errors}");
+                }
+
+                await File.WriteAllBytesAsync(testAssemblyPath, dllStream.ToArray());
+
+                // Create a proper XML documentation file
+                var xmlContent = """
+                    <?xml version="1.0"?>
+                    <doc>
+                        <assembly>
+                            <name>TestAssembly</name>
+                        </assembly>
+                        <members>
+                            <member name="T:TestNamespace.TestClass">
+                                <summary>
+                                This is a test class.
+                                </summary>
+                                <remarks>
+                                These are remarks about the class.
+                                </remarks>
+                                <example>
+                                <code>
+                                var test = new TestClass();
+                                </code>
+                                </example>
+                            </member>
+                            <member name="P:TestNamespace.TestClass.TestProperty">
+                                <summary>
+                                Gets or sets the test property.
+                                </summary>
+                            </member>
+                            <member name="M:TestNamespace.TestClass.DoSomething(System.String)">
+                                <summary>
+                                Does something important.
+                                </summary>
+                                <param name="input">The input value.</param>
+                                <returns>The result.</returns>
+                                <example>
+                                <code>
+                                var result = DoSomething("test");
+                                </code>
+                                </example>
+                            </member>
+                            <member name="M:TestNamespace.TestClass.Dispose">
+                                <summary>
+                                Disposes the object.
+                                </summary>
+                            </member>
+                            <member name="T:TestNamespace.DerivedClass">
+                                <summary>
+                                A derived class.
+                                </summary>
+                            </member>
+                            <member name="M:TestNamespace.DerivedClass.AdditionalMethod">
+                                <summary>
+                                An additional method.
+                                </summary>
+                            </member>
+                        </members>
+                    </doc>
+                    """;
+                await File.WriteAllTextAsync(testXmlPath, xmlContent, Encoding.UTF8);
+            }
+        }
+
+        /// <summary>
+        /// Saves or compares a JSON string with a baseline file.
+        /// </summary>
+        /// <param name="json">The JSON string to save or compare.</param>
+        /// <param name="baselineFile">The path to the baseline file.</param>
+        private async Task SaveOrCompareBaseline(string json, string baselineFile)
+        {
+            var fullPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, baselineFile);
+            var directory = Path.GetDirectoryName(fullPath);
+
+            if (!Directory.Exists(directory))
+            {
+                Directory.CreateDirectory(directory!);
+            }
+
+            if (File.Exists(fullPath))
+            {
+                // Compare with existing baseline
+                var baseline = await File.ReadAllTextAsync(fullPath);
+                json.Should().Be(baseline, "Output should match the baseline");
+            }
+            else
+            {
+                // Save new baseline
+                await File.WriteAllTextAsync(fullPath, json);
+                Assert.Inconclusive($"Baseline created at {fullPath}. Re-run test to verify.");
+            }
+        }
+
+        /// <summary>
+        /// Serializes a DocAssembly to JSON with deterministic settings.
+        /// </summary>
+        /// <param name="assembly">The assembly to serialize.</param>
+        /// <returns>The JSON string.</returns>
+        private string SerializeToJson(DocAssembly assembly)
+        {
+            var options = new JsonSerializerOptions
+            {
+                WriteIndented = true,
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+                Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+            };
+
+            // Create a simplified object that can be serialized
+            var serializableModel = new
+            {
+                AssemblyName = assembly.Symbol.Name,
+                Namespaces = assembly.Namespaces.Select(ns => new
+                {
+                    Name = ns.Symbol.Name,
+                    Usage = ns.Usage,
+                    Types = ns.Types.Select(t => new
+                    {
+                        Name = t.Symbol.Name,
+                        Usage = t.Usage,
+                        Examples = t.Examples,
+                        BestPractices = t.BestPractices,
+                        Patterns = t.Patterns,
+                        Considerations = t.Considerations,
+                        BaseType = t.BaseType?.Symbol.Name,
+                        RelatedApis = t.RelatedApis,
+                        Members = t.Members.Select(m => new
+                        {
+                            Name = m.Symbol.Name,
+                            Kind = m.Symbol.Kind.ToString(),
+                            Usage = m.Usage,
+                            Examples = m.Examples,
+                            Parameters = m.Parameters.Select(p => new
+                            {
+                                Name = p.Symbol.Name,
+                                Type = p.Symbol.Type.ToDisplayString(),
+                                Usage = p.Usage,
+                                DefaultValue = p.DefaultValue,
+                                IsParams = p.IsParams
+                            }).ToList()
+                        }).OrderBy(m => m.Name).ToList()
+                    }).OrderBy(t => t.Name).ToList()
+                }).OrderBy(ns => ns.Name).ToList()
+            };
+
+            return JsonSerializer.Serialize(serializableModel, options);
+        }
+
+        #endregion
+
+    }
+
+}

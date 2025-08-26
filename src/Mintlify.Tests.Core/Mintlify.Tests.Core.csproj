@@ -1,0 +1,12 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFrameworks>net10.0;net9.0;net8.0</TargetFrameworks>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\CloudNimble.DotNetDocs.Tests.Shared\CloudNimble.DotNetDocs.Tests.Shared.csproj" />
+        <ProjectReference Include="..\Mintlify.Core\Mintlify.Core.csproj" />
+    </ItemGroup>
+
+</Project>

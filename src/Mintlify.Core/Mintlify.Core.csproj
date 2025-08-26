@@ -1,0 +1,34 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFrameworks>net10.0;net9.0;net8.0;netstandard2.0</TargetFrameworks>
+        <DocumentationFile>$(DocumentationFile)\$(AssemblyName).xml</DocumentationFile>
+        <NoWarn>$(NoWarn);CA1822;NU1605;</NoWarn>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="EasyAF.Core" Version="*-*" />
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(TargetFramework)' == 'net10.0'">
+        <PackageReference Include="System.CodeDom" Version="10.*-*" />
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(TargetFramework)' == 'net9.0'">
+        <PackageReference Include="System.CodeDom" Version="9.*" />
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
+        <PackageReference Include="System.CodeDom" Version="9.*" />
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(TargetFramework)'=='netstandard2.0'">
+        <PackageReference Include="System.CodeDom" Version="10.*-*" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <!--<InternalsVisibleTo Include="Mintlify.Tests.Core, $(StrongNamePublicKey)" />-->
+        <InternalsVisibleTo Include="Mintlify.Tests.Core" />
+    </ItemGroup>
+
+</Project>
