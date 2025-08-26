@@ -7,13 +7,16 @@
   <Folder Name="/Core/">
     <Project Path="CloudNimble.DotNetDocs.Core/CloudNimble.DotNetDocs.Core.csproj" />
   </Folder>
+  <Folder Name="/Plugins/">
+    <Project Path="CloudNimble.DotNetDocs.Plugins.AI/CloudNimble.DotNetDocs.Plugins.AI.csproj" Id="d02be6be-f430-42de-af74-09e49a3ce04b" />
+  </Folder>
   <Folder Name="/Providers/" />
   <Folder Name="/Providers/Mintlify/">
+    <Project Path="CloudNimble.DotNetDocs.Mintlify/CloudNimble.DotNetDocs.Mintlify.csproj" Id="f039a3eb-5b89-4170-b4bd-84d87223fc01" />
     <Project Path="Mintlify.Core/Mintlify.Core.csproj" />
   </Folder>
   <Folder Name="/Solution Items/">
     <File Path="../CLAUDE.md" />
-    <File Path="../DotNetDocs.runsettings" />
     <File Path=".editorconfig" />
     <File Path="Directory.Build.props" />
     <File Path="global.json" />
@@ -21,11 +24,14 @@
   <Folder Name="/Solution Items/Specs/">
     <File Path="../specs/docfx-shortcomings.md" />
     <File Path="../specs/execution-plan.md" />
+    <File Path="../specs/semantic-kernel-integration.md" />
     <File Path="../specs/solution-structure.md" />
     <File Path="../specs/transformation-pipeline.md" />
   </Folder>
   <Folder Name="/Tests/">
     <Project Path="CloudNimble.DotNetDocs.Tests.Core/CloudNimble.DotNetDocs.Tests.Core.csproj" />
+    <Project Path="CloudNimble.DotNetDocs.Tests.Mintlify/CloudNimble.DotNetDocs.Tests.Mintlify.csproj" Id="13e9ada6-8b4e-4d30-a061-8c722967c1ad" />
+    <Project Path="CloudNimble.DotNetDocs.Tests.Plugins.AI/CloudNimble.DotNetDocs.Tests.Plugins.AI.csproj" Id="de5194ea-d2ce-4df5-a2aa-aeddec8cc1be" />
     <Project Path="CloudNimble.DotNetDocs.Tests.Shared/CloudNimble.DotNetDocs.Tests.Shared.csproj" />
     <Project Path="Mintlify.Tests.Core/Mintlify.Tests.Core.csproj" />
   </Folder>

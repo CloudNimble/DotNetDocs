@@ -312,6 +312,11 @@ namespace CloudNimble.DotNetDocs.Core
         /// <summary>
         /// Loads conceptual documentation from the specified folder into the model.
         /// </summary>
+        /// <remarks>
+        /// Conceptual content is organized by namespace hierarchy. For example:
+        /// /conceptual/System/Text/Json/JsonSerializer/ contains documentation for the JsonSerializer type.
+        /// /conceptual/System/Text/Json/JsonSerializer/Serialize/ contains documentation for the Serialize method.
+        /// </remarks>
         /// <param name="assembly">The documentation model to augment.</param>
         /// <param name="conceptualPath">Path to the conceptual documentation folder.</param>
         private void LoadConceptual(DocAssembly assembly, string conceptualPath)
@@ -327,47 +332,67 @@ namespace CloudNimble.DotNetDocs.Core
             {
                 foreach (var type in ns.Types)
                 {
-                    var typeDir = Path.Combine(conceptualPath, type.Symbol.Name);
+                    // Build namespace path like /conceptual/System/Text/Json/JsonSerializer/
+                    var namespacePath = ns.Symbol.IsGlobalNamespace 
+                        ? string.Empty 
+                        : ns.Symbol.ToDisplayString().Replace('.', Path.DirectorySeparatorChar);
+                    var typeDir = Path.Combine(conceptualPath, namespacePath, type.Symbol.Name);
+                    
                     if (Directory.Exists(typeDir))
                     {
-                        if (File.Exists(Path.Combine(typeDir, "usage.md")))
+                        // Load type-level conceptual content
+                        LoadConceptualFile(typeDir, "usage.md", content => type.Usage = content);
+                        LoadConceptualFile(typeDir, "examples.md", content => type.Examples = content);
+                        LoadConceptualFile(typeDir, "best-practices.md", content => type.BestPractices = content);
+                        LoadConceptualFile(typeDir, "patterns.md", content => type.Patterns = content);
+                        LoadConceptualFile(typeDir, "considerations.md", content => type.Considerations = content);
+                        
+                        // Load related APIs if markdown file exists
+                        var relatedApisPath = Path.Combine(typeDir, "related-apis.md");
+                        if (File.Exists(relatedApisPath))
                         {
-                            type.Usage = File.ReadAllText(Path.Combine(typeDir, "usage.md"));
-                        }
-                        if (File.Exists(Path.Combine(typeDir, "examples.md")))
-                        {
-                            type.Examples = File.ReadAllText(Path.Combine(typeDir, "examples.md"));
-                        }
-                        if (File.Exists(Path.Combine(typeDir, "best-practices.md")))
-                        {
-                            type.BestPractices = File.ReadAllText(Path.Combine(typeDir, "best-practices.md"));
-                        }
-                        if (File.Exists(Path.Combine(typeDir, "patterns.md")))
-                        {
-                            type.Patterns = File.ReadAllText(Path.Combine(typeDir, "patterns.md"));
-                        }
-                        if (File.Exists(Path.Combine(typeDir, "considerations.md")))
-                        {
-                            type.Considerations = File.ReadAllText(Path.Combine(typeDir, "considerations.md"));
-                        }
-                        if (File.Exists(Path.Combine(typeDir, "related-apis.yaml")))
-                        {
-                            // Assume YAML list; parse to List<string>
-                            type.RelatedApis = ParseRelatedApisYaml(Path.Combine(typeDir, "related-apis.yaml"));
+                            // Simple markdown file with one API per line for now
+                            type.RelatedApis = File.ReadAllLines(relatedApisPath)
+                                .Where(line => !string.IsNullOrWhiteSpace(line))
+                                .Select(line => line.Trim())
+                                .ToList();
                         }
 
+                        // Load member-specific conceptual content
                         foreach (var member in type.Members)
                         {
                             var memberDir = Path.Combine(typeDir, member.Symbol.Name);
                             if (Directory.Exists(memberDir))
                             {
-                                if (File.Exists(Path.Combine(memberDir, "usage.md")))
+                                LoadConceptualFile(memberDir, "usage.md", content => member.Usage = content);
+                                LoadConceptualFile(memberDir, "examples.md", content => member.Examples = content);
+                                LoadConceptualFile(memberDir, "best-practices.md", content => member.BestPractices = content);
+                                LoadConceptualFile(memberDir, "patterns.md", content => member.Patterns = content);
+                                LoadConceptualFile(memberDir, "considerations.md", content => member.Considerations = content);
+                                
+                                // Load member-specific related APIs
+                                var memberRelatedApisPath = Path.Combine(memberDir, "related-apis.md");
+                                if (File.Exists(memberRelatedApisPath))
                                 {
-                                    member.Usage = File.ReadAllText(Path.Combine(memberDir, "usage.md"));
+                                    member.RelatedApis = File.ReadAllLines(memberRelatedApisPath)
+                                        .Where(line => !string.IsNullOrWhiteSpace(line))
+                                        .Select(line => line.Trim())
+                                        .ToList();
                                 }
-                                if (File.Exists(Path.Combine(memberDir, "examples.md")))
+
+                                // Load parameter-specific documentation
+                                foreach (var parameter in member.Parameters)
                                 {
-                                    member.Examples = File.ReadAllText(Path.Combine(memberDir, "examples.md"));
+                                    var paramFile = Path.Combine(memberDir, $"param-{parameter.Symbol.Name}.md");
+                                    if (File.Exists(paramFile))
+                                    {
+                                        var content = File.ReadAllText(paramFile).Trim();
+                                        if (!string.IsNullOrWhiteSpace(content))
+                                        {
+                                            // Override XML documentation with conceptual content
+                                            parameter.Usage = content;
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -377,15 +402,24 @@ namespace CloudNimble.DotNetDocs.Core
         }
 
         /// <summary>
-        /// Parses a YAML file containing related APIs into a list of strings.
+        /// Helper method to load a conceptual file if it exists.
         /// </summary>
-        /// <param name="yamlPath">Path to the YAML file.</param>
-        /// <returns>A list of related API names or URLs.</returns>
-        private List<string> ParseRelatedApisYaml(string yamlPath)
+        /// <param name="directory">The directory to look in.</param>
+        /// <param name="fileName">The file name to load.</param>
+        /// <param name="setter">Action to set the content on the target object.</param>
+        private void LoadConceptualFile(string directory, string fileName, Action<string> setter)
         {
-            // Placeholder: Implement YAML parsing (e.g., using YamlDotNet)
-            return [];
+            var filePath = Path.Combine(directory, fileName);
+            if (File.Exists(filePath))
+            {
+                var content = File.ReadAllText(filePath).Trim();
+                if (!string.IsNullOrWhiteSpace(content))
+                {
+                    setter(content);
+                }
+            }
         }
+
 
         /// <summary>
         /// Processes a namespace and its nested namespaces recursively.

@@ -14,8 +14,8 @@ Assumptions:
 **Goal**: Establish solution, core library, and test projects with minimal dependencies. Verify with smoke tests using Breakdance.
 
 - [x] Install .NET 10 Preview 7 SDK (if not present; verify with `dotnet --version`).
-- [x] Create solution directory: `mkdir src`.
-- [x] Navigate to solution directory: `cd src`.
+- [x] Create solution directory: `mkdir CloudNimble.DotNetDocs`.
+- [x] Navigate to solution directory: `cd CloudNimble.DotNetDocs`.
 - [x] Create solution file: `dotnet new slnx -n CloudNimble.DotNetDocs.slnx --configuration Debug`.
 - [x] Create `.editorconfig` file in root:
   ```
@@ -90,10 +90,17 @@ Assumptions:
 ## Phase 2: In-Memory Model Implementation
 **Goal**: Define `DocEntity` and derived classes (`DocAssembly`, `DocNamespace`, `DocType`, `DocMember`, `DocParameter`). Use C# 14 (e.g., params collections for `RelatedApis`), ensure nullable-safe design. Test with Breakdance's real DI.
 
+✅ **COMPLETED** - All model classes implemented with full test coverage:
+- DocEntity base class with all properties (Usage, Examples, BestPractices, Patterns, Considerations, RelatedApis)
+- DocAssembly, DocNamespace, DocType, DocMember, DocParameter derived classes
+- Complete test suite with 100% passing tests
+
 - [x] Navigate to core project: `cd ../CloudNimble.DotNetDocs.Core`.
 - [x] Create `DocEntity.cs` file:
   ```csharp
+  using System.Collections.Generic;
   using System.Diagnostics.CodeAnalysis;
+  using Microsoft.CodeAnalysis;
 
   namespace CloudNimble.DotNetDocs;
 
@@ -104,15 +111,6 @@ Assumptions:
   /// Represents shared documentation properties for assemblies, namespaces, types, members, or parameters.
   /// Use to store conceptual content not directly extractable from Roslyn or XML comments.
   /// </remarks>
-  /// <example>
-  /// <code><![CDATA[
-  /// var docType = new DocType(symbol)
-  /// {
-  ///     Usage = "Use this class for logging.",
-  ///     Examples = "```csharp\nLogger.LogInfo();\n```"
-  /// };
-  /// ]]></code>
-  /// </example>
   public abstract class DocEntity
   {
       #region Properties
@@ -159,354 +157,203 @@ Assumptions:
       [NotNull]
       public string Usage { get; set; } = string.Empty;
 
+      /// <summary>
+      /// Gets or sets the list of member accessibilities to include (default: Public).
+      /// </summary>
+      [NotNull]
+      public List<Accessibility> IncludedMembers { get; set; } = [Accessibility.Public];
+
       #endregion
   }
   ```
 - [x] Create `DocAssembly.cs` file (inherit from `DocEntity`, add `IAssemblySymbol`, `List<DocNamespace>`).
 - [x] Create `DocNamespace.cs` file (inherit from `DocEntity`, add `INamespaceSymbol`, `List<DocType>`).
-- [x] Create `DocType.cs` file:
+- [x] Create `DocType.cs` file.
+- [x] Create `DocMember.cs` file (inherit from `DocEntity`, add `ISymbol` for methods/properties, `List<DocParameter>`).
+- [x] Create `DocParameter.cs` file (inherit from `DocEntity`, add `IParameterSymbol`, type reference).
+- [x] Navigate to test project: `cd ../CloudNimble.DotNetDocs.Tests.Core`.
+- [x] Create `DocEntityTests.cs` file (test properties, defaults, IncludedMembers).
+- [x] Create `DocAssemblyTests.cs` file (test constructors, null checks).
+- [x] Create `DocNamespaceTests.cs` file.
+- [x] Create `DocTypeTests.cs` file.
+- [x] Create `DocMemberTests.cs` file.
+- [x] Create `DocParameterTests.cs` file.
+- [x] Run tests: `dotnet test --configuration Debug` - All tests passing.
+- [x] Clean up temporary files from Phase 2.
+
+## Phase 3: Metadata Extraction with Roslyn and XML
+**Goal**: Implement `AssemblyManager` for loading, resolving, and XML integration. Multi-target compatible.
+
+- [x] Navigate to core project: `cd ../CloudNimble.DotNetDocs.Core`.
+- [x] Create `ProjectContext.cs` file:
   ```csharp
-  using Microsoft.CodeAnalysis;
+  using System.Collections.Generic;
   using System.Diagnostics.CodeAnalysis;
 
   namespace CloudNimble.DotNetDocs;
 
   /// <summary>
-  /// Represents documentation for a .NET type.
+  /// Represents MSBuild project context for source intent.
   /// </summary>
-  public class DocType : DocEntity
+  public class ProjectContext
   {
       #region Properties
 
       /// <summary>
-      /// Gets the Roslyn symbol for the type.
+      /// Gets the conceptual files path.
       /// </summary>
       [NotNull]
-      public ITypeSymbol Symbol { get; }
+      public string ConceptualPath { get; init; } = string.Empty;
 
       /// <summary>
-      /// Gets the base type, if any.
-      /// </summary>
-      public DocType? BaseType { get; }
-
-      /// <summary>
-      /// Gets the collection of members (methods, properties, etc.).
+      /// Gets the list of referenced assembly paths.
       /// </summary>
       [NotNull]
-      public List<DocMember> Members { get; } = [];
+      public List<string> References { get; } = [];
 
       #endregion
 
       #region Constructors
 
       /// <summary>
-      /// Initializes a new instance of <see cref="DocType"/>.
+      /// Initializes a new instance of <see cref="ProjectContext"/>.
       /// </summary>
-      /// <param name="symbol">The Roslyn type symbol.</param>
-      public DocType(ITypeSymbol symbol)
+      public ProjectContext(params string[] references)
       {
-          ArgumentNullException.ThrowIfNull(symbol);
-          Symbol = symbol;
+          ArgumentNullException.ThrowIfNull(references);
+          References.AddRange(references);
       }
 
       #endregion
   }
   ```
-- [x] Create `DocMember.cs` file (inherit from `DocEntity`, add `ISymbol` for methods/properties, `List<DocParameter>`).
-- [x] Create `DocParameter.cs` file (inherit from `DocEntity`, add `IParameterSymbol`, type reference).
+- [x] Create `AssemblyManager.cs` file (as provided).
+- [x] Update `DocAssembly.cs` (add `IAssemblySymbol`, `List<DocNamespace>`).
+- [x] Update `DocNamespace.cs` (add `INamespaceSymbol`, `List<DocType>`).
+- [x] Update `DocType.cs` (add interfaces, XML parsing via `GetDocumentationCommentXml`).
+- [x] Update `DocMember.cs` (add XML tags like `<summary>`, `<param>`).
+- [x] Update `DocParameter.cs` (add XML `<param>` description).
 - [x] Navigate to test project: `cd ../CloudNimble.DotNetDocs.Tests.Core`.
-- [x] Create Tests.Shared project: `CloudNimble.DotNetDocs.Tests.Shared` - COMPLETED
-- [x] Tests.Shared contains test base classes and helpers
-- [x] Build Tests.Shared: Builds automatically as part of solution
-- [x] Create `DocEntityTests.cs` file (test properties, defaults).
-- [x] Create `DocAssemblyTests.cs` file (test constructors, null checks).
-- [x] Create `DocNamespaceTests.cs` file.
-- [x] Create `DocTypeTests.cs` file:
-  ```csharp
-  using CloudNimble.Breakdance.Assemblies;
-  using CloudNimble.DotNetDocs;
-  using FluentAssertions;
-  using Microsoft.CodeAnalysis;
-  using Microsoft.CodeAnalysis.CSharp;
-  using Microsoft.VisualStudio.TestTools.UnitTesting;
-
-  namespace CloudNimble.DotNetDocs.Tests.Core;
-
-  [TestClass]
-  public class DocTypeTests : BreakdanceTestBase
-  {
-      [TestMethod]
-      public void Constructor_WithNullSymbol_ThrowsArgumentNullException()
-      {
-          Action act = () => new DocType(null!);
-          act.Should().Throw<ArgumentNullException>()
-              .WithParameterName(nameof(symbol));
-      }
-
-      [TestMethod]
-      public async Task Constructor_WithValidSymbol_SetsProperties()
-      {
-          var compilation = await CreateCompilationAsync();
-          var symbol = compilation.GetTypeByMetadataName("CloudNimble.DotNetDocs.Tests.Shared.TestBase");
-          symbol.Should().NotBeNull();
-
-          var docType = new DocType(symbol!);
-          docType.Symbol.Should().Be(symbol);
-          docType.Usage.Should().BeEmpty();
-          docType.RelatedApis.Should().BeEmpty();
-          docType.Members.Should().BeEmpty();
-      }
-
-      private async Task<Compilation> CreateCompilationAsync()
-      {
-          var assemblyPath = "CloudNimble.DotNetDocs.Tests.Shared/bin/Debug/net8.0/CloudNimble.DotNetDocs.Tests.Shared.dll";
-          var metadataReference = MetadataReference.CreateFromFile(assemblyPath);
-          return CSharpCompilation.Create("Test")
-              .AddReferences(metadataReference);
-      }
-  }
-  ```
-- [x] Create `DocMemberTests.cs` file.
-- [x] Create `DocParameterTests.cs` file.
-- [x] Run tests: `dotnet test --configuration Debug`.
-- [x] Clean up temporary files - N/A, using Tests.Shared project
-
-## Phase 3: Metadata Extraction with Roslyn and XML  
-**Goal**: Implement `AssemblyManager` for robust metadata and XML loading, multi-target compatible.
-
-✅ **COMPLETED** - AssemblyManager fully implemented with:
-- Roslyn metadata extraction
-- XML documentation parsing  
-- Conceptual content loading
-- Baseline JSON testing
-- 100% test coverage
-
-- [x] Navigate to core project: `cd ../CloudNimble.DotNetDocs.Core`.
-- [x] Create `ProjectContext.cs` file (COMPLETED)
-- [x] Create `AssemblyManager.cs` file (COMPLETED with actual implementation):
-  ```csharp
-  using Microsoft.CodeAnalysis;
-  using Microsoft.CodeAnalysis.CSharp;
-  using System;
-  using System.Collections.Generic;
-  using System.IO;
-  using System.Threading.Tasks;
-
-  namespace CloudNimble.DotNetDocs.Core;
-
-  /// <summary>
-  /// Manages assembly metadata extraction using Roslyn for API documentation generation.
-  /// </summary>
-  /// <example>
-  /// <code><![CDATA[
-  /// using var manager = new AssemblyManager("MyLib.dll", "MyLib.xml");
-  /// var context = new ProjectContext("ref1.dll", "ref2.dll") { ConceptualPath = "conceptual" };
-  /// var model = await manager.DocumentAsync(context);
-  /// ]]></code>
-  /// </example>
-  public class AssemblyManager : IDisposable
-  {
-      #region Properties
-
-      /// <summary>
-      /// Gets the path to the assembly DLL file.
-      /// </summary>
-      public string AssemblyPath { get; init; }
-
-      /// <summary>
-      /// Gets the path to the XML documentation file.
-      /// </summary>
-      public string XmlPath { get; init; }
-
-      #endregion
-
-      #region Constructors
-
-      /// <summary>
-      /// Initializes a new instance of the <see cref="AssemblyManager"/> class.
-      /// </summary>
-      /// <param name="assemblyPath">The path to the assembly DLL file.</param>
-      /// <param name="xmlPath">The path to the XML documentation file.</param>
-      public AssemblyManager(string assemblyPath, string xmlPath)
-      {
-          ArgumentException.ThrowIfNullOrWhiteSpace(assemblyPath);
-          ArgumentException.ThrowIfNullOrWhiteSpace(xmlPath);
-          
-          AssemblyPath = assemblyPath;
-          XmlPath = xmlPath;
-      }
-
-      #endregion
-
-      #region Public Methods
-
-      /// <summary>
-      /// Documents the assembly asynchronously using the specified project context.
-      /// </summary>
-      /// <param name="projectContext">The project context with references and conceptual path.</param>
-      /// <returns>The documented assembly model.</returns>
-      public async Task<DocAssembly> DocumentAsync(ProjectContext? projectContext = null)
-      {
-          // Implementation extracts metadata using Roslyn
-          // Loads XML documentation comments
-          // Optionally loads conceptual content from namespace-based folder structure
-      }
-
-      #endregion
-  }
-  ```
-- [x] Update `DocAssembly.cs` (add `IAssemblySymbol`, `List<DocNamespace>`) - COMPLETED
-- [x] Update `DocNamespace.cs` (add `INamespaceSymbol`, `List<DocType>`) - COMPLETED
-- [x] Update `DocType.cs` (add interfaces, XML parsing via `GetDocumentationCommentXml`) - COMPLETED
-- [x] Update `DocMember.cs` (add XML tags like `<summary>`, `<param>`) - COMPLETED
-- [x] Update `DocParameter.cs` (add XML `<param>` description) - COMPLETED
-- [x] Navigate to test project: `cd ../CloudNimble.DotNetDocs.Tests.Core`.
-- [x] Ensure Tests.Shared exists from Phase 2 - COMPLETED
-- [x] Create `AssemblyManagerTests.cs` file:
-  ```csharp
-  using CloudNimble.Breakdance.Assemblies;
-  using CloudNimble.DotNetDocs;
-  using FluentAssertions;
-  using Microsoft.VisualStudio.TestTools.UnitTesting;
-  using System.IO;
-  using System.Threading.Tasks;
-
-  namespace CloudNimble.DotNetDocs.Tests.Core;
-
-  [TestClass]
-  public class AssemblyManagerTests : BreakdanceTestBase
-  {
-      [TestMethod]
-      public async Task DocumentAsync_WithValidFiles_PopulatesModel()
-      {
-          // Arrange
-          var assemblyPath = "CloudNimble.DotNetDocs.Tests.Shared/bin/Debug/net8.0/CloudNimble.DotNetDocs.Tests.Shared.dll";
-          var xmlPath = "CloudNimble.DotNetDocs.Tests.Shared/bin/Debug/net8.0/CloudNimble.DotNetDocs.Tests.Shared.xml";
-          using var manager = new AssemblyManager(assemblyPath, xmlPath);
-          
-          // Act
-          var model = await manager.DocumentAsync();
-          
-          // Assert
-          model.Should().NotBeNull();
-          model.Namespaces.Should().NotBeEmpty();
-      }
-  }
-  ```
-- [x] Run tests: `dotnet test --configuration Debug` - All AssemblyManager tests pass
-- [x] Benchmark extraction performance (e.g., <5s for large assemblies) - Tests run in <100ms
-- [x] Clean up temporary files - N/A, using test baselines
+- [x] Create sample assembly/XML for testing (CloudNimble.DotNetDocs.Tests.Shared).
+- [x] Create `AssemblyManagerTests.cs` file with tests for `DocumentAsync`, null checks, file existence, symbol traversal.
+- [x] Run tests: `dotnet test --configuration Debug` - All tests passing.
+- [x] Clean up samples from Phase 3.
 
 ## Phase 4: Augmentation and /conceptual Loading
-**Goal**: Load conceptual content from `/conceptual` into `DocEntity` properties organized by namespace hierarchy.
+**Goal**: Load conceptual content from `/conceptual` into `DocEntity` properties, including namespaces.
+
+✅ **COMPLETED** - Conceptual loading fully implemented with namespace-based folder structure:
+- LoadConceptual method implemented in AssemblyManager
+- Namespace-based paths (e.g., /conceptual/System/Text/Json/JsonSerializer/)
+- Support for all DocEntity properties (Usage, Examples, BestPractices, Patterns, Considerations, RelatedApis)
+- Member and parameter-specific documentation loading
+- Comprehensive test coverage with AugmentationTests (6 test methods)
+- All 135 tests passing
+
+- [x] Navigate to core project: `cd ../CloudNimble.DotNetDocs.Core`.
+- [x] Update `AssemblyManager.cs` to call `LoadConceptual` in `BuildModel`.
+- [x] Implement `LoadConceptual` method in `AssemblyManager.cs` to parse /conceptual files (support namespace-level, e.g., `conceptual/MyNamespace/usage.md`, and type/member levels).
+- [x] Update `DocNamespace.cs` to handle conceptual mapping.
+- [x] Update `DocType.cs` to handle conceptual mapping.
+- [x] Update `DocMember.cs` to handle conceptual mapping.
+- [x] Navigate to test project: `cd ../CloudNimble.DotNetDocs.Tests.Core`.
+- [x] Create `/conceptual/MyNamespace/usage.md` sample file (created dynamically in tests).
+- [x] Create `/conceptual/SampleClass/usage.md` sample file (created dynamically in tests).
+- [x] Create `AugmentationTests.cs` file with tests for loading namespaces, types, and members, missing files (empty strings).
+- [x] Run tests: `dotnet test --configuration Debug` - All 135 tests passing.
+- [x] Clean up /conceptual samples from Phase 4 (tests clean up automatically).
+
+## Phase 4.5: Adjustments for DocumentationManager and IncludedMembers
+**Goal**: Implement `DocumentationManager` as pipeline orchestrator, add `IncludedMembers` to `DocEntity`, switch to JSON for settings.
 
 - [ ] Navigate to core project: `cd ../CloudNimble.DotNetDocs.Core`.
-- [ ] Update `AssemblyManager.cs` to call `LoadConceptual` in `BuildModel`.
-- [ ] Implement `LoadConceptual` method in `AssemblyManager.cs`:
-  ```csharp
-  private void LoadConceptual(DocAssembly assembly, string conceptualPath)
-  {
-      ArgumentException.ThrowIfNullOrWhiteSpace(conceptualPath);
-      foreach (var ns in assembly.Namespaces)
-      {
-          foreach (var type in ns.Types)
-          {
-              // Build namespace path like /conceptual/System/Text/Json/JsonSerializer/
-              var namespacePath = ns.Symbol.ToDisplayString().Replace('.', Path.DirectorySeparatorChar);
-              var dir = Path.Combine(conceptualPath, namespacePath, type.Symbol.Name);
-              
-              if (Directory.Exists(dir))
-              {
-                  type.Usage = File.Exists(Path.Combine(dir, "usage.md"))
-                      ? File.ReadAllText(Path.Combine(dir, "usage.md"))
-                      : string.Empty;
-                  type.Examples = File.Exists(Path.Combine(dir, "examples.md"))
-                      ? File.ReadAllText(Path.Combine(dir, "examples.md"))
-                      : string.Empty;
-                  type.BestPractices = File.Exists(Path.Combine(dir, "best-practices.md"))
-                      ? File.ReadAllText(Path.Combine(dir, "best-practices.md"))
-                      : string.Empty;
-                  // Load other DocEntity properties
-                  
-                  // Load member-specific content
-                  foreach (var member in type.Members)
-                  {
-                      var memberDir = Path.Combine(dir, member.Symbol.Name);
-                      if (Directory.Exists(memberDir))
-                      {
-                          member.Usage = File.Exists(Path.Combine(memberDir, "usage.md"))
-                              ? File.ReadAllText(Path.Combine(memberDir, "usage.md"))
-                              : string.Empty;
-                          // Load other member properties
-                      }
-                  }
-              }
-          }
-      }
-  }
-  ```
-- [ ] Update `DocType.cs` to handle conceptual mapping.
-- [ ] Update `DocMember.cs` to handle conceptual mapping.
-- [ ] Navigate to test project: `cd ../CloudNimble.DotNetDocs.Tests.Core`.
-- [ ] Create `/conceptual/CloudNimble/DotNetDocs/Tests/Shared/TestBase/usage.md` file: `Base class for test infrastructure with Breakdance support.`.
-- [ ] Create `AugmentationTests.cs` file:
-  ```csharp
-  using CloudNimble.Breakdance.Assemblies;
-  using CloudNimble.DotNetDocs;
-  using FluentAssertions;
-  using Microsoft.VisualStudio.TestTools.UnitTesting;
-
-  namespace CloudNimble.DotNetDocs.Tests.Core;
-
-  [TestClass]
-  public class AugmentationTests : BreakdanceTestBase
-  {
-      [TestMethod]
-      public async Task DocumentAsync_WithConceptualPath_LoadsUsage()
-      {
-          // Arrange: Create namespace-based conceptual structure
-          Directory.CreateDirectory("conceptual/CloudNimble/DotNetDocs/Tests/Shared");
-          File.WriteAllText("conceptual/CloudNimble/DotNetDocs/Tests/Shared/TestBase/usage.md", 
-              "Base class for test infrastructure with Breakdance support.");
-          
-          var manager = new AssemblyManager();
-          var model = await manager.DocumentAsync(
-              "CloudNimble.DotNetDocs.Tests.Shared/bin/Debug/net8.0/CloudNimble.DotNetDocs.Tests.Shared.dll",
-              "CloudNimble.DotNetDocs.Tests.Shared/bin/Debug/net8.0/CloudNimble.DotNetDocs.Tests.Shared.xml",
-              new ProjectContext { ConceptualPath = "conceptual" }
-          );
-          var testBase = model.Namespaces.SelectMany(n => n.Types)
-              .FirstOrDefault(t => t.Symbol.Name == "TestBase");
-          testBase.Should().NotBeNull();
-          testBase!.Usage.Should().Be("Base class for test infrastructure with Breakdance support.");
-      }
-  }
-  ```
-- [ ] Run tests: `dotnet test --configuration Debug`.
-- [ ] Clean up `/conceptual` samples.
-
-## Phase 5: RenderPipeline Implementation
-**Goal**: Implement transformation pipeline for customizations (insertions, overrides, etc.).
-
-- [ ] Navigate to core project: `cd ../CloudNimble.DotNetDocs.Core`.
-- [ ] Create `ITransformer.cs` file:
+- [ ] Create `IDocEnricher.cs` file:
   ```csharp
   using System.Threading.Tasks;
 
   namespace CloudNimble.DotNetDocs;
 
   /// <summary>
-  /// Defines a transformation step in the rendering pipeline.
+  /// Defines an enricher for conceptual documentation augmentation.
   /// </summary>
-  public interface ITransformer
+  public interface IDocEnricher
   {
-      Task TransformAsync(DocAssembly model, TransformationContext context);
+      Task EnrichAsync(DocEntity entity, EnrichmentContext context);
+  }
+  ```
+- [ ] Create `EnrichmentContext.cs` file:
+  ```csharp
+  using System.Diagnostics.CodeAnalysis;
+
+  namespace CloudNimble.DotNetDocs;
+
+  /// <summary>
+  /// Context for enrichment, including conceptual path and settings.
+  /// </summary>
+  public class EnrichmentContext
+  {
+      public string ConceptualPath { get; init; } = string.Empty;
+      public object Settings { get; init; } = new();
+  }
+  ```
+- [ ] Create `DocumentationManager.cs` file:
+  ```csharp
+  using System.Collections.Generic;
+  using System.Threading.Tasks;
+
+  namespace CloudNimble.DotNetDocs;
+
+  /// <summary>
+  /// Orchestrates the documentation pipeline for one or more assemblies.
+  /// </summary>
+  public class DocumentationManager
+  {
+      private readonly IEnumerable<IDocEnricher> _enrichers;
+      private readonly IEnumerable<IDocTransformer> _transformers;
+      private readonly IEnumerable<IDocRenderer> _renderers;
+
+      public DocumentationManager(IEnumerable<IDocEnricher> enrichers, IEnumerable<IDocTransformer> transformers, IEnumerable<IDocRenderer> renderers)
+      {
+          _enrichers = enrichers ?? throw new ArgumentNullException(nameof(enrichers));
+          _transformers = transformers ?? throw new ArgumentNullException(nameof(transformers));
+          _renderers = renderers ?? throw new ArgumentNullException(nameof(renderers));
+      }
+
+      public async Task ProcessAsync(string assemblyPath, string xmlPath, ProjectContext? projectContext = null)
+      {
+          using var manager = new AssemblyManager(assemblyPath, xmlPath);
+          var model = await manager.DocumentAsync(projectContext);
+
+          foreach (var enricher in _enrichers)
+              await enricher.EnrichAsync(model, new EnrichmentContext { ConceptualPath = projectContext?.ConceptualPath });
+
+          var pipeline = new RenderPipeline(_transformers.ToArray());
+          await pipeline.TransformAsync(model, new TransformationContext { CustomSettings = projectContext?.CustomSettings });
+
+          foreach (var renderer in _renderers)
+              await renderer.RenderAsync(model, projectContext?.OutputPath ?? "docs", new TransformationContext { CustomSettings = projectContext?.CustomSettings });
+      }
+
+      public async Task ProcessAsync(IEnumerable<(string assemblyPath, string xmlPath)> assemblies, ProjectContext? projectContext = null)
+      {
+          var tasks = assemblies.Select(async pair =>
+          {
+              using var manager = new AssemblyManager(pair.assemblyPath, pair.xmlPath);
+              var model = await manager.DocumentAsync(projectContext);
+              foreach (var enricher in _enrichers)
+                  await enricher.EnrichAsync(model, new EnrichmentContext { ConceptualPath = projectContext?.ConceptualPath });
+              var pipeline = new RenderPipeline(_transformers.ToArray());
+              await pipeline.TransformAsync(model, new TransformationContext { CustomSettings = projectContext?.CustomSettings });
+              foreach (var renderer in _renderers)
+                  await renderer.RenderAsync(model, projectContext?.OutputPath ?? "docs", new TransformationContext { CustomSettings = projectContext?.CustomSettings });
+          });
+          await Task.WhenAll(tasks);
+      }
   }
   ```
 - [ ] Create `TransformationContext.cs` file:
   ```csharp
   using System.Collections.Generic;
-  using System.Diagnostics.CodeAnalysis;
 
   namespace CloudNimble.DotNetDocs;
 
@@ -515,122 +362,236 @@ Assumptions:
   /// </summary>
   public class TransformationContext
   {
-      public string OutputFormat { get; init; } = string.Empty;
-      public Dictionary<string, object> Rules { get; init; } = [];
-      public string ConceptualPath { get; init; } = string.Empty;
+      public object CustomSettings { get; init; } = new();
   }
   ```
-- [ ] Create `RenderPipeline.cs` file:
+- [ ] Update `DocEntity.cs` to add `IncludedMembers`:
   ```csharp
-  using System.Collections.Generic;
-  using System.Threading.Tasks;
-
-  namespace CloudNimble.DotNetDocs;
-
+  // Add to existing DocEntity properties
   /// <summary>
-  /// Manages the transformation pipeline for rendering documentation.
+  /// Gets or sets the list of member accessibilities to include (default: Public).
   /// </summary>
-  public class RenderPipeline
+  [NotNull]
+  public List<Accessibility> IncludedMembers { get; set; } = [Accessibility.Public];
+  ```
+- [ ] Update `AssemblyManager.cs` to use `IncludedMembers` in `BuildDocType` for filtering `GetMembers()`:
+  ```csharp
+  // Update BuildDocType method
+  private DocType BuildDocType(ITypeSymbol type, Compilation compilation, Dictionary<string, DocType> typeMap)
   {
-      private readonly List<ITransformer> transformers;
-
-      public RenderPipeline(params ITransformer[] transformers)
+      var docType = new DocType(type)
       {
-          ArgumentNullException.ThrowIfNull(transformers);
-          this.transformers = [.. transformers];
-      }
+          Usage = GetXmlComment(type.GetDocumentationCommentXml()),
+          Examples = GetXmlComment(type.GetDocumentationCommentXml(), "example"),
+          BestPractices = GetXmlComment(type.GetDocumentationCommentXml(), "remarks")
+      };
 
-      public async Task<DocAssembly> TransformAsync(DocAssembly model, TransformationContext context)
+      typeMap[type.ToDisplayString()] = docType;
+
+      if (type.BaseType is not null && type.BaseType.SpecialType != SpecialType.System_Object)
       {
-          ArgumentNullException.ThrowIfNull(model);
-          ArgumentNullException.ThrowIfNull(context);
-
-          foreach (var transformer in transformers)
+          var baseTypeKey = type.BaseType.ToDisplayString();
+          if (typeMap.TryGetValue(baseTypeKey, out var baseDocType))
+              docType.BaseType = baseDocType;
+          else
           {
-              await transformer.TransformAsync(model, context);
+              var baseDocType = new DocType(type.BaseType);
+              typeMap[baseTypeKey] = baseDocType;
+              docType.BaseType = baseDocType;
           }
-          return model;
+      }
+
+      foreach (var member in type.GetMembers().Where(m => docType.IncludedMembers.Contains(m.DeclaredAccessibility)))
+      {
+          var docMember = member switch
+          {
+              IMethodSymbol method => new DocMember(method)
+              {
+                  Usage = GetXmlComment(method.GetDocumentationCommentXml()),
+                  Examples = GetXmlComment(method.GetDocumentationCommentXml(), "example"),
+                  Parameters = method.Parameters.Select(p => new DocParameter(p)
+                  {
+                      Usage = GetXmlComment(p.GetDocumentationCommentXml())
+                  }).ToList()
+              },
+              IPropertySymbol property => new DocMember(property)
+              {
+                  Usage = GetXmlComment(property.GetDocumentationCommentXml())
+              },
+              _ => null
+          };
+
+          if (docMember is not null)
+              docType.Members.Add(docMember);
+      }
+
+      docType.RelatedApis = type.AllInterfaces.Select(i => i.ToDisplayString()).ToList();
+
+      return docType;
+  }
+  ```
+- [ ] Update `AssemblyManager.cs` to support namespace conceptual (e.g., `conceptual/MyNamespace/usage.md`):
+  ```csharp
+  // Update LoadConceptual method
+  private void LoadConceptual(DocAssembly assembly, string conceptualPath)
+  {
+      ArgumentException.ThrowIfNullOrWhiteSpace(conceptualPath);
+
+      if (!Directory.Exists(conceptualPath))
+          return;
+
+      foreach (var ns in assembly.Namespaces)
+      {
+          var nsDir = Path.Combine(conceptualPath, ns.Symbol.Name.Replace(".", "/"));
+          if (Directory.Exists(nsDir))
+          {
+              if (File.Exists(Path.Combine(nsDir, "usage.md")))
+                  ns.Usage = File.ReadAllText(Path.Combine(nsDir, "usage.md"));
+              if (File.Exists(Path.Combine(nsDir, "examples.md")))
+                  ns.Examples = File.ReadAllText(Path.Combine(nsDir, "examples.md"));
+              if (File.Exists(Path.Combine(nsDir, "best-practices.md")))
+                  ns.BestPractices = File.ReadAllText(Path.Combine(nsDir, "best-practices.md"));
+              if (File.Exists(Path.Combine(nsDir, "patterns.md")))
+                  ns.Patterns = File.ReadAllText(Path.Combine(nsDir, "patterns.md"));
+              if (File.Exists(Path.Combine(nsDir, "considerations.md")))
+                  ns.Considerations = File.ReadAllText(Path.Combine(nsDir, "considerations.md"));
+              if (File.Exists(Path.Combine(nsDir, "related-apis.yaml")))
+              {
+                  ns.RelatedApis = ParseRelatedApisYaml(Path.Combine(nsDir, "related-apis.yaml"));
+              }
+          }
+
+          foreach (var type in ns.Types)
+          {
+              var typeDir = Path.Combine(nsDir, type.Symbol.Name);
+              if (Directory.Exists(typeDir))
+              {
+                  if (File.Exists(Path.Combine(typeDir, "usage.md")))
+                      type.Usage = File.ReadAllText(Path.Combine(typeDir, "usage.md"));
+                  if (File.Exists(Path.Combine(typeDir, "examples.md")))
+                      type.Examples = File.ReadAllText(Path.Combine(typeDir, "examples.md"));
+                  if (File.Exists(Path.Combine(typeDir, "best-practices.md")))
+                      type.BestPractices = File.ReadAllText(Path.Combine(typeDir, "best-practices.md"));
+                  if (File.Exists(Path.Combine(typeDir, "patterns.md")))
+                      type.Patterns = File.ReadAllText(Path.Combine(typeDir, "patterns.md"));
+                  if (File.Exists(Path.Combine(typeDir, "considerations.md")))
+                      type.Considerations = File.ReadAllText(Path.Combine(typeDir, "considerations.md"));
+                  if (File.Exists(Path.Combine(typeDir, "related-apis.yaml")))
+                  {
+                      type.RelatedApis = ParseRelatedApisYaml(Path.Combine(typeDir, "related-apis.yaml"));
+                  }
+
+                  foreach (var member in type.Members)
+                  {
+                      var memberDir = Path.Combine(typeDir, member.Symbol.Name);
+                      if (Directory.Exists(memberDir))
+                      {
+                          if (File.Exists(Path.Combine(memberDir, "usage.md")))
+                              member.Usage = File.ReadAllText(Path.Combine(memberDir, "usage.md"));
+                          if (File.Exists(Path.Combine(memberDir, "examples.md")))
+                              member.Examples = File.ReadAllText(Path.Combine(memberDir, "examples.md"));
+                      }
+                  }
+              }
+          }
       }
   }
   ```
-- [ ] Create `InsertConceptualTransformer.cs` file (insert from `/conceptual` if empty).
-- [ ] Create `OverrideTitleTransformer.cs` file (from rules).
-- [ ] Create `ExcludePrivateTransformer.cs` file.
-- [ ] Create `TransformExamplesTransformer.cs` file (e.g., to table).
-- [ ] Create `ConditionalObsoleteTransformer.cs` file.
-- [ ] Create `IOutputRenderer.cs` file:
+- [ ] Create `CustomizationSettings.cs` file:
   ```csharp
-  using System.Threading.Tasks;
+  using System.Text.Json.Serialization;
 
   namespace CloudNimble.DotNetDocs;
 
   /// <summary>
-  /// Defines a renderer for documentation output.
+  /// Represents settings for customization rules in JSON format.
   /// </summary>
-  public interface IOutputRenderer
+  public class CustomizationSettings
   {
-      Task RenderAsync(DocAssembly model, string outputPath, TransformationContext context);
+      [JsonPropertyName("root")]
+      public RootSettings? Root { get; set; }
+
+      [JsonPropertyName("namespaces")]
+      public Dictionary<string, NamespaceSettings>? Namespaces { get; set; }
+
+      [JsonPropertyName("pages")]
+      public Dictionary<string, PageSettings>? Pages { get; set; }
+  }
+
+  public class RootSettings
+  {
+      [JsonPropertyName("excludePrivate")]
+      public bool? ExcludePrivate { get; set; }
+
+      [JsonPropertyName("transformations")]
+      public Dictionary<string, string>? Transformations { get; set; }
+  }
+
+  public class NamespaceSettings
+  {
+      [JsonPropertyName("title")]
+      public string? Title { get; set; }
+
+      [JsonPropertyName("icon")]
+      public string? Icon { get; set; }
+
+      [JsonPropertyName("exclusions")]
+      public ExclusionSettings? Exclusions { get; set; }
+  }
+
+  public class PageSettings
+  {
+      [JsonPropertyName("overrides")]
+      public Dictionary<string, string>? Overrides { get; set; }
+
+      [JsonPropertyName("conditions")]
+      public Dictionary<string, Dictionary<string, string>>? Conditions { get; set; }
+  }
+
+  public class ExclusionSettings
+  {
+      [JsonPropertyName("members")]
+      public List<string>? Members { get; set; }
   }
   ```
-- [ ] Create `MarkdownRenderer.cs` file (calls pipeline, renders to Markdown).
+- [ ] Navigate to test project: `cd ../CloudNimble.DotNetDocs.Tests.Core`.
+- [ ] Create `DocumentationManagerTests.cs` file with tests for orchestration, multi-assembly support.
+- [ ] Create `DocEntityIncludedMembersTests.cs` file with tests for filtering.
+- [ ] Run tests: `dotnet test --configuration Debug`.
+- [ ] Clean up temporary files from Phase 4.5.
+
+## Phase 5: RenderPipeline Implementation
+**Goal**: Implement transformation pipeline for customizations (insertions, overrides, etc.).
+
+- [ ] Navigate to core project: `cd ../CloudNimble.DotNetDocs.Core`.
+- [ ] Create `IDocTransformer.cs` file.
+- [ ] Create `TransformationContext.cs` file.
+- [ ] Create `RenderPipeline.cs` file.
+- [ ] Create `InsertConceptualTransformer.cs` file.
+- [ ] Create `OverrideTitleTransformer.cs` file.
+- [ ] Create `ExcludePrivateTransformer.cs` file.
+- [ ] Create `TransformExamplesTransformer.cs` file.
+- [ ] Create `ConditionalObsoleteTransformer.cs` file.
+- [ ] Create `IDocRenderer.cs` file.
+- [ ] Create `MarkdownRenderer.cs` file.
 - [ ] Create `JsonRenderer.cs` file.
 - [ ] Create `YamlRenderer.cs` file.
-- [ ] Navigate to test project: `cd ../CloudNimble.DotNetDocs.Tests.Core`.
-- [ ] Create `RenderPipelineTests.cs` file (test chain, async).
-- [ ] Create `InsertConceptualTransformerTests.cs` file.
-- [ ] Create `OverrideTitleTransformerTests.cs` file.
-- [ ] Create `ExcludePrivateTransformerTests.cs` file.
-- [ ] Create `TransformExamplesTransformerTests.cs` file.
-- [ ] Create `ConditionalObsoleteTransformerTests.cs` file.
-- [ ] Create `MarkdownRendererTests.cs` file.
-- [ ] Create `JsonRendererTests.cs` file.
-- [ ] Create `YamlRendererTests.cs` file.
+- [ ] Navigate to test project.
+- [ ] Create transformer and renderer tests.
 - [ ] Run tests: `dotnet test --configuration Debug`.
-- [ ] Clean up temporary files.
 
 ## Phase 6: CLI and MSBuild Integration
 **Goal**: Implement CLI (`dotnet docs generate`) and MSBuild task.
 
-- [ ] Create Tools project directory: `mkdir ../CloudNimble.DotNetDocs.Tools`.
-- [ ] Navigate to Tools project: `cd ../CloudNimble.DotNetDocs.Tools`.
-- [ ] Create Tools project file: `dotnet new console --framework net10.0 --configuration Debug`.
-- [ ] Update `CloudNimble.DotNetDocs.Tools.csproj`:
-  ```xml
-  <Project Sdk="Microsoft.NET.Sdk">
-    <PropertyGroup>
-      <TargetFrameworks>net10.0;net9.0;net8.0</TargetFrameworks>
-      <PackAsTool>true</PackAsTool>
-      <ToolCommandName>docs</ToolCommandName>
-      <IsPackable>true</IsPackable>
-    </PropertyGroup>
-  </Project>
-  ```
-- [ ] Add McMaster NuGet: `dotnet add package McMaster.Extensions.CommandLineUtils --version 4.1.1`.
-- [ ] Create `Program.cs` file:
-  ```csharp
-  using McMaster.Extensions.CommandLineUtils;
+- [ ] Create Tools project.
+- [ ] Implement CLI commands.
+- [ ] Create MSBuild project.
+- [ ] Implement MSBuild tasks.
+- [ ] Create tests.
+- [ ] Run tests.
 
-  namespace CloudNimble.DotNetDocs.Tools;
-
-  [Command("docs")]
-  public class Program
-  {
-      public static int Main(string[] args) => CommandLineApplication.Execute<GenerateCommand>(args);
-  }
-  ```
-- [ ] Create `GenerateCommand.cs` file (parse args, call `AssemblyManager`, `RenderPipeline`).
-- [ ] Create MSBuild project directory: `mkdir ../CloudNimble.DotNetDocs.MSBuild`.
-- [ ] Navigate to MSBuild project: `cd ../CloudNimble.DotNetDocs.MSBuild`.
-- [ ] Create MSBuild project file: `dotnet new classlib --framework netstandard2.0 --configuration Debug`.
-- [ ] Add Microsoft.Build NuGet: `dotnet add package Microsoft.Build.Tasks.Core --version 17.11.0`.
-- [ ] Create `GenerateDocsTask.cs` file (MSBuild task with inputs).
-- [ ] Create test projects: `mkdir ../CloudNimble.DotNetDocs.Tests.Tools`, `mkdir ../CloudNimble.DotNetDocs.Tests.MSBuild`.
-- [ ] Create test project files and tests for CLI/MSBuild integration.
-- [ ] Run tests: `dotnet test --configuration Debug`.
-- [ ] Clean up.
-
-## Phase 7: Plugins, Mintlify/Docusaurus, and Optimization
-**Goal**: Add extensibility and tool-specific outputs.
+## Phase 7: Plugins.AI, Mintlify/Docusaurus, and Optimization
+**Goal**: Add AI-powered extensibility using Semantic Kernel and tool-specific outputs.
 
 ### Mintlify.Core Foundation ✅ **COMPLETED**
 - [x] Create Mintlify.Core project - COMPLETED (foundational library for docs.json)
@@ -642,23 +603,33 @@ Assumptions:
 - [x] Add custom JSON converters for complex navigation types - COMPLETED
 
 ### CloudNimble.DotNetDocs.Mintlify Renderer (Still Needed)
-- [ ] Create Mintlify project directory: `mkdir ../CloudNimble.DotNetDocs.Mintlify`
-- [ ] Navigate to Mintlify project: `cd ../CloudNimble.DotNetDocs.Mintlify`
-- [ ] Create Mintlify project file: `dotnet new classlib --framework net10.0 --configuration Debug`
-- [ ] Update `CloudNimble.DotNetDocs.Mintlify.csproj` to multi-target
-- [ ] Add reference to Mintlify.Core for DocsJsonConfig usage
-- [ ] Create `MintlifyRenderer.cs` - Transform DocAssembly to Mintlify MDX format
-- [ ] Create `MintlifyNavigationBuilder.cs` - Build navigation from DocAssembly structure
-- [ ] Create `MintlifyPageGenerator.cs` - Generate individual MDX pages
+- [ ] Create MintlifyRenderer.cs - Transform DocAssembly to Mintlify MDX format
+- [ ] Create MintlifyNavigationBuilder.cs - Build navigation from DocAssembly structure
+- [ ] Create MintlifyPageGenerator.cs - Generate individual MDX pages
 - [ ] Create tests for Mintlify renderer
 
-### Remaining Plugin Work
-- [ ] Create Plugins project directory: `mkdir ../CloudNimble.DotNetDocs.Plugins`.
-- [ ] Navigate to Plugins project: `cd ../CloudNimble.DotNetDocs.Plugins`.
-- [ ] Create Plugins project file: `dotnet new classlib --framework net10.0 --configuration Debug`.
-- [ ] Update `CloudNimble.DotNetDocs.Plugins.csproj` to multi-target.
-- [ ] Create `IAugmentor.cs` file.
-- [ ] Create `SampleLlmAugmentor.cs` file.
+### AI Plugins with Semantic Kernel
+- [ ] Create Plugins.AI project directory: `mkdir ../CloudNimble.DotNetDocs.Plugins.AI`.
+- [ ] Navigate to Plugins.AI project: `cd ../CloudNimble.DotNetDocs.Plugins.AI`.
+- [ ] Create Plugins.AI project file: `dotnet new classlib --framework net10.0 --configuration Debug`.
+- [ ] Update `CloudNimble.DotNetDocs.Plugins.AI.csproj` to multi-target.
+- [ ] Add Semantic Kernel NuGet: `dotnet add package Microsoft.SemanticKernel`.
+- [ ] Add Kernel Memory NuGet (optional): `dotnet add package Microsoft.KernelMemory.Core`.
+- [ ] Create `IDocEnricher.cs` file.
+- [ ] Create `SemanticKernelEnricher.cs` file - Allows users to configure:
+  - AI model selection (OpenAI, Azure OpenAI, local models, etc.)
+  - Embedding model selection for semantic search
+  - Custom prompts for documentation generation
+  - Temperature and other parameters
+- [ ] Create `DocumentationEnhancer.cs` - Uses SK to:
+  - Generate missing examples from method signatures
+  - Enhance usage documentation with best practices
+  - Create related API suggestions using embeddings
+  - Generate considerations based on code patterns
+- [ ] Create `KernelMemoryIndexer.cs` (optional) - Uses Kernel Memory to:
+  - Index existing documentation for semantic search
+  - Find similar code patterns across assemblies
+  - Suggest documentation based on similar APIs
 
 ### Docusaurus Support  
 - [ ] Create Docusaurus project directory: `mkdir ../CloudNimble.DotNetDocs.Docusaurus`.
@@ -668,36 +639,6 @@ Assumptions:
 - [ ] Create `DocusaurusRenderer.cs` file.
 
 ### Performance Optimization
-- [ ] Add BenchmarkDotNet NuGet to test project: `dotnet add package BenchmarkDotNet`.
+- [ ] Add BenchmarkDotNet NuGet to test project.
 - [ ] Create performance tests for extraction, rendering.
 - [ ] Run tests: `dotnet test --configuration Debug`.
-- [ ] Clean up.
-
-## Phase 8: Final Validation, Mintlify Integration, and Cleanup
-**Goal**: Ensure robustness, integrate Mintlify.
-
-- [ ] Create `MintlifyScript.cs` file for `dotnet easyaf mintlify`.
-- [ ] Run full tests across targets: `dotnet test --configuration Debug`.
-- [ ] Verify coverage >95% (use `dotnet test --collect:"Code Coverage"`).
-- [ ] Ensure XML comments complete.
-- [ ] Clean up all temp files.
-
-## Next Steps (Priority Order)
-
-### Immediate Tasks
-1. **Phase 4: Conceptual Loading** - Implement the /conceptual folder system for augmenting API docs with human-written content
-2. **Phase 5: RenderPipeline** - Build transformation pipeline for customizations and output generation
-3. **Phase 6: CLI Integration** - Create `dotnet docs` command-line tool for easy usage
-
-### Medium Priority  
-4. **Docusaurus Support** - Add Docusaurus output format alongside Mintlify
-5. **Plugin System** - Implement extensibility points for custom transformers
-6. **MSBuild Integration** - Create MSBuild tasks for build-time doc generation
-
-### Future Enhancements
-7. **Performance Optimization** - Add benchmarking and optimize for large assemblies
-8. **Advanced Transformers** - Add specialized transformers (obsolete handling, example formatting, etc.)
-9. **LLM Augmentation** - Explore AI-powered documentation enhancement
-
-This plan delivers a simple, performant, testable solution.
-

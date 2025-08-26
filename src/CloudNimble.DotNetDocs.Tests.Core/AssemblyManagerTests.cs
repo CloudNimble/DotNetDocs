@@ -337,7 +337,11 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             var conceptualPath = Path.Combine(tempDirectory, "conceptual");
             Directory.CreateDirectory(conceptualPath);
 
-            var testClassPath = Path.Combine(conceptualPath, "TestClass");
+            // Create namespace-based folder structure: /conceptual/TestNamespace/TestClass/
+            var namespacePath = Path.Combine(conceptualPath, "TestNamespace");
+            Directory.CreateDirectory(namespacePath);
+
+            var testClassPath = Path.Combine(namespacePath, "TestClass");
             Directory.CreateDirectory(testClassPath);
 
             await File.WriteAllTextAsync(
