@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using Microsoft.CodeAnalysis;
 
 namespace CloudNimble.DotNetDocs.Core
 {
@@ -66,6 +67,13 @@ namespace CloudNimble.DotNetDocs.Core
         /// <value>Markdown content explaining how to use the API element.</value>
         [NotNull]
         public string Usage { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the list of member accessibilities to include (default: Public).
+        /// </summary>
+        /// <value>List of accessibility levels to include when processing child members.</value>
+        [NotNull]
+        public List<Accessibility> IncludedMembers { get; set; } = [Accessibility.Public];
 
         #endregion
 

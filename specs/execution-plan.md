@@ -91,8 +91,9 @@ Assumptions:
 **Goal**: Define `DocEntity` and derived classes (`DocAssembly`, `DocNamespace`, `DocType`, `DocMember`, `DocParameter`). Use C# 14 (e.g., params collections for `RelatedApis`), ensure nullable-safe design. Test with Breakdance's real DI.
 
 ✅ **COMPLETED** - All model classes implemented with full test coverage:
-- DocEntity base class with all properties (Usage, Examples, BestPractices, Patterns, Considerations, RelatedApis)
+- DocEntity base class with all properties (Usage, Examples, BestPractices, Patterns, Considerations, RelatedApis, IncludedMembers)
 - DocAssembly, DocNamespace, DocType, DocMember, DocParameter derived classes
+- IncludedMembers property added to DocEntity with default [Accessibility.Public]
 - Complete test suite with 100% passing tests
 
 - [x] Navigate to core project: `cd ../CloudNimble.DotNetDocs.Core`.
@@ -184,60 +185,14 @@ Assumptions:
 ## Phase 3: Metadata Extraction with Roslyn and XML
 **Goal**: Implement `AssemblyManager` for loading, resolving, and XML integration. Multi-target compatible.
 
-- [x] Navigate to core project: `cd ../CloudNimble.DotNetDocs.Core`.
-- [x] Create `ProjectContext.cs` file:
-  ```csharp
-  using System.Collections.Generic;
-  using System.Diagnostics.CodeAnalysis;
-
-  namespace CloudNimble.DotNetDocs;
-
-  /// <summary>
-  /// Represents MSBuild project context for source intent.
-  /// </summary>
-  public class ProjectContext
-  {
-      #region Properties
-
-      /// <summary>
-      /// Gets the conceptual files path.
-      /// </summary>
-      [NotNull]
-      public string ConceptualPath { get; init; } = string.Empty;
-
-      /// <summary>
-      /// Gets the list of referenced assembly paths.
-      /// </summary>
-      [NotNull]
-      public List<string> References { get; } = [];
-
-      #endregion
-
-      #region Constructors
-
-      /// <summary>
-      /// Initializes a new instance of <see cref="ProjectContext"/>.
-      /// </summary>
-      public ProjectContext(params string[] references)
-      {
-          ArgumentNullException.ThrowIfNull(references);
-          References.AddRange(references);
-      }
-
-      #endregion
-  }
-  ```
-- [x] Create `AssemblyManager.cs` file (as provided).
-- [x] Update `DocAssembly.cs` (add `IAssemblySymbol`, `List<DocNamespace>`).
-- [x] Update `DocNamespace.cs` (add `INamespaceSymbol`, `List<DocType>`).
-- [x] Update `DocType.cs` (add interfaces, XML parsing via `GetDocumentationCommentXml`).
-- [x] Update `DocMember.cs` (add XML tags like `<summary>`, `<param>`).
-- [x] Update `DocParameter.cs` (add XML `<param>` description).
-- [x] Navigate to test project: `cd ../CloudNimble.DotNetDocs.Tests.Core`.
-- [x] Create sample assembly/XML for testing (CloudNimble.DotNetDocs.Tests.Shared).
-- [x] Create `AssemblyManagerTests.cs` file with tests for `DocumentAsync`, null checks, file existence, symbol traversal.
-- [x] Run tests: `dotnet test --configuration Debug` - All tests passing.
-- [x] Clean up samples from Phase 3.
+✅ **COMPLETED** - AssemblyManager implemented with IncludedMembers filtering:
+- ProjectContext.cs created with IncludedMembers property and improved constructor API
+- AssemblyManager.cs implemented with Roslyn/XML extraction
+- IncludedMembers filtering applied to types and members throughout the hierarchy
+- DocEntity.IncludedMembers cascades from assembly → namespace → type → member
+- All model classes updated with proper XML parsing
+- Comprehensive test suite with 100% passing tests
+- IncludedMembers defaults to [Accessibility.Public] but configurable via ProjectContext constructor or property
 
 ## Phase 4: Augmentation and /conceptual Loading
 **Goal**: Load conceptual content from `/conceptual` into `DocEntity` properties, including namespaces.
@@ -266,8 +221,18 @@ Assumptions:
 ## Phase 4.5: Adjustments for DocumentationManager and IncludedMembers
 **Goal**: Implement `DocumentationManager` as pipeline orchestrator, add `IncludedMembers` to `DocEntity`, switch to JSON for settings.
 
-- [ ] Navigate to core project: `cd ../CloudNimble.DotNetDocs.Core`.
-- [ ] Create `IDocEnricher.cs` file:
+✅ **COMPLETED** - DocumentationManager pipeline fully implemented:
+- Created IDocEnricher, IDocTransformer, IDocRenderer interfaces
+- Implemented DocumentationManager as pipeline orchestrator
+- Moved LoadConceptual logic from AssemblyManager to DocumentationManager
+- Made all file I/O operations async for better performance
+- Created DotNetDocsConstants class to eliminate magic strings
+- Added OutputPath and CustomSettings to ProjectContext
+- Created comprehensive DocumentationManagerTests with 100% coverage
+- All 132 tests passing
+
+- [x] Navigate to core project: `cd ../CloudNimble.DotNetDocs.Core`.
+- [x] Create `IDocEnricher.cs` file:
   ```csharp
   using System.Threading.Tasks;
 
@@ -281,7 +246,7 @@ Assumptions:
       Task EnrichAsync(DocEntity entity, EnrichmentContext context);
   }
   ```
-- [ ] Create `EnrichmentContext.cs` file:
+- [x] Create `EnrichmentContext.cs` file:
   ```csharp
   using System.Diagnostics.CodeAnalysis;
 
@@ -296,7 +261,7 @@ Assumptions:
       public object Settings { get; init; } = new();
   }
   ```
-- [ ] Create `DocumentationManager.cs` file:
+- [x] Create `DocumentationManager.cs` file:
   ```csharp
   using System.Collections.Generic;
   using System.Threading.Tasks;
@@ -327,8 +292,10 @@ Assumptions:
           foreach (var enricher in _enrichers)
               await enricher.EnrichAsync(model, new EnrichmentContext { ConceptualPath = projectContext?.ConceptualPath });
 
-          var pipeline = new RenderPipeline(_transformers.ToArray());
-          await pipeline.TransformAsync(model, new TransformationContext { CustomSettings = projectContext?.CustomSettings });
+          foreach (var transformer in _transformers)
+          {
+              await TransformModelAsync(model, transformer, projectContext);
+          }
 
           foreach (var renderer in _renderers)
               await renderer.RenderAsync(model, projectContext?.OutputPath ?? "docs", new TransformationContext { CustomSettings = projectContext?.CustomSettings });
@@ -342,8 +309,10 @@ Assumptions:
               var model = await manager.DocumentAsync(projectContext);
               foreach (var enricher in _enrichers)
                   await enricher.EnrichAsync(model, new EnrichmentContext { ConceptualPath = projectContext?.ConceptualPath });
-              var pipeline = new RenderPipeline(_transformers.ToArray());
-              await pipeline.TransformAsync(model, new TransformationContext { CustomSettings = projectContext?.CustomSettings });
+              foreach (var transformer in _transformers)
+              {
+                  await TransformModelAsync(model, transformer, projectContext);
+              }
               foreach (var renderer in _renderers)
                   await renderer.RenderAsync(model, projectContext?.OutputPath ?? "docs", new TransformationContext { CustomSettings = projectContext?.CustomSettings });
           });
@@ -351,7 +320,7 @@ Assumptions:
       }
   }
   ```
-- [ ] Create `TransformationContext.cs` file:
+- [x] Create `TransformationContext.cs` file:
   ```csharp
   using System.Collections.Generic;
 
@@ -365,7 +334,7 @@ Assumptions:
       public object CustomSettings { get; init; } = new();
   }
   ```
-- [ ] Update `DocEntity.cs` to add `IncludedMembers`:
+- [x] Update `DocEntity.cs` to add `IncludedMembers`:
   ```csharp
   // Add to existing DocEntity properties
   /// <summary>
@@ -374,7 +343,7 @@ Assumptions:
   [NotNull]
   public List<Accessibility> IncludedMembers { get; set; } = [Accessibility.Public];
   ```
-- [ ] Update `AssemblyManager.cs` to use `IncludedMembers` in `BuildDocType` for filtering `GetMembers()`:
+- [x] Update `AssemblyManager.cs` to use `IncludedMembers` in `BuildDocType` for filtering `GetMembers()`:
   ```csharp
   // Update BuildDocType method
   private DocType BuildDocType(ITypeSymbol type, Compilation compilation, Dictionary<string, DocType> typeMap)
@@ -430,7 +399,7 @@ Assumptions:
       return docType;
   }
   ```
-- [ ] Update `AssemblyManager.cs` to support namespace conceptual (e.g., `conceptual/MyNamespace/usage.md`):
+- [x] Update `AssemblyManager.cs` to support namespace conceptual (e.g., `conceptual/MyNamespace/usage.md`):
   ```csharp
   // Update LoadConceptual method
   private void LoadConceptual(DocAssembly assembly, string conceptualPath)
@@ -554,19 +523,17 @@ Assumptions:
       public List<string>? Members { get; set; }
   }
   ```
-- [ ] Navigate to test project: `cd ../CloudNimble.DotNetDocs.Tests.Core`.
-- [ ] Create `DocumentationManagerTests.cs` file with tests for orchestration, multi-assembly support.
-- [ ] Create `DocEntityIncludedMembersTests.cs` file with tests for filtering.
-- [ ] Run tests: `dotnet test --configuration Debug`.
-- [ ] Clean up temporary files from Phase 4.5.
+- [x] Navigate to test project: `cd ../CloudNimble.DotNetDocs.Tests.Core`.
+- [x] Create `DocumentationManagerTests.cs` file with tests for orchestration, multi-assembly support.
+- [x] Create `DocEntityIncludedMembersTests.cs` file with tests for filtering.
+- [x] Run tests: `dotnet test --configuration Debug`.
+- [x] Clean up temporary files from Phase 4.5.
 
-## Phase 5: RenderPipeline Implementation
-**Goal**: Implement transformation pipeline for customizations (insertions, overrides, etc.).
+## Phase 5: Transformer Implementation
+**Goal**: Implement recursive transformation pipeline for customizations (insertions, overrides, exclusions, transformations, conditions).
 
 - [ ] Navigate to core project: `cd ../CloudNimble.DotNetDocs.Core`.
-- [ ] Create `IDocTransformer.cs` file.
-- [ ] Create `TransformationContext.cs` file.
-- [ ] Create `RenderPipeline.cs` file.
+- [ ] Create `IDocTransformer.cs` file (updated to accept DocEntity instead of DocAssembly).
 - [ ] Create `InsertConceptualTransformer.cs` file.
 - [ ] Create `OverrideTitleTransformer.cs` file.
 - [ ] Create `ExcludePrivateTransformer.cs` file.
@@ -576,6 +543,7 @@ Assumptions:
 - [ ] Create `MarkdownRenderer.cs` file.
 - [ ] Create `JsonRenderer.cs` file.
 - [ ] Create `YamlRenderer.cs` file.
+- [ ] Update `DocumentationManager.cs` to apply transformers recursively like enrichers.
 - [ ] Navigate to test project.
 - [ ] Create transformer and renderer tests.
 - [ ] Run tests: `dotnet test --configuration Debug`.

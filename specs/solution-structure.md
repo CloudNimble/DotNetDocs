@@ -40,11 +40,11 @@ This document outlines the project structure for `CloudNimble.DotNetDocs`, a fle
       - `RelatedApis`: List of names/URLs for related APIs.
       - `IncludedMembers`: List of Accessibility enums (default: Public) for granular member filtering during extraction.
     - Derived: `DocAssembly`, `DocNamespace`, `DocType`, `DocMember`, `DocParameter` wrapping Roslyn `ISymbol` (e.g., `ITypeSymbol`), with specific fields (e.g., `DocType.BaseType`).
-  - **Metadata Extraction**:
-    - `AssemblyManager`: Loads assemblies (`MetadataReference`), XML (`XmlDocumentationProvider`), and `.csproj` for source intent.
-    - Method: `DocumentAsync(Compilation, ProjectContext?)`.
-    - Populates `DocEntity` properties via `/conceptual` files (e.g., `conceptual/MyNamespace/usage.md`, `conceptual/MyClass/usage.md`) or plugins, including namespace-level conceptual documentation.
-    - Filters members using `IncludedMembers` during recursive processing.
+- **Metadata Extraction**:
+  - `AssemblyManager`: Loads assemblies (`MetadataReference`), XML (`XmlDocumentationProvider`), and `.csproj` for source intent.
+  - Method: `DocumentAsync(Compilation, ProjectContext?)`.
+  - Populates `DocEntity` properties via `/conceptual` files (e.g., `conceptual/MyNamespace/usage.md`, `conceptual/MyClass/usage.md`) or plugins, including namespace-level conceptual documentation.
+  - Filters members using `IncludedMembers` during recursive processing (configurable via `ProjectContext.IncludedMembers`).
   - **Augmentation**:
     - `IDocEnricher`: Interface in Core for conceptual enrichment (e.g., LLM-driven `Examples`).
   - **Rendering**:
@@ -113,6 +113,6 @@ This document outlines the project structure for `CloudNimble.DotNetDocs`, a fle
 
 ## Next Steps
 - Define `/conceptual` file format (e.g., Markdown, JSON mapping to `DocEntity`).
-- Refine `DocumentationManager` JSON schema and transformer order (see `RenderPipeline.md`).
+- Refine `DocumentationManager` JSON schema and transformer order (see `transformation-pipeline.md`).
 - Test CLI (`dotnet docs generate`) and MSBuild modes with sample `/conceptual` files.
 

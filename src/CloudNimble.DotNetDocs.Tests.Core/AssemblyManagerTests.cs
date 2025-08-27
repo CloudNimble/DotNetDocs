@@ -224,7 +224,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core
         {
             await CreateTestAssemblyAsync();
             var manager = new AssemblyManager(testAssemblyPath, testXmlPath);
-            var context = new ProjectContext(typeof(object).Assembly.Location);
+            var context = new ProjectContext(null, typeof(object).Assembly.Location);
 
             var result = await manager.DocumentAsync(context);
 
@@ -234,16 +234,68 @@ namespace CloudNimble.DotNetDocs.Tests.Core
         }
 
         [TestMethod]
-        public async Task DocumentAsync_WithConceptualPath_LoadsConceptualContent()
+        public async Task DocumentAsync_WithIncludedMembers_FiltersMembers()
         {
             await CreateTestAssemblyAsync();
-            await CreateConceptualContentAsync();
-
             var manager = new AssemblyManager(testAssemblyPath, testXmlPath);
-            var context = new ProjectContext
+            var context = new ProjectContext([Accessibility.Public, Accessibility.Internal]);
+
+            var result = await manager.DocumentAsync(context);
+
+            // Verify that IncludedMembers is set on the assembly
+            result.IncludedMembers.Should().Contain(Accessibility.Public);
+            result.IncludedMembers.Should().Contain(Accessibility.Internal);
+
+            // Verify cascading to namespaces
+            foreach (var ns in result.Namespaces)
             {
-                ConceptualPath = Path.Combine(tempDirectory, "conceptual")
-            };
+                ns.IncludedMembers.Should().Contain(Accessibility.Public);
+                ns.IncludedMembers.Should().Contain(Accessibility.Internal);
+
+                // Verify cascading to types
+                foreach (var type in ns.Types)
+                {
+                    type.IncludedMembers.Should().Contain(Accessibility.Public);
+                    type.IncludedMembers.Should().Contain(Accessibility.Internal);
+                }
+            }
+        }
+
+        [TestMethod]
+        public async Task DocumentAsync_WithRestrictedIncludedMembers_FiltersOutPrivateMembers()
+        {
+            await CreateTestAssemblyAsync();
+            var manager = new AssemblyManager(testAssemblyPath, testXmlPath);
+            var context = new ProjectContext([Accessibility.Public]);
+
+            var result = await manager.DocumentAsync(context);
+
+            // The test assembly should only include public members
+            var testType = result.Namespaces
+                .SelectMany(ns => ns.Types)
+                .FirstOrDefault(t => t.Symbol.Name == "TestClass");
+
+            testType.Should().NotBeNull();
+            testType!.Members.Should().NotBeEmpty();
+
+            // Verify only public members are included
+            testType.Members.Should().Contain(m => m.Symbol.Name == "DoSomething");
+            testType.Members.Should().Contain(m => m.Symbol.Name == "TestProperty");
+            testType.Members.Should().Contain(m => m.Symbol.Name == "Dispose");
+
+            // Verify private/internal members are filtered out
+            testType.Members.Should().NotContain(m => m.Symbol.Name == "PrivateMethod");
+            testType.Members.Should().NotContain(m => m.Symbol.Name == "PrivateProperty");
+            testType.Members.Should().NotContain(m => m.Symbol.Name == "InternalMethod");
+            testType.Members.Should().NotContain(m => m.Symbol.Name == "InternalProperty");
+        }
+
+        [TestMethod]
+        public async Task DocumentAsync_WithInternalIncludedMembers_IncludesInternalMembers()
+        {
+            await CreateTestAssemblyAsync();
+            var manager = new AssemblyManager(testAssemblyPath, testXmlPath);
+            var context = new ProjectContext([Accessibility.Public, Accessibility.Internal]);
 
             var result = await manager.DocumentAsync(context);
 
@@ -251,34 +303,20 @@ namespace CloudNimble.DotNetDocs.Tests.Core
                 .SelectMany(ns => ns.Types)
                 .FirstOrDefault(t => t.Symbol.Name == "TestClass");
 
-            testType!.Usage.Should().Contain("This is conceptual usage documentation");
-            testType.Examples.Should().Contain("This is conceptual examples documentation");
-            testType.BestPractices.Should().Contain("This is conceptual best practices");
-            testType.Patterns.Should().Contain("This is conceptual patterns");
-            testType.Considerations.Should().Contain("This is conceptual considerations");
-        }
+            testType.Should().NotBeNull();
+            testType!.Members.Should().NotBeEmpty();
 
-        [TestMethod]
-        public async Task DocumentAsync_WithConceptualPath_LoadsMemberConceptualContent()
-        {
-            await CreateTestAssemblyAsync();
-            await CreateConceptualContentAsync();
+            // Verify public members are included
+            testType.Members.Should().Contain(m => m.Symbol.Name == "DoSomething");
+            testType.Members.Should().Contain(m => m.Symbol.Name == "TestProperty");
 
-            var manager = new AssemblyManager(testAssemblyPath, testXmlPath);
-            var context = new ProjectContext
-            {
-                ConceptualPath = Path.Combine(tempDirectory, "conceptual")
-            };
+            // Verify internal members are included
+            testType.Members.Should().Contain(m => m.Symbol.Name == "InternalMethod");
+            testType.Members.Should().Contain(m => m.Symbol.Name == "InternalProperty");
 
-            var result = await manager.DocumentAsync(context);
-
-            var method = result.Namespaces
-                .SelectMany(ns => ns.Types)
-                .SelectMany(t => t.Members)
-                .FirstOrDefault(m => m.Symbol.Name == "DoSomething");
-
-            method!.Usage.Should().Contain("This is conceptual member usage");
-            method.Examples.Should().Contain("This is conceptual member examples");
+            // Verify private members are still filtered out
+            testType.Members.Should().NotContain(m => m.Symbol.Name == "PrivateMethod");
+            testType.Members.Should().NotContain(m => m.Symbol.Name == "PrivateProperty");
         }
 
         [TestMethod]
@@ -294,28 +332,6 @@ namespace CloudNimble.DotNetDocs.Tests.Core
 
             // Save or compare baseline
             var baselineFile = Path.Combine("Baselines", "AssemblyManager", "BasicAssembly.json");
-            await SaveOrCompareBaseline(json, baselineFile);
-        }
-
-        [TestMethod]
-        public async Task DocumentAsync_WithConceptualPath_ProducesConsistentBaseline()
-        {
-            await CreateTestAssemblyAsync();
-            await CreateConceptualContentAsync();
-
-            var manager = new AssemblyManager(testAssemblyPath, testXmlPath);
-            var context = new ProjectContext
-            {
-                ConceptualPath = Path.Combine(tempDirectory, "conceptual")
-            };
-
-            var result = await manager.DocumentAsync(context);
-
-            // Serialize to JSON with deterministic settings
-            var json = SerializeToJson(result);
-
-            // Save or compare baseline
-            var baselineFile = Path.Combine("Baselines", "AssemblyManager", "AssemblyWithConceptual.json");
             await SaveOrCompareBaseline(json, baselineFile);
         }
 
@@ -345,27 +361,27 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             Directory.CreateDirectory(testClassPath);
 
             await File.WriteAllTextAsync(
-                Path.Combine(testClassPath, "usage.md"),
+                Path.Combine(testClassPath, DotNetDocsConstants.UsageFileName),
                 "This is conceptual usage documentation for TestClass."
             );
 
             await File.WriteAllTextAsync(
-                Path.Combine(testClassPath, "examples.md"),
+                Path.Combine(testClassPath, DotNetDocsConstants.ExamplesFileName),
                 "This is conceptual examples documentation for TestClass."
             );
 
             await File.WriteAllTextAsync(
-                Path.Combine(testClassPath, "best-practices.md"),
+                Path.Combine(testClassPath, DotNetDocsConstants.BestPracticesFileName),
                 "This is conceptual best practices for TestClass."
             );
 
             await File.WriteAllTextAsync(
-                Path.Combine(testClassPath, "patterns.md"),
+                Path.Combine(testClassPath, DotNetDocsConstants.PatternsFileName),
                 "This is conceptual patterns for TestClass."
             );
 
             await File.WriteAllTextAsync(
-                Path.Combine(testClassPath, "considerations.md"),
+                Path.Combine(testClassPath, DotNetDocsConstants.ConsiderationsFileName),
                 "This is conceptual considerations for TestClass."
             );
 
@@ -374,12 +390,12 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             Directory.CreateDirectory(memberPath);
 
             await File.WriteAllTextAsync(
-                Path.Combine(memberPath, "usage.md"),
+                Path.Combine(memberPath, DotNetDocsConstants.UsageFileName),
                 "This is conceptual member usage for DoSomething."
             );
 
             await File.WriteAllTextAsync(
-                Path.Combine(memberPath, "examples.md"),
+                Path.Combine(memberPath, DotNetDocsConstants.ExamplesFileName),
                 "This is conceptual member examples for DoSomething."
             );
         }
@@ -424,12 +440,36 @@ namespace CloudNimble.DotNetDocs.Tests.Core
                             return input;
                         }
 
-                        /// <summary>
-                        /// Disposes the object.
-                        /// </summary>
-                        public void Dispose()
-                        {
-                        }
+                         /// <summary>
+                         /// Disposes the object.
+                         /// </summary>
+                         public void Dispose()
+                         {
+                         }
+
+                         /// <summary>
+                         /// An internal method for testing.
+                         /// </summary>
+                         internal void InternalMethod()
+                         {
+                         }
+
+                         /// <summary>
+                         /// A private method for testing.
+                         /// </summary>
+                         private void PrivateMethod()
+                         {
+                         }
+
+                         /// <summary>
+                         /// Gets or sets an internal property.
+                         /// </summary>
+                         internal string InternalProperty { get; set; }
+
+                         /// <summary>
+                         /// Gets or sets a private property.
+                         /// </summary>
+                         private string PrivateProperty { get; set; }
                     }
 
                     /// <summary>
@@ -523,12 +563,32 @@ namespace CloudNimble.DotNetDocs.Tests.Core
                                 A derived class.
                                 </summary>
                             </member>
-                            <member name="M:TestNamespace.DerivedClass.AdditionalMethod">
-                                <summary>
-                                An additional method.
-                                </summary>
-                            </member>
-                        </members>
+                             <member name="M:TestNamespace.DerivedClass.AdditionalMethod">
+                                 <summary>
+                                 An additional method.
+                                 </summary>
+                             </member>
+                             <member name="M:TestNamespace.TestClass.InternalMethod">
+                                 <summary>
+                                 An internal method for testing.
+                                 </summary>
+                             </member>
+                             <member name="M:TestNamespace.TestClass.PrivateMethod">
+                                 <summary>
+                                 A private method for testing.
+                                 </summary>
+                             </member>
+                             <member name="P:TestNamespace.TestClass.InternalProperty">
+                                 <summary>
+                                 Gets or sets an internal property.
+                                 </summary>
+                             </member>
+                             <member name="P:TestNamespace.TestClass.PrivateProperty">
+                                 <summary>
+                                 Gets or sets a private property.
+                                 </summary>
+                             </member>
+                         </members>
                     </doc>
                     """;
                 await File.WriteAllTextAsync(testXmlPath, xmlContent, Encoding.UTF8);

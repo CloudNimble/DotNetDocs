@@ -113,7 +113,7 @@ namespace CloudNimble.DotNetDocs.Core
             if (Document is null || currentModified > LastModified)
             {
                 _compilation = await CreateCompilationAsync(projectContext?.References ?? []);
-                Document = BuildModel(_compilation, projectContext?.ConceptualPath);
+                Document = BuildModel(_compilation, projectContext?.ConceptualPath, projectContext?.IncludedMembers ?? [Accessibility.Public]);
                 LastModified = currentModified;
             }
             return Document;
@@ -128,8 +128,9 @@ namespace CloudNimble.DotNetDocs.Core
         /// </summary>
         /// <param name="compilation">The Roslyn compilation containing assembly metadata.</param>
         /// <param name="conceptualPath">Optional path to conceptual documentation files.</param>
+        /// <param name="includedMembers">List of member accessibilities to include.</param>
         /// <returns>The <see cref="DocAssembly"/> model.</returns>
-        private DocAssembly BuildModel(Compilation compilation, string? conceptualPath)
+        private DocAssembly BuildModel(Compilation compilation, string? conceptualPath, List<Accessibility> includedMembers)
         {
             var targetRef = compilation.References.OfType<PortableExecutableReference>().FirstOrDefault(r => string.Equals(r.FilePath, AssemblyPath, StringComparison.OrdinalIgnoreCase))
                 ?? throw new InvalidOperationException("Target assembly reference not found in compilation.");
@@ -142,18 +143,14 @@ namespace CloudNimble.DotNetDocs.Core
 
             var docAssembly = new DocAssembly(assemblySymbol)
             {
-                Usage = assemblyDoc?.Descendants("summary").FirstOrDefault()?.Value.Trim() ?? string.Empty
+                Usage = assemblyDoc?.Descendants("summary").FirstOrDefault()?.Value.Trim() ?? string.Empty,
+                IncludedMembers = includedMembers
             };
 
             var typeMap = new Dictionary<string, DocType>(); // Cache for type resolutions
 
             // Process all namespaces recursively
-            ProcessNamespace(assemblySymbol.GlobalNamespace, docAssembly, compilation, typeMap);
-
-            if (conceptualPath is not null)
-            {
-                LoadConceptual(docAssembly, conceptualPath);
-            }
+            ProcessNamespace(assemblySymbol.GlobalNamespace, docAssembly, compilation, typeMap, includedMembers);
 
             return docAssembly;
         }
@@ -164,8 +161,9 @@ namespace CloudNimble.DotNetDocs.Core
         /// <param name="type">The Roslyn type symbol.</param>
         /// <param name="compilation">The Roslyn compilation for symbol resolution.</param>
         /// <param name="typeMap">Cache of resolved types for linking.</param>
+        /// <param name="includedMembers">List of member accessibilities to include.</param>
         /// <returns>The <see cref="DocType"/> instance.</returns>
-        private DocType BuildDocType(ITypeSymbol type, Compilation compilation, Dictionary<string, DocType> typeMap)
+        private DocType BuildDocType(ITypeSymbol type, Compilation compilation, Dictionary<string, DocType> typeMap, List<Accessibility> includedMembers)
         {
             var xml = type.GetDocumentationCommentXml() ?? string.Empty;
             var doc = string.IsNullOrWhiteSpace(xml) ? null : XDocument.Parse(xml);
@@ -176,6 +174,7 @@ namespace CloudNimble.DotNetDocs.Core
                 Examples = doc?.Descendants("example").FirstOrDefault()?.Value.Trim() ?? string.Empty,
                 BestPractices = doc?.Descendants("remarks").FirstOrDefault()?.Value.Trim() ?? string.Empty
             };
+            docType.IncludedMembers = includedMembers;
 
             typeMap[type.ToDisplayString()] = docType;
 
@@ -207,7 +206,7 @@ namespace CloudNimble.DotNetDocs.Core
             docType.RelatedApis = type.AllInterfaces.Select(i => i.ToDisplayString()).ToList();
 
             // Resolve members
-            foreach (var member in type.GetMembers().Where(m => m.DeclaredAccessibility == Accessibility.Public && !m.IsImplicitlyDeclared))
+            foreach (var member in type.GetMembers().Where(m => docType.IncludedMembers.Contains(m.DeclaredAccessibility) && !m.IsImplicitlyDeclared))
             {
                 DocMember? docMember = null;
 
@@ -309,116 +308,6 @@ namespace CloudNimble.DotNetDocs.Core
             return await Task.FromResult(compilation);
         }
 
-        /// <summary>
-        /// Loads conceptual documentation from the specified folder into the model.
-        /// </summary>
-        /// <remarks>
-        /// Conceptual content is organized by namespace hierarchy. For example:
-        /// /conceptual/System/Text/Json/JsonSerializer/ contains documentation for the JsonSerializer type.
-        /// /conceptual/System/Text/Json/JsonSerializer/Serialize/ contains documentation for the Serialize method.
-        /// </remarks>
-        /// <param name="assembly">The documentation model to augment.</param>
-        /// <param name="conceptualPath">Path to the conceptual documentation folder.</param>
-        private void LoadConceptual(DocAssembly assembly, string conceptualPath)
-        {
-            ArgumentException.ThrowIfNullOrWhiteSpace(conceptualPath);
-
-            if (!Directory.Exists(conceptualPath))
-            {
-                return;
-            }
-
-            foreach (var ns in assembly.Namespaces)
-            {
-                foreach (var type in ns.Types)
-                {
-                    // Build namespace path like /conceptual/System/Text/Json/JsonSerializer/
-                    var namespacePath = ns.Symbol.IsGlobalNamespace 
-                        ? string.Empty 
-                        : ns.Symbol.ToDisplayString().Replace('.', Path.DirectorySeparatorChar);
-                    var typeDir = Path.Combine(conceptualPath, namespacePath, type.Symbol.Name);
-                    
-                    if (Directory.Exists(typeDir))
-                    {
-                        // Load type-level conceptual content
-                        LoadConceptualFile(typeDir, "usage.md", content => type.Usage = content);
-                        LoadConceptualFile(typeDir, "examples.md", content => type.Examples = content);
-                        LoadConceptualFile(typeDir, "best-practices.md", content => type.BestPractices = content);
-                        LoadConceptualFile(typeDir, "patterns.md", content => type.Patterns = content);
-                        LoadConceptualFile(typeDir, "considerations.md", content => type.Considerations = content);
-                        
-                        // Load related APIs if markdown file exists
-                        var relatedApisPath = Path.Combine(typeDir, "related-apis.md");
-                        if (File.Exists(relatedApisPath))
-                        {
-                            // Simple markdown file with one API per line for now
-                            type.RelatedApis = File.ReadAllLines(relatedApisPath)
-                                .Where(line => !string.IsNullOrWhiteSpace(line))
-                                .Select(line => line.Trim())
-                                .ToList();
-                        }
-
-                        // Load member-specific conceptual content
-                        foreach (var member in type.Members)
-                        {
-                            var memberDir = Path.Combine(typeDir, member.Symbol.Name);
-                            if (Directory.Exists(memberDir))
-                            {
-                                LoadConceptualFile(memberDir, "usage.md", content => member.Usage = content);
-                                LoadConceptualFile(memberDir, "examples.md", content => member.Examples = content);
-                                LoadConceptualFile(memberDir, "best-practices.md", content => member.BestPractices = content);
-                                LoadConceptualFile(memberDir, "patterns.md", content => member.Patterns = content);
-                                LoadConceptualFile(memberDir, "considerations.md", content => member.Considerations = content);
-                                
-                                // Load member-specific related APIs
-                                var memberRelatedApisPath = Path.Combine(memberDir, "related-apis.md");
-                                if (File.Exists(memberRelatedApisPath))
-                                {
-                                    member.RelatedApis = File.ReadAllLines(memberRelatedApisPath)
-                                        .Where(line => !string.IsNullOrWhiteSpace(line))
-                                        .Select(line => line.Trim())
-                                        .ToList();
-                                }
-
-                                // Load parameter-specific documentation
-                                foreach (var parameter in member.Parameters)
-                                {
-                                    var paramFile = Path.Combine(memberDir, $"param-{parameter.Symbol.Name}.md");
-                                    if (File.Exists(paramFile))
-                                    {
-                                        var content = File.ReadAllText(paramFile).Trim();
-                                        if (!string.IsNullOrWhiteSpace(content))
-                                        {
-                                            // Override XML documentation with conceptual content
-                                            parameter.Usage = content;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        /// <summary>
-        /// Helper method to load a conceptual file if it exists.
-        /// </summary>
-        /// <param name="directory">The directory to look in.</param>
-        /// <param name="fileName">The file name to load.</param>
-        /// <param name="setter">Action to set the content on the target object.</param>
-        private void LoadConceptualFile(string directory, string fileName, Action<string> setter)
-        {
-            var filePath = Path.Combine(directory, fileName);
-            if (File.Exists(filePath))
-            {
-                var content = File.ReadAllText(filePath).Trim();
-                if (!string.IsNullOrWhiteSpace(content))
-                {
-                    setter(content);
-                }
-            }
-        }
 
 
         /// <summary>
@@ -428,12 +317,13 @@ namespace CloudNimble.DotNetDocs.Core
         /// <param name="docAssembly">The documentation assembly being built.</param>
         /// <param name="compilation">The Roslyn compilation.</param>
         /// <param name="typeMap">Cache for type resolutions.</param>
-        private void ProcessNamespace(INamespaceSymbol namespaceSymbol, DocAssembly docAssembly, Compilation compilation, Dictionary<string, DocType> typeMap)
+        /// <param name="includedMembers">List of member accessibilities to include.</param>
+        private void ProcessNamespace(INamespaceSymbol namespaceSymbol, DocAssembly docAssembly, Compilation compilation, Dictionary<string, DocType> typeMap, List<Accessibility> includedMembers)
         {
             // Process types in the global namespace
             if (namespaceSymbol.IsGlobalNamespace)
             {
-                var hasTypesToDocument = namespaceSymbol.GetTypeMembers().Any(t => t.DeclaredAccessibility == Accessibility.Public || t.Name == "<Module>");
+                var hasTypesToDocument = namespaceSymbol.GetTypeMembers().Any(t => includedMembers.Contains(t.DeclaredAccessibility) || t.Name == "<Module>");
                 if (hasTypesToDocument)
                 {
                     var nsXml = namespaceSymbol.GetDocumentationCommentXml() ?? string.Empty;
@@ -441,13 +331,14 @@ namespace CloudNimble.DotNetDocs.Core
 
                     var globalNs = new DocNamespace(namespaceSymbol)
                     {
-                        Usage = nsDoc?.Descendants("summary").FirstOrDefault()?.Value.Trim() ?? string.Empty
+                        Usage = nsDoc?.Descendants("summary").FirstOrDefault()?.Value.Trim() ?? string.Empty,
+                        IncludedMembers = includedMembers
                     };
                     docAssembly.Namespaces.Add(globalNs);
 
-                    foreach (var type in namespaceSymbol.GetTypeMembers().Where(t => t.DeclaredAccessibility == Accessibility.Public || t.Name == "<Module>"))
+                    foreach (var type in namespaceSymbol.GetTypeMembers().Where(t => includedMembers.Contains(t.DeclaredAccessibility) || t.Name == "<Module>"))
                     {
-                        var docType = BuildDocType(type, compilation, typeMap);
+                        var docType = BuildDocType(type, compilation, typeMap, includedMembers);
                         globalNs.Types.Add(docType);
                     }
                 }
@@ -467,19 +358,20 @@ namespace CloudNimble.DotNetDocs.Core
 
                 var docNs = new DocNamespace(ns)
                 {
-                    Usage = nsDoc?.Descendants("summary").FirstOrDefault()?.Value.Trim() ?? string.Empty
+                    Usage = nsDoc?.Descendants("summary").FirstOrDefault()?.Value.Trim() ?? string.Empty,
+                    IncludedMembers = includedMembers
                 };
                 docAssembly.Namespaces.Add(docNs);
 
                 // Process types in this namespace
-                foreach (var type in ns.GetTypeMembers().Where(t => t.DeclaredAccessibility == Accessibility.Public))
+                foreach (var type in ns.GetTypeMembers().Where(t => includedMembers.Contains(t.DeclaredAccessibility)))
                 {
-                    var docType = BuildDocType(type, compilation, typeMap);
+                    var docType = BuildDocType(type, compilation, typeMap, includedMembers);
                     docNs.Types.Add(docType);
                 }
 
                 // Recurse into nested namespaces
-                ProcessNamespace(ns, docAssembly, compilation, typeMap);
+                ProcessNamespace(ns, docAssembly, compilation, typeMap, includedMembers);
             }
         }
 
