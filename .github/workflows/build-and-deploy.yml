@@ -123,7 +123,8 @@ jobs:
       run: dotnet build ${{ env.SOLUTION_FILE }} --configuration Release --no-restore /p:Version=${{ steps.version.outputs.VERSION }}
 
     - name: Test
-      run: dotnet test ${{ env.SOLUTION_FILE }} --configuration Release --no-build
+      working-directory: src
+      run: dotnet test --configuration Release --no-build
 
     - name: Pack
       run: dotnet pack ${{ env.SOLUTION_FILE }} --configuration Release --no-build --output ./artifacts /p:PackageVersion=${{ steps.version.outputs.VERSION }}
