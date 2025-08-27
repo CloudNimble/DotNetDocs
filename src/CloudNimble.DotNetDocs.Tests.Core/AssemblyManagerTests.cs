@@ -288,11 +288,10 @@ namespace CloudNimble.DotNetDocs.Tests.Core
         }
 
         [TestMethod]
-        public async Task DocumentAsync_WithInternalIncludedMembers_ReportsErrorWhenNotAccessible()
+        public async Task DocumentAsync_WithInternalIncludedMembers_IncludesInternalMembers()
         {
-            // Note: Even with InternalsVisibleTo attribute, when loading a compiled assembly as a reference,
-            // internal members are still not visible to the consuming compilation unless the compilation
-            // is in the same assembly context. This test verifies that we properly report this limitation.
+            // With the new bridge compilation using IgnoresAccessChecksTo attribute,
+            // we should now be able to see internal members even when loading a compiled assembly.
             
             await CreateTestAssemblyAsync();
             var manager = new AssemblyManager(testAssemblyPath, testXmlPath);
@@ -312,18 +311,13 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             // Properties appear as get_/set_ methods
             testType.Members.Should().Contain(m => m.Name == "get_TestProperty" || m.Name == "set_TestProperty");
 
-            // Internal members are not visible when loading assembly as reference,
-            // even with InternalsVisibleTo, because we're in a different compilation context.
-            // This is a known limitation of the current approach.
-            testType.Members.Should().NotContain(m => m.Name == "InternalMethod");
-            testType.Members.Should().NotContain(m => m.Name == "get_InternalProperty" || m.Name == "set_InternalProperty");
-            
-            // The error reporting would only work if we could detect that internal members exist
-            // but aren't accessible. Since we can't see them at all from this context,
-            // we can't reliably report the error. This will be addressed in future versions
-            // with source-based compilation or Mono.Cecil integration.
+            // With the bridge compilation, internal members should now be visible!
+            testType.Members.Should().Contain(m => m.Name == "InternalMethod", 
+                "bridge compilation with IgnoresAccessChecksTo should make internal methods visible");
+            testType.Members.Should().Contain(m => m.Name == "get_InternalProperty" || m.Name == "set_InternalProperty", 
+                "bridge compilation should make internal properties visible");
 
-            // Private members are never visible
+            // Private members are still not visible (and shouldn't be included with our filter)
             testType.Members.Should().NotContain(m => m.Name == "PrivateMethod");
             testType.Members.Should().NotContain(m => m.Name == "get_PrivateProperty" || m.Name == "set_PrivateProperty");
         }
@@ -424,9 +418,6 @@ namespace CloudNimble.DotNetDocs.Tests.Core
         {
             var source = """
                 using System;
-                using System.Runtime.CompilerServices;
-                
-                [assembly: InternalsVisibleTo("CloudNimble.DotNetDocs.Core")]
 
                 namespace TestNamespace
                 {

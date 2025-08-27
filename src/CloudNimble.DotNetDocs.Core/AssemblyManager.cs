@@ -253,22 +253,8 @@ namespace CloudNimble.DotNetDocs.Core
             // Set related APIs (e.g., all interfaces as strings)
             docType.RelatedApis = type.AllInterfaces.Select(i => i.ToDisplayString()).ToList();
 
-            // Check if internal members were requested but the type has no internal members visible
-            var requestedInternal = docType.IncludedMembers.Contains(Accessibility.Internal);
-            var hasInternalMembers = type.GetMembers().Any(m => m.DeclaredAccessibility == Accessibility.Internal);
-            
-            if (requestedInternal && !hasInternalMembers && type.GetMembers().Any(m => m.Name.Contains("Internal")))
-            {
-                // There are likely internal members but we can't see them
-                Errors.Add(new CompilerError
-                {
-                    IsWarning = true,
-                    ErrorNumber = "DND001",
-                    ErrorText = $"Internal members requested for type '{type.Name}' but not accessible. Assembly may need [InternalsVisibleTo(\"CloudNimble.DotNetDocs.Core\")] attribute."
-                });
-            }
-
             // Resolve members
+            // The bridge compilation with IgnoresAccessChecksTo allows us to see all members including internals
             foreach (var member in type.GetMembers().Where(m => docType.IncludedMembers.Contains(m.DeclaredAccessibility) && !m.IsImplicitlyDeclared))
             {
                 DocMember? docMember = null;
@@ -344,15 +330,60 @@ namespace CloudNimble.DotNetDocs.Core
         /// </summary>
         /// <param name="references">Paths to referenced assemblies.</param>
         /// <returns>A task representing the asynchronous operation, containing the <see cref="Compilation"/>.</returns>
+        /// <remarks>
+        /// Uses a bridge compilation technique with IgnoresAccessChecksTo attribute to enable
+        /// visibility of internal members for documentation purposes.
+        /// </remarks>
         private async Task<Compilation> CreateCompilationAsync(IEnumerable<string> references)
         {
-            var metadataReference = MetadataReference.CreateFromFile(AssemblyPath, documentation: XmlDocumentationProvider.CreateFromFile(XmlPath));
+            // Generate the IgnoresAccessChecksTo attribute dynamically
+            // This is a compiler trick to allow seeing internal members during compilation
+            // RWM: This technique is a modification of:
+            // https://www.strathweb.com/2018/10/no-internalvisibleto-no-problem-bypassing-c-visibility-rules-with-roslyn/
+            var ignoresAccessChecksSource = @"
+                namespace System.Runtime.CompilerServices
+                {
+                    [System.AttributeUsage(System.AttributeTargets.Assembly, AllowMultiple = true)]
+                    internal sealed class IgnoresAccessChecksToAttribute : System.Attribute
+                    {
+                        public string AssemblyName { get; }
+                        public IgnoresAccessChecksToAttribute(string assemblyName)
+                        {
+                            AssemblyName = assemblyName;
+                        }
+                    }
+                }";
 
-            var compilationOptions = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary);
-            var compilation = CSharpCompilation.Create(AssemblyName)
+            // Apply the attribute to our bridge compilation to see internals of the target assembly
+            var assemblyName = Path.GetFileNameWithoutExtension(AssemblyPath);
+            var bridgeSource = $@"
+                using System.Runtime.CompilerServices;
+                [assembly: IgnoresAccessChecksTo(""{assemblyName}"")]";
+
+            // Parse the source trees
+            var syntaxTrees = new[]
+            {
+                CSharpSyntaxTree.ParseText(ignoresAccessChecksSource),
+                CSharpSyntaxTree.ParseText(bridgeSource)
+            };
+
+            // Create compilation with metadata import options to see all members
+            var compilationOptions = new CSharpCompilationOptions(
+                OutputKind.DynamicallyLinkedLibrary,
+                metadataImportOptions: MetadataImportOptions.All);
+
+            // Create the compilation with our bridge that can see internals
+            var compilation = CSharpCompilation.Create($"{AssemblyName}.DocumentationBridge")
                 .WithOptions(compilationOptions)
-                .AddReferences(metadataReference);
+                .AddSyntaxTrees(syntaxTrees);
 
+            // Add the target assembly with its XML documentation
+            var targetReference = MetadataReference.CreateFromFile(
+                AssemblyPath, 
+                documentation: XmlDocumentationProvider.CreateFromFile(XmlPath));
+            compilation = compilation.AddReferences(targetReference);
+
+            // Add all provided references
             foreach (var refPath in references)
             {
                 if (File.Exists(refPath))
@@ -361,7 +392,7 @@ namespace CloudNimble.DotNetDocs.Core
                 }
             }
 
-            // Add common .NET references (e.g., System.Runtime) for resolution
+            // Add common .NET references for resolution
             var netRefs = new[]
             {
                 MetadataReference.CreateFromFile(typeof(object).Assembly.Location),
