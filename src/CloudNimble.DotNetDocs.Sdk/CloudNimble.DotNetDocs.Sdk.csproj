@@ -11,15 +11,18 @@
         <!-- This is an MSBuild SDK package -->
         <DevelopmentDependency>true</DevelopmentDependency>
         <PackageType>MSBuildSdk</PackageType>
-        <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 
         <!-- Suppress warnings about SDK packages -->
-        <NoWarn>$(NoWarn);NU5128;CS2008</NoWarn>
+        <NoWarn>$(NoWarn);NU5128;CS2008;</NoWarn>
 
         <!-- Don't include assemblies in package -->
         <IncludeBuildOutput>false</IncludeBuildOutput>
         <ContentTargetFolders>.</ContentTargetFolders>
         <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+        
+        <!-- Don't create symbols package for SDK projects -->
+        <IncludeSymbols>false</IncludeSymbols>
     </PropertyGroup>
 
     <ItemGroup>
@@ -45,9 +48,9 @@
             <NoTargetsFiles Include="$(NoTargetsSourcePath)\**\*" />
         </ItemGroup>
 
-        <Copy SourceFiles="@(NoTargetsFiles)"
-		      DestinationFiles="@(NoTargetsFiles->'$(NoTargetsDestPath)\%(RecursiveDir)%(Filename)%(Extension)')"
-		      SkipUnchangedFiles="true" />
+        <Copy SourceFiles="@(NoTargetsFiles)" 
+              DestinationFiles="@(NoTargetsFiles->'$(NoTargetsDestPath)\%(RecursiveDir)%(Filename)%(Extension)')"
+              SkipUnchangedFiles="true" />
     </Target>
 
     <!-- Include the NoTargets files in the package after they're copied -->
@@ -59,9 +62,10 @@
 
     <ItemGroup>
         <!-- Include Microsoft.Build.NoTargets for bundling its SDK files -->
-        <PackageReference Include="Microsoft.Build.NoTargets" Version="3.7.0"
-		                  PrivateAssets="all"
-		                  GeneratePathProperty="true" />
+        <PackageReference Include="Microsoft.Build.NoTargets"
+                          Version="3.7.0"
+                          PrivateAssets="all"
+                          GeneratePathProperty="true" />
     </ItemGroup>
 
 </Project>
