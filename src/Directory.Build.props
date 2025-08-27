@@ -30,7 +30,7 @@
     </PropertyGroup>
 
     <PropertyGroup>
-        <PackageId Condition="'$(IsPackable)'=='true'">$(MSBuildProjectName.Replace('CloudNimble.', ''))</PackageId>
+        <PackageId>$(MSBuildProjectName.Replace('CloudNimble.', ''))</PackageId>
         <Product>DotNetDocs</Product>
         <AssemblyVersion>1.0.0.0</AssemblyVersion>
         <PackageVersion>1.0-alpha.1</PackageVersion>
