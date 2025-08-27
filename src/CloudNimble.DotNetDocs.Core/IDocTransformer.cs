@@ -4,11 +4,11 @@ namespace CloudNimble.DotNetDocs.Core
 {
 
     /// <summary>
-    /// Defines a transformation step in the documentation rendering pipeline.
+    /// Defines a transformation step in the documentation processing pipeline.
     /// </summary>
     /// <remarks>
     /// Implementations of this interface modify the documentation model before rendering,
-    /// applying customizations such as insertions, overrides, exclusions, and transformations.
+    /// applying customizations such as overrides and transformations.
     /// </remarks>
     public interface IDocTransformer
     {

@@ -13,7 +13,6 @@ namespace CloudNimble.DotNetDocs.Core
     /// Used by <see cref="AssemblyManager.DocumentAsync"/> to enhance metadata extraction.
     /// <example>
     /// <code>
-    /// <![CDATA[
     /// // Default (public members only)
     /// var context = new ProjectContext("ref1.dll", "ref2.dll") { ConceptualPath = "conceptual" };
     ///
@@ -21,7 +20,6 @@ namespace CloudNimble.DotNetDocs.Core
     /// var context = new ProjectContext([Accessibility.Public, Accessibility.Internal], "ref1.dll", "ref2.dll");
     ///
     /// var model = await manager.DocumentAsync("MyLib.dll", "MyLib.xml", context);
-    /// ]]>
     /// </code>
     /// </example>
     /// </remarks>

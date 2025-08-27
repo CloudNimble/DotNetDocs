@@ -1,11 +1,11 @@
-<Project Sdk="Microsoft.Build.NoTargets/3.7.0">
+﻿<Project Sdk="Microsoft.Build.NoTargets/3.7.0">
 
     <PropertyGroup>
         <TargetFramework>net10.0</TargetFramework>
         <GenerateDocumentationFile>false</GenerateDocumentationFile>
         <Description>
-            MSBuild SDK for documentation projects (.docsproj) - provides a clean way to include documentation in .NET
-            solutions without compilation overhead
+            MSBuild SDK for DotNetDocs projects (.docsproj) - provides a clean way to include documentation in .NET
+            solutions
         </Description>
 
         <!-- This is an MSBuild SDK package -->

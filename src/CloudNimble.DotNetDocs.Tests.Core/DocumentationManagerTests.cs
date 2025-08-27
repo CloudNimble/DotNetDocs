@@ -141,14 +141,14 @@ namespace CloudNimble.DotNetDocs.Tests.Core
         {
             // Arrange
             await CreateTestAssemblyAsync();
-            
+
             // Create namespace-based conceptual structure
             var conceptualPath = Path.Combine(_tempDirectory!, "conceptual");
             var namespacePath = Path.Combine(conceptualPath, "TestNamespace");
             var typePath = Path.Combine(namespacePath, "TestClass");
             Directory.CreateDirectory(typePath);
-            
-            await File.WriteAllTextAsync(Path.Combine(typePath, DotNetDocsConstants.UsageFileName), 
+
+            await File.WriteAllTextAsync(Path.Combine(typePath, DotNetDocsConstants.UsageFileName),
                 "Documentation from namespace-based path");
 
             var manager = new DocumentationManager([], [], []);
@@ -182,15 +182,15 @@ namespace CloudNimble.DotNetDocs.Tests.Core
         {
             // Arrange
             await CreateTestAssemblyAsync();
-            
+
             // Create parameter documentation
             var conceptualPath = Path.Combine(_tempDirectory!, "conceptual");
             var namespacePath = Path.Combine(conceptualPath, "TestNamespace");
             var typePath = Path.Combine(namespacePath, "TestClass");
             var memberPath = Path.Combine(typePath, "DoSomething");
             Directory.CreateDirectory(memberPath);
-            
-            await File.WriteAllTextAsync(Path.Combine(memberPath, $"{DotNetDocsConstants.ParameterFilePrefix}input{DotNetDocsConstants.ParameterFileExtension}"), 
+
+            await File.WriteAllTextAsync(Path.Combine(memberPath, $"{DotNetDocsConstants.ParameterFilePrefix}input{DotNetDocsConstants.ParameterFileExtension}"),
                 "Custom parameter documentation");
 
             var manager = new DocumentationManager([], [], []);
@@ -217,7 +217,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core
                 .FirstOrDefault(m => m.Symbol.Name == "DoSomething");
 
             var parameter = method?.Parameters.FirstOrDefault(p => p.Symbol.Name == "input");
-            
+
             parameter.Should().NotBeNull();
             parameter!.Usage.Should().Be("Custom parameter documentation");
         }
@@ -231,7 +231,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core
         {
             _tempDirectory = Path.Combine(Path.GetTempPath(), $"DocManagerTests_{Guid.NewGuid()}");
             Directory.CreateDirectory(_tempDirectory);
-            
+
             _testAssemblyPath = Path.Combine(_tempDirectory, "TestAssembly.dll");
             _testXmlPath = Path.Combine(_tempDirectory, "TestAssembly.xml");
         }
@@ -379,7 +379,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             await File.WriteAllTextAsync(Path.Combine(testClassPath, DotNetDocsConstants.BestPracticesFileName), "This is conceptual best practices");
             await File.WriteAllTextAsync(Path.Combine(testClassPath, DotNetDocsConstants.PatternsFileName), "This is conceptual patterns");
             await File.WriteAllTextAsync(Path.Combine(testClassPath, DotNetDocsConstants.ConsiderationsFileName), "This is conceptual considerations");
-            
+
             // Related APIs as markdown file
             var relatedApis = @"System.Object
 System.Collections.Generic.List<T>

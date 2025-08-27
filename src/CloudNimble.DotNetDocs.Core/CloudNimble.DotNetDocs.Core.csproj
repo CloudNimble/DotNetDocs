@@ -11,4 +11,9 @@
         <PackageReference Include="System.Text.Json" Version="10.*-*" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Renderers\" />
+      <Folder Include="Transformers\" />
+    </ItemGroup>
+
 </Project>

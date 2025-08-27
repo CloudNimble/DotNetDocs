@@ -33,7 +33,7 @@
         <PackageId Condition="'$(IsPackable)'=='true'">$(MSBuildProjectName.Replace('CloudNimble.', ''))</PackageId>
         <Product>DotNetDocs</Product>
         <AssemblyVersion>1.0.0.0</AssemblyVersion>
-        <PackageVersion>1.0.0</PackageVersion>
+        <PackageVersion>1.0-alpha.1</PackageVersion>
         <Authors>CloudNimble</Authors>
         <Company>CloudNimble, Inc.</Company>
         <RpmPackageVendor>CloudNimble</RpmPackageVendor>
@@ -45,7 +45,7 @@
       Suppress a warning about upcoming deprecation of PackageLicenseUrl. When embedding licenses are supported,
       replace PackageLicenseUrl with PackageLicenseExpression.
     -->
-        <NoWarn>$(NoWarn);NU5125;NU5048;NU5128;</NoWarn>
+        <NoWarn>$(NoWarn);NU5125;NU5048;NU5128;NU5104;</NoWarn>
         <!-- Suppress warnings about using SemVer 2.0. -->
         <NoWarn>$(NoWarn);NU5105</NoWarn>
 

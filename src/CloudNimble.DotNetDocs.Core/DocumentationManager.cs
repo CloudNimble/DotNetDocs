@@ -36,13 +36,13 @@ namespace CloudNimble.DotNetDocs.Core
         /// <param name="renderers">The renderers to generate output formats.</param>
         /// <exception cref="ArgumentNullException">Thrown when any parameter is null.</exception>
         public DocumentationManager(
-            IEnumerable<IDocEnricher> enrichers,
-            IEnumerable<IDocTransformer> transformers,
-            IEnumerable<IDocRenderer> renderers)
+            List<IDocEnricher>? enrichers = null,
+            List<IDocTransformer>? transformers = null,
+            List<IDocRenderer>? renderers = null)
         {
-            this.enrichers = enrichers ?? throw new ArgumentNullException(nameof(enrichers));
-            this.transformers = transformers ?? throw new ArgumentNullException(nameof(transformers));
-            this.renderers = renderers ?? throw new ArgumentNullException(nameof(renderers));
+            this.enrichers = enrichers ?? [];
+            this.transformers = transformers ?? [];
+            this.renderers = renderers ?? [];
         }
 
         #endregion
@@ -230,11 +230,11 @@ namespace CloudNimble.DotNetDocs.Core
                 foreach (var type in ns.Types)
                 {
                     // Build namespace path like /conceptual/System/Text/Json/JsonSerializer/
-                    var namespacePath = ns.Symbol.IsGlobalNamespace 
-                        ? string.Empty 
+                    var namespacePath = ns.Symbol.IsGlobalNamespace
+                        ? string.Empty
                         : ns.Symbol.ToDisplayString().Replace('.', Path.DirectorySeparatorChar);
                     var typeDir = Path.Combine(conceptualPath, namespacePath, type.Symbol.Name);
-                    
+
                     if (Directory.Exists(typeDir))
                     {
                         // Load type-level conceptual content
@@ -243,7 +243,7 @@ namespace CloudNimble.DotNetDocs.Core
                         await LoadConceptualFileAsync(typeDir, DotNetDocsConstants.BestPracticesFileName, content => type.BestPractices = content);
                         await LoadConceptualFileAsync(typeDir, DotNetDocsConstants.PatternsFileName, content => type.Patterns = content);
                         await LoadConceptualFileAsync(typeDir, DotNetDocsConstants.ConsiderationsFileName, content => type.Considerations = content);
-                        
+
                         // Load related APIs if markdown file exists
                         var relatedApisPath = Path.Combine(typeDir, DotNetDocsConstants.RelatedApisFileName);
                         if (File.Exists(relatedApisPath))
@@ -267,7 +267,7 @@ namespace CloudNimble.DotNetDocs.Core
                                 await LoadConceptualFileAsync(memberDir, DotNetDocsConstants.BestPracticesFileName, content => member.BestPractices = content);
                                 await LoadConceptualFileAsync(memberDir, DotNetDocsConstants.PatternsFileName, content => member.Patterns = content);
                                 await LoadConceptualFileAsync(memberDir, DotNetDocsConstants.ConsiderationsFileName, content => member.Considerations = content);
-                                
+
                                 // Load member-specific related APIs
                                 var memberRelatedApisPath = Path.Combine(memberDir, DotNetDocsConstants.RelatedApisFileName);
                                 if (File.Exists(memberRelatedApisPath))
