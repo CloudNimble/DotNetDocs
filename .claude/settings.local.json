@@ -4,7 +4,11 @@
       "Bash(dotnet:*)",
       "Bash(grep:*)",
       "Bash(find:*)",
-      "Bash(mint dev:*)"
+      "Bash(mint dev:*)",
+      "mcp__github__get_workflow_run",
+      "mcp__github__get_job_logs",
+      "mcp__playwright__browser_navigate",
+      "mcp__github__list_workflow_runs"
     ],
     "deny": [],
     "ask": []

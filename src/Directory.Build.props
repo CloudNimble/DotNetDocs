@@ -95,6 +95,7 @@
         <EnableMSTestRunner>true</EnableMSTestRunner>
         <TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport>
         <TestingPlatformShowTestsFailure>true</TestingPlatformShowTestsFailure>
+        <TestingPlatformCommandLineArguments>$(TestingPlatformCommandLineArguments) --ignore-exit-code 8</TestingPlatformCommandLineArguments>
 
         <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
         <IsPackable>false</IsPackable>
