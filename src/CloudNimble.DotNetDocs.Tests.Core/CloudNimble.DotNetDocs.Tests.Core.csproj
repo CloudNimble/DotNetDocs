@@ -16,9 +16,13 @@
     </ItemGroup>
 
     <ItemGroup>
-      <None Update="app.config">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
+        <None Update="app.config">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Folder Include="Baselines\AssemblyManager\" />
     </ItemGroup>
 
 </Project>

@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Microsoft.CodeAnalysis;
 
 namespace CloudNimble.DotNetDocs.Core
@@ -23,6 +25,26 @@ namespace CloudNimble.DotNetDocs.Core
     /// </example>
     public abstract class DocEntity
     {
+
+        #region Fields
+
+        /// <summary>
+        /// Gets the JSON serializer options for consistent serialization.
+        /// </summary>
+        public static readonly JsonSerializerOptions JsonSerializerOptions = new()
+        {
+            WriteIndented = true,
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+            Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+            MaxDepth = 64,
+            Converters =
+            {
+                new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
+            }
+        };
+
+        #endregion
 
         #region Properties
 
@@ -74,6 +96,16 @@ namespace CloudNimble.DotNetDocs.Core
         /// <value>List of accessibility levels to include when processing child members.</value>
         [NotNull]
         public List<Accessibility> IncludedMembers { get; set; } = [Accessibility.Public];
+
+        #endregion
+
+        #region Public Methods
+
+        /// <summary>
+        /// Serializes this entity to JSON using consistent options.
+        /// </summary>
+        /// <returns>The JSON string representation of this entity.</returns>
+        public string ToJson() => JsonSerializer.Serialize(this, GetType(), JsonSerializerOptions);
 
         #endregion
 

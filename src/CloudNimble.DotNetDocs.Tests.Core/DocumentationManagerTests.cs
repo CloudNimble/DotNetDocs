@@ -148,7 +148,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             var typePath = Path.Combine(namespacePath, "TestClass");
             Directory.CreateDirectory(typePath);
 
-            await File.WriteAllTextAsync(Path.Combine(typePath, DotNetDocsConstants.UsageFileName),
+            await File.WriteAllTextAsync(Path.Combine(typePath, DocConstants.UsageFileName),
                 "Documentation from namespace-based path");
 
             var manager = new DocumentationManager([], [], []);
@@ -190,7 +190,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             var memberPath = Path.Combine(typePath, "DoSomething");
             Directory.CreateDirectory(memberPath);
 
-            await File.WriteAllTextAsync(Path.Combine(memberPath, $"{DotNetDocsConstants.ParameterFilePrefix}input{DotNetDocsConstants.ParameterFileExtension}"),
+            await File.WriteAllTextAsync(Path.Combine(memberPath, $"{DocConstants.ParameterFilePrefix}input{DocConstants.ParameterFileExtension}"),
                 "Custom parameter documentation");
 
             var manager = new DocumentationManager([], [], []);
@@ -374,23 +374,23 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             // TestClass conceptual content
             var testClassPath = Path.Combine(namespacePath, "TestClass");
             Directory.CreateDirectory(testClassPath);
-            await File.WriteAllTextAsync(Path.Combine(testClassPath, DotNetDocsConstants.UsageFileName), "This is conceptual usage documentation");
-            await File.WriteAllTextAsync(Path.Combine(testClassPath, DotNetDocsConstants.ExamplesFileName), "This is conceptual examples documentation");
-            await File.WriteAllTextAsync(Path.Combine(testClassPath, DotNetDocsConstants.BestPracticesFileName), "This is conceptual best practices");
-            await File.WriteAllTextAsync(Path.Combine(testClassPath, DotNetDocsConstants.PatternsFileName), "This is conceptual patterns");
-            await File.WriteAllTextAsync(Path.Combine(testClassPath, DotNetDocsConstants.ConsiderationsFileName), "This is conceptual considerations");
+            await File.WriteAllTextAsync(Path.Combine(testClassPath, DocConstants.UsageFileName), "This is conceptual usage documentation");
+            await File.WriteAllTextAsync(Path.Combine(testClassPath, DocConstants.ExamplesFileName), "This is conceptual examples documentation");
+            await File.WriteAllTextAsync(Path.Combine(testClassPath, DocConstants.BestPracticesFileName), "This is conceptual best practices");
+            await File.WriteAllTextAsync(Path.Combine(testClassPath, DocConstants.PatternsFileName), "This is conceptual patterns");
+            await File.WriteAllTextAsync(Path.Combine(testClassPath, DocConstants.ConsiderationsFileName), "This is conceptual considerations");
 
             // Related APIs as markdown file
             var relatedApis = @"System.Object
 System.Collections.Generic.List<T>
 System.Linq.Enumerable";
-            await File.WriteAllTextAsync(Path.Combine(testClassPath, DotNetDocsConstants.RelatedApisFileName), relatedApis);
+            await File.WriteAllTextAsync(Path.Combine(testClassPath, DocConstants.RelatedApisFileName), relatedApis);
 
             // Member-specific content
             var doSomethingPath = Path.Combine(testClassPath, "DoSomething");
             Directory.CreateDirectory(doSomethingPath);
-            await File.WriteAllTextAsync(Path.Combine(doSomethingPath, DotNetDocsConstants.UsageFileName), "This is conceptual member usage");
-            await File.WriteAllTextAsync(Path.Combine(doSomethingPath, DotNetDocsConstants.ExamplesFileName), "This is conceptual member examples");
+            await File.WriteAllTextAsync(Path.Combine(doSomethingPath, DocConstants.UsageFileName), "This is conceptual member usage");
+            await File.WriteAllTextAsync(Path.Combine(doSomethingPath, DocConstants.ExamplesFileName), "This is conceptual member examples");
         }
 
         #endregion

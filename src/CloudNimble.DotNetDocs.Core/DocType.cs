@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Text.Json.Serialization;
 using Microsoft.CodeAnalysis;
 
 namespace CloudNimble.DotNetDocs.Core
@@ -19,17 +20,10 @@ namespace CloudNimble.DotNetDocs.Core
         #region Properties
 
         /// <summary>
-        /// Gets the base type, if any.
+        /// Gets the base type name, if any.
         /// </summary>
-        /// <value>Documentation for the base type, or null if none exists.</value>
-        public DocType? BaseType { get; set; }
-
-        /// <summary>
-        /// Gets the collection of implemented interfaces.
-        /// </summary>
-        /// <value>List of documented interfaces implemented by this type.</value>
-        [NotNull]
-        public List<DocType> ImplementedInterfaces { get; } = [];
+        /// <value>The name of the base type, or null if none exists.</value>
+        public string? BaseType { get; set; }
 
         /// <summary>
         /// Gets the collection of members (methods, properties, fields, events, etc.).
@@ -39,10 +33,17 @@ namespace CloudNimble.DotNetDocs.Core
         public List<DocMember> Members { get; } = [];
 
         /// <summary>
+        /// Gets the name of the type.
+        /// </summary>
+        /// <value>The type name.</value>
+        public string Name => Symbol.Name;
+
+        /// <summary>
         /// Gets the Roslyn symbol for the type.
         /// </summary>
         /// <value>The underlying Roslyn type symbol containing metadata.</value>
         [NotNull]
+        [JsonIgnore]
         public ITypeSymbol Symbol { get; }
 
         #endregion

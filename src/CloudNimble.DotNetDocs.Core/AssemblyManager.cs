@@ -1,4 +1,5 @@
 using System;
+using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -57,6 +58,14 @@ namespace CloudNimble.DotNetDocs.Core
         public DocAssembly? Document { get; private set; }
 
         /// <summary>
+        /// Gets the collection of errors that occurred during Since  processing.
+        /// </summary>
+        /// <remarks>
+        /// Includes warnings about inaccessible internal members when requested but not available.
+        /// </remarks>
+        public List<CompilerError> Errors { get; } = [];
+
+        /// <summary>
         /// Gets the last modified timestamp of the assembly file for incremental builds.
         /// </summary>
         public DateTime LastModified { get; private set; }
@@ -65,6 +74,11 @@ namespace CloudNimble.DotNetDocs.Core
         /// Gets the path to the XML documentation file.
         /// </summary>
         public string XmlPath { get; init; }
+
+        /// <summary>
+        /// Gets the previously used included members for caching.
+        /// </summary>
+        private List<Accessibility> PreviousIncludedMembers { get; set; } = [];
 
         #endregion
 
@@ -110,18 +124,72 @@ namespace CloudNimble.DotNetDocs.Core
         public async Task<DocAssembly> DocumentAsync(ProjectContext? projectContext = null)
         {
             var currentModified = File.GetLastWriteTimeUtc(AssemblyPath);
-            if (Document is null || currentModified > LastModified)
+            var includedMembers = projectContext?.IncludedMembers ?? [Accessibility.Public];
+
+            // Check if we need to rebuild: file modified, no document yet, or included members changed
+            var needsRebuild = Document is null ||
+                              currentModified > LastModified ||
+                              !includedMembers.SequenceEqual(PreviousIncludedMembers);
+
+            if (needsRebuild)
             {
                 _compilation = await CreateCompilationAsync(projectContext?.References ?? []);
-                Document = BuildModel(_compilation, projectContext?.ConceptualPath, projectContext?.IncludedMembers ?? [Accessibility.Public]);
+                Document = BuildModel(_compilation, projectContext?.ConceptualPath, includedMembers);
                 LastModified = currentModified;
+                PreviousIncludedMembers = includedMembers.ToList();
             }
-            return Document;
+            return Document!;
         }
 
         #endregion
 
         #region Private Methods
+
+        /// <summary>
+        /// Extracts and parses XML documentation from a symbol.
+        /// </summary>
+        /// <param name="symbol">The symbol to extract documentation from.</param>
+        /// <returns>The parsed XML document, or null if no documentation exists.</returns>
+        private XDocument? ExtractDocumentationXml(ISymbol symbol)
+        {
+            var xml = symbol.GetDocumentationCommentXml() ?? string.Empty;
+            return string.IsNullOrWhiteSpace(xml) ? null : XDocument.Parse(xml);
+        }
+
+        /// <summary>
+        /// Extracts the summary text from XML documentation.
+        /// </summary>
+        /// <param name="doc">The parsed XML documentation.</param>
+        /// <returns>The summary text, or empty string if not found.</returns>
+        private string ExtractSummary(XDocument? doc) =>
+            doc?.Descendants("summary").FirstOrDefault()?.Value.Trim() ?? string.Empty;
+
+        /// <summary>
+        /// Extracts the examples text from XML documentation.
+        /// </summary>
+        /// <param name="doc">The parsed XML documentation.</param>
+        /// <returns>The examples text, or empty string if not found.</returns>
+        private string ExtractExamples(XDocument? doc) =>
+            doc?.Descendants("example").FirstOrDefault()?.Value.Trim() ?? string.Empty;
+
+        /// <summary>
+        /// Extracts the remarks/best practices text from XML documentation.
+        /// </summary>
+        /// <param name="doc">The parsed XML documentation.</param>
+        /// <returns>The remarks text, or empty string if not found.</returns>
+        private string ExtractRemarks(XDocument? doc) =>
+            doc?.Descendants("remarks").FirstOrDefault()?.Value.Trim() ?? string.Empty;
+
+        /// <summary>
+        /// Extracts parameter documentation from XML documentation.
+        /// </summary>
+        /// <param name="doc">The parsed XML documentation.</param>
+        /// <param name="parameterName">The name of the parameter.</param>
+        /// <returns>The parameter documentation, or empty string if not found.</returns>
+        private string ExtractParameterDocumentation(XDocument? doc, string parameterName) =>
+            doc?.Descendants("param")
+                .FirstOrDefault(e => e.Attribute("name")?.Value == parameterName)
+                ?.Value.Trim() ?? string.Empty;
 
         /// <summary>
         /// Builds the in-memory documentation model from the Roslyn compilation.
@@ -138,12 +206,11 @@ namespace CloudNimble.DotNetDocs.Core
             var assemblySymbol = compilation.GetAssemblyOrModuleSymbol(targetRef) as IAssemblySymbol
                 ?? throw new InvalidOperationException("Could not get assembly symbol from compilation.");
 
-            var assemblyXml = assemblySymbol.GetDocumentationCommentXml() ?? string.Empty;
-            var assemblyDoc = string.IsNullOrWhiteSpace(assemblyXml) ? null : XDocument.Parse(assemblyXml);
+            var assemblyDoc = ExtractDocumentationXml(assemblySymbol);
 
             var docAssembly = new DocAssembly(assemblySymbol)
             {
-                Usage = assemblyDoc?.Descendants("summary").FirstOrDefault()?.Value.Trim() ?? string.Empty,
+                Usage = ExtractSummary(assemblyDoc),
                 IncludedMembers = includedMembers
             };
 
@@ -165,14 +232,13 @@ namespace CloudNimble.DotNetDocs.Core
         /// <returns>The <see cref="DocType"/> instance.</returns>
         private DocType BuildDocType(ITypeSymbol type, Compilation compilation, Dictionary<string, DocType> typeMap, List<Accessibility> includedMembers)
         {
-            var xml = type.GetDocumentationCommentXml() ?? string.Empty;
-            var doc = string.IsNullOrWhiteSpace(xml) ? null : XDocument.Parse(xml);
+            var doc = ExtractDocumentationXml(type);
 
             var docType = new DocType(type)
             {
-                Usage = doc?.Descendants("summary").FirstOrDefault()?.Value.Trim() ?? string.Empty,
-                Examples = doc?.Descendants("example").FirstOrDefault()?.Value.Trim() ?? string.Empty,
-                BestPractices = doc?.Descendants("remarks").FirstOrDefault()?.Value.Trim() ?? string.Empty
+                Usage = ExtractSummary(doc),
+                Examples = ExtractExamples(doc),
+                BestPractices = ExtractRemarks(doc)
             };
             docType.IncludedMembers = includedMembers;
 
@@ -181,89 +247,87 @@ namespace CloudNimble.DotNetDocs.Core
             // Resolve base type
             if (type.BaseType is not null && type.BaseType.SpecialType != SpecialType.System_Object)
             {
-                var baseTypeKey = type.BaseType.ToDisplayString();
-                if (!typeMap.TryGetValue(baseTypeKey, out var baseDocType))
-                {
-                    baseDocType = new DocType(type.BaseType);
-                    typeMap[baseTypeKey] = baseDocType;
-                }
-                docType.BaseType = baseDocType;
-            }
-
-            // Resolve implemented interfaces
-            foreach (var iface in type.Interfaces)
-            {
-                var ifaceKey = iface.ToDisplayString();
-                if (!typeMap.TryGetValue(ifaceKey, out var ifaceDoc))
-                {
-                    ifaceDoc = new DocType(iface);
-                    typeMap[ifaceKey] = ifaceDoc;
-                }
-                docType.ImplementedInterfaces.Add(ifaceDoc);
+                docType.BaseType = type.BaseType.ToDisplayString();
             }
 
             // Set related APIs (e.g., all interfaces as strings)
             docType.RelatedApis = type.AllInterfaces.Select(i => i.ToDisplayString()).ToList();
+
+            // Check if internal members were requested but the type has no internal members visible
+            var requestedInternal = docType.IncludedMembers.Contains(Accessibility.Internal);
+            var hasInternalMembers = type.GetMembers().Any(m => m.DeclaredAccessibility == Accessibility.Internal);
+            
+            if (requestedInternal && !hasInternalMembers && type.GetMembers().Any(m => m.Name.Contains("Internal")))
+            {
+                // There are likely internal members but we can't see them
+                Errors.Add(new CompilerError
+                {
+                    IsWarning = true,
+                    ErrorNumber = "DND001",
+                    ErrorText = $"Internal members requested for type '{type.Name}' but not accessible. Assembly may need [InternalsVisibleTo(\"CloudNimble.DotNetDocs.Core\")] attribute."
+                });
+            }
 
             // Resolve members
             foreach (var member in type.GetMembers().Where(m => docType.IncludedMembers.Contains(m.DeclaredAccessibility) && !m.IsImplicitlyDeclared))
             {
                 DocMember? docMember = null;
 
-                if (member is IMethodSymbol method)
-                {
-                    var mXml = method.GetDocumentationCommentXml() ?? string.Empty;
-                    var mDoc = string.IsNullOrWhiteSpace(mXml) ? null : XDocument.Parse(mXml);
+                 if (member is IMethodSymbol method)
+                 {
+                     var mDoc = ExtractDocumentationXml(method);
 
-                    docMember = new DocMember(method)
-                    {
-                        Usage = mDoc?.Descendants("summary").FirstOrDefault()?.Value.Trim() ?? string.Empty,
-                        Examples = mDoc?.Descendants("example").FirstOrDefault()?.Value.Trim() ?? string.Empty,
-                        BestPractices = mDoc?.Descendants("remarks").FirstOrDefault()?.Value.Trim() ?? string.Empty,
-                        // Parameters
-                        Parameters = method.Parameters.Select(p =>
-                            {
-                                var paramDoc = new DocParameter(p);
-                                var paramElem = mDoc?.Descendants("param").FirstOrDefault(e => e.Attribute("name")?.Value == p.Name);
-                                paramDoc.Usage = paramElem?.Value.Trim() ?? string.Empty;
+                     docMember = new DocMember(method)
+                     {
+                         Usage = ExtractSummary(mDoc),
+                         Examples = ExtractExamples(mDoc),
+                         BestPractices = ExtractRemarks(mDoc),
+                         IncludedMembers = docType.IncludedMembers,
+                         // Parameters
+                         Parameters = method.Parameters.Select(p =>
+                             {
+                                 var paramDoc = new DocParameter(p);
+                                 paramDoc.Usage = ExtractParameterDocumentation(mDoc, p.Name);
 
-                                // Parameter type
-                                var pTypeKey = p.Type.ToDisplayString();
-                                if (!typeMap.TryGetValue(pTypeKey, out var pTypeDoc))
-                                {
-                                    pTypeDoc = new DocType(p.Type);
-                                    typeMap[pTypeKey] = pTypeDoc;
-                                }
-                                paramDoc.ParameterType = pTypeDoc;
+                                 // Parameter type
+                                 var pTypeKey = p.Type.ToDisplayString();
+                                 if (!typeMap.TryGetValue(pTypeKey, out var pTypeDoc))
+                                 {
+                                     pTypeDoc = new DocType(p.Type);
+                                     pTypeDoc.IncludedMembers = docType.IncludedMembers;
+                                     typeMap[pTypeKey] = pTypeDoc;
+                                 }
+                                 paramDoc.ParameterType = pTypeDoc;
 
-                                return paramDoc;
-                            }).ToList()
-                    };
+                                 return paramDoc;
+                             }).ToList()
+                     };
 
-                    // Return type
-                    if (method.ReturnType.SpecialType != SpecialType.System_Void)
-                    {
-                        var rKey = method.ReturnType.ToDisplayString();
-                        if (!typeMap.TryGetValue(rKey, out var rDoc))
-                        {
-                            rDoc = new DocType(method.ReturnType);
-                            typeMap[rKey] = rDoc;
-                        }
-                        docMember.ReturnType = rDoc;
-                    }
-                }
-                else if (member is IPropertySymbol property)
-                {
-                    var pXml = property.GetDocumentationCommentXml() ?? string.Empty;
-                    var pDoc = string.IsNullOrWhiteSpace(pXml) ? null : XDocument.Parse(pXml);
+                     // Return type
+                     if (method.ReturnType.SpecialType != SpecialType.System_Void)
+                     {
+                         var rKey = method.ReturnType.ToDisplayString();
+                         if (!typeMap.TryGetValue(rKey, out var rDoc))
+                         {
+                             rDoc = new DocType(method.ReturnType);
+                             rDoc.IncludedMembers = docType.IncludedMembers;
+                             typeMap[rKey] = rDoc;
+                         }
+                         docMember.ReturnType = rDoc;
+                     }
+                 }
+                 else if (member is IPropertySymbol property)
+                 {
+                     var pDoc = ExtractDocumentationXml(property);
 
-                    docMember = new DocMember(property)
-                    {
-                        Usage = pDoc?.Descendants("summary").FirstOrDefault()?.Value.Trim() ?? string.Empty,
-                        Examples = pDoc?.Descendants("example").FirstOrDefault()?.Value.Trim() ?? string.Empty,
-                        BestPractices = pDoc?.Descendants("remarks").FirstOrDefault()?.Value.Trim() ?? string.Empty
-                    };
-                }
+                     docMember = new DocMember(property)
+                     {
+                         Usage = ExtractSummary(pDoc),
+                         Examples = ExtractExamples(pDoc),
+                         BestPractices = ExtractRemarks(pDoc),
+                         IncludedMembers = docType.IncludedMembers
+                     };
+                 }
                 // Add handling for other member kinds (fields, events) if needed
 
                 if (docMember is not null)
@@ -326,12 +390,11 @@ namespace CloudNimble.DotNetDocs.Core
                 var hasTypesToDocument = namespaceSymbol.GetTypeMembers().Any(t => includedMembers.Contains(t.DeclaredAccessibility) || t.Name == "<Module>");
                 if (hasTypesToDocument)
                 {
-                    var nsXml = namespaceSymbol.GetDocumentationCommentXml() ?? string.Empty;
-                    var nsDoc = string.IsNullOrWhiteSpace(nsXml) ? null : XDocument.Parse(nsXml);
+                    var nsDoc = ExtractDocumentationXml(namespaceSymbol);
 
                     var globalNs = new DocNamespace(namespaceSymbol)
                     {
-                        Usage = nsDoc?.Descendants("summary").FirstOrDefault()?.Value.Trim() ?? string.Empty,
+                        Usage = ExtractSummary(nsDoc),
                         IncludedMembers = includedMembers
                     };
                     docAssembly.Namespaces.Add(globalNs);
@@ -353,12 +416,11 @@ namespace CloudNimble.DotNetDocs.Core
                     continue;
                 }
 
-                var nsXml = ns.GetDocumentationCommentXml() ?? string.Empty;
-                var nsDoc = string.IsNullOrWhiteSpace(nsXml) ? null : XDocument.Parse(nsXml);
+                var nsDoc = ExtractDocumentationXml(ns);
 
                 var docNs = new DocNamespace(ns)
                 {
-                    Usage = nsDoc?.Descendants("summary").FirstOrDefault()?.Value.Trim() ?? string.Empty,
+                    Usage = ExtractSummary(nsDoc),
                     IncludedMembers = includedMembers
                 };
                 docAssembly.Namespaces.Add(docNs);

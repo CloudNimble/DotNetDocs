@@ -4,7 +4,7 @@ namespace CloudNimble.DotNetDocs.Core
     /// <summary>
     /// Defines constants used throughout the DotNetDocs library.
     /// </summary>
-    public static class DotNetDocsConstants
+    public static class DocConstants
     {
 
         #region Conceptual File Names

@@ -35,7 +35,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             var docMember = new DocMember(methodSymbol!);
 
             docMember.Symbol.Should().Be(methodSymbol);
-            docMember.MemberKind.Should().Be(SymbolKind.Method);
+            docMember.Kind.Should().Be(SymbolKind.Method);
             docMember.Parameters.Should().BeEmpty();
             docMember.ReturnType.Should().BeNull();
             docMember.Usage.Should().BeEmpty();
@@ -52,7 +52,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             var docMember = new DocMember(propertySymbol!);
 
             docMember.Symbol.Should().Be(propertySymbol);
-            docMember.MemberKind.Should().Be(SymbolKind.Property);
+            docMember.Kind.Should().Be(SymbolKind.Property);
             docMember.Parameters.Should().BeEmpty();
         }
 

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Text.Json.Serialization;
 using Microsoft.CodeAnalysis;
 
 namespace CloudNimble.DotNetDocs.Core
@@ -22,7 +23,13 @@ namespace CloudNimble.DotNetDocs.Core
         /// Gets the member kind (method, property, field, event, etc.).
         /// </summary>
         /// <value>The kind of member as defined by Roslyn.</value>
-        public SymbolKind MemberKind => Symbol.Kind;
+        public SymbolKind Kind => Symbol.Kind;
+
+        /// <summary>
+        /// Gets the name of the member.
+        /// </summary>
+        /// <value>The member name.</value>
+        public string Name => Symbol.Name;
 
         /// <summary>
         /// Gets the collection of parameters for this member.
@@ -45,6 +52,7 @@ namespace CloudNimble.DotNetDocs.Core
         /// </summary>
         /// <value>The underlying Roslyn symbol containing metadata.</value>
         [NotNull]
+        [JsonIgnore]
         public ISymbol Symbol { get; }
 
         #endregion

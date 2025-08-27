@@ -105,11 +105,35 @@ This document outlines the project structure for `CloudNimble.DotNetDocs`, a fle
 - **Tests**: Model accuracy, CLI args, MSBuild outputs, `DocEntity` property handling, `DocumentationManager` transformations.
 - **Naming**: `CloudNimble.DotNetDocs.Tests.SubjectMatter`.
 
+## Internal Member Documentation
+
+### Current Approach
+To document internal members, assemblies must include:
+```csharp
+[assembly: InternalsVisibleTo("CloudNimble.DotNetDocs.Core")]
+```
+
+This allows the documentation generator to access internal members when `IncludedMembers` contains `Accessibility.Internal`.
+
+### Future Enhancements
+For situations where modifying the source assembly isn't possible, we may explore:
+
+1. **Mono.Cecil Integration**: Dynamically inject `[InternalsVisibleTo]` attributes into assemblies at documentation time. See [Stack Overflow example](https://stackoverflow.com/a/44329684).
+
+2. **Roslyn Compilation Bypass**: Use the technique described in [StrathWeb's article](https://www.strathweb.com/2018/10/no-internalvisibleto-no-problem-bypassing-c-visibility-rules-with-roslyn/) to compile an intermediate assembly that can access internals without the attribute.
+
+### Error Reporting
+`AssemblyManager` includes an `Errors` property (`List<CompilerError>`) to report issues such as:
+- Requested internal members but assembly lacks `InternalsVisibleTo` attribute
+- Missing XML documentation for public APIs
+- Compilation or metadata extraction failures
+
 ## Why It Works
 - **Flexibility**: `CloudNimble.DotNetDocs.Core` ensures CLI/MSBuild consistency. CLI uses `/conceptual` files and `custom.json`; MSBuild adds source intent, validation, incremental builds.
 - **Rich Documentation**: `DocEntity` supports contextual sections (Usage, Examples, etc.), populated via `/conceptual` (e.g., `conceptual/MyNamespace/usage.md`, `conceptual/MyClass/usage.md`) or plugins, including namespace support.
 - **Extensibility**: `DocumentationManager` orchestrates enrich/transform/render with DI-injected lists (e.g., `IEnumerable<IDocEnricher>`). AI plugins enhance with Semantic Kernel; Mintlify/Docusaurus projects manage tool-specific dependencies.
 - **Maintainability**: `Directory.Build.props` automates `<PackageId>`; modular, testable, aligns with C# 12/13, nullable types.
+- **Internal Documentation**: Support for internal members via `InternalsVisibleTo` attribute, with error reporting when access is restricted.
 
 ## Next Steps
 - Define `/conceptual` file format (e.g., Markdown, JSON mapping to `DocEntity`).

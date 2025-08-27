@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Text.Json.Serialization;
 using Microsoft.CodeAnalysis;
 
 namespace CloudNimble.DotNetDocs.Core
@@ -19,6 +20,12 @@ namespace CloudNimble.DotNetDocs.Core
         #region Properties
 
         /// <summary>
+        /// Gets the name of the assembly.
+        /// </summary>
+        /// <value>The assembly name.</value>
+        public string AssemblyName => Symbol.Name;
+
+        /// <summary>
         /// Gets the collection of namespaces in the assembly.
         /// </summary>
         /// <value>List of documented namespaces within this assembly.</value>
@@ -30,6 +37,7 @@ namespace CloudNimble.DotNetDocs.Core
         /// </summary>
         /// <value>The underlying Roslyn assembly symbol containing metadata.</value>
         [NotNull]
+        [JsonIgnore]
         public IAssemblySymbol Symbol { get; }
 
         #endregion

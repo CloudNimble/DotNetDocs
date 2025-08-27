@@ -39,7 +39,6 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             docType.Considerations.Should().BeEmpty();
             docType.RelatedApis.Should().BeEmpty();
             docType.Members.Should().BeEmpty();
-            docType.ImplementedInterfaces.Should().BeEmpty();
             docType.BaseType.Should().BeNull();
         }
 

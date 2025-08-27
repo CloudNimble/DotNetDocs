@@ -238,14 +238,14 @@ namespace CloudNimble.DotNetDocs.Core
                     if (Directory.Exists(typeDir))
                     {
                         // Load type-level conceptual content
-                        await LoadConceptualFileAsync(typeDir, DotNetDocsConstants.UsageFileName, content => type.Usage = content);
-                        await LoadConceptualFileAsync(typeDir, DotNetDocsConstants.ExamplesFileName, content => type.Examples = content);
-                        await LoadConceptualFileAsync(typeDir, DotNetDocsConstants.BestPracticesFileName, content => type.BestPractices = content);
-                        await LoadConceptualFileAsync(typeDir, DotNetDocsConstants.PatternsFileName, content => type.Patterns = content);
-                        await LoadConceptualFileAsync(typeDir, DotNetDocsConstants.ConsiderationsFileName, content => type.Considerations = content);
+                        await LoadConceptualFileAsync(typeDir, DocConstants.UsageFileName, content => type.Usage = content);
+                        await LoadConceptualFileAsync(typeDir, DocConstants.ExamplesFileName, content => type.Examples = content);
+                        await LoadConceptualFileAsync(typeDir, DocConstants.BestPracticesFileName, content => type.BestPractices = content);
+                        await LoadConceptualFileAsync(typeDir, DocConstants.PatternsFileName, content => type.Patterns = content);
+                        await LoadConceptualFileAsync(typeDir, DocConstants.ConsiderationsFileName, content => type.Considerations = content);
 
                         // Load related APIs if markdown file exists
-                        var relatedApisPath = Path.Combine(typeDir, DotNetDocsConstants.RelatedApisFileName);
+                        var relatedApisPath = Path.Combine(typeDir, DocConstants.RelatedApisFileName);
                         if (File.Exists(relatedApisPath))
                         {
                             // Simple markdown file with one API per line for now
@@ -262,14 +262,14 @@ namespace CloudNimble.DotNetDocs.Core
                             var memberDir = Path.Combine(typeDir, member.Symbol.Name);
                             if (Directory.Exists(memberDir))
                             {
-                                await LoadConceptualFileAsync(memberDir, DotNetDocsConstants.UsageFileName, content => member.Usage = content);
-                                await LoadConceptualFileAsync(memberDir, DotNetDocsConstants.ExamplesFileName, content => member.Examples = content);
-                                await LoadConceptualFileAsync(memberDir, DotNetDocsConstants.BestPracticesFileName, content => member.BestPractices = content);
-                                await LoadConceptualFileAsync(memberDir, DotNetDocsConstants.PatternsFileName, content => member.Patterns = content);
-                                await LoadConceptualFileAsync(memberDir, DotNetDocsConstants.ConsiderationsFileName, content => member.Considerations = content);
+                                await LoadConceptualFileAsync(memberDir, DocConstants.UsageFileName, content => member.Usage = content);
+                                await LoadConceptualFileAsync(memberDir, DocConstants.ExamplesFileName, content => member.Examples = content);
+                                await LoadConceptualFileAsync(memberDir, DocConstants.BestPracticesFileName, content => member.BestPractices = content);
+                                await LoadConceptualFileAsync(memberDir, DocConstants.PatternsFileName, content => member.Patterns = content);
+                                await LoadConceptualFileAsync(memberDir, DocConstants.ConsiderationsFileName, content => member.Considerations = content);
 
                                 // Load member-specific related APIs
-                                var memberRelatedApisPath = Path.Combine(memberDir, DotNetDocsConstants.RelatedApisFileName);
+                                var memberRelatedApisPath = Path.Combine(memberDir, DocConstants.RelatedApisFileName);
                                 if (File.Exists(memberRelatedApisPath))
                                 {
                                     var lines = await File.ReadAllLinesAsync(memberRelatedApisPath);
@@ -282,7 +282,7 @@ namespace CloudNimble.DotNetDocs.Core
                                 // Load parameter-specific documentation
                                 foreach (var parameter in member.Parameters)
                                 {
-                                    var paramFile = Path.Combine(memberDir, $"{DotNetDocsConstants.ParameterFilePrefix}{parameter.Symbol.Name}{DotNetDocsConstants.ParameterFileExtension}");
+                                    var paramFile = Path.Combine(memberDir, $"{DocConstants.ParameterFilePrefix}{parameter.Symbol.Name}{DocConstants.ParameterFileExtension}");
                                     if (File.Exists(paramFile))
                                     {
                                         var content = await File.ReadAllTextAsync(paramFile);

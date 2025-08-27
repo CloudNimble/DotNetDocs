@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Text.Json.Serialization;
 using Microsoft.CodeAnalysis;
 
 namespace CloudNimble.DotNetDocs.Core
@@ -42,16 +43,29 @@ namespace CloudNimble.DotNetDocs.Core
         public bool IsParams => Symbol.IsParams;
 
         /// <summary>
+        /// Gets the name of the parameter.
+        /// </summary>
+        /// <value>The parameter name.</value>
+        public string Name => Symbol.Name;
+
+        /// <summary>
         /// Gets the parameter type documentation.
         /// </summary>
         /// <value>Documentation for the parameter's type.</value>
         public DocType? ParameterType { get; set; }
 
         /// <summary>
+        /// Gets the type name of the parameter.
+        /// </summary>
+        /// <value>The parameter type name.</value>
+        public string Type => Symbol.Type.ToDisplayString();
+
+        /// <summary>
         /// Gets the Roslyn symbol for the parameter.
         /// </summary>
         /// <value>The underlying Roslyn parameter symbol containing metadata.</value>
         [NotNull]
+        [JsonIgnore]
         public IParameterSymbol Symbol { get; }
 
         #endregion
