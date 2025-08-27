@@ -6,6 +6,7 @@
   </Configurations>
   <Folder Name="/Core/">
     <Project Path="CloudNimble.DotNetDocs.Core/CloudNimble.DotNetDocs.Core.csproj" />
+    <Project Path="CloudNimble.DotNetDocs.Sdk/CloudNimble.DotNetDocs.Sdk.csproj" Id="1c0ccd22-7736-4d5f-b0d7-ca1cc639e57b" />
   </Folder>
   <Folder Name="/Plugins/">
     <Project Path="CloudNimble.DotNetDocs.Plugins.AI/CloudNimble.DotNetDocs.Plugins.AI.csproj" Id="d02be6be-f430-42de-af74-09e49a3ce04b" />

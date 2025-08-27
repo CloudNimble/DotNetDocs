@@ -1,0 +1,67 @@
+<Project Sdk="Microsoft.Build.NoTargets/3.7.0">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <GenerateDocumentationFile>false</GenerateDocumentationFile>
+        <Description>
+            MSBuild SDK for documentation projects (.docsproj) - provides a clean way to include documentation in .NET
+            solutions without compilation overhead
+        </Description>
+
+        <!-- This is an MSBuild SDK package -->
+        <DevelopmentDependency>true</DevelopmentDependency>
+        <PackageType>MSBuildSdk</PackageType>
+        <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+
+        <!-- Suppress warnings about SDK packages -->
+        <NoWarn>$(NoWarn);NU5128;CS2008</NoWarn>
+
+        <!-- Don't include assemblies in package -->
+        <IncludeBuildOutput>false</IncludeBuildOutput>
+        <ContentTargetFolders>.</ContentTargetFolders>
+        <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <!-- Pack the SDK files -->
+        <None Include="Sdk\**" Pack="true" PackagePath="Sdk" />
+        <None Include="build\**" Pack="true" PackagePath="build" />
+    </ItemGroup>
+
+    <!-- Copy Microsoft.Build.NoTargets SDK files during build -->
+    <Target Name="CopyNoTargetsSDK" AfterTargets="Build">
+        <PropertyGroup>
+            <NoTargetsSourcePath>$(PkgMicrosoft_Build_NoTargets)\Sdk</NoTargetsSourcePath>
+            <NoTargetsDestPath>$(MSBuildProjectDirectory)\Sdk\NoTargets</NoTargetsDestPath>
+        </PropertyGroup>
+
+        <Message Text="Copying NoTargets SDK from $(NoTargetsSourcePath) to $(NoTargetsDestPath)" Importance="high" />
+
+        <!-- Create the directory -->
+        <MakeDir Directories="$(NoTargetsDestPath)" />
+
+        <!-- Copy the files -->
+        <ItemGroup>
+            <NoTargetsFiles Include="$(NoTargetsSourcePath)\**\*" />
+        </ItemGroup>
+
+        <Copy SourceFiles="@(NoTargetsFiles)"
+		      DestinationFiles="@(NoTargetsFiles->'$(NoTargetsDestPath)\%(RecursiveDir)%(Filename)%(Extension)')"
+		      SkipUnchangedFiles="true" />
+    </Target>
+
+    <!-- Include the NoTargets files in the package after they're copied -->
+    <Target Name="IncludeNoTargetsInPackage" DependsOnTargets="CopyNoTargetsSDK" BeforeTargets="GenerateNuspec">
+        <ItemGroup>
+            <None Include="Sdk\NoTargets\**" Pack="true" PackagePath="Sdk\NoTargets" />
+        </ItemGroup>
+    </Target>
+
+    <ItemGroup>
+        <!-- Include Microsoft.Build.NoTargets for bundling its SDK files -->
+        <PackageReference Include="Microsoft.Build.NoTargets" Version="3.7.0"
+		                  PrivateAssets="all"
+		                  GeneratePathProperty="true" />
+    </ItemGroup>
+
+</Project>

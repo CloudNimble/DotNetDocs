@@ -1,0 +1,233 @@
+<Project>
+    <!-- ============================================================================
+       CloudNimble.Build.Documentation SDK - Targets
+       
+       Provides build targets for documentation projects (.docsproj)
+       Includes validation, generation, and integration targets.
+       ============================================================================ -->
+
+    <!-- Import the NoTargets SDK targets for no-compile behavior -->
+    <!-- NoTargets SDK files are bundled in the Sdk/NoTargets folder -->
+    <Import Project="$(MSBuildThisFileDirectory)NoTargets\Sdk.targets" />
+
+    <!-- Documentation project validation and information -->
+    <Target Name="ValidateDocumentationProject" AfterTargets="Build">
+        <Message Text="✅ Documentation project: $(MSBuildProjectName)" Importance="high" />
+        <Message Text="📄 Documentation type: $(DocumentationType)" Importance="high" />
+        <Message Text="📂 Documentation root: $(DocumentationRoot)" Importance="high" Condition="'$(DocumentationRoot)' != '$(MSBuildProjectDirectory)\'" />
+        <Message Text="📁 Output redirected to: $(OutputPath)" Importance="normal" Condition="'$(KeepLocalOutput)' != 'true'" />
+        <Message Text="📁 Output kept local" Importance="normal" Condition="'$(KeepLocalOutput)' == 'true'" />
+    </Target>
+
+    <!-- Check for EasyAF.Tools installation -->
+    <Target Name="CheckEasyAFTools">
+        <!-- Use different commands for Windows vs Unix-like systems -->
+        <Exec Command="dotnet tool list -g"
+              ContinueOnError="true"
+              IgnoreExitCode="true"
+              ConsoleToMSBuild="true">
+            <Output TaskParameter="ConsoleOutput" PropertyName="EasyAFToolsOutput" />
+            <Output TaskParameter="ExitCode" PropertyName="ToolListExitCode" />
+        </Exec>
+        
+        <PropertyGroup>
+            <!-- Check if EasyAF.Tools is in the output -->
+            <EasyAFToolsInstalled Condition="$(EasyAFToolsOutput.Contains('easyaf.tools'))">true</EasyAFToolsInstalled>
+            <EasyAFToolsInstalled Condition="!$(EasyAFToolsOutput.Contains('easyaf.tools'))">false</EasyAFToolsInstalled>
+        </PropertyGroup>
+    </Target>
+
+    <!-- Attempt to install EasyAF.Tools if not found -->
+    <Target Name="InstallEasyAFTools" 
+            Condition="'$(EasyAFToolsInstalled)' == 'false'"
+            DependsOnTargets="CheckEasyAFTools">
+        <Message Text="🔧 EasyAF.Tools not found. Attempting to install..." Importance="high" />
+        <Exec Command="dotnet tool install -g EasyAF.Tools"
+              ContinueOnError="true"
+              IgnoreExitCode="true">
+            <Output TaskParameter="ExitCode" PropertyName="InstallExitCode" />
+        </Exec>
+        
+        <PropertyGroup>
+            <EasyAFToolsInstalled Condition="'$(InstallExitCode)' == '0'">true</EasyAFToolsInstalled>
+        </PropertyGroup>
+        
+        <!-- Show access message if installation failed -->
+        <Message Text="❌ Could not install EasyAF.Tools automatically." 
+                 Importance="high" 
+                 Condition="'$(InstallExitCode)' != '0'" />
+        <Message Text="🎯 To get access to EasyAF.Tools, visit: https://github.com/CloudNimble/EasyAF.Docs/issues/1" 
+                 Importance="high" 
+                 Condition="'$(InstallExitCode)' != '0'" />
+        <Message Text="👍 Leave a reaction emoji on the issue to get access to the tools!" 
+                 Importance="high" 
+                 Condition="'$(InstallExitCode)' != '0'" />
+    </Target>
+
+    <!-- Optional: Mintlify integration -->
+    <Target Name="GenerateMintlifyDocs"
+            Condition="'$(GenerateMintlifyDocs)' == 'true' AND '$(DocumentationType)' == 'Mintlify'"
+            AfterTargets="Build"
+            DependsOnTargets="InstallEasyAFTools">
+        <Message Text="🚀 Generating Mintlify documentation..." Importance="high" />
+        
+        <!-- Only run if EasyAF.Tools is available -->
+        <Exec Command="dotnet easyaf mintlify generate"
+              WorkingDirectory="$(DocumentationRoot)"
+              ContinueOnError="true"
+              IgnoreExitCode="false"
+              Condition="'$(EasyAFToolsInstalled)' == 'true'" />
+              
+        <!-- Show message if tools not available -->
+        <Message Text="⚠️ Skipping Mintlify generation - EasyAF.Tools not available" 
+                 Importance="normal" 
+                 Condition="'$(EasyAFToolsInstalled)' != 'true'" />
+    </Target>
+
+    <!-- Optional: Markdown linting -->
+    <Target Name="LintMarkdown"
+            Condition="'$(LintMarkdown)' == 'true'"
+            AfterTargets="Build">
+        <Message Text="🔍 Linting Markdown files..." Importance="high" />
+        <Exec Command="markdownlint **/*.md"
+              WorkingDirectory="$(DocumentationRoot)"
+              ContinueOnError="true"
+              IgnoreExitCode="true" />
+    </Target>
+
+    <!-- Optional: Link validation -->
+    <Target Name="ValidateLinks"
+            Condition="'$(ValidateLinks)' == 'true'"
+            AfterTargets="Build">
+        <Message Text="🔗 Validating documentation links..." Importance="high" />
+        <!-- This would require a custom tool or script -->
+        <Message Text="Link validation not implemented yet - install markdown-link-check or similar tool" Importance="low" />
+    </Target>
+
+    <!-- Optional: Documentation preview -->
+    <Target Name="PreviewDocumentation"
+            Condition="'$(PreviewDocumentation)' == 'true'"
+            AfterTargets="Build">
+        <Message Text="👀 Starting documentation preview..." Importance="high" />
+
+        <!-- Mintlify preview -->
+        <Exec Command="mint dev"
+              WorkingDirectory="$(DocumentationRoot)"
+              ContinueOnError="true"
+              IgnoreExitCode="true"
+              Condition="'$(DocumentationType)' == 'Mintlify'" />
+
+        <!-- DocFX preview -->
+        <Exec Command="docfx --serve"
+              WorkingDirectory="$(DocumentationRoot)"
+              ContinueOnError="true"
+              IgnoreExitCode="true"
+              Condition="'$(DocumentationType)' == 'DocFX'" />
+
+        <!-- MkDocs preview -->
+        <Exec Command="mkdocs serve"
+              WorkingDirectory="$(DocumentationRoot)"
+              ContinueOnError="true"
+              IgnoreExitCode="true"
+              Condition="'$(DocumentationType)' == 'MkDocs'" />
+
+        <!-- Jekyll preview -->
+        <Exec Command="bundle exec jekyll serve"
+              WorkingDirectory="$(DocumentationRoot)"
+              ContinueOnError="true"
+              IgnoreExitCode="true"
+              Condition="'$(DocumentationType)' == 'Jekyll'" />
+
+        <!-- Hugo preview -->
+        <Exec Command="hugo server"
+              WorkingDirectory="$(DocumentationRoot)"
+              ContinueOnError="true"
+              IgnoreExitCode="true"
+              Condition="'$(DocumentationType)' == 'Hugo'" />
+    </Target>
+
+    <!-- Optional: Generate PDF documentation -->
+    <Target Name="GeneratePdf"
+            Condition="'$(GeneratePdf)' == 'true'"
+            AfterTargets="Build">
+        <Message Text="📄 Generating PDF documentation..." Importance="high" />
+        <!-- This would require pandoc or similar tool -->
+        <Message Text="PDF generation not implemented yet - install pandoc or similar tool" Importance="low" />
+    </Target>
+
+    <!-- Optional: Documentation deployment -->
+    <Target Name="DeployDocumentation"
+            Condition="'$(DeployDocumentation)' == 'true'"
+            AfterTargets="Build">
+        <Message Text="🚀 Deploying documentation..." Importance="high" />
+
+        <!-- Mintlify deployment -->
+        <Exec Command="mint deploy"
+              WorkingDirectory="$(DocumentationRoot)"
+              ContinueOnError="true"
+              IgnoreExitCode="false"
+              Condition="'$(DocumentationType)' == 'Mintlify'" />
+
+        <!-- GitHub Pages deployment (generic) -->
+        <Message Text="Configure GitHub Actions or other CI/CD for deployment"
+                 Importance="normal"
+                 Condition="'$(DocumentationType)' != 'Mintlify'" />
+    </Target>
+
+    <!-- Documentation project statistics -->
+    <Target Name="DocumentationStats"
+            Condition="'$(ShowDocumentationStats)' == 'true'"
+            AfterTargets="Build">
+        <Message Text="📊 Documentation Statistics:" Importance="high" />
+
+        <ItemGroup>
+            <MarkdownFiles Include="$(DocumentationRoot)**/*.md" />
+            <MarkdownFiles Include="$(DocumentationRoot)**/*.mdx" />
+            <MarkdownFiles Include="$(DocumentationRoot)**/*.mdz" />
+            <ImageFiles Include="$(DocumentationRoot)**/*.png;$(DocumentationRoot)**/*.jpg;$(DocumentationRoot)**/*.jpeg;$(DocumentationRoot)**/*.gif;$(DocumentationRoot)**/*.svg" />
+        </ItemGroup>
+
+        <Message Text="   📄 Documentation type: $(DocumentationType)" Importance="high" />
+        <Message Text="   📝 Markdown files: @(MarkdownFiles->Count())" Importance="high" />
+        <Message Text="   🖼️ Image files: @(ImageFiles->Count())" Importance="high" />
+    </Target>
+
+    <!-- Help target to show available options -->
+    <Target Name="DocumentationHelp" DependsOnTargets="CheckEasyAFTools">
+        <Message Text="" Importance="high" />
+        <Message Text="📚 CloudNimble.Build.Documentation SDK Help" Importance="high" />
+        <Message Text="════════════════════════════════════════" Importance="high" />
+        <Message Text="" Importance="high" />
+        <Message Text="Available Properties:" Importance="high" />
+        <Message Text="  KeepLocalOutput=true          - Keep bin/obj in project folder" Importance="high" />
+        <Message Text="  GenerateMintlifyDocs=true     - Auto-generate Mintlify docs on build" Importance="high" />
+        <Message Text="  LintMarkdown=true             - Lint markdown files on build" Importance="high" />
+        <Message Text="  ValidateLinks=true            - Validate links on build" Importance="high" />
+        <Message Text="  PreviewDocumentation=true     - Start preview server on build" Importance="high" />
+        <Message Text="  ShowDocumentationStats=true   - Show documentation statistics" Importance="high" />
+        <Message Text="  GeneratePdf=true              - Generate PDF output" Importance="high" />
+        <Message Text="  DeployDocumentation=true      - Deploy documentation after build" Importance="high" />
+        <Message Text="" Importance="high" />
+        <Message Text="Available Targets:" Importance="high" />
+        <Message Text="  dotnet build -t:DocumentationHelp       - Show this help" Importance="high" />
+        <Message Text="  dotnet build -t:DocumentationStats      - Show documentation statistics" Importance="high" />
+        <Message Text="  dotnet build -t:GenerateMintlifyDocs     - Generate Mintlify documentation" Importance="high" />
+        <Message Text="  dotnet build -t:LintMarkdown             - Lint markdown files" Importance="high" />
+        <Message Text="  dotnet build -t:PreviewDocumentation     - Start preview server" Importance="high" />
+        <Message Text="" Importance="high" />
+        <Message Text="Current Configuration:" Importance="high" />
+        <Message Text="  Documentation Type: $(DocumentationType)" Importance="high" />
+        <Message Text="  Documentation Root: $(DocumentationRoot)" Importance="high" />
+        <Message Text="  Output Location: $(OutputPath)" Importance="high" />
+        <Message Text="  Keep Local Output: $(KeepLocalOutput)" Importance="high" />
+        <Message Text="  EasyAF.Tools Available: $(EasyAFToolsInstalled)" Importance="high" />
+        <Message Text="" Importance="high" />
+        
+        <!-- Show EasyAF.Tools access info if not available -->
+        <Message Text="🎯 To get access to EasyAF.Tools for enhanced Mintlify features:" Importance="high" Condition="'$(EasyAFToolsInstalled)' != 'true'" />
+        <Message Text="   Visit: https://github.com/CloudNimble/EasyAF.Docs/issues/1" Importance="high" Condition="'$(EasyAFToolsInstalled)' != 'true'" />
+        <Message Text="   👍 Leave a reaction emoji on the issue to get access!" Importance="high" Condition="'$(EasyAFToolsInstalled)' != 'true'" />
+        <Message Text="" Importance="high" Condition="'$(EasyAFToolsInstalled)' != 'true'" />
+    </Target>
+
+</Project>

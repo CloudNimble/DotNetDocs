@@ -1,0 +1,201 @@
+<Project>
+    <!-- ============================================================================
+       CloudNimble.Build.Documentation SDK - Props
+       
+       Provides MSBuild SDK support for documentation projects (.docsproj)
+       Enables documentation files to be included in Visual Studio solutions
+       without compilation overhead or bin/obj folder creation.
+       ============================================================================ -->
+
+    <PropertyGroup>
+        <!-- Documentation project marker -->
+        <IsDocumentationProject>true</IsDocumentationProject>
+        <UsingDotNetDocsSdk>true</UsingDotNetDocsSdk>
+
+        <!-- Inherit from NoTargets SDK for no-compile behavior -->
+        <UsingMicrosoftNoTargetsSdk>true</UsingMicrosoftNoTargetsSdk>
+
+        <!-- Default target framework -->
+        <TargetFramework Condition="'$(TargetFramework)' == ''">net8.0</TargetFramework>
+
+        <!-- Disable packaging and publishing by default -->
+        <IsPackable Condition="'$(IsPackable)' == ''">false</IsPackable>
+        <IsPublishable Condition="'$(IsPublishable)' == ''">false</IsPublishable>
+        <GeneratePackageOnBuild Condition="'$(GeneratePackageOnBuild)' == ''">false</GeneratePackageOnBuild>
+        <GenerateDocumentationFile Condition="'$(GenerateDocumentationFile)' == ''">false</GenerateDocumentationFile>
+
+        <!-- Documentation Root Path - allows .docsproj to be in different location than docs -->
+        <DocumentationRoot Condition="'$(DocumentationRoot)' == ''">$(MSBuildProjectDirectory)</DocumentationRoot>
+        <!-- Ensure the path ends with a trailing slash for consistent concatenation -->
+        <DocumentationRoot>$([MSBuild]::EnsureTrailingSlash('$(DocumentationRoot)'))</DocumentationRoot>
+
+        <!-- Advanced Feature 1: Documentation Type Detection -->
+        <DocumentationType Condition="'$(DocumentationType)' == '' AND Exists('$(DocumentationRoot)docs.json')">Mintlify</DocumentationType>
+        <DocumentationType Condition="'$(DocumentationType)' == '' AND Exists('$(DocumentationRoot)docfx.json')">DocFX</DocumentationType>
+        <DocumentationType Condition="'$(DocumentationType)' == '' AND Exists('$(DocumentationRoot)mkdocs.yml')">MkDocs</DocumentationType>
+        <DocumentationType Condition="'$(DocumentationType)' == '' AND Exists('$(DocumentationRoot)_config.yml')">Jekyll</DocumentationType>
+        <DocumentationType Condition="'$(DocumentationType)' == '' AND Exists('$(DocumentationRoot)hugo.toml')">Hugo</DocumentationType>
+        <DocumentationType Condition="'$(DocumentationType)' == ''">Generic</DocumentationType>
+
+        <!-- Output redirection - keep documentation folders clean -->
+        <KeepLocalOutput Condition="'$(KeepLocalOutput)' == ''">false</KeepLocalOutput>
+
+        <!-- Solution name for temp paths -->
+        <_SolutionName Condition="'$(SolutionName)' != ''">$(SolutionName)</_SolutionName>
+        <_SolutionName Condition="'$(SolutionName)' == '' AND '$(SolutionFileName)' != ''">$([System.IO.Path]::GetFileNameWithoutExtension('$(SolutionFileName)'))</_SolutionName>
+        <_SolutionName Condition="'$(_SolutionName)' == ''">Documentation</_SolutionName>
+
+        <!-- Redirect output to temp unless explicitly keeping local -->
+        <BaseIntermediateOutputPath Condition="'$(KeepLocalOutput)' != 'true' AND '$(BaseIntermediateOutputPath)' == ''">$([System.IO.Path]::GetTempPath())$(_SolutionName)\$(MSBuildProjectName)\obj\</BaseIntermediateOutputPath>
+        <BaseOutputPath Condition="'$(KeepLocalOutput)' != 'true' AND '$(BaseOutputPath)' == ''">$([System.IO.Path]::GetTempPath())$(_SolutionName)\$(MSBuildProjectName)\bin\</BaseOutputPath>
+        <IntermediateOutputPath Condition="'$(KeepLocalOutput)' != 'true'">$(BaseIntermediateOutputPath)</IntermediateOutputPath>
+        <OutputPath Condition="'$(KeepLocalOutput)' != 'true'">$(BaseOutputPath)</OutputPath>
+        <MSBuildProjectExtensionsPath Condition="'$(KeepLocalOutput)' != 'true'">$(BaseIntermediateOutputPath)</MSBuildProjectExtensionsPath>
+    </PropertyGroup>
+
+    <!-- Import the NoTargets SDK props for no-compile behavior -->
+    <!-- NoTargets SDK files are bundled in the Sdk/NoTargets folder -->
+    <Import Project="$(MSBuildThisFileDirectory)NoTargets\Sdk.props" />
+
+    <!-- Advanced Feature 2: Auto-Include Patterns by Documentation Type -->
+
+    <!-- Common files for all documentation types -->
+    <ItemGroup>
+        <None Include="$(DocumentationRoot)README.md" Condition="Exists('$(DocumentationRoot)README.md')" />
+        <None Include="$(DocumentationRoot)LICENSE*" />
+        <None Include="$(DocumentationRoot)CHANGELOG*" />
+        <None Include="$(DocumentationRoot)**/*.txt" />
+    </ItemGroup>
+
+    <!-- Mintlify-specific files -->
+    <ItemGroup Condition="'$(DocumentationType)' == 'Mintlify'">
+        <None Include="$(DocumentationRoot)docs.json" />
+        <None Include="$(DocumentationRoot)**/*.mdz" />
+        <None Include="$(DocumentationRoot)**/*.mdx" />
+        <None Include="$(DocumentationRoot)**/*.md" />
+        <None Include="$(DocumentationRoot)mint.json" />
+        <None Include="$(DocumentationRoot)api-reference/**/*" />
+        <None Include="$(DocumentationRoot)conceptual/**/*" />
+        <None Include="$(DocumentationRoot)overrides/**/*" />
+        <None Include="$(DocumentationRoot)guides/**/*" />
+        <None Include="$(DocumentationRoot)logo/**/*" />
+        <None Include="$(DocumentationRoot)favicon.*" />
+        <None Include="$(DocumentationRoot)**/*.yml" />
+        <None Include="$(DocumentationRoot)**/*.yaml" />
+    </ItemGroup>
+
+    <!-- DocFX-specific files -->
+    <ItemGroup Condition="'$(DocumentationType)' == 'DocFX'">
+        <None Include="$(DocumentationRoot)docfx.json" />
+        <None Include="$(DocumentationRoot)toc.yml" />
+        <None Include="$(DocumentationRoot)toc.yaml" />
+        <None Include="$(DocumentationRoot)**/*.md" />
+        <None Include="$(DocumentationRoot)**/*.yml" />
+        <None Include="$(DocumentationRoot)**/*.yaml" />
+        <None Include="$(DocumentationRoot)articles/**/*" />
+        <None Include="$(DocumentationRoot)api/**/*" />
+        <None Include="$(DocumentationRoot)templates/**/*" />
+        <None Include="$(DocumentationRoot)images/**/*" />
+    </ItemGroup>
+
+    <!-- MkDocs-specific files -->
+    <ItemGroup Condition="'$(DocumentationType)' == 'MkDocs'">
+        <None Include="$(DocumentationRoot)mkdocs.yml" />
+        <None Include="$(DocumentationRoot)docs/**/*.md" />
+        <None Include="$(DocumentationRoot)docs/**/*.py" />
+        <None Include="$(DocumentationRoot)requirements.txt" />
+        <None Include="$(DocumentationRoot)overrides/**/*" />
+        <None Include="$(DocumentationRoot)theme/**/*" />
+    </ItemGroup>
+
+    <!-- Jekyll-specific files -->
+    <ItemGroup Condition="'$(DocumentationType)' == 'Jekyll'">
+        <None Include="$(DocumentationRoot)_config.yml" />
+        <None Include="$(DocumentationRoot)_config.yaml" />
+        <None Include="$(DocumentationRoot)**/*.md" />
+        <None Include="$(DocumentationRoot)**/*.html" />
+        <None Include="$(DocumentationRoot)_posts/**/*" />
+        <None Include="$(DocumentationRoot)_layouts/**/*" />
+        <None Include="$(DocumentationRoot)_includes/**/*" />
+        <None Include="$(DocumentationRoot)_sass/**/*" />
+        <None Include="$(DocumentationRoot)_data/**/*" />
+        <None Include="$(DocumentationRoot)assets/**/*" />
+        <None Include="$(DocumentationRoot)Gemfile*" />
+    </ItemGroup>
+
+    <!-- Hugo-specific files -->
+    <ItemGroup Condition="'$(DocumentationType)' == 'Hugo'">
+        <None Include="$(DocumentationRoot)hugo.toml" />
+        <None Include="$(DocumentationRoot)hugo.yaml" />
+        <None Include="$(DocumentationRoot)hugo.json" />
+        <None Include="$(DocumentationRoot)config.*" />
+        <None Include="$(DocumentationRoot)content/**/*" />
+        <None Include="$(DocumentationRoot)layouts/**/*" />
+        <None Include="$(DocumentationRoot)static/**/*" />
+        <None Include="$(DocumentationRoot)themes/**/*" />
+        <None Include="$(DocumentationRoot)archetypes/**/*" />
+        <None Include="$(DocumentationRoot)data/**/*" />
+        <None Include="$(DocumentationRoot)i18n/**/*" />
+    </ItemGroup>
+
+    <!-- Generic documentation files (fallback) -->
+    <ItemGroup Condition="'$(DocumentationType)' == 'Generic'">
+        <None Include="$(DocumentationRoot)**/*.md" />
+        <None Include="$(DocumentationRoot)**/*.mdx" />
+        <None Include="$(DocumentationRoot)**/*.rst" />
+        <None Include="$(DocumentationRoot)**/*.adoc" />
+        <None Include="$(DocumentationRoot)**/*.asciidoc" />
+        <None Include="$(DocumentationRoot)**/*.org" />
+        <None Include="$(DocumentationRoot)**/*.wiki" />
+        <None Include="$(DocumentationRoot)**/*.textile" />
+        <None Include="$(DocumentationRoot)**/*.yml" />
+        <None Include="$(DocumentationRoot)**/*.yaml" />
+        <None Include="$(DocumentationRoot)**/*.json" />
+        <None Include="$(DocumentationRoot)**/*.toml" />
+        <None Include="$(DocumentationRoot)**/*.ini" />
+        <None Include="$(DocumentationRoot)docs/**/*" />
+        <None Include="$(DocumentationRoot)documentation/**/*" />
+    </ItemGroup>
+
+    <!-- Common asset files for all documentation types -->
+    <ItemGroup>
+        <None Include="$(DocumentationRoot)**/*.png" />
+        <None Include="$(DocumentationRoot)**/*.jpg" />
+        <None Include="$(DocumentationRoot)**/*.jpeg" />
+        <None Include="$(DocumentationRoot)**/*.gif" />
+        <None Include="$(DocumentationRoot)**/*.svg" />
+        <None Include="$(DocumentationRoot)**/*.webp" />
+        <None Include="$(DocumentationRoot)**/*.ico" />
+        <None Include="$(DocumentationRoot)**/*.pdf" />
+        <None Include="$(DocumentationRoot)**/*.css" />
+        <None Include="$(DocumentationRoot)**/*.scss" />
+        <None Include="$(DocumentationRoot)**/*.sass" />
+        <None Include="$(DocumentationRoot)**/*.less" />
+        <None Include="$(DocumentationRoot)**/*.js" />
+        <None Include="$(DocumentationRoot)**/*.ts" />
+        <None Include="$(DocumentationRoot)**/*.mjs" />
+        <None Include="$(DocumentationRoot)**/*.woff*" />
+        <None Include="$(DocumentationRoot)**/*.ttf" />
+        <None Include="$(DocumentationRoot)**/*.otf" />
+        <None Include="$(DocumentationRoot)**/*.eot" />
+    </ItemGroup>
+
+    <!-- Exclude common build and system directories -->
+    <ItemGroup>
+        <None Remove="bin/**" />
+        <None Remove="obj/**" />
+        <None Remove=".vs/**" />
+        <None Remove=".vscode/**" />
+        <None Remove="node_modules/**" />
+        <None Remove=".git/**" />
+        <None Remove=".svn/**" />
+        <None Remove="__pycache__/**" />
+        <None Remove="*.tmp" />
+        <None Remove="*.temp" />
+        <None Remove="**/thumbs.db" />
+        <None Remove="**/.DS_Store" />
+        <None Remove="**/*.docsproj" />
+        <None Remove="**/*.docsproj.user" />
+    </ItemGroup>
+
+</Project>
