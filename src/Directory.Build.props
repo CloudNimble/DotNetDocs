@@ -52,7 +52,9 @@
         <!-- Contact email address for NuGet packages and Linux installers. -->
         <MaintainerEmail>opensource@nimbleapps.cloud</MaintainerEmail>
 
-        <PackageIcon>easyaf-logo.png</PackageIcon>
+        <PackageIcon Condition=" '$(IsTestProject)' != 'true' And $(MSBuildProjectName.StartsWith('CloudNimble.'))">easyaf-logo.png</PackageIcon>
+        <PackageIcon Condition=" '$(IsTestProject)' != 'true' And $(MSBuildProjectName.StartsWith('Mintlify.'))">mintlify-logo.png</PackageIcon>
+
         <PackageProjectUrl>https://easyaf.dev/dotnetdocs</PackageProjectUrl>
         <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
         <PackageTags>easyaf;docs;docfx;documentation;mintlify</PackageTags>
@@ -145,7 +147,8 @@
 
     <!-- RWM: Leverage defaults to include standard things in the NuGet package if they are available.-->
     <ItemGroup>
-        <None Include="$(MSBuildThisFileDirectory)easyaf-logo.png" Pack="true" PackagePath="\" Condition="'$(IsTestProject)' != 'true'" />
+        <None Include="$(MSBuildThisFileDirectory)easyaf-logo.png" Pack="true" PackagePath="\" Condition=" '$(IsTestProject)' != 'true' And $(MSBuildProjectName.StartsWith('CloudNimble.'))" />
+        <None Include="$(MSBuildThisFileDirectory)mintlify-logo.png" Pack="true" PackagePath="\" Condition=" '$(IsTestProject)' != 'true' And $(MSBuildProjectName.StartsWith('Mintlify.'))" />
         <None Include="readme.md" Pack="true" PackagePath="\" Condition="$(IncludeReadmeFile) == 'true'" />
     </ItemGroup>
 
