@@ -1,0 +1,64 @@
+items:
+- name: global
+  href: global.yaml
+  items:
+  - name: <Module>
+    fullName: <Module>
+    kind: Class
+- name: CloudNimble.DotNetDocs.Tests.Shared
+  href: CloudNimble-DotNetDocs-Tests-Shared.yaml
+  items:
+  - name: SampleClass
+    fullName: CloudNimble.DotNetDocs.Tests.Shared.SampleClass
+    kind: Class
+  - name: TestBase
+    fullName: CloudNimble.DotNetDocs.Tests.Shared.TestBase
+    kind: Class
+- name: CloudNimble.DotNetDocs.Tests.Shared.AccessModifiers
+  href: CloudNimble-DotNetDocs-Tests-Shared-AccessModifiers.yaml
+  items:
+  - name: MixedAccessClass
+    fullName: CloudNimble.DotNetDocs.Tests.Shared.AccessModifiers.MixedAccessClass
+    kind: Class
+- name: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios
+  href: CloudNimble-DotNetDocs-Tests-Shared-BasicScenarios.yaml
+  items:
+  - name: BaseClass
+    fullName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.BaseClass
+    kind: Class
+  - name: ClassWithMethods
+    fullName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ClassWithMethods
+    kind: Class
+  - name: ClassWithProperties
+    fullName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ClassWithProperties
+    kind: Class
+  - name: DerivedClass
+    fullName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass
+    kind: Class
+  - name: DisposableClass
+    fullName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DisposableClass
+    kind: Class
+  - name: SimpleClass
+    fullName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.SimpleClass
+    kind: Class
+- name: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases
+  href: CloudNimble-DotNetDocs-Tests-Shared-EdgeCases.yaml
+  items:
+  - name: ClassWithMinimalDocs
+    fullName: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithMinimalDocs
+    kind: Class
+  - name: ClassWithNoDocs
+    fullName: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithNoDocs
+    kind: Class
+  - name: ClassWithSpecialCharacters
+    fullName: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithSpecialCharacters
+    kind: Class
+  - name: ClassWithFullDocs
+    fullName: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithFullDocs
+    kind: Class
+- name: CloudNimble.DotNetDocs.Tests.Shared.Parameters
+  href: CloudNimble-DotNetDocs-Tests-Shared-Parameters.yaml
+  items:
+  - name: ParameterVariations
+    fullName: CloudNimble.DotNetDocs.Tests.Shared.Parameters.ParameterVariations
+    kind: Class

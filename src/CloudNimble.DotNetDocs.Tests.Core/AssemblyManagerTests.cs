@@ -16,12 +16,11 @@ namespace CloudNimble.DotNetDocs.Tests.Core
     /// Tests for the <see cref="AssemblyManager"/> class.
     /// </summary>
     [TestClass]
-    public class AssemblyManagerTests
+    public class AssemblyManagerTests : DotNetDocsTestBase
     {
 
         #region Fields
 
-        private const string projectPath = "..//..//..//";
         private string tempDirectory = string.Empty;
         private string testAssemblyPath = string.Empty;
         private string testXmlPath = string.Empty;

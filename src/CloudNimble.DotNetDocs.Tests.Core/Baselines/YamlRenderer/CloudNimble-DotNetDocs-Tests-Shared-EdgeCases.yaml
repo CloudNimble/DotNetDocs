@@ -1,0 +1,353 @@
+namespace:
+  name: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases
+  usage: ''
+  examples: ''
+  bestPractices: ''
+  patterns: ''
+  considerations: ''
+  relatedApis: []
+  types:
+  - name: ClassWithMinimalDocs
+    fullName: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithMinimalDocs
+    kind: Class
+    baseType: System.Object
+    usage: A class with minimal documentation.
+    examples: ''
+    bestPractices: ''
+    patterns: ''
+    considerations: ''
+    relatedApis: []
+    members:
+    - name: get_Name
+      kind: Method
+      accessibility: Public
+      usage: ''
+      examples: ''
+      bestPractices: ''
+      patterns: ''
+      considerations: ''
+      relatedApis: []
+      signature: public string get_Name()
+      parameters: 
+      returnType: string
+      modifiers: []
+    - name: set_Name
+      kind: Method
+      accessibility: Public
+      usage: ''
+      examples: ''
+      bestPractices: ''
+      patterns: ''
+      considerations: ''
+      relatedApis: []
+      signature: public void set_Name(string value)
+      parameters:
+      - name: value
+        type: string
+        isOptional: false
+        defaultValue: 
+        isParams: false
+        isRef: false
+        isOut: false
+        isIn: false
+        usage: ''
+        examples: ''
+        bestPractices: ''
+        considerations: ''
+      returnType: void
+      modifiers: []
+    - name: DoSomething
+      kind: Method
+      accessibility: Public
+      usage: Does something.
+      examples: ''
+      bestPractices: ''
+      patterns: ''
+      considerations: ''
+      relatedApis: []
+      signature: public void DoSomething()
+      parameters: 
+      returnType: void
+      modifiers: []
+    - name: .ctor
+      kind: Method
+      accessibility: Public
+      usage: ''
+      examples: ''
+      bestPractices: ''
+      patterns: ''
+      considerations: ''
+      relatedApis: []
+      signature: public .ctor()
+      parameters: 
+      returnType: 
+      modifiers: []
+    - name: Name
+      kind: Property
+      accessibility: Public
+      usage: Gets or sets the name.
+      examples: ''
+      bestPractices: ''
+      patterns: ''
+      considerations: ''
+      relatedApis: []
+      signature: public string Name { get; set; }
+      parameters: 
+      returnType: string
+      modifiers: []
+  - name: ClassWithNoDocs
+    fullName: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithNoDocs
+    kind: Class
+    baseType: System.Object
+    usage: ''
+    examples: ''
+    bestPractices: ''
+    patterns: ''
+    considerations: ''
+    relatedApis: []
+    members:
+    - name: get_UndocumentedProperty
+      kind: Method
+      accessibility: Public
+      usage: ''
+      examples: ''
+      bestPractices: ''
+      patterns: ''
+      considerations: ''
+      relatedApis: []
+      signature: public string get_UndocumentedProperty()
+      parameters: 
+      returnType: string
+      modifiers: []
+    - name: set_UndocumentedProperty
+      kind: Method
+      accessibility: Public
+      usage: ''
+      examples: ''
+      bestPractices: ''
+      patterns: ''
+      considerations: ''
+      relatedApis: []
+      signature: public void set_UndocumentedProperty(string value)
+      parameters:
+      - name: value
+        type: string
+        isOptional: false
+        defaultValue: 
+        isParams: false
+        isRef: false
+        isOut: false
+        isIn: false
+        usage: ''
+        examples: ''
+        bestPractices: ''
+        considerations: ''
+      returnType: void
+      modifiers: []
+    - name: UndocumentedMethod
+      kind: Method
+      accessibility: Public
+      usage: ''
+      examples: ''
+      bestPractices: ''
+      patterns: ''
+      considerations: ''
+      relatedApis: []
+      signature: public void UndocumentedMethod()
+      parameters: 
+      returnType: void
+      modifiers: []
+    - name: .ctor
+      kind: Method
+      accessibility: Public
+      usage: ''
+      examples: ''
+      bestPractices: ''
+      patterns: ''
+      considerations: ''
+      relatedApis: []
+      signature: public .ctor()
+      parameters: 
+      returnType: 
+      modifiers: []
+    - name: UndocumentedProperty
+      kind: Property
+      accessibility: Public
+      usage: ''
+      examples: ''
+      bestPractices: ''
+      patterns: ''
+      considerations: ''
+      relatedApis: []
+      signature: public string UndocumentedProperty { get; set; }
+      parameters: 
+      returnType: string
+      modifiers: []
+  - name: ClassWithSpecialCharacters
+    fullName: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithSpecialCharacters
+    kind: Class
+    baseType: System.Object
+    usage: "A class with special characters in documentation: <, >, &, \", '."
+    examples: >-
+      // Using generics: List<string>
+                  var list = new List<string>();
+                  if (x > 0 && y < 10) { }
+    bestPractices: ''
+    patterns: ''
+    considerations: ''
+    relatedApis: []
+    members:
+    - name: MethodWithSpecialChars
+      kind: Method
+      accessibility: Public
+      usage: 'A method with special characters in docs: <T> generics.'
+      examples: ''
+      bestPractices: ''
+      patterns: ''
+      considerations: ''
+      relatedApis: []
+      signature: public string MethodWithSpecialChars(string input)
+      parameters:
+      - name: input
+        type: string
+        isOptional: false
+        defaultValue: 
+        isParams: false
+        isRef: false
+        isOut: false
+        isIn: false
+        usage: An input with "quotes" and 'apostrophes'.
+        examples: ''
+        bestPractices: ''
+        considerations: ''
+      returnType: string
+      modifiers: []
+    - name: .ctor
+      kind: Method
+      accessibility: Public
+      usage: ''
+      examples: ''
+      bestPractices: ''
+      patterns: ''
+      considerations: ''
+      relatedApis: []
+      signature: public .ctor()
+      parameters: 
+      returnType: 
+      modifiers: []
+  - name: ClassWithFullDocs
+    fullName: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithFullDocs
+    kind: Class
+    baseType: System.Object
+    usage: A class with comprehensive XML documentation tags.
+    examples: >-
+      var fullDocs = new ClassWithFullDocs();
+                  fullDocs.ComplexMethod("test", 42);
+    bestPractices: ''
+    patterns: ''
+    considerations: ''
+    relatedApis: []
+    members:
+    - name: get_Value
+      kind: Method
+      accessibility: Public
+      usage: ''
+      examples: ''
+      bestPractices: ''
+      patterns: ''
+      considerations: ''
+      relatedApis: []
+      signature: public string get_Value()
+      parameters: 
+      returnType: string
+      modifiers: []
+    - name: set_Value
+      kind: Method
+      accessibility: Public
+      usage: ''
+      examples: ''
+      bestPractices: ''
+      patterns: ''
+      considerations: ''
+      relatedApis: []
+      signature: public void set_Value(string value)
+      parameters:
+      - name: value
+        type: string
+        isOptional: false
+        defaultValue: 
+        isParams: false
+        isRef: false
+        isOut: false
+        isIn: false
+        usage: ''
+        examples: ''
+        bestPractices: ''
+        considerations: ''
+      returnType: void
+      modifiers: []
+    - name: ComplexMethod
+      kind: Method
+      accessibility: Public
+      usage: A complex method with full documentation.
+      examples: >-
+        var result = ComplexMethod("hello", 5);
+                    Console.WriteLine(result);
+      bestPractices: ''
+      patterns: ''
+      considerations: ''
+      relatedApis: []
+      signature: public string ComplexMethod(string text, int number)
+      parameters:
+      - name: text
+        type: string
+        isOptional: false
+        defaultValue: 
+        isParams: false
+        isRef: false
+        isOut: false
+        isIn: false
+        usage: The text parameter to process.
+        examples: ''
+        bestPractices: ''
+        considerations: ''
+      - name: number
+        type: int
+        isOptional: false
+        defaultValue: 
+        isParams: false
+        isRef: false
+        isOut: false
+        isIn: false
+        usage: The number to use in processing.
+        examples: ''
+        bestPractices: ''
+        considerations: ''
+      returnType: string
+      modifiers: []
+    - name: .ctor
+      kind: Method
+      accessibility: Public
+      usage: ''
+      examples: ''
+      bestPractices: ''
+      patterns: ''
+      considerations: ''
+      relatedApis: []
+      signature: public .ctor()
+      parameters: 
+      returnType: 
+      modifiers: []
+    - name: Value
+      kind: Property
+      accessibility: Public
+      usage: Gets or sets the value property.
+      examples: ''
+      bestPractices: ''
+      patterns: ''
+      considerations: ''
+      relatedApis: []
+      signature: public string Value { get; set; }
+      parameters: 
+      returnType: string
+      modifiers: []

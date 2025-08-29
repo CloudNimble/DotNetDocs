@@ -1,0 +1,287 @@
+namespace:
+  name: CloudNimble.DotNetDocs.Tests.Shared.Parameters
+  usage: ''
+  examples: ''
+  bestPractices: ''
+  patterns: ''
+  considerations: ''
+  relatedApis: []
+  types:
+  - name: ParameterVariations
+    fullName: CloudNimble.DotNetDocs.Tests.Shared.Parameters.ParameterVariations
+    kind: Class
+    baseType: System.Object
+    usage: A class demonstrating various parameter types and patterns.
+    examples: ''
+    bestPractices: ''
+    patterns: ''
+    considerations: ''
+    relatedApis: []
+    members:
+    - name: MethodWithOptionalParam
+      kind: Method
+      accessibility: Public
+      usage: A method with an optional parameter.
+      examples: >-
+        var result1 = MethodWithOptionalParam("test");      // Uses default value 42
+                    var result2 = MethodWithOptionalParam("test", 100); // Uses provided value
+      bestPractices: ''
+      patterns: ''
+      considerations: ''
+      relatedApis: []
+      signature: public string MethodWithOptionalParam(string required, int optional)
+      parameters:
+      - name: required
+        type: string
+        isOptional: false
+        defaultValue: 
+        isParams: false
+        isRef: false
+        isOut: false
+        isIn: false
+        usage: The required string parameter.
+        examples: ''
+        bestPractices: ''
+        considerations: ''
+      - name: optional
+        type: int
+        isOptional: true
+        defaultValue: 42
+        isParams: false
+        isRef: false
+        isOut: false
+        isIn: false
+        usage: The optional integer parameter with a default value.
+        examples: ''
+        bestPractices: ''
+        considerations: ''
+      returnType: string
+      modifiers: []
+    - name: MethodWithParams
+      kind: Method
+      accessibility: Public
+      usage: A method with a params array.
+      examples: >-
+        var sum1 = MethodWithParams(1, 2, 3);        // Returns 6
+                    var sum2 = MethodWithParams(new[] { 1, 2 }); // Returns 3
+      bestPractices: ''
+      patterns: ''
+      considerations: ''
+      relatedApis: []
+      signature: public int MethodWithParams(int[] values)
+      parameters:
+      - name: values
+        type: int[]
+        isOptional: false
+        defaultValue: 
+        isParams: true
+        isRef: false
+        isOut: false
+        isIn: false
+        usage: Variable number of integer values.
+        examples: ''
+        bestPractices: ''
+        considerations: ''
+      returnType: int
+      modifiers: []
+    - name: MethodWithRef
+      kind: Method
+      accessibility: Public
+      usage: A method with a ref parameter.
+      examples: ''
+      bestPractices: ''
+      patterns: ''
+      considerations: ''
+      relatedApis: []
+      signature: public void MethodWithRef(int value)
+      parameters:
+      - name: value
+        type: int
+        isOptional: false
+        defaultValue: 
+        isParams: false
+        isRef: true
+        isOut: false
+        isIn: false
+        usage: The value to be modified by reference.
+        examples: ''
+        bestPractices: ''
+        considerations: ''
+      returnType: void
+      modifiers: []
+    - name: MethodWithOut
+      kind: Method
+      accessibility: Public
+      usage: A method with an out parameter.
+      examples: ''
+      bestPractices: ''
+      patterns: ''
+      considerations: ''
+      relatedApis: []
+      signature: public bool MethodWithOut(string input, int value)
+      parameters:
+      - name: input
+        type: string
+        isOptional: false
+        defaultValue: 
+        isParams: false
+        isRef: false
+        isOut: false
+        isIn: false
+        usage: The input string to parse.
+        examples: ''
+        bestPractices: ''
+        considerations: ''
+      - name: value
+        type: int
+        isOptional: false
+        defaultValue: 
+        isParams: false
+        isRef: false
+        isOut: true
+        isIn: false
+        usage: The output integer value if parsing succeeds.
+        examples: ''
+        bestPractices: ''
+        considerations: ''
+      returnType: bool
+      modifiers: []
+    - name: GenericMethod
+      kind: Method
+      accessibility: Public
+      usage: A generic method with a type parameter.
+      examples: >-
+        var result1 = GenericMethod<int>(42);
+                    var result2 = GenericMethod("hello");
+      bestPractices: ''
+      patterns: ''
+      considerations: ''
+      relatedApis: []
+      signature: public string GenericMethod<T>(T value)
+      parameters:
+      - name: value
+        type: T
+        isOptional: false
+        defaultValue: 
+        isParams: false
+        isRef: false
+        isOut: false
+        isIn: false
+        usage: The value to process.
+        examples: ''
+        bestPractices: ''
+        considerations: ''
+      returnType: string
+      modifiers: []
+    - name: GenericMethodWithMultipleTypes
+      kind: Method
+      accessibility: Public
+      usage: A method with multiple generic type parameters.
+      examples: ''
+      bestPractices: ''
+      patterns: ''
+      considerations: ''
+      relatedApis: []
+      signature: public System.Collections.Generic.KeyValuePair<TKey, TValue> GenericMethodWithMultipleTypes<TKey, TValue>(TKey key, TValue value)
+      parameters:
+      - name: key
+        type: TKey
+        isOptional: false
+        defaultValue: 
+        isParams: false
+        isRef: false
+        isOut: false
+        isIn: false
+        usage: The key.
+        examples: ''
+        bestPractices: ''
+        considerations: ''
+      - name: value
+        type: TValue
+        isOptional: false
+        defaultValue: 
+        isParams: false
+        isRef: false
+        isOut: false
+        isIn: false
+        usage: The value.
+        examples: ''
+        bestPractices: ''
+        considerations: ''
+      returnType: System.Collections.Generic.KeyValuePair<TKey, TValue>
+      modifiers: []
+    - name: MethodWithNullables
+      kind: Method
+      accessibility: Public
+      usage: A method with nullable parameters.
+      examples: ''
+      bestPractices: ''
+      patterns: ''
+      considerations: ''
+      relatedApis: []
+      signature: public string MethodWithNullables(System.Nullable<int> nullableInt, string? nullableString)
+      parameters:
+      - name: nullableInt
+        type: System.Nullable<int>
+        isOptional: false
+        defaultValue: 
+        isParams: false
+        isRef: false
+        isOut: false
+        isIn: false
+        usage: An optional nullable integer.
+        examples: ''
+        bestPractices: ''
+        considerations: ''
+      - name: nullableString
+        type: string?
+        isOptional: false
+        defaultValue: 
+        isParams: false
+        isRef: false
+        isOut: false
+        isIn: false
+        usage: An optional nullable string.
+        examples: ''
+        bestPractices: ''
+        considerations: ''
+      returnType: string
+      modifiers: []
+    - name: MethodWithConstraints
+      kind: Method
+      accessibility: Public
+      usage: A method demonstrating parameter constraints.
+      examples: ''
+      bestPractices: ''
+      patterns: ''
+      considerations: ''
+      relatedApis: []
+      signature: public string MethodWithConstraints<T>(T item)
+      parameters:
+      - name: item
+        type: T
+        isOptional: false
+        defaultValue: 
+        isParams: false
+        isRef: false
+        isOut: false
+        isIn: false
+        usage: The item to process.
+        examples: ''
+        bestPractices: ''
+        considerations: ''
+      returnType: string
+      modifiers: []
+    - name: .ctor
+      kind: Method
+      accessibility: Public
+      usage: ''
+      examples: ''
+      bestPractices: ''
+      patterns: ''
+      considerations: ''
+      relatedApis: []
+      signature: public .ctor()
+      parameters: 
+      returnType: 
+      modifiers: []

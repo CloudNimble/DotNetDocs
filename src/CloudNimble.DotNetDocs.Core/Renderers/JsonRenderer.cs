@@ -1,0 +1,193 @@
+using System;
+using System.IO;
+using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Threading.Tasks;
+using Microsoft.CodeAnalysis;
+
+namespace CloudNimble.DotNetDocs.Core.Renderers
+{
+
+    /// <summary>
+    /// Renders documentation as JSON files.
+    /// </summary>
+    /// <remarks>
+    /// Generates structured JSON documentation suitable for API consumption and integration
+    /// with documentation tools.
+    /// </remarks>
+    public class JsonRenderer : RendererBase, IDocRenderer
+    {
+
+        #region Fields
+
+        private static readonly JsonSerializerOptions _jsonOptions = new()
+        {
+            WriteIndented = true,
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) }
+        };
+
+        #endregion
+
+        #region Public Methods
+
+        /// <summary>
+        /// Renders the documentation assembly to JSON files.
+        /// </summary>
+        /// <param name="model">The documentation assembly to render.</param>
+        /// <param name="outputPath">The path where JSON files should be generated.</param>
+        /// <param name="context">The project context providing rendering settings.</param>
+        /// <returns>A task representing the asynchronous rendering operation.</returns>
+        public async Task RenderAsync(DocAssembly model, string outputPath, ProjectContext context)
+        {
+            ArgumentNullException.ThrowIfNull(model);
+            ArgumentNullException.ThrowIfNull(outputPath);
+            ArgumentNullException.ThrowIfNull(context);
+
+            Directory.CreateDirectory(outputPath);
+
+            // Create the main documentation structure
+            var documentation = new
+            {
+                Assembly = new
+                {
+                    Name = model.AssemblyName,
+                    Version = model.Symbol.Identity.Version.ToString(),
+                    model.Usage,
+                    model.Examples,
+                    model.BestPractices,
+                    model.Patterns,
+                    model.Considerations,
+                    model.RelatedApis,
+                    Namespaces = SerializeNamespaces(model)
+                }
+            };
+
+            // Write main documentation file
+            var mainFilePath = Path.Combine(outputPath, "documentation.json");
+            var json = JsonSerializer.Serialize(documentation, _jsonOptions);
+            await File.WriteAllTextAsync(mainFilePath, json);
+
+            // Also write individual namespace files for easier consumption
+            foreach (var ns in model.Namespaces)
+            {
+                await RenderNamespaceFileAsync(ns, outputPath);
+            }
+        }
+
+        #endregion
+
+        #region Private Methods
+
+        private object SerializeNamespaces(DocAssembly assembly)
+        {
+            return assembly.Namespaces.Select(ns => new
+            {
+                Name = ns.Symbol.ToDisplayString(),
+                ns.Usage,
+                ns.Examples,
+                ns.BestPractices,
+                ns.Patterns,
+                ns.Considerations,
+                ns.RelatedApis,
+                Types = SerializeTypes(ns)
+            });
+        }
+
+        private object SerializeTypes(DocNamespace ns)
+        {
+            return ns.Types.Select(type => new
+            {
+                Name = type.Symbol.Name,
+                FullName = type.Symbol.ToDisplayString(),
+                Kind = type.Symbol.TypeKind.ToString(),
+                BaseType = type.BaseType,
+                type.Usage,
+                type.Examples,
+                type.BestPractices,
+                type.Patterns,
+                type.Considerations,
+                type.RelatedApis,
+                Members = SerializeMembers(type)
+            });
+        }
+
+        private object SerializeMembers(DocType type)
+        {
+            return type.Members.Select(member => new
+            {
+                Name = member.Symbol.Name,
+                Kind = member.Symbol.Kind.ToString(),
+                Accessibility = member.Symbol.DeclaredAccessibility.ToString(),
+                member.Usage,
+                member.Examples,
+                member.BestPractices,
+                member.Patterns,
+                member.Considerations,
+                member.RelatedApis,
+                Signature = GetMemberSignature(member),
+                Parameters = SerializeParameters(member),
+                ReturnType = GetReturnType(member)
+            });
+        }
+
+        private object? SerializeParameters(DocMember member)
+        {
+            if (member.Parameters is null || !member.Parameters.Any())
+                return null;
+
+            return member.Parameters.Select(param => new
+            {
+                Name = param.Symbol.Name,
+                Type = param.Symbol.Type.ToDisplayString(),
+                IsOptional = param.Symbol.HasExplicitDefaultValue,
+                DefaultValue = param.Symbol.HasExplicitDefaultValue ? param.Symbol.ExplicitDefaultValue?.ToString() : null,
+                param.Usage,
+                param.Examples,
+                param.BestPractices,
+                param.Considerations
+            });
+        }
+
+        private async Task RenderNamespaceFileAsync(DocNamespace ns, string outputPath)
+        {
+            var namespaceData = new
+            {
+                Namespace = new
+                {
+                    Name = ns.Symbol.ToDisplayString(),
+                    ns.Usage,
+                    ns.Examples,
+                    ns.BestPractices,
+                    ns.Patterns,
+                    ns.Considerations,
+                    ns.RelatedApis,
+                    Types = SerializeTypes(ns)
+                }
+            };
+
+            var filePath = Path.Combine(outputPath, GetNamespaceFileName(ns, "json"));
+            var json = JsonSerializer.Serialize(namespaceData, _jsonOptions);
+            await File.WriteAllTextAsync(filePath, json);
+        }
+
+        // GetMemberSignature and GetMethodSignature are inherited from RendererBase
+
+        private string? GetReturnType(DocMember member)
+        {
+            return member.Symbol switch
+            {
+                IMethodSymbol method when method.MethodKind != MethodKind.Constructor => method.ReturnType.ToDisplayString(),
+                IPropertySymbol property => property.Type.ToDisplayString(),
+                IFieldSymbol field => field.Type.ToDisplayString(),
+                _ => null
+            };
+        }
+
+        #endregion
+
+    }
+
+}

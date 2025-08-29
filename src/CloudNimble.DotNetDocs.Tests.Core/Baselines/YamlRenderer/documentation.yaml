@@ -1,0 +1,1716 @@
+assembly:
+  name: CloudNimble.DotNetDocs.Tests.Shared
+  version: 1.0.0.0
+  usage: ''
+  examples: ''
+  bestPractices: ''
+  patterns: ''
+  considerations: ''
+  relatedApis: []
+  namespaces:
+  - name: <global namespace>
+    usage: ''
+    examples: ''
+    bestPractices: ''
+    patterns: ''
+    considerations: ''
+    relatedApis: []
+    types:
+    - name: <Module>
+      fullName: <Module>
+      kind: Class
+      baseType: 
+      usage: ''
+      examples: ''
+      bestPractices: ''
+      patterns: ''
+      considerations: ''
+      relatedApis: []
+      members: []
+  - name: CloudNimble.DotNetDocs.Tests.Shared
+    usage: ''
+    examples: ''
+    bestPractices: ''
+    patterns: ''
+    considerations: ''
+    relatedApis: []
+    types:
+    - name: SampleClass
+      fullName: CloudNimble.DotNetDocs.Tests.Shared.SampleClass
+      kind: Class
+      baseType: System.Object
+      usage: A sample class for testing documentation generation.
+      examples: ''
+      bestPractices: ''
+      patterns: ''
+      considerations: ''
+      relatedApis: []
+      members:
+      - name: get_Name
+        kind: Method
+        accessibility: Public
+        usage: ''
+        examples: ''
+        bestPractices: ''
+        patterns: ''
+        considerations: ''
+        relatedApis: []
+        signature: public string get_Name()
+        parameters: 
+        returnType: string
+        modifiers: []
+      - name: set_Name
+        kind: Method
+        accessibility: Public
+        usage: ''
+        examples: ''
+        bestPractices: ''
+        patterns: ''
+        considerations: ''
+        relatedApis: []
+        signature: public void set_Name(string value)
+        parameters:
+        - name: value
+          type: string
+          isOptional: false
+          defaultValue: 
+          isParams: false
+          isRef: false
+          isOut: false
+          isIn: false
+          usage: ''
+          examples: ''
+          bestPractices: ''
+          considerations: ''
+        returnType: void
+        modifiers: []
+      - name: get_Value
+        kind: Method
+        accessibility: Public
+        usage: ''
+        examples: ''
+        bestPractices: ''
+        patterns: ''
+        considerations: ''
+        relatedApis: []
+        signature: public int get_Value()
+        parameters: 
+        returnType: int
+        modifiers: []
+      - name: set_Value
+        kind: Method
+        accessibility: Public
+        usage: ''
+        examples: ''
+        bestPractices: ''
+        patterns: ''
+        considerations: ''
+        relatedApis: []
+        signature: public void set_Value(int value)
+        parameters:
+        - name: value
+          type: int
+          isOptional: false
+          defaultValue: 
+          isParams: false
+          isRef: false
+          isOut: false
+          isIn: false
+          usage: ''
+          examples: ''
+          bestPractices: ''
+          considerations: ''
+        returnType: void
+        modifiers: []
+      - name: DoSomething
+        kind: Method
+        accessibility: Public
+        usage: Performs a sample operation.
+        examples: ''
+        bestPractices: ''
+        patterns: ''
+        considerations: ''
+        relatedApis: []
+        signature: public string DoSomething(string input)
+        parameters:
+        - name: input
+          type: string
+          isOptional: false
+          defaultValue: 
+          isParams: false
+          isRef: false
+          isOut: false
+          isIn: false
+          usage: The input parameter.
+          examples: ''
+          bestPractices: ''
+          considerations: ''
+        returnType: string
+        modifiers: []
+      - name: GetDisplay
+        kind: Method
+        accessibility: Public
+        usage: Gets the display value.
+        examples: ''
+        bestPractices: ''
+        patterns: ''
+        considerations: ''
+        relatedApis: []
+        signature: public string GetDisplay()
+        parameters: 
+        returnType: string
+        modifiers: []
+      - name: MethodWithOptional
+        kind: Method
+        accessibility: Public
+        usage: Method with optional parameter.
+        examples: ''
+        bestPractices: ''
+        patterns: ''
+        considerations: ''
+        relatedApis: []
+        signature: public string MethodWithOptional(string required, int optional)
+        parameters:
+        - name: required
+          type: string
+          isOptional: false
+          defaultValue: 
+          isParams: false
+          isRef: false
+          isOut: false
+          isIn: false
+          usage: Required parameter.
+          examples: ''
+          bestPractices: ''
+          considerations: ''
+        - name: optional
+          type: int
+          isOptional: true
+          defaultValue: 42
+          isParams: false
+          isRef: false
+          isOut: false
+          isIn: false
+          usage: Optional parameter with default value.
+          examples: ''
+          bestPractices: ''
+          considerations: ''
+        returnType: string
+        modifiers: []
+      - name: MethodWithParams
+        kind: Method
+        accessibility: Public
+        usage: Method with params array.
+        examples: ''
+        bestPractices: ''
+        patterns: ''
+        considerations: ''
+        relatedApis: []
+        signature: public int MethodWithParams(int[] values)
+        parameters:
+        - name: values
+          type: int[]
+          isOptional: false
+          defaultValue: 
+          isParams: true
+          isRef: false
+          isOut: false
+          isIn: false
+          usage: Variable number of values.
+          examples: ''
+          bestPractices: ''
+          considerations: ''
+        returnType: int
+        modifiers: []
+      - name: .ctor
+        kind: Method
+        accessibility: Public
+        usage: ''
+        examples: ''
+        bestPractices: ''
+        patterns: ''
+        considerations: ''
+        relatedApis: []
+        signature: public .ctor()
+        parameters: 
+        returnType: 
+        modifiers: []
+      - name: Name
+        kind: Property
+        accessibility: Public
+        usage: Gets or sets the name.
+        examples: ''
+        bestPractices: ''
+        patterns: ''
+        considerations: ''
+        relatedApis: []
+        signature: public string Name { get; set; }
+        parameters: 
+        returnType: string
+        modifiers: []
+      - name: Value
+        kind: Property
+        accessibility: Public
+        usage: Gets or sets the value.
+        examples: ''
+        bestPractices: ''
+        patterns: ''
+        considerations: ''
+        relatedApis: []
+        signature: public int Value { get; set; }
+        parameters: 
+        returnType: int
+        modifiers: []
+    - name: TestBase
+      fullName: CloudNimble.DotNetDocs.Tests.Shared.TestBase
+      kind: Class
+      baseType: CloudNimble.Breakdance.Assemblies.BreakdanceTestBase
+      usage: Base class for DotNetDocs tests that need Roslyn compilation support.
+      examples: ''
+      bestPractices: ''
+      patterns: ''
+      considerations: ''
+      relatedApis: []
+      members: []
+  - name: CloudNimble.DotNetDocs.Tests.Shared.AccessModifiers
+    usage: ''
+    examples: ''
+    bestPractices: ''
+    patterns: ''
+    considerations: ''
+    relatedApis: []
+    types:
+    - name: MixedAccessClass
+      fullName: CloudNimble.DotNetDocs.Tests.Shared.AccessModifiers.MixedAccessClass
+      kind: Class
+      baseType: System.Object
+      usage: A class with members of various access modifiers for testing filtering.
+      examples: ''
+      bestPractices: ''
+      patterns: ''
+      considerations: ''
+      relatedApis: []
+      members:
+      - name: PublicField
+        kind: Field
+        accessibility: Public
+        usage: A public field.
+        examples: ''
+        bestPractices: ''
+        patterns: ''
+        considerations: ''
+        relatedApis: []
+        signature: public string PublicField
+        parameters: 
+        returnType: string
+        modifiers: []
+      - name: get_PublicProperty
+        kind: Method
+        accessibility: Public
+        usage: ''
+        examples: ''
+        bestPractices: ''
+        patterns: ''
+        considerations: ''
+        relatedApis: []
+        signature: public string get_PublicProperty()
+        parameters: 
+        returnType: string
+        modifiers: []
+      - name: set_PublicProperty
+        kind: Method
+        accessibility: Public
+        usage: ''
+        examples: ''
+        bestPractices: ''
+        patterns: ''
+        considerations: ''
+        relatedApis: []
+        signature: public void set_PublicProperty(string value)
+        parameters:
+        - name: value
+          type: string
+          isOptional: false
+          defaultValue: 
+          isParams: false
+          isRef: false
+          isOut: false
+          isIn: false
+          usage: ''
+          examples: ''
+          bestPractices: ''
+          considerations: ''
+        returnType: void
+        modifiers: []
+      - name: PublicMethod
+        kind: Method
+        accessibility: Public
+        usage: A public method.
+        examples: ''
+        bestPractices: ''
+        patterns: ''
+        considerations: ''
+        relatedApis: []
+        signature: public string PublicMethod()
+        parameters: 
+        returnType: string
+        modifiers: []
+      - name: .ctor
+        kind: Method
+        accessibility: Public
+        usage: ''
+        examples: ''
+        bestPractices: ''
+        patterns: ''
+        considerations: ''
+        relatedApis: []
+        signature: public .ctor()
+        parameters: 
+        returnType: 
+        modifiers: []
+      - name: PublicProperty
+        kind: Property
+        accessibility: Public
+        usage: Gets or sets the public property.
+        examples: ''
+        bestPractices: ''
+        patterns: ''
+        considerations: ''
+        relatedApis: []
+        signature: public string PublicProperty { get; set; }
+        parameters: 
+        returnType: string
+        modifiers: []
+  - name: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios
+    usage: ''
+    examples: ''
+    bestPractices: ''
+    patterns: ''
+    considerations: ''
+    relatedApis: []
+    types:
+    - name: BaseClass
+      fullName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.BaseClass
+      kind: Class
+      baseType: System.Object
+      usage: A base class for testing inheritance documentation.
+      examples: ''
+      bestPractices: ''
+      patterns: ''
+      considerations: ''
+      relatedApis: []
+      members:
+      - name: get_BaseProperty
+        kind: Method
+        accessibility: Public
+        usage: ''
+        examples: ''
+        bestPractices: ''
+        patterns: ''
+        considerations: ''
+        relatedApis: []
+        signature: public virtual string get_BaseProperty()
+        parameters: 
+        returnType: string
+        modifiers:
+        - virtual
+      - name: set_BaseProperty
+        kind: Method
+        accessibility: Public
+        usage: ''
+        examples: ''
+        bestPractices: ''
+        patterns: ''
+        considerations: ''
+        relatedApis: []
+        signature: public virtual void set_BaseProperty(string value)
+        parameters:
+        - name: value
+          type: string
+          isOptional: false
+          defaultValue: 
+          isParams: false
+          isRef: false
+          isOut: false
+          isIn: false
+          usage: ''
+          examples: ''
+          bestPractices: ''
+          considerations: ''
+        returnType: void
+        modifiers:
+        - virtual
+      - name: VirtualMethod
+        kind: Method
+        accessibility: Public
+        usage: A virtual method that can be overridden.
+        examples: ''
+        bestPractices: ''
+        patterns: ''
+        considerations: ''
+        relatedApis: []
+        signature: public virtual string VirtualMethod()
+        parameters: 
+        returnType: string
+        modifiers:
+        - virtual
+      - name: BaseMethod
+        kind: Method
+        accessibility: Public
+        usage: A method in the base class.
+        examples: ''
+        bestPractices: ''
+        patterns: ''
+        considerations: ''
+        relatedApis: []
+        signature: public void BaseMethod()
+        parameters: 
+        returnType: void
+        modifiers: []
+      - name: .ctor
+        kind: Method
+        accessibility: Public
+        usage: ''
+        examples: ''
+        bestPractices: ''
+        patterns: ''
+        considerations: ''
+        relatedApis: []
+        signature: public .ctor()
+        parameters: 
+        returnType: 
+        modifiers: []
+      - name: BaseProperty
+        kind: Property
+        accessibility: Public
+        usage: Gets or sets the base property.
+        examples: ''
+        bestPractices: ''
+        patterns: ''
+        considerations: ''
+        relatedApis: []
+        signature: public virtual string BaseProperty { get; set; }
+        parameters: 
+        returnType: string
+        modifiers:
+        - virtual
+    - name: ClassWithMethods
+      fullName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ClassWithMethods
+      kind: Class
+      baseType: System.Object
+      usage: A class demonstrating various method documentation scenarios.
+      examples: >-
+        var obj = new ClassWithMethods();
+                    var result = obj.Calculate(5, 10);
+      bestPractices: ''
+      patterns: ''
+      considerations: ''
+      relatedApis: []
+      members:
+      - name: Calculate
+        kind: Method
+        accessibility: Public
+        usage: Calculates the sum of two numbers.
+        examples: var result = Calculate(3, 4); // Returns 7
+        bestPractices: ''
+        patterns: ''
+        considerations: ''
+        relatedApis: []
+        signature: public int Calculate(int a, int b)
+        parameters:
+        - name: a
+          type: int
+          isOptional: false
+          defaultValue: 
+          isParams: false
+          isRef: false
+          isOut: false
+          isIn: false
+          usage: The first number.
+          examples: ''
+          bestPractices: ''
+          considerations: ''
+        - name: b
+          type: int
+          isOptional: false
+          defaultValue: 
+          isParams: false
+          isRef: false
+          isOut: false
+          isIn: false
+          usage: The second number.
+          examples: ''
+          bestPractices: ''
+          considerations: ''
+        returnType: int
+        modifiers: []
+      - name: Process
+        kind: Method
+        accessibility: Public
+        usage: Processes the input string.
+        examples: ''
+        bestPractices: ''
+        patterns: ''
+        considerations: ''
+        relatedApis: []
+        signature: public string Process(string input)
+        parameters:
+        - name: input
+          type: string
+          isOptional: false
+          defaultValue: 
+          isParams: false
+          isRef: false
+          isOut: false
+          isIn: false
+          usage: The string to process.
+          examples: ''
+          bestPractices: ''
+          considerations: ''
+        returnType: string
+        modifiers: []
+      - name: PerformAction
+        kind: Method
+        accessibility: Public
+        usage: A void method that performs an action.
+        examples: ''
+        bestPractices: ''
+        patterns: ''
+        considerations: ''
+        relatedApis: []
+        signature: public void PerformAction()
+        parameters: 
+        returnType: void
+        modifiers: []
+      - name: GetConditionalValue
+        kind: Method
+        accessibility: Public
+        usage: Gets a value based on a condition.
+        examples: ''
+        bestPractices: ''
+        patterns: ''
+        considerations: ''
+        relatedApis: []
+        signature: public string GetConditionalValue(bool condition)
+        parameters:
+        - name: condition
+          type: bool
+          isOptional: false
+          defaultValue: 
+          isParams: false
+          isRef: false
+          isOut: false
+          isIn: false
+          usage: The condition to evaluate.
+          examples: ''
+          bestPractices: ''
+          considerations: ''
+        returnType: string
+        modifiers: []
+      - name: .ctor
+        kind: Method
+        accessibility: Public
+        usage: ''
+        examples: ''
+        bestPractices: ''
+        patterns: ''
+        considerations: ''
+        relatedApis: []
+        signature: public .ctor()
+        parameters: 
+        returnType: 
+        modifiers: []
+    - name: ClassWithProperties
+      fullName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ClassWithProperties
+      kind: Class
+      baseType: System.Object
+      usage: A class demonstrating various property documentation scenarios.
+      examples: ''
+      bestPractices: ''
+      patterns: ''
+      considerations: ''
+      relatedApis: []
+      members:
+      - name: get_Name
+        kind: Method
+        accessibility: Public
+        usage: ''
+        examples: ''
+        bestPractices: ''
+        patterns: ''
+        considerations: ''
+        relatedApis: []
+        signature: public string get_Name()
+        parameters: 
+        returnType: string
+        modifiers: []
+      - name: set_Name
+        kind: Method
+        accessibility: Public
+        usage: ''
+        examples: ''
+        bestPractices: ''
+        patterns: ''
+        considerations: ''
+        relatedApis: []
+        signature: public void set_Name(string value)
+        parameters:
+        - name: value
+          type: string
+          isOptional: false
+          defaultValue: 
+          isParams: false
+          isRef: false
+          isOut: false
+          isIn: false
+          usage: ''
+          examples: ''
+          bestPractices: ''
+          considerations: ''
+        returnType: void
+        modifiers: []
+      - name: get_Id
+        kind: Method
+        accessibility: Public
+        usage: ''
+        examples: ''
+        bestPractices: ''
+        patterns: ''
+        considerations: ''
+        relatedApis: []
+        signature: public int get_Id()
+        parameters: 
+        returnType: int
+        modifiers: []
+      - name: get_Value
+        kind: Method
+        accessibility: Public
+        usage: ''
+        examples: ''
+        bestPractices: ''
+        patterns: ''
+        considerations: ''
+        relatedApis: []
+        signature: public double get_Value()
+        parameters: 
+        returnType: double
+        modifiers: []
+      - name: UpdateValue
+        kind: Method
+        accessibility: Public
+        usage: Updates the value property.
+        examples: ''
+        bestPractices: ''
+        patterns: ''
+        considerations: ''
+        relatedApis: []
+        signature: public void UpdateValue(double newValue)
+        parameters:
+        - name: newValue
+          type: double
+          isOptional: false
+          defaultValue: 
+          isParams: false
+          isRef: false
+          isOut: false
+          isIn: false
+          usage: The new value to set.
+          examples: ''
+          bestPractices: ''
+          considerations: ''
+        returnType: void
+        modifiers: []
+      - name: .ctor
+        kind: Method
+        accessibility: Public
+        usage: ''
+        examples: ''
+        bestPractices: ''
+        patterns: ''
+        considerations: ''
+        relatedApis: []
+        signature: public .ctor()
+        parameters: 
+        returnType: 
+        modifiers: []
+      - name: Name
+        kind: Property
+        accessibility: Public
+        usage: Gets or sets the name.
+        examples: ''
+        bestPractices: ''
+        patterns: ''
+        considerations: ''
+        relatedApis: []
+        signature: public string Name { get; set; }
+        parameters: 
+        returnType: string
+        modifiers: []
+      - name: Id
+        kind: Property
+        accessibility: Public
+        usage: Gets the read-only identifier.
+        examples: ''
+        bestPractices: ''
+        patterns: ''
+        considerations: ''
+        relatedApis: []
+        signature: public int Id { get; }
+        parameters: 
+        returnType: int
+        modifiers:
+        - readonly
+      - name: Value
+        kind: Property
+        accessibility: Public
+        usage: Gets or sets the value with a private setter.
+        examples: ''
+        bestPractices: ''
+        patterns: ''
+        considerations: ''
+        relatedApis: []
+        signature: public double Value { get; private set; }
+        parameters: 
+        returnType: double
+        modifiers: []
+    - name: DerivedClass
+      fullName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass
+      kind: Class
+      baseType: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.BaseClass
+      usage: A derived class for testing inheritance documentation.
+      examples: >-
+        var derived = new DerivedClass();
+                    var result = derived.VirtualMethod();
+      bestPractices: ''
+      patterns: ''
+      considerations: ''
+      relatedApis: []
+      members:
+      - name: get_DerivedProperty
+        kind: Method
+        accessibility: Public
+        usage: ''
+        examples: ''
+        bestPractices: ''
+        patterns: ''
+        considerations: ''
+        relatedApis: []
+        signature: public string get_DerivedProperty()
+        parameters: 
+        returnType: string
+        modifiers: []
+      - name: set_DerivedProperty
+        kind: Method
+        accessibility: Public
+        usage: ''
+        examples: ''
+        bestPractices: ''
+        patterns: ''
+        considerations: ''
+        relatedApis: []
+        signature: public void set_DerivedProperty(string value)
+        parameters:
+        - name: value
+          type: string
+          isOptional: false
+          defaultValue: 
+          isParams: false
+          isRef: false
+          isOut: false
+          isIn: false
+          usage: ''
+          examples: ''
+          bestPractices: ''
+          considerations: ''
+        returnType: void
+        modifiers: []
+      - name: get_BaseProperty
+        kind: Method
+        accessibility: Public
+        usage: ''
+        examples: ''
+        bestPractices: ''
+        patterns: ''
+        considerations: ''
+        relatedApis: []
+        signature: public override string get_BaseProperty()
+        parameters: 
+        returnType: string
+        modifiers:
+        - override
+      - name: set_BaseProperty
+        kind: Method
+        accessibility: Public
+        usage: ''
+        examples: ''
+        bestPractices: ''
+        patterns: ''
+        considerations: ''
+        relatedApis: []
+        signature: public override void set_BaseProperty(string value)
+        parameters:
+        - name: value
+          type: string
+          isOptional: false
+          defaultValue: 
+          isParams: false
+          isRef: false
+          isOut: false
+          isIn: false
+          usage: ''
+          examples: ''
+          bestPractices: ''
+          considerations: ''
+        returnType: void
+        modifiers:
+        - override
+      - name: VirtualMethod
+        kind: Method
+        accessibility: Public
+        usage: Overrides the virtual method from the base class.
+        examples: ''
+        bestPractices: ''
+        patterns: ''
+        considerations: ''
+        relatedApis: []
+        signature: public override string VirtualMethod()
+        parameters: 
+        returnType: string
+        modifiers:
+        - override
+      - name: DerivedMethod
+        kind: Method
+        accessibility: Public
+        usage: An additional method in the derived class.
+        examples: ''
+        bestPractices: ''
+        patterns: ''
+        considerations: ''
+        relatedApis: []
+        signature: public void DerivedMethod()
+        parameters: 
+        returnType: void
+        modifiers: []
+      - name: .ctor
+        kind: Method
+        accessibility: Public
+        usage: ''
+        examples: ''
+        bestPractices: ''
+        patterns: ''
+        considerations: ''
+        relatedApis: []
+        signature: public .ctor()
+        parameters: 
+        returnType: 
+        modifiers: []
+      - name: DerivedProperty
+        kind: Property
+        accessibility: Public
+        usage: Gets or sets the derived property.
+        examples: ''
+        bestPractices: ''
+        patterns: ''
+        considerations: ''
+        relatedApis: []
+        signature: public string DerivedProperty { get; set; }
+        parameters: 
+        returnType: string
+        modifiers: []
+      - name: BaseProperty
+        kind: Property
+        accessibility: Public
+        usage: Gets or sets the base property with overridden behavior.
+        examples: ''
+        bestPractices: ''
+        patterns: ''
+        considerations: ''
+        relatedApis: []
+        signature: public override string BaseProperty { get; set; }
+        parameters: 
+        returnType: string
+        modifiers:
+        - override
+    - name: DisposableClass
+      fullName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DisposableClass
+      kind: Class
+      baseType: System.Object
+      usage: A class that implements IDisposable for testing interface documentation.
+      examples: >-
+        using (var disposable = new DisposableClass())
+                    {
+                        disposable.UseResource();
+                    }
+      bestPractices: ''
+      patterns: ''
+      considerations: ''
+      relatedApis:
+      - System.IDisposable
+      members:
+      - name: get_ResourceName
+        kind: Method
+        accessibility: Public
+        usage: ''
+        examples: ''
+        bestPractices: ''
+        patterns: ''
+        considerations: ''
+        relatedApis: []
+        signature: public string get_ResourceName()
+        parameters: 
+        returnType: string
+        modifiers: []
+      - name: set_ResourceName
+        kind: Method
+        accessibility: Public
+        usage: ''
+        examples: ''
+        bestPractices: ''
+        patterns: ''
+        considerations: ''
+        relatedApis: []
+        signature: public void set_ResourceName(string value)
+        parameters:
+        - name: value
+          type: string
+          isOptional: false
+          defaultValue: 
+          isParams: false
+          isRef: false
+          isOut: false
+          isIn: false
+          usage: ''
+          examples: ''
+          bestPractices: ''
+          considerations: ''
+        returnType: void
+        modifiers: []
+      - name: Dispose
+        kind: Method
+        accessibility: Public
+        usage: Disposes the resources used by this instance.
+        examples: ''
+        bestPractices: ''
+        patterns: ''
+        considerations: ''
+        relatedApis: []
+        signature: public void Dispose()
+        parameters: 
+        returnType: void
+        modifiers: []
+      - name: UseResource
+        kind: Method
+        accessibility: Public
+        usage: Uses the resource.
+        examples: ''
+        bestPractices: ''
+        patterns: ''
+        considerations: ''
+        relatedApis: []
+        signature: public void UseResource()
+        parameters: 
+        returnType: void
+        modifiers: []
+      - name: .ctor
+        kind: Method
+        accessibility: Public
+        usage: ''
+        examples: ''
+        bestPractices: ''
+        patterns: ''
+        considerations: ''
+        relatedApis: []
+        signature: public .ctor()
+        parameters: 
+        returnType: 
+        modifiers: []
+      - name: ResourceName
+        kind: Property
+        accessibility: Public
+        usage: Gets or sets the resource name.
+        examples: ''
+        bestPractices: ''
+        patterns: ''
+        considerations: ''
+        relatedApis: []
+        signature: public string ResourceName { get; set; }
+        parameters: 
+        returnType: string
+        modifiers: []
+    - name: SimpleClass
+      fullName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.SimpleClass
+      kind: Class
+      baseType: System.Object
+      usage: A simple class for testing basic documentation extraction.
+      examples: >-
+        var simple = new SimpleClass();
+                    simple.DoWork();
+      bestPractices: ''
+      patterns: ''
+      considerations: ''
+      relatedApis: []
+      members:
+      - name: DoWork
+        kind: Method
+        accessibility: Public
+        usage: Performs some work.
+        examples: ''
+        bestPractices: ''
+        patterns: ''
+        considerations: ''
+        relatedApis: []
+        signature: public void DoWork()
+        parameters: 
+        returnType: void
+        modifiers: []
+      - name: .ctor
+        kind: Method
+        accessibility: Public
+        usage: ''
+        examples: ''
+        bestPractices: ''
+        patterns: ''
+        considerations: ''
+        relatedApis: []
+        signature: public .ctor()
+        parameters: 
+        returnType: 
+        modifiers: []
+  - name: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases
+    usage: ''
+    examples: ''
+    bestPractices: ''
+    patterns: ''
+    considerations: ''
+    relatedApis: []
+    types:
+    - name: ClassWithMinimalDocs
+      fullName: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithMinimalDocs
+      kind: Class
+      baseType: System.Object
+      usage: A class with minimal documentation.
+      examples: ''
+      bestPractices: ''
+      patterns: ''
+      considerations: ''
+      relatedApis: []
+      members:
+      - name: get_Name
+        kind: Method
+        accessibility: Public
+        usage: ''
+        examples: ''
+        bestPractices: ''
+        patterns: ''
+        considerations: ''
+        relatedApis: []
+        signature: public string get_Name()
+        parameters: 
+        returnType: string
+        modifiers: []
+      - name: set_Name
+        kind: Method
+        accessibility: Public
+        usage: ''
+        examples: ''
+        bestPractices: ''
+        patterns: ''
+        considerations: ''
+        relatedApis: []
+        signature: public void set_Name(string value)
+        parameters:
+        - name: value
+          type: string
+          isOptional: false
+          defaultValue: 
+          isParams: false
+          isRef: false
+          isOut: false
+          isIn: false
+          usage: ''
+          examples: ''
+          bestPractices: ''
+          considerations: ''
+        returnType: void
+        modifiers: []
+      - name: DoSomething
+        kind: Method
+        accessibility: Public
+        usage: Does something.
+        examples: ''
+        bestPractices: ''
+        patterns: ''
+        considerations: ''
+        relatedApis: []
+        signature: public void DoSomething()
+        parameters: 
+        returnType: void
+        modifiers: []
+      - name: .ctor
+        kind: Method
+        accessibility: Public
+        usage: ''
+        examples: ''
+        bestPractices: ''
+        patterns: ''
+        considerations: ''
+        relatedApis: []
+        signature: public .ctor()
+        parameters: 
+        returnType: 
+        modifiers: []
+      - name: Name
+        kind: Property
+        accessibility: Public
+        usage: Gets or sets the name.
+        examples: ''
+        bestPractices: ''
+        patterns: ''
+        considerations: ''
+        relatedApis: []
+        signature: public string Name { get; set; }
+        parameters: 
+        returnType: string
+        modifiers: []
+    - name: ClassWithNoDocs
+      fullName: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithNoDocs
+      kind: Class
+      baseType: System.Object
+      usage: ''
+      examples: ''
+      bestPractices: ''
+      patterns: ''
+      considerations: ''
+      relatedApis: []
+      members:
+      - name: get_UndocumentedProperty
+        kind: Method
+        accessibility: Public
+        usage: ''
+        examples: ''
+        bestPractices: ''
+        patterns: ''
+        considerations: ''
+        relatedApis: []
+        signature: public string get_UndocumentedProperty()
+        parameters: 
+        returnType: string
+        modifiers: []
+      - name: set_UndocumentedProperty
+        kind: Method
+        accessibility: Public
+        usage: ''
+        examples: ''
+        bestPractices: ''
+        patterns: ''
+        considerations: ''
+        relatedApis: []
+        signature: public void set_UndocumentedProperty(string value)
+        parameters:
+        - name: value
+          type: string
+          isOptional: false
+          defaultValue: 
+          isParams: false
+          isRef: false
+          isOut: false
+          isIn: false
+          usage: ''
+          examples: ''
+          bestPractices: ''
+          considerations: ''
+        returnType: void
+        modifiers: []
+      - name: UndocumentedMethod
+        kind: Method
+        accessibility: Public
+        usage: ''
+        examples: ''
+        bestPractices: ''
+        patterns: ''
+        considerations: ''
+        relatedApis: []
+        signature: public void UndocumentedMethod()
+        parameters: 
+        returnType: void
+        modifiers: []
+      - name: .ctor
+        kind: Method
+        accessibility: Public
+        usage: ''
+        examples: ''
+        bestPractices: ''
+        patterns: ''
+        considerations: ''
+        relatedApis: []
+        signature: public .ctor()
+        parameters: 
+        returnType: 
+        modifiers: []
+      - name: UndocumentedProperty
+        kind: Property
+        accessibility: Public
+        usage: ''
+        examples: ''
+        bestPractices: ''
+        patterns: ''
+        considerations: ''
+        relatedApis: []
+        signature: public string UndocumentedProperty { get; set; }
+        parameters: 
+        returnType: string
+        modifiers: []
+    - name: ClassWithSpecialCharacters
+      fullName: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithSpecialCharacters
+      kind: Class
+      baseType: System.Object
+      usage: "A class with special characters in documentation: <, >, &, \", '."
+      examples: >-
+        // Using generics: List<string>
+                    var list = new List<string>();
+                    if (x > 0 && y < 10) { }
+      bestPractices: ''
+      patterns: ''
+      considerations: ''
+      relatedApis: []
+      members:
+      - name: MethodWithSpecialChars
+        kind: Method
+        accessibility: Public
+        usage: 'A method with special characters in docs: <T> generics.'
+        examples: ''
+        bestPractices: ''
+        patterns: ''
+        considerations: ''
+        relatedApis: []
+        signature: public string MethodWithSpecialChars(string input)
+        parameters:
+        - name: input
+          type: string
+          isOptional: false
+          defaultValue: 
+          isParams: false
+          isRef: false
+          isOut: false
+          isIn: false
+          usage: An input with "quotes" and 'apostrophes'.
+          examples: ''
+          bestPractices: ''
+          considerations: ''
+        returnType: string
+        modifiers: []
+      - name: .ctor
+        kind: Method
+        accessibility: Public
+        usage: ''
+        examples: ''
+        bestPractices: ''
+        patterns: ''
+        considerations: ''
+        relatedApis: []
+        signature: public .ctor()
+        parameters: 
+        returnType: 
+        modifiers: []
+    - name: ClassWithFullDocs
+      fullName: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithFullDocs
+      kind: Class
+      baseType: System.Object
+      usage: A class with comprehensive XML documentation tags.
+      examples: >-
+        var fullDocs = new ClassWithFullDocs();
+                    fullDocs.ComplexMethod("test", 42);
+      bestPractices: ''
+      patterns: ''
+      considerations: ''
+      relatedApis: []
+      members:
+      - name: get_Value
+        kind: Method
+        accessibility: Public
+        usage: ''
+        examples: ''
+        bestPractices: ''
+        patterns: ''
+        considerations: ''
+        relatedApis: []
+        signature: public string get_Value()
+        parameters: 
+        returnType: string
+        modifiers: []
+      - name: set_Value
+        kind: Method
+        accessibility: Public
+        usage: ''
+        examples: ''
+        bestPractices: ''
+        patterns: ''
+        considerations: ''
+        relatedApis: []
+        signature: public void set_Value(string value)
+        parameters:
+        - name: value
+          type: string
+          isOptional: false
+          defaultValue: 
+          isParams: false
+          isRef: false
+          isOut: false
+          isIn: false
+          usage: ''
+          examples: ''
+          bestPractices: ''
+          considerations: ''
+        returnType: void
+        modifiers: []
+      - name: ComplexMethod
+        kind: Method
+        accessibility: Public
+        usage: A complex method with full documentation.
+        examples: >-
+          var result = ComplexMethod("hello", 5);
+                      Console.WriteLine(result);
+        bestPractices: ''
+        patterns: ''
+        considerations: ''
+        relatedApis: []
+        signature: public string ComplexMethod(string text, int number)
+        parameters:
+        - name: text
+          type: string
+          isOptional: false
+          defaultValue: 
+          isParams: false
+          isRef: false
+          isOut: false
+          isIn: false
+          usage: The text parameter to process.
+          examples: ''
+          bestPractices: ''
+          considerations: ''
+        - name: number
+          type: int
+          isOptional: false
+          defaultValue: 
+          isParams: false
+          isRef: false
+          isOut: false
+          isIn: false
+          usage: The number to use in processing.
+          examples: ''
+          bestPractices: ''
+          considerations: ''
+        returnType: string
+        modifiers: []
+      - name: .ctor
+        kind: Method
+        accessibility: Public
+        usage: ''
+        examples: ''
+        bestPractices: ''
+        patterns: ''
+        considerations: ''
+        relatedApis: []
+        signature: public .ctor()
+        parameters: 
+        returnType: 
+        modifiers: []
+      - name: Value
+        kind: Property
+        accessibility: Public
+        usage: Gets or sets the value property.
+        examples: ''
+        bestPractices: ''
+        patterns: ''
+        considerations: ''
+        relatedApis: []
+        signature: public string Value { get; set; }
+        parameters: 
+        returnType: string
+        modifiers: []
+  - name: CloudNimble.DotNetDocs.Tests.Shared.Parameters
+    usage: ''
+    examples: ''
+    bestPractices: ''
+    patterns: ''
+    considerations: ''
+    relatedApis: []
+    types:
+    - name: ParameterVariations
+      fullName: CloudNimble.DotNetDocs.Tests.Shared.Parameters.ParameterVariations
+      kind: Class
+      baseType: System.Object
+      usage: A class demonstrating various parameter types and patterns.
+      examples: ''
+      bestPractices: ''
+      patterns: ''
+      considerations: ''
+      relatedApis: []
+      members:
+      - name: MethodWithOptionalParam
+        kind: Method
+        accessibility: Public
+        usage: A method with an optional parameter.
+        examples: >-
+          var result1 = MethodWithOptionalParam("test");      // Uses default value 42
+                      var result2 = MethodWithOptionalParam("test", 100); // Uses provided value
+        bestPractices: ''
+        patterns: ''
+        considerations: ''
+        relatedApis: []
+        signature: public string MethodWithOptionalParam(string required, int optional)
+        parameters:
+        - name: required
+          type: string
+          isOptional: false
+          defaultValue: 
+          isParams: false
+          isRef: false
+          isOut: false
+          isIn: false
+          usage: The required string parameter.
+          examples: ''
+          bestPractices: ''
+          considerations: ''
+        - name: optional
+          type: int
+          isOptional: true
+          defaultValue: 42
+          isParams: false
+          isRef: false
+          isOut: false
+          isIn: false
+          usage: The optional integer parameter with a default value.
+          examples: ''
+          bestPractices: ''
+          considerations: ''
+        returnType: string
+        modifiers: []
+      - name: MethodWithParams
+        kind: Method
+        accessibility: Public
+        usage: A method with a params array.
+        examples: >-
+          var sum1 = MethodWithParams(1, 2, 3);        // Returns 6
+                      var sum2 = MethodWithParams(new[] { 1, 2 }); // Returns 3
+        bestPractices: ''
+        patterns: ''
+        considerations: ''
+        relatedApis: []
+        signature: public int MethodWithParams(int[] values)
+        parameters:
+        - name: values
+          type: int[]
+          isOptional: false
+          defaultValue: 
+          isParams: true
+          isRef: false
+          isOut: false
+          isIn: false
+          usage: Variable number of integer values.
+          examples: ''
+          bestPractices: ''
+          considerations: ''
+        returnType: int
+        modifiers: []
+      - name: MethodWithRef
+        kind: Method
+        accessibility: Public
+        usage: A method with a ref parameter.
+        examples: ''
+        bestPractices: ''
+        patterns: ''
+        considerations: ''
+        relatedApis: []
+        signature: public void MethodWithRef(int value)
+        parameters:
+        - name: value
+          type: int
+          isOptional: false
+          defaultValue: 
+          isParams: false
+          isRef: true
+          isOut: false
+          isIn: false
+          usage: The value to be modified by reference.
+          examples: ''
+          bestPractices: ''
+          considerations: ''
+        returnType: void
+        modifiers: []
+      - name: MethodWithOut
+        kind: Method
+        accessibility: Public
+        usage: A method with an out parameter.
+        examples: ''
+        bestPractices: ''
+        patterns: ''
+        considerations: ''
+        relatedApis: []
+        signature: public bool MethodWithOut(string input, int value)
+        parameters:
+        - name: input
+          type: string
+          isOptional: false
+          defaultValue: 
+          isParams: false
+          isRef: false
+          isOut: false
+          isIn: false
+          usage: The input string to parse.
+          examples: ''
+          bestPractices: ''
+          considerations: ''
+        - name: value
+          type: int
+          isOptional: false
+          defaultValue: 
+          isParams: false
+          isRef: false
+          isOut: true
+          isIn: false
+          usage: The output integer value if parsing succeeds.
+          examples: ''
+          bestPractices: ''
+          considerations: ''
+        returnType: bool
+        modifiers: []
+      - name: GenericMethod
+        kind: Method
+        accessibility: Public
+        usage: A generic method with a type parameter.
+        examples: >-
+          var result1 = GenericMethod<int>(42);
+                      var result2 = GenericMethod("hello");
+        bestPractices: ''
+        patterns: ''
+        considerations: ''
+        relatedApis: []
+        signature: public string GenericMethod<T>(T value)
+        parameters:
+        - name: value
+          type: T
+          isOptional: false
+          defaultValue: 
+          isParams: false
+          isRef: false
+          isOut: false
+          isIn: false
+          usage: The value to process.
+          examples: ''
+          bestPractices: ''
+          considerations: ''
+        returnType: string
+        modifiers: []
+      - name: GenericMethodWithMultipleTypes
+        kind: Method
+        accessibility: Public
+        usage: A method with multiple generic type parameters.
+        examples: ''
+        bestPractices: ''
+        patterns: ''
+        considerations: ''
+        relatedApis: []
+        signature: public System.Collections.Generic.KeyValuePair<TKey, TValue> GenericMethodWithMultipleTypes<TKey, TValue>(TKey key, TValue value)
+        parameters:
+        - name: key
+          type: TKey
+          isOptional: false
+          defaultValue: 
+          isParams: false
+          isRef: false
+          isOut: false
+          isIn: false
+          usage: The key.
+          examples: ''
+          bestPractices: ''
+          considerations: ''
+        - name: value
+          type: TValue
+          isOptional: false
+          defaultValue: 
+          isParams: false
+          isRef: false
+          isOut: false
+          isIn: false
+          usage: The value.
+          examples: ''
+          bestPractices: ''
+          considerations: ''
+        returnType: System.Collections.Generic.KeyValuePair<TKey, TValue>
+        modifiers: []
+      - name: MethodWithNullables
+        kind: Method
+        accessibility: Public
+        usage: A method with nullable parameters.
+        examples: ''
+        bestPractices: ''
+        patterns: ''
+        considerations: ''
+        relatedApis: []
+        signature: public string MethodWithNullables(System.Nullable<int> nullableInt, string? nullableString)
+        parameters:
+        - name: nullableInt
+          type: System.Nullable<int>
+          isOptional: false
+          defaultValue: 
+          isParams: false
+          isRef: false
+          isOut: false
+          isIn: false
+          usage: An optional nullable integer.
+          examples: ''
+          bestPractices: ''
+          considerations: ''
+        - name: nullableString
+          type: string?
+          isOptional: false
+          defaultValue: 
+          isParams: false
+          isRef: false
+          isOut: false
+          isIn: false
+          usage: An optional nullable string.
+          examples: ''
+          bestPractices: ''
+          considerations: ''
+        returnType: string
+        modifiers: []
+      - name: MethodWithConstraints
+        kind: Method
+        accessibility: Public
+        usage: A method demonstrating parameter constraints.
+        examples: ''
+        bestPractices: ''
+        patterns: ''
+        considerations: ''
+        relatedApis: []
+        signature: public string MethodWithConstraints<T>(T item)
+        parameters:
+        - name: item
+          type: T
+          isOptional: false
+          defaultValue: 
+          isParams: false
+          isRef: false
+          isOut: false
+          isIn: false
+          usage: The item to process.
+          examples: ''
+          bestPractices: ''
+          considerations: ''
+        returnType: string
+        modifiers: []
+      - name: .ctor
+        kind: Method
+        accessibility: Public
+        usage: ''
+        examples: ''
+        bestPractices: ''
+        patterns: ''
+        considerations: ''
+        relatedApis: []
+        signature: public .ctor()
+        parameters: 
+        returnType: 
+        modifiers: []

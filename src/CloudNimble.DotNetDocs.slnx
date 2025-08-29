@@ -30,6 +30,7 @@
   <Folder Name="/Solution Items/Specs/">
     <File Path="../specs/docfx-shortcomings.md" />
     <File Path="../specs/execution-plan.md" />
+    <File Path="../specs/placeholder-handling.md" />
     <File Path="../specs/semantic-kernel-integration.md" />
     <File Path="../specs/solution-structure.md" />
     <File Path="../specs/transformation-pipeline.md" />

@@ -1,0 +1,110 @@
+namespace:
+  name: CloudNimble.DotNetDocs.Tests.Shared.AccessModifiers
+  usage: ''
+  examples: ''
+  bestPractices: ''
+  patterns: ''
+  considerations: ''
+  relatedApis: []
+  types:
+  - name: MixedAccessClass
+    fullName: CloudNimble.DotNetDocs.Tests.Shared.AccessModifiers.MixedAccessClass
+    kind: Class
+    baseType: System.Object
+    usage: A class with members of various access modifiers for testing filtering.
+    examples: ''
+    bestPractices: ''
+    patterns: ''
+    considerations: ''
+    relatedApis: []
+    members:
+    - name: PublicField
+      kind: Field
+      accessibility: Public
+      usage: A public field.
+      examples: ''
+      bestPractices: ''
+      patterns: ''
+      considerations: ''
+      relatedApis: []
+      signature: public string PublicField
+      parameters: 
+      returnType: string
+      modifiers: []
+    - name: get_PublicProperty
+      kind: Method
+      accessibility: Public
+      usage: ''
+      examples: ''
+      bestPractices: ''
+      patterns: ''
+      considerations: ''
+      relatedApis: []
+      signature: public string get_PublicProperty()
+      parameters: 
+      returnType: string
+      modifiers: []
+    - name: set_PublicProperty
+      kind: Method
+      accessibility: Public
+      usage: ''
+      examples: ''
+      bestPractices: ''
+      patterns: ''
+      considerations: ''
+      relatedApis: []
+      signature: public void set_PublicProperty(string value)
+      parameters:
+      - name: value
+        type: string
+        isOptional: false
+        defaultValue: 
+        isParams: false
+        isRef: false
+        isOut: false
+        isIn: false
+        usage: ''
+        examples: ''
+        bestPractices: ''
+        considerations: ''
+      returnType: void
+      modifiers: []
+    - name: PublicMethod
+      kind: Method
+      accessibility: Public
+      usage: A public method.
+      examples: ''
+      bestPractices: ''
+      patterns: ''
+      considerations: ''
+      relatedApis: []
+      signature: public string PublicMethod()
+      parameters: 
+      returnType: string
+      modifiers: []
+    - name: .ctor
+      kind: Method
+      accessibility: Public
+      usage: ''
+      examples: ''
+      bestPractices: ''
+      patterns: ''
+      considerations: ''
+      relatedApis: []
+      signature: public .ctor()
+      parameters: 
+      returnType: 
+      modifiers: []
+    - name: PublicProperty
+      kind: Property
+      accessibility: Public
+      usage: Gets or sets the public property.
+      examples: ''
+      bestPractices: ''
+      patterns: ''
+      considerations: ''
+      relatedApis: []
+      signature: public string PublicProperty { get; set; }
+      parameters: 
+      returnType: string
+      modifiers: []

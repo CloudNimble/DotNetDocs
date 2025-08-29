@@ -1,0 +1,696 @@
+namespace:
+  name: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios
+  usage: ''
+  examples: ''
+  bestPractices: ''
+  patterns: ''
+  considerations: ''
+  relatedApis: []
+  types:
+  - name: BaseClass
+    fullName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.BaseClass
+    kind: Class
+    baseType: System.Object
+    usage: A base class for testing inheritance documentation.
+    examples: ''
+    bestPractices: ''
+    patterns: ''
+    considerations: ''
+    relatedApis: []
+    members:
+    - name: get_BaseProperty
+      kind: Method
+      accessibility: Public
+      usage: ''
+      examples: ''
+      bestPractices: ''
+      patterns: ''
+      considerations: ''
+      relatedApis: []
+      signature: public virtual string get_BaseProperty()
+      parameters: 
+      returnType: string
+      modifiers:
+      - virtual
+    - name: set_BaseProperty
+      kind: Method
+      accessibility: Public
+      usage: ''
+      examples: ''
+      bestPractices: ''
+      patterns: ''
+      considerations: ''
+      relatedApis: []
+      signature: public virtual void set_BaseProperty(string value)
+      parameters:
+      - name: value
+        type: string
+        isOptional: false
+        defaultValue: 
+        isParams: false
+        isRef: false
+        isOut: false
+        isIn: false
+        usage: ''
+        examples: ''
+        bestPractices: ''
+        considerations: ''
+      returnType: void
+      modifiers:
+      - virtual
+    - name: VirtualMethod
+      kind: Method
+      accessibility: Public
+      usage: A virtual method that can be overridden.
+      examples: ''
+      bestPractices: ''
+      patterns: ''
+      considerations: ''
+      relatedApis: []
+      signature: public virtual string VirtualMethod()
+      parameters: 
+      returnType: string
+      modifiers:
+      - virtual
+    - name: BaseMethod
+      kind: Method
+      accessibility: Public
+      usage: A method in the base class.
+      examples: ''
+      bestPractices: ''
+      patterns: ''
+      considerations: ''
+      relatedApis: []
+      signature: public void BaseMethod()
+      parameters: 
+      returnType: void
+      modifiers: []
+    - name: .ctor
+      kind: Method
+      accessibility: Public
+      usage: ''
+      examples: ''
+      bestPractices: ''
+      patterns: ''
+      considerations: ''
+      relatedApis: []
+      signature: public .ctor()
+      parameters: 
+      returnType: 
+      modifiers: []
+    - name: BaseProperty
+      kind: Property
+      accessibility: Public
+      usage: Gets or sets the base property.
+      examples: ''
+      bestPractices: ''
+      patterns: ''
+      considerations: ''
+      relatedApis: []
+      signature: public virtual string BaseProperty { get; set; }
+      parameters: 
+      returnType: string
+      modifiers:
+      - virtual
+  - name: ClassWithMethods
+    fullName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ClassWithMethods
+    kind: Class
+    baseType: System.Object
+    usage: A class demonstrating various method documentation scenarios.
+    examples: >-
+      var obj = new ClassWithMethods();
+                  var result = obj.Calculate(5, 10);
+    bestPractices: ''
+    patterns: ''
+    considerations: ''
+    relatedApis: []
+    members:
+    - name: Calculate
+      kind: Method
+      accessibility: Public
+      usage: Calculates the sum of two numbers.
+      examples: var result = Calculate(3, 4); // Returns 7
+      bestPractices: ''
+      patterns: ''
+      considerations: ''
+      relatedApis: []
+      signature: public int Calculate(int a, int b)
+      parameters:
+      - name: a
+        type: int
+        isOptional: false
+        defaultValue: 
+        isParams: false
+        isRef: false
+        isOut: false
+        isIn: false
+        usage: The first number.
+        examples: ''
+        bestPractices: ''
+        considerations: ''
+      - name: b
+        type: int
+        isOptional: false
+        defaultValue: 
+        isParams: false
+        isRef: false
+        isOut: false
+        isIn: false
+        usage: The second number.
+        examples: ''
+        bestPractices: ''
+        considerations: ''
+      returnType: int
+      modifiers: []
+    - name: Process
+      kind: Method
+      accessibility: Public
+      usage: Processes the input string.
+      examples: ''
+      bestPractices: ''
+      patterns: ''
+      considerations: ''
+      relatedApis: []
+      signature: public string Process(string input)
+      parameters:
+      - name: input
+        type: string
+        isOptional: false
+        defaultValue: 
+        isParams: false
+        isRef: false
+        isOut: false
+        isIn: false
+        usage: The string to process.
+        examples: ''
+        bestPractices: ''
+        considerations: ''
+      returnType: string
+      modifiers: []
+    - name: PerformAction
+      kind: Method
+      accessibility: Public
+      usage: A void method that performs an action.
+      examples: ''
+      bestPractices: ''
+      patterns: ''
+      considerations: ''
+      relatedApis: []
+      signature: public void PerformAction()
+      parameters: 
+      returnType: void
+      modifiers: []
+    - name: GetConditionalValue
+      kind: Method
+      accessibility: Public
+      usage: Gets a value based on a condition.
+      examples: ''
+      bestPractices: ''
+      patterns: ''
+      considerations: ''
+      relatedApis: []
+      signature: public string GetConditionalValue(bool condition)
+      parameters:
+      - name: condition
+        type: bool
+        isOptional: false
+        defaultValue: 
+        isParams: false
+        isRef: false
+        isOut: false
+        isIn: false
+        usage: The condition to evaluate.
+        examples: ''
+        bestPractices: ''
+        considerations: ''
+      returnType: string
+      modifiers: []
+    - name: .ctor
+      kind: Method
+      accessibility: Public
+      usage: ''
+      examples: ''
+      bestPractices: ''
+      patterns: ''
+      considerations: ''
+      relatedApis: []
+      signature: public .ctor()
+      parameters: 
+      returnType: 
+      modifiers: []
+  - name: ClassWithProperties
+    fullName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ClassWithProperties
+    kind: Class
+    baseType: System.Object
+    usage: A class demonstrating various property documentation scenarios.
+    examples: ''
+    bestPractices: ''
+    patterns: ''
+    considerations: ''
+    relatedApis: []
+    members:
+    - name: get_Name
+      kind: Method
+      accessibility: Public
+      usage: ''
+      examples: ''
+      bestPractices: ''
+      patterns: ''
+      considerations: ''
+      relatedApis: []
+      signature: public string get_Name()
+      parameters: 
+      returnType: string
+      modifiers: []
+    - name: set_Name
+      kind: Method
+      accessibility: Public
+      usage: ''
+      examples: ''
+      bestPractices: ''
+      patterns: ''
+      considerations: ''
+      relatedApis: []
+      signature: public void set_Name(string value)
+      parameters:
+      - name: value
+        type: string
+        isOptional: false
+        defaultValue: 
+        isParams: false
+        isRef: false
+        isOut: false
+        isIn: false
+        usage: ''
+        examples: ''
+        bestPractices: ''
+        considerations: ''
+      returnType: void
+      modifiers: []
+    - name: get_Id
+      kind: Method
+      accessibility: Public
+      usage: ''
+      examples: ''
+      bestPractices: ''
+      patterns: ''
+      considerations: ''
+      relatedApis: []
+      signature: public int get_Id()
+      parameters: 
+      returnType: int
+      modifiers: []
+    - name: get_Value
+      kind: Method
+      accessibility: Public
+      usage: ''
+      examples: ''
+      bestPractices: ''
+      patterns: ''
+      considerations: ''
+      relatedApis: []
+      signature: public double get_Value()
+      parameters: 
+      returnType: double
+      modifiers: []
+    - name: UpdateValue
+      kind: Method
+      accessibility: Public
+      usage: Updates the value property.
+      examples: ''
+      bestPractices: ''
+      patterns: ''
+      considerations: ''
+      relatedApis: []
+      signature: public void UpdateValue(double newValue)
+      parameters:
+      - name: newValue
+        type: double
+        isOptional: false
+        defaultValue: 
+        isParams: false
+        isRef: false
+        isOut: false
+        isIn: false
+        usage: The new value to set.
+        examples: ''
+        bestPractices: ''
+        considerations: ''
+      returnType: void
+      modifiers: []
+    - name: .ctor
+      kind: Method
+      accessibility: Public
+      usage: ''
+      examples: ''
+      bestPractices: ''
+      patterns: ''
+      considerations: ''
+      relatedApis: []
+      signature: public .ctor()
+      parameters: 
+      returnType: 
+      modifiers: []
+    - name: Name
+      kind: Property
+      accessibility: Public
+      usage: Gets or sets the name.
+      examples: ''
+      bestPractices: ''
+      patterns: ''
+      considerations: ''
+      relatedApis: []
+      signature: public string Name { get; set; }
+      parameters: 
+      returnType: string
+      modifiers: []
+    - name: Id
+      kind: Property
+      accessibility: Public
+      usage: Gets the read-only identifier.
+      examples: ''
+      bestPractices: ''
+      patterns: ''
+      considerations: ''
+      relatedApis: []
+      signature: public int Id { get; }
+      parameters: 
+      returnType: int
+      modifiers:
+      - readonly
+    - name: Value
+      kind: Property
+      accessibility: Public
+      usage: Gets or sets the value with a private setter.
+      examples: ''
+      bestPractices: ''
+      patterns: ''
+      considerations: ''
+      relatedApis: []
+      signature: public double Value { get; private set; }
+      parameters: 
+      returnType: double
+      modifiers: []
+  - name: DerivedClass
+    fullName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass
+    kind: Class
+    baseType: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.BaseClass
+    usage: A derived class for testing inheritance documentation.
+    examples: >-
+      var derived = new DerivedClass();
+                  var result = derived.VirtualMethod();
+    bestPractices: ''
+    patterns: ''
+    considerations: ''
+    relatedApis: []
+    members:
+    - name: get_DerivedProperty
+      kind: Method
+      accessibility: Public
+      usage: ''
+      examples: ''
+      bestPractices: ''
+      patterns: ''
+      considerations: ''
+      relatedApis: []
+      signature: public string get_DerivedProperty()
+      parameters: 
+      returnType: string
+      modifiers: []
+    - name: set_DerivedProperty
+      kind: Method
+      accessibility: Public
+      usage: ''
+      examples: ''
+      bestPractices: ''
+      patterns: ''
+      considerations: ''
+      relatedApis: []
+      signature: public void set_DerivedProperty(string value)
+      parameters:
+      - name: value
+        type: string
+        isOptional: false
+        defaultValue: 
+        isParams: false
+        isRef: false
+        isOut: false
+        isIn: false
+        usage: ''
+        examples: ''
+        bestPractices: ''
+        considerations: ''
+      returnType: void
+      modifiers: []
+    - name: get_BaseProperty
+      kind: Method
+      accessibility: Public
+      usage: ''
+      examples: ''
+      bestPractices: ''
+      patterns: ''
+      considerations: ''
+      relatedApis: []
+      signature: public override string get_BaseProperty()
+      parameters: 
+      returnType: string
+      modifiers:
+      - override
+    - name: set_BaseProperty
+      kind: Method
+      accessibility: Public
+      usage: ''
+      examples: ''
+      bestPractices: ''
+      patterns: ''
+      considerations: ''
+      relatedApis: []
+      signature: public override void set_BaseProperty(string value)
+      parameters:
+      - name: value
+        type: string
+        isOptional: false
+        defaultValue: 
+        isParams: false
+        isRef: false
+        isOut: false
+        isIn: false
+        usage: ''
+        examples: ''
+        bestPractices: ''
+        considerations: ''
+      returnType: void
+      modifiers:
+      - override
+    - name: VirtualMethod
+      kind: Method
+      accessibility: Public
+      usage: Overrides the virtual method from the base class.
+      examples: ''
+      bestPractices: ''
+      patterns: ''
+      considerations: ''
+      relatedApis: []
+      signature: public override string VirtualMethod()
+      parameters: 
+      returnType: string
+      modifiers:
+      - override
+    - name: DerivedMethod
+      kind: Method
+      accessibility: Public
+      usage: An additional method in the derived class.
+      examples: ''
+      bestPractices: ''
+      patterns: ''
+      considerations: ''
+      relatedApis: []
+      signature: public void DerivedMethod()
+      parameters: 
+      returnType: void
+      modifiers: []
+    - name: .ctor
+      kind: Method
+      accessibility: Public
+      usage: ''
+      examples: ''
+      bestPractices: ''
+      patterns: ''
+      considerations: ''
+      relatedApis: []
+      signature: public .ctor()
+      parameters: 
+      returnType: 
+      modifiers: []
+    - name: DerivedProperty
+      kind: Property
+      accessibility: Public
+      usage: Gets or sets the derived property.
+      examples: ''
+      bestPractices: ''
+      patterns: ''
+      considerations: ''
+      relatedApis: []
+      signature: public string DerivedProperty { get; set; }
+      parameters: 
+      returnType: string
+      modifiers: []
+    - name: BaseProperty
+      kind: Property
+      accessibility: Public
+      usage: Gets or sets the base property with overridden behavior.
+      examples: ''
+      bestPractices: ''
+      patterns: ''
+      considerations: ''
+      relatedApis: []
+      signature: public override string BaseProperty { get; set; }
+      parameters: 
+      returnType: string
+      modifiers:
+      - override
+  - name: DisposableClass
+    fullName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DisposableClass
+    kind: Class
+    baseType: System.Object
+    usage: A class that implements IDisposable for testing interface documentation.
+    examples: >-
+      using (var disposable = new DisposableClass())
+                  {
+                      disposable.UseResource();
+                  }
+    bestPractices: ''
+    patterns: ''
+    considerations: ''
+    relatedApis:
+    - System.IDisposable
+    members:
+    - name: get_ResourceName
+      kind: Method
+      accessibility: Public
+      usage: ''
+      examples: ''
+      bestPractices: ''
+      patterns: ''
+      considerations: ''
+      relatedApis: []
+      signature: public string get_ResourceName()
+      parameters: 
+      returnType: string
+      modifiers: []
+    - name: set_ResourceName
+      kind: Method
+      accessibility: Public
+      usage: ''
+      examples: ''
+      bestPractices: ''
+      patterns: ''
+      considerations: ''
+      relatedApis: []
+      signature: public void set_ResourceName(string value)
+      parameters:
+      - name: value
+        type: string
+        isOptional: false
+        defaultValue: 
+        isParams: false
+        isRef: false
+        isOut: false
+        isIn: false
+        usage: ''
+        examples: ''
+        bestPractices: ''
+        considerations: ''
+      returnType: void
+      modifiers: []
+    - name: Dispose
+      kind: Method
+      accessibility: Public
+      usage: Disposes the resources used by this instance.
+      examples: ''
+      bestPractices: ''
+      patterns: ''
+      considerations: ''
+      relatedApis: []
+      signature: public void Dispose()
+      parameters: 
+      returnType: void
+      modifiers: []
+    - name: UseResource
+      kind: Method
+      accessibility: Public
+      usage: Uses the resource.
+      examples: ''
+      bestPractices: ''
+      patterns: ''
+      considerations: ''
+      relatedApis: []
+      signature: public void UseResource()
+      parameters: 
+      returnType: void
+      modifiers: []
+    - name: .ctor
+      kind: Method
+      accessibility: Public
+      usage: ''
+      examples: ''
+      bestPractices: ''
+      patterns: ''
+      considerations: ''
+      relatedApis: []
+      signature: public .ctor()
+      parameters: 
+      returnType: 
+      modifiers: []
+    - name: ResourceName
+      kind: Property
+      accessibility: Public
+      usage: Gets or sets the resource name.
+      examples: ''
+      bestPractices: ''
+      patterns: ''
+      considerations: ''
+      relatedApis: []
+      signature: public string ResourceName { get; set; }
+      parameters: 
+      returnType: string
+      modifiers: []
+  - name: SimpleClass
+    fullName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.SimpleClass
+    kind: Class
+    baseType: System.Object
+    usage: A simple class for testing basic documentation extraction.
+    examples: >-
+      var simple = new SimpleClass();
+                  simple.DoWork();
+    bestPractices: ''
+    patterns: ''
+    considerations: ''
+    relatedApis: []
+    members:
+    - name: DoWork
+      kind: Method
+      accessibility: Public
+      usage: Performs some work.
+      examples: ''
+      bestPractices: ''
+      patterns: ''
+      considerations: ''
+      relatedApis: []
+      signature: public void DoWork()
+      parameters: 
+      returnType: void
+      modifiers: []
+    - name: .ctor
+      kind: Method
+      accessibility: Public
+      usage: ''
+      examples: ''
+      bestPractices: ''
+      patterns: ''
+      considerations: ''
+      relatedApis: []
+      signature: public .ctor()
+      parameters: 
+      returnType: 
+      modifiers: []

@@ -1,0 +1,20 @@
+namespace:
+  name: <global namespace>
+  usage: ''
+  examples: ''
+  bestPractices: ''
+  patterns: ''
+  considerations: ''
+  relatedApis: []
+  types:
+  - name: <Module>
+    fullName: <Module>
+    kind: Class
+    baseType: 
+    usage: ''
+    examples: ''
+    bestPractices: ''
+    patterns: ''
+    considerations: ''
+    relatedApis: []
+    members: []
