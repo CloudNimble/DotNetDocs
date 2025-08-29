@@ -2,9 +2,10 @@
 
 [![NuGet](https://img.shields.io/nuget/v/Mintlify.Core.svg)](https://www.nuget.org/packages/Mintlify.Core/)
 [![Downloads](https://img.shields.io/nuget/dt/Mintlify.Core.svg)](https://www.nuget.org/packages/Mintlify.Core/)
-[![License](https://img.shields.io/github/license/cloudnimble/easyaf.svg)](https://github.com/CloudNimble/EasyAF/blob/master/LICENSE)
+[![License](https://img.shields.io/github/license/cloudnimble/dotnetdocs.svg)](https://github.com/CloudNimble/DotNetDocs/blob/master/LICENSE)
 
-A comprehensive .NET library for working with Mintlify documentation configuration files (`docs.json`). This package provides robust loading, validation, manipulation, and generation capabilities for Mintlify documentation projects.
+Mintlify.Core is a comprehensive .NET library for working with Mintlify documentation configuration files (`docs.json`). This package provides robust loading, 
+validation, manipulation, and generation capabilities for Mintlify documentation projects.
 
 ## Features
 

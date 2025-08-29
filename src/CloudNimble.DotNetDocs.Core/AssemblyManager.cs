@@ -150,7 +150,7 @@ namespace CloudNimble.DotNetDocs.Core
         /// </summary>
         /// <param name="symbol">The symbol to extract documentation from.</param>
         /// <returns>The parsed XML document, or null if no documentation exists.</returns>
-        private XDocument? ExtractDocumentationXml(ISymbol symbol)
+        internal XDocument? ExtractDocumentationXml(ISymbol symbol)
         {
             var xml = symbol.GetDocumentationCommentXml() ?? string.Empty;
             return string.IsNullOrWhiteSpace(xml) ? null : XDocument.Parse(xml);
@@ -161,7 +161,7 @@ namespace CloudNimble.DotNetDocs.Core
         /// </summary>
         /// <param name="doc">The parsed XML documentation.</param>
         /// <returns>The summary text, or empty string if not found.</returns>
-        private string ExtractSummary(XDocument? doc) =>
+        internal string ExtractSummary(XDocument? doc) =>
             doc?.Descendants("summary").FirstOrDefault()?.Value.Trim() ?? string.Empty;
 
         /// <summary>
@@ -169,7 +169,7 @@ namespace CloudNimble.DotNetDocs.Core
         /// </summary>
         /// <param name="doc">The parsed XML documentation.</param>
         /// <returns>The examples text, or empty string if not found.</returns>
-        private string ExtractExamples(XDocument? doc) =>
+        internal string ExtractExamples(XDocument? doc) =>
             doc?.Descendants("example").FirstOrDefault()?.Value.Trim() ?? string.Empty;
 
         /// <summary>
@@ -177,7 +177,7 @@ namespace CloudNimble.DotNetDocs.Core
         /// </summary>
         /// <param name="doc">The parsed XML documentation.</param>
         /// <returns>The remarks text, or empty string if not found.</returns>
-        private string ExtractRemarks(XDocument? doc) =>
+        internal string ExtractRemarks(XDocument? doc) =>
             doc?.Descendants("remarks").FirstOrDefault()?.Value.Trim() ?? string.Empty;
 
         /// <summary>
@@ -186,7 +186,7 @@ namespace CloudNimble.DotNetDocs.Core
         /// <param name="doc">The parsed XML documentation.</param>
         /// <param name="parameterName">The name of the parameter.</param>
         /// <returns>The parameter documentation, or empty string if not found.</returns>
-        private string ExtractParameterDocumentation(XDocument? doc, string parameterName) =>
+        internal string ExtractParameterDocumentation(XDocument? doc, string parameterName) =>
             doc?.Descendants("param")
                 .FirstOrDefault(e => e.Attribute("name")?.Value == parameterName)
                 ?.Value.Trim() ?? string.Empty;
@@ -198,7 +198,7 @@ namespace CloudNimble.DotNetDocs.Core
         /// <param name="conceptualPath">Optional path to conceptual documentation files.</param>
         /// <param name="includedMembers">List of member accessibilities to include.</param>
         /// <returns>The <see cref="DocAssembly"/> model.</returns>
-        private DocAssembly BuildModel(Compilation compilation, string? conceptualPath, List<Accessibility> includedMembers)
+        internal DocAssembly BuildModel(Compilation compilation, string? conceptualPath, List<Accessibility> includedMembers)
         {
             var targetRef = compilation.References.OfType<PortableExecutableReference>().FirstOrDefault(r => string.Equals(r.FilePath, AssemblyPath, StringComparison.OrdinalIgnoreCase))
                 ?? throw new InvalidOperationException("Target assembly reference not found in compilation.");
@@ -230,7 +230,7 @@ namespace CloudNimble.DotNetDocs.Core
         /// <param name="typeMap">Cache of resolved types for linking.</param>
         /// <param name="includedMembers">List of member accessibilities to include.</param>
         /// <returns>The <see cref="DocType"/> instance.</returns>
-        private DocType BuildDocType(ITypeSymbol type, Compilation compilation, Dictionary<string, DocType> typeMap, List<Accessibility> includedMembers)
+        internal DocType BuildDocType(ITypeSymbol type, Compilation compilation, Dictionary<string, DocType> typeMap, List<Accessibility> includedMembers)
         {
             var doc = ExtractDocumentationXml(type);
 
@@ -238,7 +238,7 @@ namespace CloudNimble.DotNetDocs.Core
             {
                 Usage = ExtractSummary(doc),
                 Examples = ExtractExamples(doc),
-                BestPractices = ExtractRemarks(doc)
+                Remarks = ExtractRemarks(doc)
             };
             docType.IncludedMembers = includedMembers;
 
@@ -267,20 +267,24 @@ namespace CloudNimble.DotNetDocs.Core
                      {
                          Usage = ExtractSummary(mDoc),
                          Examples = ExtractExamples(mDoc),
-                         BestPractices = ExtractRemarks(mDoc),
+                         Remarks = ExtractRemarks(mDoc),
                          IncludedMembers = docType.IncludedMembers,
                          // Parameters
                          Parameters = method.Parameters.Select(p =>
                              {
-                                 var paramDoc = new DocParameter(p);
-                                 paramDoc.Usage = ExtractParameterDocumentation(mDoc, p.Name);
+                                 var paramDoc = new DocParameter(p)
+                                 {
+                                     Usage = ExtractParameterDocumentation(mDoc, p.Name)
+                                 };
 
                                  // Parameter type
                                  var pTypeKey = p.Type.ToDisplayString();
                                  if (!typeMap.TryGetValue(pTypeKey, out var pTypeDoc))
                                  {
-                                     pTypeDoc = new DocType(p.Type);
-                                     pTypeDoc.IncludedMembers = docType.IncludedMembers;
+                                     pTypeDoc = new DocType(p.Type)
+                                     {
+                                         IncludedMembers = docType.IncludedMembers
+                                     };
                                      typeMap[pTypeKey] = pTypeDoc;
                                  }
                                  paramDoc.ParameterType = pTypeDoc;
@@ -295,9 +299,11 @@ namespace CloudNimble.DotNetDocs.Core
                          var rKey = method.ReturnType.ToDisplayString();
                          if (!typeMap.TryGetValue(rKey, out var rDoc))
                          {
-                             rDoc = new DocType(method.ReturnType);
-                             rDoc.IncludedMembers = docType.IncludedMembers;
-                             typeMap[rKey] = rDoc;
+                            rDoc = new DocType(method.ReturnType)
+                            {
+                                IncludedMembers = docType.IncludedMembers
+                            };
+                            typeMap[rKey] = rDoc;
                          }
                          docMember.ReturnType = rDoc;
                      }
@@ -310,11 +316,34 @@ namespace CloudNimble.DotNetDocs.Core
                      {
                          Usage = ExtractSummary(pDoc),
                          Examples = ExtractExamples(pDoc),
-                         BestPractices = ExtractRemarks(pDoc),
+                         Remarks = ExtractRemarks(pDoc),
                          IncludedMembers = docType.IncludedMembers
                      };
                  }
-                // Add handling for other member kinds (fields, events) if needed
+                 else if (member is IFieldSymbol field)
+                 {
+                     var fDoc = ExtractDocumentationXml(field);
+
+                     docMember = new DocMember(field)
+                     {
+                         Usage = ExtractSummary(fDoc),
+                         Examples = ExtractExamples(fDoc),
+                         Remarks = ExtractRemarks(fDoc),
+                         IncludedMembers = docType.IncludedMembers
+                     };
+                 }
+                 else if (member is IEventSymbol eventSymbol)
+                 {
+                     var eDoc = ExtractDocumentationXml(eventSymbol);
+
+                     docMember = new DocMember(eventSymbol)
+                     {
+                         Usage = ExtractSummary(eDoc),
+                         Examples = ExtractExamples(eDoc),
+                         Remarks = ExtractRemarks(eDoc),
+                         IncludedMembers = docType.IncludedMembers
+                     };
+                 }
 
                 if (docMember is not null)
                 {
@@ -334,7 +363,7 @@ namespace CloudNimble.DotNetDocs.Core
         /// Uses a bridge compilation technique with IgnoresAccessChecksTo attribute to enable
         /// visibility of internal members for documentation purposes.
         /// </remarks>
-        private async Task<Compilation> CreateCompilationAsync(IEnumerable<string> references)
+        internal async Task<Compilation> CreateCompilationAsync(IEnumerable<string> references)
         {
             // Generate the IgnoresAccessChecksTo attribute dynamically
             // This is a compiler trick to allow seeing internal members during compilation
@@ -413,7 +442,7 @@ namespace CloudNimble.DotNetDocs.Core
         /// <param name="compilation">The Roslyn compilation.</param>
         /// <param name="typeMap">Cache for type resolutions.</param>
         /// <param name="includedMembers">List of member accessibilities to include.</param>
-        private void ProcessNamespace(INamespaceSymbol namespaceSymbol, DocAssembly docAssembly, Compilation compilation, Dictionary<string, DocType> typeMap, List<Accessibility> includedMembers)
+        internal void ProcessNamespace(INamespaceSymbol namespaceSymbol, DocAssembly docAssembly, Compilation compilation, Dictionary<string, DocType> typeMap, List<Accessibility> includedMembers)
         {
             // Process types in the global namespace
             if (namespaceSymbol.IsGlobalNamespace)
@@ -438,33 +467,47 @@ namespace CloudNimble.DotNetDocs.Core
                 }
             }
 
-            // Process nested namespaces
+            // Process nested namespaces recursively, collecting all namespaces with types
+            ProcessNamespaceRecursive(namespaceSymbol, docAssembly, compilation, typeMap, includedMembers);
+        }
+
+        /// <summary>
+        /// Recursively processes namespaces, only adding those that contain types.
+        /// </summary>
+        /// <param name="namespaceSymbol">The namespace symbol to process.</param>
+        /// <param name="docAssembly">The documentation assembly being built.</param>
+        /// <param name="compilation">The Roslyn compilation.</param>
+        /// <param name="typeMap">Cache for type resolutions.</param>
+        /// <param name="includedMembers">List of member accessibilities to include.</param>
+        internal void ProcessNamespaceRecursive(INamespaceSymbol namespaceSymbol, DocAssembly docAssembly, Compilation compilation, Dictionary<string, DocType> typeMap, List<Accessibility> includedMembers)
+        {
             foreach (var ns in namespaceSymbol.GetNamespaceMembers())
             {
-                // Skip empty namespaces (check for types or nested namespaces)
-                if (!ns.GetTypeMembers().Any() && !ns.GetNamespaceMembers().Any())
+                // Check if this namespace has any types with the required accessibility
+                var typesInNamespace = ns.GetTypeMembers().Where(t => includedMembers.Contains(t.DeclaredAccessibility)).ToList();
+                
+                if (typesInNamespace.Any())
                 {
-                    continue;
+                    // This namespace has types, so add it to the assembly
+                    var nsDoc = ExtractDocumentationXml(ns);
+
+                    var docNs = new DocNamespace(ns)
+                    {
+                        Usage = ExtractSummary(nsDoc),
+                        IncludedMembers = includedMembers
+                    };
+                    docAssembly.Namespaces.Add(docNs);
+
+                    // Process types in this namespace
+                    foreach (var type in typesInNamespace)
+                    {
+                        var docType = BuildDocType(type, compilation, typeMap, includedMembers);
+                        docNs.Types.Add(docType);
+                    }
                 }
 
-                var nsDoc = ExtractDocumentationXml(ns);
-
-                var docNs = new DocNamespace(ns)
-                {
-                    Usage = ExtractSummary(nsDoc),
-                    IncludedMembers = includedMembers
-                };
-                docAssembly.Namespaces.Add(docNs);
-
-                // Process types in this namespace
-                foreach (var type in ns.GetTypeMembers().Where(t => includedMembers.Contains(t.DeclaredAccessibility)))
-                {
-                    var docType = BuildDocType(type, compilation, typeMap, includedMembers);
-                    docNs.Types.Add(docType);
-                }
-
-                // Recurse into nested namespaces
-                ProcessNamespace(ns, docAssembly, compilation, typeMap, includedMembers);
+                // Recurse into nested namespaces regardless of whether this one had types
+                ProcessNamespaceRecursive(ns, docAssembly, compilation, typeMap, includedMembers);
             }
         }
 

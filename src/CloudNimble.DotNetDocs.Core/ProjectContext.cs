@@ -61,6 +61,15 @@ namespace CloudNimble.DotNetDocs.Core
         public List<string> References { get; init; } = [];
 
         /// <summary>
+        /// Gets or sets whether to show placeholder content in the documentation.
+        /// </summary>
+        /// <value>
+        /// When true (default), placeholder content is included. When false, files containing the
+        /// TODO marker comment are skipped during loading.
+        /// </value>
+        public bool ShowPlaceholders { get; init; } = true;
+
+        /// <summary>
         /// Gets or sets the list of member accessibilities to include in documentation.
         /// </summary>
         /// <value>

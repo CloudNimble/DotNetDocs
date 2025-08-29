@@ -1,6 +1,7 @@
 {
   "permissions": {
     "allow": [
+      "Bash(dir:*)",
       "Bash(dotnet:*)",
       "Bash(grep:*)",
       "Bash(find:*)",
@@ -8,9 +9,14 @@
       "mcp__github__get_workflow_run",
       "mcp__github__get_job_logs",
       "mcp__playwright__browser_navigate",
-      "mcp__github__list_workflow_runs"
+      "mcp__github__list_workflow_runs",
+      "WebSearch",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:stackoverflow.com)"
     ],
     "deny": [],
-    "ask": []
+    "ask": [],
+    "additionalDirectories": [
+    ]
   }
 }

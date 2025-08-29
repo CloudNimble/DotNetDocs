@@ -84,6 +84,13 @@ namespace CloudNimble.DotNetDocs.Core
         public List<string> RelatedApis { get; set; } = [];
 
         /// <summary>
+        /// Gets or sets the remarks from XML documentation.
+        /// </summary>
+        /// <value>Content from the XML documentation's remarks element.</value>
+        [NotNull]
+        public string Remarks { get; set; } = string.Empty;
+
+        /// <summary>
         /// Gets or sets the usage documentation content.
         /// </summary>
         /// <value>Markdown content explaining how to use the API element.</value>

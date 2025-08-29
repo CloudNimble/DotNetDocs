@@ -23,7 +23,7 @@ namespace CloudNimble.DotNetDocs.Core
         /// Gets the name of the namespace.
         /// </summary>
         /// <value>The namespace name.</value>
-        public string Name => Symbol.Name;
+        public string Name => Symbol.IsGlobalNamespace ? string.Empty : Symbol.ToDisplayString();
 
         /// <summary>
         /// Gets the Roslyn symbol for the namespace.

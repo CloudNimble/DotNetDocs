@@ -10,6 +10,10 @@
     </ItemGroup>
 
     <ItemGroup>
+        <AssemblyAttribute Include="CloudNimble.Breakdance.Assemblies.BreakdanceTestAssembly" />
+    </ItemGroup>
+
+    <ItemGroup>
         <None Update="Baselines\**\*.json">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
