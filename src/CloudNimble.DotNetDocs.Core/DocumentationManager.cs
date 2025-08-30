@@ -68,10 +68,11 @@ namespace CloudNimble.DotNetDocs.Core
         /// <param name="assemblyPath">The path to the assembly file.</param>
         /// <param name="xmlPath">The path to the XML documentation file.</param>
         /// <param name="outputPath">The base output path for conceptual files.</param>
+        /// <param name="context">The project context containing configuration. If null, a default context is created.</param>
         /// <returns>A task representing the asynchronous operation.</returns>
-        public async Task CreateConceptualFilesAsync(string assemblyPath, string xmlPath, string outputPath)
+        public async Task CreateConceptualFilesAsync(string assemblyPath, string xmlPath, string outputPath, ProjectContext? context = null)
         {
-            await CreateConceptualFilesAsync([(assemblyPath, xmlPath)], outputPath);
+            await CreateConceptualFilesAsync([(assemblyPath, xmlPath)], outputPath, context);
         }
 
         /// <summary>
@@ -79,15 +80,18 @@ namespace CloudNimble.DotNetDocs.Core
         /// </summary>
         /// <param name="assemblies">The collection of assembly and XML path pairs.</param>
         /// <param name="outputPath">The base output path for conceptual files.</param>
+        /// <param name="context">The project context containing configuration. If null, a default context is created.</param>
         /// <returns>A task representing the asynchronous operation.</returns>
-        public async Task CreateConceptualFilesAsync(IEnumerable<(string assemblyPath, string xmlPath)> assemblies, string outputPath)
+        public async Task CreateConceptualFilesAsync(IEnumerable<(string assemblyPath, string xmlPath)> assemblies, string outputPath, ProjectContext? context = null)
         {
+            context ??= new ProjectContext();
+            
             var tasks = assemblies.Select(async pair =>
             {
                 var manager = GetOrCreateAssemblyManager(pair.assemblyPath, pair.xmlPath);
                 var model = await manager.DocumentAsync(null);
 
-                await GenerateConceptualFilesForAssembly(model, outputPath);
+                await GenerateConceptualFilesForAssembly(model, outputPath, context);
             });
 
             await Task.WhenAll(tasks);
@@ -435,16 +439,18 @@ namespace CloudNimble.DotNetDocs.Core
         /// </summary>
         /// <param name="assembly">The assembly to generate conceptual files for.</param>
         /// <param name="outputPath">The base output path for conceptual files.</param>
-        internal async Task GenerateConceptualFilesForAssembly(DocAssembly assembly, string outputPath)
+        /// <param name="context">The project context containing configuration.</param>
+        internal async Task GenerateConceptualFilesForAssembly(DocAssembly assembly, string outputPath, ProjectContext context)
         {
             foreach (var ns in assembly.Namespaces)
             {
                 foreach (var type in ns.Types)
                 {
-                    // Build namespace path like /conceptual/System/Text/Json/JsonSerializer/
-                    var namespacePath = ns.Symbol.IsGlobalNamespace
-                        ? string.Empty
-                        : ns.Symbol.ToDisplayString().Replace('.', Path.DirectorySeparatorChar);
+                    // Use ProjectContext to get the namespace folder path
+                    var namespaceName = context.GetSafeNamespaceName(ns.Symbol);
+                    var namespacePath = namespaceName == "global" 
+                        ? "global"
+                        : namespaceName.Replace('.', Path.DirectorySeparatorChar);
                     var typeDir = Path.Combine(outputPath, namespacePath, type.Symbol.Name);
 
                     // Create directory if it doesn't exist

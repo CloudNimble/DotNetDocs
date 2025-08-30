@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CloudNimble.Breakdance.Assemblies;
 using CloudNimble.DotNetDocs.Core;
+using CloudNimble.DotNetDocs.Core.Configuration;
 using CloudNimble.DotNetDocs.Core.Renderers;
 using CloudNimble.DotNetDocs.Tests.Shared;
 using CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios;
@@ -66,7 +67,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             await _renderer.RenderAsync(model, _testOutputPath, context);
 
             // Assert - Compare against baseline
-            var baselinePath = Path.Combine(projectPath, "Baselines", "MarkdownRenderer", "index.md");
+            var baselinePath = Path.Combine(projectPath, "Baselines", "MarkdownRenderer", "FileMode", "index.md");
             
             if (File.Exists(baselinePath))
             {
@@ -355,7 +356,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core
                 await renderer.RenderAsync(model, tempOutputPath, context);
 
                 // Create baselines directory
-                var baselinesDir = Path.Combine(projectPath, "Baselines", "MarkdownRenderer");
+                var baselinesDir = Path.Combine(projectPath, "Baselines", "MarkdownRenderer", "FileMode");
                 if (!Directory.Exists(baselinesDir))
                 {
                     Directory.CreateDirectory(baselinesDir);
@@ -377,6 +378,293 @@ namespace CloudNimble.DotNetDocs.Tests.Core
                     Directory.Delete(tempOutputPath, true);
                 }
             }
+        }
+
+        #endregion
+
+        #region FileNamingOptions Tests
+
+        [TestMethod]
+        public async Task RenderAsync_WithFileModeDefaultSeparator_CreatesFilesWithHyphen()
+        {
+            // Arrange
+            var assemblyPath = typeof(SampleClass).Assembly.Location;
+            var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
+            using var manager = new AssemblyManager(assemblyPath, xmlPath);
+            var model = await manager.DocumentAsync();
+            
+            var context = new ProjectContext
+            {
+                FileNamingOptions = new FileNamingOptions(NamespaceMode.File, '-')
+            };
+            var renderer = new MarkdownRenderer(context);
+
+            // Act
+            await renderer.RenderAsync(model, _testOutputPath, context);
+
+            // Assert
+            var files = Directory.GetFiles(_testOutputPath, "*.md");
+            files.Should().Contain(f => Path.GetFileName(f).Contains("CloudNimble-DotNetDocs-Tests-Shared"));
+        }
+
+        [TestMethod]
+        public async Task RenderAsync_WithFileModeUnderscoreSeparator_CreatesFilesWithUnderscore()
+        {
+            // Arrange
+            var assemblyPath = typeof(SampleClass).Assembly.Location;
+            var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
+            using var manager = new AssemblyManager(assemblyPath, xmlPath);
+            var model = await manager.DocumentAsync();
+            
+            var context = new ProjectContext
+            {
+                FileNamingOptions = new FileNamingOptions(NamespaceMode.File, '_')
+            };
+            var renderer = new MarkdownRenderer(context);
+
+            // Act
+            await renderer.RenderAsync(model, _testOutputPath, context);
+
+            // Assert
+            var files = Directory.GetFiles(_testOutputPath, "*.md");
+            files.Should().Contain(f => Path.GetFileName(f).Contains("CloudNimble_DotNetDocs_Tests_Shared"));
+        }
+
+        [TestMethod]
+        public async Task RenderAsync_WithFileModePeriodSeparator_CreatesFilesWithPeriod()
+        {
+            // Arrange
+            var assemblyPath = typeof(SampleClass).Assembly.Location;
+            var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
+            using var manager = new AssemblyManager(assemblyPath, xmlPath);
+            var model = await manager.DocumentAsync();
+            
+            var context = new ProjectContext
+            {
+                FileNamingOptions = new FileNamingOptions(NamespaceMode.File, '.')
+            };
+            var renderer = new MarkdownRenderer(context);
+
+            // Act
+            await renderer.RenderAsync(model, _testOutputPath, context);
+
+            // Assert
+            var files = Directory.GetFiles(_testOutputPath, "*.md");
+            files.Should().Contain(f => Path.GetFileName(f).Contains("CloudNimble.DotNetDocs.Tests.Shared"));
+        }
+
+        [TestMethod]
+        public async Task RenderAsync_WithFolderMode_CreatesNamespaceFolderStructure()
+        {
+            // Arrange
+            var assemblyPath = typeof(SampleClass).Assembly.Location;
+            var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
+            using var manager = new AssemblyManager(assemblyPath, xmlPath);
+            var model = await manager.DocumentAsync();
+            
+            var context = new ProjectContext
+            {
+                FileNamingOptions = new FileNamingOptions(NamespaceMode.Folder)
+            };
+            var renderer = new MarkdownRenderer(context);
+
+            // Act
+            await renderer.RenderAsync(model, _testOutputPath, context);
+
+            // Assert
+            // Check folder structure exists
+            var cloudNimbleDir = Path.Combine(_testOutputPath, "CloudNimble");
+            Directory.Exists(cloudNimbleDir).Should().BeTrue();
+            
+            var dotNetDocsDir = Path.Combine(cloudNimbleDir, "DotNetDocs");
+            Directory.Exists(dotNetDocsDir).Should().BeTrue();
+            
+            var testsDir = Path.Combine(dotNetDocsDir, "Tests");
+            Directory.Exists(testsDir).Should().BeTrue();
+            
+            var sharedDir = Path.Combine(testsDir, "Shared");
+            Directory.Exists(sharedDir).Should().BeTrue();
+            
+            // Check that index.md exists in namespace folder
+            var indexFile = Path.Combine(sharedDir, "index.md");
+            File.Exists(indexFile).Should().BeTrue();
+            
+            // Check that type files exist in namespace folder
+            var typeFiles = Directory.GetFiles(sharedDir, "*.md");
+            typeFiles.Should().Contain(f => Path.GetFileName(f) != "index.md", "Type files should exist alongside index.md");
+        }
+
+        [TestMethod]
+        public async Task RenderAsync_WithFolderModeAndGlobalNamespace_CreatesGlobalFolder()
+        {
+            // Arrange
+            // Use SampleClass since we don't have a dedicated GlobalNamespaceClass
+            var assemblyPath = typeof(SampleClass).Assembly.Location;
+            var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
+            using var manager = new AssemblyManager(assemblyPath, xmlPath);
+            var model = await manager.DocumentAsync();
+            
+            // Check if we have any global namespace types
+            var globalNs = model.Namespaces.FirstOrDefault(n => n.Symbol.IsGlobalNamespace);
+            if (globalNs != null && globalNs.Types.Any())
+            {
+                var context = new ProjectContext
+                {
+                    FileNamingOptions = new FileNamingOptions(NamespaceMode.Folder)
+                };
+                var renderer = new MarkdownRenderer(context);
+
+                // Act
+                await renderer.RenderAsync(model, _testOutputPath, context);
+
+                // Assert
+                var globalDir = Path.Combine(_testOutputPath, "global");
+                Directory.Exists(globalDir).Should().BeTrue();
+                
+                var indexFile = Path.Combine(globalDir, "index.md");
+                File.Exists(indexFile).Should().BeTrue();
+            }
+            else
+            {
+                // Skip this test if no global namespace types exist
+                Assert.Inconclusive("No global namespace types found in test assembly - this is expected");
+            }
+        }
+
+        [TestMethod]
+        public async Task RenderAsync_WithFolderMode_IgnoresNamespaceSeparator()
+        {
+            // Arrange
+            var assemblyPath = typeof(SampleClass).Assembly.Location;
+            var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
+            using var manager = new AssemblyManager(assemblyPath, xmlPath);
+            var model = await manager.DocumentAsync();
+            
+            // Set a separator that should be ignored in Folder mode
+            var context = new ProjectContext
+            {
+                FileNamingOptions = new FileNamingOptions(NamespaceMode.Folder, '_')
+            };
+            var renderer = new MarkdownRenderer(context);
+
+            // Act
+            await renderer.RenderAsync(model, _testOutputPath, context);
+
+            // Assert
+            // Verify folder structure uses path separators, not the configured separator
+            var cloudNimbleDir = Path.Combine(_testOutputPath, "CloudNimble");
+            Directory.Exists(cloudNimbleDir).Should().BeTrue();
+            
+            // Should NOT have a folder named "CloudNimble_DotNetDocs_Tests_Shared"
+            var wrongDir = Path.Combine(_testOutputPath, "CloudNimble_DotNetDocs_Tests_Shared");
+            Directory.Exists(wrongDir).Should().BeFalse();
+        }
+
+        #endregion
+
+        #region Folder Structure Baseline Tests
+
+        [TestMethod]
+        public async Task RenderAsync_WithFolderMode_MatchesFolderStructureBaseline()
+        {
+            // Arrange
+            var context = new ProjectContext
+            {
+                FileNamingOptions = new FileNamingOptions(NamespaceMode.Folder)
+            };
+            var renderer = new MarkdownRenderer(context);
+            var testOutputPath = Path.Combine(Path.GetTempPath(), $"MDFolderBaseline_{Guid.NewGuid()}");
+
+            try
+            {
+                // Get the test model
+                var assemblyPath = typeof(SampleClass).Assembly.Location;
+                var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
+                using var manager = new AssemblyManager(assemblyPath, xmlPath);
+                var projectContext = new ProjectContext([Accessibility.Public, Accessibility.Internal]) 
+                { 
+                    ShowPlaceholders = false,
+                    FileNamingOptions = new FileNamingOptions(NamespaceMode.Folder)
+                };
+                var model = await manager.DocumentAsync(projectContext);
+
+                // Act
+                await renderer.RenderAsync(model, testOutputPath, projectContext);
+
+                // Assert - Verify folder structure
+                var cloudNimbleDir = Path.Combine(testOutputPath, "CloudNimble");
+                Directory.Exists(cloudNimbleDir).Should().BeTrue();
+                
+                var dotNetDocsDir = Path.Combine(cloudNimbleDir, "DotNetDocs");
+                Directory.Exists(dotNetDocsDir).Should().BeTrue();
+                
+                var testsDir = Path.Combine(dotNetDocsDir, "Tests");
+                Directory.Exists(testsDir).Should().BeTrue();
+                
+                var sharedDir = Path.Combine(testsDir, "Shared");
+                Directory.Exists(sharedDir).Should().BeTrue();
+
+                // Verify namespace index files exist
+                File.Exists(Path.Combine(sharedDir, "index.md")).Should().BeTrue();
+                
+                // Verify type files exist in namespace folders
+                File.Exists(Path.Combine(sharedDir, "SampleClass.md")).Should().BeTrue();
+                File.Exists(Path.Combine(sharedDir, "TestBase.md")).Should().BeTrue();
+                
+                // Verify sub-namespace folders
+                var basicScenariosDir = Path.Combine(sharedDir, "BasicScenarios");
+                Directory.Exists(basicScenariosDir).Should().BeTrue();
+                File.Exists(Path.Combine(basicScenariosDir, "index.md")).Should().BeTrue();
+                File.Exists(Path.Combine(basicScenariosDir, "SimpleClass.md")).Should().BeTrue();
+
+                // Compare specific files with baselines
+                await CompareWithFolderBaseline(
+                    Path.Combine(sharedDir, "index.md"),
+                    "CloudNimble/DotNetDocs/Tests/Shared/index.md");
+                
+                await CompareWithFolderBaseline(
+                    Path.Combine(basicScenariosDir, "SimpleClass.md"),
+                    "CloudNimble/DotNetDocs/Tests/Shared/BasicScenarios/SimpleClass.md");
+            }
+            finally
+            {
+                // Cleanup
+                if (Directory.Exists(testOutputPath))
+                {
+                    Directory.Delete(testOutputPath, true);
+                }
+            }
+        }
+
+        private async Task CompareWithFolderBaseline(string actualFilePath, string baselineRelativePath)
+        {
+            // Read actual file
+            var actualContent = await File.ReadAllTextAsync(actualFilePath);
+            
+            // Construct baseline path
+            var baselineDir = Path.Combine(
+                Directory.GetCurrentDirectory(),
+                "Baselines",
+                "MarkdownRenderer",
+                "FolderMode");
+            var baselinePath = Path.Combine(baselineDir, baselineRelativePath);
+            
+            // If baseline doesn't exist, create it for first run
+            if (!File.Exists(baselinePath))
+            {
+                var directory = Path.GetDirectoryName(baselinePath);
+                if (!string.IsNullOrEmpty(directory))
+                {
+                    Directory.CreateDirectory(directory);
+                }
+                await File.WriteAllTextAsync(baselinePath, actualContent);
+                Assert.Inconclusive($"Baseline created at: {baselinePath}. Re-run test to verify.");
+            }
+            
+            // Compare with baseline
+            var baselineContent = await File.ReadAllTextAsync(baselinePath);
+            actualContent.Should().Be(baselineContent, 
+                $"Output should match baseline at {baselinePath}");
         }
 
         #endregion

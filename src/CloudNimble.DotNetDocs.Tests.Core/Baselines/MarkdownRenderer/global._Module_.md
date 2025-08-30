@@ -1,4 +1,0 @@
-# <Module>
-
-**Namespace:** global
-

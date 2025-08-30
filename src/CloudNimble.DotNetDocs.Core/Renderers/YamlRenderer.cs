@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using YamlDotNet.Serialization;
@@ -30,6 +29,18 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
 
         #endregion
 
+        #region Constructors
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="YamlRenderer"/> class.
+        /// </summary>
+        /// <param name="context">The project context. If null, a default context is created.</param>
+        public YamlRenderer(ProjectContext? context = null) : base(context)
+        {
+        }
+
+        #endregion
+
         #region Public Methods
 
         /// <summary>
@@ -45,7 +56,8 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
             ArgumentNullException.ThrowIfNull(outputPath);
             ArgumentNullException.ThrowIfNull(context);
 
-            Directory.CreateDirectory(outputPath);
+            // Ensure all necessary directories exist based on the file naming mode
+            Context.EnsureOutputDirectoryStructure(model, outputPath);
 
             // Create the main documentation structure
             var documentation = new Dictionary<string, object>
@@ -81,13 +93,13 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
 
         #endregion
 
-        #region Private Methods
+        #region Internal Methods
 
-        private List<Dictionary<string, object>> SerializeNamespaces(DocAssembly assembly)
+        internal List<Dictionary<string, object>> SerializeNamespaces(DocAssembly assembly)
         {
             return assembly.Namespaces.Select(ns => new Dictionary<string, object>
             {
-                ["name"] = ns.Symbol.ToDisplayString(),
+                ["name"] = GetSafeNamespaceName(ns),
                 ["usage"] = ns.Usage,
                 ["examples"] = ns.Examples,
                 ["bestPractices"] = ns.BestPractices,
@@ -98,7 +110,7 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
             }).ToList();
         }
 
-        private List<Dictionary<string, object>> SerializeTypes(DocNamespace ns)
+        internal List<Dictionary<string, object>> SerializeTypes(DocNamespace ns)
         {
             return ns.Types.Select(type => new Dictionary<string, object>
             {
@@ -116,7 +128,7 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
             }).ToList();
         }
 
-        private List<Dictionary<string, object>> SerializeMembers(DocType type)
+        internal List<Dictionary<string, object>> SerializeMembers(DocType type)
         {
             return type.Members.Select(member => new Dictionary<string, object>
             {
@@ -136,7 +148,7 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
             }).ToList();
         }
 
-        private List<Dictionary<string, object>>? SerializeParameters(DocMember member)
+        internal List<Dictionary<string, object>>? SerializeParameters(DocMember member)
         {
             if (member.Parameters is null || !member.Parameters.Any())
                 return null;
@@ -158,13 +170,13 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
             }).ToList();
         }
 
-        private async Task RenderNamespaceFileAsync(DocNamespace ns, string outputPath)
+        internal async Task RenderNamespaceFileAsync(DocNamespace ns, string outputPath)
         {
             var namespaceData = new Dictionary<string, object>
             {
                 ["namespace"] = new Dictionary<string, object>
                 {
-                    ["name"] = ns.Symbol.ToDisplayString(),
+                    ["name"] = GetSafeNamespaceName(ns),
                     ["usage"] = ns.Usage,
                     ["examples"] = ns.Examples,
                     ["bestPractices"] = ns.BestPractices,
@@ -175,24 +187,25 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
                 }
             };
 
-            var namespaceName = ns.Symbol.IsGlobalNamespace ? "global" : ns.Symbol.ToDisplayString();
-            var fileName = $"{namespaceName.Replace('.', '-')}.yaml";
-            var filePath = Path.Combine(outputPath, fileName);
+            var filePath = GetNamespaceFilePath(ns, outputPath, "yaml");
+            
+            // Ensure directory exists for folder mode
             var yaml = _yamlSerializer.Serialize(namespaceData);
             await File.WriteAllTextAsync(filePath, yaml);
         }
 
-        private async Task RenderTableOfContentsAsync(DocAssembly model, string outputPath)
+        internal async Task RenderTableOfContentsAsync(DocAssembly model, string outputPath)
         {
             var toc = new Dictionary<string, object>
             {
                 ["items"] = model.Namespaces.Select(ns =>
                 {
-                    var namespaceName = ns.Symbol.IsGlobalNamespace ? "global" : ns.Symbol.ToDisplayString();
+                    var namespaceName = GetSafeNamespaceName(ns);
+                    var namespaceFileName = GetNamespaceFileName(ns, "yaml");
                     return new Dictionary<string, object>
                     {
                         ["name"] = namespaceName,
-                        ["href"] = $"{namespaceName.Replace('.', '-')}.yaml",
+                        ["href"] = namespaceFileName,
                         ["items"] = ns.Types.Select(type => new Dictionary<string, object>
                         {
                             ["name"] = type.Symbol.Name,
@@ -210,7 +223,7 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
 
         // GetMemberSignature and GetMethodSignature are inherited from RendererBase
 
-        private string? GetReturnType(DocMember member)
+        internal string? GetReturnType(DocMember member)
         {
             return member.Symbol switch
             {
@@ -221,7 +234,7 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
             };
         }
 
-        private List<string> GetModifiers(DocMember member)
+        internal List<string> GetModifiers(DocMember member)
         {
             var modifiers = new List<string>();
             

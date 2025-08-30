@@ -1,16 +1,26 @@
 # MixedAccessClass
 
+## Definition
+
 **Namespace:** CloudNimble.DotNetDocs.Tests.Shared.AccessModifiers
+**Assembly:** CloudNimble.DotNetDocs.Tests.Shared
+**Inheritance:** System.Object
 
-**Base Type:** System.Object
+## Syntax
 
-## Overview
+```csharp
+public class MixedAccessClass : System.Object
+```
+
+## Description
 
 A class with members of various access modifiers for testing filtering.
 
 ## Constructors
 
 ### .ctor
+
+#### Syntax
 
 ```csharp
 public .ctor()
@@ -20,29 +30,43 @@ public .ctor()
 
 ### PublicProperty
 
+Gets or sets the public property.
+
+#### Syntax
+
 ```csharp
 public string PublicProperty { get; set; }
 ```
 
-Gets or sets the public property.
+#### Property Value
+
+Type: `string`
 
 ## Methods
 
 ### PublicMethod
 
+A public method.
+
+#### Syntax
+
 ```csharp
 public string PublicMethod()
 ```
 
-A public method.
+#### Returns
+
+Type: `string`
 
 ## Fields
 
 ### PublicField
 
+A public field.
+
+#### Syntax
+
 ```csharp
 public string PublicField
 ```
-
-A public field.
 

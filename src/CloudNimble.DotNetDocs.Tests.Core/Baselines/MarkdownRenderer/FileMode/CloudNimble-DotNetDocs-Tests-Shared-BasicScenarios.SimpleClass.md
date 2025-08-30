@@ -1,10 +1,18 @@
 # SimpleClass
 
+## Definition
+
 **Namespace:** CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios
+**Assembly:** CloudNimble.DotNetDocs.Tests.Shared
+**Inheritance:** System.Object
 
-**Base Type:** System.Object
+## Syntax
 
-## Overview
+```csharp
+public class SimpleClass : System.Object
+```
+
+## Description
 
 A simple class for testing basic documentation extraction.
 
@@ -17,6 +25,8 @@ var simple = new SimpleClass();
 
 ### .ctor
 
+#### Syntax
+
 ```csharp
 public .ctor()
 ```
@@ -25,9 +35,11 @@ public .ctor()
 
 ### DoWork
 
+Performs some work.
+
+#### Syntax
+
 ```csharp
 public void DoWork()
 ```
-
-Performs some work.
 

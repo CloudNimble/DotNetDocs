@@ -1,0 +1,62 @@
+namespace: CloudNimble.DotNetDocs.Core
+description: Core functionality for .NET documentation generation.
+types:
+  - name: DocAssembly
+    kind: Class
+    accessibility: Public
+    inheritance: System.Object
+    description: Represents a documented assembly.
+  - name: DocNamespace
+    kind: Class
+    accessibility: Public
+    inheritance: System.Object
+    description: Represents a documented namespace.
+  - name: DocType
+    kind: Class
+    accessibility: Public
+    inheritance: System.Object
+    description: Represents a documented type.
+  - name: ProjectContext
+    kind: Class
+    accessibility: Public
+    inheritance: System.Object
+    description: Represents MSBuild project context for source intent in documentation generation.
+    properties:
+      - name: ConceptualPath
+        type: string?
+        accessibility: Public
+        description: Gets or sets the path to the conceptual documentation folder.
+      - name: FileNamingOptions
+        type: FileNamingOptions
+        accessibility: Public
+        description: Gets or sets the file naming options for documentation generation.
+      - name: OutputPath
+        type: string
+        accessibility: Public
+        description: Gets or sets the output path for generated documentation.
+    methods:
+      - name: GetNamespaceFolderPath
+        returnType: string
+        accessibility: Public
+        parameters:
+          - name: namespaceName
+            type: string
+        description: Converts a namespace string to a folder path based on the configured file naming options.
+      - name: GetTypeFilePath
+        returnType: string
+        accessibility: Public
+        parameters:
+          - name: fullyQualifiedTypeName
+            type: string
+          - name: extension
+            type: string
+        description: Gets the full file path for a type, including namespace folder structure if in Folder mode.
+      - name: EnsureOutputDirectoryStructure
+        returnType: void
+        accessibility: Public
+        parameters:
+          - name: assemblyModel
+            type: DocAssembly
+          - name: outputPath
+            type: string
+        description: Ensures that the output directory structure exists for all namespaces in the assembly model.

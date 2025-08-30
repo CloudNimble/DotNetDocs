@@ -1,10 +1,18 @@
 # ClassWithSpecialCharacters
 
+## Definition
+
 **Namespace:** CloudNimble.DotNetDocs.Tests.Shared.EdgeCases
+**Assembly:** CloudNimble.DotNetDocs.Tests.Shared
+**Inheritance:** System.Object
 
-**Base Type:** System.Object
+## Syntax
 
-## Overview
+```csharp
+public class ClassWithSpecialCharacters : System.Object
+```
+
+## Description
 
 A class with special characters in documentation: <, >, &, ", '.
 
@@ -18,6 +26,8 @@ A class with special characters in documentation: <, >, &, ", '.
 
 ### .ctor
 
+#### Syntax
+
 ```csharp
 public .ctor()
 ```
@@ -26,13 +36,21 @@ public .ctor()
 
 ### MethodWithSpecialChars
 
+A method with special characters in docs: <T> generics.
+
+#### Syntax
+
 ```csharp
 public string MethodWithSpecialChars(string input)
 ```
 
-A method with special characters in docs: <T> generics.
+#### Parameters
 
-**Parameters:**
+| Name | Type | Description |
+|------|------|-------------|
+| `input` | `string` | An input with "quotes" and 'apostrophes'. |
 
-- `input`: An input with "quotes" and 'apostrophes'.
+#### Returns
+
+Type: `string`
 

@@ -1,5 +1,5 @@
 namespace:
-  name: <global namespace>
+  name: global
   usage: ''
   examples: ''
   bestPractices: ''

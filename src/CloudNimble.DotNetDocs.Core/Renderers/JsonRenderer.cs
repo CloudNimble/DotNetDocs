@@ -21,13 +21,30 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
 
         #region Fields
 
-        private static readonly JsonSerializerOptions _jsonOptions = new()
+        private readonly JsonRendererOptions _options;
+
+        #endregion
+
+        #region Properties
+
+        /// <summary>
+        /// Gets the JsonSerializerOptions used by this renderer.
+        /// </summary>
+        internal JsonSerializerOptions SerializerOptions => _options.SerializerOptions;
+
+        #endregion
+
+        #region Constructors
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="JsonRenderer"/> class.
+        /// </summary>
+        /// <param name="context">The project context. If null, a default context is created.</param>
+        /// <param name="options">The rendering options. If null, default options are used.</param>
+        public JsonRenderer(ProjectContext? context = null, JsonRendererOptions? options = null) : base(context)
         {
-            WriteIndented = true,
-            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) }
-        };
+            _options = options ?? new JsonRendererOptions();
+        }
 
         #endregion
 
@@ -46,7 +63,8 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
             ArgumentNullException.ThrowIfNull(outputPath);
             ArgumentNullException.ThrowIfNull(context);
 
-            Directory.CreateDirectory(outputPath);
+            // Ensure all necessary directories exist based on the file naming mode
+            Context.EnsureOutputDirectoryStructure(model, outputPath);
 
             // Create the main documentation structure
             var documentation = new
@@ -67,7 +85,7 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
 
             // Write main documentation file
             var mainFilePath = Path.Combine(outputPath, "documentation.json");
-            var json = JsonSerializer.Serialize(documentation, _jsonOptions);
+            var json = JsonSerializer.Serialize(documentation, _options.SerializerOptions);
             await File.WriteAllTextAsync(mainFilePath, json);
 
             // Also write individual namespace files for easier consumption
@@ -79,24 +97,24 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
 
         #endregion
 
-        #region Private Methods
+        #region Internal Methods
 
-        private object SerializeNamespaces(DocAssembly assembly)
+        internal object SerializeNamespaces(DocAssembly assembly)
         {
             return assembly.Namespaces.Select(ns => new
             {
                 Name = ns.Symbol.ToDisplayString(),
-                ns.Usage,
-                ns.Examples,
-                ns.BestPractices,
-                ns.Patterns,
-                ns.Considerations,
-                ns.RelatedApis,
+                Usage = ns.Usage,
+                Examples = ns.Examples,
+                BestPractices = ns.BestPractices,
+                Patterns = ns.Patterns,
+                Considerations = ns.Considerations,
+                RelatedApis = ns.RelatedApis,
                 Types = SerializeTypes(ns)
             });
         }
 
-        private object SerializeTypes(DocNamespace ns)
+        internal object SerializeTypes(DocNamespace ns)
         {
             return ns.Types.Select(type => new
             {
@@ -104,36 +122,36 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
                 FullName = type.Symbol.ToDisplayString(),
                 Kind = type.Symbol.TypeKind.ToString(),
                 BaseType = type.BaseType,
-                type.Usage,
-                type.Examples,
-                type.BestPractices,
-                type.Patterns,
-                type.Considerations,
-                type.RelatedApis,
+                Usage = type.Usage,
+                Examples = type.Examples,
+                BestPractices = type.BestPractices,
+                Patterns = type.Patterns,
+                Considerations = type.Considerations,
+                RelatedApis = type.RelatedApis,
                 Members = SerializeMembers(type)
             });
         }
 
-        private object SerializeMembers(DocType type)
+        internal object SerializeMembers(DocType type)
         {
             return type.Members.Select(member => new
             {
                 Name = member.Symbol.Name,
                 Kind = member.Symbol.Kind.ToString(),
                 Accessibility = member.Symbol.DeclaredAccessibility.ToString(),
-                member.Usage,
-                member.Examples,
-                member.BestPractices,
-                member.Patterns,
-                member.Considerations,
-                member.RelatedApis,
+                Usage = member.Usage,
+                Examples = member.Examples,
+                BestPractices = member.BestPractices,
+                Patterns = member.Patterns,
+                Considerations = member.Considerations,
+                RelatedApis = member.RelatedApis,
                 Signature = GetMemberSignature(member),
                 Parameters = SerializeParameters(member),
                 ReturnType = GetReturnType(member)
             });
         }
 
-        private object? SerializeParameters(DocMember member)
+        internal object? SerializeParameters(DocMember member)
         {
             if (member.Parameters is null || !member.Parameters.Any())
                 return null;
@@ -144,14 +162,14 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
                 Type = param.Symbol.Type.ToDisplayString(),
                 IsOptional = param.Symbol.HasExplicitDefaultValue,
                 DefaultValue = param.Symbol.HasExplicitDefaultValue ? param.Symbol.ExplicitDefaultValue?.ToString() : null,
-                param.Usage,
-                param.Examples,
-                param.BestPractices,
-                param.Considerations
+                Usage = param.Usage,
+                Examples = param.Examples,
+                BestPractices = param.BestPractices,
+                Considerations = param.Considerations
             });
         }
 
-        private async Task RenderNamespaceFileAsync(DocNamespace ns, string outputPath)
+        internal async Task RenderNamespaceFileAsync(DocNamespace ns, string outputPath)
         {
             var namespaceData = new
             {
@@ -169,13 +187,13 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
             };
 
             var filePath = Path.Combine(outputPath, GetNamespaceFileName(ns, "json"));
-            var json = JsonSerializer.Serialize(namespaceData, _jsonOptions);
+            var json = JsonSerializer.Serialize(namespaceData, _options.SerializerOptions);
             await File.WriteAllTextAsync(filePath, json);
         }
 
         // GetMemberSignature and GetMethodSignature are inherited from RendererBase
 
-        private string? GetReturnType(DocMember member)
+        internal string? GetReturnType(DocMember member)
         {
             return member.Symbol switch
             {

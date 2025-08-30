@@ -18,6 +18,18 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
     public class MarkdownRenderer : RendererBase, IDocRenderer
     {
 
+        #region Constructors
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MarkdownRenderer"/> class.
+        /// </summary>
+        /// <param name="context">The project context. If null, a default context is created.</param>
+        public MarkdownRenderer(ProjectContext? context = null) : base(context)
+        {
+        }
+
+        #endregion
+
         #region Public Methods
 
         /// <summary>
@@ -33,7 +45,8 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
             ArgumentNullException.ThrowIfNull(outputPath);
             ArgumentNullException.ThrowIfNull(context);
 
-            Directory.CreateDirectory(outputPath);
+            // Ensure all necessary directories exist based on the file naming mode
+            Context.EnsureOutputDirectoryStructure(model, outputPath);
 
             // Render assembly overview
             await RenderAssemblyAsync(model, outputPath);
@@ -53,9 +66,9 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
 
         #endregion
 
-        #region Private Methods
+        #region Internal Methods
 
-        private async Task RenderAssemblyAsync(DocAssembly assembly, string outputPath)
+        internal async Task RenderAssemblyAsync(DocAssembly assembly, string outputPath)
         {
             var sb = new StringBuilder();
             
@@ -125,7 +138,7 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
             await File.WriteAllTextAsync(filePath, sb.ToString());
         }
 
-        private async Task RenderNamespaceAsync(DocNamespace ns, string outputPath)
+        internal async Task RenderNamespaceAsync(DocNamespace ns, string outputPath)
         {
             var sb = new StringBuilder();
             var namespaceName = GetSafeNamespaceName(ns);
@@ -250,29 +263,47 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
                 }
             }
 
-            var filePath = Path.Combine(outputPath, GetNamespaceFileName(ns, "md"));
+            var filePath = GetNamespaceFilePath(ns, outputPath, "md");
             await File.WriteAllTextAsync(filePath, sb.ToString());
         }
 
-        private async Task RenderTypeAsync(DocType type, DocNamespace ns, string outputPath)
+        internal async Task RenderTypeAsync(DocType type, DocNamespace ns, string outputPath)
         {
             var sb = new StringBuilder();
             
             sb.AppendLine($"# {type.Symbol.Name}");
             sb.AppendLine();
+            
+            // Type metadata section
+            sb.AppendLine("## Definition");
+            sb.AppendLine();
             var namespaceName = GetSafeNamespaceName(ns);
             sb.AppendLine($"**Namespace:** {namespaceName}");
-            sb.AppendLine();
+            sb.AppendLine($"**Assembly:** {type.Symbol.ContainingAssembly?.Name ?? "Unknown"}");
             
             if (!string.IsNullOrWhiteSpace(type.BaseType))
             {
-                sb.AppendLine($"**Base Type:** {type.BaseType}");
-                sb.AppendLine();
+                sb.AppendLine($"**Inheritance:** {type.BaseType}");
             }
+            
+            var interfaces = type.Symbol.AllInterfaces;
+            if (interfaces.Any())
+            {
+                sb.AppendLine($"**Implements:** {string.Join(", ", interfaces.Select(i => i.ToDisplayString()))}");
+            }
+            sb.AppendLine();
+            
+            // Type signature
+            sb.AppendLine("## Syntax");
+            sb.AppendLine();
+            sb.AppendLine("```csharp");
+            sb.AppendLine(GetTypeSignature(type));
+            sb.AppendLine("```");
+            sb.AppendLine();
 
             if (!string.IsNullOrWhiteSpace(type.Usage))
             {
-                sb.AppendLine("## Overview");
+                sb.AppendLine("## Description");
                 sb.AppendLine();
                 sb.AppendLine(type.Usage);
                 sb.AppendLine();
@@ -377,64 +408,102 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
                 sb.AppendLine();
             }
 
-            var filePath = Path.Combine(outputPath, GetTypeFileName(type, ns, "md"));
+            var filePath = GetTypeFilePath(type, ns, outputPath, "md");
             await File.WriteAllTextAsync(filePath, sb.ToString());
         }
 
-        private void RenderMember(StringBuilder sb, DocMember member)
+        internal void RenderMember(StringBuilder sb, DocMember member)
         {
             sb.AppendLine($"### {member.Symbol.Name}");
             sb.AppendLine();
             
-            // Render signature
-            sb.AppendLine("```csharp");
-            sb.AppendLine(GetMemberSignature(member));
-            sb.AppendLine("```");
-            sb.AppendLine();
-
+            // Summary/Description
             if (!string.IsNullOrWhiteSpace(member.Usage))
             {
                 sb.AppendLine(member.Usage);
                 sb.AppendLine();
             }
+            
+            // Syntax
+            sb.AppendLine("#### Syntax");
+            sb.AppendLine();
+            sb.AppendLine("```csharp");
+            sb.AppendLine(GetMemberSignature(member));
+            sb.AppendLine("```");
+            sb.AppendLine();
 
+            // Parameters
             if (member.Parameters?.Any() == true)
             {
-                sb.AppendLine("**Parameters:**");
+                sb.AppendLine("#### Parameters");
                 sb.AppendLine();
+                sb.AppendLine("| Name | Type | Description |");
+                sb.AppendLine("|------|------|-------------|");
                 foreach (var param in member.Parameters)
                 {
-                    sb.Append($"- `{param.Symbol.Name}`");
-                    if (!string.IsNullOrWhiteSpace(param.Usage))
-                    {
-                        sb.Append($": {param.Usage}");
-                    }
-                    sb.AppendLine();
+                    var paramType = param.Symbol.Type.ToDisplayString();
+                    var description = !string.IsNullOrWhiteSpace(param.Usage) ? param.Usage : "-";
+                    sb.AppendLine($"| `{param.Symbol.Name}` | `{paramType}` | {description} |");
                 }
                 sb.AppendLine();
             }
 
+            // Returns (for methods)
+            if (member.Symbol is IMethodSymbol method && method.ReturnsVoid == false)
+            {
+                sb.AppendLine("#### Returns");
+                sb.AppendLine();
+                sb.AppendLine($"Type: `{method.ReturnType.ToDisplayString()}`");
+                // TODO: Add return documentation when available in DocMember
+                sb.AppendLine();
+            }
+
+            // Property type (for properties)
+            if (member.Symbol is IPropertySymbol property)
+            {
+                sb.AppendLine("#### Property Value");
+                sb.AppendLine();
+                sb.AppendLine($"Type: `{property.Type.ToDisplayString()}`");
+                // TODO: Add property value documentation when available in DocMember
+                sb.AppendLine();
+            }
+
+            // Examples
             if (!string.IsNullOrWhiteSpace(member.Examples))
             {
-                sb.AppendLine("**Examples:**");
+                sb.AppendLine("#### Examples");
                 sb.AppendLine();
                 sb.AppendLine(member.Examples);
                 sb.AppendLine();
             }
 
+            // Remarks/Best Practices
             if (!string.IsNullOrWhiteSpace(member.BestPractices))
             {
-                sb.AppendLine("**Best Practices:**");
+                sb.AppendLine("#### Remarks");
                 sb.AppendLine();
                 sb.AppendLine(member.BestPractices);
                 sb.AppendLine();
             }
 
+            // Considerations
             if (!string.IsNullOrWhiteSpace(member.Considerations))
             {
-                sb.AppendLine("**Considerations:**");
+                sb.AppendLine("#### Considerations");
                 sb.AppendLine();
                 sb.AppendLine(member.Considerations);
+                sb.AppendLine();
+            }
+
+            // See Also
+            if (member.RelatedApis?.Any() == true)
+            {
+                sb.AppendLine("#### See Also");
+                sb.AppendLine();
+                foreach (var api in member.RelatedApis)
+                {
+                    sb.AppendLine($"- {api}");
+                }
                 sb.AppendLine();
             }
         }

@@ -1,16 +1,26 @@
 # BaseClass
 
+## Definition
+
 **Namespace:** CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios
+**Assembly:** CloudNimble.DotNetDocs.Tests.Shared
+**Inheritance:** System.Object
 
-**Base Type:** System.Object
+## Syntax
 
-## Overview
+```csharp
+public class BaseClass : System.Object
+```
+
+## Description
 
 A base class for testing inheritance documentation.
 
 ## Constructors
 
 ### .ctor
+
+#### Syntax
 
 ```csharp
 public .ctor()
@@ -20,27 +30,41 @@ public .ctor()
 
 ### BaseProperty
 
+Gets or sets the base property.
+
+#### Syntax
+
 ```csharp
 public virtual string BaseProperty { get; set; }
 ```
 
-Gets or sets the base property.
+#### Property Value
+
+Type: `string`
 
 ## Methods
 
 ### BaseMethod
 
+A method in the base class.
+
+#### Syntax
+
 ```csharp
 public void BaseMethod()
 ```
 
-A method in the base class.
-
 ### VirtualMethod
+
+A virtual method that can be overridden.
+
+#### Syntax
 
 ```csharp
 public virtual string VirtualMethod()
 ```
 
-A virtual method that can be overridden.
+#### Returns
+
+Type: `string`
 
