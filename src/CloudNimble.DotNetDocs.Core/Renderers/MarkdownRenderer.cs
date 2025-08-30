@@ -146,6 +146,14 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
             sb.AppendLine($"# {namespaceName}");
             sb.AppendLine();
 
+            if (!string.IsNullOrWhiteSpace(ns.Summary))
+            {
+                sb.AppendLine("## Summary");
+                sb.AppendLine();
+                sb.AppendLine(ns.Summary);
+                sb.AppendLine();
+            }
+
             if (!string.IsNullOrWhiteSpace(ns.Usage))
             {
                 sb.AppendLine("## Overview");

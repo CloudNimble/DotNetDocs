@@ -345,9 +345,20 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
         [BreakdanceManifestGenerator]
         public async Task GenerateMarkdownBaselines(string projectPath)
         {
-            // Setup
-            var renderer = new MarkdownRenderer();
-            var tempOutputPath = Path.Combine(Path.GetTempPath(), $"MDBaseline_{Guid.NewGuid()}");
+            // Generate baselines for both FileMode and FolderMode
+            await GenerateFileModeBaselines(projectPath);
+            await GenerateFolderModeBaselines(projectPath);
+        }
+
+        private async Task GenerateFileModeBaselines(string projectPath)
+        {
+            // Setup with FileMode context
+            var context = new ProjectContext
+            {
+                FileNamingOptions = new FileNamingOptions(NamespaceMode.File, '-')
+            };
+            var renderer = new MarkdownRenderer(context);
+            var tempOutputPath = Path.Combine(Path.GetTempPath(), $"MDBaseline_FileMode_{Guid.NewGuid()}");
             Directory.CreateDirectory(tempOutputPath);
 
             try
@@ -357,19 +368,19 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
                 var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
                 using var manager = new AssemblyManager(assemblyPath, xmlPath);
                 var model = await manager.DocumentAsync();
-                var context = new ProjectContext();
 
                 await renderer.RenderAsync(model, tempOutputPath, context);
 
                 // Create baselines directory
                 var baselinesDir = Path.Combine(projectPath, "Baselines", "MarkdownRenderer", "FileMode");
-                if (!Directory.Exists(baselinesDir))
+                if (Directory.Exists(baselinesDir))
                 {
-                    Directory.CreateDirectory(baselinesDir);
+                    Directory.Delete(baselinesDir, true);
                 }
+                Directory.CreateDirectory(baselinesDir);
 
-                // Copy rendered files to baselines
-                foreach (var file in Directory.GetFiles(tempOutputPath, "*.md"))
+                // Copy all rendered files to baselines
+                foreach (var file in Directory.GetFiles(tempOutputPath, "*.md", SearchOption.AllDirectories))
                 {
                     var fileName = Path.GetFileName(file);
                     var content = await File.ReadAllTextAsync(file);
@@ -383,6 +394,66 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
                 {
                     Directory.Delete(tempOutputPath, true);
                 }
+            }
+        }
+
+        private async Task GenerateFolderModeBaselines(string projectPath)
+        {
+            // Setup with FolderMode context
+            var context = new ProjectContext
+            {
+                FileNamingOptions = new FileNamingOptions(NamespaceMode.Folder, '-')
+            };
+            var renderer = new MarkdownRenderer(context);
+            var tempOutputPath = Path.Combine(Path.GetTempPath(), $"MDBaseline_FolderMode_{Guid.NewGuid()}");
+            Directory.CreateDirectory(tempOutputPath);
+
+            try
+            {
+                // Generate baseline for SimpleClass documentation
+                var assemblyPath = typeof(SimpleClass).Assembly.Location;
+                var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
+                using var manager = new AssemblyManager(assemblyPath, xmlPath);
+                var model = await manager.DocumentAsync();
+
+                await renderer.RenderAsync(model, tempOutputPath, context);
+
+                // Create baselines directory
+                var baselinesDir = Path.Combine(projectPath, "Baselines", "MarkdownRenderer", "FolderMode");
+                if (Directory.Exists(baselinesDir))
+                {
+                    Directory.Delete(baselinesDir, true);
+                }
+                Directory.CreateDirectory(baselinesDir);
+
+                // Copy entire folder structure preserving hierarchy
+                CopyDirectoryRecursive(tempOutputPath, baselinesDir);
+            }
+            finally
+            {
+                if (Directory.Exists(tempOutputPath))
+                {
+                    Directory.Delete(tempOutputPath, true);
+                }
+            }
+        }
+
+        private static void CopyDirectoryRecursive(string sourceDir, string destDir)
+        {
+            // Copy all files from the source directory
+            foreach (var file in Directory.GetFiles(sourceDir))
+            {
+                var destFile = Path.Combine(destDir, Path.GetFileName(file));
+                File.Copy(file, destFile, true);
+            }
+
+            // Recursively copy subdirectories
+            foreach (var subDir in Directory.GetDirectories(sourceDir))
+            {
+                var dirName = Path.GetFileName(subDir);
+                var destSubDir = Path.Combine(destDir, dirName);
+                Directory.CreateDirectory(destSubDir);
+                CopyDirectoryRecursive(subDir, destSubDir);
             }
         }
 
@@ -610,8 +681,8 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
                 var sharedDir = Path.Combine(testsDir, "Shared");
                 Directory.Exists(sharedDir).Should().BeTrue();
 
-                // Verify namespace index files exist --- NOTE DOES NOT EXIST YET BUT SHOULD
-                //File.Exists(Path.Combine(sharedDir, "index.md")).Should().BeTrue();
+                // Verify namespace index files exist 
+                File.Exists(Path.Combine(sharedDir, "index.md")).Should().BeTrue();
                 
                 // Verify type files exist in namespace folders
                 File.Exists(Path.Combine(sharedDir, "SampleClass.md")).Should().BeTrue();
@@ -623,10 +694,10 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
                 File.Exists(Path.Combine(basicScenariosDir, "SimpleClass.md")).Should().BeTrue();
 
                 // Compare specific files with baselines
-                //await CompareWithFolderBaseline(
-                //    Path.Combine(sharedDir, "index.md"),
-                //    "CloudNimble/DotNetDocs/Tests/Shared/index.md");
-                
+                await CompareWithFolderBaseline(
+                    Path.Combine(sharedDir, "index.md"),
+                    "CloudNimble/DotNetDocs/Tests/Shared/index.md");
+
                 await CompareWithFolderBaseline(
                     Path.Combine(basicScenariosDir, "SimpleClass.md"),
                     "CloudNimble/DotNetDocs/Tests/Shared/BasicScenarios/SimpleClass.md");

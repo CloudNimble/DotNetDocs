@@ -9,6 +9,7 @@ assembly:
   relatedApis: []
   namespaces:
   - name: global
+    summary: ''
     usage: ''
     examples: ''
     bestPractices: ''
@@ -28,6 +29,7 @@ assembly:
       relatedApis: []
       members: []
   - name: CloudNimble.DotNetDocs.Tests.Shared
+    summary: ''
     usage: ''
     examples: ''
     bestPractices: ''
@@ -326,6 +328,7 @@ assembly:
         returnType: int
         modifiers: []
   - name: CloudNimble.DotNetDocs.Tests.Shared.AccessModifiers
+    summary: ''
     usage: ''
     examples: ''
     bestPractices: ''
@@ -435,6 +438,7 @@ assembly:
         returnType: string
         modifiers: []
   - name: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios
+    summary: ''
     usage: ''
     examples: ''
     bestPractices: ''
@@ -1130,6 +1134,7 @@ assembly:
         returnType: 
         modifiers: []
   - name: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases
+    summary: ''
     usage: ''
     examples: ''
     bestPractices: ''
@@ -1482,6 +1487,7 @@ assembly:
         returnType: string
         modifiers: []
   - name: CloudNimble.DotNetDocs.Tests.Shared.Parameters
+    summary: ''
     usage: ''
     examples: ''
     bestPractices: ''

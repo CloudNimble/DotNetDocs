@@ -10,6 +10,11 @@ namespace CloudNimble.DotNetDocs.Core
         #region Conceptual File Names
 
         /// <summary>
+        /// The file name for namespace summary documentation.
+        /// </summary>
+        public const string SummaryFileName = "summary.md";
+
+        /// <summary>
         /// The file name for usage documentation.
         /// </summary>
         public const string UsageFileName = "usage.md";

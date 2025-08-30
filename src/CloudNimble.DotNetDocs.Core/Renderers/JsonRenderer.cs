@@ -103,6 +103,7 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
             return assembly.Namespaces.Select(ns => new
             {
                 Name = ns.Symbol.ToDisplayString(),
+                Summary = ns.Summary,
                 Usage = ns.Usage,
                 Examples = ns.Examples,
                 BestPractices = ns.BestPractices,

@@ -100,6 +100,7 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
             return assembly.Namespaces.Select(ns => new Dictionary<string, object>
             {
                 ["name"] = GetSafeNamespaceName(ns),
+                ["summary"] = ns.Summary,
                 ["usage"] = ns.Usage,
                 ["examples"] = ns.Examples,
                 ["bestPractices"] = ns.BestPractices,

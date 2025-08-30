@@ -285,11 +285,12 @@ namespace CloudNimble.DotNetDocs.Tests.Core
         }
 
         [TestMethod]
-        public async Task DocumentAsync_ProducesConsistentBaseline()
+        [DataRow(true, "BasicAssembly.json")]
+        [DataRow(false, "BasicAssembly_WithGlobals.json")]
+        public async Task DocumentAsync_ProducesConsistentBaseline(bool ignoreGlobalModule, string baselineFileName)
         {
             var manager = new AssemblyManager(testAssemblyPath, testXmlPath);
-            // Use IgnoreGlobalModule = false to match the baseline which includes the global namespace
-            var context = new ProjectContext { IgnoreGlobalModule = false };
+            var context = new ProjectContext { IgnoreGlobalModule = ignoreGlobalModule };
 
             var result = await manager.DocumentAsync(context);
 
@@ -309,13 +310,13 @@ namespace CloudNimble.DotNetDocs.Tests.Core
 
             // Compare against baseline
             var projectPath = "..//..//..//";
-            var baselinePath = Path.Combine(projectPath, "Baselines", "AssemblyManager", "BasicAssembly.json");
+            var baselinePath = Path.Combine(projectPath, "Baselines", "AssemblyManager", baselineFileName);
             
             if (File.Exists(baselinePath))
             {
                 var baseline = await File.ReadAllTextAsync(baselinePath);
                 json.Should().Be(baseline, 
-                    "Assembly documentation has changed. If this is intentional, regenerate baselines using 'dotnet breakdance generate'");
+                    $"Assembly documentation has changed for {(ignoreGlobalModule ? "without" : "with")} globals. If this is intentional, regenerate baselines using 'dotnet breakdance generate'");
             }
             else
             {
@@ -333,21 +334,28 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
             
             var manager = new AssemblyManager(assemblyPath, xmlPath);
-            var result = await manager.DocumentAsync();
-
-            // Serialize to JSON with deterministic settings
-            var json = SerializeToJson(result);
-
-            // Write baseline
-            var baselinePath = Path.Combine(projectPath, "Baselines", "AssemblyManager", "BasicAssembly.json");
-            var directory = Path.GetDirectoryName(baselinePath);
+            var directory = Path.Combine(projectPath, "Baselines", "AssemblyManager");
             
             if (!Directory.Exists(directory))
             {
-                Directory.CreateDirectory(directory!);
+                Directory.CreateDirectory(directory);
             }
-            
-            await File.WriteAllTextAsync(baselinePath, json);
+
+            // Generate baseline WITHOUT global module (default behavior)
+            var contextWithoutGlobals = new ProjectContext { IgnoreGlobalModule = true };
+            var resultWithoutGlobals = await manager.DocumentAsync(contextWithoutGlobals);
+            var jsonWithoutGlobals = SerializeToJson(resultWithoutGlobals);
+            var baselinePathWithoutGlobals = Path.Combine(directory, "BasicAssembly.json");
+            Console.WriteLine($"Writing baseline without globals to: {baselinePathWithoutGlobals}");
+            await File.WriteAllTextAsync(baselinePathWithoutGlobals, jsonWithoutGlobals);
+
+            // Generate baseline WITH global module
+            var contextWithGlobals = new ProjectContext { IgnoreGlobalModule = false };
+            var resultWithGlobals = await manager.DocumentAsync(contextWithGlobals);
+            var jsonWithGlobals = SerializeToJson(resultWithGlobals);
+            var baselinePathWithGlobals = Path.Combine(directory, "BasicAssembly_WithGlobals.json");
+            Console.WriteLine($"Writing baseline with globals to: {baselinePathWithGlobals}");
+            await File.WriteAllTextAsync(baselinePathWithGlobals, jsonWithGlobals);
         }
 
         [TestInitialize]

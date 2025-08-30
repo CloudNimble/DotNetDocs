@@ -26,6 +26,13 @@ namespace CloudNimble.DotNetDocs.Core
         public string Name => Symbol.IsGlobalNamespace ? string.Empty : Symbol.ToDisplayString();
 
         /// <summary>
+        /// Gets or sets the namespace summary.
+        /// </summary>
+        /// <value>A brief description of the namespace's purpose and functionality.</value>
+        [NotNull]
+        public string Summary { get; set; } = string.Empty;
+
+        /// <summary>
         /// Gets the Roslyn symbol for the namespace.
         /// </summary>
         /// <value>The underlying Roslyn namespace symbol containing metadata.</value>

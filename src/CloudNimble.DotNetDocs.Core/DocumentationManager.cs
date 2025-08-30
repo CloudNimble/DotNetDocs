@@ -261,6 +261,7 @@ namespace CloudNimble.DotNetDocs.Core
                 
                 if (Directory.Exists(namespacePath))
                 {
+                    await LoadConceptualFileAsync(namespacePath, DocConstants.SummaryFileName, content => ns.Summary = content, showPlaceholders);
                     await LoadConceptualFileAsync(namespacePath, DocConstants.UsageFileName, content => ns.Usage = content, showPlaceholders);
                     await LoadConceptualFileAsync(namespacePath, DocConstants.ExamplesFileName, content => ns.Examples = content, showPlaceholders);
                     await LoadConceptualFileAsync(namespacePath, DocConstants.BestPracticesFileName, content => ns.BestPractices = content, showPlaceholders);
@@ -444,14 +445,24 @@ namespace CloudNimble.DotNetDocs.Core
         {
             foreach (var ns in assembly.Namespaces)
             {
+                // Generate namespace-level conceptual files
+                var namespaceName = context.GetSafeNamespaceName(ns.Symbol);
+                var namespacePath = namespaceName == "global" 
+                    ? "global"
+                    : namespaceName.Replace('.', Path.DirectorySeparatorChar);
+                var namespaceDir = Path.Combine(outputPath, namespacePath);
+                
+                // Create namespace directory if it doesn't exist
+                Directory.CreateDirectory(namespaceDir);
+                
+                // Generate namespace summary file (only for namespaces, not types)
+                await GeneratePlaceholderFileAsync(namespaceDir, DocConstants.SummaryFileName,
+                    $"<!-- TODO: REMOVE THIS COMMENT AFTER YOU CUSTOMIZE THIS CONTENT -->\n# Summary\n\nProvide a brief description of the `{namespaceName}` namespace's purpose and functionality.\n");
+
                 foreach (var type in ns.Types)
                 {
-                    // Use ProjectContext to get the namespace folder path
-                    var namespaceName = context.GetSafeNamespaceName(ns.Symbol);
-                    var namespacePath = namespaceName == "global" 
-                        ? "global"
-                        : namespaceName.Replace('.', Path.DirectorySeparatorChar);
-                    var typeDir = Path.Combine(outputPath, namespacePath, type.Symbol.Name);
+                    // Type directory is within the namespace directory
+                    var typeDir = Path.Combine(namespaceDir, type.Symbol.Name);
 
                     // Create directory if it doesn't exist
                     Directory.CreateDirectory(typeDir);

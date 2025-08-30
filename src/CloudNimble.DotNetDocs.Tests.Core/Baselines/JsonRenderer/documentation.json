@@ -11,6 +11,7 @@
     "namespaces": [
       {
         "name": "CloudNimble.DotNetDocs.Tests.Shared",
+        "summary": "",
         "usage": "",
         "examples": "",
         "bestPractices": "",
@@ -307,6 +308,7 @@
       },
       {
         "name": "CloudNimble.DotNetDocs.Tests.Shared.AccessModifiers",
+        "summary": "",
         "usage": "",
         "examples": "",
         "bestPractices": "",
@@ -420,6 +422,7 @@
       },
       {
         "name": "CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios",
+        "summary": "",
         "usage": "",
         "examples": "",
         "bestPractices": "",
@@ -1100,6 +1103,7 @@
       },
       {
         "name": "CloudNimble.DotNetDocs.Tests.Shared.EdgeCases",
+        "summary": "",
         "usage": "",
         "examples": "",
         "bestPractices": "",
@@ -1448,6 +1452,7 @@
       },
       {
         "name": "CloudNimble.DotNetDocs.Tests.Shared.Parameters",
+        "summary": "",
         "usage": "",
         "examples": "",
         "bestPractices": "",

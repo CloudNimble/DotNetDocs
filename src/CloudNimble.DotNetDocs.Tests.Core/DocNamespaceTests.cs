@@ -36,9 +36,27 @@ namespace CloudNimble.DotNetDocs.Tests.Core
 
             docNamespace.Symbol.Should().Be(namespaceDoc.Symbol);
             docNamespace.Types.Should().BeEmpty();
+            docNamespace.Summary.Should().BeEmpty();
             docNamespace.Usage.Should().BeEmpty();
             docNamespace.Examples.Should().BeEmpty();
             docNamespace.RelatedApis.Should().BeEmpty();
+        }
+
+        [TestMethod]
+        public void Summary_CanBeSetAndRetrieved()
+        {
+            var assembly = GetTestsDotSharedAssembly();
+            var namespaceDoc = assembly.Namespaces.FirstOrDefault(n => !n.Symbol.IsGlobalNamespace);
+            
+            namespaceDoc.Should().NotBeNull("Test assembly should contain at least one non-global namespace");
+            
+            var docNamespace = new DocNamespace(namespaceDoc!.Symbol);
+            
+            // Test setting the summary
+            var expectedSummary = "This namespace provides core functionality for the application.";
+            docNamespace.Summary = expectedSummary;
+            
+            docNamespace.Summary.Should().Be(expectedSummary);
         }
 
         [TestMethod]
