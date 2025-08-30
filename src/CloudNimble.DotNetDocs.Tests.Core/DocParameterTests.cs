@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using System.Threading.Tasks;
 using CloudNimble.DotNetDocs.Core;
 using CloudNimble.DotNetDocs.Tests.Shared;
 using FluentAssertions;
@@ -11,7 +10,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core
 {
 
     [TestClass]
-    public class DocParameterTests : TestBase
+    public class DocParameterTests : DotNetDocsTestBase
     {
 
         #region Public Methods
@@ -25,14 +24,28 @@ namespace CloudNimble.DotNetDocs.Tests.Core
         }
 
         [TestMethod]
-        public async Task Constructor_WithRequiredParameter_SetsProperties()
+        public void Constructor_WithRequiredParameter_SetsProperties()
         {
-            var compilation = await CreateCompilationAsync();
-            var typeSymbol = compilation.GetTypeByMetadataName("CloudNimble.DotNetDocs.Tests.Shared.SampleClass");
-            var methodSymbol = typeSymbol!.GetMembers("DoSomething").FirstOrDefault() as IMethodSymbol;
-            var inputParam = methodSymbol!.Parameters.First(p => p.Name == "input");
+            var assembly = GetTestsDotSharedAssembly();
+            var type = assembly.Namespaces
+                .SelectMany(n => n.Types)
+                .FirstOrDefault(t => t.Symbol.Name == "SampleClass");
+            
+            type.Should().NotBeNull("SampleClass should exist in test assembly");
+            
+            var methodMember = type!.Members
+                .FirstOrDefault(m => m.Symbol.Name == "DoSomething");
+            
+            methodMember.Should().NotBeNull("DoSomething method should exist in SampleClass");
+            
+            var methodSymbol = methodMember!.Symbol as IMethodSymbol;
+            methodSymbol.Should().NotBeNull("Symbol should be an IMethodSymbol");
+            
+            var inputParam = methodSymbol!.Parameters.FirstOrDefault(p => p.Name == "input");
+            
+            inputParam.Should().NotBeNull("'input' parameter should exist in DoSomething method");
 
-            var docParam = new DocParameter(inputParam);
+            var docParam = new DocParameter(inputParam!);
 
             docParam.Symbol.Should().Be(inputParam);
             docParam.IsOptional.Should().BeFalse();
@@ -43,14 +56,28 @@ namespace CloudNimble.DotNetDocs.Tests.Core
         }
 
         [TestMethod]
-        public async Task Constructor_WithOptionalParameter_SetsDefaultValue()
+        public void Constructor_WithOptionalParameter_SetsDefaultValue()
         {
-            var compilation = await CreateCompilationAsync();
-            var typeSymbol = compilation.GetTypeByMetadataName("CloudNimble.DotNetDocs.Tests.Shared.SampleClass");
-            var methodSymbol = typeSymbol!.GetMembers("MethodWithOptional").FirstOrDefault() as IMethodSymbol;
-            var optionalParam = methodSymbol!.Parameters.First(p => p.Name == "optional");
+            var assembly = GetTestsDotSharedAssembly();
+            var type = assembly.Namespaces
+                .SelectMany(n => n.Types)
+                .FirstOrDefault(t => t.Symbol.Name == "SampleClass");
+            
+            type.Should().NotBeNull("SampleClass should exist in test assembly");
+            
+            var methodMember = type!.Members
+                .FirstOrDefault(m => m.Symbol.Name == "MethodWithOptional");
+            
+            methodMember.Should().NotBeNull("MethodWithOptional method should exist in SampleClass");
+            
+            var methodSymbol = methodMember!.Symbol as IMethodSymbol;
+            methodSymbol.Should().NotBeNull("Symbol should be an IMethodSymbol");
+            
+            var optionalParam = methodSymbol!.Parameters.FirstOrDefault(p => p.Name == "optional");
+            
+            optionalParam.Should().NotBeNull("'optional' parameter should exist in MethodWithOptional method");
 
-            var docParam = new DocParameter(optionalParam);
+            var docParam = new DocParameter(optionalParam!);
 
             docParam.Symbol.Should().Be(optionalParam);
             docParam.IsOptional.Should().BeTrue();
@@ -60,12 +87,26 @@ namespace CloudNimble.DotNetDocs.Tests.Core
         }
 
         [TestMethod]
-        public async Task Constructor_WithParamsParameter_SetsIsParams()
+        public void Constructor_WithParamsParameter_SetsIsParams()
         {
-            var compilation = await CreateCompilationAsync();
-            var typeSymbol = compilation.GetTypeByMetadataName("CloudNimble.DotNetDocs.Tests.Shared.SampleClass");
-            var methodSymbol = typeSymbol!.GetMembers("MethodWithParams").FirstOrDefault() as IMethodSymbol;
-            var itemsParam = methodSymbol!.Parameters.First();
+            var assembly = GetTestsDotSharedAssembly();
+            var type = assembly.Namespaces
+                .SelectMany(n => n.Types)
+                .FirstOrDefault(t => t.Symbol.Name == "SampleClass");
+            
+            type.Should().NotBeNull("SampleClass should exist in test assembly");
+            
+            var methodMember = type!.Members
+                .FirstOrDefault(m => m.Symbol.Name == "MethodWithParams");
+            
+            methodMember.Should().NotBeNull("MethodWithParams method should exist in SampleClass");
+            
+            var methodSymbol = methodMember!.Symbol as IMethodSymbol;
+            methodSymbol.Should().NotBeNull("Symbol should be an IMethodSymbol");
+            
+            methodSymbol!.Parameters.Should().NotBeEmpty("MethodWithParams should have parameters");
+            
+            var itemsParam = methodSymbol.Parameters.First();
 
             var docParam = new DocParameter(itemsParam);
 

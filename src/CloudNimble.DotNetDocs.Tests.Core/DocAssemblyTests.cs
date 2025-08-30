@@ -1,5 +1,5 @@
 using System;
-using System.Threading.Tasks;
+using System.Linq;
 using CloudNimble.DotNetDocs.Core;
 using CloudNimble.DotNetDocs.Tests.Shared;
 using FluentAssertions;
@@ -9,7 +9,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core
 {
 
     [TestClass]
-    public class DocAssemblyTests : TestBase
+    public class DocAssemblyTests : DotNetDocsTestBase
     {
 
         #region Public Methods
@@ -23,15 +23,15 @@ namespace CloudNimble.DotNetDocs.Tests.Core
         }
 
         [TestMethod]
-        public async Task Constructor_WithValidSymbol_SetsProperties()
+        public void Constructor_WithValidSymbol_SetsProperties()
         {
-            var compilation = await CreateCompilationAsync();
-            var assemblySymbol = compilation.Assembly;
-            assemblySymbol.Should().NotBeNull();
+            var assembly = GetTestsDotSharedAssembly();
+            
+            // The assembly is already a DocAssembly from AssemblyManager
+            // Create a new one to test the constructor
+            var docAssembly = new DocAssembly(assembly.Symbol);
 
-            var docAssembly = new DocAssembly(assemblySymbol);
-
-            docAssembly.Symbol.Should().Be(assemblySymbol);
+            docAssembly.Symbol.Should().Be(assembly.Symbol);
             docAssembly.Namespaces.Should().BeEmpty();
             docAssembly.Usage.Should().BeEmpty();
             docAssembly.Examples.Should().BeEmpty();
@@ -40,14 +40,17 @@ namespace CloudNimble.DotNetDocs.Tests.Core
         }
 
         [TestMethod]
-        public async Task Namespaces_CanBeAdded()
+        public void Namespaces_CanBeAdded()
         {
-            var compilation = await CreateCompilationAsync();
-            var assemblySymbol = compilation.Assembly;
-            var docAssembly = new DocAssembly(assemblySymbol);
+            var assembly = GetTestsDotSharedAssembly();
+            
+            // Create a new DocAssembly to test adding namespaces
+            var docAssembly = new DocAssembly(assembly.Symbol);
 
-            var namespaceSymbol = compilation.GlobalNamespace;
-            var docNamespace = new DocNamespace(namespaceSymbol);
+            var namespaceDoc = assembly.Namespaces.FirstOrDefault(n => !n.Symbol.IsGlobalNamespace);
+            namespaceDoc.Should().NotBeNull("Test assembly should contain at least one non-global namespace");
+            
+            var docNamespace = new DocNamespace(namespaceDoc!.Symbol);
 
             docAssembly.Namespaces.Add(docNamespace);
 

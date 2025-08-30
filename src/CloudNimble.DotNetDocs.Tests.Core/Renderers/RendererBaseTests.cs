@@ -3,13 +3,14 @@ using System.Linq;
 using CloudNimble.DotNetDocs.Core;
 using CloudNimble.DotNetDocs.Core.Configuration;
 using CloudNimble.DotNetDocs.Core.Renderers;
+using CloudNimble.DotNetDocs.Tests.Shared;
 using FluentAssertions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace CloudNimble.DotNetDocs.Tests.Core
+namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
 {
 
     /// <summary>

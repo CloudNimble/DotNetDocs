@@ -15,8 +15,9 @@ using FluentAssertions;
 using Microsoft.CodeAnalysis;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using YamlDotNet.Serialization;
+using YamlDotNet.Serialization.NamingConventions;
 
-namespace CloudNimble.DotNetDocs.Tests.Core
+namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
 {
 
     /// <summary>
@@ -65,8 +66,8 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             var assemblyPath = typeof(SimpleClass).Assembly.Location;
             var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
             using var manager = new AssemblyManager(assemblyPath, xmlPath);
-            var model = await manager.DocumentAsync();
-            var context = new ProjectContext();
+            var context = new ProjectContext { IgnoreGlobalModule = false };
+            var model = await manager.DocumentAsync(context);
 
             // Act
             await _renderer.RenderAsync(model, _testOutputPath, context);
@@ -96,8 +97,8 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             var assemblyPath = typeof(SampleClass).Assembly.Location;
             var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
             using var manager = new AssemblyManager(assemblyPath, xmlPath);
-            var model = await manager.DocumentAsync();
-            var context = new ProjectContext();
+            var context = new ProjectContext { IgnoreGlobalModule = false };
+            var model = await manager.DocumentAsync(context);
 
             // Act
             await _renderer.RenderAsync(model, _testOutputPath, context);
@@ -114,8 +115,8 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             var assemblyPath = typeof(SampleClass).Assembly.Location;
             var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
             using var manager = new AssemblyManager(assemblyPath, xmlPath);
-            var model = await manager.DocumentAsync();
-            var context = new ProjectContext();
+            var context = new ProjectContext { IgnoreGlobalModule = false };
+            var model = await manager.DocumentAsync(context);
 
             // Act
             await _renderer.RenderAsync(model, _testOutputPath, context);
@@ -135,11 +136,11 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             var assemblyPath = typeof(SampleClass).Assembly.Location;
             var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
             using var manager = new AssemblyManager(assemblyPath, xmlPath);
-            var model = await manager.DocumentAsync();
+            var context = new ProjectContext { IgnoreGlobalModule = false };
+            var model = await manager.DocumentAsync(context);
             model.Usage = "Test usage";
             model.Examples = "Test examples";
             model.BestPractices = "Test best practices";
-            var context = new ProjectContext();
 
             // Act
             await _renderer.RenderAsync(model, _testOutputPath, context);
@@ -166,8 +167,8 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             var assemblyPath = typeof(SampleClass).Assembly.Location;
             var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
             using var manager = new AssemblyManager(assemblyPath, xmlPath);
-            var model = await manager.DocumentAsync();
-            var context = new ProjectContext();
+            var context = new ProjectContext { IgnoreGlobalModule = false };
+            var model = await manager.DocumentAsync(context);
 
             // Act
             await _renderer.RenderAsync(model, _testOutputPath, context);
@@ -206,8 +207,8 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             var assemblyPath = typeof(SampleClass).Assembly.Location;
             var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
             using var manager = new AssemblyManager(assemblyPath, xmlPath);
-            var model = await manager.DocumentAsync();
-            var context = new ProjectContext();
+            var context = new ProjectContext { IgnoreGlobalModule = false };
+            var model = await manager.DocumentAsync(context);
 
             // Act
             Func<Task> act = async () => await _renderer.RenderAsync(model, null, context);
@@ -223,7 +224,8 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             var assemblyPath = typeof(SampleClass).Assembly.Location;
             var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
             using var manager = new AssemblyManager(assemblyPath, xmlPath);
-            var model = await manager.DocumentAsync();
+            var context = new ProjectContext { IgnoreGlobalModule = false };
+            var model = await manager.DocumentAsync(context);
 
             // Act
             Func<Task> act = async () => await _renderer.RenderAsync(model, _testOutputPath, null);
@@ -243,8 +245,8 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             var assemblyPath = typeof(SampleClass).Assembly.Location;
             var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
             using var manager = new AssemblyManager(assemblyPath, xmlPath);
-            var model = await manager.DocumentAsync();
-            var context = new ProjectContext();
+            var context = new ProjectContext { IgnoreGlobalModule = false };
+            var model = await manager.DocumentAsync(context);
 
             // Act
             await _renderer.RenderAsync(model, _testOutputPath, context);
@@ -274,8 +276,8 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             var assemblyPath = typeof(ClassWithMethods).Assembly.Location;
             var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
             using var manager = new AssemblyManager(assemblyPath, xmlPath);
-            var model = await manager.DocumentAsync();
-            var context = new ProjectContext();
+            var context = new ProjectContext { IgnoreGlobalModule = false };
+            var model = await manager.DocumentAsync(context);
 
             // Act
             await _renderer.RenderAsync(model, _testOutputPath, context);
@@ -317,8 +319,8 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             var assemblyPath = typeof(ClassWithProperties).Assembly.Location;
             var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
             using var manager = new AssemblyManager(assemblyPath, xmlPath);
-            var model = await manager.DocumentAsync();
-            var context = new ProjectContext();
+            var context = new ProjectContext { IgnoreGlobalModule = false };
+            var model = await manager.DocumentAsync(context);
 
             // Act
             await _renderer.RenderAsync(model, _testOutputPath, context);
@@ -365,8 +367,8 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             var assemblyPath = typeof(ParameterVariations).Assembly.Location;
             var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
             using var manager = new AssemblyManager(assemblyPath, xmlPath);
-            var model = await manager.DocumentAsync();
-            var context = new ProjectContext();
+            var context = new ProjectContext { IgnoreGlobalModule = false };
+            var model = await manager.DocumentAsync(context);
 
             // Act
             await _renderer.RenderAsync(model, _testOutputPath, context);
@@ -425,10 +427,10 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             var assemblyPath = typeof(SampleClass).Assembly.Location;
             var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
             using var manager = new AssemblyManager(assemblyPath, xmlPath);
-            var model = await manager.DocumentAsync();
+            var context = new ProjectContext { IgnoreGlobalModule = false };
+            var model = await manager.DocumentAsync(context);
             model.BestPractices = "Test best practices";
             model.RelatedApis = new List<string> { "System.Object" };
-            var context = new ProjectContext();
 
             // Act
             await _renderer.RenderAsync(model, _testOutputPath, context);
@@ -465,8 +467,8 @@ namespace CloudNimble.DotNetDocs.Tests.Core
                 var assemblyPath = typeof(SimpleClass).Assembly.Location;
                 var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
                 using var manager = new AssemblyManager(assemblyPath, xmlPath);
-                var model = await manager.DocumentAsync();
-                var context = new ProjectContext();
+                var context = new ProjectContext { IgnoreGlobalModule = false };
+                var model = await manager.DocumentAsync(context);
 
                 await renderer.RenderAsync(model, tempOutputPath, context);
 
@@ -506,9 +508,10 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             var assemblyPath = typeof(SampleClass).Assembly.Location;
             var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
             using var manager = new AssemblyManager(assemblyPath, xmlPath);
-            var model = await manager.DocumentAsync();
+            var context = new ProjectContext { IgnoreGlobalModule = false };
+            var model = await manager.DocumentAsync(context);
             
-            var context = new ProjectContext
+            context = new ProjectContext
             {
                 FileNamingOptions = new FileNamingOptions(NamespaceMode.File, '-')
             };
@@ -529,9 +532,10 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             var assemblyPath = typeof(SampleClass).Assembly.Location;
             var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
             using var manager = new AssemblyManager(assemblyPath, xmlPath);
-            var model = await manager.DocumentAsync();
+            var context = new ProjectContext { IgnoreGlobalModule = false };
+            var model = await manager.DocumentAsync(context);
             
-            var context = new ProjectContext
+            context = new ProjectContext
             {
                 FileNamingOptions = new FileNamingOptions(NamespaceMode.File, '_')
             };
@@ -552,9 +556,10 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             var assemblyPath = typeof(SampleClass).Assembly.Location;
             var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
             using var manager = new AssemblyManager(assemblyPath, xmlPath);
-            var model = await manager.DocumentAsync();
+            var context = new ProjectContext { IgnoreGlobalModule = false };
+            var model = await manager.DocumentAsync(context);
             
-            var context = new ProjectContext
+            context = new ProjectContext
             {
                 FileNamingOptions = new FileNamingOptions(NamespaceMode.File, '.')
             };
@@ -575,9 +580,10 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             var assemblyPath = typeof(SampleClass).Assembly.Location;
             var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
             using var manager = new AssemblyManager(assemblyPath, xmlPath);
-            var model = await manager.DocumentAsync();
+            var context = new ProjectContext { IgnoreGlobalModule = false };
+            var model = await manager.DocumentAsync(context);
             
-            var context = new ProjectContext
+            context = new ProjectContext
             {
                 FileNamingOptions = new FileNamingOptions(NamespaceMode.Folder)
             };
@@ -618,10 +624,11 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             var assemblyPath = typeof(SampleClass).Assembly.Location;
             var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
             using var manager = new AssemblyManager(assemblyPath, xmlPath);
-            var model = await manager.DocumentAsync();
+            var context = new ProjectContext { IgnoreGlobalModule = false };
+            var model = await manager.DocumentAsync(context);
             
             // Set a separator that should be ignored in Folder mode
-            var context = new ProjectContext
+            context = new ProjectContext
             {
                 FileNamingOptions = new FileNamingOptions(NamespaceMode.Folder, '_')
             };
@@ -652,9 +659,10 @@ namespace CloudNimble.DotNetDocs.Tests.Core
                 var assemblyPath = typeof(SampleClass).Assembly.Location;
                 var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
                 using var manager = new AssemblyManager(assemblyPath, xmlPath);
-                var model = await manager.DocumentAsync();
+                var context = new ProjectContext { IgnoreGlobalModule = false };
+                var model = await manager.DocumentAsync(context);
                 
-                var context = new ProjectContext
+                context = new ProjectContext
                 {
                     FileNamingOptions = new FileNamingOptions(NamespaceMode.File, separator)
                 };
@@ -799,6 +807,455 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             actualYaml.Should().BeEquivalentTo(baselineYaml, 
                 $"YAML output should match baseline at {baselinePath}");
         }
+
+        #endregion
+
+        #region Internal Method Tests
+
+        #region SerializeNamespaces Tests
+
+        [TestMethod]
+        [DataRow(true)]
+        [DataRow(false)]
+        public void SerializeNamespaces_Should_Return_List_Of_Namespace_Dictionaries(bool ignoreGlobalModule)
+        {
+            // Arrange
+            var assembly = GetTestsDotSharedAssembly(ignoreGlobalModule);
+            var context = new ProjectContext { OutputPath = _testOutputPath };
+            var renderer = new YamlRenderer(context);
+
+            // Act
+            var result = renderer.SerializeNamespaces(assembly);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Should().BeOfType<List<Dictionary<string, object>>>();
+            var namespaces = result as List<Dictionary<string, object>>;
+            namespaces.Should().HaveCount(assembly.Namespaces.Count);
+            
+            // When ignoreGlobalModule is true, global namespace should not be present
+            if (ignoreGlobalModule)
+            {
+                assembly.Namespaces.Should().NotContain(ns => ns.Symbol.IsGlobalNamespace);
+            }
+        }
+
+        [TestMethod]
+        public void SerializeNamespaces_Should_Include_Namespace_Properties()
+        {
+            // Arrange
+            var assembly = GetTestsDotSharedAssembly();
+            var context = new ProjectContext { OutputPath = _testOutputPath };
+            var renderer = new YamlRenderer(context);
+
+            // Act
+            var result = renderer.SerializeNamespaces(assembly) as List<Dictionary<string, object>>;
+
+            // Assert
+            result.Should().NotBeNull();
+            var firstNamespace = result!.First();
+            firstNamespace.Should().ContainKey("name");
+            firstNamespace.Should().ContainKey("types");
+            firstNamespace.Should().ContainKey("usage");
+        }
+
+        #endregion
+
+        #region SerializeTypes Tests
+
+        [TestMethod]
+        public void SerializeTypes_Should_Return_List_Of_Type_Dictionaries()
+        {
+            // Arrange
+            var assembly = GetTestsDotSharedAssembly();
+            var ns = assembly.Namespaces.First();
+            var context = new ProjectContext { OutputPath = _testOutputPath };
+            var renderer = new YamlRenderer(context);
+
+            // Act
+            var result = renderer.SerializeTypes(ns);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Should().BeOfType<List<Dictionary<string, object>>>();
+            var types = result as List<Dictionary<string, object>>;
+            types.Should().HaveCount(ns.Types.Count);
+        }
+
+        [TestMethod]
+        public void SerializeTypes_Should_Include_Type_Properties()
+        {
+            // Arrange
+            var assembly = GetTestsDotSharedAssembly();
+            var ns = assembly.Namespaces.First();
+            var context = new ProjectContext { OutputPath = _testOutputPath };
+            var renderer = new YamlRenderer(context);
+
+            // Act
+            var result = renderer.SerializeTypes(ns) as List<Dictionary<string, object>>;
+
+            // Assert
+            result.Should().NotBeNull();
+            var firstType = result!.First();
+            firstType.Should().ContainKey("name");
+            firstType.Should().ContainKey("fullName");
+            firstType.Should().ContainKey("kind");
+            firstType.Should().ContainKey("baseType");
+            firstType.Should().ContainKey("members");
+        }
+
+        #endregion
+
+        #region SerializeMembers Tests
+
+        [TestMethod]
+        public void SerializeMembers_Should_Return_List_Of_Member_Dictionaries()
+        {
+            // Arrange
+            var assembly = GetTestsDotSharedAssembly();
+            var type = assembly.Namespaces.First().Types.First();
+            var context = new ProjectContext { OutputPath = _testOutputPath };
+            var renderer = new YamlRenderer(context);
+
+            // Act
+            var result = renderer.SerializeMembers(type);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Should().BeOfType<List<Dictionary<string, object>>>();
+            var members = result as List<Dictionary<string, object>>;
+            members.Should().HaveCount(type.Members.Count);
+        }
+
+        [TestMethod]
+        public void SerializeMembers_Should_Include_Member_Properties()
+        {
+            // Arrange
+            var assembly = GetTestsDotSharedAssembly();
+            var type = assembly.Namespaces.First().Types.First();
+            var context = new ProjectContext { OutputPath = _testOutputPath };
+            var renderer = new YamlRenderer(context);
+
+            // Act
+            var result = renderer.SerializeMembers(type) as List<Dictionary<string, object>>;
+
+            // Assert
+            result.Should().NotBeNull();
+            if (result != null && result.Any())
+            {
+                var firstMember = result.First();
+                firstMember.Should().ContainKey("name");
+                firstMember.Should().ContainKey("kind");
+                firstMember.Should().ContainKey("accessibility");
+                firstMember.Should().ContainKey("signature");
+            }
+        }
+
+        #endregion
+
+        #region SerializeParameters Tests
+
+        [TestMethod]
+        public void SerializeParameters_Should_Return_Null_When_No_Parameters()
+        {
+            // Arrange
+            var assembly = GetTestsDotSharedAssembly();
+            var type = assembly.Namespaces.First().Types.First();
+            var memberWithoutParams = type.Members.FirstOrDefault(m => 
+                m.Symbol.Kind == SymbolKind.Method && 
+                (m.Symbol as IMethodSymbol)?.Parameters.Length == 0);
+            var context = new ProjectContext { OutputPath = _testOutputPath };
+            var renderer = new YamlRenderer(context);
+
+            if (memberWithoutParams != null)
+            {
+                // Act
+                var result = renderer.SerializeParameters(memberWithoutParams);
+                
+                // Assert
+                result.Should().BeNull();
+            }
+        }
+
+        [TestMethod]
+        public void SerializeParameters_Should_Return_List_When_Parameters_Present()
+        {
+            // Arrange
+            var assembly = GetTestsDotSharedAssembly();
+            var type = assembly.Namespaces
+                .SelectMany(n => n.Types)
+                .FirstOrDefault(t => t.Symbol.Name == "ClassWithMethods");
+            
+            type.Should().NotBeNull("ClassWithMethods should exist in test assembly");
+            
+            var memberWithParams = type!.Members.FirstOrDefault(m => m.Symbol.Name == "Calculate");
+            memberWithParams.Should().NotBeNull("Calculate method should exist in ClassWithMethods");
+
+            var context = new ProjectContext { OutputPath = _testOutputPath };
+            var renderer = new YamlRenderer(context);
+
+            // Act
+            var result = renderer.SerializeParameters(memberWithParams!);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Should().BeOfType<List<Dictionary<string, object>>>();
+            var parameters = result as List<Dictionary<string, object>>;
+            parameters!.Should().HaveCount(2); // Calculate method has 2 parameters
+        }
+
+        [TestMethod]
+        public void SerializeParameters_Should_Include_Parameter_Properties()
+        {
+            // Arrange
+            var assembly = GetTestsDotSharedAssembly();
+            var type = assembly.Namespaces
+                .SelectMany(n => n.Types)
+                .FirstOrDefault(t => t.Symbol.Name == "ClassWithMethods");
+            
+            type.Should().NotBeNull("ClassWithMethods should exist in test assembly");
+            
+            var memberWithParams = type.Members.FirstOrDefault(m => m.Symbol.Name == "Calculate");
+            memberWithParams.Should().NotBeNull("Calculate method should exist in ClassWithMethods");
+
+            var context = new ProjectContext { OutputPath = _testOutputPath };
+            var renderer = new YamlRenderer(context);
+
+            // Act
+            var result = renderer.SerializeParameters(memberWithParams) as List<Dictionary<string, object>>;
+
+            // Assert
+            result.Should().NotBeNull();
+            var firstParam = result!.First();
+            firstParam.Should().ContainKey("name");
+            firstParam.Should().ContainKey("type");
+            firstParam.Should().ContainKey("isOptional");
+            firstParam.Should().ContainKey("usage");
+        }
+
+        #endregion
+
+        #region RenderNamespaceFileAsync Tests
+
+        [TestMethod]
+        public async Task RenderNamespaceFileAsync_Should_Create_Namespace_File()
+        {
+            // Arrange
+            var assembly = GetTestsDotSharedAssembly();
+            var ns = assembly.Namespaces.First();
+            var context = new ProjectContext { OutputPath = _testOutputPath };
+            var renderer = new YamlRenderer(context);
+
+            // Act
+            await renderer.RenderNamespaceFileAsync(ns, _testOutputPath);
+
+            // Assert
+            var expectedFileName = renderer.GetNamespaceFileName(ns, "yaml");
+            var nsPath = Path.Combine(_testOutputPath, expectedFileName);
+            File.Exists(nsPath).Should().BeTrue();
+        }
+
+        [TestMethod]
+        public async Task RenderNamespaceFileAsync_Should_Include_Namespace_Data()
+        {
+            // Arrange
+            var assembly = GetTestsDotSharedAssembly();
+            var ns = assembly.Namespaces.First();
+            var context = new ProjectContext { OutputPath = _testOutputPath };
+            var renderer = new YamlRenderer(context);
+            var camelCaseDeserializer = new DeserializerBuilder()
+                .WithNamingConvention(CamelCaseNamingConvention.Instance)
+                .Build();
+
+            // Act
+            await renderer.RenderNamespaceFileAsync(ns, _testOutputPath);
+
+            // Assert
+            var expectedFileName = renderer.GetNamespaceFileName(ns, "yaml");
+            var nsPath = Path.Combine(_testOutputPath, expectedFileName);
+            var content = await File.ReadAllTextAsync(nsPath);
+            var data = camelCaseDeserializer.Deserialize<Dictionary<string, object>>(content);
+
+            data.Should().ContainKey("namespace");
+            var namespaceData = data["namespace"] as Dictionary<object, object>;
+            namespaceData.Should().NotBeNull();
+            namespaceData!.Should().ContainKey("name");
+            var expectedName = ns.Symbol.IsGlobalNamespace ? "global" : ns.Symbol.ToDisplayString();
+            namespaceData!["name"].Should().Be(expectedName);
+        }
+
+        #endregion
+
+        #region RenderTableOfContentsAsync Tests
+
+        [TestMethod]
+        public async Task RenderTableOfContentsAsync_Should_Create_TOC_File()
+        {
+            // Arrange
+            var assembly = GetTestsDotSharedAssembly();
+            var context = new ProjectContext { OutputPath = _testOutputPath };
+            var renderer = new YamlRenderer(context);
+
+            // Act
+            await renderer.RenderTableOfContentsAsync(assembly, _testOutputPath);
+
+            // Assert
+            var tocPath = Path.Combine(_testOutputPath, "toc.yaml");
+            File.Exists(tocPath).Should().BeTrue();
+        }
+
+        [TestMethod]
+        public async Task RenderTableOfContentsAsync_Should_Include_All_Namespaces()
+        {
+            // Arrange
+            var assembly = GetTestsDotSharedAssembly();
+            var context = new ProjectContext { OutputPath = _testOutputPath };
+            var renderer = new YamlRenderer(context);
+
+            // Act
+            await renderer.RenderTableOfContentsAsync(assembly, _testOutputPath);
+
+            // Assert
+            var tocPath = Path.Combine(_testOutputPath, "toc.yaml");
+            var content = await File.ReadAllTextAsync(tocPath);
+            var data = _yamlDeserializer.Deserialize<Dictionary<string, object>>(content);
+
+            data.Should().ContainKey("items");
+            var items = data["items"] as List<object>;
+            items.Should().NotBeNull();
+            items!.Should().HaveCount(assembly.Namespaces.Count);
+        }
+
+        #endregion
+
+        #region GetReturnType Tests
+
+        [TestMethod]
+        public void GetReturnType_Should_Return_Method_ReturnType()
+        {
+            // Arrange
+            var assembly = GetTestsDotSharedAssembly();
+            var type = assembly.Namespaces
+                .SelectMany(n => n.Types)
+                .FirstOrDefault(t => t.Symbol.Name == "ClassWithMethods");
+            
+            type.Should().NotBeNull("ClassWithMethods should exist in test assembly");
+            
+            var method = type!.Members.FirstOrDefault(m => m.Symbol.Name == "Calculate");
+            method.Should().NotBeNull("Calculate method should exist in ClassWithMethods");
+
+            var context = new ProjectContext { OutputPath = _testOutputPath };
+            var renderer = new YamlRenderer(context);
+
+            // Act
+            var result = renderer.GetReturnType(method!);
+
+            // Assert
+            result.Should().Be("int");
+        }
+
+        [TestMethod]
+        public void GetReturnType_Should_Return_Property_Type()
+        {
+            // Arrange
+            var assembly = GetTestsDotSharedAssembly();
+            var type = assembly.Namespaces
+                .SelectMany(n => n.Types)
+                .FirstOrDefault(t => t.Symbol.Name == "ClassWithProperties");
+            
+            type.Should().NotBeNull("ClassWithProperties should exist in test assembly");
+            
+            var property = type!.Members.FirstOrDefault(m => m.Symbol.Kind == SymbolKind.Property && m.Symbol.Name == "Name");
+            property.Should().NotBeNull("Name property should exist in ClassWithProperties");
+
+            var context = new ProjectContext { OutputPath = _testOutputPath };
+            var renderer = new YamlRenderer(context);
+
+            // Act
+            var result = renderer.GetReturnType(property!);
+
+            // Assert
+            result.Should().Be("string");
+        }
+
+        [TestMethod]
+        public void GetReturnType_Should_Return_Null_For_Constructor()
+        {
+            // Arrange
+            var assembly = GetTestsDotSharedAssembly();
+            var type = assembly.Namespaces.First().Types.First();
+            var constructor = type.Members.FirstOrDefault(m => 
+                m.Symbol.Kind == SymbolKind.Method && 
+                (m.Symbol as IMethodSymbol)?.MethodKind == MethodKind.Constructor);
+
+            if (constructor != null)
+            {
+                var context = new ProjectContext { OutputPath = _testOutputPath };
+                var renderer = new YamlRenderer(context);
+
+                // Act
+                var result = renderer.GetReturnType(constructor);
+                
+                // Assert
+                result.Should().BeNull();
+            }
+        }
+
+        #endregion
+
+        #region GetModifiers Tests
+
+        [TestMethod]
+        public void GetModifiers_Should_Return_Method_Modifiers()
+        {
+            // Arrange
+            var assembly = GetTestsDotSharedAssembly();
+            var type = assembly.Namespaces
+                .SelectMany(n => n.Types)
+                .FirstOrDefault(t => t.Symbol.Name == "BaseClass");
+            
+            type.Should().NotBeNull("BaseClass should exist in test assembly");
+            
+            var method = type!.Members.FirstOrDefault(m => m.Symbol.Name == "VirtualMethod");
+            method.Should().NotBeNull("VirtualMethod should exist in BaseClass");
+
+            var context = new ProjectContext { OutputPath = _testOutputPath };
+            var renderer = new YamlRenderer(context);
+
+            // Act
+            var result = renderer.GetModifiers(method!);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Should().Contain("virtual");
+        }
+
+        [TestMethod]
+        public void GetModifiers_Should_Return_Empty_List_For_Non_Modified_Members()
+        {
+            // Arrange
+            var assembly = GetTestsDotSharedAssembly();
+            var type = assembly.Namespaces
+                .SelectMany(n => n.Types)
+                .FirstOrDefault(t => t.Symbol.Name == "ClassWithMethods");
+            
+            type.Should().NotBeNull("ClassWithMethods should exist in test assembly");
+            
+            var method = type!.Members.FirstOrDefault(m => m.Symbol.Name == "Calculate");
+            method.Should().NotBeNull("Calculate method should exist in ClassWithMethods");
+
+            var context = new ProjectContext { OutputPath = _testOutputPath };
+            var renderer = new YamlRenderer(context);
+
+            // Act
+            var result = renderer.GetModifiers(method!);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Should().BeEmpty();
+        }
+
+        #endregion
 
         #endregion
 

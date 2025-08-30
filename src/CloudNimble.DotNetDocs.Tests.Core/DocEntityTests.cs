@@ -1,4 +1,3 @@
-using System;
 using CloudNimble.Breakdance.Assemblies;
 using CloudNimble.DotNetDocs.Core;
 using FluentAssertions;

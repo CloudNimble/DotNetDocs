@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CloudNimble.Breakdance.Assemblies;
 using CloudNimble.DotNetDocs.Core;
+using CloudNimble.DotNetDocs.Tests.Shared;
 using CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios;
 using FluentAssertions;
 using Microsoft.CodeAnalysis;
@@ -287,8 +288,10 @@ namespace CloudNimble.DotNetDocs.Tests.Core
         public async Task DocumentAsync_ProducesConsistentBaseline()
         {
             var manager = new AssemblyManager(testAssemblyPath, testXmlPath);
+            // Use IgnoreGlobalModule = false to match the baseline which includes the global namespace
+            var context = new ProjectContext { IgnoreGlobalModule = false };
 
-            var result = await manager.DocumentAsync();
+            var result = await manager.DocumentAsync(context);
 
             // Debug: Check if the result has the expected structure
             result.Should().NotBeNull();
@@ -320,7 +323,6 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             }
         }
 
-        //[Ignore]
         //[TestMethod]
         //[DataRow(projectPath)]
         [BreakdanceManifestGenerator]

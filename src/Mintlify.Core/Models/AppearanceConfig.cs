@@ -1,6 +1,4 @@
-﻿using System.Text.Json.Serialization;
-
-namespace Mintlify.Core.Models
+﻿namespace Mintlify.Core.Models
 {
 
     /// <summary>

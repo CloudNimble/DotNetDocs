@@ -72,6 +72,15 @@ namespace CloudNimble.DotNetDocs.Core
         public bool ShowPlaceholders { get; init; } = true;
 
         /// <summary>
+        /// Gets or sets whether to ignore the global namespace and its contents.
+        /// </summary>
+        /// <value>
+        /// When true (default), the global namespace and its contents are excluded from documentation.
+        /// When false, the global namespace is included if it contains types.
+        /// </value>
+        public bool IgnoreGlobalModule { get; init; } = true;
+
+        /// <summary>
         /// Gets or sets the list of member accessibilities to include in documentation.
         /// </summary>
         /// <value>

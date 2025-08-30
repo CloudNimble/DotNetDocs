@@ -8,11 +8,11 @@ items:
 - name: CloudNimble.DotNetDocs.Tests.Shared
   href: CloudNimble-DotNetDocs-Tests-Shared.yaml
   items:
+  - name: DotNetDocsTestBase
+    fullName: CloudNimble.DotNetDocs.Tests.Shared.DotNetDocsTestBase
+    kind: Class
   - name: SampleClass
     fullName: CloudNimble.DotNetDocs.Tests.Shared.SampleClass
-    kind: Class
-  - name: TestBase
-    fullName: CloudNimble.DotNetDocs.Tests.Shared.TestBase
     kind: Class
 - name: CloudNimble.DotNetDocs.Tests.Shared.AccessModifiers
   href: CloudNimble-DotNetDocs-Tests-Shared-AccessModifiers.yaml

@@ -7,6 +7,70 @@ namespace:
   considerations: ''
   relatedApis: []
   types:
+  - name: DotNetDocsTestBase
+    fullName: CloudNimble.DotNetDocs.Tests.Shared.DotNetDocsTestBase
+    kind: Class
+    baseType: CloudNimble.Breakdance.Extensions.MSTest2.BreakdanceMSTestBase
+    usage: ''
+    examples: ''
+    bestPractices: ''
+    patterns: ''
+    considerations: ''
+    relatedApis: []
+    members:
+    - name: projectPath
+      kind: Field
+      accessibility: Public
+      usage: ''
+      examples: ''
+      bestPractices: ''
+      patterns: ''
+      considerations: ''
+      relatedApis: []
+      signature: public const string projectPath
+      parameters: 
+      returnType: string
+      modifiers:
+      - static
+      - const
+    - name: GetTestsDotSharedAssembly
+      kind: Method
+      accessibility: Public
+      usage: ''
+      examples: ''
+      bestPractices: ''
+      patterns: ''
+      considerations: ''
+      relatedApis: []
+      signature: public CloudNimble.DotNetDocs.Core.DocAssembly GetTestsDotSharedAssembly(bool ignoreGlobalModule)
+      parameters:
+      - name: ignoreGlobalModule
+        type: bool
+        isOptional: true
+        defaultValue: True
+        isParams: false
+        isRef: false
+        isOut: false
+        isIn: false
+        usage: ''
+        examples: ''
+        bestPractices: ''
+        considerations: ''
+      returnType: CloudNimble.DotNetDocs.Core.DocAssembly
+      modifiers: []
+    - name: .ctor
+      kind: Method
+      accessibility: Public
+      usage: ''
+      examples: ''
+      bestPractices: ''
+      patterns: ''
+      considerations: ''
+      relatedApis: []
+      signature: public .ctor()
+      parameters: 
+      returnType: 
+      modifiers: []
   - name: SampleClass
     fullName: CloudNimble.DotNetDocs.Tests.Shared.SampleClass
     kind: Class
@@ -233,14 +297,3 @@ namespace:
       parameters: 
       returnType: int
       modifiers: []
-  - name: TestBase
-    fullName: CloudNimble.DotNetDocs.Tests.Shared.TestBase
-    kind: Class
-    baseType: CloudNimble.Breakdance.Assemblies.BreakdanceTestBase
-    usage: Base class for DotNetDocs tests that need Roslyn compilation support.
-    examples: ''
-    bestPractices: ''
-    patterns: ''
-    considerations: ''
-    relatedApis: []
-    members: []

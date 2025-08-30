@@ -2,11 +2,105 @@
   "assemblyName": "CloudNimble.DotNetDocs.Tests.Shared",
   "namespaces": [
     {
-      "name": "",
+      "name": "CloudNimble.DotNetDocs.Tests.Shared",
       "types": [
         {
-          "members": [],
-          "name": "<Module>",
+          "baseType": "CloudNimble.Breakdance.Extensions.MSTest2.BreakdanceMSTestBase",
+          "members": [
+            {
+              "kind": "field",
+              "name": "projectPath",
+              "parameters": [],
+              "bestPractices": "",
+              "considerations": "",
+              "examples": "",
+              "patterns": "",
+              "relatedApis": [],
+              "remarks": "",
+              "usage": "",
+              "includedMembers": [
+                "public"
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "GetTestsDotSharedAssembly",
+              "parameters": [
+                {
+                  "defaultValue": "True",
+                  "hasDefaultValue": true,
+                  "isOptional": true,
+                  "isParams": false,
+                  "name": "ignoreGlobalModule",
+                  "parameterType": {
+                    "members": [],
+                    "name": "Boolean",
+                    "bestPractices": "",
+                    "considerations": "",
+                    "examples": "",
+                    "patterns": "",
+                    "relatedApis": [],
+                    "remarks": "",
+                    "usage": "",
+                    "includedMembers": [
+                      "public"
+                    ]
+                  },
+                  "type": "bool",
+                  "bestPractices": "",
+                  "considerations": "",
+                  "examples": "",
+                  "patterns": "",
+                  "relatedApis": [],
+                  "remarks": "",
+                  "usage": "",
+                  "includedMembers": [
+                    "public"
+                  ]
+                }
+              ],
+              "returnType": {
+                "members": [],
+                "name": "DocAssembly",
+                "bestPractices": "",
+                "considerations": "",
+                "examples": "",
+                "patterns": "",
+                "relatedApis": [],
+                "remarks": "",
+                "usage": "",
+                "includedMembers": [
+                  "public"
+                ]
+              },
+              "bestPractices": "",
+              "considerations": "",
+              "examples": "",
+              "patterns": "",
+              "relatedApis": [],
+              "remarks": "",
+              "usage": "",
+              "includedMembers": [
+                "public"
+              ]
+            },
+            {
+              "kind": "method",
+              "name": ".ctor",
+              "parameters": [],
+              "bestPractices": "",
+              "considerations": "",
+              "examples": "",
+              "patterns": "",
+              "relatedApis": [],
+              "remarks": "",
+              "usage": "",
+              "includedMembers": [
+                "public"
+              ]
+            }
+          ],
+          "name": "DotNetDocsTestBase",
           "bestPractices": "",
           "considerations": "",
           "examples": "",
@@ -17,22 +111,7 @@
           "includedMembers": [
             "public"
           ]
-        }
-      ],
-      "bestPractices": "",
-      "considerations": "",
-      "examples": "",
-      "patterns": "",
-      "relatedApis": [],
-      "remarks": "",
-      "usage": "",
-      "includedMembers": [
-        "public"
-      ]
-    },
-    {
-      "name": "CloudNimble.DotNetDocs.Tests.Shared",
-      "types": [
+        },
         {
           "baseType": "System.Object",
           "members": [
@@ -486,21 +565,6 @@
           "relatedApis": [],
           "remarks": "",
           "usage": "A sample class for testing documentation generation.",
-          "includedMembers": [
-            "public"
-          ]
-        },
-        {
-          "baseType": "CloudNimble.Breakdance.Assemblies.BreakdanceTestBase",
-          "members": [],
-          "name": "TestBase",
-          "bestPractices": "",
-          "considerations": "",
-          "examples": "",
-          "patterns": "",
-          "relatedApis": [],
-          "remarks": "",
-          "usage": "Base class for DotNetDocs tests that need Roslyn compilation support.",
           "includedMembers": [
             "public"
           ]

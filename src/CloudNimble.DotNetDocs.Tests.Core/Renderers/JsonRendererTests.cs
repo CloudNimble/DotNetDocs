@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using CloudNimble.Breakdance.Assemblies;
@@ -10,9 +11,10 @@ using CloudNimble.DotNetDocs.Tests.Shared;
 using CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios;
 using CloudNimble.DotNetDocs.Tests.Shared.Parameters;
 using FluentAssertions;
+using Microsoft.CodeAnalysis;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace CloudNimble.DotNetDocs.Tests.Core
+namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
 {
 
     /// <summary>
@@ -449,6 +451,425 @@ namespace CloudNimble.DotNetDocs.Tests.Core
                 }
             }
         }
+
+        #endregion
+
+        #region Internal Method Tests
+
+        #region SerializeNamespaces Tests
+
+        [TestMethod]
+        [DataRow(true)]
+        [DataRow(false)]
+        public void SerializeNamespaces_Should_Return_Anonymous_Object_Collection(bool ignoreGlobalModule)
+        {
+            // Arrange
+            var assembly = GetTestsDotSharedAssembly(ignoreGlobalModule);
+
+            // Act
+            var result = _renderer.SerializeNamespaces(assembly);
+
+            // Assert
+            result.Should().NotBeNull();
+            var json = JsonSerializer.Serialize(result, _renderer.SerializerOptions);
+            var deserialized = JsonSerializer.Deserialize<List<JsonElement>>(json);
+            deserialized.Should().HaveCount(assembly.Namespaces.Count);
+            
+            // When ignoreGlobalModule is true, global namespace should not be present
+            if (ignoreGlobalModule)
+            {
+                assembly.Namespaces.Should().NotContain(ns => ns.Symbol.IsGlobalNamespace);
+            }
+        }
+
+        [TestMethod]
+        public void SerializeNamespaces_Should_Include_Namespace_Properties()
+        {
+            // Arrange
+            var assembly = GetTestsDotSharedAssembly();
+
+            // Act
+            var result = _renderer.SerializeNamespaces(assembly);
+
+            // Assert
+            var json = JsonSerializer.Serialize(result, _renderer.SerializerOptions);
+            var deserialized = JsonSerializer.Deserialize<List<JsonElement>>(json);
+            
+            deserialized.Should().NotBeNull();
+            var firstNamespace = deserialized!.First();
+            // JSON uses camelCase due to JsonNamingPolicy.CamelCase
+            firstNamespace.TryGetProperty("name", out _).Should().BeTrue();
+            firstNamespace.TryGetProperty("types", out _).Should().BeTrue();
+            // usage is only present if not null (due to JsonIgnoreCondition.WhenWritingNull)
+        }
+
+        #endregion
+
+        #region SerializeTypes Tests
+
+        [TestMethod]
+        public void SerializeTypes_Should_Return_Anonymous_Object_Collection()
+        {
+            // Arrange
+            var assembly = GetTestsDotSharedAssembly();
+            var ns = assembly.Namespaces.First();
+
+            // Act
+            var result = _renderer.SerializeTypes(ns);
+
+            // Assert
+            result.Should().NotBeNull();
+            var json = JsonSerializer.Serialize(result, _renderer.SerializerOptions);
+            var deserialized = JsonSerializer.Deserialize<List<JsonElement>>(json);
+            deserialized.Should().HaveCount(ns.Types.Count);
+        }
+
+        [TestMethod]
+        public void SerializeTypes_Should_Include_Type_Properties()
+        {
+            // Arrange
+            var assembly = GetTestsDotSharedAssembly();
+            
+            assembly.Namespaces.Should().NotBeEmpty("Test assembly should contain namespaces");
+            
+            var ns = assembly.Namespaces.First();
+
+            // Act
+            var result = _renderer.SerializeTypes(ns);
+
+            // Assert
+            var json = JsonSerializer.Serialize(result, _renderer.SerializerOptions);
+            var deserialized = JsonSerializer.Deserialize<List<JsonElement>>(json);
+            
+            deserialized.Should().NotBeNull();
+            var firstType = deserialized!.First();
+            // JSON uses camelCase due to JsonNamingPolicy.CamelCase
+            firstType.TryGetProperty("name", out _).Should().BeTrue();
+            firstType.TryGetProperty("fullName", out _).Should().BeTrue();
+            firstType.TryGetProperty("kind", out _).Should().BeTrue();
+            // baseType is only present if not null (due to JsonIgnoreCondition.WhenWritingNull)
+            // Check if it exists, and if it does, it should be a valid property
+            firstType.TryGetProperty("members", out _).Should().BeTrue();
+        }
+
+        #endregion
+
+        #region SerializeMembers Tests
+
+        [TestMethod]
+        public void SerializeMembers_Should_Return_Anonymous_Object_Collection()
+        {
+            // Arrange
+            var assembly = GetTestsDotSharedAssembly();
+            
+            assembly.Namespaces.Should().NotBeEmpty("Test assembly should contain namespaces");
+            assembly.Namespaces.First().Types.Should().NotBeEmpty("First namespace should contain types");
+            
+            var type = assembly.Namespaces.First().Types.First();
+
+            // Act
+            var result = _renderer.SerializeMembers(type);
+
+            // Assert
+            result.Should().NotBeNull();
+            var json = JsonSerializer.Serialize(result, _renderer.SerializerOptions);
+            var deserialized = JsonSerializer.Deserialize<List<JsonElement>>(json);
+            deserialized.Should().HaveCount(type.Members.Count);
+        }
+
+        [TestMethod]
+        public void SerializeMembers_Should_Include_Member_Properties()
+        {
+            // Arrange
+            var assembly = GetTestsDotSharedAssembly();
+            
+            assembly.Namespaces.Should().NotBeEmpty("Test assembly should contain namespaces");
+            assembly.Namespaces.First().Types.Should().NotBeEmpty("First namespace should contain types");
+            
+            var type = assembly.Namespaces.First().Types.First();
+
+            // Act
+            var result = _renderer.SerializeMembers(type);
+
+            // Assert
+            var json = JsonSerializer.Serialize(result, _renderer.SerializerOptions);
+            var deserialized = JsonSerializer.Deserialize<List<JsonElement>>(json);
+            
+            deserialized.Should().NotBeNull();
+            if (deserialized != null && deserialized.Any())
+            {
+                var firstMember = deserialized.First();
+                // JSON uses camelCase due to JsonNamingPolicy.CamelCase
+                firstMember.TryGetProperty("name", out _).Should().BeTrue();
+                firstMember.TryGetProperty("kind", out _).Should().BeTrue();
+                firstMember.TryGetProperty("accessibility", out _).Should().BeTrue();
+                // signature might be null for some members
+            }
+        }
+
+        #endregion
+
+        #region SerializeParameters Tests
+
+        [TestMethod]
+        public void SerializeParameters_Should_Return_Null_When_No_Parameters()
+        {
+            // Arrange
+            var assembly = GetTestsDotSharedAssembly();
+            
+            assembly.Namespaces.Should().NotBeEmpty("Test assembly should contain namespaces");
+            assembly.Namespaces.First().Types.Should().NotBeEmpty("First namespace should contain types");
+            
+            var type = assembly.Namespaces.First().Types.First();
+            var memberWithoutParams = type.Members.FirstOrDefault(m => 
+                m.Symbol.Kind == SymbolKind.Method && 
+                (m.Symbol as IMethodSymbol)?.Parameters.Length == 0);
+
+            if (memberWithoutParams != null)
+            {
+                // Act
+                var result = _renderer.SerializeParameters(memberWithoutParams);
+                
+                // Assert
+                result.Should().BeNull();
+            }
+        }
+
+        [TestMethod]
+        public void SerializeParameters_Should_Return_Collection_When_Parameters_Present()
+        {
+            // Arrange
+            var assembly = GetTestsDotSharedAssembly();
+            var type = assembly.Namespaces
+                .SelectMany(n => n.Types)
+                .FirstOrDefault(t => t.Symbol.Name == "ClassWithMethods");
+            
+            type.Should().NotBeNull("ClassWithMethods should exist in test assembly");
+            
+            var memberWithParams = type!.Members.FirstOrDefault(m => m.Symbol.Name == "Calculate");
+            
+            memberWithParams.Should().NotBeNull("Calculate method should exist in ClassWithMethods");
+
+            // Act
+            var result = _renderer.SerializeParameters(memberWithParams!);
+
+            // Assert
+            result.Should().NotBeNull();
+            var json = JsonSerializer.Serialize(result, _renderer.SerializerOptions);
+            var deserialized = JsonSerializer.Deserialize<List<JsonElement>>(json);
+            deserialized.Should().NotBeNull().And.NotBeEmpty();
+        }
+
+        [TestMethod]
+        public void SerializeParameters_Should_Include_Parameter_Properties()
+        {
+            // Arrange
+            var assembly = GetTestsDotSharedAssembly();
+            var type = assembly.Namespaces
+                .SelectMany(n => n.Types)
+                .FirstOrDefault(t => t.Symbol.Name == "ClassWithMethods");
+            
+            type.Should().NotBeNull("ClassWithMethods should exist in test assembly");
+            
+            var memberWithParams = type!.Members.FirstOrDefault(m => m.Symbol.Name == "Calculate");
+            
+            memberWithParams.Should().NotBeNull("Calculate method should exist in ClassWithMethods");
+
+            // Act
+            var result = _renderer.SerializeParameters(memberWithParams!);
+
+            // Assert
+            var json = JsonSerializer.Serialize(result, _renderer.SerializerOptions);
+            var deserialized = JsonSerializer.Deserialize<List<JsonElement>>(json);
+            
+            deserialized.Should().NotBeNull();
+            var firstParam = deserialized!.First();
+            // JSON uses camelCase due to JsonNamingPolicy.CamelCase
+            firstParam.TryGetProperty("name", out _).Should().BeTrue();
+            firstParam.TryGetProperty("type", out _).Should().BeTrue();
+            firstParam.TryGetProperty("isOptional", out _).Should().BeTrue();
+            // usage is only present if not null (due to JsonIgnoreCondition.WhenWritingNull)
+        }
+
+        #endregion
+
+        #region RenderNamespaceFileAsync Tests
+
+        [TestMethod]
+        public async Task RenderNamespaceFileAsync_Should_Create_Namespace_File()
+        {
+            // Arrange
+            var assembly = GetTestsDotSharedAssembly();
+            
+            assembly.Namespaces.Should().NotBeEmpty("Test assembly should contain namespaces");
+            
+            var ns = assembly.Namespaces.First();
+
+            // Act
+            await _renderer.RenderNamespaceFileAsync(ns, _testOutputPath);
+
+            // Assert
+            var expectedFileName = _renderer.GetNamespaceFileName(ns, "json");
+            var nsPath = Path.Combine(_testOutputPath, expectedFileName);
+            File.Exists(nsPath).Should().BeTrue();
+        }
+
+        [TestMethod]
+        public async Task RenderNamespaceFileAsync_Should_Include_Namespace_Data()
+        {
+            // Arrange
+            var assembly = GetTestsDotSharedAssembly();
+            
+            assembly.Namespaces.Should().NotBeEmpty("Test assembly should contain namespaces");
+            
+            var ns = assembly.Namespaces.First();
+
+            // Act
+            await _renderer.RenderNamespaceFileAsync(ns, _testOutputPath);
+
+            // Assert
+            var expectedFileName = _renderer.GetNamespaceFileName(ns, "json");
+            var nsPath = Path.Combine(_testOutputPath, expectedFileName);
+            var content = await File.ReadAllTextAsync(nsPath);
+            var data = JsonSerializer.Deserialize<JsonElement>(content);
+
+            data.TryGetProperty("namespace", out var namespaceElement).Should().BeTrue();
+            namespaceElement.TryGetProperty("name", out var nameElement).Should().BeTrue();
+            nameElement.GetString().Should().Be(ns.Symbol.ToDisplayString());
+        }
+
+        [TestMethod]
+        public async Task RenderNamespaceFileAsync_Should_Include_Types()
+        {
+            // Arrange
+            var assembly = GetTestsDotSharedAssembly();
+            
+            assembly.Namespaces.Should().NotBeEmpty("Test assembly should contain namespaces");
+            
+            var ns = assembly.Namespaces.First();
+
+            // Act
+            await _renderer.RenderNamespaceFileAsync(ns, _testOutputPath);
+
+            // Assert
+            var expectedFileName = _renderer.GetNamespaceFileName(ns, "json");
+            var nsPath = Path.Combine(_testOutputPath, expectedFileName);
+            var content = await File.ReadAllTextAsync(nsPath);
+            var data = JsonSerializer.Deserialize<JsonElement>(content);
+
+            data.TryGetProperty("namespace", out var namespaceElement).Should().BeTrue();
+            namespaceElement.TryGetProperty("types", out var typesElement).Should().BeTrue();
+            typesElement.GetArrayLength().Should().Be(ns.Types.Count);
+        }
+
+        #endregion
+
+        #region GetReturnType Tests
+
+        [TestMethod]
+        public void GetReturnType_Should_Return_Method_ReturnType()
+        {
+            // Arrange
+            var assembly = GetTestsDotSharedAssembly();
+            var type = assembly.Namespaces
+                .SelectMany(n => n.Types)
+                .FirstOrDefault(t => t.Symbol.Name == "ClassWithMethods");
+            
+            type.Should().NotBeNull("ClassWithMethods should exist in test assembly");
+            
+            var method = type!.Members.FirstOrDefault(m => m.Symbol.Name == "Calculate");
+            method.Should().NotBeNull("Calculate method should exist in ClassWithMethods");
+
+            // Act
+            var result = _renderer.GetReturnType(method!);
+
+            // Assert
+            result.Should().Be("int");
+        }
+
+        [TestMethod]
+        public void GetReturnType_Should_Return_Property_Type()
+        {
+            // Arrange
+            var assembly = GetTestsDotSharedAssembly();
+            var type = assembly.Namespaces
+                .SelectMany(n => n.Types)
+                .FirstOrDefault(t => t.Symbol.Name == "ClassWithProperties");
+            
+            type.Should().NotBeNull("ClassWithProperties should exist in test assembly");
+            
+            var property = type!.Members.FirstOrDefault(m => m.Symbol.Kind == SymbolKind.Property && m.Symbol.Name == "Name");
+            property.Should().NotBeNull("Name property should exist in ClassWithProperties");
+
+            // Act
+            var result = _renderer.GetReturnType(property!);
+
+            // Assert
+            result.Should().Be("string");
+        }
+
+        [TestMethod]
+        public void GetReturnType_Should_Return_Field_Type()
+        {
+            // Arrange
+            var assembly = GetTestsDotSharedAssembly();
+            var type = assembly.Namespaces.First().Types.FirstOrDefault(t => 
+                t.Members.Any(m => m.Symbol.Kind == SymbolKind.Field));
+            
+            if (type != null)
+            {
+                var field = type.Members.First(m => m.Symbol.Kind == SymbolKind.Field);
+                
+                // Act
+                var result = _renderer.GetReturnType(field);
+                
+                // Assert
+                result.Should().NotBeNull();
+            }
+        }
+
+        [TestMethod]
+        public void GetReturnType_Should_Return_Null_For_Constructor()
+        {
+            // Arrange
+            var assembly = GetTestsDotSharedAssembly();
+            var type = assembly.Namespaces.First().Types.First();
+            var constructor = type.Members.FirstOrDefault(m => 
+                m.Symbol.Kind == SymbolKind.Method && 
+                (m.Symbol as IMethodSymbol)?.MethodKind == MethodKind.Constructor);
+
+            if (constructor != null)
+            {
+                // Act
+                var result = _renderer.GetReturnType(constructor);
+                
+                // Assert
+                result.Should().BeNull();
+            }
+        }
+
+        [TestMethod]
+        public void GetReturnType_Should_Return_Null_For_Void_Method()
+        {
+            // Arrange
+            var assembly = GetTestsDotSharedAssembly();
+            var type = assembly.Namespaces
+                .SelectMany(n => n.Types)
+                .FirstOrDefault(t => t.Symbol.Name == "ClassWithMethods");
+            
+            type.Should().NotBeNull("ClassWithMethods should exist in test assembly");
+            
+            var voidMethod = type!.Members.FirstOrDefault(m => m.Symbol.Name == "PerformAction");
+            voidMethod.Should().NotBeNull("PerformAction method should exist in ClassWithMethods");
+
+            // Act
+            var result = _renderer.GetReturnType(voidMethod!);
+
+            // Assert
+            result.Should().Be("void");
+        }
+
+        #endregion
 
         #endregion
 

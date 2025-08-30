@@ -134,7 +134,7 @@ namespace CloudNimble.DotNetDocs.Core
             if (needsRebuild)
             {
                 _compilation = await CreateCompilationAsync(projectContext?.References ?? []);
-                Document = BuildModel(_compilation, projectContext?.ConceptualPath, includedMembers);
+                Document = BuildModel(_compilation, projectContext?.ConceptualPath, includedMembers, projectContext?.IgnoreGlobalModule ?? true);
                 LastModified = currentModified;
                 PreviousIncludedMembers = includedMembers.ToList();
             }
@@ -197,8 +197,9 @@ namespace CloudNimble.DotNetDocs.Core
         /// <param name="compilation">The Roslyn compilation containing assembly metadata.</param>
         /// <param name="conceptualPath">Optional path to conceptual documentation files.</param>
         /// <param name="includedMembers">List of member accessibilities to include.</param>
+        /// <param name="ignoreGlobalModule">Whether to ignore the global namespace and its contents.</param>
         /// <returns>The <see cref="DocAssembly"/> model.</returns>
-        internal DocAssembly BuildModel(Compilation compilation, string? conceptualPath, List<Accessibility> includedMembers)
+        internal DocAssembly BuildModel(Compilation compilation, string? conceptualPath, List<Accessibility> includedMembers, bool ignoreGlobalModule = true)
         {
             var targetRef = compilation.References.OfType<PortableExecutableReference>().FirstOrDefault(r => string.Equals(r.FilePath, AssemblyPath, StringComparison.OrdinalIgnoreCase))
                 ?? throw new InvalidOperationException("Target assembly reference not found in compilation.");
@@ -217,7 +218,7 @@ namespace CloudNimble.DotNetDocs.Core
             var typeMap = new Dictionary<string, DocType>(); // Cache for type resolutions
 
             // Process all namespaces recursively
-            ProcessNamespace(assemblySymbol.GlobalNamespace, docAssembly, compilation, typeMap, includedMembers);
+            ProcessNamespace(assemblySymbol.GlobalNamespace, docAssembly, compilation, typeMap, includedMembers, ignoreGlobalModule);
 
             return docAssembly;
         }
@@ -442,10 +443,11 @@ namespace CloudNimble.DotNetDocs.Core
         /// <param name="compilation">The Roslyn compilation.</param>
         /// <param name="typeMap">Cache for type resolutions.</param>
         /// <param name="includedMembers">List of member accessibilities to include.</param>
-        internal void ProcessNamespace(INamespaceSymbol namespaceSymbol, DocAssembly docAssembly, Compilation compilation, Dictionary<string, DocType> typeMap, List<Accessibility> includedMembers)
+        /// <param name="ignoreGlobalModule">Whether to ignore the global namespace and its contents.</param>
+        internal void ProcessNamespace(INamespaceSymbol namespaceSymbol, DocAssembly docAssembly, Compilation compilation, Dictionary<string, DocType> typeMap, List<Accessibility> includedMembers, bool ignoreGlobalModule = true)
         {
             // Process types in the global namespace
-            if (namespaceSymbol.IsGlobalNamespace)
+            if (namespaceSymbol.IsGlobalNamespace && !ignoreGlobalModule)
             {
                 var hasTypesToDocument = namespaceSymbol.GetTypeMembers().Any(t => includedMembers.Contains(t.DeclaredAccessibility) || t.Name == "<Module>");
                 if (hasTypesToDocument)

@@ -1,5 +1,5 @@
 using System;
-using System.Threading.Tasks;
+using System.Linq;
 using CloudNimble.DotNetDocs.Core;
 using CloudNimble.DotNetDocs.Tests.Shared;
 using FluentAssertions;
@@ -9,7 +9,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core
 {
 
     [TestClass]
-    public class DocNamespaceTests : TestBase
+    public class DocNamespaceTests : DotNetDocsTestBase
     {
 
         #region Public Methods
@@ -23,15 +23,18 @@ namespace CloudNimble.DotNetDocs.Tests.Core
         }
 
         [TestMethod]
-        public async Task Constructor_WithValidSymbol_SetsProperties()
+        public void Constructor_WithValidSymbol_SetsProperties()
         {
-            var compilation = await CreateCompilationAsync();
-            var namespaceSymbol = compilation.GlobalNamespace;
-            namespaceSymbol.Should().NotBeNull();
+            var assembly = GetTestsDotSharedAssembly();
+            var namespaceDoc = assembly.Namespaces.FirstOrDefault(n => !n.Symbol.IsGlobalNamespace);
+            
+            namespaceDoc.Should().NotBeNull("Test assembly should contain at least one non-global namespace");
 
-            var docNamespace = new DocNamespace(namespaceSymbol);
+            // The namespace is already a DocNamespace from AssemblyManager
+            // Create a new one to test the constructor
+            var docNamespace = new DocNamespace(namespaceDoc!.Symbol);
 
-            docNamespace.Symbol.Should().Be(namespaceSymbol);
+            docNamespace.Symbol.Should().Be(namespaceDoc.Symbol);
             docNamespace.Types.Should().BeEmpty();
             docNamespace.Usage.Should().BeEmpty();
             docNamespace.Examples.Should().BeEmpty();
@@ -39,18 +42,27 @@ namespace CloudNimble.DotNetDocs.Tests.Core
         }
 
         [TestMethod]
-        public async Task Types_CanBeAdded()
+        public void Types_CanBeAdded()
         {
-            var compilation = await CreateCompilationAsync();
-            var namespaceSymbol = compilation.GlobalNamespace;
-            var docNamespace = new DocNamespace(namespaceSymbol);
+            var assembly = GetTestsDotSharedAssembly();
+            var namespaceDoc = assembly.Namespaces.FirstOrDefault(n => !n.Symbol.IsGlobalNamespace);
+            
+            namespaceDoc.Should().NotBeNull("Test assembly should contain at least one non-global namespace");
+            
+            // Create a new DocNamespace to test adding types
+            var docNamespace = new DocNamespace(namespaceDoc!.Symbol);
 
-            var typeSymbol = compilation.GetTypeByMetadataName("CloudNimble.DotNetDocs.Tests.Shared.SampleClass");
-            var docType = new DocType(typeSymbol!);
+            var existingType = assembly.Namespaces
+                .SelectMany(n => n.Types)
+                .FirstOrDefault(t => t.Symbol.Name == "SampleClass");
+            
+            existingType.Should().NotBeNull("SampleClass should exist in test assembly");
+            
+            var docType = new DocType(existingType!.Symbol);
 
             docNamespace.Types.Add(docType);
 
-            docNamespace.Types.Should().HaveCount(1);
+            docNamespace.Types.Should().ContainSingle();
             docNamespace.Types.Should().Contain(docType);
         }
 

@@ -2,7 +2,6 @@
 
 ## Namespaces
 
-- [global](global.md)
 - [CloudNimble.DotNetDocs.Tests.Shared](CloudNimble-DotNetDocs-Tests-Shared.md)
 - [CloudNimble.DotNetDocs.Tests.Shared.AccessModifiers](CloudNimble-DotNetDocs-Tests-Shared-AccessModifiers.md)
 - [CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios](CloudNimble-DotNetDocs-Tests-Shared-BasicScenarios.md)
