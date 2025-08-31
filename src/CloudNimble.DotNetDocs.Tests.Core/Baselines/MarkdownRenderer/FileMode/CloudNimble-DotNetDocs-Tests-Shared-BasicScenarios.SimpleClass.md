@@ -9,12 +9,17 @@
 ## Syntax
 
 ```csharp
-public class SimpleClass : System.Object
+CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.SimpleClass
 ```
 
-## Description
+## Summary
 
 A simple class for testing basic documentation extraction.
+
+## Remarks
+
+These are remarks about the SimpleClass. They provide additional context
+            and information beyond what's in the summary.
 
 ## Examples
 
@@ -28,7 +33,7 @@ var simple = new SimpleClass();
 #### Syntax
 
 ```csharp
-public .ctor()
+public SimpleClass()
 ```
 
 ## Methods
@@ -42,4 +47,8 @@ Performs some work.
 ```csharp
 public void DoWork()
 ```
+
+#### Remarks
+
+This method doesn't actually do anything, but it has documentation.
 

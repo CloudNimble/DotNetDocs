@@ -9,12 +9,17 @@
 ## Syntax
 
 ```csharp
-public class ClassWithSpecialCharacters : System.Object
+CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithSpecialCharacters
 ```
 
-## Description
+## Summary
 
 A class with special characters in documentation: <, >, &, ", '.
+
+## Remarks
+
+This tests handling of XML special characters like <tag> and &entity;.
+            Also tests "quotes" and 'apostrophes'.
 
 ## Examples
 
@@ -29,7 +34,7 @@ A class with special characters in documentation: <, >, &, ", '.
 #### Syntax
 
 ```csharp
-public .ctor()
+public ClassWithSpecialCharacters()
 ```
 
 ## Methods
@@ -53,4 +58,9 @@ public string MethodWithSpecialChars(string input)
 #### Returns
 
 Type: `string`
+A string with & ampersands.
+
+#### Remarks
+
+This method handles <, >, & characters properly.
 

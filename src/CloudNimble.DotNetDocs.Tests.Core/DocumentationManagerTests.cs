@@ -155,8 +155,8 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             testClass!.Usage.Should().NotContain("TODO: REMOVE THIS COMMENT");
             testClass.Usage.Should().NotContain("This is placeholder usage");
             
-            // BestPractices should be empty since it had placeholder content
-            testClass.BestPractices.Should().BeEmpty();
+            // BestPractices should be null since it had placeholder content and was skipped
+            testClass.BestPractices.Should().BeNull();
 
             // Examples was set to real content, should have that content
             testClass.Examples.Should().Be("This is real conceptual examples");

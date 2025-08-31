@@ -28,9 +28,12 @@
     <File Path="../.github/workflows/README.md" />
   </Folder>
   <Folder Name="/Solution Items/Specs/">
+    <File Path="../specs/core-documentation-fixes.md" />
+    <File Path="../specs/core-documentation-spec.md" />
     <File Path="../specs/docfx-shortcomings.md" />
     <File Path="../specs/execution-plan.md" />
     <File Path="../specs/placeholder-handling.md" />
+    <File Path="../specs/remove-globals.md" />
     <File Path="../specs/semantic-kernel-integration.md" />
     <File Path="../specs/solution-structure.md" />
     <File Path="../specs/transformation-pipeline.md" />

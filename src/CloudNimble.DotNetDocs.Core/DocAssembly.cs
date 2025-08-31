@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
 using Microsoft.CodeAnalysis;
+using YamlDotNet.Serialization;
 
 namespace CloudNimble.DotNetDocs.Core
 {
@@ -20,10 +21,10 @@ namespace CloudNimble.DotNetDocs.Core
         #region Properties
 
         /// <summary>
-        /// Gets the name of the assembly.
+        /// Gets or sets the name of the assembly.
         /// </summary>
         /// <value>The assembly name.</value>
-        public string AssemblyName => Symbol.Name;
+        public string AssemblyName { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets the collection of namespaces in the assembly.
@@ -38,7 +39,14 @@ namespace CloudNimble.DotNetDocs.Core
         /// <value>The underlying Roslyn assembly symbol containing metadata.</value>
         [NotNull]
         [JsonIgnore]
+        [YamlIgnore]
         public IAssemblySymbol Symbol { get; }
+
+        /// <summary>
+        /// Gets or sets the version of the assembly.
+        /// </summary>
+        /// <value>The assembly version string.</value>
+        public string? Version { get; set; }
 
         #endregion
 
@@ -49,7 +57,7 @@ namespace CloudNimble.DotNetDocs.Core
         /// </summary>
         /// <param name="symbol">The Roslyn assembly symbol.</param>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="symbol"/> is null.</exception>
-        public DocAssembly(IAssemblySymbol symbol)
+        public DocAssembly(IAssemblySymbol symbol) : base(symbol)
         {
             ArgumentNullException.ThrowIfNull(symbol);
             Symbol = symbol;

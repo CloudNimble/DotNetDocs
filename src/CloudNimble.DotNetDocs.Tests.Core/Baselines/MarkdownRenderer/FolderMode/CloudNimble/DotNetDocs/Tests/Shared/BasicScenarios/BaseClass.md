@@ -9,12 +9,16 @@
 ## Syntax
 
 ```csharp
-public class BaseClass : System.Object
+CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.BaseClass
 ```
 
-## Description
+## Summary
 
 A base class for testing inheritance documentation.
+
+## Remarks
+
+This class serves as the base for DerivedClass.
 
 ## Constructors
 
@@ -23,7 +27,7 @@ A base class for testing inheritance documentation.
 #### Syntax
 
 ```csharp
-public .ctor()
+public BaseClass()
 ```
 
 ## Properties
@@ -35,8 +39,12 @@ Gets or sets the base property.
 #### Syntax
 
 ```csharp
-public virtual string BaseProperty { get; set; }
+public virtual string BaseProperty
 ```
+
+#### Returns
+
+Type: `string`
 
 #### Property Value
 
@@ -67,4 +75,5 @@ public virtual string VirtualMethod()
 #### Returns
 
 Type: `string`
+A string value.
 

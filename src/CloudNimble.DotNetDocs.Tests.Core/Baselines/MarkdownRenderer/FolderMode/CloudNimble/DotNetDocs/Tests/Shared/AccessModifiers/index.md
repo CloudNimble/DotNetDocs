@@ -4,5 +4,5 @@
 
 ### Classes
 
-- [MixedAccessClass](CloudNimble-DotNetDocs-Tests-Shared-AccessModifiers.MixedAccessClass.md)
+- [MixedAccessClass](MixedAccessClass.md)
 

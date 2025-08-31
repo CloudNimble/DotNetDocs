@@ -4,6 +4,6 @@
 
 ### Classes
 
-- [DotNetDocsTestBase](CloudNimble-DotNetDocs-Tests-Shared.DotNetDocsTestBase.md)
-- [SampleClass](CloudNimble-DotNetDocs-Tests-Shared.SampleClass.md)
+- [DotNetDocsTestBase](DotNetDocsTestBase.md)
+- [SampleClass](SampleClass.md)
 

@@ -9,12 +9,16 @@
 ## Syntax
 
 ```csharp
-public class ClassWithMethods : System.Object
+CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ClassWithMethods
 ```
 
-## Description
+## Summary
 
 A class demonstrating various method documentation scenarios.
+
+## Remarks
+
+Contains methods with different signatures, parameters, and return types.
 
 ## Examples
 
@@ -28,7 +32,7 @@ var obj = new ClassWithMethods();
 #### Syntax
 
 ```csharp
-public .ctor()
+public ClassWithMethods()
 ```
 
 ## Methods
@@ -53,6 +57,7 @@ public int Calculate(int a, int b)
 #### Returns
 
 Type: `int`
+The sum of a and b.
 
 #### Examples
 
@@ -77,6 +82,7 @@ public string GetConditionalValue(bool condition)
 #### Returns
 
 Type: `string`
+Returns "Yes" if condition is true, "No" otherwise.
 
 ### PerformAction
 
@@ -87,6 +93,10 @@ A void method that performs an action.
 ```csharp
 public void PerformAction()
 ```
+
+#### Remarks
+
+This method doesn't return anything.
 
 ### Process
 
@@ -107,4 +117,15 @@ public string Process(string input)
 #### Returns
 
 Type: `string`
+The processed string in uppercase.
+
+#### Exceptions
+
+| Exception | Description |
+|-----------|-------------|
+| `ArgumentNullException` | Thrown when input is null. |
+
+#### Remarks
+
+This method performs a simple transformation for testing purposes.
 

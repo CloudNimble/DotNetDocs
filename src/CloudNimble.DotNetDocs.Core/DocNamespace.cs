@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
 using Microsoft.CodeAnalysis;
+using YamlDotNet.Serialization;
 
 namespace CloudNimble.DotNetDocs.Core
 {
@@ -20,17 +21,10 @@ namespace CloudNimble.DotNetDocs.Core
         #region Properties
 
         /// <summary>
-        /// Gets the name of the namespace.
+        /// Gets or sets the name of the namespace.
         /// </summary>
         /// <value>The namespace name.</value>
-        public string Name => Symbol.IsGlobalNamespace ? string.Empty : Symbol.ToDisplayString();
-
-        /// <summary>
-        /// Gets or sets the namespace summary.
-        /// </summary>
-        /// <value>A brief description of the namespace's purpose and functionality.</value>
-        [NotNull]
-        public string Summary { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets the Roslyn symbol for the namespace.
@@ -38,6 +32,7 @@ namespace CloudNimble.DotNetDocs.Core
         /// <value>The underlying Roslyn namespace symbol containing metadata.</value>
         [NotNull]
         [JsonIgnore]
+        [YamlIgnore]
         public INamespaceSymbol Symbol { get; }
 
         /// <summary>
@@ -56,7 +51,7 @@ namespace CloudNimble.DotNetDocs.Core
         /// </summary>
         /// <param name="symbol">The Roslyn namespace symbol.</param>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="symbol"/> is null.</exception>
-        public DocNamespace(INamespaceSymbol symbol)
+        public DocNamespace(INamespaceSymbol symbol) : base(symbol)
         {
             ArgumentNullException.ThrowIfNull(symbol);
             Symbol = symbol;

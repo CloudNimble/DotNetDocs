@@ -1,8 +1,8 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using CloudNimble.DotNetDocs.Core.Renderers.YamlConverters;
 using Microsoft.CodeAnalysis;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
@@ -17,14 +17,22 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
     /// Generates structured YAML documentation suitable for configuration files and
     /// integration with various documentation platforms.
     /// </remarks>
-    public class YamlRenderer : RendererBase, IDocRenderer
+    public partial class YamlRenderer : RendererBase, IDocRenderer
     {
 
         #region Fields
 
         private static readonly ISerializer _yamlSerializer = new SerializerBuilder()
             .WithNamingConvention(CamelCaseNamingConvention.Instance)
-            .ConfigureDefaultValuesHandling(DefaultValuesHandling.OmitNull)
+            .ConfigureDefaultValuesHandling(DefaultValuesHandling.OmitNull | DefaultValuesHandling.OmitDefaults | DefaultValuesHandling.OmitEmptyCollections)
+            .DisableAliases()
+            .IgnoreFields()
+            // Type converters for Roslyn types to ensure proper serialization
+            .WithTypeConverter(new SymbolTypeConverter())  // Handle ISymbol types first
+            .WithTypeConverter(new AccessibilityTypeConverter())
+            .WithTypeConverter(new SymbolKindTypeConverter())
+            .WithTypeConverter(new TypeKindTypeConverter())
+            .WithTypeConverter(new RefKindTypeConverter())
             .Build();
 
         #endregion
@@ -59,26 +67,11 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
             // Ensure all necessary directories exist based on the file naming mode
             Context.EnsureOutputDirectoryStructure(model, outputPath);
 
-            // Create the main documentation structure
-            var documentation = new Dictionary<string, object>
-            {
-                ["assembly"] = new Dictionary<string, object>
-                {
-                    ["name"] = model.AssemblyName,
-                    ["version"] = model.Symbol.Identity.Version.ToString(),
-                    ["usage"] = model.Usage,
-                    ["examples"] = model.Examples,
-                    ["bestPractices"] = model.BestPractices,
-                    ["patterns"] = model.Patterns,
-                    ["considerations"] = model.Considerations,
-                    ["relatedApis"] = model.RelatedApis,
-                    ["namespaces"] = SerializeNamespaces(model)
-                }
-            };
-
+            // Serialize the entire model directly
+            var yaml = _yamlSerializer.Serialize(model);
+            
             // Write main documentation file
             var mainFilePath = Path.Combine(outputPath, "documentation.yaml");
-            var yaml = _yamlSerializer.Serialize(documentation);
             await File.WriteAllTextAsync(mainFilePath, yaml);
 
             // Also write individual namespace files for easier consumption
@@ -95,189 +88,33 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
 
         #region Internal Methods
 
-        internal List<Dictionary<string, object>> SerializeNamespaces(DocAssembly assembly)
-        {
-            return assembly.Namespaces.Select(ns => new Dictionary<string, object>
-            {
-                ["name"] = GetSafeNamespaceName(ns),
-                ["summary"] = ns.Summary,
-                ["usage"] = ns.Usage,
-                ["examples"] = ns.Examples,
-                ["bestPractices"] = ns.BestPractices,
-                ["patterns"] = ns.Patterns,
-                ["considerations"] = ns.Considerations,
-                ["relatedApis"] = ns.RelatedApis,
-                ["types"] = SerializeTypes(ns)
-            }).ToList();
-        }
-
-        internal List<Dictionary<string, object>> SerializeTypes(DocNamespace ns)
-        {
-            return ns.Types.Select(type => new Dictionary<string, object>
-            {
-                ["name"] = type.Symbol.Name,
-                ["fullName"] = type.Symbol.ToDisplayString(),
-                ["kind"] = type.Symbol.TypeKind.ToString(),
-                ["baseType"] = type.BaseType!,
-                ["usage"] = type.Usage,
-                ["examples"] = type.Examples,
-                ["bestPractices"] = type.BestPractices,
-                ["patterns"] = type.Patterns,
-                ["considerations"] = type.Considerations,
-                ["relatedApis"] = type.RelatedApis,
-                ["members"] = SerializeMembers(type)
-            }).ToList();
-        }
-
-        internal List<Dictionary<string, object>> SerializeMembers(DocType type)
-        {
-            return type.Members.Select(member => new Dictionary<string, object>
-            {
-                ["name"] = member.Symbol.Name,
-                ["kind"] = member.Symbol.Kind.ToString(),
-                ["accessibility"] = member.Symbol.DeclaredAccessibility.ToString(),
-                ["usage"] = member.Usage,
-                ["examples"] = member.Examples,
-                ["bestPractices"] = member.BestPractices,
-                ["patterns"] = member.Patterns,
-                ["considerations"] = member.Considerations,
-                ["relatedApis"] = member.RelatedApis,
-                ["signature"] = GetMemberSignature(member),
-                ["parameters"] = SerializeParameters(member)!,
-                ["returnType"] = GetReturnType(member)!,
-                ["modifiers"] = GetModifiers(member)
-            }).ToList();
-        }
-
-        internal List<Dictionary<string, object>>? SerializeParameters(DocMember member)
-        {
-            if (member.Parameters is null || !member.Parameters.Any())
-                return null;
-
-            return member.Parameters.Select(param => new Dictionary<string, object>
-            {
-                ["name"] = param.Symbol.Name,
-                ["type"] = param.Symbol.Type.ToDisplayString(),
-                ["isOptional"] = param.Symbol.HasExplicitDefaultValue,
-                ["defaultValue"] = param.Symbol.HasExplicitDefaultValue ? (param.Symbol.ExplicitDefaultValue?.ToString() ?? "null") : null!,
-                ["isParams"] = param.Symbol.IsParams,
-                ["isRef"] = param.Symbol.RefKind == RefKind.Ref,
-                ["isOut"] = param.Symbol.RefKind == RefKind.Out,
-                ["isIn"] = param.Symbol.RefKind == RefKind.In,
-                ["usage"] = param.Usage,
-                ["examples"] = param.Examples,
-                ["bestPractices"] = param.BestPractices,
-                ["considerations"] = param.Considerations
-            }).ToList();
-        }
-
         internal async Task RenderNamespaceFileAsync(DocNamespace ns, string outputPath)
         {
-            var namespaceData = new Dictionary<string, object>
-            {
-                ["namespace"] = new Dictionary<string, object>
-                {
-                    ["name"] = GetSafeNamespaceName(ns),
-                    ["usage"] = ns.Usage,
-                    ["examples"] = ns.Examples,
-                    ["bestPractices"] = ns.BestPractices,
-                    ["patterns"] = ns.Patterns,
-                    ["considerations"] = ns.Considerations,
-                    ["relatedApis"] = ns.RelatedApis,
-                    ["types"] = SerializeTypes(ns)
-                }
-            };
-
             var filePath = GetNamespaceFilePath(ns, outputPath, "yaml");
-            
-            // Ensure directory exists for folder mode
-            var yaml = _yamlSerializer.Serialize(namespaceData);
+            var yaml = _yamlSerializer.Serialize(ns);
             await File.WriteAllTextAsync(filePath, yaml);
         }
 
         internal async Task RenderTableOfContentsAsync(DocAssembly model, string outputPath)
         {
-            var toc = new Dictionary<string, object>
+            var toc = new
             {
-                ["items"] = model.Namespaces.Select(ns =>
+                Title = model.AssemblyName,
+                Items = model.Namespaces.Select(ns => new
                 {
-                    var namespaceName = GetSafeNamespaceName(ns);
-                    var namespaceFileName = GetNamespaceFileName(ns, "yaml");
-                    return new Dictionary<string, object>
+                    Name = GetSafeNamespaceName(ns),
+                    Href = Path.GetFileName(GetNamespaceFilePath(ns, outputPath, "yaml")),
+                    Types = ns.Types.Select(t => new
                     {
-                        ["name"] = namespaceName,
-                        ["href"] = namespaceFileName,
-                        ["items"] = ns.Types.Select(type => new Dictionary<string, object>
-                        {
-                            ["name"] = type.Symbol.Name,
-                            ["fullName"] = type.Symbol.ToDisplayString(),
-                            ["kind"] = type.Symbol.TypeKind.ToString()
-                        }).ToList()
-                    };
-                }).ToList()
+                        t.Name,
+                        Kind = t.TypeKind.ToString()
+                    })
+                })
             };
 
             var tocFilePath = Path.Combine(outputPath, "toc.yaml");
             var yaml = _yamlSerializer.Serialize(toc);
             await File.WriteAllTextAsync(tocFilePath, yaml);
-        }
-
-        // GetMemberSignature and GetMethodSignature are inherited from RendererBase
-
-        internal string? GetReturnType(DocMember member)
-        {
-            return member.Symbol switch
-            {
-                IMethodSymbol method when method.MethodKind != MethodKind.Constructor => method.ReturnType.ToDisplayString(),
-                IPropertySymbol property => property.Type.ToDisplayString(),
-                IFieldSymbol field => field.Type.ToDisplayString(),
-                _ => null
-            };
-        }
-
-        internal List<string> GetModifiers(DocMember member)
-        {
-            var modifiers = new List<string>();
-            
-            switch (member.Symbol)
-            {
-                case IMethodSymbol method:
-                    if (method.IsStatic) modifiers.Add("static");
-                    if (method.IsVirtual) modifiers.Add("virtual");
-                    if (method.IsOverride) modifiers.Add("override");
-                    if (method.IsAbstract) modifiers.Add("abstract");
-                    if (method.IsAsync) modifiers.Add("async");
-                    if (method.IsSealed) modifiers.Add("sealed");
-                    if (method.IsExtern) modifiers.Add("extern");
-                    break;
-                    
-                case IPropertySymbol property:
-                    if (property.IsStatic) modifiers.Add("static");
-                    if (property.IsVirtual) modifiers.Add("virtual");
-                    if (property.IsOverride) modifiers.Add("override");
-                    if (property.IsAbstract) modifiers.Add("abstract");
-                    if (property.IsSealed) modifiers.Add("sealed");
-                    if (property.IsReadOnly) modifiers.Add("readonly");
-                    if (property.IsWriteOnly) modifiers.Add("writeonly");
-                    break;
-                    
-                case IFieldSymbol field:
-                    if (field.IsStatic) modifiers.Add("static");
-                    if (field.IsReadOnly) modifiers.Add("readonly");
-                    if (field.IsConst) modifiers.Add("const");
-                    if (field.IsVolatile) modifiers.Add("volatile");
-                    break;
-                    
-                case IEventSymbol evt:
-                    if (evt.IsStatic) modifiers.Add("static");
-                    if (evt.IsVirtual) modifiers.Add("virtual");
-                    if (evt.IsOverride) modifiers.Add("override");
-                    if (evt.IsAbstract) modifiers.Add("abstract");
-                    if (evt.IsSealed) modifiers.Add("sealed");
-                    break;
-            }
-            
-            return modifiers;
         }
 
         #endregion

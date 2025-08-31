@@ -4,5 +4,5 @@
 
 ### Classes
 
-- [ParameterVariations](CloudNimble-DotNetDocs-Tests-Shared-Parameters.ParameterVariations.md)
+- [ParameterVariations](ParameterVariations.md)
 

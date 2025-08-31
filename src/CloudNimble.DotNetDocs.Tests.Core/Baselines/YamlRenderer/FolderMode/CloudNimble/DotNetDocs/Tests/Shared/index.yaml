@@ -1,345 +1,245 @@
-namespace:
-  name: CloudNimble.DotNetDocs.Tests.Shared
-  usage: ''
-  examples: ''
-  bestPractices: ''
-  patterns: ''
-  considerations: ''
-  relatedApis: []
-  types:
-  - name: SampleClass
-    fullName: CloudNimble.DotNetDocs.Tests.Shared.SampleClass
-    kind: Class
-    baseType: System.Object
-    usage: A sample class for testing documentation generation.
-    examples: ''
-    bestPractices: ''
-    patterns: ''
-    considerations: ''
-    relatedApis: []
-    members:
-    - name: get_Name
-      kind: Method
-      accessibility: Public
-      usage: ''
-      examples: ''
-      bestPractices: ''
-      patterns: ''
-      considerations: ''
-      relatedApis: []
-      signature: public string get_Name()
-      parameters: 
-      returnType: string
-      modifiers: []
-    - name: set_Name
-      kind: Method
-      accessibility: Public
-      usage: ''
-      examples: ''
-      bestPractices: ''
-      patterns: ''
-      considerations: ''
-      relatedApis: []
-      signature: public void set_Name(string value)
-      parameters:
-      - name: value
-        type: string
-        isOptional: false
-        defaultValue: 
-        isParams: false
-        isRef: false
-        isOut: false
-        isIn: false
-        usage: ''
-        examples: ''
-        bestPractices: ''
-        considerations: ''
-      returnType: void
-      modifiers: []
-    - name: get_Value
-      kind: Method
-      accessibility: Public
-      usage: ''
-      examples: ''
-      bestPractices: ''
-      patterns: ''
-      considerations: ''
-      relatedApis: []
-      signature: public int get_Value()
-      parameters: 
-      returnType: int
-      modifiers: []
-    - name: set_Value
-      kind: Method
-      accessibility: Public
-      usage: ''
-      examples: ''
-      bestPractices: ''
-      patterns: ''
-      considerations: ''
-      relatedApis: []
-      signature: public void set_Value(int value)
-      parameters:
-      - name: value
-        type: int
-        isOptional: false
-        defaultValue: 
-        isParams: false
-        isRef: false
-        isOut: false
-        isIn: false
-        usage: ''
-        examples: ''
-        bestPractices: ''
-        considerations: ''
-      returnType: void
-      modifiers: []
-    - name: DoSomething
-      kind: Method
-      accessibility: Public
-      usage: Performs a sample operation.
-      examples: ''
-      bestPractices: ''
-      patterns: ''
-      considerations: ''
-      relatedApis: []
-      signature: public string DoSomething(string input)
-      parameters:
-      - name: input
-        type: string
-        isOptional: false
-        defaultValue: 
-        isParams: false
-        isRef: false
-        isOut: false
-        isIn: false
-        usage: The input parameter.
-        examples: ''
-        bestPractices: ''
-        considerations: ''
-      returnType: string
-      modifiers: []
-    - name: GetDisplay
-      kind: Method
-      accessibility: Public
-      usage: Gets the display value.
-      examples: ''
-      bestPractices: ''
-      patterns: ''
-      considerations: ''
-      relatedApis: []
-      signature: public string GetDisplay()
-      parameters: 
-      returnType: string
-      modifiers: []
-    - name: MethodWithOptional
-      kind: Method
-      accessibility: Public
-      usage: Method with optional parameter.
-      examples: ''
-      bestPractices: ''
-      patterns: ''
-      considerations: ''
-      relatedApis: []
-      signature: public string MethodWithOptional(string required, int optional)
-      parameters:
-      - name: required
-        type: string
-        isOptional: false
-        defaultValue: 
-        isParams: false
-        isRef: false
-        isOut: false
-        isIn: false
-        usage: Required parameter.
-        examples: ''
-        bestPractices: ''
-        considerations: ''
-      - name: optional
-        type: int
-        isOptional: true
-        defaultValue: 42
-        isParams: false
-        isRef: false
-        isOut: false
-        isIn: false
-        usage: Optional parameter with default value.
-        examples: ''
-        bestPractices: ''
-        considerations: ''
-      returnType: string
-      modifiers: []
-    - name: MethodWithParams
-      kind: Method
-      accessibility: Public
-      usage: Method with params array.
-      examples: ''
-      bestPractices: ''
-      patterns: ''
-      considerations: ''
-      relatedApis: []
-      signature: public int MethodWithParams(int[] values)
-      parameters:
-      - name: values
-        type: int[]
-        isOptional: false
-        defaultValue: 
-        isParams: true
-        isRef: false
-        isOut: false
-        isIn: false
-        usage: Variable number of values.
-        examples: ''
-        bestPractices: ''
-        considerations: ''
-      returnType: int
-      modifiers: []
-    - name: .ctor
-      kind: Method
-      accessibility: Public
-      usage: ''
-      examples: ''
-      bestPractices: ''
-      patterns: ''
-      considerations: ''
-      relatedApis: []
-      signature: public .ctor()
-      parameters: 
-      returnType: 
-      modifiers: []
-    - name: Name
-      kind: Property
-      accessibility: Public
-      usage: Gets or sets the name.
-      examples: ''
-      bestPractices: ''
-      patterns: ''
-      considerations: ''
-      relatedApis: []
-      signature: public string Name { get; set; }
-      parameters: 
-      returnType: string
-      modifiers: []
-    - name: Value
-      kind: Property
-      accessibility: Public
-      usage: Gets or sets the value.
-      examples: ''
-      bestPractices: ''
-      patterns: ''
-      considerations: ''
-      relatedApis: []
-      signature: public int Value { get; set; }
-      parameters: 
-      returnType: int
-      modifiers: []
-  - name: TestBase
-    fullName: CloudNimble.DotNetDocs.Tests.Shared.TestBase
-    kind: Class
-    baseType: CloudNimble.Breakdance.Assemblies.BreakdanceTestBase
-    usage: Base class for DotNetDocs tests that need Roslyn compilation support.
-    examples: ''
-    bestPractices: ''
-    patterns: ''
-    considerations: ''
-    relatedApis: []
-    members: []
-  - name: MicrosoftTestingPlatformEntryPoint
-    fullName: CloudNimble.DotNetDocs.Tests.Shared.MicrosoftTestingPlatformEntryPoint
-    kind: Class
-    baseType: System.Object
-    usage: ''
-    examples: ''
-    bestPractices: ''
-    patterns: ''
-    considerations: ''
-    relatedApis: []
-    members:
-    - name: Main
-      kind: Method
-      accessibility: Public
-      usage: ''
-      examples: ''
-      bestPractices: ''
-      patterns: ''
-      considerations: ''
-      relatedApis: []
-      signature: public static System.Threading.Tasks.Task<int> Main(string[] args)
-      parameters:
-      - name: args
-        type: string[]
-        isOptional: false
-        defaultValue: 
-        isParams: false
-        isRef: false
-        isOut: false
-        isIn: false
-        usage: ''
-        examples: ''
-        bestPractices: ''
-        considerations: ''
-      returnType: System.Threading.Tasks.Task<int>
-      modifiers:
-      - static
-    - name: .ctor
-      kind: Method
-      accessibility: Public
-      usage: ''
-      examples: ''
-      bestPractices: ''
-      patterns: ''
-      considerations: ''
-      relatedApis: []
-      signature: public .ctor()
-      parameters: 
-      returnType: 
-      modifiers: []
-  - name: SelfRegisteredExtensions
-    fullName: CloudNimble.DotNetDocs.Tests.Shared.SelfRegisteredExtensions
-    kind: Class
-    baseType: System.Object
-    usage: ''
-    examples: ''
-    bestPractices: ''
-    patterns: ''
-    considerations: ''
-    relatedApis: []
-    members:
-    - name: AddSelfRegisteredExtensions
-      kind: Method
-      accessibility: Public
-      usage: ''
-      examples: ''
-      bestPractices: ''
-      patterns: ''
-      considerations: ''
-      relatedApis: []
-      signature: public static void AddSelfRegisteredExtensions(Microsoft.Testing.Platform.Builder.ITestApplicationBuilder builder, string[] args)
-      parameters:
-      - name: builder
-        type: Microsoft.Testing.Platform.Builder.ITestApplicationBuilder
-        isOptional: false
-        defaultValue: 
-        isParams: false
-        isRef: false
-        isOut: false
-        isIn: false
-        usage: ''
-        examples: ''
-        bestPractices: ''
-        considerations: ''
-      - name: args
-        type: string[]
-        isOptional: false
-        defaultValue: 
-        isParams: false
-        isRef: false
-        isOut: false
-        isIn: false
-        usage: ''
-        examples: ''
-        bestPractices: ''
-        considerations: ''
-      returnType: void
-      modifiers:
-      - static
+name: CloudNimble.DotNetDocs.Tests.Shared
+types:
+- baseType: CloudNimble.Breakdance.Extensions.MSTest2.BreakdanceMSTestBase
+  members:
+  - accessibility: Public
+    memberKind: Field
+    name: projectPath
+    returnTypeName: string
+    signature: public const string projectPath
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.DotNetDocsTestBase.projectPath
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: GetTestsDotSharedAssembly
+    returnType:
+      assemblyName: CloudNimble.DotNetDocs.Core
+      fullName: CloudNimble.DotNetDocs.Core.DocAssembly
+      name: DocAssembly
+      signature: CloudNimble.DotNetDocs.Core.DocAssembly
+      typeKind: Error
+      displayName: CloudNimble.DotNetDocs.Core.DocAssembly
+    returnTypeName: CloudNimble.DotNetDocs.Core.DocAssembly
+    signature: public DocAssembly GetTestsDotSharedAssembly()
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.DotNetDocsTestBase.GetTestsDotSharedAssembly()
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Constructor
+    name: .ctor
+    returnTypeName: void
+    signature: public DotNetDocsTestBase()
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.DotNetDocsTestBase.DotNetDocsTestBase()
+  assemblyName: CloudNimble.DotNetDocs.Tests.Shared
+  fullName: CloudNimble.DotNetDocs.Tests.Shared.DotNetDocsTestBase
+  name: DotNetDocsTestBase
+  signature: CloudNimble.DotNetDocs.Tests.Shared.DotNetDocsTestBase
+  typeKind: Class
+  displayName: CloudNimble.DotNetDocs.Tests.Shared.DotNetDocsTestBase
+- baseType: System.Object
+  members:
+  - accessibility: Public
+    memberKind: Method
+    methodKind: PropertyGet
+    name: get_Name
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: string
+      name: String
+      signature: string
+      typeKind: Class
+      displayName: string
+    returnTypeName: string
+    signature: public string Name.get
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.SampleClass.Name.get
+  - accessibility: Public
+    memberKind: Method
+    methodKind: PropertySet
+    name: set_Name
+    parameters:
+    - name: value
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: string
+        name: String
+        signature: string
+        typeKind: Class
+        displayName: string
+      typeName: string
+      displayName: string value
+    returnTypeName: void
+    signature: public void Name.set
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.SampleClass.Name.set
+  - accessibility: Public
+    memberKind: Method
+    methodKind: PropertyGet
+    name: get_Value
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: int
+      name: Int32
+      signature: int
+      typeKind: Struct
+      displayName: int
+    returnTypeName: int
+    signature: public int Value.get
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.SampleClass.Value.get
+  - accessibility: Public
+    memberKind: Method
+    methodKind: PropertySet
+    name: set_Value
+    parameters:
+    - name: value
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: int
+        name: Int32
+        signature: int
+        typeKind: Struct
+        displayName: int
+      typeName: int
+      displayName: int value
+    returnTypeName: void
+    signature: public void Value.set
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.SampleClass.Value.set
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: DoSomething
+    parameters:
+    - name: input
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: string
+        name: String
+        signature: string
+        typeKind: Class
+        displayName: string
+      typeName: string
+      displayName: string input
+      usage: The input parameter.
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: string
+      name: String
+      signature: string
+      typeKind: Class
+      displayName: string
+    returnTypeName: string
+    signature: public string DoSomething(string input)
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.SampleClass.DoSomething(string)
+    returns: The result of the operation.
+    summary: Performs a sample operation.
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: GetDisplay
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: string
+      name: String
+      signature: string
+      typeKind: Class
+      displayName: string
+    returnTypeName: string
+    signature: public string GetDisplay()
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.SampleClass.GetDisplay()
+    returns: A formatted string containing the name and value.
+    summary: Gets the display value.
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: MethodWithOptional
+    parameters:
+    - name: required
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: string
+        name: String
+        signature: string
+        typeKind: Class
+        displayName: string
+      typeName: string
+      displayName: string required
+      usage: Required parameter.
+    - defaultValue: 42
+      hasDefaultValue: true
+      isOptional: true
+      name: optional
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: int
+        name: Int32
+        signature: int
+        typeKind: Struct
+        displayName: int
+      typeName: int
+      displayName: int optional
+      usage: Optional parameter with default value.
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: string
+      name: String
+      signature: string
+      typeKind: Class
+      displayName: string
+    returnTypeName: string
+    signature: public string MethodWithOptional(string required, int optional = 42)
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.SampleClass.MethodWithOptional(string, int)
+    returns: Combined result.
+    summary: Method with optional parameter.
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: MethodWithParams
+    parameters:
+    - isParams: true
+      name: values
+      parameterType:
+        fullName: int[]
+        signature: int[]
+        typeKind: Array
+        displayName: int[]
+      typeName: int[]
+      displayName: params int[] values
+      usage: Variable number of values.
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: int
+      name: Int32
+      signature: int
+      typeKind: Struct
+      displayName: int
+    returnTypeName: int
+    signature: public int MethodWithParams(params int[] values)
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.SampleClass.MethodWithParams(params int[])
+    returns: Sum of values.
+    summary: Method with params array.
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Constructor
+    name: .ctor
+    returnTypeName: void
+    signature: public SampleClass()
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.SampleClass.SampleClass()
+  - accessibility: Public
+    memberKind: Property
+    name: Name
+    returnTypeName: string
+    signature: public string Name
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.SampleClass.Name
+    summary: Gets or sets the name.
+  - accessibility: Public
+    memberKind: Property
+    name: Value
+    returnTypeName: int
+    signature: public int Value
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.SampleClass.Value
+    summary: Gets or sets the value.
+  assemblyName: CloudNimble.DotNetDocs.Tests.Shared
+  fullName: CloudNimble.DotNetDocs.Tests.Shared.SampleClass
+  name: SampleClass
+  signature: CloudNimble.DotNetDocs.Tests.Shared.SampleClass
+  typeKind: Class
+  displayName: CloudNimble.DotNetDocs.Tests.Shared.SampleClass
+  summary: A sample class for testing documentation generation.
+displayName: CloudNimble.DotNetDocs.Tests.Shared

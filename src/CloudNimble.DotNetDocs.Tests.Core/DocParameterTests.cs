@@ -52,7 +52,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             docParam.HasDefaultValue.Should().BeFalse();
             docParam.DefaultValue.Should().BeNull();
             docParam.IsParams.Should().BeFalse();
-            docParam.Usage.Should().BeEmpty();
+            docParam.Usage.Should().BeNull();
         }
 
         [TestMethod]

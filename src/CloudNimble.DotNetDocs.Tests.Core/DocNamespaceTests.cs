@@ -36,10 +36,10 @@ namespace CloudNimble.DotNetDocs.Tests.Core
 
             docNamespace.Symbol.Should().Be(namespaceDoc.Symbol);
             docNamespace.Types.Should().BeEmpty();
-            docNamespace.Summary.Should().BeEmpty();
-            docNamespace.Usage.Should().BeEmpty();
-            docNamespace.Examples.Should().BeEmpty();
-            docNamespace.RelatedApis.Should().BeEmpty();
+            docNamespace.Summary.Should().BeNull();
+            docNamespace.Usage.Should().BeNull();
+            docNamespace.Examples.Should().BeNull();
+            docNamespace.RelatedApis.Should().BeNull();
         }
 
         [TestMethod]

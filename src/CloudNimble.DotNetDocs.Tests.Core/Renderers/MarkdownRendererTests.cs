@@ -105,8 +105,8 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             // Assert
             foreach (var ns in model.Namespaces)
             {
-                var namespaceName = ns.Symbol.IsGlobalNamespace ? "global" : ns.Symbol.ToDisplayString();
-                var nsFileName = $"{namespaceName.Replace('.', '-')}.md";
+                var namespaceName = string.IsNullOrEmpty(ns.Name) ? "global" : ns.Name;
+                var nsFileName = $"{namespaceName.Replace('.', context.FileNamingOptions.NamespaceSeparator)}.md";
                 var nsPath = Path.Combine(_testOutputPath, nsFileName);
                 File.Exists(nsPath).Should().BeTrue($"Namespace file {nsFileName} should exist");
             }
@@ -130,12 +130,12 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             {
                 foreach (var type in ns.Types)
                 {
-                    var namespaceName = ns.Symbol.IsGlobalNamespace ? "global" : ns.Symbol.ToDisplayString();
+                    var namespaceName = string.IsNullOrEmpty(ns.Name) ? "global" : ns.Name;
                     var safeTypeName = type!.Symbol.Name
                         .Replace('<', '_')
                         .Replace('>', '_')
                         .Replace('`', '_');
-                    var typeFileName = $"{namespaceName.Replace('.', '-')}.{safeTypeName}.md";
+                    var typeFileName = $"{namespaceName.Replace('.', context.FileNamingOptions.NamespaceSeparator)}.{safeTypeName}.md";
                     var typePath = Path.Combine(_testOutputPath, typeFileName);
                     File.Exists(typePath).Should().BeTrue($"Type file {typeFileName} should exist");
                 }
@@ -328,8 +328,8 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
 
             // Assert
             var ns = model.Namespaces.First(n => n.Types.Any(t => t.Symbol.Name == "ClassWithMethods"));
-            var namespaceName = ns.Symbol.IsGlobalNamespace ? "global" : ns.Symbol.ToDisplayString();
-            var typeFileName = $"{namespaceName.Replace('.', '-')}.ClassWithMethods.md";
+            var namespaceName = string.IsNullOrEmpty(ns.Name) ? "global" : ns.Name;
+            var typeFileName = $"{namespaceName.Replace('.', context.FileNamingOptions.NamespaceSeparator)}.ClassWithMethods.md";
             var content = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, typeFileName));
             
             content.Should().Contain("```csharp");
@@ -572,43 +572,6 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
         }
 
         [TestMethod]
-        public async Task RenderAsync_WithFolderModeAndGlobalNamespace_CreatesGlobalFolder()
-        {
-            // Arrange
-            // Use SampleClass since we don't have a dedicated GlobalNamespaceClass
-            var assemblyPath = typeof(SampleClass).Assembly.Location;
-            var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
-            using var manager = new AssemblyManager(assemblyPath, xmlPath);
-            var model = await manager.DocumentAsync();
-            
-            // Check if we have any global namespace types
-            var globalNs = model.Namespaces.FirstOrDefault(n => n.Symbol.IsGlobalNamespace);
-            if (globalNs != null && globalNs.Types.Count != 0)
-            {
-                var context = new ProjectContext
-                {
-                    FileNamingOptions = new FileNamingOptions(NamespaceMode.Folder)
-                };
-                var renderer = new MarkdownRenderer(context);
-
-                // Act
-                await renderer.RenderAsync(model, _testOutputPath, context);
-
-                // Assert
-                var globalDir = Path.Combine(_testOutputPath, "global");
-                Directory.Exists(globalDir).Should().BeTrue();
-                
-                var indexFile = Path.Combine(globalDir, "index.md");
-                File.Exists(indexFile).Should().BeTrue();
-            }
-            else
-            {
-                // Skip this test if no global namespace types exist
-                Assert.Inconclusive("No global namespace types found in test assembly - this is expected");
-            }
-        }
-
-        [TestMethod]
         public async Task RenderAsync_WithFolderMode_IgnoresNamespaceSeparator()
         {
             // Arrange
@@ -784,11 +747,9 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
         }
 
         [TestMethod]
-        [DataRow(true)]
-        [DataRow(false)]
-        public async Task RenderAssemblyAsync_Should_List_Namespaces(bool ignoreGlobalModule)
+        public async Task RenderAssemblyAsync_Should_List_Namespaces()
         {
-            var assembly = GetTestsDotSharedAssembly(ignoreGlobalModule);
+            var assembly = GetTestsDotSharedAssembly();
 
             await _renderer.RenderAssemblyAsync(assembly, _testOutputPath);
 
@@ -800,11 +761,8 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
                 content.Should().Contain($"- [{namespaceName}]");
             }
             
-            // When ignoreGlobalModule is true, global namespace should not be in the list
-            if (ignoreGlobalModule)
-            {
-                assembly.Namespaces.Should().NotContain(ns => ns.Symbol.IsGlobalNamespace);
-            }
+            // Global namespace should never be in the list
+            assembly.Namespaces.Should().NotContain(ns => ns.Symbol.IsGlobalNamespace);
         }
 
         #endregion
@@ -822,8 +780,8 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
 
             await _renderer.RenderNamespaceAsync(ns, _testOutputPath);
 
-            var namespaceName = ns.Symbol.IsGlobalNamespace ? "global" : ns.Symbol.ToDisplayString();
-            var nsPath = Path.Combine(_testOutputPath, $"{namespaceName}.md");
+            var namespaceName = string.IsNullOrEmpty(ns.Name) ? "global" : ns.Name;
+            var nsPath = Path.Combine(_testOutputPath, $"{namespaceName.Replace('.', _context.FileNamingOptions.NamespaceSeparator)}.md");
             File.Exists(nsPath).Should().BeTrue();
         }
 
@@ -838,8 +796,8 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
 
             await _renderer.RenderNamespaceAsync(ns, _testOutputPath);
 
-            var namespaceName = ns.Symbol.IsGlobalNamespace ? "global" : ns.Symbol.ToDisplayString();
-            var nsPath = Path.Combine(_testOutputPath, $"{namespaceName}.md");
+            var namespaceName = string.IsNullOrEmpty(ns.Name) ? "global" : ns.Name;
+            var nsPath = Path.Combine(_testOutputPath, $"{namespaceName.Replace('.', _context.FileNamingOptions.NamespaceSeparator)}.md");
             var content = await File.ReadAllTextAsync(nsPath);
 
             content.Should().Contain("## Types");
@@ -869,7 +827,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
 
             await _renderer.RenderTypeAsync(type, ns, _testOutputPath);
 
-            var safeNamespace = ns.Symbol.IsGlobalNamespace ? "global" : ns.Symbol.ToDisplayString();
+            var safeNamespace = string.IsNullOrEmpty(ns.Name) ? "global" : ns.Name;
             var safeTypeName = type!.Symbol.Name
                 .Replace('<', '_')
                 .Replace('>', '_')
@@ -892,7 +850,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
 
             await _renderer.RenderTypeAsync(type, ns, _testOutputPath);
 
-            var safeNamespace = ns.Symbol.IsGlobalNamespace ? "global" : ns.Symbol.ToDisplayString();
+            var safeNamespace = string.IsNullOrEmpty(ns.Name) ? "global" : ns.Name;
             var safeTypeName = type!.Symbol.Name
                 .Replace('<', '_')
                 .Replace('>', '_')
@@ -921,7 +879,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
 
             await _renderer.RenderTypeAsync(type, ns, _testOutputPath);
 
-            var safeNamespace = ns.Symbol.IsGlobalNamespace ? "global" : ns.Symbol.ToDisplayString();
+            var safeNamespace = string.IsNullOrEmpty(ns.Name) ? "global" : ns.Name;
             var safeTypeName = type!.Symbol.Name
                 .Replace('<', '_')
                 .Replace('>', '_')
@@ -949,7 +907,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
 
             await _renderer.RenderTypeAsync(type!, ns, _testOutputPath);
 
-            var safeNamespace = ns.Symbol.IsGlobalNamespace ? "global" : ns.Symbol.ToDisplayString();
+            var safeNamespace = string.IsNullOrEmpty(ns.Name) ? "global" : ns.Name;
             var safeTypeName = type!.Symbol.Name
                 .Replace('<', '_')
                 .Replace('>', '_')

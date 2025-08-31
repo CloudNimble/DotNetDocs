@@ -1,6 +1,7 @@
 {
   "permissions": {
     "allow": [
+      "Bash(cd:*)",
       "Bash(dir:*)",
       "Bash(dotnet:*)",
       "Bash(grep:*)",

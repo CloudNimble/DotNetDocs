@@ -52,7 +52,7 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
         /// <returns>A safe namespace name, using "global" for the global namespace.</returns>
         internal string GetSafeNamespaceName(DocNamespace ns)
         {
-            return ns.Symbol.IsGlobalNamespace ? "global" : ns.Symbol.ToDisplayString();
+            return string.IsNullOrEmpty(ns.Name) ? "global" : ns.Name;
         }
 
         /// <summary>
@@ -63,7 +63,7 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
         protected string GetSafeTypeName(DocType type)
         {
             // Replace angle brackets (from <Module> and generic types) and other invalid filename characters
-            return type.Symbol.Name
+            return type.Name
                 .Replace('<', '_')
                 .Replace('>', '_')
                 .Replace('`', '_')

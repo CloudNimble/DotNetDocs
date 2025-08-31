@@ -9,12 +9,16 @@
 ## Syntax
 
 ```csharp
-public class DerivedClass : CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.BaseClass
+CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass
 ```
 
-## Description
+## Summary
 
 A derived class for testing inheritance documentation.
+
+## Remarks
+
+This class inherits from BaseClass and overrides some members.
 
 ## Examples
 
@@ -28,7 +32,7 @@ var derived = new DerivedClass();
 #### Syntax
 
 ```csharp
-public .ctor()
+public DerivedClass()
 ```
 
 ## Properties
@@ -40,12 +44,20 @@ Gets or sets the base property with overridden behavior.
 #### Syntax
 
 ```csharp
-public override string BaseProperty { get; set; }
+public override string BaseProperty
 ```
+
+#### Returns
+
+Type: `string`
 
 #### Property Value
 
 Type: `string`
+
+#### Remarks
+
+This property overrides the base implementation.
 
 ### DerivedProperty
 
@@ -54,8 +66,12 @@ Gets or sets the derived property.
 #### Syntax
 
 ```csharp
-public string DerivedProperty { get; set; }
+public string DerivedProperty
 ```
+
+#### Returns
+
+Type: `string`
 
 #### Property Value
 
@@ -86,4 +102,9 @@ public override string VirtualMethod()
 #### Returns
 
 Type: `string`
+A string indicating the derived implementation.
+
+#### Remarks
+
+This method provides custom behavior for the derived class.
 

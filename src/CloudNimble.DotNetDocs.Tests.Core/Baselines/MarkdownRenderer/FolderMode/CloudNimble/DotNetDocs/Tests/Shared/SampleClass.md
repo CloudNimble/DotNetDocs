@@ -9,10 +9,10 @@
 ## Syntax
 
 ```csharp
-public class SampleClass : System.Object
+CloudNimble.DotNetDocs.Tests.Shared.SampleClass
 ```
 
-## Description
+## Summary
 
 A sample class for testing documentation generation.
 
@@ -23,7 +23,7 @@ A sample class for testing documentation generation.
 #### Syntax
 
 ```csharp
-public .ctor()
+public SampleClass()
 ```
 
 ## Properties
@@ -35,8 +35,12 @@ Gets or sets the name.
 #### Syntax
 
 ```csharp
-public string Name { get; set; }
+public string Name
 ```
+
+#### Returns
+
+Type: `string`
 
 #### Property Value
 
@@ -49,8 +53,12 @@ Gets or sets the value.
 #### Syntax
 
 ```csharp
-public int Value { get; set; }
+public int Value
 ```
+
+#### Returns
+
+Type: `int`
 
 #### Property Value
 
@@ -77,6 +85,7 @@ public string DoSomething(string input)
 #### Returns
 
 Type: `string`
+The result of the operation.
 
 ### GetDisplay
 
@@ -91,6 +100,7 @@ public string GetDisplay()
 #### Returns
 
 Type: `string`
+A formatted string containing the name and value.
 
 ### MethodWithOptional
 
@@ -99,7 +109,7 @@ Method with optional parameter.
 #### Syntax
 
 ```csharp
-public string MethodWithOptional(string required, int optional)
+public string MethodWithOptional(string required, int optional = 42)
 ```
 
 #### Parameters
@@ -112,6 +122,7 @@ public string MethodWithOptional(string required, int optional)
 #### Returns
 
 Type: `string`
+Combined result.
 
 ### MethodWithParams
 
@@ -120,7 +131,7 @@ Method with params array.
 #### Syntax
 
 ```csharp
-public int MethodWithParams(int[] values)
+public int MethodWithParams(params int[] values)
 ```
 
 #### Parameters
@@ -132,4 +143,5 @@ public int MethodWithParams(int[] values)
 #### Returns
 
 Type: `int`
+Sum of values.
 

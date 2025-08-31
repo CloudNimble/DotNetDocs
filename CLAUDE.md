@@ -48,11 +48,14 @@ If you create any temporary new files, scripts, or helper files for iteration, c
 
 ## Guidelines
 * The format for test projects is "BaseNamespace.Tests.SubjectMatter". For example, if the Main project is "CloudNimble.Common.Amazon", then the Test project is "CloudNimble.Common.Tests.Amazon".
-* We use MSTest v3, Breakdance, and FluentAssertions for tests.
+* We use Microsoft.TestPlatform for test execution (run from the /src folder), MSTest v3 for test code, Breakdance, and FluentAssertions for tests.
 * Do not emit "Act", "Arrange" or "Assert" comments.
 * Do not use any mocking in tests. Ever.
 * Copy existing style in nearby files for test method names and capitalization.
 * Always prefer `.NotBeNullOrWhiteSpace()` over `.NotBeNullOrEmpty()` for testing strings.
+* This document defines how to create baselines: "D:\GitHub\Breakdance\specs\baseline-testing.md"
+  * Use the `dotnet breakdance generate` command to create or update baselines.
+  * If tests that need the baselines fail, and you regenerated the baselines, then the code to generate them is wrong and you need to fix it. 
 
 # Documentation
 

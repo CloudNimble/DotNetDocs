@@ -72,21 +72,35 @@ namespace CloudNimble.DotNetDocs.Core
         public bool ShowPlaceholders { get; init; } = true;
 
         /// <summary>
-        /// Gets or sets whether to ignore the global namespace and its contents.
-        /// </summary>
-        /// <value>
-        /// When true (default), the global namespace and its contents are excluded from documentation.
-        /// When false, the global namespace is included if it contains types.
-        /// </value>
-        public bool IgnoreGlobalModule { get; init; } = true;
-
-        /// <summary>
         /// Gets or sets the list of member accessibilities to include in documentation.
         /// </summary>
         /// <value>
         /// List of accessibility levels to include. Defaults to Public only.
         /// </value>
         public List<Accessibility> IncludedMembers { get; init; }
+
+        /// <summary>
+        /// Gets or sets the list of type patterns to exclude from documentation.
+        /// </summary>
+        /// <value>
+        /// Set of type patterns to exclude. Supports wildcards (*) for flexible matching.
+        /// This is useful for filtering out compiler-generated or test framework-injected types.
+        /// </value>
+        /// <remarks>
+        /// Patterns can use wildcards:
+        /// - "*.TypeName" matches TypeName in any namespace
+        /// - "Namespace.*.TypeName" matches TypeName in any sub-namespace of Namespace
+        /// - "Full.Namespace.TypeName" matches exact fully qualified type name
+        /// </remarks>
+        /// <example>
+        /// ExcludedTypes = new HashSet&lt;string&gt; 
+        /// { 
+        ///     "*.MicrosoftTestingPlatformEntryPoint",  // Matches in any namespace
+        ///     "*.SelfRegisteredExtensions",             // Matches in any namespace
+        ///     "System.Runtime.CompilerServices.*"       // Matches any type in this namespace
+        /// }
+        /// </example>
+        public HashSet<string> ExcludedTypes { get; init; }
 
         #endregion
 
@@ -102,6 +116,13 @@ namespace CloudNimble.DotNetDocs.Core
             IncludedMembers = includedMembers ?? [Accessibility.Public];
             ArgumentNullException.ThrowIfNull(references);
             References.AddRange(references);
+            
+            // Default exclusions for common test framework injected types
+            ExcludedTypes = new HashSet<string>
+            {
+                "*.MicrosoftTestingPlatformEntryPoint",
+                "*.SelfRegisteredExtensions"
+            };
         }
 
         #endregion
@@ -194,6 +215,48 @@ namespace CloudNimble.DotNetDocs.Core
         public string GetSafeNamespaceName(INamespaceSymbol namespaceSymbol)
         {
             return namespaceSymbol.IsGlobalNamespace ? "global" : namespaceSymbol.ToDisplayString();
+        }
+
+        /// <summary>
+        /// Checks if a type should be excluded from documentation based on exclusion patterns.
+        /// </summary>
+        /// <param name="fullyQualifiedTypeName">The fully qualified type name to check.</param>
+        /// <returns>True if the type should be excluded; otherwise, false.</returns>
+        public bool IsTypeExcluded(string fullyQualifiedTypeName)
+        {
+            if (ExcludedTypes == null || ExcludedTypes.Count == 0)
+            {
+                return false;
+            }
+
+            foreach (var pattern in ExcludedTypes)
+            {
+                if (MatchesPattern(fullyQualifiedTypeName, pattern))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Checks if a fully qualified type name matches a wildcard pattern.
+        /// </summary>
+        /// <param name="typeName">The fully qualified type name.</param>
+        /// <param name="pattern">The pattern with optional wildcards (*).</param>
+        /// <returns>True if the type name matches the pattern; otherwise, false.</returns>
+        private static bool MatchesPattern(string typeName, string pattern)
+        {
+            // Convert wildcard pattern to regex pattern
+            // Escape special regex characters except *
+            var regexPattern = System.Text.RegularExpressions.Regex.Escape(pattern)
+                .Replace("\\*", ".*");  // Convert * to regex .*
+            
+            // Add anchors to match the entire string
+            regexPattern = "^" + regexPattern + "$";
+            
+            return System.Text.RegularExpressions.Regex.IsMatch(typeName, regexPattern);
         }
 
         /// <summary>

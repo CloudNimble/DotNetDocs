@@ -3,10 +3,15 @@
     <PropertyGroup>
         <TargetFrameworks>net10.0;net9.0;net8.0</TargetFrameworks>
         <DocumentationFile>$(DocumentationFile)\$(AssemblyName).xml</DocumentationFile>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
     </PropertyGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\CloudNimble.DotNetDocs.Core\CloudNimble.DotNetDocs.Core.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Using Include="System" />
     </ItemGroup>
 
 </Project>

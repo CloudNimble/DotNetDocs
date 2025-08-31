@@ -69,8 +69,9 @@ namespace CloudNimble.DotNetDocs.Tests.Core
         public async Task DocumentAsync_ReturnsDocAssembly()
         {
             var manager = new AssemblyManager(testAssemblyPath, testXmlPath);
+            var context = new ProjectContext();
 
-            var result = await manager.DocumentAsync();
+            var result = await manager.DocumentAsync(context);
 
             result.Should().NotBeNull();
             result.Should().BeOfType<DocAssembly>();
@@ -81,8 +82,9 @@ namespace CloudNimble.DotNetDocs.Tests.Core
         public async Task DocumentAsync_ExtractsNamespaces()
         {
             var manager = new AssemblyManager(testAssemblyPath, testXmlPath);
+            var context = new ProjectContext();
 
-            var result = await manager.DocumentAsync();
+            var result = await manager.DocumentAsync(context);
 
             result.Namespaces.Should().NotBeEmpty();
             result.Namespaces.Should().Contain(ns => ns.Name == "CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios");
@@ -92,8 +94,9 @@ namespace CloudNimble.DotNetDocs.Tests.Core
         public async Task DocumentAsync_ExtractsTypes()
         {
             var manager = new AssemblyManager(testAssemblyPath, testXmlPath);
+            var context = new ProjectContext();
 
-            var result = await manager.DocumentAsync();
+            var result = await manager.DocumentAsync(context);
 
             var testNamespace = result.Namespaces
                 .FirstOrDefault(ns => ns.Name == "CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios");
@@ -108,8 +111,9 @@ namespace CloudNimble.DotNetDocs.Tests.Core
         public async Task DocumentAsync_HandlesXmlDocumentationFile()
         {
             var manager = new AssemblyManager(testAssemblyPath, testXmlPath);
+            var context = new ProjectContext();
 
-            var result = await manager.DocumentAsync();
+            var result = await manager.DocumentAsync(context);
 
             // Check that XML documentation was loaded
             var simpleClass = result.Namespaces
@@ -117,22 +121,23 @@ namespace CloudNimble.DotNetDocs.Tests.Core
                 .FirstOrDefault(t => t.Symbol.Name == "SimpleClass");
 
             simpleClass.Should().NotBeNull();
-            simpleClass!.Usage.Should().Contain("simple class for testing basic documentation extraction");
+            simpleClass!.Summary.Should().Contain("simple class for testing basic documentation extraction");
         }
 
         [TestMethod]
         public async Task DocumentAsync_ExtractsDocumentation()
         {
             var manager = new AssemblyManager(testAssemblyPath, testXmlPath);
+            var context = new ProjectContext();
 
-            var result = await manager.DocumentAsync();
+            var result = await manager.DocumentAsync(context);
 
             var testType = result.Namespaces
                 .SelectMany(ns => ns.Types)
                 .FirstOrDefault(t => t.Symbol.Name == "SimpleClass");
 
             testType.Should().NotBeNull();
-            testType!.Usage.Should().Contain("simple class");
+            testType!.Summary.Should().Contain("simple class");
             testType.Remarks.Should().Contain("remarks about the SimpleClass");
             testType.Examples.Should().Contain("new SimpleClass()");
         }
@@ -141,8 +146,9 @@ namespace CloudNimble.DotNetDocs.Tests.Core
         public async Task DocumentAsync_ExtractsMembers()
         {
             var manager = new AssemblyManager(testAssemblyPath, testXmlPath);
+            var context = new ProjectContext();
 
-            var result = await manager.DocumentAsync();
+            var result = await manager.DocumentAsync(context);
 
             var testType = result.Namespaces
                 .SelectMany(ns => ns.Types)
@@ -157,8 +163,9 @@ namespace CloudNimble.DotNetDocs.Tests.Core
         public async Task DocumentAsync_ExtractsMemberDocumentation()
         {
             var manager = new AssemblyManager(testAssemblyPath, testXmlPath);
+            var context = new ProjectContext();
 
-            var result = await manager.DocumentAsync();
+            var result = await manager.DocumentAsync(context);
 
             var method = result.Namespaces
                 .SelectMany(ns => ns.Types)
@@ -166,7 +173,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core
                 .FirstOrDefault(m => m.Symbol.Name == "Calculate");
 
             method.Should().NotBeNull();
-            method!.Usage.Should().Contain("Calculates the sum");
+            method!.Summary.Should().Contain("Calculates the sum");
             method.Examples.Should().Contain("Calculate(3, 4)");
         }
 
@@ -174,8 +181,9 @@ namespace CloudNimble.DotNetDocs.Tests.Core
         public async Task DocumentAsync_ExtractsInheritanceRelationships()
         {
             var manager = new AssemblyManager(testAssemblyPath, testXmlPath);
+            var context = new ProjectContext();
 
-            var result = await manager.DocumentAsync();
+            var result = await manager.DocumentAsync(context);
 
             var testType = result.Namespaces
                 .SelectMany(ns => ns.Types)
@@ -285,12 +293,10 @@ namespace CloudNimble.DotNetDocs.Tests.Core
         }
 
         [TestMethod]
-        [DataRow(true, "BasicAssembly.json")]
-        [DataRow(false, "BasicAssembly_WithGlobals.json")]
-        public async Task DocumentAsync_ProducesConsistentBaseline(bool ignoreGlobalModule, string baselineFileName)
+        public async Task DocumentAsync_ProducesConsistentBaseline()
         {
             var manager = new AssemblyManager(testAssemblyPath, testXmlPath);
-            var context = new ProjectContext { IgnoreGlobalModule = ignoreGlobalModule };
+            var context = new ProjectContext();
 
             var result = await manager.DocumentAsync(context);
 
@@ -309,14 +315,14 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             var json = SerializeToJson(result);
 
             // Compare against baseline
-            var projectPath = "..//..//..//";
-            var baselinePath = Path.Combine(projectPath, "Baselines", "AssemblyManager", baselineFileName);
-            
+            var baselinePath = Path.Combine("..", "..", "..", "Baselines", "AssemblyManager", "BasicAssembly.json");
+            var fullPath = Path.GetFullPath(baselinePath);
+
             if (File.Exists(baselinePath))
             {
                 var baseline = await File.ReadAllTextAsync(baselinePath);
-                json.Should().Be(baseline, 
-                    $"Assembly documentation has changed for {(ignoreGlobalModule ? "without" : "with")} globals. If this is intentional, regenerate baselines using 'dotnet breakdance generate'");
+                json.Should().Be(baseline,
+                    "Assembly documentation has changed. If this is intentional, regenerate baselines using 'dotnet breakdance generate'");
             }
             else
             {
@@ -341,21 +347,14 @@ namespace CloudNimble.DotNetDocs.Tests.Core
                 Directory.CreateDirectory(directory);
             }
 
-            // Generate baseline WITHOUT global module (default behavior)
-            var contextWithoutGlobals = new ProjectContext { IgnoreGlobalModule = true };
-            var resultWithoutGlobals = await manager.DocumentAsync(contextWithoutGlobals);
-            var jsonWithoutGlobals = SerializeToJson(resultWithoutGlobals);
-            var baselinePathWithoutGlobals = Path.Combine(directory, "BasicAssembly.json");
-            Console.WriteLine($"Writing baseline without globals to: {baselinePathWithoutGlobals}");
-            await File.WriteAllTextAsync(baselinePathWithoutGlobals, jsonWithoutGlobals);
-
-            // Generate baseline WITH global module
-            var contextWithGlobals = new ProjectContext { IgnoreGlobalModule = false };
-            var resultWithGlobals = await manager.DocumentAsync(contextWithGlobals);
-            var jsonWithGlobals = SerializeToJson(resultWithGlobals);
-            var baselinePathWithGlobals = Path.Combine(directory, "BasicAssembly_WithGlobals.json");
-            Console.WriteLine($"Writing baseline with globals to: {baselinePathWithGlobals}");
-            await File.WriteAllTextAsync(baselinePathWithGlobals, jsonWithGlobals);
+            // Generate baseline
+            var context = new ProjectContext();
+            var result = await manager.DocumentAsync(context);
+            var json = SerializeToJson(result);
+            var baselinePath = Path.Combine(directory, "BasicAssembly.json");
+            Console.WriteLine($"Writing baseline to: {baselinePath}");
+            Console.WriteLine($"Namespace count: {result.Namespaces.Count}");
+            await File.WriteAllTextAsync(baselinePath, json);
         }
 
         [TestInitialize]

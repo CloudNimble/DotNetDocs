@@ -9,12 +9,16 @@
 ## Syntax
 
 ```csharp
-public class ClassWithFullDocs : System.Object
+CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithFullDocs
 ```
 
-## Description
+## Summary
 
 A class with comprehensive XML documentation tags.
+
+## Remarks
+
+This class demonstrates all available XML documentation tags.It includes multiple paragraphs in the remarks section.
 
 ## Examples
 
@@ -28,7 +32,7 @@ var fullDocs = new ClassWithFullDocs();
 #### Syntax
 
 ```csharp
-public .ctor()
+public ClassWithFullDocs()
 ```
 
 ## Properties
@@ -40,12 +44,21 @@ Gets or sets the value property.
 #### Syntax
 
 ```csharp
-public string Value { get; set; }
+public string Value
 ```
+
+#### Returns
+
+Type: `string`
 
 #### Property Value
 
 Type: `string`
+The current value as a string.
+
+#### Remarks
+
+This property stores important data.
 
 ## Methods
 
@@ -69,9 +82,30 @@ public string ComplexMethod(string text, int number)
 #### Returns
 
 Type: `string`
+A processed result string.
+
+#### Exceptions
+
+| Exception | Description |
+|-----------|-------------|
+| `ArgumentNullException` | Thrown when text is null. |
+| `ArgumentOutOfRangeException` | Thrown when number is negative. |
 
 #### Examples
 
 var result = ComplexMethod("hello", 5);
             Console.WriteLine(result);
+
+#### Remarks
+
+This method performs complex processing.First, it validates the input.Then, it processes the data.Finally, it returns the result.
+
+#### See Also
+
+- System.String.Format(System.String,System.Object[])
+
+## See Also
+
+- CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithMinimalDocs
+- System.String
 

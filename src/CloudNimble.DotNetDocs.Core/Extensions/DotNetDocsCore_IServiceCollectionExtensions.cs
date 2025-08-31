@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace CloudNimble.DotNetDocs.Core.Extensions
+﻿namespace CloudNimble.DotNetDocs.Core.Extensions
 {
 
     /// <summary>

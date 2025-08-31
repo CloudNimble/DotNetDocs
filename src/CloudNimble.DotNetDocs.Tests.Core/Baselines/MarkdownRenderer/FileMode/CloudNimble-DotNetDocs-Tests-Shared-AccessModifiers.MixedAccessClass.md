@@ -9,12 +9,16 @@
 ## Syntax
 
 ```csharp
-public class MixedAccessClass : System.Object
+CloudNimble.DotNetDocs.Tests.Shared.AccessModifiers.MixedAccessClass
 ```
 
-## Description
+## Summary
 
 A class with members of various access modifiers for testing filtering.
+
+## Remarks
+
+This class tests the IncludedMembers filtering functionality.
 
 ## Constructors
 
@@ -23,7 +27,7 @@ A class with members of various access modifiers for testing filtering.
 #### Syntax
 
 ```csharp
-public .ctor()
+public MixedAccessClass()
 ```
 
 ## Properties
@@ -35,8 +39,12 @@ Gets or sets the public property.
 #### Syntax
 
 ```csharp
-public string PublicProperty { get; set; }
+public string PublicProperty
 ```
+
+#### Returns
+
+Type: `string`
 
 #### Property Value
 
@@ -57,6 +65,7 @@ public string PublicMethod()
 #### Returns
 
 Type: `string`
+A string indicating this is a public method.
 
 ## Fields
 
@@ -69,4 +78,8 @@ A public field.
 ```csharp
 public string PublicField
 ```
+
+#### Returns
+
+Type: `string`
 

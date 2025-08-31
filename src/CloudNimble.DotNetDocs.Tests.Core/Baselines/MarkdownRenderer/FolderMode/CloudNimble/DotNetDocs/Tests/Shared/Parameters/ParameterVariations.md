@@ -9,12 +9,16 @@
 ## Syntax
 
 ```csharp
-public class ParameterVariations : System.Object
+CloudNimble.DotNetDocs.Tests.Shared.Parameters.ParameterVariations
 ```
 
-## Description
+## Summary
 
 A class demonstrating various parameter types and patterns.
+
+## Remarks
+
+This class contains methods with different parameter modifiers and types.
 
 ## Constructors
 
@@ -23,7 +27,7 @@ A class demonstrating various parameter types and patterns.
 #### Syntax
 
 ```csharp
-public .ctor()
+public ParameterVariations()
 ```
 
 ## Methods
@@ -47,6 +51,11 @@ public string GenericMethod<T>(T value)
 #### Returns
 
 Type: `string`
+The string representation of the value.
+
+#### Type Parameters
+
+- `T` - The type of the value.
 
 #### Examples
 
@@ -60,7 +69,7 @@ A method with multiple generic type parameters.
 #### Syntax
 
 ```csharp
-public System.Collections.Generic.KeyValuePair<TKey, TValue> GenericMethodWithMultipleTypes<TKey, TValue>(TKey key, TValue value)
+public KeyValuePair<TKey, TValue> GenericMethodWithMultipleTypes<TKey, TValue>(TKey key, TValue value)
 ```
 
 #### Parameters
@@ -73,6 +82,12 @@ public System.Collections.Generic.KeyValuePair<TKey, TValue> GenericMethodWithMu
 #### Returns
 
 Type: `System.Collections.Generic.KeyValuePair<TKey, TValue>`
+A key-value pair.
+
+#### Type Parameters
+
+- `TKey` - The type of the key.
+- `TValue` - The type of the value.
 
 ### MethodWithConstraints
 
@@ -81,7 +96,7 @@ A method demonstrating parameter constraints.
 #### Syntax
 
 ```csharp
-public string MethodWithConstraints<T>(T item)
+public string MethodWithConstraints<T>(T item) where T : class
 ```
 
 #### Parameters
@@ -93,6 +108,11 @@ public string MethodWithConstraints<T>(T item)
 #### Returns
 
 Type: `string`
+The type name of the item.
+
+#### Type Parameters
+
+- `T` - The type parameter constrained to class types.
 
 ### MethodWithNullables
 
@@ -101,7 +121,7 @@ A method with nullable parameters.
 #### Syntax
 
 ```csharp
-public string MethodWithNullables(System.Nullable<int> nullableInt, string? nullableString)
+public string MethodWithNullables(Nullable<int> nullableInt, string nullableString)
 ```
 
 #### Parameters
@@ -114,6 +134,7 @@ public string MethodWithNullables(System.Nullable<int> nullableInt, string? null
 #### Returns
 
 Type: `string`
+A description of the provided values.
 
 ### MethodWithOptionalParam
 
@@ -122,7 +143,7 @@ A method with an optional parameter.
 #### Syntax
 
 ```csharp
-public string MethodWithOptionalParam(string required, int optional)
+public string MethodWithOptionalParam(string required, int optional = 42)
 ```
 
 #### Parameters
@@ -135,6 +156,7 @@ public string MethodWithOptionalParam(string required, int optional)
 #### Returns
 
 Type: `string`
+A formatted string combining both parameters.
 
 #### Examples
 
@@ -148,7 +170,7 @@ A method with an out parameter.
 #### Syntax
 
 ```csharp
-public bool MethodWithOut(string input, int value)
+public bool MethodWithOut(string input, out int value)
 ```
 
 #### Parameters
@@ -161,6 +183,7 @@ public bool MethodWithOut(string input, int value)
 #### Returns
 
 Type: `bool`
+true if the parsing was successful; otherwise, false.
 
 ### MethodWithParams
 
@@ -169,7 +192,7 @@ A method with a params array.
 #### Syntax
 
 ```csharp
-public int MethodWithParams(int[] values)
+public int MethodWithParams(params int[] values)
 ```
 
 #### Parameters
@@ -181,6 +204,7 @@ public int MethodWithParams(int[] values)
 #### Returns
 
 Type: `int`
+The sum of all provided values.
 
 #### Examples
 
@@ -194,7 +218,7 @@ A method with a ref parameter.
 #### Syntax
 
 ```csharp
-public void MethodWithRef(int value)
+public void MethodWithRef(ref int value)
 ```
 
 #### Parameters
@@ -202,4 +226,8 @@ public void MethodWithRef(int value)
 | Name | Type | Description |
 |------|------|-------------|
 | `value` | `int` | The value to be modified by reference. |
+
+#### Remarks
+
+This method doubles the input value.
 

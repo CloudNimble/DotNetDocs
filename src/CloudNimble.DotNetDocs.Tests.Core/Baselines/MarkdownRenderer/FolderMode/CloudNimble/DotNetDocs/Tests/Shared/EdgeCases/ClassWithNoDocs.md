@@ -9,7 +9,7 @@
 ## Syntax
 
 ```csharp
-public class ClassWithNoDocs : System.Object
+CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithNoDocs
 ```
 
 ## Constructors
@@ -19,7 +19,7 @@ public class ClassWithNoDocs : System.Object
 #### Syntax
 
 ```csharp
-public .ctor()
+public ClassWithNoDocs()
 ```
 
 ## Properties
@@ -29,8 +29,12 @@ public .ctor()
 #### Syntax
 
 ```csharp
-public string UndocumentedProperty { get; set; }
+public string UndocumentedProperty
 ```
+
+#### Returns
+
+Type: `string`
 
 #### Property Value
 

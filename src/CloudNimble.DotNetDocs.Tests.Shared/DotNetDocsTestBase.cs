@@ -12,13 +12,13 @@ namespace CloudNimble.DotNetDocs.Tests.Shared
 
         #region Internal Methods
 
-        public DocAssembly GetTestsDotSharedAssembly(bool ignoreGlobalModule = true)
+        public DocAssembly GetTestsDotSharedAssembly()
         {
             // Use a type from BasicScenarios namespace to ensure we get all types
             var assemblyPath = typeof(SampleClass).Assembly.Location;
             var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
             var manager = new AssemblyManager(assemblyPath, xmlPath);
-            var context = new ProjectContext { IgnoreGlobalModule = ignoreGlobalModule };
+            var context = new ProjectContext();
             var assembly = manager.DocumentAsync(context).GetAwaiter().GetResult();
 
             // Debug: Log available namespaces and types

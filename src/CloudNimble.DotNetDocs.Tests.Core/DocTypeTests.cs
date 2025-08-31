@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using CloudNimble.DotNetDocs.Core;
 using CloudNimble.DotNetDocs.Tests.Shared;
@@ -34,12 +35,13 @@ namespace CloudNimble.DotNetDocs.Tests.Core
 
             // The type is already a DocType from AssemblyManager
             type!.Symbol.Name.Should().Be("SampleClass");
-            // Note: Usage is populated from XML documentation
-            type.Usage.Should().NotBeEmpty(); // Has XML doc comment
-            type.Examples.Should().BeEmpty();
-            type.BestPractices.Should().BeEmpty();
-            type.Patterns.Should().BeEmpty();
-            type.Considerations.Should().BeEmpty();
+            // Summary is populated from XML doc comment
+            type.Summary.Should().NotBeNullOrEmpty();
+            type.Summary.Should().Be("A sample class for testing documentation generation.");
+            type.Examples.Should().BeNull();
+            type.BestPractices.Should().BeNull();
+            type.Patterns.Should().BeNull();
+            type.Considerations.Should().BeNull();
             type.RelatedApis.Should().BeEmpty();
             // Note: Members may be populated from AssemblyManager
             type.BaseType.Should().NotBeNull(); // SampleClass inherits from DotNetDocsTestBase
@@ -65,6 +67,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core
                 Considerations = "Important considerations"
             };
 
+            docType.RelatedApis ??= new List<string>();
             docType.RelatedApis.Add("System.String");
             docType.RelatedApis.Add("System.Object");
 
@@ -75,6 +78,88 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             docType.Considerations.Should().Be("Important considerations");
             docType.RelatedApis.Should().HaveCount(2);
             docType.RelatedApis.Should().Contain("System.String");
+        }
+
+        [TestMethod]
+        public void TypeSpecificProperties_CanBeSet()
+        {
+            var assembly = GetTestsDotSharedAssembly();
+            var type = assembly.Namespaces
+                .SelectMany(n => n.Types)
+                .FirstOrDefault(t => t.Symbol.Name == "SampleClass");
+            
+            var docType = new DocType(type!.Symbol)
+            {
+                Name = "TestType",
+                FullName = "Namespace.TestType",
+                AssemblyName = "TestAssembly",
+                Signature = "public class TestType",
+                TypeKind = Microsoft.CodeAnalysis.TypeKind.Class
+            };
+
+            docType.Name.Should().Be("TestType");
+            docType.FullName.Should().Be("Namespace.TestType");
+            docType.AssemblyName.Should().Be("TestAssembly");
+            docType.Signature.Should().Be("public class TestType");
+            docType.TypeKind.Should().Be(Microsoft.CodeAnalysis.TypeKind.Class);
+        }
+
+        [TestMethod]
+        public void BaseType_IsExtractedCorrectly()
+        {
+            var assembly = GetTestsDotSharedAssembly();
+            
+            // SampleClass should have a base type
+            var type = assembly.Namespaces
+                .SelectMany(n => n.Types)
+                .FirstOrDefault(t => t.Symbol.Name == "SampleClass");
+            
+            type.Should().NotBeNull();
+            type!.BaseType.Should().NotBeNull();
+        }
+
+        [TestMethod]
+        public void Members_CollectionCanBePopulated()
+        {
+            var assembly = GetTestsDotSharedAssembly();
+            var type = assembly.Namespaces
+                .SelectMany(n => n.Types)
+                .FirstOrDefault(t => t.Symbol.Name == "SampleClass");
+
+            // The type loaded from AssemblyManager should have members
+            type!.Members.Should().NotBeEmpty();
+            type.Members.Should().Contain(m => m.Name == "DoSomething");
+            type.Members.Should().Contain(m => m.Name == "Name" || m.Name == "get_Name" || m.Name == "set_Name");
+        }
+
+        [TestMethod]
+        public void Different_TypeKinds_AreHandledCorrectly()
+        {
+            var assembly = GetTestsDotSharedAssembly();
+            
+            // Find different type kinds in the test assembly
+            var types = assembly.Namespaces.SelectMany(n => n.Types).ToList();
+            
+            // We should have at least classes
+            var classTypes = types.Where(t => t.TypeKind == Microsoft.CodeAnalysis.TypeKind.Class);
+            classTypes.Should().NotBeEmpty("Test assembly should contain classes");
+        }
+
+
+        [TestMethod]
+        public void Symbol_IsPreservedCorrectly()
+        {
+            var assembly = GetTestsDotSharedAssembly();
+            var type = assembly.Namespaces
+                .SelectMany(n => n.Types)
+                .FirstOrDefault(t => t.Symbol.Name == "SampleClass");
+            
+            var originalSymbol = type!.Symbol;
+            var docType = new DocType(originalSymbol);
+
+            docType.Symbol.Should().NotBeNull();
+            docType.Symbol.Should().Be(originalSymbol);
+            docType.Symbol.Name.Should().Be("SampleClass");
         }
 
         #endregion

@@ -10,29 +10,21 @@
     </ItemGroup>
 
     <ItemGroup>
-        <AssemblyAttribute Include="CloudNimble.Breakdance.Assemblies.BreakdanceTestAssembly" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <None Update="Baselines\**\*.json">
+        <None Update="Baselines\**\*.*">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
-        <None Update="Baselines\**\*.yaml">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-        <None Update="Baselines\**\*.md">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-    </ItemGroup>
-
-    <ItemGroup>
         <None Update="app.config">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
     </ItemGroup>
 
     <ItemGroup>
-        <Folder Include="Baselines\AssemblyManager\" />
+        <AssemblyAttribute Include="CloudNimble.Breakdance.Assemblies.BreakdanceTestAssembly" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Baselines\MarkdownRenderer\FileMode\" />
+      <Folder Include="Baselines\MarkdownRenderer\FolderMode\" />
     </ItemGroup>
 
 </Project>

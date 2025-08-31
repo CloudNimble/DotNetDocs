@@ -38,6 +38,24 @@ namespace CloudNimble.DotNetDocs.Core
         private Compilation? _compilation;
         private bool _disposed;
 
+        /// <summary>
+        /// SymbolDisplayFormat for generating member signatures with access modifiers.
+        /// </summary>
+        private static readonly SymbolDisplayFormat DocumentationSignatureFormat = new SymbolDisplayFormat(
+            memberOptions: SymbolDisplayMemberOptions.IncludeAccessibility |
+                           SymbolDisplayMemberOptions.IncludeModifiers |
+                           SymbolDisplayMemberOptions.IncludeType |
+                           SymbolDisplayMemberOptions.IncludeParameters |
+                           SymbolDisplayMemberOptions.IncludeRef,
+            parameterOptions: SymbolDisplayParameterOptions.IncludeType |
+                              SymbolDisplayParameterOptions.IncludeName |
+                              SymbolDisplayParameterOptions.IncludeDefaultValue |
+                              SymbolDisplayParameterOptions.IncludeParamsRefOut,
+            typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypes,
+            genericsOptions: SymbolDisplayGenericsOptions.IncludeTypeParameters |
+                             SymbolDisplayGenericsOptions.IncludeTypeConstraints,
+            miscellaneousOptions: SymbolDisplayMiscellaneousOptions.UseSpecialTypes);
+
         #endregion
 
         #region Properties
@@ -134,7 +152,7 @@ namespace CloudNimble.DotNetDocs.Core
             if (needsRebuild)
             {
                 _compilation = await CreateCompilationAsync(projectContext?.References ?? []);
-                Document = BuildModel(_compilation, projectContext?.ConceptualPath, includedMembers, projectContext?.IgnoreGlobalModule ?? true);
+                Document = BuildModel(_compilation, projectContext);
                 LastModified = currentModified;
                 PreviousIncludedMembers = includedMembers.ToList();
             }
@@ -161,24 +179,24 @@ namespace CloudNimble.DotNetDocs.Core
         /// </summary>
         /// <param name="doc">The parsed XML documentation.</param>
         /// <returns>The summary text, or empty string if not found.</returns>
-        internal string ExtractSummary(XDocument? doc) =>
-            doc?.Descendants("summary").FirstOrDefault()?.Value.Trim() ?? string.Empty;
+        internal string? ExtractSummary(XDocument? doc) =>
+            doc?.Descendants("summary").FirstOrDefault()?.Value.Trim();
 
         /// <summary>
         /// Extracts the examples text from XML documentation.
         /// </summary>
         /// <param name="doc">The parsed XML documentation.</param>
         /// <returns>The examples text, or empty string if not found.</returns>
-        internal string ExtractExamples(XDocument? doc) =>
-            doc?.Descendants("example").FirstOrDefault()?.Value.Trim() ?? string.Empty;
+        internal string? ExtractExamples(XDocument? doc) =>
+            doc?.Descendants("example").FirstOrDefault()?.Value.Trim();
 
         /// <summary>
         /// Extracts the remarks/best practices text from XML documentation.
         /// </summary>
         /// <param name="doc">The parsed XML documentation.</param>
         /// <returns>The remarks text, or empty string if not found.</returns>
-        internal string ExtractRemarks(XDocument? doc) =>
-            doc?.Descendants("remarks").FirstOrDefault()?.Value.Trim() ?? string.Empty;
+        internal string? ExtractRemarks(XDocument? doc) =>
+            doc?.Descendants("remarks").FirstOrDefault()?.Value.Trim();
 
         /// <summary>
         /// Extracts parameter documentation from XML documentation.
@@ -192,14 +210,88 @@ namespace CloudNimble.DotNetDocs.Core
                 ?.Value.Trim() ?? string.Empty;
 
         /// <summary>
+        /// Extracts the returns documentation from XML documentation.
+        /// </summary>
+        /// <param name="doc">The parsed XML documentation.</param>
+        /// <returns>The returns text, or null if not found.</returns>
+        internal string? ExtractReturns(XDocument? doc)
+        {
+            var returns = doc?.Descendants("returns").FirstOrDefault()?.Value.Trim();
+            return string.IsNullOrWhiteSpace(returns) ? null : returns;
+        }
+
+        /// <summary>
+        /// Extracts exception documentation from XML documentation.
+        /// </summary>
+        /// <param name="doc">The parsed XML documentation.</param>
+        /// <returns>Collection of exception documentation, or null if none found.</returns>
+        internal ICollection<DocException>? ExtractExceptions(XDocument? doc)
+        {
+            var exceptions = doc?.Descendants("exception")
+                .Select(e => new DocException
+                {
+                    Type = e.Attribute("cref")?.Value?.Replace("T:", "")?.Split('.').LastOrDefault(),
+                    Description = e.Value.Trim()
+                })
+                .Where(e => !string.IsNullOrWhiteSpace(e.Type))
+                .ToList();
+
+            return exceptions?.Any() == true ? exceptions : null;
+        }
+
+        /// <summary>
+        /// Extracts type parameter documentation from XML documentation.
+        /// </summary>
+        /// <param name="doc">The parsed XML documentation.</param>
+        /// <returns>Collection of type parameter documentation, or null if none found.</returns>
+        internal ICollection<DocTypeParameter>? ExtractTypeParameters(XDocument? doc)
+        {
+            var typeParams = doc?.Descendants("typeparam")
+                .Select(e => new DocTypeParameter
+                {
+                    Name = e.Attribute("name")?.Value,
+                    Description = e.Value.Trim()
+                })
+                .Where(p => !string.IsNullOrWhiteSpace(p.Name))
+                .ToList();
+
+            return typeParams?.Any() == true ? typeParams : null;
+        }
+
+        /// <summary>
+        /// Extracts the value documentation from XML documentation (for properties).
+        /// </summary>
+        /// <param name="doc">The parsed XML documentation.</param>
+        /// <returns>The value text, or null if not found.</returns>
+        internal string? ExtractValue(XDocument? doc)
+        {
+            var value = doc?.Descendants("value").FirstOrDefault()?.Value.Trim();
+            return string.IsNullOrWhiteSpace(value) ? null : value;
+        }
+
+        /// <summary>
+        /// Extracts see-also references from XML documentation.
+        /// </summary>
+        /// <param name="doc">The parsed XML documentation.</param>
+        /// <returns>Collection of see-also references, or null if none found.</returns>
+        internal ICollection<string>? ExtractSeeAlso(XDocument? doc)
+        {
+            var seeAlso = doc?.Descendants("seealso")
+                .Select(e => e.Attribute("cref")?.Value?.Replace("T:", "")?.Replace("M:", "")?.Replace("P:", "")?.Replace("F:", "")?.Replace("E:", ""))
+                .Where(s => !string.IsNullOrWhiteSpace(s))
+                .Cast<string>()
+                .ToList();
+
+            return seeAlso?.Any() == true ? seeAlso : null;
+        }
+
+        /// <summary>
         /// Builds the in-memory documentation model from the Roslyn compilation.
         /// </summary>
         /// <param name="compilation">The Roslyn compilation containing assembly metadata.</param>
-        /// <param name="conceptualPath">Optional path to conceptual documentation files.</param>
-        /// <param name="includedMembers">List of member accessibilities to include.</param>
-        /// <param name="ignoreGlobalModule">Whether to ignore the global namespace and its contents.</param>
+        /// <param name="projectContext">Optional project context containing configuration and filters.</param>
         /// <returns>The <see cref="DocAssembly"/> model.</returns>
-        internal DocAssembly BuildModel(Compilation compilation, string? conceptualPath, List<Accessibility> includedMembers, bool ignoreGlobalModule = true)
+        internal DocAssembly BuildModel(Compilation compilation, ProjectContext? projectContext)
         {
             var targetRef = compilation.References.OfType<PortableExecutableReference>().FirstOrDefault(r => string.Equals(r.FilePath, AssemblyPath, StringComparison.OrdinalIgnoreCase))
                 ?? throw new InvalidOperationException("Target assembly reference not found in compilation.");
@@ -208,17 +300,26 @@ namespace CloudNimble.DotNetDocs.Core
                 ?? throw new InvalidOperationException("Could not get assembly symbol from compilation.");
 
             var assemblyDoc = ExtractDocumentationXml(assemblySymbol);
+            var includedMembers = projectContext?.IncludedMembers ?? [Accessibility.Public];
 
             var docAssembly = new DocAssembly(assemblySymbol)
             {
-                Usage = ExtractSummary(assemblyDoc),
+                AssemblyName = assemblySymbol.Name,
+                Version = assemblySymbol.Identity.Version.ToString(),
+                DisplayName = assemblySymbol.ToDisplayString(),
+                Summary = ExtractSummary(assemblyDoc),
+                Returns = ExtractReturns(assemblyDoc),
+                Exceptions = ExtractExceptions(assemblyDoc),
+                TypeParameters = ExtractTypeParameters(assemblyDoc),
+                Value = ExtractValue(assemblyDoc),
+                SeeAlso = ExtractSeeAlso(assemblyDoc),
                 IncludedMembers = includedMembers
             };
 
             var typeMap = new Dictionary<string, DocType>(); // Cache for type resolutions
 
             // Process all namespaces recursively
-            ProcessNamespace(assemblySymbol.GlobalNamespace, docAssembly, compilation, typeMap, includedMembers, ignoreGlobalModule);
+            ProcessNamespace(assemblySymbol.GlobalNamespace, docAssembly, compilation, typeMap, includedMembers, projectContext);
 
             return docAssembly;
         }
@@ -237,7 +338,18 @@ namespace CloudNimble.DotNetDocs.Core
 
             var docType = new DocType(type)
             {
-                Usage = ExtractSummary(doc),
+                Name = type.Name,
+                FullName = type.ToDisplayString(),
+                DisplayName = type.ToDisplayString(),
+                Signature = type.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat),
+                TypeKind = type.TypeKind,
+                AssemblyName = type.ContainingAssembly?.Name,
+                Summary = ExtractSummary(doc),
+                Returns = ExtractReturns(doc),
+                Exceptions = ExtractExceptions(doc),
+                TypeParameters = ExtractTypeParameters(doc),
+                Value = ExtractValue(doc),
+                SeeAlso = ExtractSeeAlso(doc),
                 Examples = ExtractExamples(doc),
                 Remarks = ExtractRemarks(doc)
             };
@@ -266,7 +378,19 @@ namespace CloudNimble.DotNetDocs.Core
 
                      docMember = new DocMember(method)
                      {
-                         Usage = ExtractSummary(mDoc),
+                         Name = method.Name,
+                         DisplayName = method.ToDisplayString(),
+                         Signature = method.ToDisplayString(DocumentationSignatureFormat),
+                         MemberKind = method.Kind,
+                         MethodKind = method.MethodKind,
+                         Accessibility = method.DeclaredAccessibility,
+                         ReturnTypeName = method.ReturnsVoid ? "void" : method.ReturnType.ToDisplayString(),
+                         Summary = ExtractSummary(mDoc),
+                         Returns = ExtractReturns(mDoc),
+                         Exceptions = ExtractExceptions(mDoc),
+                         TypeParameters = ExtractTypeParameters(mDoc),
+                         Value = ExtractValue(mDoc),
+                         SeeAlso = ExtractSeeAlso(mDoc),
                          Examples = ExtractExamples(mDoc),
                          Remarks = ExtractRemarks(mDoc),
                          IncludedMembers = docType.IncludedMembers,
@@ -275,6 +399,13 @@ namespace CloudNimble.DotNetDocs.Core
                              {
                                  var paramDoc = new DocParameter(p)
                                  {
+                                     Name = p.Name,
+                                     TypeName = p.Type.ToDisplayString(),
+                                     DisplayName = p.ToDisplayString(),
+                                     IsOptional = p.IsOptional,
+                                     HasDefaultValue = p.HasExplicitDefaultValue,
+                                     DefaultValue = p.HasExplicitDefaultValue ? p.ExplicitDefaultValue?.ToString() : null,
+                                     IsParams = p.IsParams,
                                      Usage = ExtractParameterDocumentation(mDoc, p.Name)
                                  };
 
@@ -284,6 +415,12 @@ namespace CloudNimble.DotNetDocs.Core
                                  {
                                      pTypeDoc = new DocType(p.Type)
                                      {
+                                         Name = p.Type.Name,
+                                         FullName = p.Type.ToDisplayString(),
+                                         DisplayName = p.Type.ToDisplayString(),
+                                         Signature = p.Type.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat),
+                                         TypeKind = p.Type.TypeKind,
+                                         AssemblyName = p.Type.ContainingAssembly?.Name,
                                          IncludedMembers = docType.IncludedMembers
                                      };
                                      typeMap[pTypeKey] = pTypeDoc;
@@ -302,6 +439,12 @@ namespace CloudNimble.DotNetDocs.Core
                          {
                             rDoc = new DocType(method.ReturnType)
                             {
+                                Name = method.ReturnType.Name,
+                                FullName = method.ReturnType.ToDisplayString(),
+                                DisplayName = method.ReturnType.ToDisplayString(),
+                                Signature = method.ReturnType.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat),
+                                TypeKind = method.ReturnType.TypeKind,
+                                AssemblyName = method.ReturnType.ContainingAssembly?.Name,
                                 IncludedMembers = docType.IncludedMembers
                             };
                             typeMap[rKey] = rDoc;
@@ -315,7 +458,16 @@ namespace CloudNimble.DotNetDocs.Core
 
                      docMember = new DocMember(property)
                      {
-                         Usage = ExtractSummary(pDoc),
+                         Name = property.Name,
+                         DisplayName = property.ToDisplayString(),
+                         Signature = property.ToDisplayString(DocumentationSignatureFormat),
+                         MemberKind = property.Kind,
+                         Accessibility = property.DeclaredAccessibility,
+                         ReturnTypeName = property.Type.ToDisplayString(),
+                         Summary = ExtractSummary(pDoc),
+                         Value = ExtractValue(pDoc),
+                         Exceptions = ExtractExceptions(pDoc),
+                         SeeAlso = ExtractSeeAlso(pDoc),
                          Examples = ExtractExamples(pDoc),
                          Remarks = ExtractRemarks(pDoc),
                          IncludedMembers = docType.IncludedMembers
@@ -327,7 +479,15 @@ namespace CloudNimble.DotNetDocs.Core
 
                      docMember = new DocMember(field)
                      {
-                         Usage = ExtractSummary(fDoc),
+                         Name = field.Name,
+                         DisplayName = field.ToDisplayString(),
+                         Signature = field.ToDisplayString(DocumentationSignatureFormat),
+                         MemberKind = field.Kind,
+                         Accessibility = field.DeclaredAccessibility,
+                         ReturnTypeName = field.Type.ToDisplayString(),
+                         Summary = ExtractSummary(fDoc),
+                         Value = ExtractValue(fDoc),
+                         SeeAlso = ExtractSeeAlso(fDoc),
                          Examples = ExtractExamples(fDoc),
                          Remarks = ExtractRemarks(fDoc),
                          IncludedMembers = docType.IncludedMembers
@@ -339,7 +499,14 @@ namespace CloudNimble.DotNetDocs.Core
 
                      docMember = new DocMember(eventSymbol)
                      {
-                         Usage = ExtractSummary(eDoc),
+                         Name = eventSymbol.Name,
+                         DisplayName = eventSymbol.ToDisplayString(),
+                         Signature = eventSymbol.ToDisplayString(DocumentationSignatureFormat),
+                         MemberKind = eventSymbol.Kind,
+                         Accessibility = eventSymbol.DeclaredAccessibility,
+                         ReturnTypeName = eventSymbol.Type.ToDisplayString(),
+                         Summary = ExtractSummary(eDoc),
+                         SeeAlso = ExtractSeeAlso(eDoc),
                          Examples = ExtractExamples(eDoc),
                          Remarks = ExtractRemarks(eDoc),
                          IncludedMembers = docType.IncludedMembers
@@ -443,34 +610,12 @@ namespace CloudNimble.DotNetDocs.Core
         /// <param name="compilation">The Roslyn compilation.</param>
         /// <param name="typeMap">Cache for type resolutions.</param>
         /// <param name="includedMembers">List of member accessibilities to include.</param>
-        /// <param name="ignoreGlobalModule">Whether to ignore the global namespace and its contents.</param>
-        internal void ProcessNamespace(INamespaceSymbol namespaceSymbol, DocAssembly docAssembly, Compilation compilation, Dictionary<string, DocType> typeMap, List<Accessibility> includedMembers, bool ignoreGlobalModule = true)
+        /// <param name="projectContext">Optional project context containing configuration and filters.</param>
+        internal void ProcessNamespace(INamespaceSymbol namespaceSymbol, DocAssembly docAssembly, Compilation compilation, Dictionary<string, DocType> typeMap, List<Accessibility> includedMembers, ProjectContext? projectContext)
         {
-            // Process types in the global namespace
-            if (namespaceSymbol.IsGlobalNamespace && !ignoreGlobalModule)
-            {
-                var hasTypesToDocument = namespaceSymbol.GetTypeMembers().Any(t => includedMembers.Contains(t.DeclaredAccessibility) || t.Name == "<Module>");
-                if (hasTypesToDocument)
-                {
-                    var nsDoc = ExtractDocumentationXml(namespaceSymbol);
-
-                    var globalNs = new DocNamespace(namespaceSymbol)
-                    {
-                        Usage = ExtractSummary(nsDoc),
-                        IncludedMembers = includedMembers
-                    };
-                    docAssembly.Namespaces.Add(globalNs);
-
-                    foreach (var type in namespaceSymbol.GetTypeMembers().Where(t => includedMembers.Contains(t.DeclaredAccessibility) || t.Name == "<Module>"))
-                    {
-                        var docType = BuildDocType(type, compilation, typeMap, includedMembers);
-                        globalNs.Types.Add(docType);
-                    }
-                }
-            }
-
             // Process nested namespaces recursively, collecting all namespaces with types
-            ProcessNamespaceRecursive(namespaceSymbol, docAssembly, compilation, typeMap, includedMembers);
+            // We always skip the global namespace to avoid documenting compiler-generated <Module> types
+            ProcessNamespaceRecursive(namespaceSymbol, docAssembly, compilation, typeMap, includedMembers, projectContext);
         }
 
         /// <summary>
@@ -481,12 +626,23 @@ namespace CloudNimble.DotNetDocs.Core
         /// <param name="compilation">The Roslyn compilation.</param>
         /// <param name="typeMap">Cache for type resolutions.</param>
         /// <param name="includedMembers">List of member accessibilities to include.</param>
-        internal void ProcessNamespaceRecursive(INamespaceSymbol namespaceSymbol, DocAssembly docAssembly, Compilation compilation, Dictionary<string, DocType> typeMap, List<Accessibility> includedMembers)
+        /// <param name="projectContext">Optional project context containing configuration and filters.</param>
+        internal void ProcessNamespaceRecursive(INamespaceSymbol namespaceSymbol, DocAssembly docAssembly, Compilation compilation, Dictionary<string, DocType> typeMap, List<Accessibility> includedMembers, ProjectContext? projectContext)
         {
             foreach (var ns in namespaceSymbol.GetNamespaceMembers())
             {
                 // Check if this namespace has any types with the required accessibility
-                var typesInNamespace = ns.GetTypeMembers().Where(t => includedMembers.Contains(t.DeclaredAccessibility)).ToList();
+                var typesInNamespace = ns.GetTypeMembers()
+                    .Where(t => includedMembers.Contains(t.DeclaredAccessibility))
+                    .ToList();
+                
+                // Filter out excluded types if we have a project context
+                if (projectContext != null)
+                {
+                    typesInNamespace = typesInNamespace
+                        .Where(t => !projectContext.IsTypeExcluded(t.ToDisplayString()))
+                        .ToList();
+                }
                 
                 if (typesInNamespace.Any())
                 {
@@ -495,7 +651,10 @@ namespace CloudNimble.DotNetDocs.Core
 
                     var docNs = new DocNamespace(ns)
                     {
-                        Usage = ExtractSummary(nsDoc),
+                        Name = ns.IsGlobalNamespace ? string.Empty : ns.ToDisplayString(),
+                        DisplayName = ns.ToDisplayString(),
+                        Summary = ExtractSummary(nsDoc),
+                        SeeAlso = ExtractSeeAlso(nsDoc),
                         IncludedMembers = includedMembers
                     };
                     docAssembly.Namespaces.Add(docNs);
@@ -509,7 +668,7 @@ namespace CloudNimble.DotNetDocs.Core
                 }
 
                 // Recurse into nested namespaces regardless of whether this one had types
-                ProcessNamespaceRecursive(ns, docAssembly, compilation, typeMap, includedMembers);
+                ProcessNamespaceRecursive(ns, docAssembly, compilation, typeMap, includedMembers, projectContext);
             }
         }
 

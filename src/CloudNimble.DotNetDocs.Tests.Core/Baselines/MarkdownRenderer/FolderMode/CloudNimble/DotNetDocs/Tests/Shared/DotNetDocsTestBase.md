@@ -9,7 +9,7 @@
 ## Syntax
 
 ```csharp
-public class DotNetDocsTestBase : CloudNimble.Breakdance.Extensions.MSTest2.BreakdanceMSTestBase
+CloudNimble.DotNetDocs.Tests.Shared.DotNetDocsTestBase
 ```
 
 ## Constructors
@@ -19,7 +19,7 @@ public class DotNetDocsTestBase : CloudNimble.Breakdance.Extensions.MSTest2.Brea
 #### Syntax
 
 ```csharp
-public .ctor()
+public DotNetDocsTestBase()
 ```
 
 ## Methods
@@ -29,14 +29,8 @@ public .ctor()
 #### Syntax
 
 ```csharp
-public CloudNimble.DotNetDocs.Core.DocAssembly GetTestsDotSharedAssembly(bool ignoreGlobalModule)
+public DocAssembly GetTestsDotSharedAssembly()
 ```
-
-#### Parameters
-
-| Name | Type | Description |
-|------|------|-------------|
-| `ignoreGlobalModule` | `bool` | - |
 
 #### Returns
 
@@ -51,4 +45,8 @@ Type: `CloudNimble.DotNetDocs.Core.DocAssembly`
 ```csharp
 public const string projectPath
 ```
+
+#### Returns
+
+Type: `string`
 

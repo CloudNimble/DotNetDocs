@@ -1,0 +1,105 @@
+XML Documentation Tag to Property Mappings
+
+  Based on the code in AssemblyManager.cs, here are the mappings from XML documentation tags to DocEntity
+  properties:
+
+  Direct XML Tag Mappings:
+
+  1. <summary> → Usage property
+    - Extracted via ExtractSummary() method
+    - Contains the brief description of the API element
+  2. <remarks> → Remarks property
+    - Extracted via ExtractRemarks() method
+    - Contains additional notes and detailed information
+  3. <example> → Examples property
+    - Extracted via ExtractExamples() method
+    - Contains code examples and usage demonstrations
+  4. <param name="..."> → Usage property (for DocParameter only)
+    - Extracted via ExtractParameterDocumentation() method
+    - Parameter descriptions are stored in the DocParameter's Usage property
+
+  Properties NOT populated from XML documentation:
+
+  - BestPractices - Loaded from conceptual content files only
+  - Patterns - Loaded from conceptual content files only
+  - Considerations - Loaded from conceptual content files only
+  - RelatedApis - Loaded from conceptual content files only
+
+  Other XML tags that are NOT currently mapped:
+
+  - <returns> - Not currently extracted
+  - <exception> - Not currently extracted
+  - <seealso> - Not currently extracted (could potentially map to RelatedApis)
+  - <value> - Not currently extracted
+  - <typeparam> - Not currently extracted
+
+  The test failure is because DoSomething method has <summary>Performs a sample operation.</summary> in the XML
+  documentation, which gets mapped to the Usage property, so the test should expect that value instead of an empty
+  string.
+
+> Without making any code changes, does it seem problematic that so many xml documentation items are not being
+  extracted? Does it seem problematic that there aree not 1-1 mappings between properties?
+
+● Yes, this is quite problematic for several reasons:
+
+  Missing Critical Documentation Elements
+
+  1. <returns> not extracted - This is a significant omission. Return value documentation is crucial for
+  understanding what a method produces. Users need to know what they're getting back from a method call.
+  2. <exception> not extracted - This is a serious gap for API documentation. Developers need to know what
+  exceptions can be thrown so they can handle them appropriately. This is essential for writing robust code.
+  3. <typeparam> not extracted - For generic types and methods, understanding type parameters is fundamental to
+  using the API correctly.
+  4. <value> not extracted - For properties, the <value> tag describes what the property represents, which is
+  different from the summary.
+
+  Confusing Property Mappings
+
+  1. <summary> → Usage - This mapping is semantically incorrect:
+    - <summary> is meant to be a brief description of what something IS
+    - Usage implies HOW to use something
+    - These are fundamentally different concepts
+  2. <remarks> → Remarks - This is the only mapping that makes semantic sense.
+  3. No place for actual usage documentation - Since <summary> takes over the Usage property, there's no place to
+  put actual usage instructions from conceptual content without overwriting the summary.
+
+  Architectural Issues
+
+  1. Mixed concerns - The properties are trying to serve both XML documentation (which is reference documentation)
+  and conceptual documentation (which is tutorial/guide documentation) with the same fields.
+  2. Loss of information - By mapping <summary> to Usage, you lose the semantic distinction between "what this is"
+  and "how to use it."
+  3. Incomplete API documentation - Without returns, exceptions, and type parameters, the generated documentation
+  will be missing critical information that developers expect from API reference documentation.
+
+  Recommendation
+
+  The system should either:
+  1. Have separate properties for XML documentation elements (Summary, Returns, Exceptions, etc.) distinct from
+  conceptual documentation properties (Usage, Patterns, BestPractices)
+  2. Or use a more complex structure that preserves the original XML documentation structure while adding conceptual
+   content as enhancements
+
+  This would provide complete API documentation while maintaining the ability to enhance it with conceptual content.
+
+> ME: The way we are handling everything seems problematic. The fact that on the Doc* objects in Core rely so much on the
+  symbols is a huge problem. Those objects should represent mutable versions of the documentation as it moves through
+  the pipeline, with the stuff loaded from XML being the default.
+
+  Instead of relying on ISymbol everywhere, it should be assepting the ISymbol in the constructor, storing that value
+  in a backing field, and setting the properties on itself based on the the symbol passed in.
+
+  That way future conceptual loading and transformations can make adjustments before the values are output, but
+  it can still refer back to the original values in the ISymbol is necessary.
+
+  This is a complex problem that is going to need an incredibly detailed solution. Create a plan in /specs called
+  core-documentation-fixes.md that has invidual todos for every property that needs to be added and every little thing
+   that needs to get done. That includes:
+
+  - Adding all of the missing documentation elements that aren't being extracted, whether they make more sense in
+  DocEntity or the symbol-specific classes.
+  - Fixing each of the mappings that don't make semantic sense
+  - Creating an intuitive, Easy As Fuck specification doc for how this should work that both AI and humans can
+  understand.
+  - fixing all of the holes in the unit tests for the core objects that missed these problems so they never happen
+  again.

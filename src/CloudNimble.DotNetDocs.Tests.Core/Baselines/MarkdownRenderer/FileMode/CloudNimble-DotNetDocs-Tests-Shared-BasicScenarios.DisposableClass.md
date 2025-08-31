@@ -5,17 +5,20 @@
 **Namespace:** CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios
 **Assembly:** CloudNimble.DotNetDocs.Tests.Shared
 **Inheritance:** System.Object
-**Implements:** System.IDisposable
 
 ## Syntax
 
 ```csharp
-public class DisposableClass : System.Object, System.IDisposable
+CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DisposableClass
 ```
 
-## Description
+## Summary
 
 A class that implements IDisposable for testing interface documentation.
+
+## Remarks
+
+This class demonstrates how interface implementation is documented.
 
 ## Examples
 
@@ -31,7 +34,7 @@ using (var disposable = new DisposableClass())
 #### Syntax
 
 ```csharp
-public .ctor()
+public DisposableClass()
 ```
 
 ## Properties
@@ -43,8 +46,12 @@ Gets or sets the resource name.
 #### Syntax
 
 ```csharp
-public string ResourceName { get; set; }
+public string ResourceName
 ```
+
+#### Returns
+
+Type: `string`
 
 #### Property Value
 
@@ -62,6 +69,10 @@ Disposes the resources used by this instance.
 public void Dispose()
 ```
 
+#### Remarks
+
+Implements the IDisposable pattern.
+
 ### UseResource
 
 Uses the resource.
@@ -71,6 +82,12 @@ Uses the resource.
 ```csharp
 public void UseResource()
 ```
+
+#### Exceptions
+
+| Exception | Description |
+|-----------|-------------|
+| `ObjectDisposedException` | Thrown if the object has been disposed. |
 
 ## Related APIs
 

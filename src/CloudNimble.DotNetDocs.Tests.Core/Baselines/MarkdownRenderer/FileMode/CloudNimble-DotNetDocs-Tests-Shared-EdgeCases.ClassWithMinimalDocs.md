@@ -9,10 +9,10 @@
 ## Syntax
 
 ```csharp
-public class ClassWithMinimalDocs : System.Object
+CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithMinimalDocs
 ```
 
-## Description
+## Summary
 
 A class with minimal documentation.
 
@@ -23,7 +23,7 @@ A class with minimal documentation.
 #### Syntax
 
 ```csharp
-public .ctor()
+public ClassWithMinimalDocs()
 ```
 
 ## Properties
@@ -35,8 +35,12 @@ Gets or sets the name.
 #### Syntax
 
 ```csharp
-public string Name { get; set; }
+public string Name
 ```
+
+#### Returns
+
+Type: `string`
 
 #### Property Value
 
