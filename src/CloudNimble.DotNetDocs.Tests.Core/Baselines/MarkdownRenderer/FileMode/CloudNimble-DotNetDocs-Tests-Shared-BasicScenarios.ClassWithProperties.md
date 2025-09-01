@@ -3,7 +3,9 @@
 ## Definition
 
 **Namespace:** CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios
-**Assembly:** CloudNimble.DotNetDocs.Tests.Shared
+
+**Assembly:** CloudNimble.DotNetDocs.Tests.Shared.dll
+
 **Inheritance:** System.Object
 
 ## Syntax
@@ -39,12 +41,8 @@ Gets the read-only identifier.
 #### Syntax
 
 ```csharp
-public int Id
+public int Id { get; }
 ```
-
-#### Returns
-
-Type: `int`
 
 #### Property Value
 
@@ -61,12 +59,8 @@ Gets or sets the name.
 #### Syntax
 
 ```csharp
-public string Name
+public string Name { get; set; }
 ```
-
-#### Returns
-
-Type: `string`
 
 #### Property Value
 
@@ -83,12 +77,8 @@ Gets or sets the value with a private setter.
 #### Syntax
 
 ```csharp
-public double Value
+public double Value { get; private set; }
 ```
-
-#### Returns
-
-Type: `double`
 
 #### Property Value
 

@@ -3,7 +3,9 @@
 ## Definition
 
 **Namespace:** CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios
-**Assembly:** CloudNimble.DotNetDocs.Tests.Shared
+
+**Assembly:** CloudNimble.DotNetDocs.Tests.Shared.dll
+
 **Inheritance:** System.Object
 
 ## Syntax
@@ -46,12 +48,8 @@ Gets or sets the resource name.
 #### Syntax
 
 ```csharp
-public string ResourceName
+public string ResourceName { get; set; }
 ```
-
-#### Returns
-
-Type: `string`
 
 #### Property Value
 

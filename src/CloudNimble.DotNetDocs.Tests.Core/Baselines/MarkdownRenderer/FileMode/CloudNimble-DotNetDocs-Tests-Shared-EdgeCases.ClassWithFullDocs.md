@@ -3,7 +3,9 @@
 ## Definition
 
 **Namespace:** CloudNimble.DotNetDocs.Tests.Shared.EdgeCases
-**Assembly:** CloudNimble.DotNetDocs.Tests.Shared
+
+**Assembly:** CloudNimble.DotNetDocs.Tests.Shared.dll
+
 **Inheritance:** System.Object
 
 ## Syntax
@@ -44,12 +46,8 @@ Gets or sets the value property.
 #### Syntax
 
 ```csharp
-public string Value
+public string Value { get; set; }
 ```
-
-#### Returns
-
-Type: `string`
 
 #### Property Value
 

@@ -3,7 +3,9 @@
 ## Definition
 
 **Namespace:** CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios
-**Assembly:** CloudNimble.DotNetDocs.Tests.Shared
+
+**Assembly:** CloudNimble.DotNetDocs.Tests.Shared.dll
+
 **Inheritance:** CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.BaseClass
 
 ## Syntax
@@ -44,12 +46,8 @@ Gets or sets the base property with overridden behavior.
 #### Syntax
 
 ```csharp
-public override string BaseProperty
+public override string BaseProperty { get; set; }
 ```
-
-#### Returns
-
-Type: `string`
 
 #### Property Value
 
@@ -66,12 +64,8 @@ Gets or sets the derived property.
 #### Syntax
 
 ```csharp
-public string DerivedProperty
+public string DerivedProperty { get; set; }
 ```
-
-#### Returns
-
-Type: `string`
 
 #### Property Value
 

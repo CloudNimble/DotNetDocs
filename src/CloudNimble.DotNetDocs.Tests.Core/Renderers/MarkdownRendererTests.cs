@@ -237,7 +237,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
 
             // Assert
             var content = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, "index.md"));
-            content.Should().Contain("## Overview");
+            content.Should().Contain("## Usage");
             content.Should().Contain("This is assembly usage documentation");
         }
 
@@ -742,7 +742,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             await _renderer.RenderAssemblyAsync(assembly, _testOutputPath);
 
             var content = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, "index.md"));
-            content.Should().Contain("## Overview");
+            content.Should().Contain("## Usage");
             content.Should().Contain(assembly.Usage);
         }
 

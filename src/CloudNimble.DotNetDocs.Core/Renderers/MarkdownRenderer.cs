@@ -70,10 +70,10 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
         internal async Task RenderAssemblyAsync(DocAssembly assembly, string outputPath)
         {
             var sb = new StringBuilder();
-            
+
             sb.AppendLine($"# {assembly.AssemblyName}");
             sb.AppendLine();
-            
+
             if (!string.IsNullOrWhiteSpace(assembly.Summary))
             {
                 sb.AppendLine("## Summary");
@@ -84,7 +84,7 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
 
             if (!string.IsNullOrWhiteSpace(assembly.Usage))
             {
-                sb.AppendLine("## Overview");
+                sb.AppendLine("## Usage");
                 sb.AppendLine();
                 sb.AppendLine(assembly.Usage);
                 sb.AppendLine();
@@ -166,7 +166,7 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
         internal async Task RenderNamespaceAsync(DocNamespace ns, string outputPath)
         {
             var sb = new StringBuilder();
-            
+
             sb.AppendLine($"# {ns.Name}");
             sb.AppendLine();
 
@@ -180,7 +180,7 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
 
             if (!string.IsNullOrWhiteSpace(ns.Usage))
             {
-                sb.AppendLine("## Overview");
+                sb.AppendLine("## Usage");
                 sb.AppendLine();
                 sb.AppendLine(ns.Usage);
                 sb.AppendLine();
@@ -251,7 +251,7 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
             {
                 sb.AppendLine("## Types");
                 sb.AppendLine();
-                
+
                 var classes = ns.Types.Where(t => t.TypeKind == Microsoft.CodeAnalysis.TypeKind.Class).ToList();
                 if (classes.Any())
                 {
@@ -325,24 +325,26 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
         internal async Task RenderTypeAsync(DocType type, DocNamespace ns, string outputPath)
         {
             var sb = new StringBuilder();
-            
+
             sb.AppendLine($"# {type.Name}");
             sb.AppendLine();
-            
+
             // Type metadata section
             sb.AppendLine("## Definition");
             sb.AppendLine();
             sb.AppendLine($"**Namespace:** {ns.Name}");
-            sb.AppendLine($"**Assembly:** {type.AssemblyName ?? "Unknown"}");
-            
+            sb.AppendLine();
+            sb.AppendLine($"**Assembly:** {(type.AssemblyName != null ? $"{type.AssemblyName}.dll" : "Unknown")}");
+
             if (!string.IsNullOrWhiteSpace(type.BaseType))
             {
+                sb.AppendLine();
                 sb.AppendLine($"**Inheritance:** {type.BaseType}");
             }
-            
+
             // TODO: Add interface information when available in DocType
             sb.AppendLine();
-            
+
             // Type signature
             sb.AppendLine("## Syntax");
             sb.AppendLine();
@@ -361,7 +363,7 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
 
             if (!string.IsNullOrWhiteSpace(type.Usage))
             {
-                sb.AppendLine("## Description");
+                sb.AppendLine("## Usage");
                 sb.AppendLine();
                 sb.AppendLine(type.Usage);
                 sb.AppendLine();
@@ -519,7 +521,7 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
         {
             sb.AppendLine($"### {member.Name}");
             sb.AppendLine();
-            
+
             // Summary/Description
             if (!string.IsNullOrWhiteSpace(member.Summary))
             {
@@ -531,7 +533,7 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
                 sb.AppendLine(member.Usage);
                 sb.AppendLine();
             }
-            
+
             // Syntax
             sb.AppendLine("#### Syntax");
             sb.AppendLine();
@@ -556,8 +558,9 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
                 sb.AppendLine();
             }
 
-            // Returns (for methods)
-            if (member.ReturnTypeName != null && member.ReturnTypeName != "void")
+            // Returns (for methods only, not properties)
+            if (member.MemberKind == Microsoft.CodeAnalysis.SymbolKind.Method &&
+                member.ReturnTypeName != null && member.ReturnTypeName != "void")
             {
                 sb.AppendLine("#### Returns");
                 sb.AppendLine();

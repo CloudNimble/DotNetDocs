@@ -93,14 +93,14 @@ types:
     memberKind: Property
     name: Name
     returnTypeName: string
-    signature: public string Name
+    signature: public string Name { get; set; }
     displayName: CloudNimble.DotNetDocs.Tests.Shared.AccessModifiers.InternalClass.Name
     summary: Gets or sets the name.
   - accessibility: Internal
     memberKind: Property
     name: InternalValue
     returnTypeName: int
-    signature: internal int InternalValue
+    signature: internal int InternalValue { get; set; }
     displayName: CloudNimble.DotNetDocs.Tests.Shared.AccessModifiers.InternalClass.InternalValue
     summary: Gets or sets the internal value.
   assemblyName: CloudNimble.DotNetDocs.Tests.Shared
@@ -234,14 +234,14 @@ types:
     memberKind: Property
     name: PublicProperty
     returnTypeName: string
-    signature: public string PublicProperty
+    signature: public string PublicProperty { get; set; }
     displayName: CloudNimble.DotNetDocs.Tests.Shared.AccessModifiers.MixedAccessClass.PublicProperty
     summary: Gets or sets the public property.
   - accessibility: Internal
     memberKind: Property
     name: InternalProperty
     returnTypeName: string
-    signature: internal string InternalProperty
+    signature: internal string InternalProperty { get; set; }
     displayName: CloudNimble.DotNetDocs.Tests.Shared.AccessModifiers.MixedAccessClass.InternalProperty
     summary: Gets or sets the internal property.
   assemblyName: CloudNimble.DotNetDocs.Tests.Shared

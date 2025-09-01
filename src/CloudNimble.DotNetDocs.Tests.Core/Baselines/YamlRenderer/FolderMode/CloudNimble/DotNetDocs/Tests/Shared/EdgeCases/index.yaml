@@ -53,7 +53,7 @@ types:
     memberKind: Property
     name: Name
     returnTypeName: string
-    signature: public string Name
+    signature: public string Name { get; set; }
     displayName: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithMinimalDocs.Name
     summary: Gets or sets the name.
   assemblyName: CloudNimble.DotNetDocs.Tests.Shared
@@ -115,7 +115,7 @@ types:
     memberKind: Property
     name: UndocumentedProperty
     returnTypeName: string
-    signature: public string UndocumentedProperty
+    signature: public string UndocumentedProperty { get; set; }
     displayName: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithNoDocs.UndocumentedProperty
   assemblyName: CloudNimble.DotNetDocs.Tests.Shared
   fullName: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithNoDocs
@@ -270,7 +270,7 @@ types:
     memberKind: Property
     name: Value
     returnTypeName: string
-    signature: public string Value
+    signature: public string Value { get; set; }
     displayName: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithFullDocs.Value
     remarks: This property stores important data.
     summary: Gets or sets the value property.

@@ -467,129 +467,6 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
 
         #endregion
 
-        #region Baseline Generation
-
-        //[TestMethod]
-        //[DataRow(projectPath)]
-        [BreakdanceManifestGenerator]
-        public async Task GenerateYamlBaselines(string projectPath)
-        {
-            // Generate baselines for both FileMode and FolderMode
-            await GenerateFileModeBaselines(projectPath);
-            await GenerateFolderModeBaselines(projectPath);
-        }
-        
-        private async Task GenerateFileModeBaselines(string projectPath)
-        {
-            // Setup with FileMode context
-            var context = new ProjectContext
-            {
-                FileNamingOptions = new FileNamingOptions(NamespaceMode.File, '-')
-            };
-            var renderer = new YamlRenderer(context);
-            var tempOutputPath = Path.Combine(Path.GetTempPath(), $"YamlBaseline_FileMode_{Guid.NewGuid()}");
-            Directory.CreateDirectory(tempOutputPath);
-
-            try
-            {
-                // Generate baseline for SimpleClass documentation
-                var assemblyPath = typeof(SimpleClass).Assembly.Location;
-                var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
-                using var manager = new AssemblyManager(assemblyPath, xmlPath);
-                var model = await manager.DocumentAsync(context);
-
-                await renderer.RenderAsync(model, tempOutputPath, context);
-
-                // Create baselines directory
-                var baselinesDir = Path.Combine(projectPath, "Baselines", "YamlRenderer", "FileMode");
-                if (!Directory.Exists(baselinesDir))
-                {
-                    Directory.CreateDirectory(baselinesDir);
-                }
-
-                // Copy YAML files to baseline
-                foreach (var file in Directory.GetFiles(tempOutputPath, "*.yaml"))
-                {
-                    var fileName = Path.GetFileName(file);
-                    var content = await File.ReadAllTextAsync(file);
-                    var baselinePath = Path.Combine(baselinesDir, fileName);
-                    await File.WriteAllTextAsync(baselinePath, content);
-                }
-            }
-            finally
-            {
-                if (Directory.Exists(tempOutputPath))
-                {
-                    Directory.Delete(tempOutputPath, true);
-                }
-            }
-        }
-        
-        private async Task GenerateFolderModeBaselines(string projectPath)
-        {
-            // Setup with FolderMode context
-            var context = new ProjectContext([Accessibility.Public, Accessibility.Internal])
-            {
-                ShowPlaceholders = false,
-                FileNamingOptions = new FileNamingOptions(NamespaceMode.Folder)
-            };
-            var renderer = new YamlRenderer(context);
-            var tempOutputPath = Path.Combine(Path.GetTempPath(), $"YamlBaseline_FolderMode_{Guid.NewGuid()}");
-            Directory.CreateDirectory(tempOutputPath);
-
-            try
-            {
-                // Generate baseline for SimpleClass documentation
-                var assemblyPath = typeof(SimpleClass).Assembly.Location;
-                var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
-                using var manager = new AssemblyManager(assemblyPath, xmlPath);
-                var model = await manager.DocumentAsync(context);
-
-                await renderer.RenderAsync(model, tempOutputPath, context);
-
-                // Create baselines directory
-                var baselinesDir = Path.Combine(projectPath, "Baselines", "YamlRenderer", "FolderMode");
-                if (Directory.Exists(baselinesDir))
-                {
-                    Directory.Delete(baselinesDir, true);
-                }
-                Directory.CreateDirectory(baselinesDir);
-
-                // Copy entire folder structure preserving hierarchy
-                CopyDirectoryRecursive(tempOutputPath, baselinesDir);
-            }
-            finally
-            {
-                if (Directory.Exists(tempOutputPath))
-                {
-                    Directory.Delete(tempOutputPath, true);
-                }
-            }
-        }
-        
-        private void CopyDirectoryRecursive(string sourceDir, string targetDir)
-        {
-            Directory.CreateDirectory(targetDir);
-
-            // Copy files
-            foreach (var file in Directory.GetFiles(sourceDir))
-            {
-                var fileName = Path.GetFileName(file);
-                var destFile = Path.Combine(targetDir, fileName);
-                File.Copy(file, destFile, true);
-            }
-
-            // Copy subdirectories
-            foreach (var subDir in Directory.GetDirectories(sourceDir))
-            {
-                var dirName = Path.GetFileName(subDir);
-                var destDir = Path.Combine(targetDir, dirName);
-                CopyDirectoryRecursive(subDir, destDir);
-            }
-        }
-
-        #endregion
-
         #region FileNamingOptions Tests
 
         [TestMethod]
@@ -900,6 +777,130 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
         }
 
         #endregion
+
+        #region Baseline Generation
+
+        //[TestMethod]
+        //[DataRow(projectPath)]
+        [BreakdanceManifestGenerator]
+        public async Task GenerateYamlBaselines(string projectPath)
+        {
+            // Generate baselines for both FileMode and FolderMode
+            await GenerateFileModeBaselines(projectPath);
+            await GenerateFolderModeBaselines(projectPath);
+        }
+        
+        private async Task GenerateFileModeBaselines(string projectPath)
+        {
+            // Setup with FileMode context
+            var context = new ProjectContext
+            {
+                FileNamingOptions = new FileNamingOptions(NamespaceMode.File, '-')
+            };
+            var renderer = new YamlRenderer(context);
+            var tempOutputPath = Path.Combine(Path.GetTempPath(), $"YamlBaseline_FileMode_{Guid.NewGuid()}");
+            Directory.CreateDirectory(tempOutputPath);
+
+            try
+            {
+                // Generate baseline for SimpleClass documentation
+                var assemblyPath = typeof(SimpleClass).Assembly.Location;
+                var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
+                using var manager = new AssemblyManager(assemblyPath, xmlPath);
+                var model = await manager.DocumentAsync(context);
+
+                await renderer.RenderAsync(model, tempOutputPath, context);
+
+                // Create baselines directory
+                var baselinesDir = Path.Combine(projectPath, "Baselines", "YamlRenderer", "FileMode");
+                if (!Directory.Exists(baselinesDir))
+                {
+                    Directory.CreateDirectory(baselinesDir);
+                }
+
+                // Copy YAML files to baseline
+                foreach (var file in Directory.GetFiles(tempOutputPath, "*.yaml"))
+                {
+                    var fileName = Path.GetFileName(file);
+                    var content = await File.ReadAllTextAsync(file);
+                    var baselinePath = Path.Combine(baselinesDir, fileName);
+                    await File.WriteAllTextAsync(baselinePath, content);
+                }
+            }
+            finally
+            {
+                if (Directory.Exists(tempOutputPath))
+                {
+                    Directory.Delete(tempOutputPath, true);
+                }
+            }
+        }
+        
+        private async Task GenerateFolderModeBaselines(string projectPath)
+        {
+            // Setup with FolderMode context
+            var context = new ProjectContext([Accessibility.Public, Accessibility.Internal])
+            {
+                ShowPlaceholders = false,
+                FileNamingOptions = new FileNamingOptions(NamespaceMode.Folder)
+            };
+            var renderer = new YamlRenderer(context);
+            var tempOutputPath = Path.Combine(Path.GetTempPath(), $"YamlBaseline_FolderMode_{Guid.NewGuid()}");
+            Directory.CreateDirectory(tempOutputPath);
+
+            try
+            {
+                // Generate baseline for SimpleClass documentation
+                var assemblyPath = typeof(SimpleClass).Assembly.Location;
+                var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
+                using var manager = new AssemblyManager(assemblyPath, xmlPath);
+                var model = await manager.DocumentAsync(context);
+
+                await renderer.RenderAsync(model, tempOutputPath, context);
+
+                // Create baselines directory
+                var baselinesDir = Path.Combine(projectPath, "Baselines", "YamlRenderer", "FolderMode");
+                if (Directory.Exists(baselinesDir))
+                {
+                    Directory.Delete(baselinesDir, true);
+                }
+                Directory.CreateDirectory(baselinesDir);
+
+                // Copy entire folder structure preserving hierarchy
+                CopyDirectoryRecursive(tempOutputPath, baselinesDir);
+            }
+            finally
+            {
+                if (Directory.Exists(tempOutputPath))
+                {
+                    Directory.Delete(tempOutputPath, true);
+                }
+            }
+        }
+        
+        private void CopyDirectoryRecursive(string sourceDir, string targetDir)
+        {
+            Directory.CreateDirectory(targetDir);
+
+            // Copy files
+            foreach (var file in Directory.GetFiles(sourceDir))
+            {
+                var fileName = Path.GetFileName(file);
+                var destFile = Path.Combine(targetDir, fileName);
+                File.Copy(file, destFile, true);
+            }
+
+            // Copy subdirectories
+            foreach (var subDir in Directory.GetDirectories(sourceDir))
+            {
+                var dirName = Path.GetFileName(subDir);
+                var destDir = Path.Combine(targetDir, dirName);
+                CopyDirectoryRecursive(subDir, destDir);
+            }
+        }
+
+        #endregion
+
 
     }
 

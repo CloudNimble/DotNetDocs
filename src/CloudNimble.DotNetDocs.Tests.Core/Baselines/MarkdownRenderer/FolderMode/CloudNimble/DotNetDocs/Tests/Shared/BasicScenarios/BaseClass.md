@@ -3,7 +3,9 @@
 ## Definition
 
 **Namespace:** CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios
-**Assembly:** CloudNimble.DotNetDocs.Tests.Shared
+
+**Assembly:** CloudNimble.DotNetDocs.Tests.Shared.dll
+
 **Inheritance:** System.Object
 
 ## Syntax
@@ -39,12 +41,8 @@ Gets or sets the base property.
 #### Syntax
 
 ```csharp
-public virtual string BaseProperty
+public virtual string BaseProperty { get; set; }
 ```
-
-#### Returns
-
-Type: `string`
 
 #### Property Value
 

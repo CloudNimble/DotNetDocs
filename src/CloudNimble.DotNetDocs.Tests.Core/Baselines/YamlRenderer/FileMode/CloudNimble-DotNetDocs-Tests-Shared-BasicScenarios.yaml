@@ -69,7 +69,7 @@ types:
     memberKind: Property
     name: BaseProperty
     returnTypeName: string
-    signature: public virtual string BaseProperty
+    signature: public virtual string BaseProperty { get; set; }
     displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.BaseClass.BaseProperty
     summary: Gets or sets the base property.
   assemblyName: CloudNimble.DotNetDocs.Tests.Shared
@@ -302,7 +302,7 @@ types:
     memberKind: Property
     name: Name
     returnTypeName: string
-    signature: public string Name
+    signature: public string Name { get; set; }
     displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ClassWithProperties.Name
     remarks: This is a standard public property with get and set accessors.
     summary: Gets or sets the name.
@@ -310,7 +310,7 @@ types:
     memberKind: Property
     name: Id
     returnTypeName: int
-    signature: public int Id
+    signature: public int Id { get; }
     displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ClassWithProperties.Id
     remarks: This property can only be read, not written to.
     summary: Gets the read-only identifier.
@@ -318,7 +318,7 @@ types:
     memberKind: Property
     name: Value
     returnTypeName: double
-    signature: public double Value
+    signature: public double Value { get; private set; }
     displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ClassWithProperties.Value
     remarks: This property can be read publicly but only set within the class.
     summary: Gets or sets the value with a private setter.
@@ -432,14 +432,14 @@ types:
     memberKind: Property
     name: DerivedProperty
     returnTypeName: string
-    signature: public string DerivedProperty
+    signature: public string DerivedProperty { get; set; }
     displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass.DerivedProperty
     summary: Gets or sets the derived property.
   - accessibility: Public
     memberKind: Property
     name: BaseProperty
     returnTypeName: string
-    signature: public override string BaseProperty
+    signature: public override string BaseProperty { get; set; }
     displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass.BaseProperty
     remarks: This property overrides the base implementation.
     summary: Gets or sets the base property with overridden behavior.
@@ -519,7 +519,7 @@ types:
     memberKind: Property
     name: ResourceName
     returnTypeName: string
-    signature: public string ResourceName
+    signature: public string ResourceName { get; set; }
     displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DisposableClass.ResourceName
     summary: Gets or sets the resource name.
   assemblyName: CloudNimble.DotNetDocs.Tests.Shared

@@ -3,7 +3,9 @@
 ## Definition
 
 **Namespace:** CloudNimble.DotNetDocs.Tests.Shared.Parameters
-**Assembly:** CloudNimble.DotNetDocs.Tests.Shared
+
+**Assembly:** CloudNimble.DotNetDocs.Tests.Shared.dll
+
 **Inheritance:** System.Object
 
 ## Syntax
@@ -69,7 +71,7 @@ A method with multiple generic type parameters.
 #### Syntax
 
 ```csharp
-public KeyValuePair<TKey, TValue> GenericMethodWithMultipleTypes<TKey, TValue>(TKey key, TValue value)
+public System.Collections.Generic.KeyValuePair<TKey, TValue> GenericMethodWithMultipleTypes<TKey, TValue>(TKey key, TValue value)
 ```
 
 #### Parameters
@@ -121,7 +123,7 @@ A method with nullable parameters.
 #### Syntax
 
 ```csharp
-public string MethodWithNullables(Nullable<int> nullableInt, string nullableString)
+public string MethodWithNullables(System.Nullable<int> nullableInt, string nullableString)
 ```
 
 #### Parameters

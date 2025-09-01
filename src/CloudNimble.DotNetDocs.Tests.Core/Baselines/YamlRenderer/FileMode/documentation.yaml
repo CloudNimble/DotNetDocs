@@ -22,7 +22,7 @@ namespaces:
         typeKind: Error
         displayName: CloudNimble.DotNetDocs.Core.DocAssembly
       returnTypeName: CloudNimble.DotNetDocs.Core.DocAssembly
-      signature: public DocAssembly GetTestsDotSharedAssembly()
+      signature: public CloudNimble.DotNetDocs.Core.DocAssembly GetTestsDotSharedAssembly()
       displayName: CloudNimble.DotNetDocs.Tests.Shared.DotNetDocsTestBase.GetTestsDotSharedAssembly()
     - accessibility: Public
       memberKind: Method
@@ -227,14 +227,14 @@ namespaces:
       memberKind: Property
       name: Name
       returnTypeName: string
-      signature: public string Name
+      signature: public string Name { get; set; }
       displayName: CloudNimble.DotNetDocs.Tests.Shared.SampleClass.Name
       summary: Gets or sets the name.
     - accessibility: Public
       memberKind: Property
       name: Value
       returnTypeName: int
-      signature: public int Value
+      signature: public int Value { get; set; }
       displayName: CloudNimble.DotNetDocs.Tests.Shared.SampleClass.Value
       summary: Gets or sets the value.
     assemblyName: CloudNimble.DotNetDocs.Tests.Shared
@@ -315,7 +315,7 @@ namespaces:
       memberKind: Property
       name: PublicProperty
       returnTypeName: string
-      signature: public string PublicProperty
+      signature: public string PublicProperty { get; set; }
       displayName: CloudNimble.DotNetDocs.Tests.Shared.AccessModifiers.MixedAccessClass.PublicProperty
       summary: Gets or sets the public property.
     assemblyName: CloudNimble.DotNetDocs.Tests.Shared
@@ -398,7 +398,7 @@ namespaces:
       memberKind: Property
       name: BaseProperty
       returnTypeName: string
-      signature: public virtual string BaseProperty
+      signature: public virtual string BaseProperty { get; set; }
       displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.BaseClass.BaseProperty
       summary: Gets or sets the base property.
     assemblyName: CloudNimble.DotNetDocs.Tests.Shared
@@ -631,7 +631,7 @@ namespaces:
       memberKind: Property
       name: Name
       returnTypeName: string
-      signature: public string Name
+      signature: public string Name { get; set; }
       displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ClassWithProperties.Name
       remarks: This is a standard public property with get and set accessors.
       summary: Gets or sets the name.
@@ -639,7 +639,7 @@ namespaces:
       memberKind: Property
       name: Id
       returnTypeName: int
-      signature: public int Id
+      signature: public int Id { get; }
       displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ClassWithProperties.Id
       remarks: This property can only be read, not written to.
       summary: Gets the read-only identifier.
@@ -647,7 +647,7 @@ namespaces:
       memberKind: Property
       name: Value
       returnTypeName: double
-      signature: public double Value
+      signature: public double Value { get; private set; }
       displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ClassWithProperties.Value
       remarks: This property can be read publicly but only set within the class.
       summary: Gets or sets the value with a private setter.
@@ -761,14 +761,14 @@ namespaces:
       memberKind: Property
       name: DerivedProperty
       returnTypeName: string
-      signature: public string DerivedProperty
+      signature: public string DerivedProperty { get; set; }
       displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass.DerivedProperty
       summary: Gets or sets the derived property.
     - accessibility: Public
       memberKind: Property
       name: BaseProperty
       returnTypeName: string
-      signature: public override string BaseProperty
+      signature: public override string BaseProperty { get; set; }
       displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass.BaseProperty
       remarks: This property overrides the base implementation.
       summary: Gets or sets the base property with overridden behavior.
@@ -848,7 +848,7 @@ namespaces:
       memberKind: Property
       name: ResourceName
       returnTypeName: string
-      signature: public string ResourceName
+      signature: public string ResourceName { get; set; }
       displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DisposableClass.ResourceName
       summary: Gets or sets the resource name.
     assemblyName: CloudNimble.DotNetDocs.Tests.Shared
@@ -953,7 +953,7 @@ namespaces:
       memberKind: Property
       name: Name
       returnTypeName: string
-      signature: public string Name
+      signature: public string Name { get; set; }
       displayName: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithMinimalDocs.Name
       summary: Gets or sets the name.
     assemblyName: CloudNimble.DotNetDocs.Tests.Shared
@@ -1015,7 +1015,7 @@ namespaces:
       memberKind: Property
       name: UndocumentedProperty
       returnTypeName: string
-      signature: public string UndocumentedProperty
+      signature: public string UndocumentedProperty { get; set; }
       displayName: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithNoDocs.UndocumentedProperty
     assemblyName: CloudNimble.DotNetDocs.Tests.Shared
     fullName: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithNoDocs
@@ -1170,7 +1170,7 @@ namespaces:
       memberKind: Property
       name: Value
       returnTypeName: string
-      signature: public string Value
+      signature: public string Value { get; set; }
       displayName: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithFullDocs.Value
       remarks: This property stores important data.
       summary: Gets or sets the value property.
@@ -1398,7 +1398,7 @@ namespaces:
         typeKind: Error
         displayName: System.Collections.Generic.KeyValuePair<TKey, TValue>
       returnTypeName: System.Collections.Generic.KeyValuePair<TKey, TValue>
-      signature: public KeyValuePair<TKey, TValue> GenericMethodWithMultipleTypes<TKey, TValue>(TKey key, TValue value)
+      signature: public System.Collections.Generic.KeyValuePair<TKey, TValue> GenericMethodWithMultipleTypes<TKey, TValue>(TKey key, TValue value)
       displayName: CloudNimble.DotNetDocs.Tests.Shared.Parameters.ParameterVariations.GenericMethodWithMultipleTypes<TKey, TValue>(TKey, TValue)
       returns: A key-value pair.
       summary: A method with multiple generic type parameters.
@@ -1442,7 +1442,7 @@ namespaces:
         typeKind: Class
         displayName: string
       returnTypeName: string
-      signature: public string MethodWithNullables(Nullable<int> nullableInt, string nullableString)
+      signature: public string MethodWithNullables(System.Nullable<int> nullableInt, string nullableString)
       displayName: CloudNimble.DotNetDocs.Tests.Shared.Parameters.ParameterVariations.MethodWithNullables(System.Nullable<int>, string?)
       returns: A description of the provided values.
       summary: A method with nullable parameters.

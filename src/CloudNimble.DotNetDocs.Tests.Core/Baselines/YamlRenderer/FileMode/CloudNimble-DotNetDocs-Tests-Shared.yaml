@@ -20,7 +20,7 @@ types:
       typeKind: Error
       displayName: CloudNimble.DotNetDocs.Core.DocAssembly
     returnTypeName: CloudNimble.DotNetDocs.Core.DocAssembly
-    signature: public DocAssembly GetTestsDotSharedAssembly()
+    signature: public CloudNimble.DotNetDocs.Core.DocAssembly GetTestsDotSharedAssembly()
     displayName: CloudNimble.DotNetDocs.Tests.Shared.DotNetDocsTestBase.GetTestsDotSharedAssembly()
   - accessibility: Public
     memberKind: Method
@@ -225,14 +225,14 @@ types:
     memberKind: Property
     name: Name
     returnTypeName: string
-    signature: public string Name
+    signature: public string Name { get; set; }
     displayName: CloudNimble.DotNetDocs.Tests.Shared.SampleClass.Name
     summary: Gets or sets the name.
   - accessibility: Public
     memberKind: Property
     name: Value
     returnTypeName: int
-    signature: public int Value
+    signature: public int Value { get; set; }
     displayName: CloudNimble.DotNetDocs.Tests.Shared.SampleClass.Value
     summary: Gets or sets the value.
   assemblyName: CloudNimble.DotNetDocs.Tests.Shared

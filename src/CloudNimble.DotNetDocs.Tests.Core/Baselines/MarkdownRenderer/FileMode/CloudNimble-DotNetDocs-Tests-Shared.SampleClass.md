@@ -3,7 +3,9 @@
 ## Definition
 
 **Namespace:** CloudNimble.DotNetDocs.Tests.Shared
-**Assembly:** CloudNimble.DotNetDocs.Tests.Shared
+
+**Assembly:** CloudNimble.DotNetDocs.Tests.Shared.dll
+
 **Inheritance:** System.Object
 
 ## Syntax
@@ -35,12 +37,8 @@ Gets or sets the name.
 #### Syntax
 
 ```csharp
-public string Name
+public string Name { get; set; }
 ```
-
-#### Returns
-
-Type: `string`
 
 #### Property Value
 
@@ -53,12 +51,8 @@ Gets or sets the value.
 #### Syntax
 
 ```csharp
-public int Value
+public int Value { get; set; }
 ```
-
-#### Returns
-
-Type: `int`
 
 #### Property Value
 

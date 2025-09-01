@@ -3,7 +3,9 @@
 ## Definition
 
 **Namespace:** CloudNimble.DotNetDocs.Tests.Shared
-**Assembly:** CloudNimble.DotNetDocs.Tests.Shared
+
+**Assembly:** CloudNimble.DotNetDocs.Tests.Shared.dll
+
 **Inheritance:** CloudNimble.Breakdance.Extensions.MSTest2.BreakdanceMSTestBase
 
 ## Syntax
@@ -29,7 +31,7 @@ public DotNetDocsTestBase()
 #### Syntax
 
 ```csharp
-public DocAssembly GetTestsDotSharedAssembly()
+public CloudNimble.DotNetDocs.Core.DocAssembly GetTestsDotSharedAssembly()
 ```
 
 #### Returns
@@ -45,8 +47,4 @@ Type: `CloudNimble.DotNetDocs.Core.DocAssembly`
 ```csharp
 public const string projectPath
 ```
-
-#### Returns
-
-Type: `string`
 

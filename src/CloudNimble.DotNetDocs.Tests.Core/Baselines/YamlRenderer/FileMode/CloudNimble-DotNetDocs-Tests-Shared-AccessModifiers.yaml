@@ -68,7 +68,7 @@ types:
     memberKind: Property
     name: PublicProperty
     returnTypeName: string
-    signature: public string PublicProperty
+    signature: public string PublicProperty { get; set; }
     displayName: CloudNimble.DotNetDocs.Tests.Shared.AccessModifiers.MixedAccessClass.PublicProperty
     summary: Gets or sets the public property.
   assemblyName: CloudNimble.DotNetDocs.Tests.Shared

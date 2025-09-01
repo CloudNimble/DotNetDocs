@@ -206,7 +206,7 @@ types:
       typeKind: Error
       displayName: System.Collections.Generic.KeyValuePair<TKey, TValue>
     returnTypeName: System.Collections.Generic.KeyValuePair<TKey, TValue>
-    signature: public KeyValuePair<TKey, TValue> GenericMethodWithMultipleTypes<TKey, TValue>(TKey key, TValue value)
+    signature: public System.Collections.Generic.KeyValuePair<TKey, TValue> GenericMethodWithMultipleTypes<TKey, TValue>(TKey key, TValue value)
     displayName: CloudNimble.DotNetDocs.Tests.Shared.Parameters.ParameterVariations.GenericMethodWithMultipleTypes<TKey, TValue>(TKey, TValue)
     returns: A key-value pair.
     summary: A method with multiple generic type parameters.
@@ -250,7 +250,7 @@ types:
       typeKind: Class
       displayName: string
     returnTypeName: string
-    signature: public string MethodWithNullables(Nullable<int> nullableInt, string nullableString)
+    signature: public string MethodWithNullables(System.Nullable<int> nullableInt, string nullableString)
     displayName: CloudNimble.DotNetDocs.Tests.Shared.Parameters.ParameterVariations.MethodWithNullables(System.Nullable<int>, string?)
     returns: A description of the provided values.
     summary: A method with nullable parameters.

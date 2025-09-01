@@ -3,7 +3,9 @@
 ## Definition
 
 **Namespace:** CloudNimble.DotNetDocs.Tests.Shared.AccessModifiers
-**Assembly:** CloudNimble.DotNetDocs.Tests.Shared
+
+**Assembly:** CloudNimble.DotNetDocs.Tests.Shared.dll
+
 **Inheritance:** System.Object
 
 ## Syntax
@@ -39,12 +41,8 @@ Gets or sets the public property.
 #### Syntax
 
 ```csharp
-public string PublicProperty
+public string PublicProperty { get; set; }
 ```
-
-#### Returns
-
-Type: `string`
 
 #### Property Value
 
@@ -78,8 +76,4 @@ A public field.
 ```csharp
 public string PublicField
 ```
-
-#### Returns
-
-Type: `string`
 

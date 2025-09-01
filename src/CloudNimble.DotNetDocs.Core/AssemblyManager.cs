@@ -51,9 +51,21 @@ namespace CloudNimble.DotNetDocs.Core
                               SymbolDisplayParameterOptions.IncludeName |
                               SymbolDisplayParameterOptions.IncludeDefaultValue |
                               SymbolDisplayParameterOptions.IncludeParamsRefOut,
-            typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypes,
+            typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces,
             genericsOptions: SymbolDisplayGenericsOptions.IncludeTypeParameters |
                              SymbolDisplayGenericsOptions.IncludeTypeConstraints,
+            miscellaneousOptions: SymbolDisplayMiscellaneousOptions.UseSpecialTypes);
+
+        /// <summary>
+        /// SymbolDisplayFormat for generating property signatures with accessors.
+        /// </summary>
+        private static readonly SymbolDisplayFormat PropertySignatureFormat = new SymbolDisplayFormat(
+            memberOptions: SymbolDisplayMemberOptions.IncludeAccessibility |
+                           SymbolDisplayMemberOptions.IncludeModifiers |
+                           SymbolDisplayMemberOptions.IncludeType,
+            propertyStyle: SymbolDisplayPropertyStyle.ShowReadWriteDescriptor,
+            typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces,
+            genericsOptions: SymbolDisplayGenericsOptions.IncludeTypeParameters,
             miscellaneousOptions: SymbolDisplayMiscellaneousOptions.UseSpecialTypes);
 
         #endregion
@@ -460,7 +472,7 @@ namespace CloudNimble.DotNetDocs.Core
                      {
                          Name = property.Name,
                          DisplayName = property.ToDisplayString(),
-                         Signature = property.ToDisplayString(DocumentationSignatureFormat),
+                         Signature = property.ToDisplayString(PropertySignatureFormat),
                          MemberKind = property.Kind,
                          Accessibility = property.DeclaredAccessibility,
                          ReturnTypeName = property.Type.ToDisplayString(),

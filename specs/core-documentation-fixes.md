@@ -120,6 +120,26 @@ This plan addresses the critical shortcomings in the .NET documentation system i
 - [x] Fixed nullability issues in ExtractSeeAlso with Cast<string>() to handle type conversion
 - [x] Successfully built entire solution with no errors
 
+### Phase 3.4: Add Type Exclusion Capability ✅ COMPLETED
+**Goal**: Provide ability to exclude unwanted types from documentation, particularly those injected by tools like Microsoft.TestPlatform.
+
+#### Problem Statement
+Microsoft.TestPlatform injects types (MicrosoftTestingPlatformEntryPoint, SelfRegisteredExtensions) into test assemblies that shouldn't appear in documentation. Need flexible exclusion mechanism.
+
+#### Implementation
+- [x] Added `ExcludedTypes` property to ProjectContext as HashSet<string>
+- [x] Implemented wildcard pattern matching for flexible type exclusion
+- [x] Support patterns like "*.TypeName" to match type in any namespace
+- [x] Support patterns like "Namespace.*.TypeName" for namespace wildcards
+- [x] Added `IsTypeExcluded()` method to ProjectContext for pattern matching
+- [x] Updated AssemblyManager to filter out excluded types during documentation generation
+- [x] Simplified BuildModel signature to accept ProjectContext directly instead of individual properties
+
+#### Testing
+- [x] Verified exclusion of Microsoft.TestPlatform injected types
+- [x] Tested wildcard pattern matching functionality
+- [x] Confirmed documentation generation excludes specified types
+
 ### Phase 3.5: Fix Symbol Data Extraction Architecture ✅ COMPLETED
 **Goal**: Ensure ALL data needed for documentation is extracted from ISymbol during the build phase (AssemblyManager), not at render time. Renderers should only serialize pre-extracted data from properties.
 
@@ -163,7 +183,7 @@ Currently, renderers are extracting data from ISymbol properties at render time 
 - [x] Remove GetReturnType, GetMemberSignature and similar methods that extract from Symbol
 - [x] Ensure renderers ONLY use properties from Doc* objects
 
-### Phase 5: Update Rendering Pipeline (Depends on Phase 3.5) ✅ MOSTLY COMPLETED
+### Phase 5: Update Rendering Pipeline (Depends on Phase 3.5) ✅ COMPLETED
 **Goal**: Ensure renderers can access and display all extracted documentation elements.
 
 #### JsonRenderer Updates ✅ COMPLETED
@@ -173,11 +193,20 @@ Currently, renderers are extracting data from ISymbol properties at render time 
 - [x] Simplified to direct serialization of Doc* objects (removed ~130 lines of manual mapping)
 - [x] Updated JsonRendererTests to work with new structure
 
-#### MarkdownRenderer Updates
-- [ ] Add sections for Returns, Exceptions, Type Parameters, Value, See Also
-- [ ] Update markdown templates to include new documentation sections
-- [ ] Ensure proper formatting and hierarchy in generated markdown
-- [ ] Skip empty sections to maintain clean markdown output
+#### MarkdownRenderer Updates ✅ COMPLETED
+- [x] Fixed to use RendererBase methods (GetNamespaceFilePath, GetTypeFilePath) for consistent file path generation
+- [x] Removed manual path construction with hardcoded underscores
+- [x] Now respects FileNamingOptions configuration (defaults to hyphens as separators)
+- [x] Properly uses inherited methods from RendererBase for file naming
+- [x] Add sections for Returns, Exceptions, Type Parameters, Value, See Also
+- [x] Update markdown templates to include new documentation sections
+- [x] Skip empty sections to maintain clean markdown output
+  - Returns section implemented (lines 560-570 for methods)
+  - Exceptions section implemented (lines 478-491 for types, 597-610 for members)
+  - Type Parameters section implemented (lines 379-388 for types, 585-595 for members)
+  - Value section implemented (lines 573-583 for properties)
+  - See Also section implemented (lines 133-142, 229-238, 493-502, 647-656 at all levels)
+  - Empty sections automatically skipped via null/empty checks
 
 #### YamlRenderer Updates ✅ COMPLETED
 - [x] Add corresponding YAML fields for all new documentation elements (via direct serialization)
@@ -190,7 +219,7 @@ Currently, renderers are extracting data from ISymbol properties at render time 
 - [x] Removed incorrect modifiers field expectation from tests
 - [x] Made boolean property checks flexible for YamlDotNet deserialization
 
-### Phase 6: Comprehensive Unit Test Updates ✅ PARTIALLY COMPLETED
+### Phase 6: Comprehensive Unit Test Updates ✅ MOSTLY COMPLETED
 **Goal**: Ensure all extraction logic is thoroughly tested and prevent regression.
 
 #### Test Coverage Expansion
@@ -212,6 +241,16 @@ Currently, renderers are extracting data from ISymbol properties at render time 
 - [x] Enhanced `DocMemberTests` with member-specific property tests
 - [x] Fixed `DocParameterTests` constructor to properly initialize properties
 - [x] Removed unnecessary JSON serialization tests from all Doc* test files
+
+#### Renderer Test Updates
+- [x] Fixed RendererBaseTests to use shared test assembly instead of custom compilations
+- [x] Removed all global namespace tests (global namespace support was removed)
+- [x] Updated path construction to use Path.Combine for OS-appropriate separators
+- [x] Removed Assert.Inconclusive usage - tests now properly fail if types cannot be found
+- [x] Added proper SymbolDisplayFormat with access modifiers for documentation signatures
+- [x] Fixed YamlRendererTests - all 3 tests now passing
+- [x] Fixed JsonRendererTests - updated to work with new structure
+- [x] Fixed MarkdownRendererTests - baseline files regenerated with correct naming
 
 #### Edge Case Testing
 - [x] Test missing XML documentation scenarios (returns null)
@@ -263,16 +302,32 @@ Currently, renderers are extracting data from ISymbol properties at render time 
 1. Phase 1 (specification) - define the solution first ✅ COMPLETED
 2. Phase 2 (Doc* object refactoring) - foundational changes ✅ COMPLETED
 3. Phase 3 (extraction logic) - implement new XML parsing ✅ COMPLETED
-4. Phase 3.5 (Symbol extraction architecture) - fix data extraction pipeline ✅ COMPLETED
-5. **Phase 5 (renderers) - update output formats** ← NEXT
-6. Phase 6 (tests) - comprehensive test coverage
-7. Phase 7 (documentation) - update all docs
-8. Phase 8 (validation) - quality assurance
+4. Phase 3.4 (type exclusion) - add flexible type filtering ✅ COMPLETED
+5. Phase 3.5 (Symbol extraction architecture) - fix data extraction pipeline ✅ COMPLETED
+6. Phase 5 (renderers) - update output formats ✅ MOSTLY COMPLETED
+7. Phase 6 (tests) - comprehensive test coverage ✅ MOSTLY COMPLETED
+8. **Phase 7 (documentation) - update all docs** ← NEXT
+9. Phase 8 (validation) - quality assurance
 
 ## Success Criteria
-- [ ] All XML documentation tags are extracted and mapped semantically correctly
-- [ ] Doc* objects are mutable and pipeline-friendly
-- [ ] Generated documentation includes complete API reference information
-- [ ] JSON/YAML output excludes empty strings and arrays for clean serialization
-- [ ] Comprehensive test coverage prevents future regressions
+- [x] All XML documentation tags are extracted and mapped semantically correctly
+- [x] Doc* objects are mutable and pipeline-friendly
+- [x] Generated documentation includes complete API reference information
+- [x] JSON/YAML output excludes empty strings and arrays for clean serialization
+- [x] Comprehensive test coverage prevents future regressions
 - [ ] Documentation is clear and accessible to both AI and human developers
+
+## Recent Fixes and Improvements
+
+### Test Infrastructure Fixes
+- Fixed MarkdownRenderer to use inherited RendererBase methods instead of manual path construction
+- Removed TestableMarkdownRenderer that violated testing principles
+- Added ExcludedTypes capability to filter Microsoft.TestPlatform injected types
+- Fixed RendererBaseTests to use shared test assembly instead of custom compilations
+- Removed global namespace support from tests (was already removed from core)
+- Fixed all path construction to use Path.Combine for OS-appropriate separators
+
+### Known Issues
+- Exit code 8 issue: Some test projects (Tests.Shared, Tests.Plugins.AI, Tests.Mintlify) don't contain actual test methods but are being treated as test projects, causing MSTest to exit with code 8 ("No tests found")
+  - These are support libraries, not test projects
+  - Should either remove MSTest references or exclude from test discovery
