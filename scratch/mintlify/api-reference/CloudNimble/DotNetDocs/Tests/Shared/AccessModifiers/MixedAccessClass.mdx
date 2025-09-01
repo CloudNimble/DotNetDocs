@@ -1,0 +1,112 @@
+---
+title: MixedAccessClass
+description: Demonstrates various access modifier combinations
+icon: shield-halved
+---
+
+# MixedAccessClass Class
+
+<Note>
+  **Namespace**: CloudNimble.DotNetDocs.Tests.Shared.AccessModifiers  
+  **Assembly**: CloudNimble.DotNetDocs.Tests.Shared.dll
+</Note>
+
+## 📋 Definition
+
+```csharp
+public class MixedAccessClass
+```
+
+## 📝 Summary
+
+Demonstrates various access modifier patterns and their usage in a single class.
+
+## 🎯 Members
+
+<Tabs>
+  <Tab title="Public Members">
+    ### PublicProperty
+    
+    ```csharp
+    public string PublicProperty { get; set; }
+    ```
+    
+    Fully accessible property from any code.
+    
+    ### PublicMethod
+    
+    ```csharp
+    public void PublicMethod()
+    ```
+    
+    Publicly accessible method.
+  </Tab>
+  
+  <Tab title="Protected Members">
+    ### ProtectedProperty
+    
+    ```csharp
+    protected string ProtectedProperty { get; set; }
+    ```
+    
+    Property accessible only to derived classes.
+    
+    ### ProtectedMethod
+    
+    ```csharp
+    protected virtual void ProtectedMethod()
+    ```
+    
+    Virtual protected method for inheritance scenarios.
+  </Tab>
+  
+  <Tab title="Internal Members">
+    ### InternalProperty
+    
+    ```csharp
+    internal string InternalProperty { get; set; }
+    ```
+    
+    Property accessible within the same assembly.
+    
+    ### InternalMethod
+    
+    ```csharp
+    internal void InternalMethod()
+    ```
+    
+    Method accessible within the same assembly.
+  </Tab>
+  
+  <Tab title="Private Members">
+    ### _privateField
+    
+    ```csharp
+    private string _privateField;
+    ```
+    
+    Private backing field.
+    
+    ### PrivateMethod
+    
+    ```csharp
+    private void PrivateMethod()
+    ```
+    
+    Method accessible only within this class.
+  </Tab>
+</Tabs>
+
+## 💡 Access Level Matrix
+
+| Modifier | Same Class | Derived Class | Same Assembly | Different Assembly |
+|----------|------------|---------------|---------------|-------------------|
+| public | ✅ | ✅ | ✅ | ✅ |
+| protected internal | ✅ | ✅ | ✅ | ❌ |
+| protected | ✅ | ✅ | ❌ | ❌ |
+| internal | ✅ | ❌ | ✅ | ❌ |
+| private | ✅ | ❌ | ❌ | ❌ |
+
+<Tip>
+  Use the principle of least privilege: start with private and only increase accessibility as needed.
+</Tip>

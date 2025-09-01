@@ -1,0 +1,181 @@
+---
+title: Tabs Demo
+description: Organize content with tabbed interfaces
+icon: table-columns
+---
+
+# Tabs Demo
+
+<Note>
+  Tabs are excellent for organizing related content, showing different perspectives of the same information, or presenting alternative approaches.
+</Note>
+
+## 📑 Basic Tabs
+
+<Tabs>
+  <Tab title="First Tab">
+    This is the content of the first tab.
+  </Tab>
+  
+  <Tab title="Second Tab">
+    This is the content of the second tab with different information.
+  </Tab>
+  
+  <Tab title="Third Tab">
+    And here's the third tab with its own unique content.
+  </Tab>
+</Tabs>
+
+## 🔧 Member Organization
+
+<Tabs>
+  <Tab title="Properties">
+    ### Public Properties
+    
+    - `Name` (string) - Gets or sets the name
+    - `Id` (int) - Gets the unique identifier  
+    - `IsActive` (bool) - Gets or sets the active state
+    - `CreatedDate` (DateTime) - Gets the creation timestamp
+    - `ModifiedDate` (DateTime?) - Gets or sets the modification timestamp
+  </Tab>
+  
+  <Tab title="Methods">
+    ### Public Methods
+    
+    - `Initialize()` - Initializes the instance with default values
+    - `Process(string data)` - Processes the input data
+    - `ValidateAsync()` - Asynchronously validates the state
+    - `ToString()` - Returns a string representation
+    - `Dispose()` - Releases managed resources
+  </Tab>
+  
+  <Tab title="Events">
+    ### Public Events
+    
+    - `PropertyChanged` - Raised when a property value changes
+    - `Processing` - Raised before processing begins
+    - `Processed` - Raised after processing completes
+    - `Error` - Raised when an error occurs
+  </Tab>
+  
+  <Tab title="Fields">
+    ### Constants & Fields
+    
+    - `MaxNameLength` (const int) - Maximum allowed name length (100)
+    - `DefaultTimeout` (static readonly) - Default timeout value (30 seconds)
+    - `_syncRoot` (private readonly) - Synchronization object
+  </Tab>
+</Tabs>
+
+## 💻 Platform-Specific Code
+
+<Tabs>
+  <Tab title=".NET 6.0">
+    ```csharp
+    // .NET 6.0 specific features
+    public record Person(string Name, int Age);
+    
+    // File-scoped namespaces
+    namespace MyApp;
+    
+    // Global using directives
+    global using System.Text.Json;
+    ```
+  </Tab>
+  
+  <Tab title=".NET 7.0">
+    ```csharp
+    // .NET 7.0 enhancements
+    public required string Name { get; init; }
+    
+    // Generic math support
+    public static T Add<T>(T left, T right) 
+        where T : INumber<T>
+    {
+        return left + right;
+    }
+    ```
+  </Tab>
+  
+  <Tab title=".NET 8.0">
+    ```csharp
+    // .NET 8.0 latest features
+    public class TimeService
+    {
+        // Primary constructors
+        public TimeService(ILogger logger);
+        
+        // Collection expressions
+        int[] numbers = [1, 2, 3, 4, 5];
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## 🎯 Implementation Approaches
+
+<Tabs>
+  <Tab title="Synchronous">
+    ```csharp
+    public class DataService
+    {
+        public string GetData(int id)
+        {
+            var result = QueryDatabase(id);
+            return ProcessResult(result);
+        }
+        
+        public void SaveData(string data)
+        {
+            ValidateData(data);
+            WriteToDatabase(data);
+        }
+    }
+    ```
+  </Tab>
+  
+  <Tab title="Asynchronous">
+    ```csharp
+    public class DataService
+    {
+        public async Task<string> GetDataAsync(int id)
+        {
+            var result = await QueryDatabaseAsync(id);
+            return await ProcessResultAsync(result);
+        }
+        
+        public async Task SaveDataAsync(string data)
+        {
+            await ValidateDataAsync(data);
+            await WriteToDatabaseAsync(data);
+        }
+    }
+    ```
+  </Tab>
+  
+  <Tab title="Reactive">
+    ```csharp
+    public class DataService
+    {
+        public IObservable<string> GetData(int id)
+        {
+            return Observable
+                .FromAsync(() => QueryDatabaseAsync(id))
+                .SelectMany(ProcessResultAsync);
+        }
+        
+        public IObservable<Unit> SaveData(string data)
+        {
+            return Observable
+                .Return(data)
+                .Do(ValidateData)
+                .SelectMany(WriteToDatabaseAsync);
+        }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+<Info>
+  Tabs maintain their selected state as users navigate through them, providing a smooth user experience.
+</Info>

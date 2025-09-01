@@ -1,0 +1,137 @@
+---
+title: ClassWithFullDocs
+description: Fully documented class with comprehensive XML documentation
+icon: file-circle-check
+---
+
+# ClassWithFullDocs Class
+
+<Note>
+  **Namespace**: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases  
+  **Assembly**: CloudNimble.DotNetDocs.Tests.Shared.dll
+</Note>
+
+## 📋 Definition
+
+```csharp
+/// <summary>
+/// A fully documented class demonstrating comprehensive XML documentation.
+/// </summary>
+/// <remarks>
+/// This class shows how to properly document all members with complete XML documentation tags.
+/// </remarks>
+/// <example>
+/// <code>
+/// var instance = new ClassWithFullDocs();
+/// var result = instance.ProcessData("input", 42);
+/// </code>
+/// </example>
+public class ClassWithFullDocs
+```
+
+## 📝 Summary
+
+A fully documented class demonstrating comprehensive XML documentation.
+
+### Remarks
+
+This class shows how to properly document all members with complete XML documentation tags.
+
+## 🎯 Members
+
+<Tabs>
+  <Tab title="Properties">
+    ### Name
+    
+    ```csharp
+    /// <summary>
+    /// Gets or sets the name of the instance.
+    /// </summary>
+    /// <value>
+    /// The name as a string value.
+    /// </value>
+    /// <remarks>
+    /// This property should not be null or empty.
+    /// </remarks>
+    public string Name { get; set; }
+    ```
+    
+    Gets or sets the name of the instance.
+    
+    **Value**: The name as a string value.
+    
+    <Accordion title="Remarks">
+      This property should not be null or empty.
+    </Accordion>
+  </Tab>
+  
+  <Tab title="Methods">
+    ### ProcessData
+    
+    ```csharp
+    /// <summary>
+    /// Processes the input data with the specified options.
+    /// </summary>
+    /// <param name="input">The input string to process.</param>
+    /// <param name="options">Processing options as an integer value.</param>
+    /// <returns>The processed result as a string.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when input is null.</exception>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when options is negative.</exception>
+    /// <example>
+    /// <code>
+    /// var result = instance.ProcessData("test", 10);
+    /// Console.WriteLine(result);
+    /// </code>
+    /// </example>
+    public string ProcessData(string input, int options)
+    ```
+    
+    Processes the input data with the specified options.
+    
+    **Parameters**:
+    - `input` (string) - The input string to process
+    - `options` (int) - Processing options as an integer value
+    
+    **Returns**: The processed result as a string
+    
+    **Exceptions**:
+    - `ArgumentNullException` - Thrown when input is null
+    - `ArgumentOutOfRangeException` - Thrown when options is negative
+    
+    <Accordion title="Example">
+      ```csharp
+      var result = instance.ProcessData("test", 10);
+      Console.WriteLine(result);
+      ```
+    </Accordion>
+  </Tab>
+</Tabs>
+
+## 💡 Complete Example
+
+```csharp
+// Create and configure instance
+var processor = new ClassWithFullDocs
+{
+    Name = "DataProcessor"
+};
+
+try
+{
+    // Process data with error handling
+    var result = processor.ProcessData("input data", 42);
+    Console.WriteLine($"Result: {result}");
+}
+catch (ArgumentNullException ex)
+{
+    Console.WriteLine($"Invalid input: {ex.Message}");
+}
+catch (ArgumentOutOfRangeException ex)
+{
+    Console.WriteLine($"Invalid options: {ex.Message}");
+}
+```
+
+<Check>
+  This class demonstrates best practices for XML documentation including summaries, parameters, returns, exceptions, remarks, and examples.
+</Check>

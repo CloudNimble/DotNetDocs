@@ -1,0 +1,99 @@
+---
+title: ClassWithSpecialCharacters
+description: Class demonstrating special character handling
+icon: hashtag
+---
+
+# ClassWithSpecialCharacters Class
+
+<Note>
+  **Namespace**: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases  
+  **Assembly**: CloudNimble.DotNetDocs.Tests.Shared.dll
+</Note>
+
+## 📋 Definition
+
+```csharp
+/// <summary>
+/// Class with special characters like `<`, `>`, `&`, `"`, `'` in documentation.
+/// </summary>
+public class ClassWithSpecialCharacters
+```
+
+## 📝 Summary
+
+Class with special characters like `<`, `>`, `&`, `"`, `'` in documentation.
+
+## 🎯 Members
+
+<Tabs>
+  <Tab title="Properties">
+    ### Property<T>
+    
+    ```csharp
+    /// <summary>
+    /// Property with generic type <T> and special chars: & " '
+    /// </summary>
+    public string Property<T> { get; set; }
+    ```
+    
+    Property with generic type <T> and special chars: & " '
+  </Tab>
+  
+  <Tab title="Methods">
+    ### Method<TInput, TOutput>
+    
+    ```csharp
+    /// <summary>
+    /// Method with <paramref name="input"/> & <typeparamref name="TOutput"/>
+    /// </summary>
+    public TOutput Method<TInput, TOutput>(TInput input)
+        where TInput : class
+        where TOutput : new()
+    ```
+    
+    Method with input parameter & TOutput type parameter.
+    
+    **Type Parameters**:
+    - `TInput` - Must be a reference type
+    - `TOutput` - Must have a parameterless constructor
+    
+    ### SpecialCharsInCode
+    
+    ```csharp
+    /// <example>
+    /// <code>
+    /// if (x < y && y > z)
+    /// {
+    ///     var result = "value with \"quotes\" & 'apostrophes'";
+    /// }
+    /// </code>
+    /// </example>
+    public void SpecialCharsInCode()
+    ```
+    
+    <Accordion title="Example">
+      ```csharp
+      if (x < y && y > z)
+      {
+          var result = "value with \"quotes\" & 'apostrophes'";
+      }
+      ```
+    </Accordion>
+  </Tab>
+</Tabs>
+
+## ⚠️ Special Character Handling
+
+<Warning>
+  Special characters in XML documentation must be properly escaped:
+  - `<` becomes `&lt;`
+  - `>` becomes `&gt;`
+  - `&` becomes `&amp;`
+  - `"` becomes `&quot;`
+  - `'` becomes `&apos;`
+</Warning>
+
+<Info>
+  The documentation renderer handles these escapes automatically when generating output formats.
+</Info>

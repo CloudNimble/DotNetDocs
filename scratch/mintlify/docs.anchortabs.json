@@ -1,0 +1,192 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "mint",
+  "name": "CloudNimble.DotNetDocs",
+  "colors": {
+    "primary": "#7c3aed",
+    "light": "#a78bfa",
+    "dark": "#5b21b6"
+  },
+  "favicon": "/favicon.svg",
+  "navigation": {
+    "anchors": [
+      {
+        "anchor": "Documentation",
+        "icon": "book-open",
+        "tabs": [
+          {
+            "tab": "Documentation",
+            "groups": [
+              {
+                "group": "Getting Started",
+                "pages": [
+                  "introduction",
+                  "quickstart"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "Guides",
+            "groups": [
+              {
+                "group": "Guides",
+                "pages": [
+                  "guides/getting-started",
+                  "guides/best-practices",
+                  "guides/patterns",
+                  "guides/async-programming"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "Components Demo",
+            "groups": [
+              {
+                "group": "Component Showcase",
+                "pages": [
+                  "components/overview",
+                  "components/cards-demo",
+                  "components/code-groups-demo",
+                  "components/tabs-demo",
+                  "components/accordions-demo",
+                  "components/callouts-demo",
+                  "components/diagrams-demo"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "anchor": "Documentation",
+        "icon": "book-open",
+        "tabs": [
+          {
+            "tab": "API Reference",
+            "groups": [
+              {
+                "group": "API Documentation",
+                "pages": [
+                  "api-reference/index",
+                  {
+                    "group": "CloudNimble",
+                    "icon": "folder-tree",
+                    "pages": [
+                      {
+                        "group": "DotNetDocs",
+                        "icon": "folder-tree",
+                        "pages": [
+                          {
+                            "group": "Tests",
+                            "icon": "folder-tree",
+                            "pages": [
+                              {
+                                "group": "Shared",
+                                "icon": "layer-group",
+                                "pages": [
+                                  "api-reference/CloudNimble/DotNetDocs/Tests/Shared/index",
+                                  "api-reference/CloudNimble/DotNetDocs/Tests/Shared/DotNetDocsTestBase",
+                                  "api-reference/CloudNimble/DotNetDocs/Tests/Shared/SampleClass",
+                                  {
+                                    "group": "AccessModifiers",
+                                    "icon": "lock",
+                                    "pages": [
+                                      "api-reference/CloudNimble/DotNetDocs/Tests/Shared/AccessModifiers/index",
+                                      "api-reference/CloudNimble/DotNetDocs/Tests/Shared/AccessModifiers/MixedAccessClass"
+                                    ]
+                                  },
+                                  {
+                                    "group": "BasicScenarios",
+                                    "icon": "diagram-project",
+                                    "pages": [
+                                      "api-reference/CloudNimble/DotNetDocs/Tests/Shared/BasicScenarios/index",
+                                      "api-reference/CloudNimble/DotNetDocs/Tests/Shared/BasicScenarios/BaseClass",
+                                      "api-reference/CloudNimble/DotNetDocs/Tests/Shared/BasicScenarios/DerivedClass",
+                                      "api-reference/CloudNimble/DotNetDocs/Tests/Shared/BasicScenarios/SimpleClass",
+                                      "api-reference/CloudNimble/DotNetDocs/Tests/Shared/BasicScenarios/ClassWithProperties",
+                                      "api-reference/CloudNimble/DotNetDocs/Tests/Shared/BasicScenarios/ClassWithMethods",
+                                      "api-reference/CloudNimble/DotNetDocs/Tests/Shared/BasicScenarios/DisposableClass"
+                                    ]
+                                  },
+                                  {
+                                    "group": "EdgeCases",
+                                    "icon": "triangle-exclamation",
+                                    "pages": [
+                                      "api-reference/CloudNimble/DotNetDocs/Tests/Shared/EdgeCases/index",
+                                      "api-reference/CloudNimble/DotNetDocs/Tests/Shared/EdgeCases/ClassWithNoDocs",
+                                      "api-reference/CloudNimble/DotNetDocs/Tests/Shared/EdgeCases/ClassWithMinimalDocs",
+                                      "api-reference/CloudNimble/DotNetDocs/Tests/Shared/EdgeCases/ClassWithFullDocs",
+                                      "api-reference/CloudNimble/DotNetDocs/Tests/Shared/EdgeCases/ClassWithSpecialCharacters"
+                                    ]
+                                  },
+                                  {
+                                    "group": "Parameters",
+                                    "icon": "sliders",
+                                    "pages": [
+                                      "api-reference/CloudNimble/DotNetDocs/Tests/Shared/Parameters/index",
+                                      "api-reference/CloudNimble/DotNetDocs/Tests/Shared/Parameters/ParameterVariations"
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "anchor": "GitHub",
+        "href": "https://github.com/CloudNimble/DotNetDocs",
+        "icon": "github"
+      },
+      {
+        "anchor": "Community",
+        "href": "https://discord.gg/cloudnimble",
+        "icon": "discord"
+      }
+    ]
+  },
+  "logo": {
+    "light": "/logo/light.svg",
+    "dark": "/logo/dark.svg"
+  },
+  "appearance": {
+    "default": "dark"
+  },
+  "navbar": {
+    "links": [
+      {
+        "label": "GitHub",
+        "href": "https://github.com/CloudNimble/DotNetDocs"
+      }
+    ],
+    "primary": {
+      "type": "button",
+      "label": "Get Started",
+      "href": "https://github.com/CloudNimble/DotNetDocs"
+    }
+  },
+  "search": {
+    "prompt": "Search the API documentation..."
+  },
+  "footer": {
+    "socials": {
+      "github": "https://github.com/CloudNimble/DotNetDocs",
+      "twitter": "https://twitter.com/cloudnimble"
+    }
+  },
+  "integrations": {
+    "gtm": {
+      "tagId": "GTM-XXXXXX"
+    }
+  }
+}

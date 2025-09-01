@@ -1,0 +1,65 @@
+---
+title: DerivedClass
+description: Concrete implementation extending BaseClass
+icon: code-branch
+---
+
+# DerivedClass Class
+
+<Note>
+  **Namespace**: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios  
+  **Assembly**: CloudNimble.DotNetDocs.Tests.Shared.dll
+</Note>
+
+## 📋 Definition
+
+```csharp
+public class DerivedClass : BaseClass
+```
+
+## 📝 Summary
+
+Concrete implementation of BaseClass demonstrating method overriding and inheritance patterns.
+
+## 🎯 Members
+
+<Tabs>
+  <Tab title="Methods">
+    ### VirtualMethod (Override)
+    
+    ```csharp
+    public override void VirtualMethod()
+    ```
+    
+    Overrides the virtual method from BaseClass with custom implementation.
+    
+    ### AbstractMethod (Override)
+    
+    ```csharp
+    public override void AbstractMethod()
+    ```
+    
+    Required implementation of the abstract method from BaseClass.
+    
+    ### NewMethod
+    
+    ```csharp
+    public void NewMethod()
+    ```
+    
+    Additional method specific to DerivedClass.
+  </Tab>
+</Tabs>
+
+## 💡 Usage Example
+
+```csharp
+var derived = new DerivedClass();
+derived.VirtualMethod();    // Calls overridden version
+derived.AbstractMethod();   // Calls implemented version
+derived.NewMethod();        // Calls new method
+
+BaseClass polymorphic = derived;
+polymorphic.VirtualMethod();    // Still calls overridden version
+polymorphic.AbstractMethod();   // Still calls implemented version
+```

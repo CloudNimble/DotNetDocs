@@ -1,0 +1,213 @@
+---
+title: Getting Started
+description: Complete guide to using CloudNimble.DotNetDocs
+icon: rocket
+---
+
+# Getting Started with CloudNimble.DotNetDocs
+
+<Note>
+  This guide provides comprehensive instructions for setting up and using CloudNimble.DotNetDocs to generate beautiful documentation for your .NET libraries.
+</Note>
+
+## 📋 Prerequisites
+
+- .NET 8.0 or later
+- Visual Studio 2022 or VS Code
+- Node.js 18+ (for Mintlify)
+
+## 🔧 Installation
+
+<CodeGroup>
+  ```bash Package Manager Console
+  Install-Package CloudNimble.DotNetDocs
+  ```
+  
+  ```bash .NET CLI
+  dotnet add package CloudNimble.DotNetDocs
+  ```
+  
+  ```xml Project File
+  <PackageReference Include="CloudNimble.DotNetDocs" Version="1.0.0" />
+  ```
+</CodeGroup>
+
+## 📝 Configuration
+
+### Basic Configuration
+
+```csharp
+var config = new DocumentationConfiguration
+{
+    AssemblyPath = @"C:\MyProject\bin\Debug\net8.0\MyLibrary.dll",
+    OutputPath = @"C:\MyProject\docs",
+    Format = OutputFormat.Mintlify,
+    IncludeInternals = false
+};
+```
+
+### Advanced Configuration
+
+```csharp
+var config = new DocumentationConfiguration
+{
+    AssemblyPath = assemblyPath,
+    OutputPath = outputPath,
+    Format = OutputFormat.Mintlify,
+    IncludeInternals = true,
+    IncludePrivates = false,
+    GenerateInheritanceTree = true,
+    GenerateExamples = true,
+    Theme = new MintlifyTheme
+    {
+        PrimaryColor = "#7c3aed",
+        DarkMode = true
+    }
+};
+```
+
+## 🚀 Generating Documentation
+
+<Steps>
+  <Step title="Load Assembly">
+    ```csharp
+    var manager = new DocumentationManager(config);
+    var assembly = await manager.LoadAssemblyAsync();
+    ```
+  </Step>
+  
+  <Step title="Process Documentation">
+    ```csharp
+    await manager.ProcessAsync(assembly);
+    ```
+  </Step>
+  
+  <Step title="Generate Output">
+    ```csharp
+    await manager.RenderAsync(assembly);
+    ```
+  </Step>
+</Steps>
+
+## 🎨 Customization
+
+### Custom Enrichers
+
+```csharp
+public class MyCustomEnricher : IDocEnricher
+{
+    public void Enrich(DocAssembly assembly)
+    {
+        // Add custom documentation logic
+    }
+}
+
+manager.AddEnricher(new MyCustomEnricher());
+```
+
+### Custom Transformers
+
+```csharp
+public class MyCustomTransformer : IDocTransformer
+{
+    public void Transform(DocAssembly assembly)
+    {
+        // Transform documentation structure
+    }
+}
+
+manager.AddTransformer(new MyCustomTransformer());
+```
+
+## 📊 Output Structure
+
+```
+docs/
+├── mint.json
+├── introduction.mdx
+├── quickstart.mdx
+├── api-reference/
+│   ├── index.mdx
+│   └── [namespace folders]/
+│       ├── index.mdx
+│       └── [type files].mdx
+└── guides/
+    └── getting-started.mdx
+```
+
+## 🔍 Best Practices
+
+<Accordion title="XML Documentation">
+  Always include comprehensive XML documentation comments:
+  
+  ```csharp
+  /// <summary>
+  /// Processes the specified data.
+  /// </summary>
+  /// <param name="data">The data to process.</param>
+  /// <returns>The processed result.</returns>
+  /// <example>
+  /// <code>
+  /// var result = processor.Process(data);
+  /// </code>
+  /// </example>
+  public string Process(string data)
+  {
+      // Implementation
+  }
+  ```
+</Accordion>
+
+<Accordion title="Assembly Organization">
+  - Group related types in namespaces
+  - Use clear, descriptive type names
+  - Follow .NET naming conventions
+  - Maintain consistent access modifiers
+</Accordion>
+
+<Accordion title="Documentation Structure">
+  - Include summaries for all public members
+  - Provide examples for complex APIs
+  - Document exceptions and return values
+  - Use remarks for additional context
+</Accordion>
+
+## 🚦 Next Steps
+
+<CardGroup cols={2}>
+  <Card 
+    title="API Reference" 
+    icon="book"
+    href="/api-reference/index"
+  >
+    Explore the complete API documentation
+  </Card>
+  
+  <Card 
+    title="Best Practices" 
+    icon="star"
+    href="/guides/best-practices"
+  >
+    Learn documentation best practices
+  </Card>
+  
+  <Card 
+    title="Patterns" 
+    icon="diagram-project"
+    href="/guides/patterns"
+  >
+    Common documentation patterns
+  </Card>
+  
+  <Card 
+    title="Examples" 
+    icon="code"
+    href="/components/overview"
+  >
+    See component examples
+  </Card>
+</CardGroup>
+
+<Info>
+  **Need help?** Check our [GitHub repository](https://github.com/CloudNimble/DotNetDocs) for issues and discussions.
+</Info>
