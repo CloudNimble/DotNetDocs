@@ -14,13 +14,6 @@ namespace CloudNimble.DotNetDocs.Core
     /// <summary>
     /// Manages assembly metadata extraction using Roslyn for API documentation generation.
     /// </summary>
-    /// <remarks>
-    /// Extracts metadata from a single .NET assembly and its XML documentation file, building an in-memory model
-    /// (<see cref="DocAssembly"/>) with interconnected types, members, and parameters. Supports conceptual content
-    /// loading from a specified folder. Designed for multi-targeting .NET 10.0, 9.0, and 8.0. One instance per assembly
-    /// is required, with paths specified at construction for incremental build support. Implements <see cref="IDisposable"/>
-    /// to release memory used by the compilation and model.
-    /// </remarks>
     /// <example>
     /// <code>
     /// <![CDATA[
@@ -30,6 +23,13 @@ namespace CloudNimble.DotNetDocs.Core
     /// ]]>
     /// </code>
     /// </example>
+    /// <remarks>
+    /// Extracts metadata from a single .NET assembly and its XML documentation file, building an in-memory model
+    /// (<see cref="DocAssembly"/>) with interconnected types, members, and parameters. Supports conceptual content
+    /// loading from a specified folder. Designed for multi-targeting .NET 10.0, 9.0, and 8.0. One instance per assembly
+    /// is required, with paths specified at construction for incremental build support. Implements <see cref="IDisposable"/>
+    /// to release memory used by the compilation and model.
+    /// </remarks>
     public class AssemblyManager : IDisposable
     {
 

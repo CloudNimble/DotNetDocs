@@ -207,6 +207,16 @@ Currently, renderers are extracting data from ISymbol properties at render time 
   - Value section implemented (lines 573-583 for properties)
   - See Also section implemented (lines 133-142, 229-238, 493-502, 647-656 at all levels)
   - Empty sections automatically skipped via null/empty checks
+- [x] Fixed duplicate Returns section issue for properties (added MemberKind check)
+- [x] Changed "Overview" and "Description" headers to "Usage" for 1:1 property mapping
+- [x] Added .dll extension to assembly names in Definition section (matches Microsoft docs)
+- [x] Fixed property signatures to show get/set accessors (created PropertySignatureFormat)
+- [x] Fixed method signatures to show fully qualified type names (updated DocumentationSignatureFormat)
+- [x] Identified all non-1:1 mappings between section headers and property names:
+  - "Related APIs" → RelatedApis property (spacing/casing difference)
+  - "Definition" section → composite of multiple properties (not a single property)
+  - "Syntax" section → Signature property
+  - "Property Value" section → Value property
 
 #### YamlRenderer Updates ✅ COMPLETED
 - [x] Add corresponding YAML fields for all new documentation elements (via direct serialization)
@@ -326,6 +336,18 @@ Currently, renderers are extracting data from ISymbol properties at render time 
 - Fixed RendererBaseTests to use shared test assembly instead of custom compilations
 - Removed global namespace support from tests (was already removed from core)
 - Fixed all path construction to use Path.Combine for OS-appropriate separators
+
+### Test Infrastructure Line Ending Fixes ✅ COMPLETED
+- [x] Created `.gitattributes` file configured for Windows development with CRLF line endings
+- [x] Converted all baseline files to CRLF (Windows line endings) for consistency
+- [x] Updated all test comparison methods to normalize line endings before comparison:
+  - MarkdownRendererTests.cs - 2 locations (CompareWithFolderBaseline and main test)
+  - AssemblyManagerTests.cs - 1 location
+  - JsonRendererTests.cs - 1 location
+  - YamlRendererTests.cs - 1 location
+- [x] Used `ReplaceLineEndings(Environment.NewLine)` for platform-agnostic comparison
+- [x] Ensures tests pass on both Windows and Linux CI runners
+- [x] Prevents Visual Studio line ending warnings during development
 
 ### Known Issues
 - Exit code 8 issue: Some test projects (Tests.Shared, Tests.Plugins.AI, Tests.Mintlify) don't contain actual test methods but are being treated as test projects, causing MSTest to exit with code 8 ("No tests found")

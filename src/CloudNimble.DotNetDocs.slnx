@@ -30,6 +30,7 @@
   <Folder Name="/Solution Items/Specs/">
     <File Path="../specs/core-documentation-fixes.md" />
     <File Path="../specs/core-documentation-spec.md" />
+    <File Path="../specs/dependency-injection.md" />
     <File Path="../specs/docfx-shortcomings.md" />
     <File Path="../specs/execution-plan.md" />
     <File Path="../specs/placeholder-handling.md" />
