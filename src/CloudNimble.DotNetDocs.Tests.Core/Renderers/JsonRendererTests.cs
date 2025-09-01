@@ -451,8 +451,6 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             }
         }
 
-        public TestContext TestContext { get; set; }
-
         #endregion
 
     }
