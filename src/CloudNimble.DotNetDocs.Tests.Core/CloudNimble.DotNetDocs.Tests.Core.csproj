@@ -22,9 +22,5 @@
         <AssemblyAttribute Include="CloudNimble.Breakdance.Assemblies.BreakdanceTestAssembly" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Baselines\MarkdownRenderer\FileMode\" />
-      <Folder Include="Baselines\MarkdownRenderer\FolderMode\" />
-    </ItemGroup>
 
 </Project>

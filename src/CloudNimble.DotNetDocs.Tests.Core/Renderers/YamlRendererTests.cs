@@ -80,7 +80,11 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
                 var baseline = await File.ReadAllTextAsync(baselinePath);
                 var actual = await File.ReadAllTextAsync(actualPath);
                 
-                actual.Should().Be(baseline,
+                // Normalize line endings for cross-platform compatibility
+                var normalizedActual = actual.ReplaceLineEndings(Environment.NewLine);
+                var normalizedBaseline = baseline.ReplaceLineEndings(Environment.NewLine);
+                
+                normalizedActual.Should().Be(normalizedBaseline,
                     "YAML output has changed. If this is intentional, regenerate baselines using 'dotnet breakdance generate'");
             }
             else

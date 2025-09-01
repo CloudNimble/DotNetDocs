@@ -321,7 +321,12 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             if (File.Exists(baselinePath))
             {
                 var baseline = await File.ReadAllTextAsync(baselinePath);
-                json.Should().Be(baseline,
+                
+                // Normalize line endings for cross-platform compatibility
+                var normalizedJson = json.ReplaceLineEndings(Environment.NewLine);
+                var normalizedBaseline = baseline.ReplaceLineEndings(Environment.NewLine);
+                
+                normalizedJson.Should().Be(normalizedBaseline,
                     "Assembly documentation has changed. If this is intentional, regenerate baselines using 'dotnet breakdance generate'");
             }
             else

@@ -80,7 +80,11 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
                 var baseline = await File.ReadAllTextAsync(baselinePath);
                 var actual = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, "index.md"));
                 
-                actual.Should().Be(baseline,
+                // Normalize line endings for cross-platform compatibility
+                var normalizedActual = actual.ReplaceLineEndings(Environment.NewLine);
+                var normalizedBaseline = baseline.ReplaceLineEndings(Environment.NewLine);
+                
+                normalizedActual.Should().Be(normalizedBaseline,
                     "Markdown output has changed. If this is intentional, regenerate baselines using 'dotnet breakdance generate'");
             }
             else
@@ -700,9 +704,14 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
                 Assert.Inconclusive($"Baseline created at: {baselinePath}. Re-run test to verify.");
             }
             
-            // Compare with baseline
+            // Compare with baseline - normalize line endings for cross-platform compatibility
             var baselineContent = await File.ReadAllTextAsync(baselinePath);
-            actualContent.Should().Be(baselineContent, 
+            
+            // Normalize both to Environment.NewLine to handle any line ending differences
+            var normalizedActual = actualContent.ReplaceLineEndings(Environment.NewLine);
+            var normalizedBaseline = baselineContent.ReplaceLineEndings(Environment.NewLine);
+            
+            normalizedActual.Should().Be(normalizedBaseline, 
                 $"Output should match baseline at {baselinePath}");
         }
 

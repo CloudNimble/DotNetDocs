@@ -74,7 +74,11 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
                 var baseline = await File.ReadAllTextAsync(baselinePath, TestContext.CancellationTokenSource.Token);
                 var actual = await File.ReadAllTextAsync(actualPath, TestContext.CancellationTokenSource.Token);
                 
-                actual.Should().Be(baseline,
+                // Normalize line endings for cross-platform compatibility
+                var normalizedActual = actual.ReplaceLineEndings(Environment.NewLine);
+                var normalizedBaseline = baseline.ReplaceLineEndings(Environment.NewLine);
+                
+                normalizedActual.Should().Be(normalizedBaseline,
                     "JSON output has changed. If this is intentional, regenerate baselines using 'dotnet breakdance generate'");
             }
             else
