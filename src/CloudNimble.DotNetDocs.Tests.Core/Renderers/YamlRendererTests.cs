@@ -298,7 +298,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
                 if (ns.ContainsKey("types"))
                 {
                     var types = ns["types"] as List<object>;
-                    if (types != null && types.Count > 0)
+                    if (types is not null && types.Count > 0)
                     {
                         hasTypes = true;
                         foreach (var type in types.Cast<Dictionary<object, object>>())
@@ -403,7 +403,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
                                 if (member.ContainsKey("parameters"))
                                 {
                                     var parameters = member["parameters"] as List<object>;
-                                    if (parameters != null && parameters.Count > 0)
+                                    if (parameters is not null && parameters.Count > 0)
                                     {
                                         hasParameters = true;
                                         foreach (var param in parameters.Cast<Dictionary<object, object>>())

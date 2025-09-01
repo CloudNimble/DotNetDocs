@@ -35,11 +35,14 @@ namespace CloudNimble.DotNetDocs.Core
         /// <param name="enrichers">The enrichers to apply to documentation entities.</param>
         /// <param name="transformers">The transformers to apply to the documentation model.</param>
         /// <param name="renderers">The renderers to generate output formats.</param>
-        /// <exception cref="ArgumentNullException">Thrown when any parameter is null.</exception>
+        /// <remarks>
+        /// This constructor is designed to work with dependency injection containers.
+        /// All parameters accept IEnumerable collections that are typically injected by the DI container.
+        /// </remarks>
         public DocumentationManager(
-            List<IDocEnricher>? enrichers = null,
-            List<IDocTransformer>? transformers = null,
-            List<IDocRenderer>? renderers = null)
+            IEnumerable<IDocEnricher>? enrichers = null,
+            IEnumerable<IDocTransformer>? transformers = null,
+            IEnumerable<IDocRenderer>? renderers = null)
         {
             this.enrichers = enrichers ?? [];
             this.transformers = transformers ?? [];

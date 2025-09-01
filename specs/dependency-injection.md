@@ -123,7 +123,7 @@ public static IServiceCollection AddMarkdownRenderer(this IServiceCollection ser
 public static IServiceCollection AddJsonRenderer(this IServiceCollection services, 
     Action<JsonRendererOptions>? configureOptions = null)
 {
-    if (configureOptions != null)
+    if (configureOptions is not null)
     {
         services.Configure<JsonRendererOptions>(configureOptions);
     }
@@ -186,7 +186,7 @@ public static IServiceCollection AddDocTransformer<TTransformer>(this IServiceCo
 ```
 
 ### Step 6: Create Pipeline Builder Class
-Create a new file `DotNetDocsPipelineBuilder.cs` in the same namespace:
+Create a new file `DotNetDocsBuilder.cs` in the same namespace:
 ```csharp
 using System;
 using Microsoft.Extensions.DependencyInjection;
@@ -198,15 +198,15 @@ namespace CloudNimble.DotNetDocs.Core.Extensions
     /// <summary>
     /// Builder for configuring the DotNetDocs documentation pipeline.
     /// </summary>
-    public class DotNetDocsPipelineBuilder
+    public class DotNetDocsBuilder
     {
         private readonly IServiceCollection _services;
         
         /// <summary>
-        /// Initializes a new instance of the <see cref="DotNetDocsPipelineBuilder"/> class.
+        /// Initializes a new instance of the <see cref="DotNetDocsBuilder"/> class.
         /// </summary>
         /// <param name="services">The service collection.</param>
-        public DotNetDocsPipelineBuilder(IServiceCollection services)
+        public DotNetDocsBuilder(IServiceCollection services)
         {
             _services = services;
         }
@@ -216,7 +216,7 @@ namespace CloudNimble.DotNetDocs.Core.Extensions
         /// </summary>
         /// <typeparam name="TRenderer">The type of renderer to add.</typeparam>
         /// <returns>The builder for chaining.</returns>
-        public DotNetDocsPipelineBuilder AddRenderer<TRenderer>() 
+        public DotNetDocsBuilder AddRenderer<TRenderer>() 
             where TRenderer : class, IDocRenderer
         {
             _services.TryAddScoped<IDocRenderer, TRenderer>();
@@ -228,7 +228,7 @@ namespace CloudNimble.DotNetDocs.Core.Extensions
         /// </summary>
         /// <typeparam name="TEnricher">The type of enricher to add.</typeparam>
         /// <returns>The builder for chaining.</returns>
-        public DotNetDocsPipelineBuilder AddEnricher<TEnricher>()
+        public DotNetDocsBuilder AddEnricher<TEnricher>()
             where TEnricher : class, IDocEnricher
         {
             _services.TryAddScoped<IDocEnricher, TEnricher>();
@@ -240,7 +240,7 @@ namespace CloudNimble.DotNetDocs.Core.Extensions
         /// </summary>
         /// <typeparam name="TTransformer">The type of transformer to add.</typeparam>
         /// <returns>The builder for chaining.</returns>
-        public DotNetDocsPipelineBuilder AddTransformer<TTransformer>()
+        public DotNetDocsBuilder AddTransformer<TTransformer>()
             where TTransformer : class, IDocTransformer
         {
             _services.TryAddScoped<IDocTransformer, TTransformer>();
@@ -252,7 +252,7 @@ namespace CloudNimble.DotNetDocs.Core.Extensions
         /// </summary>
         /// <param name="configure">Action to configure the ProjectContext.</param>
         /// <returns>The builder for chaining.</returns>
-        public DotNetDocsPipelineBuilder ConfigureContext(Action<ProjectContext> configure)
+        public DotNetDocsBuilder ConfigureContext(Action<ProjectContext> configure)
         {
             var context = new ProjectContext();
             configure(context);
@@ -264,7 +264,7 @@ namespace CloudNimble.DotNetDocs.Core.Extensions
         /// Adds the Markdown renderer to the pipeline.
         /// </summary>
         /// <returns>The builder for chaining.</returns>
-        public DotNetDocsPipelineBuilder UseMarkdownRenderer()
+        public DotNetDocsBuilder UseMarkdownRenderer()
         {
             return AddRenderer<MarkdownRenderer>();
         }
@@ -274,9 +274,9 @@ namespace CloudNimble.DotNetDocs.Core.Extensions
         /// </summary>
         /// <param name="configure">Optional action to configure JsonRendererOptions.</param>
         /// <returns>The builder for chaining.</returns>
-        public DotNetDocsPipelineBuilder UseJsonRenderer(Action<JsonRendererOptions>? configure = null)
+        public DotNetDocsBuilder UseJsonRenderer(Action<JsonRendererOptions>? configure = null)
         {
-            if (configure != null)
+            if (configure is not null)
             {
                 _services.Configure<JsonRendererOptions>(configure);
             }
@@ -287,7 +287,7 @@ namespace CloudNimble.DotNetDocs.Core.Extensions
         /// Adds the YAML renderer to the pipeline.
         /// </summary>
         /// <returns>The builder for chaining.</returns>
-        public DotNetDocsPipelineBuilder UseYamlRenderer()
+        public DotNetDocsBuilder UseYamlRenderer()
         {
             return AddRenderer<YamlRenderer>();
         }
@@ -329,9 +329,9 @@ Add to `DotNetDocsCore_IServiceCollectionExtensions.cs`:
 /// </code>
 /// </example>
 public static IServiceCollection AddDotNetDocsPipeline(this IServiceCollection services,
-    Action<DotNetDocsPipelineBuilder> configurePipeline)
+    Action<DotNetDocsBuilder> configurePipeline)
 {
-    var builder = new DotNetDocsPipelineBuilder(services);
+    var builder = new DotNetDocsBuilder(services);
     configurePipeline(builder);
     builder.Build();
     return services;

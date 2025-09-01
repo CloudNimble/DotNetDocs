@@ -36,7 +36,7 @@ namespace CloudNimble.DotNetDocs.Core
         /// <value>
         /// The file system path to the folder containing conceptual documentation files.
         /// </value>
-        public string? ConceptualPath { get; init; }
+        public string? ConceptualPath { get; set; }
 
         /// <summary>
         /// Gets or sets the file naming options for documentation generation.
@@ -44,7 +44,7 @@ namespace CloudNimble.DotNetDocs.Core
         /// <value>
         /// Configuration for how documentation files are named and organized.
         /// </value>
-        public FileNamingOptions FileNamingOptions { get; init; } = new FileNamingOptions();
+        public FileNamingOptions FileNamingOptions { get; set; } = new FileNamingOptions();
 
         /// <summary>
         /// Gets or sets the output path for generated documentation.
@@ -52,7 +52,7 @@ namespace CloudNimble.DotNetDocs.Core
         /// <value>
         /// The file system path where documentation output will be generated.
         /// </value>
-        public string OutputPath { get; init; } = "docs";
+        public string OutputPath { get; set; } = "docs";
 
         /// <summary>
         /// Gets or sets the collection of paths to referenced assemblies.
@@ -60,7 +60,7 @@ namespace CloudNimble.DotNetDocs.Core
         /// <value>
         /// A collection of file system paths to assemblies referenced by the project being documented.
         /// </value>
-        public List<string> References { get; init; } = [];
+        public List<string> References { get; set; } = [];
 
         /// <summary>
         /// Gets or sets whether to show placeholder content in the documentation.
@@ -69,7 +69,7 @@ namespace CloudNimble.DotNetDocs.Core
         /// When true (default), placeholder content is included. When false, files containing the
         /// TODO marker comment are skipped during loading.
         /// </value>
-        public bool ShowPlaceholders { get; init; } = true;
+        public bool ShowPlaceholders { get; set; } = true;
 
         /// <summary>
         /// Gets or sets the list of member accessibilities to include in documentation.
@@ -77,7 +77,7 @@ namespace CloudNimble.DotNetDocs.Core
         /// <value>
         /// List of accessibility levels to include. Defaults to Public only.
         /// </value>
-        public List<Accessibility> IncludedMembers { get; init; }
+        public List<Accessibility> IncludedMembers { get; set; }
 
         /// <summary>
         /// Gets or sets the list of type patterns to exclude from documentation.
@@ -100,22 +100,31 @@ namespace CloudNimble.DotNetDocs.Core
         ///     "System.Runtime.CompilerServices.*"       // Matches any type in this namespace
         /// }
         /// </example>
-        public HashSet<string> ExcludedTypes { get; init; }
+        public HashSet<string> ExcludedTypes { get; set; }
 
         #endregion
 
         #region Constructors
 
         /// <summary>
+        /// Initializes a new instance of <see cref="ProjectContext"/> with default settings.
+        /// </summary>
+        public ProjectContext() : this(null, null)
+        {
+        }
+
+        /// <summary>
         /// Initializes a new instance of <see cref="ProjectContext"/> with optional included members and referenced assemblies.
         /// </summary>
         /// <param name="includedMembers">List of member accessibilities to include. Defaults to Public if null.</param>
         /// <param name="references">Paths to referenced assemblies.</param>
-        public ProjectContext(List<Accessibility>? includedMembers = null, params string[] references)
+        public ProjectContext(List<Accessibility>? includedMembers, params string[]? references)
         {
             IncludedMembers = includedMembers ?? [Accessibility.Public];
-            ArgumentNullException.ThrowIfNull(references);
-            References.AddRange(references);
+            if (references is not null)
+            {
+                References.AddRange(references);
+            }
             
             // Default exclusions for common test framework injected types
             ExcludedTypes = new HashSet<string>
@@ -224,7 +233,7 @@ namespace CloudNimble.DotNetDocs.Core
         /// <returns>True if the type should be excluded; otherwise, false.</returns>
         public bool IsTypeExcluded(string fullyQualifiedTypeName)
         {
-            if (ExcludedTypes == null || ExcludedTypes.Count == 0)
+            if (ExcludedTypes is null || ExcludedTypes.Count == 0)
             {
                 return false;
             }

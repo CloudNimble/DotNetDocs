@@ -357,7 +357,7 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
             }
             
             // Base type and interfaces (for classes and structs)
-            var hasBaseType = type.Symbol.BaseType != null && 
+            var hasBaseType = type.Symbol.BaseType is not null && 
                              type.Symbol.BaseType.SpecialType != SpecialType.System_Object &&
                              type.Symbol.BaseType.SpecialType != SpecialType.System_ValueType &&
                              type.Symbol.TypeKind == TypeKind.Class;

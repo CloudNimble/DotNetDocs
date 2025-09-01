@@ -334,7 +334,7 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
             sb.AppendLine();
             sb.AppendLine($"**Namespace:** {ns.Name}");
             sb.AppendLine();
-            sb.AppendLine($"**Assembly:** {(type.AssemblyName != null ? $"{type.AssemblyName}.dll" : "Unknown")}");
+            sb.AppendLine($"**Assembly:** {(type.AssemblyName is not null ? $"{type.AssemblyName}.dll" : "Unknown")}");
 
             if (!string.IsNullOrWhiteSpace(type.BaseType))
             {
@@ -560,7 +560,7 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
 
             // Returns (for methods only, not properties)
             if (member.MemberKind == Microsoft.CodeAnalysis.SymbolKind.Method &&
-                member.ReturnTypeName != null && member.ReturnTypeName != "void")
+                member.ReturnTypeName is not null && member.ReturnTypeName != "void")
             {
                 sb.AppendLine("#### Returns");
                 sb.AppendLine();
@@ -573,7 +573,7 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
             }
 
             // Property type (for properties)
-            if (member.MemberKind == Microsoft.CodeAnalysis.SymbolKind.Property && member.ReturnTypeName != null)
+            if (member.MemberKind == Microsoft.CodeAnalysis.SymbolKind.Property && member.ReturnTypeName is not null)
             {
                 sb.AppendLine("#### Property Value");
                 sb.AppendLine();

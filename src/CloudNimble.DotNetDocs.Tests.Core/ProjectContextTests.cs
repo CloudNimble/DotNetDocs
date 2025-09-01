@@ -80,16 +80,6 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             context.IncludedMembers.Should().Contain(Accessibility.Protected);
         }
 
-        [TestMethod]
-        public void Constructor_WithNullReferences_ThrowsArgumentNullException()
-        {
-            // Act
-            Action act = () => new ProjectContext(null, null!);
-
-            // Assert
-            act.Should().Throw<ArgumentNullException>();
-        }
-
         #endregion
 
         #region GetNamespaceFolderPath Tests

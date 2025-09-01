@@ -649,7 +649,7 @@ namespace CloudNimble.DotNetDocs.Core
                     .ToList();
                 
                 // Filter out excluded types if we have a project context
-                if (projectContext != null)
+                if (projectContext is not null)
                 {
                     typesInNamespace = typesInNamespace
                         .Where(t => !projectContext.IsTypeExcluded(t.ToDisplayString()))

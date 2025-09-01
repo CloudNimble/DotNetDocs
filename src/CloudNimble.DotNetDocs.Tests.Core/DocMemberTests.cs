@@ -143,7 +143,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             var fieldMember = type!.Members
                 .FirstOrDefault(m => m.Symbol.Kind == SymbolKind.Field);
             
-            if (fieldMember != null)
+            if (fieldMember is not null)
             {
                 fieldMember.Symbol.Should().BeAssignableTo<IFieldSymbol>();
                 fieldMember.MemberKind.Should().Be(SymbolKind.Field);
@@ -164,7 +164,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             var eventMember = type!.Members
                 .FirstOrDefault(m => m.Symbol.Kind == SymbolKind.Event);
             
-            if (eventMember != null)
+            if (eventMember is not null)
             {
                 eventMember.Symbol.Should().BeAssignableTo<IEventSymbol>();
                 eventMember.MemberKind.Should().Be(SymbolKind.Event);
