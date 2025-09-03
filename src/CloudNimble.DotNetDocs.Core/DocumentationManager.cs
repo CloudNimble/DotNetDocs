@@ -54,18 +54,6 @@ namespace CloudNimble.DotNetDocs.Core
         #region Public Methods
 
         /// <summary>
-        /// Processes a single assembly through the documentation pipeline.
-        /// </summary>
-        /// <param name="assemblyPath">The path to the assembly file.</param>
-        /// <param name="xmlPath">The path to the XML documentation file.</param>
-        /// <param name="projectContext">Optional project context with additional settings.</param>
-        /// <returns>A task representing the asynchronous processing operation.</returns>
-        public async Task ProcessAsync(string assemblyPath, string xmlPath, ProjectContext? projectContext = null)
-        {
-            await ProcessAsync([(assemblyPath, xmlPath)], projectContext);
-        }
-
-        /// <summary>
         /// Creates placeholder conceptual documentation files for a single assembly.
         /// </summary>
         /// <param name="assemblyPath">The path to the assembly file.</param>
@@ -98,6 +86,18 @@ namespace CloudNimble.DotNetDocs.Core
             });
 
             await Task.WhenAll(tasks);
+        }
+
+        /// <summary>
+        /// Processes a single assembly through the documentation pipeline.
+        /// </summary>
+        /// <param name="assemblyPath">The path to the assembly file.</param>
+        /// <param name="xmlPath">The path to the XML documentation file.</param>
+        /// <param name="projectContext">Optional project context with additional settings.</param>
+        /// <returns>A task representing the asynchronous processing operation.</returns>
+        public async Task ProcessAsync(string assemblyPath, string xmlPath, ProjectContext? projectContext = null)
+        {
+            await ProcessAsync([(assemblyPath, xmlPath)], projectContext);
         }
 
         /// <summary>

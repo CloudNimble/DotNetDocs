@@ -7,6 +7,9 @@
   <Folder Name="/Core/">
     <Project Path="CloudNimble.DotNetDocs.Core/CloudNimble.DotNetDocs.Core.csproj" />
   </Folder>
+  <Folder Name="/Docs/">
+    <Project Path="CloudNimble.DotNetDocs.Docs/CloudNimble.DotNetDocs.Docs.csproj" Type="C#" />
+  </Folder>
   <Folder Name="/Plugins/">
     <Project Path="CloudNimble.DotNetDocs.Plugins.AI/CloudNimble.DotNetDocs.Plugins.AI.csproj" Id="d02be6be-f430-42de-af74-09e49a3ce04b" />
   </Folder>
@@ -14,6 +17,9 @@
   <Folder Name="/Providers/Mintlify/">
     <Project Path="CloudNimble.DotNetDocs.Mintlify/CloudNimble.DotNetDocs.Mintlify.csproj" Id="f039a3eb-5b89-4170-b4bd-84d87223fc01" />
     <Project Path="Mintlify.Core/Mintlify.Core.csproj" />
+  </Folder>
+  <Folder Name="/Reference/">
+    <Project Path="CloudNimble.DotNetDocs.Reference.Mintlify/CloudNimble.DotNetDocs.Reference.Mintlify.docsproj" Type="C#" />
   </Folder>
   <Folder Name="/Solution Items/">
     <File Path="../CLAUDE.md" />

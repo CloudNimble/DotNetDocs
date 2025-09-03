@@ -10,4 +10,8 @@
       <ProjectReference Include="..\Mintlify.Core\Mintlify.Core.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Extensions\" />
+    </ItemGroup>
+
 </Project>

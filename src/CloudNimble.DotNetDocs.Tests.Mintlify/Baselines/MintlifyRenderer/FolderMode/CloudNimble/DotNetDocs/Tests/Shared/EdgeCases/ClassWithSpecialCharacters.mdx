@@ -1,0 +1,75 @@
+---
+title: ClassWithSpecialCharacters
+description: "A class with special characters in documentation: <, >, &, ', '."
+icon: file-code
+keywords: ['ClassWithSpecialCharacters', 'CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithSpecialCharacters', 'CloudNimble.DotNetDocs.Tests.Shared.EdgeCases', 'class', 'System.Object']
+---
+
+# ClassWithSpecialCharacters
+
+## Definition
+
+**Namespace:** CloudNimble.DotNetDocs.Tests.Shared.EdgeCases
+
+**Assembly:** CloudNimble.DotNetDocs.Tests.Shared.dll
+
+**Inheritance:** System.Object
+
+## Syntax
+
+```csharp
+CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithSpecialCharacters
+```
+
+## Summary
+
+A class with special characters in documentation: <, >, &, ", '.
+
+## Remarks
+
+This tests handling of XML special characters like <tag> and &entity;.
+            Also tests "quotes" and 'apostrophes'.
+
+## Examples
+
+// Using generics: List<string>
+            var list = new List<string>();
+            if (x > 0 && y < 10) { }
+
+## Constructors
+
+### .ctor
+
+#### Syntax
+
+```csharp
+public ClassWithSpecialCharacters()
+```
+
+## Methods
+
+### MethodWithSpecialChars
+
+A method with special characters in docs: <T> generics.
+
+#### Syntax
+
+```csharp
+public string MethodWithSpecialChars(string input)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `input` | `string` | An input with "quotes" and 'apostrophes'. |
+
+#### Returns
+
+Type: `string`
+A string with & ampersands.
+
+#### Remarks
+
+This method handles <, >, & characters properly.
+

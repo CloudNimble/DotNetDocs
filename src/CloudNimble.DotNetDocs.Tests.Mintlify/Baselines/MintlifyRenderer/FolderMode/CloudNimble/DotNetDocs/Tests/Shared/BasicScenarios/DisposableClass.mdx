@@ -1,0 +1,100 @@
+---
+title: DisposableClass
+description: "A class that implements IDisposable for testing interface documentation."
+icon: file-code
+keywords: ['DisposableClass', 'CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DisposableClass', 'CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios', 'class', 'System.Object', 'System.IDisposable']
+---
+
+# DisposableClass
+
+## Definition
+
+**Namespace:** CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios
+
+**Assembly:** CloudNimble.DotNetDocs.Tests.Shared.dll
+
+**Inheritance:** System.Object
+
+## Syntax
+
+```csharp
+CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DisposableClass
+```
+
+## Summary
+
+A class that implements IDisposable for testing interface documentation.
+
+## Remarks
+
+This class demonstrates how interface implementation is documented.
+
+## Examples
+
+using (var disposable = new DisposableClass())
+            {
+                disposable.UseResource();
+            }
+
+## Constructors
+
+### .ctor
+
+#### Syntax
+
+```csharp
+public DisposableClass()
+```
+
+## Properties
+
+### ResourceName
+
+Gets or sets the resource name.
+
+#### Syntax
+
+```csharp
+public string ResourceName { get; set; }
+```
+
+#### Property Value
+
+Type: `string`
+
+## Methods
+
+### Dispose
+
+Disposes the resources used by this instance.
+
+#### Syntax
+
+```csharp
+public void Dispose()
+```
+
+#### Remarks
+
+Implements the IDisposable pattern.
+
+### UseResource
+
+Uses the resource.
+
+#### Syntax
+
+```csharp
+public void UseResource()
+```
+
+#### Exceptions
+
+| Exception | Description |
+|-----------|-------------|
+| `ObjectDisposedException` | Thrown if the object has been disposed. |
+
+## Related APIs
+
+- System.IDisposable
+

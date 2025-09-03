@@ -1,0 +1,153 @@
+---
+title: Introduction
+description: Modern, AI-enhanced documentation for .NET libraries
+icon: rocket
+---
+
+# Welcome to CloudNimble.DotNetDocs
+
+<Note>
+  This is a showcase of how Mintlify can be used to create stunning documentation for .NET libraries.
+</Note>
+
+CloudNimble.DotNetDocs is a powerful documentation generator for .NET libraries that creates beautiful, interactive documentation using Mintlify's advanced features.
+
+## ✨ Key Features
+
+<CardGroup cols={2}>
+  <Card 
+    title="Rich Components" 
+    icon="layer-group"
+    href="/components/overview"
+  >
+    Leverage Mintlify's component system for beautiful API documentation
+  </Card>
+  <Card 
+    title="AI-Enhanced Search" 
+    icon="magnifying-glass"
+    href="#"
+  >
+    Natural language search powered by AI to find APIs quickly
+  </Card>
+  <Card 
+    title="Interactive Examples" 
+    icon="code"
+    href="/components/code-groups-demo"
+  >
+    Code examples with syntax highlighting and copy buttons
+  </Card>
+  <Card 
+    title="Type Safety" 
+    icon="shield-check"
+    href="/api-reference/CloudNimble/DotNetDocs/Tests/Shared"
+  >
+    Full type information with inheritance and interface mappings
+  </Card>
+</CardGroup>
+
+## 🚀 Quick Navigation
+
+<CardGroup cols={3}>
+  <Card 
+    title="API Reference" 
+    icon="book"
+    href="/api-reference/index"
+    color="#7c3aed"
+  >
+    Browse the complete API documentation
+  </Card>
+  <Card 
+    title="Getting Started" 
+    icon="play"
+    href="/quickstart"
+    color="#10b981"
+  >
+    Get up and running in minutes
+  </Card>
+  <Card 
+    title="Component Demo" 
+    icon="shapes"
+    href="/components/overview"
+    color="#f59e0b"
+  >
+    See all Mintlify components in action
+  </Card>
+</CardGroup>
+
+## 📚 Documentation Structure
+
+Our documentation is organized into clear sections:
+
+<Steps>
+  <Step title="Assembly Overview">
+    High-level view of the entire assembly with namespace organization
+  </Step>
+  <Step title="Namespace Documentation">
+    Detailed documentation for each namespace with type listings
+  </Step>
+  <Step title="Type Documentation">
+    Complete type information including members, inheritance, and examples
+  </Step>
+  <Step title="Member Details">
+    Comprehensive member documentation with parameters, returns, and exceptions
+  </Step>
+</Steps>
+
+## 🎯 Featured Examples
+
+<Tabs>
+  <Tab title="Basic Usage">
+    ```csharp
+    using CloudNimble.DotNetDocs.Tests.Shared;
+
+    var test = new DotNetDocsTestBase();
+    var assembly = test.GetTestsDotSharedAssembly();
+    
+    // Process the assembly documentation
+    Console.WriteLine($"Assembly: {assembly.AssemblyName}");
+    ```
+  </Tab>
+  <Tab title="Advanced Scenarios">
+    ```csharp
+    using CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios;
+
+    // Inheritance example
+    BaseClass baseInstance = new DerivedClass();
+    baseInstance.VirtualMethod();
+    
+    // Disposable pattern
+    using (var disposable = new DisposableClass())
+    {
+        disposable.DoWork();
+    }
+    ```
+  </Tab>
+  <Tab title="Async Patterns">
+    ```csharp
+    using CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios;
+
+    // Async method usage
+    var instance = new ClassWithMethods();
+    await instance.AsyncMethodAsync();
+    
+    // Task-based operations
+    var result = await instance.GetDataAsync();
+    ```
+  </Tab>
+</Tabs>
+
+<Info>
+  **Pro Tip**: Use the search bar above to quickly find any type, method, or property in the documentation.
+</Info>
+
+## 🔗 Quick Links
+
+- [Browse API Documentation →](/api/index)
+- [View Component Showcase →](/components/overview)
+- [Read the Guides →](/guides/getting-started)
+
+---
+
+<Check>
+  Ready to explore? Start with the [API Overview](/api-reference/index) or jump directly to a [namespace](/api/CloudNimble/DotNetDocs/Tests/Shared).
+</Check>
