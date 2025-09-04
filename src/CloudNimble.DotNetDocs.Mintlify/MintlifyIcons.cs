@@ -16,7 +16,7 @@ public static class MintlifyIcons
     /// <summary>
     /// FontAwesome icon for assembly documentation.
     /// </summary>
-    public const string Assembly = "cube";
+    public const string Assembly = "cubes";
     
     /// <summary>
     /// FontAwesome icon for namespace documentation.
@@ -26,7 +26,7 @@ public static class MintlifyIcons
     /// <summary>
     /// FontAwesome icon for class documentation.
     /// </summary>
-    public const string Class = "file-code";
+    public const string Class = "file-brackets-curly";
     
     /// <summary>
     /// FontAwesome icon for interface documentation.
@@ -81,7 +81,7 @@ public static class MintlifyIcons
     /// <summary>
     /// FontAwesome icon for method documentation.
     /// </summary>
-    public const string Method = "gear";
+    public const string Method = "function";
     
     /// <summary>
     /// FontAwesome icon for property documentation.
@@ -176,7 +176,7 @@ public static class MintlifyIcons
     /// <summary>
     /// FontAwesome icon for example documentation sections.
     /// </summary>
-    public const string Example = "lightbulb";
+    public const string Example = "brackets-curly";
     
     /// <summary>
     /// FontAwesome icon for note documentation sections.
@@ -201,7 +201,7 @@ public static class MintlifyIcons
     /// <summary>
     /// FontAwesome icon for package documentation.
     /// </summary>
-    public const string Package = "cube";
+    public const string Package = "box-isometric";
 
     /// <summary>
     /// Default FontAwesome icon for miscellaneous documentation.

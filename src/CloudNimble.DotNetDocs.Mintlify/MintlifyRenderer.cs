@@ -5,30 +5,51 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CloudNimble.DotNetDocs.Core;
+using CloudNimble.DotNetDocs.Core.Configuration;
 using CloudNimble.DotNetDocs.Core.Renderers;
 using Microsoft.CodeAnalysis;
+using Microsoft.Extensions.Options;
+using Mintlify.Core;
+using Mintlify.Core.Models;
 
 namespace CloudNimble.DotNetDocs.Mintlify
 {
 
     /// <summary>
-    /// Renders documentation as Markdown files.
+    /// Renders documentation as MDX files with Mintlify frontmatter and navigation.
     /// </summary>
     /// <remarks>
-    /// Generates structured Markdown documentation with support for customizations including
-    /// insertions, overrides, exclusions, transformations, and conditions.
+    /// Generates structured MDX documentation with Mintlify-specific features including
+    /// frontmatter with icons, tags, and SEO metadata. Optionally generates docs.json
+    /// navigation configuration for Mintlify documentation sites.
     /// </remarks>
     public class MintlifyRenderer : RendererBase, IDocRenderer
     {
+
+        #region Fields
+
+        private readonly MintlifyRendererOptions _options;
+        private readonly DocsJsonManager? _docsJsonManager;
+
+        #endregion
 
         #region Constructors
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MintlifyRenderer"/> class.
         /// </summary>
-        /// <param name="context">The project context. If null, a default context is created.</param>
-        public MintlifyRenderer(ProjectContext? context = null) : base(context)
+        /// <param name="context">The project context.</param>
+        /// <param name="options">The Mintlify renderer options.</param>
+        /// <param name="docsJsonManager">The DocsJsonManager for navigation generation.</param>
+        public MintlifyRenderer(
+            ProjectContext context,
+            IOptions<MintlifyRendererOptions> options,
+            DocsJsonManager docsJsonManager) : base(context)
         {
+            ArgumentNullException.ThrowIfNull(options);
+            ArgumentNullException.ThrowIfNull(docsJsonManager);
+            _options = options.Value;
+            _docsJsonManager = docsJsonManager;
         }
 
         #endregion
@@ -36,10 +57,10 @@ namespace CloudNimble.DotNetDocs.Mintlify
         #region Public Methods
 
         /// <summary>
-        /// Renders the documentation assembly to Markdown files.
+        /// Renders the documentation assembly to MDX files with optional docs.json generation.
         /// </summary>
         /// <param name="model">The documentation assembly to render.</param>
-        /// <param name="outputPath">The path where Markdown files should be generated.</param>
+        /// <param name="outputPath">The path where MDX files should be generated.</param>
         /// <param name="context">The project context providing rendering settings.</param>
         /// <returns>A task representing the asynchronous rendering operation.</returns>
         public async Task RenderAsync(DocAssembly model, string outputPath, ProjectContext context)
@@ -47,6 +68,19 @@ namespace CloudNimble.DotNetDocs.Mintlify
             ArgumentNullException.ThrowIfNull(model);
             ArgumentNullException.ThrowIfNull(outputPath);
             ArgumentNullException.ThrowIfNull(context);
+
+            // Initialize DocsJsonManager if enabled
+            DocsJsonConfig? docsConfig = null;
+            if (_options.GenerateDocsJson && _docsJsonManager is not null)
+            {
+                docsConfig = _options.Template ?? DocsJsonManager.CreateDefault(
+                    model.AssemblyName ?? "API Documentation",
+                    "mint"
+                );
+                // Load configuration using JSON serialization
+                var json = System.Text.Json.JsonSerializer.Serialize(docsConfig, global::Mintlify.Core.MintlifyConstants.JsonSerializerOptions);
+                _docsJsonManager.Load(json);
+            }
 
             // Ensure all necessary directories exist based on the file naming mode
             Context.EnsureOutputDirectoryStructure(model, outputPath);
@@ -65,11 +99,170 @@ namespace CloudNimble.DotNetDocs.Mintlify
                     await RenderTypeAsync(type, ns, outputPath);
                 }
             }
+
+            // Generate docs.json if enabled
+            if (_options.GenerateDocsJson && _docsJsonManager is not null && _docsJsonManager.Configuration is not null)
+            {
+                BuildNavigationStructure(_docsJsonManager.Configuration, model, outputPath);
+                var docsJsonPath = Path.Combine(outputPath, "docs.json");
+                _docsJsonManager.Save(docsJsonPath);
+            }
         }
 
         #endregion
 
         #region Internal Methods
+
+        /// <summary>
+        /// Builds the navigation structure from the DocAssembly model.
+        /// </summary>
+        /// <param name="config">The DocsJsonConfig to populate.</param>
+        /// <param name="model">The DocAssembly model containing the documentation structure.</param>
+        /// <param name="outputPath">The output directory path.</param>
+        internal void BuildNavigationStructure(DocsJsonConfig config, DocAssembly model, string outputPath)
+        {
+            config.Navigation ??= new NavigationConfig();
+            config.Navigation.Pages = new List<object>();
+
+            // Add the index page (assembly overview)
+            config.Navigation.Pages.Add("index");
+
+            // Create "API Reference" root group
+            var apiReferenceGroup = new GroupConfig
+            {
+                Group = "API Reference",
+                Icon = _options.IncludeIcons ? "code" : null,
+                Pages = new List<object>()
+            };
+
+            // Build navigation based on file/folder mode
+            if (Context.FileNamingOptions.NamespaceMode == NamespaceMode.Folder)
+            {
+                BuildFolderModeNavigation(apiReferenceGroup.Pages, model, outputPath);
+            }
+            else
+            {
+                BuildFileModeNavigation(apiReferenceGroup.Pages, model, outputPath);
+            }
+
+            // Only add the API Reference group if it has content
+            if (apiReferenceGroup.Pages.Any())
+            {
+                config.Navigation.Pages.Add(apiReferenceGroup);
+            }
+        }
+
+        /// <summary>
+        /// Builds navigation for File mode (flat structure with namespace groups).
+        /// </summary>
+        /// <param name="pages">The pages list to populate.</param>
+        /// <param name="model">The DocAssembly model.</param>
+        /// <param name="outputPath">The output directory path.</param>
+        internal void BuildFileModeNavigation(List<object> pages, DocAssembly model, string outputPath)
+        {
+            // Process each namespace as a group
+            foreach (var ns in model.Namespaces.OrderBy(n => n.Name))
+            {
+                var namespaceName = base.GetSafeNamespaceName(ns);
+                var group = new GroupConfig
+                {
+                    Group = ns.Name ?? "global",
+                    Icon = _options.IncludeIcons ? MintlifyIcons.GetIconForNamespace(ns) : null,
+                    Pages = new List<object>()
+                };
+
+                // Add namespace overview page
+                var nsFilePath = GetNamespaceFilePath(ns, outputPath, "mdx");
+                var nsRelativePath = Path.GetRelativePath(outputPath, nsFilePath)
+                    .Replace('\\', '/')
+                    .Replace(".mdx", "");
+                group.Pages.Add(nsRelativePath);
+
+                // Add type pages
+                foreach (var type in ns.Types.OrderBy(t => t.Name))
+                {
+                    var typeFilePath = GetTypeFilePath(type, ns, outputPath, "mdx");
+                    var typeRelativePath = Path.GetRelativePath(outputPath, typeFilePath)
+                        .Replace('\\', '/')
+                        .Replace(".mdx", "");
+                    group.Pages.Add(typeRelativePath);
+                }
+
+                if (group.Pages.Any())
+                {
+                    pages.Add(group);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Builds navigation for Folder mode (hierarchical structure).
+        /// </summary>
+        /// <param name="pages">The pages list to populate.</param>
+        /// <param name="model">The DocAssembly model.</param>
+        /// <param name="outputPath">The output directory path.</param>
+        internal void BuildFolderModeNavigation(List<object> pages, DocAssembly model, string outputPath)
+        {
+            // Group namespaces by their hierarchical structure
+            var namespaceTree = new Dictionary<string, GroupConfig>();
+
+            foreach (var ns in model.Namespaces.OrderBy(n => n.Name))
+            {
+                var namespaceName = base.GetSafeNamespaceName(ns);
+                var parts = namespaceName.Split('.');
+                
+                // Build nested structure for namespace hierarchy
+                var currentLevel = pages;
+                GroupConfig? parentGroup = null;
+                string currentPath = "";
+
+                for (int i = 0; i < parts.Length; i++)
+                {
+                    var part = parts[i];
+                    currentPath = i == 0 ? part : $"{currentPath}.{part}";
+                    
+                    // Find or create group at this level
+                    var existingGroup = currentLevel
+                        .OfType<GroupConfig>()
+                        .FirstOrDefault(g => g.Group == part);
+
+                    if (existingGroup is null)
+                    {
+                        existingGroup = new GroupConfig
+                        {
+                            Group = part,
+                            Icon = _options.IncludeIcons ? MintlifyIcons.Namespace : null,
+                            Pages = []
+                        };
+                        currentLevel.Add(existingGroup);
+                    }
+
+                    parentGroup = existingGroup;
+                    currentLevel = existingGroup.Pages!;
+                }
+
+                // At the deepest level, add the namespace index and all types
+                if (parentGroup is not null && currentLevel is not null)
+                {
+                    // Add namespace index
+                    var nsFilePath = GetNamespaceFilePath(ns, outputPath, "mdx");
+                    var nsRelativePath = Path.GetRelativePath(outputPath, nsFilePath)
+                        .Replace('\\', '/')
+                        .Replace(".mdx", "");
+                    currentLevel.Add(nsRelativePath);
+
+                    // Add types in this namespace
+                    foreach (var type in ns.Types.OrderBy(t => t.Name))
+                    {
+                        var typeFilePath = GetTypeFilePath(type, ns, outputPath, "mdx");
+                        var typeRelativePath = Path.GetRelativePath(outputPath, typeFilePath)
+                            .Replace('\\', '/')
+                            .Replace(".mdx", "");
+                        currentLevel.Add(typeRelativePath);
+                    }
+                }
+            }
+        }
 
         /// <summary>
         /// Generates Mintlify frontmatter for any documentation entity.
@@ -256,7 +449,9 @@ namespace CloudNimble.DotNetDocs.Mintlify
             {
                 sb.AppendLine("## Examples");
                 sb.AppendLine();
-                sb.AppendLine(assembly.Examples);
+                sb.AppendLine("```csharp");
+                sb.AppendLine(RemoveIndentation(assembly.Examples));
+                sb.AppendLine("```");
                 sb.AppendLine();
             }
 
@@ -347,7 +542,9 @@ namespace CloudNimble.DotNetDocs.Mintlify
             {
                 sb.AppendLine("## Examples");
                 sb.AppendLine();
-                sb.AppendLine(ns.Examples);
+                sb.AppendLine("```csharp");
+                sb.AppendLine(RemoveIndentation(ns.Examples));
+                sb.AppendLine("```");
                 sb.AppendLine();
             }
 
@@ -553,7 +750,9 @@ namespace CloudNimble.DotNetDocs.Mintlify
             {
                 sb.AppendLine("## Examples");
                 sb.AppendLine();
-                sb.AppendLine(type.Examples);
+                sb.AppendLine("```csharp");
+                sb.AppendLine(RemoveIndentation(type.Examples));
+                sb.AppendLine("```");
                 sb.AppendLine();
             }
 
@@ -719,7 +918,7 @@ namespace CloudNimble.DotNetDocs.Mintlify
             }
 
             // Returns (for methods only, not properties)
-            if (member.MemberKind == Microsoft.CodeAnalysis.SymbolKind.Method &&
+            if (member.MemberKind == SymbolKind.Method &&
                 member.ReturnTypeName is not null && member.ReturnTypeName != "void")
             {
                 sb.AppendLine("#### Returns");
@@ -733,7 +932,7 @@ namespace CloudNimble.DotNetDocs.Mintlify
             }
 
             // Property type (for properties)
-            if (member.MemberKind == Microsoft.CodeAnalysis.SymbolKind.Property && member.ReturnTypeName is not null)
+            if (member.MemberKind == SymbolKind.Property && member.ReturnTypeName is not null)
             {
                 sb.AppendLine("#### Property Value");
                 sb.AppendLine();
@@ -777,7 +976,9 @@ namespace CloudNimble.DotNetDocs.Mintlify
             {
                 sb.AppendLine("#### Examples");
                 sb.AppendLine();
-                sb.AppendLine(member.Examples);
+                sb.AppendLine("```csharp");
+                sb.AppendLine(RemoveIndentation(member.Examples));
+                sb.AppendLine("```");
                 sb.AppendLine();
             }
 
@@ -830,6 +1031,83 @@ namespace CloudNimble.DotNetDocs.Mintlify
         }
 
         // All signature and file name methods are now inherited from RendererBase
+
+        #endregion
+
+        #region Private Methods
+
+        /// <summary>
+        /// Removes common leading indentation from multi-line text content.
+        /// </summary>
+        /// <param name="text">The text to remove indentation from.</param>
+        /// <returns>The text with common indentation removed.</returns>
+        private static string RemoveIndentation(string text)
+        {
+            if (string.IsNullOrWhiteSpace(text))
+                return text;
+
+            var lines = text.Split('\n');
+            
+            // Skip the first line when calculating minimum indentation since it's often already correct
+            // (XML doc comments often start with content on the same line as the tag)
+            int minIndent = int.MaxValue;
+            bool skipFirst = true;
+            
+            foreach (var line in lines)
+            {
+                if (skipFirst)
+                {
+                    skipFirst = false;
+                    continue;
+                }
+                
+                if (string.IsNullOrWhiteSpace(line))
+                    continue;
+                    
+                int indent = 0;
+                foreach (var ch in line)
+                {
+                    if (ch == ' ' || ch == '\t')
+                        indent++;
+                    else
+                        break;
+                }
+                
+                if (indent < minIndent)
+                    minIndent = indent;
+            }
+            
+            // If no indentation found, return original text
+            if (minIndent == int.MaxValue || minIndent == 0)
+                return text;
+            
+            // Process lines: keep first line as-is, remove indentation from subsequent lines
+            var result = new StringBuilder();
+            for (int i = 0; i < lines.Length; i++)
+            {
+                var line = lines[i];
+                
+                if (i == 0)
+                {
+                    // Keep first line as-is
+                    result.AppendLine(line);
+                }
+                else if (string.IsNullOrWhiteSpace(line))
+                {
+                    result.AppendLine();
+                }
+                else if (line.Length > minIndent)
+                {
+                    result.AppendLine(line.Substring(minIndent));
+                }
+                else
+                {
+                    result.AppendLine(line.TrimStart());
+                }
+            }
+            
+            return result.ToString().TrimEnd();
+        }
 
         #endregion
 

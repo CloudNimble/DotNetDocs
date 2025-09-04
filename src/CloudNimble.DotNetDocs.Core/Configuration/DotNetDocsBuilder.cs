@@ -2,7 +2,6 @@ using System;
 using CloudNimble.DotNetDocs.Core.Renderers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Options;
 
 namespace CloudNimble.DotNetDocs.Core.Configuration
 {
@@ -19,7 +18,7 @@ namespace CloudNimble.DotNetDocs.Core.Configuration
 
         #region Fields
 
-        private readonly IServiceCollection _services;
+        internal readonly IServiceCollection _services;
 
         #endregion
 
