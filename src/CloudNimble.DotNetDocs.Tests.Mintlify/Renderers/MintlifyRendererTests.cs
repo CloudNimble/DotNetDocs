@@ -14,7 +14,9 @@ using CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios;
 using FluentAssertions;
 using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Mintlify.Core;
 
 namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
 {
@@ -419,8 +421,8 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
 
         #region Baseline Generation
 
-        [TestMethod]
-        [DataRow(projectPath)]
+        //[TestMethod]
+        //[DataRow(projectPath)]
         [BreakdanceManifestGenerator]
         public async Task GenerateMintlifyBaselines(string projectPath)
         {
@@ -436,8 +438,8 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             {
                 FileNamingOptions = new FileNamingOptions(NamespaceMode.File, '-')
             };
-            var options = Microsoft.Extensions.Options.Options.Create(new MintlifyRendererOptions());
-            var docsJsonManager = new global::Mintlify.Core.DocsJsonManager();
+            var options = Options.Create(new MintlifyRendererOptions());
+            var docsJsonManager = new DocsJsonManager();
             var renderer = new MintlifyRenderer(context, options, docsJsonManager);
             var tempOutputPath = Path.Combine(Path.GetTempPath(), $"MintlifyBaseline_FileMode_{Guid.NewGuid()}");
             Directory.CreateDirectory(tempOutputPath);
@@ -485,8 +487,8 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             {
                 FileNamingOptions = new FileNamingOptions(NamespaceMode.Folder, '-')
             };
-            var options = Microsoft.Extensions.Options.Options.Create(new MintlifyRendererOptions());
-            var docsJsonManager = new global::Mintlify.Core.DocsJsonManager();
+            var options = Options.Create(new MintlifyRendererOptions());
+            var docsJsonManager = new DocsJsonManager();
             var renderer = new MintlifyRenderer(context, options, docsJsonManager);
             var tempOutputPath = Path.Combine(Path.GetTempPath(), $"MintlifyBaseline_FolderMode_{Guid.NewGuid()}");
             Directory.CreateDirectory(tempOutputPath);
@@ -557,8 +559,8 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             {
                 FileNamingOptions = new FileNamingOptions(NamespaceMode.File, '-')
             };
-            var options = Microsoft.Extensions.Options.Options.Create(new MintlifyRendererOptions());
-            var docsJsonManager = new global::Mintlify.Core.DocsJsonManager();
+            var options = Options.Create(new MintlifyRendererOptions());
+            var docsJsonManager = new DocsJsonManager();
             var renderer = new MintlifyRenderer(context, options, docsJsonManager);
 
             // Act
@@ -582,8 +584,8 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             {
                 FileNamingOptions = new FileNamingOptions(NamespaceMode.File, '_')
             };
-            var options = Microsoft.Extensions.Options.Options.Create(new MintlifyRendererOptions());
-            var docsJsonManager = new global::Mintlify.Core.DocsJsonManager();
+            var options = Options.Create(new MintlifyRendererOptions());
+            var docsJsonManager = new DocsJsonManager();
             var renderer = new MintlifyRenderer(context, options, docsJsonManager);
 
             // Act
@@ -607,8 +609,8 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             {
                 FileNamingOptions = new FileNamingOptions(NamespaceMode.File, '.')
             };
-            var options = Microsoft.Extensions.Options.Options.Create(new MintlifyRendererOptions());
-            var docsJsonManager = new global::Mintlify.Core.DocsJsonManager();
+            var options = Options.Create(new MintlifyRendererOptions());
+            var docsJsonManager = new DocsJsonManager();
             var renderer = new MintlifyRenderer(context, options, docsJsonManager);
 
             // Act
@@ -632,8 +634,8 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             {
                 FileNamingOptions = new FileNamingOptions(NamespaceMode.Folder)
             };
-            var options = Microsoft.Extensions.Options.Options.Create(new MintlifyRendererOptions());
-            var docsJsonManager = new global::Mintlify.Core.DocsJsonManager();
+            var options = Options.Create(new MintlifyRendererOptions());
+            var docsJsonManager = new DocsJsonManager();
             var renderer = new MintlifyRenderer(context, options, docsJsonManager);
 
             // Act
@@ -676,8 +678,8 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             {
                 FileNamingOptions = new FileNamingOptions(NamespaceMode.Folder, '_')
             };
-            var options = Microsoft.Extensions.Options.Options.Create(new MintlifyRendererOptions());
-            var docsJsonManager = new global::Mintlify.Core.DocsJsonManager();
+            var options = Options.Create(new MintlifyRendererOptions());
+            var docsJsonManager = new DocsJsonManager();
             var renderer = new MintlifyRenderer(context, options, docsJsonManager);
 
             // Act
@@ -705,8 +707,8 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             {
                 FileNamingOptions = new FileNamingOptions(NamespaceMode.Folder)
             };
-            var options = Microsoft.Extensions.Options.Options.Create(new MintlifyRendererOptions());
-            var docsJsonManager = new global::Mintlify.Core.DocsJsonManager();
+            var options = Options.Create(new MintlifyRendererOptions());
+            var docsJsonManager = new DocsJsonManager();
             var renderer = new MintlifyRenderer(context, options, docsJsonManager);
             var testOutputPath = Path.Combine(Path.GetTempPath(), $"MintlifyFolderBaseline_{Guid.NewGuid()}");
 

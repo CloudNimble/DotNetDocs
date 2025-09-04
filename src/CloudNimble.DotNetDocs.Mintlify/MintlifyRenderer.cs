@@ -683,8 +683,8 @@ namespace CloudNimble.DotNetDocs.Mintlify
             // Add frontmatter with namespace context
             sb.Append(GenerateFrontmatter(type, ns));
 
-            sb.AppendLine($"# {type.Name}");
-            sb.AppendLine();
+            //sb.AppendLine($"# {type.Name}");
+            //sb.AppendLine();
 
             // Type metadata section
             sb.AppendLine("## Definition");
