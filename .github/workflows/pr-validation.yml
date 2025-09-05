@@ -4,6 +4,7 @@ on:
   pull_request:
     branches: [ main, dev ]
     types: [opened, synchronize, reopened]
+  workflow_dispatch:
 
 env:
   DOTNET_VERSION: '10.0.x'
