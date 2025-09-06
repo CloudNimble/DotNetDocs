@@ -1,0 +1,247 @@
+---
+title: DotNetDocsBuilder
+description: "Builder for configuring the DotNetDocs documentation pipeline."
+icon: file-brackets-curly
+keywords: ['DotNetDocsBuilder', 'CloudNimble.DotNetDocs.Core.Configuration.DotNetDocsBuilder', 'CloudNimble.DotNetDocs.Core.Configuration', 'class', 'System.Object']
+---
+
+## Definition
+
+**Namespace:** CloudNimble.DotNetDocs.Core.Configuration
+
+**Assembly:** CloudNimble.DotNetDocs.Core.dll
+
+**Inheritance:** System.Object
+
+## Syntax
+
+```csharp
+CloudNimble.DotNetDocs.Core.Configuration.DotNetDocsBuilder
+```
+
+## Summary
+
+Builder for configuring the DotNetDocs documentation pipeline.
+
+## Remarks
+
+Provides a fluent API for registering renderers, enrichers, transformers,
+            and configuring the documentation pipeline context.
+
+## Constructors
+
+### .ctor
+
+Initializes a new instance of the  class.
+
+#### Syntax
+
+```csharp
+public DotNetDocsBuilder(Microsoft.Extensions.DependencyInjection.IServiceCollection services)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `services` | `Microsoft.Extensions.DependencyInjection.IServiceCollection` | The service collection to configure. |
+
+#### Exceptions
+
+| Exception | Description |
+|-----------|-------------|
+| `ArgumentNullException` | Thrown when services is null. |
+
+## Methods
+
+### AddEnricher
+
+Adds a custom enricher to the pipeline.
+
+#### Syntax
+
+```csharp
+public CloudNimble.DotNetDocs.Core.Configuration.DotNetDocsBuilder AddEnricher<TEnricher>() where TEnricher : class, CloudNimble.DotNetDocs.Core.IDocEnricher
+```
+
+#### Returns
+
+Type: `CloudNimble.DotNetDocs.Core.Configuration.DotNetDocsBuilder`
+The builder for chaining.
+
+#### Type Parameters
+
+- `TEnricher` - The type of enricher to add.
+
+#### Examples
+
+```csharp
+pipeline.AddEnricher<ConceptualContentEnricher>();
+```
+
+#### Remarks
+
+Enrichers add conceptual content to documentation entities.
+
+### AddRenderer
+
+Adds a custom renderer to the pipeline.
+
+#### Syntax
+
+```csharp
+public CloudNimble.DotNetDocs.Core.Configuration.DotNetDocsBuilder AddRenderer<TRenderer>() where TRenderer : class, CloudNimble.DotNetDocs.Core.IDocRenderer
+```
+
+#### Returns
+
+Type: `CloudNimble.DotNetDocs.Core.Configuration.DotNetDocsBuilder`
+The builder for chaining.
+
+#### Type Parameters
+
+- `TRenderer` - The type of renderer to add.
+
+#### Examples
+
+```csharp
+pipeline.AddRenderer<MyCustomRenderer>();
+```
+
+#### Remarks
+
+Renderers generate output in specific formats (e.g., Markdown, JSON, YAML).
+
+### AddTransformer
+
+Adds a custom transformer to the pipeline.
+
+#### Syntax
+
+```csharp
+public CloudNimble.DotNetDocs.Core.Configuration.DotNetDocsBuilder AddTransformer<TTransformer>() where TTransformer : class, CloudNimble.DotNetDocs.Core.IDocTransformer
+```
+
+#### Returns
+
+Type: `CloudNimble.DotNetDocs.Core.Configuration.DotNetDocsBuilder`
+The builder for chaining.
+
+#### Type Parameters
+
+- `TTransformer` - The type of transformer to add.
+
+#### Examples
+
+```csharp
+pipeline.AddTransformer<InheritDocTransformer>();
+```
+
+#### Remarks
+
+Transformers modify the documentation model before rendering.
+
+### ConfigureContext
+
+Configures the ProjectContext for the pipeline.
+
+#### Syntax
+
+```csharp
+public CloudNimble.DotNetDocs.Core.Configuration.DotNetDocsBuilder ConfigureContext(System.Action<CloudNimble.DotNetDocs.Core.ProjectContext> configure)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `configure` | `System.Action<CloudNimble.DotNetDocs.Core.ProjectContext>` | Action to configure the ProjectContext. |
+
+#### Returns
+
+Type: `CloudNimble.DotNetDocs.Core.Configuration.DotNetDocsBuilder`
+The builder for chaining.
+
+#### Examples
+
+```csharp
+pipeline.ConfigureContext(ctx =>
+{
+    ctx.OutputPath = "docs/api";
+    ctx.ShowPlaceholders = false;
+});
+```
+
+### UseJsonRenderer
+
+Adds the JSON renderer to the pipeline.
+
+#### Syntax
+
+```csharp
+public CloudNimble.DotNetDocs.Core.Configuration.DotNetDocsBuilder UseJsonRenderer(System.Action<CloudNimble.DotNetDocs.Core.Renderers.JsonRendererOptions> configure = null)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `configure` | `System.Action<CloudNimble.DotNetDocs.Core.Renderers.JsonRendererOptions>?` | Optional action to configure JsonRendererOptions. |
+
+#### Returns
+
+Type: `CloudNimble.DotNetDocs.Core.Configuration.DotNetDocsBuilder`
+The builder for chaining.
+
+#### Examples
+
+```csharp
+pipeline.UseJsonRenderer(options =>
+{
+    options.WriteIndented = true;
+    options.IncludeNullValues = false;
+});
+```
+
+### UseMarkdownRenderer
+
+Adds the Markdown renderer to the pipeline.
+
+#### Syntax
+
+```csharp
+public CloudNimble.DotNetDocs.Core.Configuration.DotNetDocsBuilder UseMarkdownRenderer()
+```
+
+#### Returns
+
+Type: `CloudNimble.DotNetDocs.Core.Configuration.DotNetDocsBuilder`
+The builder for chaining.
+
+#### Examples
+
+```csharp
+pipeline.UseMarkdownRenderer();
+```
+
+### UseYamlRenderer
+
+Adds the YAML renderer to the pipeline.
+
+#### Syntax
+
+```csharp
+public CloudNimble.DotNetDocs.Core.Configuration.DotNetDocsBuilder UseYamlRenderer()
+```
+
+#### Returns
+
+Type: `CloudNimble.DotNetDocs.Core.Configuration.DotNetDocsBuilder`
+The builder for chaining.
+
+#### Examples
+
+```csharp
+pipeline.UseYamlRenderer();
+```
+

@@ -27,6 +27,7 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
             .ConfigureDefaultValuesHandling(DefaultValuesHandling.OmitNull | DefaultValuesHandling.OmitDefaults | DefaultValuesHandling.OmitEmptyCollections)
             .DisableAliases()
             .IgnoreFields()
+            .WithMaximumRecursion(5)  // Limit recursion depth to prevent cycles
             // Type converters for Roslyn types to ensure proper serialization
             .WithTypeConverter(new SymbolTypeConverter())  // Handle ISymbol types first
             .WithTypeConverter(new AccessibilityTypeConverter())

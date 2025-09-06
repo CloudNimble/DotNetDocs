@@ -1,0 +1,80 @@
+---
+title: MintlifyRenderer
+description: "Renders documentation as MDX files with Mintlify frontmatter and navigation."
+icon: file-brackets-curly
+keywords: ['MintlifyRenderer', 'CloudNimble.DotNetDocs.Mintlify.MintlifyRenderer', 'CloudNimble.DotNetDocs.Mintlify', 'class', 'CloudNimble.DotNetDocs.Core.Renderers.RendererBase', 'CloudNimble.DotNetDocs.Core.IDocRenderer']
+---
+
+## Definition
+
+**Namespace:** CloudNimble.DotNetDocs.Mintlify
+
+**Assembly:** CloudNimble.DotNetDocs.Mintlify.dll
+
+**Inheritance:** CloudNimble.DotNetDocs.Core.Renderers.RendererBase
+
+## Syntax
+
+```csharp
+CloudNimble.DotNetDocs.Mintlify.MintlifyRenderer
+```
+
+## Summary
+
+Renders documentation as MDX files with Mintlify frontmatter and navigation.
+
+## Remarks
+
+Generates structured MDX documentation with Mintlify-specific features including
+            frontmatter with icons, tags, and SEO metadata. Optionally generates docs.json
+            navigation configuration for Mintlify documentation sites.
+
+## Constructors
+
+### .ctor
+
+Initializes a new instance of the  class.
+
+#### Syntax
+
+```csharp
+public MintlifyRenderer(CloudNimble.DotNetDocs.Core.ProjectContext context, Microsoft.Extensions.Options.IOptions<CloudNimble.DotNetDocs.Mintlify.MintlifyRendererOptions> options, Mintlify.Core.DocsJsonManager docsJsonManager)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `context` | `CloudNimble.DotNetDocs.Core.ProjectContext` | The project context. |
+| `options` | `Microsoft.Extensions.Options.IOptions<CloudNimble.DotNetDocs.Mintlify.MintlifyRendererOptions>` | The Mintlify renderer options. |
+| `docsJsonManager` | `Mintlify.Core.DocsJsonManager` | The DocsJsonManager for navigation generation. |
+
+## Methods
+
+### RenderAsync
+
+Renders the documentation assembly to MDX files with optional docs.json generation.
+
+#### Syntax
+
+```csharp
+public System.Threading.Tasks.Task RenderAsync(CloudNimble.DotNetDocs.Core.DocAssembly model, string outputPath, CloudNimble.DotNetDocs.Core.ProjectContext context)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `model` | `CloudNimble.DotNetDocs.Core.DocAssembly` | The documentation assembly to render. |
+| `outputPath` | `string` | The path where MDX files should be generated. |
+| `context` | `CloudNimble.DotNetDocs.Core.ProjectContext` | The project context providing rendering settings. |
+
+#### Returns
+
+Type: `System.Threading.Tasks.Task`
+A task representing the asynchronous rendering operation.
+
+## Related APIs
+
+- CloudNimble.DotNetDocs.Core.IDocRenderer
+

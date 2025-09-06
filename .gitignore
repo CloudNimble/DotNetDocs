@@ -418,3 +418,4 @@ FodyWeavers.xsd
 *.msp
 /.playwright-mcp
 /src/CloudNimble.DotNetDocs.Sdk/Sdk/NoTargets
+/src/CloudNimble.DotNetDocs.Docs/assembly-list.txt

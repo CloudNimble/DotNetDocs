@@ -1,0 +1,101 @@
+---
+title: ApiPlaygroundConfig
+description: "Represents the API playground settings for interactive documentation."
+icon: file-brackets-curly
+keywords: ['ApiPlaygroundConfig', 'Mintlify.Core.Models.ApiPlaygroundConfig', 'Mintlify.Core.Models', 'class', 'System.Object']
+---
+
+## Definition
+
+**Namespace:** Mintlify.Core.Models
+
+**Assembly:** Mintlify.Core.dll
+
+**Inheritance:** System.Object
+
+## Syntax
+
+```csharp
+Mintlify.Core.Models.ApiPlaygroundConfig
+```
+
+## Summary
+
+Represents the API playground settings for interactive documentation.
+
+## Remarks
+
+Controls how the API playground is displayed and whether API requests
+            are proxied through Mintlify's servers for CORS handling.
+
+## Constructors
+
+### .ctor
+
+#### Syntax
+
+```csharp
+public ApiPlaygroundConfig()
+```
+
+## Properties
+
+### Display
+
+Gets or sets the display mode of the API playground.
+
+#### Syntax
+
+```csharp
+public string Display { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+
+#### Examples
+
+```csharp
+"playground": {
+  "display": "interactive"
+}
+```
+
+#### Remarks
+
+Valid values are:
+            - "interactive": Full interactive playground with request/response testing
+            - "simple": Copyable endpoint with no interactive features
+            - "none": Hide the playground completely
+            Defaults to "interactive" when not specified.
+
+### Proxy
+
+Gets or sets whether to pass API requests through a proxy server.
+
+#### Syntax
+
+```csharp
+public System.Nullable<bool> Proxy { get; set; }
+```
+
+#### Property Value
+
+Type: `System.Nullable<bool>?`
+
+#### Examples
+
+```csharp
+"playground": {
+  "proxy": false
+}
+```
+
+#### Remarks
+
+When true, API requests from the playground are routed through Mintlify's
+            proxy servers to handle CORS restrictions. This allows the playground to
+            make requests to APIs that don't have CORS configured.
+            Defaults to true when not specified.
+

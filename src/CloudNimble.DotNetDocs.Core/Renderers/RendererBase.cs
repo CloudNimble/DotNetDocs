@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -87,7 +87,7 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
         {
             var namespaceName = GetSafeNamespaceName(ns);
             var folderPath = Context.GetNamespaceFolderPath(namespaceName);
-            
+
             if (FileNamingOptions.NamespaceMode == NamespaceMode.Folder)
             {
                 // Use folder structure with index file
@@ -115,7 +115,7 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
             var namespaceName = GetSafeNamespaceName(ns);
             var typeName = GetSafeTypeName(type);
             var folderPath = Context.GetNamespaceFolderPath(namespaceName);
-            
+
             if (FileNamingOptions.NamespaceMode == NamespaceMode.Folder)
             {
                 // Use folder structure based on namespace

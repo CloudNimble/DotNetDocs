@@ -1,0 +1,89 @@
+---
+title: NavigationPageListConverter
+description: "Handles JSON conversion for lists of navigation page items that can be either strings or GroupConfig objects."
+icon: file-brackets-curly
+keywords: ['NavigationPageListConverter', 'Mintlify.Core.Converters.NavigationPageListConverter', 'Mintlify.Core.Converters', 'class', 'System.Text.Json.Serialization.JsonConverter<System.Collections.Generic.List<object>>']
+---
+
+## Definition
+
+**Namespace:** Mintlify.Core.Converters
+
+**Assembly:** Mintlify.Core.dll
+
+**Inheritance:** System.Text.Json.Serialization.JsonConverter<System.Collections.Generic.List<object>>
+
+## Syntax
+
+```csharp
+Mintlify.Core.Converters.NavigationPageListConverter
+```
+
+## Summary
+
+Handles JSON conversion for lists of navigation page items that can be either strings or GroupConfig objects.
+
+## Remarks
+
+This converter uses a static NavigationPageConverter instance for efficient conversion of all items
+            in the list without creating new converter instances for each item.
+
+## Constructors
+
+### .ctor
+
+#### Syntax
+
+```csharp
+public NavigationPageListConverter()
+```
+
+## Methods
+
+### Read
+
+Reads and converts the JSON array to a list of navigation page objects.
+
+#### Syntax
+
+```csharp
+public override System.Collections.Generic.List<object> Read(ref System.Text.Json.Utf8JsonReader reader, System.Type typeToConvert, System.Text.Json.JsonSerializerOptions options)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `reader` | `System.Text.Json.Utf8JsonReader` | The JSON reader. |
+| `typeToConvert` | `System.Type` | The type to convert to. |
+| `options` | `System.Text.Json.JsonSerializerOptions` | The serializer options. |
+
+#### Returns
+
+Type: `System.Collections.Generic.List<object>`
+A list containing string and GroupConfig objects.
+
+#### Exceptions
+
+| Exception | Description |
+|-----------|-------------|
+| `JsonException` | Thrown when the JSON token is not a StartArray. |
+
+### Write
+
+Writes the list of navigation page objects to JSON array.
+
+#### Syntax
+
+```csharp
+public override void Write(System.Text.Json.Utf8JsonWriter writer, System.Collections.Generic.List<object> value, System.Text.Json.JsonSerializerOptions options)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `writer` | `System.Text.Json.Utf8JsonWriter` | The JSON writer. |
+| `value` | `System.Collections.Generic.List<object>` | The list of navigation page objects to write. |
+| `options` | `System.Text.Json.JsonSerializerOptions` | The serializer options. |
+

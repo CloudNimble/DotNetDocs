@@ -1,15 +1,22 @@
-﻿<Project Sdk="DotNetDocs.Sdk/1.0.0-preview.7">
-    <PropertyGroup>
+<Project>
+  <Import Project="$(MSBuildThisFileDirectory)..\CloudNimble.DotNetDocs.Sdk\Sdk\Sdk.props" />
+  <Import Project="$(MSBuildThisFileDirectory)..\CloudNimble.DotNetDocs.Sdk\Sdk\Sdk.targets" />
 
-        <KeepLocalOutput>true</KeepLocalOutput>
-        <DocumentationType>Mintlify</DocumentationType>
-        <GenerateMintlifyDocs>true</GenerateMintlifyDocs>
-        <LintMarkdown>true</LintMarkdown>
-        <ShowDocumentationStats>true</ShowDocumentationStats>
-    </PropertyGroup>
+    <PropertyGroup>
+     <KeepLocalOutput>true</KeepLocalOutput>
+     <DocumentationType>Mintlify</DocumentationType>
+     <GenerateDocumentation>true</GenerateDocumentation>
+     <NamespaceMode>Folder</NamespaceMode>
+     <LintMarkdown>true</LintMarkdown>
+     <ShowDocumentationStats>true</ShowDocumentationStats>
+   </PropertyGroup>
 
     <ItemGroup>
         <None Remove="D:\GitHub\DotNetDocs\src\CloudNimble.DotNetDocs.Docs\mint.json" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="guides\" />
     </ItemGroup>
 
 </Project>

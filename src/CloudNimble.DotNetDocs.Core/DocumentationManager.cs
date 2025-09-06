@@ -24,6 +24,7 @@ namespace CloudNimble.DotNetDocs.Core
         private readonly IEnumerable<IDocEnricher> enrichers;
         private readonly IEnumerable<IDocRenderer> renderers;
         private readonly IEnumerable<IDocTransformer> transformers;
+        private readonly ProjectContext projectContext;
 
         #endregion
 
@@ -32,6 +33,7 @@ namespace CloudNimble.DotNetDocs.Core
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentationManager"/> class.
         /// </summary>
+        /// <param name="projectContext">The project context containing configuration settings.</param>
         /// <param name="enrichers">The enrichers to apply to documentation entities.</param>
         /// <param name="transformers">The transformers to apply to the documentation model.</param>
         /// <param name="renderers">The renderers to generate output formats.</param>
@@ -40,10 +42,12 @@ namespace CloudNimble.DotNetDocs.Core
         /// All parameters accept IEnumerable collections that are typically injected by the DI container.
         /// </remarks>
         public DocumentationManager(
+            ProjectContext projectContext,
             IEnumerable<IDocEnricher>? enrichers = null,
             IEnumerable<IDocTransformer>? transformers = null,
             IEnumerable<IDocRenderer>? renderers = null)
         {
+            this.projectContext = projectContext ?? throw new ArgumentNullException(nameof(projectContext));
             this.enrichers = enrichers ?? [];
             this.transformers = transformers ?? [];
             this.renderers = renderers ?? [];
@@ -59,11 +63,10 @@ namespace CloudNimble.DotNetDocs.Core
         /// <param name="assemblyPath">The path to the assembly file.</param>
         /// <param name="xmlPath">The path to the XML documentation file.</param>
         /// <param name="outputPath">The base output path for conceptual files.</param>
-        /// <param name="context">The project context containing configuration. If null, a default context is created.</param>
         /// <returns>A task representing the asynchronous operation.</returns>
-        public async Task CreateConceptualFilesAsync(string assemblyPath, string xmlPath, string outputPath, ProjectContext? context = null)
+        public async Task CreateConceptualFilesAsync(string assemblyPath, string xmlPath, string outputPath)
         {
-            await CreateConceptualFilesAsync([(assemblyPath, xmlPath)], outputPath, context);
+            await CreateConceptualFilesAsync([(assemblyPath, xmlPath)], outputPath);
         }
 
         /// <summary>
@@ -71,18 +74,15 @@ namespace CloudNimble.DotNetDocs.Core
         /// </summary>
         /// <param name="assemblies">The collection of assembly and XML path pairs.</param>
         /// <param name="outputPath">The base output path for conceptual files.</param>
-        /// <param name="context">The project context containing configuration. If null, a default context is created.</param>
         /// <returns>A task representing the asynchronous operation.</returns>
-        public async Task CreateConceptualFilesAsync(IEnumerable<(string assemblyPath, string xmlPath)> assemblies, string outputPath, ProjectContext? context = null)
+        public async Task CreateConceptualFilesAsync(IEnumerable<(string assemblyPath, string xmlPath)> assemblies, string outputPath)
         {
-            context ??= new ProjectContext();
-            
             var tasks = assemblies.Select(async pair =>
             {
                 var manager = GetOrCreateAssemblyManager(pair.assemblyPath, pair.xmlPath);
-                var model = await manager.DocumentAsync(null);
+                var model = await manager.DocumentAsync(projectContext);
 
-                await GenerateConceptualFilesForAssembly(model, outputPath, context);
+                await GenerateConceptualFilesForAssembly(model, outputPath, projectContext);
             });
 
             await Task.WhenAll(tasks);
@@ -93,60 +93,192 @@ namespace CloudNimble.DotNetDocs.Core
         /// </summary>
         /// <param name="assemblyPath">The path to the assembly file.</param>
         /// <param name="xmlPath">The path to the XML documentation file.</param>
-        /// <param name="projectContext">Optional project context with additional settings.</param>
         /// <returns>A task representing the asynchronous processing operation.</returns>
-        public async Task ProcessAsync(string assemblyPath, string xmlPath, ProjectContext? projectContext = null)
+        public async Task ProcessAsync(string assemblyPath, string xmlPath)
         {
-            await ProcessAsync([(assemblyPath, xmlPath)], projectContext);
+            await ProcessAsync([(assemblyPath, xmlPath)]);
         }
 
         /// <summary>
         /// Processes multiple assemblies through the documentation pipeline.
         /// </summary>
         /// <param name="assemblies">The collection of assembly and XML path pairs.</param>
-        /// <param name="projectContext">Optional project context with additional settings.</param>
         /// <returns>A task representing the asynchronous processing operation.</returns>
-        public async Task ProcessAsync(IEnumerable<(string assemblyPath, string xmlPath)> assemblies, ProjectContext? projectContext = null)
+        public async Task ProcessAsync(IEnumerable<(string assemblyPath, string xmlPath)> assemblies)
         {
-            var tasks = assemblies.Select(async pair =>
+            // Collect all DocAssembly models
+            var docAssemblies = new List<DocAssembly>();
+            foreach (var pair in assemblies)
             {
                 var manager = GetOrCreateAssemblyManager(pair.assemblyPath, pair.xmlPath);
                 var model = await manager.DocumentAsync(projectContext);
 
                 // Load conceptual content if path provided
-                if (!string.IsNullOrWhiteSpace(projectContext?.ConceptualPath))
+                if (!string.IsNullOrWhiteSpace(projectContext.ConceptualPath))
                 {
                     await LoadConceptualAsync(model, projectContext.ConceptualPath, projectContext);
                 }
 
-                // Apply enrichers
-                foreach (var enricher in enrichers)
-                {
-                    await EnrichModelAsync(model, enricher, projectContext);
-                }
+                docAssemblies.Add(model);
+            }
 
-                // Apply transformers
-                foreach (var transformer in transformers)
-                {
-                    await TransformModelAsync(model, transformer, projectContext);
-                }
+            // Merge all DocAssembly models into unified model
+            var mergedModel = await MergeDocAssembliesAsync(docAssemblies);
 
-                // Apply renderers
-                foreach (var renderer in renderers)
-                {
-                    await renderer.RenderAsync(
-                        model,
-                        projectContext?.OutputPath ?? "docs",
-                        projectContext ?? new ProjectContext());
-                }
-            });
+            // Apply enrichers to merged model
+            foreach (var enricher in enrichers)
+            {
+                await EnrichModelAsync(mergedModel, enricher);
+            }
 
-            await Task.WhenAll(tasks);
+            // Apply transformers to merged model
+            foreach (var transformer in transformers)
+            {
+                await TransformModelAsync(mergedModel, transformer);
+            }
+
+            // Apply renderers once with merged model
+            foreach (var renderer in renderers)
+            {
+                await renderer.RenderAsync(
+                    mergedModel,
+                    projectContext.OutputPath,
+                    projectContext);
+            }
         }
 
         #endregion
 
         #region Private Methods
+
+        /// <summary>
+        /// Merges multiple DocAssembly models into a single unified model.
+        /// </summary>
+        /// <param name="assemblies">The collection of DocAssembly models to merge.</param>
+        /// <returns>A task representing the asynchronous merge operation.</returns>
+        private async Task<DocAssembly> MergeDocAssembliesAsync(List<DocAssembly> assemblies)
+        {
+            if (assemblies.Count == 0)
+            {
+                throw new ArgumentException("At least one assembly must be provided", nameof(assemblies));
+            }
+
+            if (assemblies.Count == 1)
+            {
+                return assemblies[0];
+            }
+
+            // Use the first assembly as the base
+            var mergedAssembly = assemblies[0];
+
+            // Merge namespaces from additional assemblies
+            for (int i = 1; i < assemblies.Count; i++)
+            {
+                var assembly = assemblies[i];
+                foreach (var ns in assembly.Namespaces)
+                {
+                    await MergeNamespaceAsync(mergedAssembly, ns);
+                }
+            }
+
+            return mergedAssembly;
+        }
+
+        /// <summary>
+        /// Merges a namespace into the merged assembly, handling conflicts.
+        /// </summary>
+        /// <param name="mergedAssembly">The assembly being merged into.</param>
+        /// <param name="sourceNamespace">The namespace to merge.</param>
+        /// <returns>A task representing the asynchronous merge operation.</returns>
+        private async Task MergeNamespaceAsync(DocAssembly mergedAssembly, DocNamespace sourceNamespace)
+        {
+            // Find existing namespace or create new one
+            var existingNamespace = mergedAssembly.Namespaces.FirstOrDefault(ns =>
+                ns.Symbol.ToDisplayString() == sourceNamespace.Symbol.ToDisplayString());
+
+            if (existingNamespace == null)
+            {
+                // Add new namespace
+                mergedAssembly.Namespaces.Add(sourceNamespace);
+            }
+            else
+            {
+                // Merge types into existing namespace
+                foreach (var type in sourceNamespace.Types)
+                {
+                    await MergeTypeAsync(existingNamespace, type);
+                }
+
+                // Merge namespace-level content (summary, usage, etc.)
+                if (!string.IsNullOrWhiteSpace(sourceNamespace.Summary) &&
+                    string.IsNullOrWhiteSpace(existingNamespace.Summary))
+                {
+                    existingNamespace.Summary = sourceNamespace.Summary;
+                }
+                // TODO: Merge other namespace content as needed
+            }
+        }
+
+        /// <summary>
+        /// Merges a type into the merged namespace, handling conflicts.
+        /// </summary>
+        /// <param name="mergedNamespace">The namespace being merged into.</param>
+        /// <param name="sourceType">The type to merge.</param>
+        /// <returns>A task representing the asynchronous merge operation.</returns>
+        private async Task MergeTypeAsync(DocNamespace mergedNamespace, DocType sourceType)
+        {
+            // Find existing type or create new one
+            var existingType = mergedNamespace.Types.FirstOrDefault(t =>
+                t.Symbol.ToDisplayString() == sourceType.Symbol.ToDisplayString());
+
+            if (existingType == null)
+            {
+                // Add new type
+                mergedNamespace.Types.Add(sourceType);
+            }
+            else
+            {
+                // Merge members into existing type
+                foreach (var member in sourceType.Members)
+                {
+                    await MergeMemberAsync(existingType, member);
+                }
+
+                // Merge type-level content (summary, usage, etc.)
+                if (!string.IsNullOrWhiteSpace(sourceType.Summary) &&
+                    string.IsNullOrWhiteSpace(existingType.Summary))
+                {
+                    existingType.Summary = sourceType.Summary;
+                }
+                // TODO: Merge other type content as needed
+            }
+        }
+
+        /// <summary>
+        /// Merges a member into the merged type, handling conflicts.
+        /// </summary>
+        /// <param name="mergedType">The type being merged into.</param>
+        /// <param name="sourceMember">The member to merge.</param>
+        /// <returns>A task representing the asynchronous merge operation.</returns>
+        private Task MergeMemberAsync(DocType mergedType, DocMember sourceMember)
+        {
+            // Find existing member or create new one
+            var existingMember = mergedType.Members.FirstOrDefault(m =>
+                m.Symbol.ToDisplayString() == sourceMember.Symbol.ToDisplayString());
+
+            if (existingMember == null)
+            {
+                // Add new member
+                mergedType.Members.Add(sourceMember);
+            }
+            else
+            {
+                // TODO: Handle member conflicts - for now, prefer the first one encountered
+                // This could be enhanced to merge documentation from multiple sources
+            }
+
+            return Task.CompletedTask;
+        }
 
         /// <summary>
         /// Gets or creates a cached <see cref="AssemblyManager"/> instance for the specified assembly path.
@@ -167,37 +299,37 @@ namespace CloudNimble.DotNetDocs.Core
         /// <summary>
         /// Recursively enriches a documentation model and all its children.
         /// </summary>
-        internal async Task EnrichModelAsync(DocEntity entity, IDocEnricher enricher, ProjectContext? projectContext)
+        internal async Task EnrichModelAsync(DocEntity entity, IDocEnricher enricher)
         {
-            await enricher.EnrichAsync(entity, projectContext ?? new ProjectContext());
+            await enricher.EnrichAsync(entity, projectContext);
 
             // Recursively enrich children
             if (entity is DocAssembly assembly)
             {
                 foreach (var ns in assembly.Namespaces)
                 {
-                    await EnrichModelAsync(ns, enricher, projectContext);
+                    await EnrichModelAsync(ns, enricher);
                 }
             }
             else if (entity is DocNamespace ns)
             {
                 foreach (var type in ns.Types)
                 {
-                    await EnrichModelAsync(type, enricher, projectContext);
+                    await EnrichModelAsync(type, enricher);
                 }
             }
             else if (entity is DocType type)
             {
                 foreach (var member in type.Members)
                 {
-                    await EnrichModelAsync(member, enricher, projectContext);
+                    await EnrichModelAsync(member, enricher);
                 }
             }
             else if (entity is DocMember member)
             {
                 foreach (var param in member.Parameters)
                 {
-                    await EnrichModelAsync(param, enricher, projectContext);
+                    await EnrichModelAsync(param, enricher);
                 }
             }
         }
@@ -205,37 +337,37 @@ namespace CloudNimble.DotNetDocs.Core
         /// <summary>
         /// Recursively transforms a documentation model and all its children.
         /// </summary>
-        internal async Task TransformModelAsync(DocEntity entity, IDocTransformer transformer, ProjectContext? projectContext)
+        internal async Task TransformModelAsync(DocEntity entity, IDocTransformer transformer)
         {
-            await transformer.TransformAsync(entity, projectContext ?? new ProjectContext());
+            await transformer.TransformAsync(entity, projectContext);
 
             // Recursively transform children
             if (entity is DocAssembly assembly)
             {
                 foreach (var ns in assembly.Namespaces)
                 {
-                    await TransformModelAsync(ns, transformer, projectContext);
+                    await TransformModelAsync(ns, transformer);
                 }
             }
             else if (entity is DocNamespace ns)
             {
                 foreach (var type in ns.Types)
                 {
-                    await TransformModelAsync(type, transformer, projectContext);
+                    await TransformModelAsync(type, transformer);
                 }
             }
             else if (entity is DocType type)
             {
                 foreach (var member in type.Members)
                 {
-                    await TransformModelAsync(member, transformer, projectContext);
+                    await TransformModelAsync(member, transformer);
                 }
             }
             else if (entity is DocMember member)
             {
                 foreach (var param in member.Parameters)
                 {
-                    await TransformModelAsync(param, transformer, projectContext);
+                    await TransformModelAsync(param, transformer);
                 }
             }
         }

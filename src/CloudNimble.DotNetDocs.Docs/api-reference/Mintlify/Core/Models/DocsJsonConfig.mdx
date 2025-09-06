@@ -1,0 +1,399 @@
+---
+title: DocsJsonConfig
+description: "Represents the root configuration object for Mintlify docs.json."
+icon: file-brackets-curly
+keywords: ['DocsJsonConfig', 'Mintlify.Core.Models.DocsJsonConfig', 'Mintlify.Core.Models', 'class', 'System.Object']
+---
+
+## Definition
+
+**Namespace:** Mintlify.Core.Models
+
+**Assembly:** Mintlify.Core.dll
+
+**Inheritance:** System.Object
+
+## Syntax
+
+```csharp
+Mintlify.Core.Models.DocsJsonConfig
+```
+
+## Summary
+
+Represents the root configuration object for Mintlify docs.json.
+
+## Remarks
+
+This class represents the complete structure of a Mintlify docs.json configuration file
+            as defined by the official Mintlify schema. It supports all themes and configuration options.
+
+## Constructors
+
+### .ctor
+
+#### Syntax
+
+```csharp
+public DocsJsonConfig()
+```
+
+## Properties
+
+### Api
+
+Gets or sets the API reference configuration.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.ApiConfig Api { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.ApiConfig?`
+
+### Appearance
+
+Gets or sets the appearance configuration.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.AppearanceConfig Appearance { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.AppearanceConfig?`
+
+### Background
+
+Gets or sets the background configuration.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.BackgroundConfig Background { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.BackgroundConfig?`
+
+### Banner
+
+Gets or sets the banner configuration.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.BannerConfig Banner { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.BannerConfig?`
+
+### Colors
+
+Gets or sets the color configuration.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.ColorsConfig Colors { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.ColorsConfig`
+
+#### Remarks
+
+This is a required field. At minimum, the primary color must be defined.
+
+### Contextual
+
+Gets or sets the contextual options configuration.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.ContextualConfig Contextual { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.ContextualConfig?`
+
+### Description
+
+Gets or sets the optional description used for SEO and LLM indexing.
+
+#### Syntax
+
+```csharp
+public string Description { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+
+### Errors
+
+Gets or sets the error pages configuration.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.ErrorsConfig Errors { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.ErrorsConfig?`
+
+### Favicon
+
+Gets or sets the favicon configuration.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.FaviconConfig Favicon { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.FaviconConfig?`
+
+### Fonts
+
+Gets or sets the fonts configuration.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.FontsConfig Fonts { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.FontsConfig?`
+
+### Footer
+
+Gets or sets the footer configuration.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.FooterConfig Footer { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.FooterConfig?`
+
+### Icons
+
+Gets or sets the icons configuration.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.IconsConfig Icons { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.IconsConfig?`
+
+### Integrations
+
+Gets or sets the integrations configuration.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.IntegrationsConfig Integrations { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.IntegrationsConfig?`
+
+### Logo
+
+Gets or sets the logo configuration.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.LogoConfig Logo { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.LogoConfig?`
+
+### Name
+
+Gets or sets the name of the project, organization, or product.
+
+#### Syntax
+
+```csharp
+public string Name { get; set; }
+```
+
+#### Property Value
+
+Type: `string`
+
+#### Remarks
+
+This is a required field.
+
+### Navbar
+
+Gets or sets the navbar configuration.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.NavbarConfig Navbar { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.NavbarConfig?`
+
+### Navigation
+
+Gets or sets the navigation structure.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.NavigationConfig Navigation { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.NavigationConfig`
+
+#### Remarks
+
+This is a required field that defines the structure of your documentation.
+
+### Redirects
+
+Gets or sets the redirects.
+
+#### Syntax
+
+```csharp
+public System.Collections.Generic.List<Mintlify.Core.Models.RedirectConfig> Redirects { get; set; }
+```
+
+#### Property Value
+
+Type: `System.Collections.Generic.List<Mintlify.Core.Models.RedirectConfig>?`
+
+### Schema
+
+Gets or sets the JSON schema URL.
+
+#### Syntax
+
+```csharp
+public string Schema { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+
+### Search
+
+Gets or sets the search configuration.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.SearchConfig Search { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.SearchConfig?`
+
+### Seo
+
+Gets or sets the SEO configuration.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.SeoConfig Seo { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.SeoConfig?`
+
+### Styling
+
+Gets or sets the styling configuration.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.StylingConfig Styling { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.StylingConfig?`
+
+### Theme
+
+Gets or sets the theme name.
+
+#### Syntax
+
+```csharp
+public string Theme { get; set; }
+```
+
+#### Property Value
+
+Type: `string`
+
+#### Remarks
+
+This is a required field. Valid values are: mint, maple, palm, willow, linden, almond, aspen.
+
+### Thumbnails
+
+Gets or sets the thumbnails configuration.
+
+#### Syntax
+
+```csharp
+public System.Collections.Generic.Dictionary<string, string> Thumbnails { get; set; }
+```
+
+#### Property Value
+
+Type: `System.Collections.Generic.Dictionary<string, string>?`
+
+#### Remarks
+
+Defines custom thumbnail images for social media sharing and link previews.
+            Can include background images and other preview assets.
+

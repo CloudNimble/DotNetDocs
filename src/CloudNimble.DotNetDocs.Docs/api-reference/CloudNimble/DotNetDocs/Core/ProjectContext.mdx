@@ -1,0 +1,328 @@
+---
+title: ProjectContext
+description: "Represents MSBuild project context for source intent in documentation generation."
+icon: file-brackets-curly
+keywords: ['ProjectContext', 'CloudNimble.DotNetDocs.Core.ProjectContext', 'CloudNimble.DotNetDocs.Core', 'class', 'System.Object']
+---
+
+## Definition
+
+**Namespace:** CloudNimble.DotNetDocs.Core
+
+**Assembly:** CloudNimble.DotNetDocs.Core.dll
+
+**Inheritance:** System.Object
+
+## Syntax
+
+```csharp
+CloudNimble.DotNetDocs.Core.ProjectContext
+```
+
+## Summary
+
+Represents MSBuild project context for source intent in documentation generation.
+
+## Remarks
+
+Provides metadata such as referenced assembly paths and the conceptual documentation folder path.
+             Used by  to enhance metadata extraction.
+             
+             // Default (public members only)
+             var context = new ProjectContext("ref1.dll", "ref2.dll") { ConceptualPath = "conceptual" };
+            
+             // Include public and internal members
+             var context = new ProjectContext([Accessibility.Public, Accessibility.Internal], "ref1.dll", "ref2.dll");
+            
+             var model = await manager.DocumentAsync("MyLib.dll", "MyLib.xml", context);
+
+## Examples
+
+```csharp
+// Default (public members only)
+var context = new ProjectContext("ref1.dll", "ref2.dll") { ConceptualPath = "conceptual" };
+
+// Include public and internal members
+var context = new ProjectContext([Accessibility.Public, Accessibility.Internal], "ref1.dll", "ref2.dll");
+
+var model = await manager.DocumentAsync("MyLib.dll", "MyLib.xml", context);
+```
+
+## Constructors
+
+### .ctor
+
+Initializes a new instance of  with default settings.
+
+#### Syntax
+
+```csharp
+public ProjectContext()
+```
+
+### .ctor
+
+Initializes a new instance of  with optional included members and referenced assemblies.
+
+#### Syntax
+
+```csharp
+public ProjectContext(System.Collections.Generic.List<Microsoft.CodeAnalysis.Accessibility> includedMembers, params string[] references)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `includedMembers` | `System.Collections.Generic.List<Microsoft.CodeAnalysis.Accessibility?>?` | List of member accessibilities to include. Defaults to Public if null. |
+| `references` | `string[]?` | Paths to referenced assemblies. |
+
+## Properties
+
+### ConceptualPath
+
+Gets or sets the path to the conceptual documentation folder.
+
+#### Syntax
+
+```csharp
+public string ConceptualPath { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+The file system path to the folder containing conceptual documentation files.
+
+### ExcludedTypes
+
+Gets or sets the list of type patterns to exclude from documentation.
+
+#### Syntax
+
+```csharp
+public System.Collections.Generic.HashSet<string> ExcludedTypes { get; set; }
+```
+
+#### Property Value
+
+Type: `System.Collections.Generic.HashSet<string>`
+Set of type patterns to exclude. Supports wildcards (*) for flexible matching.
+            This is useful for filtering out compiler-generated or test framework-injected types.
+
+#### Examples
+
+```csharp
+ExcludedTypes = new HashSet<string> 
+{ 
+    "*.MicrosoftTestingPlatformEntryPoint",  // Matches in any namespace
+    "*.SelfRegisteredExtensions",             // Matches in any namespace
+    "System.Runtime.CompilerServices.*"       // Matches any type in this namespace
+}
+```
+
+#### Remarks
+
+Patterns can use wildcards:
+            - "*.TypeName" matches TypeName in any namespace
+            - "Namespace.*.TypeName" matches TypeName in any sub-namespace of Namespace
+            - "Full.Namespace.TypeName" matches exact fully qualified type name
+
+### FileNamingOptions
+
+Gets or sets the file naming options for documentation generation.
+
+#### Syntax
+
+```csharp
+public CloudNimble.DotNetDocs.Core.Configuration.FileNamingOptions FileNamingOptions { get; set; }
+```
+
+#### Property Value
+
+Type: `CloudNimble.DotNetDocs.Core.Configuration.FileNamingOptions`
+Configuration for how documentation files are named and organized.
+
+### IncludedMembers
+
+Gets or sets the list of member accessibilities to include in documentation.
+
+#### Syntax
+
+```csharp
+public System.Collections.Generic.List<Microsoft.CodeAnalysis.Accessibility> IncludedMembers { get; set; }
+```
+
+#### Property Value
+
+Type: `System.Collections.Generic.List<Microsoft.CodeAnalysis.Accessibility>`
+List of accessibility levels to include. Defaults to Public only.
+
+### OutputPath
+
+Gets or sets the output path for generated documentation.
+
+#### Syntax
+
+```csharp
+public string OutputPath { get; set; }
+```
+
+#### Property Value
+
+Type: `string`
+The file system path where documentation output will be generated.
+
+### References
+
+Gets or sets the collection of paths to referenced assemblies.
+
+#### Syntax
+
+```csharp
+public System.Collections.Generic.List<string> References { get; set; }
+```
+
+#### Property Value
+
+Type: `System.Collections.Generic.List<string>`
+A collection of file system paths to assemblies referenced by the project being documented.
+
+### ShowPlaceholders
+
+Gets or sets whether to show placeholder content in the documentation.
+
+#### Syntax
+
+```csharp
+public bool ShowPlaceholders { get; set; }
+```
+
+#### Property Value
+
+Type: `bool`
+When true (default), placeholder content is included. When false, files containing the
+            TODO marker comment are skipped during loading.
+
+## Methods
+
+### EnsureOutputDirectoryStructure
+
+Ensures that the output directory structure exists for all namespaces in the assembly model.
+
+#### Syntax
+
+```csharp
+public void EnsureOutputDirectoryStructure(CloudNimble.DotNetDocs.Core.DocAssembly assemblyModel, string outputPath)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `assemblyModel` | `CloudNimble.DotNetDocs.Core.DocAssembly` | The assembly model containing namespaces to create directories for. |
+| `outputPath` | `string` | The base output path where directories will be created. |
+
+#### Remarks
+
+This method creates the necessary folder structure when using Folder mode.
+            In File mode, it simply ensures the base output directory exists.
+            This centralizes folder creation logic so renderers can assume directories exist.
+
+### GetNamespaceFolderPath
+
+Converts a namespace string to a folder path based on the configured file naming options.
+
+#### Syntax
+
+```csharp
+public string GetNamespaceFolderPath(string namespaceName)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `namespaceName` | `string` | The namespace name to convert (e.g., "System.Collections.Generic"). |
+
+#### Returns
+
+Type: `string`
+The folder path representation of the namespace.
+
+#### Remarks
+
+When  is ,
+            this returns a path with folders for each namespace part (e.g., "System/Collections/Generic").
+            When using , this returns an empty string as no folder
+            structure is created.
+
+### GetSafeNamespaceName
+
+Gets the safe namespace name for a given namespace symbol.
+
+#### Syntax
+
+```csharp
+public string GetSafeNamespaceName(Microsoft.CodeAnalysis.INamespaceSymbol namespaceSymbol)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `namespaceSymbol` | `Microsoft.CodeAnalysis.INamespaceSymbol` | The namespace symbol. |
+
+#### Returns
+
+Type: `string`
+A safe namespace name, using "global" for the global namespace.
+
+### GetTypeFilePath
+
+Gets the full file path for a type, including namespace folder structure if in Folder mode.
+
+#### Syntax
+
+```csharp
+public string GetTypeFilePath(string fullyQualifiedTypeName, string extension)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `fullyQualifiedTypeName` | `string` | The fully qualified type name (e.g., "System.Text.Json.JsonSerializer"). |
+| `extension` | `string` | The file extension without the dot (e.g., "md", "yaml"). |
+
+#### Returns
+
+Type: `string`
+The file path for the type.
+
+#### Remarks
+
+In Folder mode: "System.Text.Json.JsonSerializer" becomes "System/Text/Json/JsonSerializer.md"
+            In File mode: "System.Text.Json.JsonSerializer" becomes "System_Text_Json_JsonSerializer.md" (using configured separator)
+
+### IsTypeExcluded
+
+Checks if a type should be excluded from documentation based on exclusion patterns.
+
+#### Syntax
+
+```csharp
+public bool IsTypeExcluded(string fullyQualifiedTypeName)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `fullyQualifiedTypeName` | `string` | The fully qualified type name to check. |
+
+#### Returns
+
+Type: `bool`
+True if the type should be excluded; otherwise, false.
+

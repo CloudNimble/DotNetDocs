@@ -1,0 +1,195 @@
+---
+title: AssemblyManager
+description: "Manages assembly metadata extraction using Roslyn for API documentation generation."
+icon: file-brackets-curly
+keywords: ['AssemblyManager', 'CloudNimble.DotNetDocs.Core.AssemblyManager', 'CloudNimble.DotNetDocs.Core', 'class', 'System.Object', 'System.IDisposable']
+---
+
+## Definition
+
+**Namespace:** CloudNimble.DotNetDocs.Core
+
+**Assembly:** CloudNimble.DotNetDocs.Core.dll
+
+**Inheritance:** System.Object
+
+## Syntax
+
+```csharp
+CloudNimble.DotNetDocs.Core.AssemblyManager
+```
+
+## Summary
+
+Manages assembly metadata extraction using Roslyn for API documentation generation.
+
+## Remarks
+
+Extracts metadata from a single .NET assembly and its XML documentation file, building an in-memory model
+            () with interconnected types, members, and parameters. Supports conceptual content
+            loading from a specified folder. Designed for multi-targeting .NET 10.0, 9.0, and 8.0. One instance per assembly
+            is required, with paths specified at construction for incremental build support. Implements 
+            to release memory used by the compilation and model.
+
+## Examples
+
+```csharp
+using var manager = new AssemblyManager("MyLib.dll", "MyLib.xml");
+var context = new ProjectContext("ref1.dll", "ref2.dll") { ConceptualPath = "conceptual" };
+var model = await manager.DocumentAsync(context);
+```
+
+## Constructors
+
+### .ctor
+
+Initializes a new instance of  for a specific assembly.
+
+#### Syntax
+
+```csharp
+public AssemblyManager(string assemblyPath, string xmlPath)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `assemblyPath` | `string` | Path to the assembly DLL file. |
+| `xmlPath` | `string` | Path to the XML documentation file. |
+
+#### Exceptions
+
+| Exception | Description |
+|-----------|-------------|
+| `ArgumentNullException` | Thrown when  or  is null. |
+| `ArgumentException` | Thrown when  or  is empty or whitespace. |
+| `FileNotFoundException` | Thrown when  or  does not exist. |
+
+## Properties
+
+### AssemblyName
+
+Gets the name of the assembly (without extension).
+
+#### Syntax
+
+```csharp
+public string AssemblyName { get; init; }
+```
+
+#### Property Value
+
+Type: `string`
+
+### AssemblyPath
+
+Gets the path to the assembly DLL file.
+
+#### Syntax
+
+```csharp
+public string AssemblyPath { get; init; }
+```
+
+#### Property Value
+
+Type: `string`
+
+### Document
+
+Gets the current documentation model for the processed assembly.
+
+#### Syntax
+
+```csharp
+public CloudNimble.DotNetDocs.Core.DocAssembly Document { get; private set; }
+```
+
+#### Property Value
+
+Type: `CloudNimble.DotNetDocs.Core.DocAssembly?`
+
+### Errors
+
+Gets the collection of errors that occurred during Since  processing.
+
+#### Syntax
+
+```csharp
+public System.Collections.Generic.List<System.CodeDom.Compiler.CompilerError> Errors { get; }
+```
+
+#### Property Value
+
+Type: `System.Collections.Generic.List<System.CodeDom.Compiler.CompilerError>`
+
+#### Remarks
+
+Includes warnings about inaccessible internal members when requested but not available.
+
+### LastModified
+
+Gets the last modified timestamp of the assembly file for incremental builds.
+
+#### Syntax
+
+```csharp
+public System.DateTime LastModified { get; private set; }
+```
+
+#### Property Value
+
+Type: `System.DateTime`
+
+### XmlPath
+
+Gets the path to the XML documentation file.
+
+#### Syntax
+
+```csharp
+public string XmlPath { get; init; }
+```
+
+#### Property Value
+
+Type: `string`
+
+## Methods
+
+### Dispose
+
+Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+
+#### Syntax
+
+```csharp
+public void Dispose()
+```
+
+### DocumentAsync
+
+Documents the assembly asynchronously, building or rebuilding an in-memory model with metadata and documentation if necessary.
+
+#### Syntax
+
+```csharp
+public System.Threading.Tasks.Task<CloudNimble.DotNetDocs.Core.DocAssembly> DocumentAsync(CloudNimble.DotNetDocs.Core.ProjectContext projectContext = null)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `projectContext` | `CloudNimble.DotNetDocs.Core.ProjectContext?` | Optional project context for referenced assemblies and conceptual content path. |
+
+#### Returns
+
+Type: `System.Threading.Tasks.Task<CloudNimble.DotNetDocs.Core.DocAssembly>`
+A task representing the asynchronous operation, containing the  model.
+
+## Related APIs
+
+- System.IDisposable
+

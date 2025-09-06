@@ -1,0 +1,78 @@
+---
+title: JsonRenderer
+description: "Renders documentation as JSON files."
+icon: file-brackets-curly
+keywords: ['JsonRenderer', 'CloudNimble.DotNetDocs.Core.Renderers.JsonRenderer', 'CloudNimble.DotNetDocs.Core.Renderers', 'class', 'CloudNimble.DotNetDocs.Core.Renderers.RendererBase', 'CloudNimble.DotNetDocs.Core.IDocRenderer']
+---
+
+## Definition
+
+**Namespace:** CloudNimble.DotNetDocs.Core.Renderers
+
+**Assembly:** CloudNimble.DotNetDocs.Core.dll
+
+**Inheritance:** CloudNimble.DotNetDocs.Core.Renderers.RendererBase
+
+## Syntax
+
+```csharp
+CloudNimble.DotNetDocs.Core.Renderers.JsonRenderer
+```
+
+## Summary
+
+Renders documentation as JSON files.
+
+## Remarks
+
+Generates structured JSON documentation suitable for API consumption and integration
+            with documentation tools.
+
+## Constructors
+
+### .ctor
+
+Initializes a new instance of the  class.
+
+#### Syntax
+
+```csharp
+public JsonRenderer(CloudNimble.DotNetDocs.Core.ProjectContext context = null, CloudNimble.DotNetDocs.Core.Renderers.JsonRendererOptions options = null)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `context` | `CloudNimble.DotNetDocs.Core.ProjectContext?` | The project context. If null, a default context is created. |
+| `options` | `CloudNimble.DotNetDocs.Core.Renderers.JsonRendererOptions?` | The rendering options. If null, default options are used. |
+
+## Methods
+
+### RenderAsync
+
+Renders the documentation assembly to JSON files.
+
+#### Syntax
+
+```csharp
+public System.Threading.Tasks.Task RenderAsync(CloudNimble.DotNetDocs.Core.DocAssembly model, string outputPath, CloudNimble.DotNetDocs.Core.ProjectContext context)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `model` | `CloudNimble.DotNetDocs.Core.DocAssembly` | The documentation assembly to render. |
+| `outputPath` | `string` | The path where JSON files should be generated. |
+| `context` | `CloudNimble.DotNetDocs.Core.ProjectContext` | The project context providing rendering settings. |
+
+#### Returns
+
+Type: `System.Threading.Tasks.Task`
+A task representing the asynchronous rendering operation.
+
+## Related APIs
+
+- CloudNimble.DotNetDocs.Core.IDocRenderer
+

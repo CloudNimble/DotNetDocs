@@ -1,0 +1,67 @@
+---
+title: DocException
+description: "Represents exception documentation extracted from XML documentation comments."
+icon: file-brackets-curly
+keywords: ['DocException', 'CloudNimble.DotNetDocs.Core.DocException', 'CloudNimble.DotNetDocs.Core', 'class', 'System.Object']
+---
+
+## Definition
+
+**Namespace:** CloudNimble.DotNetDocs.Core
+
+**Assembly:** CloudNimble.DotNetDocs.Core.dll
+
+**Inheritance:** System.Object
+
+## Syntax
+
+```csharp
+CloudNimble.DotNetDocs.Core.DocException
+```
+
+## Summary
+
+Represents exception documentation extracted from XML documentation comments.
+
+## Constructors
+
+### .ctor
+
+#### Syntax
+
+```csharp
+public DocException()
+```
+
+## Properties
+
+### Description
+
+Gets or sets the description of when the exception is thrown.
+
+#### Syntax
+
+```csharp
+public string Description { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+The description text from the exception XML documentation.
+
+### Type
+
+Gets or sets the exception type name.
+
+#### Syntax
+
+```csharp
+public string Type { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+The fully qualified or simple name of the exception type (e.g., "ArgumentNullException").
+

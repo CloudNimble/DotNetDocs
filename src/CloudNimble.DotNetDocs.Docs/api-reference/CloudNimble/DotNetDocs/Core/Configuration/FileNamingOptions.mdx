@@ -1,0 +1,121 @@
+---
+title: FileNamingOptions
+description: "Provides configuration options for how documentation files are named and organized."
+icon: file-brackets-curly
+keywords: ['FileNamingOptions', 'CloudNimble.DotNetDocs.Core.Configuration.FileNamingOptions', 'CloudNimble.DotNetDocs.Core.Configuration', 'class', 'System.Object']
+---
+
+## Definition
+
+**Namespace:** CloudNimble.DotNetDocs.Core.Configuration
+
+**Assembly:** CloudNimble.DotNetDocs.Core.dll
+
+**Inheritance:** System.Object
+
+## Syntax
+
+```csharp
+CloudNimble.DotNetDocs.Core.Configuration.FileNamingOptions
+```
+
+## Summary
+
+Provides configuration options for how documentation files are named and organized.
+
+## Remarks
+
+This class controls the file naming strategy for rendered documentation, including
+            how namespaces are represented in the file system and what characters are used
+            as separators in file names.
+
+## Constructors
+
+### .ctor
+
+Initializes a new instance of the  class with default settings.
+
+#### Syntax
+
+```csharp
+public FileNamingOptions()
+```
+
+### .ctor
+
+Initializes a new instance of the  class with the specified settings.
+
+#### Syntax
+
+```csharp
+public FileNamingOptions(CloudNimble.DotNetDocs.Core.Configuration.NamespaceMode namespaceMode, char namespaceSeparator = '-')
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `namespaceMode` | `CloudNimble.DotNetDocs.Core.Configuration.NamespaceMode` | The namespace organization mode. |
+| `namespaceSeparator` | `char` | The character to use as a namespace separator in file names. |
+
+## Properties
+
+### NamespaceMode
+
+Gets or sets the mode for organizing namespace documentation.
+
+#### Syntax
+
+```csharp
+public CloudNimble.DotNetDocs.Core.Configuration.NamespaceMode NamespaceMode { get; set; }
+```
+
+#### Property Value
+
+Type: `CloudNimble.DotNetDocs.Core.Configuration.NamespaceMode`
+The namespace organization mode. Default is .
+
+#### Remarks
+
+This property determines whether namespaces are rendered as individual files
+            or organized into a folder hierarchy.
+
+### NamespaceSeparator
+
+Gets or sets the character used to separate namespace parts in file names.
+
+#### Syntax
+
+```csharp
+public char NamespaceSeparator { get; set; }
+```
+
+#### Property Value
+
+Type: `char`
+The separator character. Default is '-'.
+
+#### Remarks
+
+This setting is only used when  is set to .
+            When using , this setting is ignored as namespaces
+            are organized into actual folder hierarchies.
+            Common values include '-' (hyphen), '_' (underscore), or '.' (period).
+
+## Methods
+
+### Clone
+
+Creates a copy of the current  instance.
+
+#### Syntax
+
+```csharp
+public CloudNimble.DotNetDocs.Core.Configuration.FileNamingOptions Clone()
+```
+
+#### Returns
+
+Type: `CloudNimble.DotNetDocs.Core.Configuration.FileNamingOptions`
+A new instance with the same settings.
+

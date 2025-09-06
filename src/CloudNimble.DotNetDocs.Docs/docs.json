@@ -1,0 +1,203 @@
+{
+  "colors": {
+    "primary": "#0D9373"
+  },
+  "name": "CloudNimble.DotNetDocs.Core",
+  "navigation": {
+    "pages": [
+      "index",
+      {
+        "group": "API Reference",
+        "icon": "code",
+        "pages": [
+          {
+            "group": "CloudNimble",
+            "icon": "folder-tree",
+            "pages": [
+              {
+                "group": "DotNetDocs",
+                "icon": "folder-tree",
+                "pages": [
+                  {
+                    "group": "Core",
+                    "icon": "folder-tree",
+                    "pages": [
+                      "CloudNimble/DotNetDocs/Core/index",
+                      "CloudNimble/DotNetDocs/Core/AssemblyManager",
+                      "CloudNimble/DotNetDocs/Core/DocAssembly",
+                      "CloudNimble/DotNetDocs/Core/DocConstants",
+                      "CloudNimble/DotNetDocs/Core/DocEntity",
+                      "CloudNimble/DotNetDocs/Core/DocException",
+                      "CloudNimble/DotNetDocs/Core/DocMember",
+                      "CloudNimble/DotNetDocs/Core/DocNamespace",
+                      "CloudNimble/DotNetDocs/Core/DocParameter",
+                      "CloudNimble/DotNetDocs/Core/DocType",
+                      "CloudNimble/DotNetDocs/Core/DocTypeParameter",
+                      "CloudNimble/DotNetDocs/Core/DocumentationManager",
+                      "CloudNimble/DotNetDocs/Core/IDocEnricher",
+                      "CloudNimble/DotNetDocs/Core/IDocRenderer",
+                      "CloudNimble/DotNetDocs/Core/IDocTransformer",
+                      "CloudNimble/DotNetDocs/Core/ProjectContext",
+                      {
+                        "group": "Configuration",
+                        "icon": "folder-tree",
+                        "pages": [
+                          "CloudNimble/DotNetDocs/Core/Configuration/index",
+                          "CloudNimble/DotNetDocs/Core/Configuration/DotNetDocsBuilder",
+                          "CloudNimble/DotNetDocs/Core/Configuration/DotNetDocsMintlify_DotNetDocsBuilderExtensions",
+                          "CloudNimble/DotNetDocs/Core/Configuration/FileNamingOptions",
+                          "CloudNimble/DotNetDocs/Core/Configuration/NamespaceMode"
+                        ]
+                      },
+                      {
+                        "group": "Renderers",
+                        "icon": "folder-tree",
+                        "pages": [
+                          "CloudNimble/DotNetDocs/Core/Renderers/index",
+                          "CloudNimble/DotNetDocs/Core/Renderers/JsonRenderer",
+                          "CloudNimble/DotNetDocs/Core/Renderers/JsonRendererOptions",
+                          "CloudNimble/DotNetDocs/Core/Renderers/MarkdownRenderer",
+                          "CloudNimble/DotNetDocs/Core/Renderers/RendererBase",
+                          "CloudNimble/DotNetDocs/Core/Renderers/YamlRenderer",
+                          {
+                            "group": "YamlConverters",
+                            "icon": "folder-tree",
+                            "pages": [
+                              "CloudNimble/DotNetDocs/Core/Renderers/YamlConverters/index",
+                              "CloudNimble/DotNetDocs/Core/Renderers/YamlConverters/AccessibilityTypeConverter",
+                              "CloudNimble/DotNetDocs/Core/Renderers/YamlConverters/RefKindTypeConverter",
+                              "CloudNimble/DotNetDocs/Core/Renderers/YamlConverters/SymbolKindTypeConverter",
+                              "CloudNimble/DotNetDocs/Core/Renderers/YamlConverters/SymbolTypeConverter",
+                              "CloudNimble/DotNetDocs/Core/Renderers/YamlConverters/TypeKindTypeConverter"
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "group": "Mintlify",
+                    "icon": "folder-tree",
+                    "pages": [
+                      "CloudNimble/DotNetDocs/Mintlify/index",
+                      "CloudNimble/DotNetDocs/Mintlify/MintlifyIcons",
+                      "CloudNimble/DotNetDocs/Mintlify/MintlifyRenderer",
+                      "CloudNimble/DotNetDocs/Mintlify/MintlifyRendererOptions"
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "group": "Microsoft",
+            "icon": "folder-tree",
+            "pages": [
+              {
+                "group": "Extensions",
+                "icon": "folder-tree",
+                "pages": [
+                  {
+                    "group": "DependencyInjection",
+                    "icon": "folder-tree",
+                    "pages": [
+                      "Microsoft/Extensions/DependencyInjection/index",
+                      "Microsoft/Extensions/DependencyInjection/DotNetDocsCore_IServiceCollectionExtensions",
+                      "Microsoft/Extensions/DependencyInjection/DotNetDocsMintlify_IServiceCollectionExtensions"
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "group": "Mintlify",
+            "icon": "folder-tree",
+            "pages": [
+              {
+                "group": "Core",
+                "icon": "folder-tree",
+                "pages": [
+                  "Mintlify/Core/index",
+                  "Mintlify/Core/DocsJsonManager",
+                  "Mintlify/Core/DocsJsonValidator",
+                  "Mintlify/Core/MintlifyConstants",
+                  "Mintlify/Core/MintlifyOptions",
+                  {
+                    "group": "Converters",
+                    "icon": "folder-tree",
+                    "pages": [
+                      "Mintlify/Core/Converters/index",
+                      "Mintlify/Core/Converters/ApiConfigConverter",
+                      "Mintlify/Core/Converters/BackgroundImageConverter",
+                      "Mintlify/Core/Converters/ColorConverter",
+                      "Mintlify/Core/Converters/IconConverter",
+                      "Mintlify/Core/Converters/NavigationJsonConverter",
+                      "Mintlify/Core/Converters/NavigationPageConverter",
+                      "Mintlify/Core/Converters/NavigationPageListConverter",
+                      "Mintlify/Core/Converters/PrimaryNavigationConverter"
+                    ]
+                  },
+                  {
+                    "group": "Models",
+                    "icon": "folder-tree",
+                    "pages": [
+                      "Mintlify/Core/Models/index",
+                      "Mintlify/Core/Models/AnchorConfig",
+                      "Mintlify/Core/Models/ApiConfig",
+                      "Mintlify/Core/Models/ApiExamplesConfig",
+                      "Mintlify/Core/Models/ApiParamsConfig",
+                      "Mintlify/Core/Models/ApiPlaygroundConfig",
+                      "Mintlify/Core/Models/AppearanceConfig",
+                      "Mintlify/Core/Models/BackgroundConfig",
+                      "Mintlify/Core/Models/BannerConfig",
+                      "Mintlify/Core/Models/ColorPairConfig",
+                      "Mintlify/Core/Models/ColorsConfig",
+                      "Mintlify/Core/Models/ContextualConfig",
+                      "Mintlify/Core/Models/DocsJsonConfig",
+                      "Mintlify/Core/Models/DropdownConfig",
+                      "Mintlify/Core/Models/Error404Config",
+                      "Mintlify/Core/Models/ErrorsConfig",
+                      "Mintlify/Core/Models/FaviconConfig",
+                      "Mintlify/Core/Models/FaviconConfigJsonConverter",
+                      "Mintlify/Core/Models/FontsConfig",
+                      "Mintlify/Core/Models/FooterConfig",
+                      "Mintlify/Core/Models/FooterLink",
+                      "Mintlify/Core/Models/FooterLinkGroup",
+                      "Mintlify/Core/Models/FrontMatterConfig",
+                      "Mintlify/Core/Models/GlobalAnchorConfig",
+                      "Mintlify/Core/Models/GlobalDropdownConfig",
+                      "Mintlify/Core/Models/GlobalLanguageConfig",
+                      "Mintlify/Core/Models/GlobalNavigationConfig",
+                      "Mintlify/Core/Models/GlobalTabConfig",
+                      "Mintlify/Core/Models/GlobalVersionConfig",
+                      "Mintlify/Core/Models/GroupConfig",
+                      "Mintlify/Core/Models/IconsConfig",
+                      "Mintlify/Core/Models/IntegrationsConfig",
+                      "Mintlify/Core/Models/LanguageConfig",
+                      "Mintlify/Core/Models/LogoConfig",
+                      "Mintlify/Core/Models/MdxAuthConfig",
+                      "Mintlify/Core/Models/MdxConfig",
+                      "Mintlify/Core/Models/MergeOptions",
+                      "Mintlify/Core/Models/NavbarConfig",
+                      "Mintlify/Core/Models/NavbarLink",
+                      "Mintlify/Core/Models/NavigationConfig",
+                      "Mintlify/Core/Models/RedirectConfig",
+                      "Mintlify/Core/Models/SearchConfig",
+                      "Mintlify/Core/Models/SeoConfig",
+                      "Mintlify/Core/Models/StylingConfig",
+                      "Mintlify/Core/Models/TabConfig",
+                      "Mintlify/Core/Models/VersionConfig"
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "mint"
+}

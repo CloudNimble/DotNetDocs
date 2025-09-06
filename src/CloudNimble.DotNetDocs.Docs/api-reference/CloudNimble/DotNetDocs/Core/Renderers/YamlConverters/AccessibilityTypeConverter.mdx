@@ -1,0 +1,110 @@
+---
+title: AccessibilityTypeConverter
+description: "Custom type converter for Accessibility enum."
+icon: file-brackets-curly
+keywords: ['AccessibilityTypeConverter', 'CloudNimble.DotNetDocs.Core.Renderers.YamlConverters.AccessibilityTypeConverter', 'CloudNimble.DotNetDocs.Core.Renderers.YamlConverters', 'class', 'System.Object', 'YamlDotNet.Serialization.IYamlTypeConverter']
+---
+
+## Definition
+
+**Namespace:** CloudNimble.DotNetDocs.Core.Renderers.YamlConverters
+
+**Assembly:** CloudNimble.DotNetDocs.Core.dll
+
+**Inheritance:** System.Object
+
+## Syntax
+
+```csharp
+CloudNimble.DotNetDocs.Core.Renderers.YamlConverters.AccessibilityTypeConverter
+```
+
+## Summary
+
+Custom type converter for Accessibility enum.
+
+## Constructors
+
+### .ctor
+
+#### Syntax
+
+```csharp
+public AccessibilityTypeConverter()
+```
+
+## Methods
+
+### Accepts
+
+Determines whether this converter can handle the specified type.
+
+#### Syntax
+
+```csharp
+public bool Accepts(System.Type type)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `type` | `System.Type` | The type to check. |
+
+#### Returns
+
+Type: `bool`
+true if this converter can handle the type; otherwise, false.
+
+### ReadYaml
+
+Reads the YAML representation of the object.
+
+#### Syntax
+
+```csharp
+public object ReadYaml(YamlDotNet.Core.IParser parser, System.Type type, YamlDotNet.Serialization.ObjectDeserializer rootDeserializer)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `parser` | `YamlDotNet.Core.IParser` | The parser to read from. |
+| `type` | `System.Type` | The type of the object. |
+| `rootDeserializer` | `YamlDotNet.Serialization.ObjectDeserializer` | The root deserializer. |
+
+#### Returns
+
+Type: `object?`
+The deserialized object.
+
+#### Exceptions
+
+| Exception | Description |
+|-----------|-------------|
+| `NotImplementedException` | Reading is not supported. |
+
+### WriteYaml
+
+Writes the YAML representation of the object.
+
+#### Syntax
+
+```csharp
+public void WriteYaml(YamlDotNet.Core.IEmitter emitter, object value, System.Type type, YamlDotNet.Serialization.ObjectSerializer serializer)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `emitter` | `YamlDotNet.Core.IEmitter` | The emitter to write to. |
+| `value` | `object?` | The value to serialize. |
+| `type` | `System.Type` | The type of the value. |
+| `serializer` | `YamlDotNet.Serialization.ObjectSerializer` | The serializer. |
+
+## Related APIs
+
+- YamlDotNet.Serialization.IYamlTypeConverter
+

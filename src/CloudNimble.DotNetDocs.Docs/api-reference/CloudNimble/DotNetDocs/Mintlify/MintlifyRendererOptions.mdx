@@ -1,0 +1,117 @@
+---
+title: MintlifyRendererOptions
+description: "Configuration options for the Mintlify documentation renderer."
+icon: file-brackets-curly
+keywords: ['MintlifyRendererOptions', 'CloudNimble.DotNetDocs.Mintlify.MintlifyRendererOptions', 'CloudNimble.DotNetDocs.Mintlify', 'class', 'System.Object']
+---
+
+## Definition
+
+**Namespace:** CloudNimble.DotNetDocs.Mintlify
+
+**Assembly:** CloudNimble.DotNetDocs.Mintlify.dll
+
+**Inheritance:** System.Object
+
+## Syntax
+
+```csharp
+CloudNimble.DotNetDocs.Mintlify.MintlifyRendererOptions
+```
+
+## Summary
+
+Configuration options for the Mintlify documentation renderer.
+
+## Constructors
+
+### .ctor
+
+#### Syntax
+
+```csharp
+public MintlifyRendererOptions()
+```
+
+## Properties
+
+### GenerateDocsJson
+
+Gets or sets whether to generate the docs.json navigation file.
+
+#### Syntax
+
+```csharp
+public bool GenerateDocsJson { get; set; }
+```
+
+#### Property Value
+
+Type: `bool`
+True to generate docs.json alongside MDX files; otherwise, false.
+            Default is true.
+
+### GenerateNamespaceIndex
+
+Gets or sets whether to generate index files for namespaces.
+
+#### Syntax
+
+```csharp
+public bool GenerateNamespaceIndex { get; set; }
+```
+
+#### Property Value
+
+Type: `bool`
+True to generate index.mdx files for namespace documentation; otherwise, false.
+            Default is true.
+
+### IncludeIcons
+
+Gets or sets whether to include icons in navigation and frontmatter.
+
+#### Syntax
+
+```csharp
+public bool IncludeIcons { get; set; }
+```
+
+#### Property Value
+
+Type: `bool`
+True to include FontAwesome icons; otherwise, false.
+            Default is true.
+
+### NamespaceOrder
+
+Gets or sets the custom order for namespaces in navigation.
+
+#### Syntax
+
+```csharp
+public System.Collections.Generic.List<string> NamespaceOrder { get; set; }
+```
+
+#### Property Value
+
+Type: `System.Collections.Generic.List<string>?`
+A list of namespace patterns in the desired order, or null for alphabetical ordering.
+            Supports wildcards (e.g., "System.*" matches all System namespaces).
+
+### Template
+
+Gets or sets a custom template for the docs.json configuration.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.DocsJsonConfig Template { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.DocsJsonConfig?`
+A DocsJsonConfig instance to use as a template, or null to use defaults.
+            The navigation section will be generated automatically.
+

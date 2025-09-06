@@ -1,0 +1,81 @@
+---
+title: NavbarConfig
+description: "Represents the navigation bar configuration for the Mintlify documentation site."
+icon: file-brackets-curly
+keywords: ['NavbarConfig', 'Mintlify.Core.Models.NavbarConfig', 'Mintlify.Core.Models', 'class', 'System.Object']
+---
+
+## Definition
+
+**Namespace:** Mintlify.Core.Models
+
+**Assembly:** Mintlify.Core.dll
+
+**Inheritance:** System.Object
+
+## Syntax
+
+```csharp
+Mintlify.Core.Models.NavbarConfig
+```
+
+## Summary
+
+Represents the navigation bar configuration for the Mintlify documentation site.
+
+## Remarks
+
+This configuration controls the content and appearance of the top navigation bar,
+            including custom links and primary call-to-action buttons.
+
+## Constructors
+
+### .ctor
+
+#### Syntax
+
+```csharp
+public NavbarConfig()
+```
+
+## Properties
+
+### Links
+
+Gets or sets the list of navigation links to display in the navbar.
+
+#### Syntax
+
+```csharp
+public System.Collections.Generic.List<Mintlify.Core.Models.NavbarLink> Links { get; set; }
+```
+
+#### Property Value
+
+Type: `System.Collections.Generic.List<Mintlify.Core.Models.NavbarLink>?`
+
+#### Remarks
+
+Each link should have a label, optional icon, and href pointing to the destination.
+            These links appear in the top navigation bar of the documentation site.
+
+### Primary
+
+Gets or sets the primary call-to-action configuration in the navbar.
+
+#### Syntax
+
+```csharp
+public object Primary { get; set; }
+```
+
+#### Property Value
+
+Type: `object?`
+
+#### Remarks
+
+Can be a button configuration with type "button", label, and href properties,
+            or a GitHub configuration with type "github" and href properties.
+            This appears prominently in the navbar to drive user actions.
+

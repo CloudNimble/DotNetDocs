@@ -1,0 +1,163 @@
+---
+title: DotNetDocsMintlify_IServiceCollectionExtensions
+description: "Extension methods for registering Mintlify documentation services with dependency injection."
+icon: bolt
+sidebarTitle: DotNetDocsMintlify_IServiceCollectionExtensions
+tag: "STATIC"
+keywords: ['DotNetDocsMintlify_IServiceCollectionExtensions', 'Microsoft.Extensions.DependencyInjection.DotNetDocsMintlify_IServiceCollectionExtensions', 'Microsoft.Extensions.DependencyInjection', 'class', 'System.Object']
+---
+
+## Definition
+
+**Namespace:** Microsoft.Extensions.DependencyInjection
+
+**Assembly:** CloudNimble.DotNetDocs.Mintlify.dll
+
+**Inheritance:** System.Object
+
+## Syntax
+
+```csharp
+Microsoft.Extensions.DependencyInjection.DotNetDocsMintlify_IServiceCollectionExtensions
+```
+
+## Summary
+
+Extension methods for registering Mintlify documentation services with dependency injection.
+
+## Methods
+
+### AddMintlifyRenderer
+
+Adds the Mintlify renderer to the service collection.
+
+#### Syntax
+
+```csharp
+public static Microsoft.Extensions.DependencyInjection.IServiceCollection AddMintlifyRenderer(Microsoft.Extensions.DependencyInjection.IServiceCollection services)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `services` | `Microsoft.Extensions.DependencyInjection.IServiceCollection` | The service collection. |
+
+#### Returns
+
+Type: `Microsoft.Extensions.DependencyInjection.IServiceCollection`
+The service collection for chaining.
+
+#### Examples
+
+```csharp
+services.AddMintlifyRenderer();
+```
+
+#### Remarks
+
+Registers MintlifyRenderer as Scoped implementation of IDocRenderer.
+
+### AddMintlifyRenderer
+
+Adds a custom Mintlify renderer implementation to the service collection.
+
+#### Syntax
+
+```csharp
+public static Microsoft.Extensions.DependencyInjection.IServiceCollection AddMintlifyRenderer<TRenderer>(Microsoft.Extensions.DependencyInjection.IServiceCollection services) where TRenderer : CloudNimble.DotNetDocs.Mintlify.MintlifyRenderer
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `services` | `Microsoft.Extensions.DependencyInjection.IServiceCollection` | The service collection. |
+
+#### Returns
+
+Type: `Microsoft.Extensions.DependencyInjection.IServiceCollection`
+The service collection for chaining.
+
+#### Type Parameters
+
+- `TRenderer` - The type of Mintlify renderer to add.
+
+#### Examples
+
+```csharp
+services.AddMintlifyRenderer<CustomMintlifyRenderer>();
+```
+
+#### Remarks
+
+Registers the custom renderer as Scoped implementation of IDocRenderer.
+            The renderer must inherit from MintlifyRenderer.
+
+### AddMintlifyServices
+
+Adds Mintlify documentation services including the renderer and DocsJsonManager.
+
+#### Syntax
+
+```csharp
+public static Microsoft.Extensions.DependencyInjection.IServiceCollection AddMintlifyServices(Microsoft.Extensions.DependencyInjection.IServiceCollection services)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `services` | `Microsoft.Extensions.DependencyInjection.IServiceCollection` | The service collection. |
+
+#### Returns
+
+Type: `Microsoft.Extensions.DependencyInjection.IServiceCollection`
+The service collection for chaining.
+
+#### Examples
+
+```csharp
+services.AddMintlifyServices();
+```
+
+#### Remarks
+
+This method registers:MintlifyRenderer as Scoped implementation of IDocRendererDocsJsonManager as Scoped service for navigation generation
+
+### AddMintlifyServices
+
+Adds Mintlify documentation services with configuration options.
+
+#### Syntax
+
+```csharp
+public static Microsoft.Extensions.DependencyInjection.IServiceCollection AddMintlifyServices(Microsoft.Extensions.DependencyInjection.IServiceCollection services, System.Action<CloudNimble.DotNetDocs.Mintlify.MintlifyRendererOptions> configureMintlify)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `services` | `Microsoft.Extensions.DependencyInjection.IServiceCollection` | The service collection. |
+| `configureMintlify` | `System.Action<CloudNimble.DotNetDocs.Mintlify.MintlifyRendererOptions>` | Action to configure Mintlify options. |
+
+#### Returns
+
+Type: `Microsoft.Extensions.DependencyInjection.IServiceCollection`
+The service collection for chaining.
+
+#### Examples
+
+```csharp
+services.AddMintlifyServices(options =>
+{
+    options.GenerateDocsJson = true;
+    options.IncludeIcons = true;
+});
+```
+
+#### Remarks
+
+This method registers:MintlifyRenderer as Scoped implementation of IDocRendererDocsJsonManager as Scoped service for navigation generationMintlifyOptions configuration
+

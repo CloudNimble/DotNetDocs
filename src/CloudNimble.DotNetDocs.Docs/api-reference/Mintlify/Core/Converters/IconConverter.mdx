@@ -1,0 +1,117 @@
+---
+title: IconConverter
+description: "Handles JSON conversion for icon properties that can be either strings or objects."
+icon: file-brackets-curly
+keywords: ['IconConverter', 'Mintlify.Core.Converters.IconConverter', 'Mintlify.Core.Converters', 'class', 'System.Text.Json.Serialization.JsonConverter<object>']
+---
+
+## Definition
+
+**Namespace:** Mintlify.Core.Converters
+
+**Assembly:** Mintlify.Core.dll
+
+**Inheritance:** System.Text.Json.Serialization.JsonConverter<object>
+
+## Syntax
+
+```csharp
+Mintlify.Core.Converters.IconConverter
+```
+
+## Summary
+
+Handles JSON conversion for icon properties that can be either strings or objects.
+
+## Remarks
+
+Icons in Mintlify can be specified as:
+            - String: Simple icon name (e.g., "folder", "home")
+            - Object: Icon configuration with additional properties
+
+## Constructors
+
+### .ctor
+
+#### Syntax
+
+```csharp
+public IconConverter()
+```
+
+## Methods
+
+### CanConvert
+
+Determines whether the specified type can be converted by this converter.
+
+#### Syntax
+
+```csharp
+public override bool CanConvert(System.Type typeToConvert)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `typeToConvert` | `System.Type` | The type to convert. |
+
+#### Returns
+
+Type: `bool`
+True if the type is object; otherwise, false.
+
+### Read
+
+Reads and converts the JSON to an icon object.
+
+#### Syntax
+
+```csharp
+public override object Read(ref System.Text.Json.Utf8JsonReader reader, System.Type typeToConvert, System.Text.Json.JsonSerializerOptions options)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `reader` | `System.Text.Json.Utf8JsonReader` | The JSON reader. |
+| `typeToConvert` | `System.Type` | The type to convert to. |
+| `options` | `System.Text.Json.JsonSerializerOptions` | The serializer options. |
+
+#### Returns
+
+Type: `object?`
+A string for simple icon names or a Dictionary for icon configuration objects.
+
+#### Exceptions
+
+| Exception | Description |
+|-----------|-------------|
+| `JsonException` | Thrown when the JSON token type is not supported. |
+
+### Write
+
+Writes the icon object to JSON.
+
+#### Syntax
+
+```csharp
+public override void Write(System.Text.Json.Utf8JsonWriter writer, object value, System.Text.Json.JsonSerializerOptions options)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `writer` | `System.Text.Json.Utf8JsonWriter` | The JSON writer. |
+| `value` | `object` | The value to write. |
+| `options` | `System.Text.Json.JsonSerializerOptions` | The serializer options. |
+
+#### Exceptions
+
+| Exception | Description |
+|-----------|-------------|
+| `JsonException` | Thrown when the value type is not supported. |
+

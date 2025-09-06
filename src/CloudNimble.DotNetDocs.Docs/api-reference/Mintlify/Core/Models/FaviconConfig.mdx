@@ -1,0 +1,84 @@
+---
+title: FaviconConfig
+description: "Represents the favicon configuration for Mintlify.             Can be a single file or separate files for light and dark mode."
+icon: file-brackets-curly
+keywords: ['FaviconConfig', 'Mintlify.Core.Models.FaviconConfig', 'Mintlify.Core.Models', 'class', 'System.Object']
+---
+
+## Definition
+
+**Namespace:** Mintlify.Core.Models
+
+**Assembly:** Mintlify.Core.dll
+
+**Inheritance:** System.Object
+
+## Syntax
+
+```csharp
+Mintlify.Core.Models.FaviconConfig
+```
+
+## Summary
+
+Represents the favicon configuration for Mintlify.
+            Can be a single file or separate files for light and dark mode.
+
+## Constructors
+
+### .ctor
+
+Initializes a new instance of the  class.
+
+#### Syntax
+
+```csharp
+public FaviconConfig()
+```
+
+### .ctor
+
+Initializes a new instance of the  class with a single favicon path.
+
+#### Syntax
+
+```csharp
+public FaviconConfig(string faviconPath)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `faviconPath` | `string?` | The path to the favicon file. |
+
+## Properties
+
+### Dark
+
+Gets or sets the path to the dark favicon file, including the file extension.
+
+#### Syntax
+
+```csharp
+public string Dark { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+
+### Light
+
+Gets or sets the path to the light favicon file, including the file extension.
+
+#### Syntax
+
+```csharp
+public string Light { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+

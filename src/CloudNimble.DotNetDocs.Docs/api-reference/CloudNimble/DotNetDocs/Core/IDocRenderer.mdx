@@ -1,0 +1,53 @@
+---
+title: IDocRenderer
+description: "Defines a renderer for documentation output generation."
+icon: plug
+keywords: ['IDocRenderer', 'CloudNimble.DotNetDocs.Core.IDocRenderer', 'CloudNimble.DotNetDocs.Core', 'interface']
+---
+
+## Definition
+
+**Namespace:** CloudNimble.DotNetDocs.Core
+
+**Assembly:** CloudNimble.DotNetDocs.Core.dll
+
+## Syntax
+
+```csharp
+CloudNimble.DotNetDocs.Core.IDocRenderer
+```
+
+## Summary
+
+Defines a renderer for documentation output generation.
+
+## Remarks
+
+Implementations of this interface generate specific output formats (Markdown, JSON, YAML, etc.)
+            from the documentation model after all transformations have been applied.
+
+## Methods
+
+### RenderAsync
+
+Renders the documentation assembly to the specified output path.
+
+#### Syntax
+
+```csharp
+System.Threading.Tasks.Task RenderAsync(CloudNimble.DotNetDocs.Core.DocAssembly model, string outputPath, CloudNimble.DotNetDocs.Core.ProjectContext context)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `model` | `CloudNimble.DotNetDocs.Core.DocAssembly` | The documentation assembly to render. |
+| `outputPath` | `string` | The path where output should be generated. |
+| `context` | `CloudNimble.DotNetDocs.Core.ProjectContext` | The project context providing rendering settings. |
+
+#### Returns
+
+Type: `System.Threading.Tasks.Task`
+A task representing the asynchronous rendering operation.
+

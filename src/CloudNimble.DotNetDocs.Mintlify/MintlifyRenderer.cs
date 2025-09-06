@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -104,7 +104,9 @@ namespace CloudNimble.DotNetDocs.Mintlify
             if (_options.GenerateDocsJson && _docsJsonManager is not null && _docsJsonManager.Configuration is not null)
             {
                 BuildNavigationStructure(_docsJsonManager.Configuration, model, outputPath);
-                var docsJsonPath = Path.Combine(outputPath, "docs.json");
+                // Write docs.json to the root directory (parent of outputPath)
+                var rootPath = Directory.GetParent(outputPath)?.FullName ?? outputPath;
+                var docsJsonPath = Path.Combine(rootPath, "docs.json");
                 _docsJsonManager.Save(docsJsonPath);
             }
         }

@@ -40,7 +40,7 @@ namespace Microsoft.Extensions.DependencyInjection
             Action<ProjectContext>? configureContext = null)
         {
             // Register core services
-            services.TryAddSingleton<ProjectContext>(sp => 
+            services.TryAddSingleton(sp => 
             {
                 var context = new ProjectContext();
                 configureContext?.Invoke(context);
@@ -83,7 +83,7 @@ namespace Microsoft.Extensions.DependencyInjection
             Action<ProjectContext>? configureContext = null)
         {
             // Just the core services without renderers
-            services.TryAddSingleton<ProjectContext>(sp => 
+            services.TryAddSingleton(sp => 
             {
                 var context = new ProjectContext();
                 configureContext?.Invoke(context);
@@ -161,7 +161,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             if (configureOptions is not null)
             {
-                services.Configure<JsonRendererOptions>(configureOptions);
+                services.Configure(configureOptions);
             }
             services.TryAddEnumerable(ServiceDescriptor.Scoped<IDocRenderer, JsonRenderer>());
             return services;
