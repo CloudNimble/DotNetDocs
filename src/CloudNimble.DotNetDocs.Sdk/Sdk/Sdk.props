@@ -81,7 +81,6 @@
         <None Include="$(DocumentationRoot)**/*.mdz" />
         <None Include="$(DocumentationRoot)**/*.mdx" />
         <None Include="$(DocumentationRoot)**/*.md" />
-        <None Include="$(DocumentationRoot)mint.json" />
         <None Include="$(DocumentationRoot)api-reference/**/*" />
         <None Include="$(DocumentationRoot)conceptual/**/*" />
         <None Include="$(DocumentationRoot)overrides/**/*" />
