@@ -8,7 +8,7 @@
     <Project Path="CloudNimble.DotNetDocs.Core/CloudNimble.DotNetDocs.Core.csproj" />
   </Folder>
   <Folder Name="/Docs/">
-    <Project Path="CloudNimble.DotNetDocs.Docs/CloudNimble.DotNetDocs.Docs.csproj" />
+    <Project Path="CloudNimble.DotNetDocs.Docs/CloudNimble.DotNetDocs.Docs.csproj" Type="C#" />
   </Folder>
   <Folder Name="/Plugins/">
     <Project Path="CloudNimble.DotNetDocs.Plugins.AI/CloudNimble.DotNetDocs.Plugins.AI.csproj" Id="d02be6be-f430-42de-af74-09e49a3ce04b" />

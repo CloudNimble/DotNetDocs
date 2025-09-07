@@ -4,7 +4,6 @@
         <KeepLocalOutput>true</KeepLocalOutput>
         <DocumentationType>Mintlify</DocumentationType>
         <GenerateMintlifyDocs>true</GenerateMintlifyDocs>
-        <LintMarkdown>true</LintMarkdown>
         <ShowDocumentationStats>true</ShowDocumentationStats>
     </PropertyGroup>
 

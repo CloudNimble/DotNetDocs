@@ -1,18 +1,17 @@
 <Project>
+    <!--<Sdk Name="DotNetDocs.Sdk" Version="1.0.0-preview.10" />-->
+
     <Import Project="$(MSBuildThisFileDirectory)..\CloudNimble.DotNetDocs.Sdk\Sdk\Sdk.props" />
     <Import Project="$(MSBuildThisFileDirectory)..\CloudNimble.DotNetDocs.Sdk\Sdk\Sdk.targets" />
-
     <PropertyGroup>
         <KeepLocalOutput>true</KeepLocalOutput>
         <DocumentationType>Mintlify</DocumentationType>
         <GenerateDocumentation>true</GenerateDocumentation>
         <NamespaceMode>Folder</NamespaceMode>
-        <LintMarkdown>true</LintMarkdown>
         <ShowDocumentationStats>true</ShowDocumentationStats>
     </PropertyGroup>
 
     <ItemGroup>
         <Folder Include="guides\" />
     </ItemGroup>
-
 </Project>
