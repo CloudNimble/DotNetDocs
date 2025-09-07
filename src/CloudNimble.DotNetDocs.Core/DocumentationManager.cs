@@ -20,7 +20,7 @@ namespace CloudNimble.DotNetDocs.Core
 
         #region Private Fields
 
-        private readonly Dictionary<string, AssemblyManager> assemblyManagerCache = new();
+        private readonly Dictionary<string, AssemblyManager> assemblyManagerCache = [];
         private readonly IEnumerable<IDocEnricher> enrichers;
         private readonly IEnumerable<IDocRenderer> renderers;
         private readonly IEnumerable<IDocTransformer> transformers;
@@ -62,27 +62,25 @@ namespace CloudNimble.DotNetDocs.Core
         /// </summary>
         /// <param name="assemblyPath">The path to the assembly file.</param>
         /// <param name="xmlPath">The path to the XML documentation file.</param>
-        /// <param name="outputPath">The base output path for conceptual files.</param>
         /// <returns>A task representing the asynchronous operation.</returns>
-        public async Task CreateConceptualFilesAsync(string assemblyPath, string xmlPath, string outputPath)
+        public async Task CreateConceptualFilesAsync(string assemblyPath, string xmlPath)
         {
-            await CreateConceptualFilesAsync([(assemblyPath, xmlPath)], outputPath);
+            await CreateConceptualFilesAsync([(assemblyPath, xmlPath)]);
         }
 
         /// <summary>
         /// Creates placeholder conceptual documentation files for multiple assemblies.
         /// </summary>
         /// <param name="assemblies">The collection of assembly and XML path pairs.</param>
-        /// <param name="outputPath">The base output path for conceptual files.</param>
         /// <returns>A task representing the asynchronous operation.</returns>
-        public async Task CreateConceptualFilesAsync(IEnumerable<(string assemblyPath, string xmlPath)> assemblies, string outputPath)
+        public async Task CreateConceptualFilesAsync(IEnumerable<(string assemblyPath, string xmlPath)> assemblies)
         {
             var tasks = assemblies.Select(async pair =>
             {
                 var manager = GetOrCreateAssemblyManager(pair.assemblyPath, pair.xmlPath);
                 var model = await manager.DocumentAsync(projectContext);
 
-                await GenerateConceptualFilesForAssembly(model, outputPath, projectContext);
+                await GenerateConceptualFilesForAssembly(model);
             });
 
             await Task.WhenAll(tasks);
@@ -116,7 +114,7 @@ namespace CloudNimble.DotNetDocs.Core
                 // Load conceptual content if path provided
                 if (!string.IsNullOrWhiteSpace(projectContext.ConceptualPath))
                 {
-                    await LoadConceptualAsync(model, projectContext.ConceptualPath, projectContext);
+                    await LoadConceptualAsync(model);
                 }
 
                 docAssemblies.Add(model);
@@ -128,22 +126,19 @@ namespace CloudNimble.DotNetDocs.Core
             // Apply enrichers to merged model
             foreach (var enricher in enrichers)
             {
-                await EnrichModelAsync(mergedModel, enricher);
+                await enricher.EnrichAsync(mergedModel);
             }
 
             // Apply transformers to merged model
             foreach (var transformer in transformers)
             {
-                await TransformModelAsync(mergedModel, transformer);
+                await transformer.TransformAsync(mergedModel);
             }
 
             // Apply renderers once with merged model
             foreach (var renderer in renderers)
             {
-                await renderer.RenderAsync(
-                    mergedModel,
-                    projectContext.OutputPath,
-                    projectContext);
+                await renderer.RenderAsync(mergedModel);
             }
         }
 
@@ -301,7 +296,7 @@ namespace CloudNimble.DotNetDocs.Core
         /// </summary>
         internal async Task EnrichModelAsync(DocEntity entity, IDocEnricher enricher)
         {
-            await enricher.EnrichAsync(entity, projectContext);
+            await enricher.EnrichAsync(entity);
 
             // Recursively enrich children
             if (entity is DocAssembly assembly)
@@ -339,7 +334,7 @@ namespace CloudNimble.DotNetDocs.Core
         /// </summary>
         internal async Task TransformModelAsync(DocEntity entity, IDocTransformer transformer)
         {
-            await transformer.TransformAsync(entity, projectContext);
+            await transformer.TransformAsync(entity);
 
             // Recursively transform children
             if (entity is DocAssembly assembly)
@@ -376,11 +371,9 @@ namespace CloudNimble.DotNetDocs.Core
         /// Loads conceptual content from the file system into the documentation model.
         /// </summary>
         /// <param name="assembly">The assembly to load conceptual content for.</param>
-        /// <param name="conceptualPath">The path to the conceptual content folder.</param>
-        /// <param name="projectContext">The project context containing settings like ShowPlaceholders.</param>
-        internal async Task LoadConceptualAsync(DocAssembly assembly, string conceptualPath, ProjectContext? projectContext)
+        internal async Task LoadConceptualAsync(DocAssembly assembly)
         {
-            if (!Directory.Exists(conceptualPath))
+            if (!Directory.Exists(projectContext.ConceptualPath))
             {
                 return;
             }
@@ -391,8 +384,8 @@ namespace CloudNimble.DotNetDocs.Core
             {
                 // Load namespace-level conceptual content
                 var namespacePath = ns.Symbol.IsGlobalNamespace
-                    ? conceptualPath
-                    : Path.Combine(conceptualPath, ns.Symbol.ToDisplayString().Replace('.', Path.DirectorySeparatorChar));
+                    ? projectContext?.ConceptualPath
+                    : Path.Combine(projectContext?.ConceptualPath ?? "", ns.Symbol.ToDisplayString().Replace('.', Path.DirectorySeparatorChar));
                 
                 if (Directory.Exists(namespacePath))
                 {
@@ -407,7 +400,7 @@ namespace CloudNimble.DotNetDocs.Core
                 foreach (var type in ns.Types)
                 {
                     // Build type path like /conceptual/System/Text/Json/JsonSerializer/
-                    var typeDir = Path.Combine(namespacePath, type.Symbol.Name);
+                    var typeDir = Path.Combine(namespacePath ?? "", type.Symbol.Name);
 
                     if (Directory.Exists(typeDir))
                     {
@@ -574,18 +567,16 @@ namespace CloudNimble.DotNetDocs.Core
         /// Generates placeholder conceptual documentation files for an assembly.
         /// </summary>
         /// <param name="assembly">The assembly to generate conceptual files for.</param>
-        /// <param name="outputPath">The base output path for conceptual files.</param>
-        /// <param name="context">The project context containing configuration.</param>
-        internal async Task GenerateConceptualFilesForAssembly(DocAssembly assembly, string outputPath, ProjectContext context)
+        internal async Task GenerateConceptualFilesForAssembly(DocAssembly assembly)
         {
             foreach (var ns in assembly.Namespaces)
             {
                 // Generate namespace-level conceptual files
-                var namespaceName = context.GetSafeNamespaceName(ns.Symbol);
+                var namespaceName = projectContext.GetSafeNamespaceName(ns.Symbol);
                 var namespacePath = namespaceName == "global" 
                     ? "global"
                     : namespaceName.Replace('.', Path.DirectorySeparatorChar);
-                var namespaceDir = Path.Combine(outputPath, namespacePath);
+                var namespaceDir = Path.Combine(projectContext.ConceptualPath, namespacePath);
                 
                 // Create namespace directory if it doesn't exist
                 Directory.CreateDirectory(namespaceDir);

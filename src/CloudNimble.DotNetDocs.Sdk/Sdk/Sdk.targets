@@ -15,6 +15,7 @@
     <!-- NoTargets SDK files are bundled in the Sdk/NoTargets folder -->
     <Import Project="$(MSBuildThisFileDirectory)NoTargets\Sdk.targets" />
 
+
     <!-- Debug: Show GenerateDocumentation property value -->
     <Target Name="DebugGenerateDocumentation" BeforeTargets="ValidateDocumentationProject">
         <Message Text="🔧 GenerateDocumentation property: '$(GenerateDocumentation)'" Importance="high" />
@@ -25,64 +26,66 @@
         <Message Text="✅ Documentation project: $(MSBuildProjectName)" Importance="high" />
         <Message Text="📄 Documentation type: $(DocumentationType)" Importance="high" />
         <Message Text="📂 Documentation root: $(DocumentationRoot)" Importance="high" Condition="'$(DocumentationRoot)' != '$(MSBuildProjectDirectory)\'" />
-        <Message Text="📁 Output redirected to: $(OutputPath)" Importance="normal" Condition="'$(KeepLocalOutput)' != 'true'" />
+        <Message Text="📁 Output redirected to: $(ApiReferencePath)" Importance="normal" Condition="'$(KeepLocalOutput)' != 'true'" />
         <Message Text="📁 Output kept local" Importance="normal" Condition="'$(KeepLocalOutput)' == 'true'" />
         <Message Text="🔧 Generate documentation: $(GenerateDocumentation)" Importance="normal" />
     </Target>
 
-    <!-- Discover packable projects in solution for documentation generation -->
-    <Target Name="DiscoverPackableProjects" Condition="'$(GenerateDocumentation)' == 'true'" BeforeTargets="ValidateDocumentationProject">
-        <Message Text="🔍 Discovering packable projects in solution..." Importance="high" />
-        <Message Text="   SolutionDir: $(SolutionDir)" Importance="normal" />
-        <Message Text="   MSBuildProjectDirectory: $(MSBuildProjectDirectory)" Importance="normal" />
+    <!-- Discover documented projects in solution for documentation generation -->
+    <Target Name="DiscoverDocumentedProjects" Condition="'$(GenerateDocumentation)' == 'true'" BeforeTargets="ValidateDocumentationProject">
+        <Message Text="🔍 Discovering documented projects in solution..." Importance="high" />
 
-        <!-- Try to find projects relative to the docs project directory -->
-        <PropertyGroup>
-            <SolutionRoot>$([System.IO.Path]::GetFullPath('$(MSBuildProjectDirectory)\..\..'))</SolutionRoot>
-        </PropertyGroup>
-        <Message Text="   SolutionRoot calculated: $(SolutionRoot)" Importance="normal" />
-
-        <!-- For now, hardcode the list of non-test projects -->
+        <!-- Find all .csproj files in parent directory (sibling projects) -->
         <ItemGroup>
-            <PackableProjects Include="$(MSBuildProjectDirectory)\..\CloudNimble.DotNetDocs.Core\CloudNimble.DotNetDocs.Core.csproj" />
-            <PackableProjects Include="$(MSBuildProjectDirectory)\..\CloudNimble.DotNetDocs.Mintlify\CloudNimble.DotNetDocs.Mintlify.csproj" />
-            <PackableProjects Include="$(MSBuildProjectDirectory)\..\CloudNimble.DotNetDocs.Plugins.AI\CloudNimble.DotNetDocs.Plugins.AI.csproj" />
-            <PackableProjects Include="$(MSBuildProjectDirectory)\..\CloudNimble.DotNetDocs.Tools\CloudNimble.DotNetDocs.Tools.csproj" />
-            <PackableProjects Include="$(MSBuildProjectDirectory)\..\Mintlify.Core\Mintlify.Core.csproj" />
+            <AllProjectFiles Include="$(MSBuildProjectDirectory)\..\**\*.csproj" />
+            <!-- Exclude the docs project itself -->
+            <AllProjectFiles Remove="$(MSBuildProjectDirectory)\..\$(MSBuildProjectName)\*.csproj" />
+            <!-- Exclude test projects by pattern (projects can override with GenerateDotNetDocs property) -->
+            <AllProjectFiles Remove="$(MSBuildProjectDirectory)\..\**\*.Tests.*\*.csproj" />
+            <AllProjectFiles Remove="$(MSBuildProjectDirectory)\..\**\*.Test\*.csproj" />
         </ItemGroup>
 
-        <Message Text="📦 Using hardcoded list: @(PackableProjects->Count()) projects for documentation" Importance="normal" />
+        <Message Text="   Found @(AllProjectFiles->Count()) non-test project files" Importance="normal" />
 
-        <Message Text="   Found @(AllProjects->Count()) total projects" Importance="normal" />
-
-        <!-- For now, just include all projects as packable for testing -->
-        <!-- TODO: Implement proper IsPackable checking -->
+        <!-- 
+        For now, use pattern-based discovery with property override capability:
+        - Include all non-test projects by default
+        - Projects can opt-in with <GenerateDotNetDocs>true</GenerateDotNetDocs>
+        - Projects can opt-out with <GenerateDotNetDocs>false</GenerateDotNetDocs> or <IsPackable>false</IsPackable>
+        - In the future, we can enhance this with inline tasks when MSBuild support improves
+        -->
         <ItemGroup>
-            <PackableProjects Include="@(AllProjects)" />
+            <DocumentedProjects Include="@(AllProjectFiles)" />
         </ItemGroup>
 
-        <Message Text="📦 Found @(PackableProjects->Count()) packable projects for documentation" Importance="high" />
+        <Message Text="📚 Found @(DocumentedProjects->Count()) documented projects for documentation" Importance="high" />
+        
+        <!-- Show the list of projects that will be documented -->
+        <ItemGroup>
+            <_ProjectNames Include="@(DocumentedProjects->'%(Filename)')" />
+        </ItemGroup>
+        <Message Text="   Projects: @(_ProjectNames, ', ')" Importance="normal" />
     </Target>
 
     <!-- Build discovered projects and generate documentation -->
     <Target Name="GenerateDocumentation"
             Condition="'$(GenerateDocumentation)' == 'true'"
             AfterTargets="Build"
-            DependsOnTargets="DiscoverPackableProjects">
+            DependsOnTargets="DiscoverDocumentedProjects">
         <Message Text="🚀 Generating unified documentation from solution..." Importance="high" />
 
-        <!-- Build all packable projects to ensure assemblies are up to date -->
-        <MSBuild Projects="@(PackableProjects)"
+        <!-- Build all documented projects to ensure assemblies are up to date -->
+        <MSBuild Projects="@(DocumentedProjects)"
                  Targets="Restore;Build"
                  ContinueOnError="false" />
 
-        <Message Text="✅ Successfully built @(PackableProjects->Count()) projects" Importance="normal" />
+        <Message Text="✅ Successfully built @(DocumentedProjects->Count()) projects" Importance="normal" />
 
         <!-- Extract assembly paths from built projects (only main project assemblies) -->
         <ItemGroup>
             <!-- Get assembly paths for net8.0 target framework - only main project assemblies -->
-            <AssemblyPaths Include="%(PackableProjects.RootDir)%(PackableProjects.Directory)bin\Release\net8.0\%(PackableProjects.Filename).dll" />
-            <XmlDocPaths Include="%(PackableProjects.RootDir)%(PackableProjects.Directory)bin\Release\net8.0\%(PackableProjects.Filename).xml" />
+            <AssemblyPaths Include="%(DocumentedProjects.RootDir)%(DocumentedProjects.Directory)bin\Release\net8.0\%(DocumentedProjects.Filename).dll" />
+            <XmlDocPaths Include="%(DocumentedProjects.RootDir)%(DocumentedProjects.Directory)bin\Release\net8.0\%(DocumentedProjects.Filename).xml" />
         </ItemGroup>
 
         <Message Text="📁 Found @(AssemblyPaths->Count()) assemblies for documentation generation" Importance="normal" />
@@ -90,7 +93,7 @@
         <!-- Call DocumentationManager to process assemblies -->
         <PropertyGroup>
             <DocumentationManagerAssembly>$(MSBuildThisFileDirectory)..\..\CloudNimble.DotNetDocs.Core\bin\Release\net8.0\CloudNimble.DotNetDocs.Core.dll</DocumentationManagerAssembly>
-            <OutputPathProperty>$(MSBuildProjectDirectory)\$(ApiReferencePath)</OutputPathProperty>
+            <DocumentationRootPath>$(MSBuildProjectDirectory)</DocumentationRootPath>
             <DocumentationGeneratorTool>$(MSBuildThisFileDirectory)..\..\CloudNimble.DotNetDocs.Tools\bin\Release\net8.0\CloudNimble.DotNetDocs.Tools.dll</DocumentationGeneratorTool>
             <NamespaceModeProperty>$(NamespaceMode)</NamespaceModeProperty>
         </PropertyGroup>
@@ -105,7 +108,7 @@
         <Message Text="🔧 Calling DocumentationManager.ProcessAsync with @(AssemblyPaths->Count()) assemblies" Importance="high" />
 
         <!-- Call DocumentationManager via Tools project -->
-        <Exec Command="dotnet run --project &quot;$(MSBuildThisFileDirectory)..\..\CloudNimble.DotNetDocs.Tools\CloudNimble.DotNetDocs.Tools.csproj&quot; --framework net8.0 -- &quot;$(MSBuildProjectDirectory)\assembly-list.txt&quot; &quot;$(OutputPathProperty)&quot; &quot;$(NamespaceModeProperty)&quot; &quot;$(DocumentationType)&quot;"
+        <Exec Command="dotnet run --project &quot;$(MSBuildThisFileDirectory)..\..\CloudNimble.DotNetDocs.Tools\CloudNimble.DotNetDocs.Tools.csproj&quot; --framework net8.0 -- &quot;$(MSBuildProjectDirectory)\assembly-list.txt&quot; &quot;$(DocumentationRootPath)&quot; &quot;$(NamespaceModeProperty)&quot; &quot;$(DocumentationType)&quot; &quot;$(ApiReferencePath)&quot;"
               ContinueOnError="true"
               WorkingDirectory="$(MSBuildProjectDirectory)">
             <Output TaskParameter="ExitCode" PropertyName="DocGenExitCode" />
@@ -266,7 +269,7 @@
         <Message Text="Current Configuration:" Importance="high" />
         <Message Text="  Documentation Type: $(DocumentationType)" Importance="high" />
         <Message Text="  Documentation Root: $(DocumentationRoot)" Importance="high" />
-        <Message Text="  Output Location: $(OutputPath)" Importance="high" />
+        <Message Text="  Output Location: $(ApiReferencePath)" Importance="high" />
         <Message Text="  Keep Local Output: $(KeepLocalOutput)" Importance="high" />
         <Message Text="  Generate Documentation: $(GenerateDocumentation)" Importance="high" />
         <Message Text="" Importance="high" />

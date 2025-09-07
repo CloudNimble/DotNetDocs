@@ -5,14 +5,15 @@
         Used by DiscoverPackableProjects target to extract project properties
         ============================================================================ -->
 
-    <Target Name="GetProjectProperties">
+    <Target Name="GetProjectProperties" Returns="@(PackableProject)">
         <!-- Debug: Show project properties -->
         <Message Text="🔍 Checking project: $(MSBuildProjectName)" Importance="low" />
         <Message Text="   IsPackable: $(IsPackable)" Importance="low" />
         <Message Text="   IsTestProject: $(IsTestProject)" Importance="low" />
 
         <!-- Only include projects that are packable and not test projects -->
-        <ItemGroup Condition="'$(IsPackable)' == 'true' AND '$(IsTestProject)' != 'true'">
+        <!-- Note: IsPackable defaults to true for SDK-style projects, so we check != 'false' -->
+        <ItemGroup Condition="'$(IsPackable)' != 'false' AND '$(IsTestProject)' != 'true'">
             <PackableProject Include="$(MSBuildProjectFullPath)">
                 <ProjectName>$(MSBuildProjectName)</ProjectName>
                 <ProjectPath>$(MSBuildProjectFullPath)</ProjectPath>
@@ -21,11 +22,6 @@
                 <IsPackable>$(IsPackable)</IsPackable>
                 <IsTestProject>$(IsTestProject)</IsTestProject>
             </PackableProject>
-        </ItemGroup>
-
-        <!-- Return the packable projects -->
-        <ItemGroup>
-            <PackableProjectOutput Include="@(PackableProject)" />
         </ItemGroup>
     </Target>
 </Project>

@@ -56,21 +56,19 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
         /// Renders the documentation assembly to YAML files.
         /// </summary>
         /// <param name="model">The documentation assembly to render.</param>
-        /// <param name="outputPath">The path where YAML files should be generated.</param>
-        /// <param name="context">The project context providing rendering settings.</param>
         /// <returns>A task representing the asynchronous rendering operation.</returns>
-        public async Task RenderAsync(DocAssembly model, string outputPath, ProjectContext context)
+        public async Task RenderAsync(DocAssembly model)
         {
             ArgumentNullException.ThrowIfNull(model);
-            ArgumentNullException.ThrowIfNull(outputPath);
-            ArgumentNullException.ThrowIfNull(context);
+
+            var outputPath = Path.Combine(Context.DocumentationRootPath, Context.ApiReferencePath);
 
             // Ensure all necessary directories exist based on the file naming mode
             Context.EnsureOutputDirectoryStructure(model, outputPath);
 
             // Serialize the entire model directly
             var yaml = _yamlSerializer.Serialize(model);
-            
+
             // Write main documentation file
             var mainFilePath = Path.Combine(outputPath, "documentation.yaml");
             await File.WriteAllTextAsync(mainFilePath, yaml);

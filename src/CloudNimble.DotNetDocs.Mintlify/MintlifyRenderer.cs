@@ -1,8 +1,9 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using CloudNimble.DotNetDocs.Core;
 using CloudNimble.DotNetDocs.Core.Configuration;
@@ -60,14 +61,13 @@ namespace CloudNimble.DotNetDocs.Mintlify
         /// Renders the documentation assembly to MDX files with optional docs.json generation.
         /// </summary>
         /// <param name="model">The documentation assembly to render.</param>
-        /// <param name="outputPath">The path where MDX files should be generated.</param>
-        /// <param name="context">The project context providing rendering settings.</param>
         /// <returns>A task representing the asynchronous rendering operation.</returns>
-        public async Task RenderAsync(DocAssembly model, string outputPath, ProjectContext context)
+        public async Task RenderAsync(DocAssembly model)
         {
             ArgumentNullException.ThrowIfNull(model);
-            ArgumentNullException.ThrowIfNull(outputPath);
-            ArgumentNullException.ThrowIfNull(context);
+
+            var apiOutputPath = Path.Combine(Context.DocumentationRootPath, Context.ApiReferencePath);
+            Console.WriteLine($"📝 Rendering documentation to: {apiOutputPath}");
 
             // Initialize DocsJsonManager if enabled
             DocsJsonConfig? docsConfig = null;
@@ -78,35 +78,34 @@ namespace CloudNimble.DotNetDocs.Mintlify
                     "mint"
                 );
                 // Load configuration using JSON serialization
-                var json = System.Text.Json.JsonSerializer.Serialize(docsConfig, global::Mintlify.Core.MintlifyConstants.JsonSerializerOptions);
+                var json = JsonSerializer.Serialize(docsConfig, MintlifyConstants.JsonSerializerOptions);
                 _docsJsonManager.Load(json);
             }
 
             // Ensure all necessary directories exist based on the file naming mode
-            Context.EnsureOutputDirectoryStructure(model, outputPath);
+            Context.EnsureOutputDirectoryStructure(model, apiOutputPath);
 
             // Render assembly overview
-            await RenderAssemblyAsync(model, outputPath);
+            await RenderAssemblyAsync(model, apiOutputPath);
 
             // Render each namespace
             foreach (var ns in model.Namespaces)
             {
-                await RenderNamespaceAsync(ns, outputPath);
+                await RenderNamespaceAsync(ns, apiOutputPath);
 
                 // Render each type in the namespace
                 foreach (var type in ns.Types)
                 {
-                    await RenderTypeAsync(type, ns, outputPath);
+                    await RenderTypeAsync(type, ns, apiOutputPath);
                 }
             }
 
             // Generate docs.json if enabled
             if (_options.GenerateDocsJson && _docsJsonManager is not null && _docsJsonManager.Configuration is not null)
             {
-                BuildNavigationStructure(_docsJsonManager.Configuration, model, outputPath);
-                // Write docs.json to the root directory (parent of outputPath)
-                var rootPath = Directory.GetParent(outputPath)?.FullName ?? outputPath;
-                var docsJsonPath = Path.Combine(rootPath, "docs.json");
+                BuildNavigationStructure(_docsJsonManager.Configuration, model);
+                // Write docs.json to the DocumentationRootPath
+                var docsJsonPath = Path.Combine(Context.DocumentationRootPath, "docs.json");
                 _docsJsonManager.Save(docsJsonPath);
             }
         }
@@ -120,35 +119,35 @@ namespace CloudNimble.DotNetDocs.Mintlify
         /// </summary>
         /// <param name="config">The DocsJsonConfig to populate.</param>
         /// <param name="model">The DocAssembly model containing the documentation structure.</param>
-        /// <param name="outputPath">The output directory path.</param>
-        internal void BuildNavigationStructure(DocsJsonConfig config, DocAssembly model, string outputPath)
+        internal void BuildNavigationStructure(DocsJsonConfig config, DocAssembly model)
         {
             config.Navigation ??= new NavigationConfig();
-            config.Navigation.Pages = new List<object>();
-
-            // Add the index page (assembly overview)
-            config.Navigation.Pages.Add("index");
+            config.Navigation.Pages =
+            [
+                // Add the index page (assembly overview)
+                "index",
+            ];
 
             // Create "API Reference" root group
             var apiReferenceGroup = new GroupConfig
             {
                 Group = "API Reference",
                 Icon = _options.IncludeIcons ? "code" : null,
-                Pages = new List<object>()
+                Pages = []
             };
 
             // Build navigation based on file/folder mode
             if (Context.FileNamingOptions.NamespaceMode == NamespaceMode.Folder)
             {
-                BuildFolderModeNavigation(apiReferenceGroup.Pages, model, outputPath);
+                BuildFolderModeNavigation(apiReferenceGroup.Pages, model);
             }
             else
             {
-                BuildFileModeNavigation(apiReferenceGroup.Pages, model, outputPath);
+                BuildFileModeNavigation(apiReferenceGroup.Pages, model);
             }
 
             // Only add the API Reference group if it has content
-            if (apiReferenceGroup.Pages.Any())
+            if (apiReferenceGroup.Pages.Count != 0)
             {
                 config.Navigation.Pages.Add(apiReferenceGroup);
             }
@@ -159,8 +158,7 @@ namespace CloudNimble.DotNetDocs.Mintlify
         /// </summary>
         /// <param name="pages">The pages list to populate.</param>
         /// <param name="model">The DocAssembly model.</param>
-        /// <param name="outputPath">The output directory path.</param>
-        internal void BuildFileModeNavigation(List<object> pages, DocAssembly model, string outputPath)
+        internal void BuildFileModeNavigation(List<object> pages, DocAssembly model)
         {
             // Process each namespace as a group
             foreach (var ns in model.Namespaces.OrderBy(n => n.Name))
@@ -170,27 +168,28 @@ namespace CloudNimble.DotNetDocs.Mintlify
                 {
                     Group = ns.Name ?? "global",
                     Icon = _options.IncludeIcons ? MintlifyIcons.GetIconForNamespace(ns) : null,
-                    Pages = new List<object>()
+                    Pages = []
                 };
 
                 // Add namespace overview page
-                var nsFilePath = GetNamespaceFilePath(ns, outputPath, "mdx");
-                var nsRelativePath = Path.GetRelativePath(outputPath, nsFilePath)
-                    .Replace('\\', '/')
+                var apiOutputPath = Path.Combine(Context.DocumentationRootPath, Context.ApiReferencePath);
+                var nsFilePath = GetNamespaceFilePath(ns, apiOutputPath, "mdx");
+                var nsRelativePath = Path.GetRelativePath(Context.DocumentationRootPath, nsFilePath)
+                    .Replace(Path.DirectorySeparatorChar, '/')
                     .Replace(".mdx", "");
                 group.Pages.Add(nsRelativePath);
 
                 // Add type pages
                 foreach (var type in ns.Types.OrderBy(t => t.Name))
                 {
-                    var typeFilePath = GetTypeFilePath(type, ns, outputPath, "mdx");
-                    var typeRelativePath = Path.GetRelativePath(outputPath, typeFilePath)
-                        .Replace('\\', '/')
+                    var typeFilePath = GetTypeFilePath(type, ns, apiOutputPath, "mdx");
+                    var typeRelativePath = Path.GetRelativePath(Context.DocumentationRootPath, typeFilePath)
+                        .Replace(Path.DirectorySeparatorChar, '/')
                         .Replace(".mdx", "");
                     group.Pages.Add(typeRelativePath);
                 }
 
-                if (group.Pages.Any())
+                if (group.Pages.Count != 0)
                 {
                     pages.Add(group);
                 }
@@ -202,8 +201,7 @@ namespace CloudNimble.DotNetDocs.Mintlify
         /// </summary>
         /// <param name="pages">The pages list to populate.</param>
         /// <param name="model">The DocAssembly model.</param>
-        /// <param name="outputPath">The output directory path.</param>
-        internal void BuildFolderModeNavigation(List<object> pages, DocAssembly model, string outputPath)
+        internal void BuildFolderModeNavigation(List<object> pages, DocAssembly model)
         {
             // Group namespaces by their hierarchical structure
             var namespaceTree = new Dictionary<string, GroupConfig>();
@@ -247,18 +245,19 @@ namespace CloudNimble.DotNetDocs.Mintlify
                 if (parentGroup is not null && currentLevel is not null)
                 {
                     // Add namespace index
-                    var nsFilePath = GetNamespaceFilePath(ns, outputPath, "mdx");
-                    var nsRelativePath = Path.GetRelativePath(outputPath, nsFilePath)
-                        .Replace('\\', '/')
+                    var apiOutputPath = Path.Combine(Context.DocumentationRootPath, Context.ApiReferencePath);
+                    var nsFilePath = GetNamespaceFilePath(ns, apiOutputPath, "mdx");
+                    var nsRelativePath = Path.GetRelativePath(Context.DocumentationRootPath, nsFilePath)
+                        .Replace(Path.DirectorySeparatorChar, '/')
                         .Replace(".mdx", "");
                     currentLevel.Add(nsRelativePath);
 
                     // Add types in this namespace
                     foreach (var type in ns.Types.OrderBy(t => t.Name))
                     {
-                        var typeFilePath = GetTypeFilePath(type, ns, outputPath, "mdx");
-                        var typeRelativePath = Path.GetRelativePath(outputPath, typeFilePath)
-                            .Replace('\\', '/')
+                        var typeFilePath = GetTypeFilePath(type, ns, apiOutputPath, "mdx");
+                        var typeRelativePath = Path.GetRelativePath(Context.DocumentationRootPath, typeFilePath)
+                            .Replace(Path.DirectorySeparatorChar, '/')
                             .Replace(".mdx", "");
                         currentLevel.Add(typeRelativePath);
                     }
@@ -280,8 +279,8 @@ namespace CloudNimble.DotNetDocs.Mintlify
             // Generate title
             string title = entity switch
             {
-                DocAssembly assembly => assembly.AssemblyName ?? "Assembly",
-                DocNamespace ns => ns.Name ?? "Namespace",
+                DocAssembly assembly => "Overview" ?? "Assembly",
+                DocNamespace ns => "Overview" ?? "Namespace",
                 DocType dt => dt.Name,
                 DocMember member => member.Name,
                 _ => entity.GetType().Name
@@ -301,7 +300,7 @@ namespace CloudNimble.DotNetDocs.Mintlify
                 // Limit to 160 characters for SEO
                 if (description.Length > 160)
                 {
-                    description = description.Substring(0, 157) + "...";
+                    description = string.Concat(description.AsSpan(0, 157), "...");
                 }
                 
                 sb.AppendLine($"description: \"{description}\"");
@@ -325,7 +324,7 @@ namespace CloudNimble.DotNetDocs.Mintlify
                 var sidebarTitle = docType.Name;
                 if (sidebarTitle.Contains('<'))
                 {
-                    sidebarTitle = sidebarTitle.Substring(0, sidebarTitle.IndexOf('<')) + "<...>";
+                    sidebarTitle = string.Concat(sidebarTitle.AsSpan(0, sidebarTitle.IndexOf('<')), "<...>");
                 }
                 sb.AppendLine($"sidebarTitle: {sidebarTitle}");
             }
@@ -420,8 +419,8 @@ namespace CloudNimble.DotNetDocs.Mintlify
             // Add frontmatter
             sb.Append(GenerateFrontmatter(assembly));
 
-            sb.AppendLine($"# {assembly.AssemblyName}");
-            sb.AppendLine();
+            //sb.AppendLine($"# {assembly.AssemblyName}");
+            //sb.AppendLine();
 
             if (!string.IsNullOrWhiteSpace(assembly.Summary))
             {
@@ -521,8 +520,8 @@ namespace CloudNimble.DotNetDocs.Mintlify
             // Add frontmatter
             sb.Append(GenerateFrontmatter(ns));
 
-            sb.AppendLine($"# {ns.Name}");
-            sb.AppendLine();
+            //sb.AppendLine($"# {ns.Name}");
+            //sb.AppendLine();
 
             if (!string.IsNullOrWhiteSpace(ns.Summary))
             {

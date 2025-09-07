@@ -123,7 +123,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Configuration
                 {
                     pipeline.ConfigureContext(ctx =>
                     {
-                        ctx.OutputPath = expectedPath;
+                        ctx.DocumentationRootPath = expectedPath;
                         ctx.ShowPlaceholders = expectedPlaceholders;
                     });
                 }));
@@ -131,7 +131,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Configuration
 
             // Assert
             var context = TestHost.Services.GetRequiredService<ProjectContext>();
-            context.OutputPath.Should().Be(expectedPath);
+            context.DocumentationRootPath.Should().Be(expectedPath);
             context.ShowPlaceholders.Should().Be(expectedPlaceholders);
         }
 
@@ -177,7 +177,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Configuration
                         .AddTransformer<TestTransformer>()
                         .ConfigureContext(ctx =>
                         {
-                            ctx.OutputPath = "complex/output";
+                            ctx.DocumentationRootPath = "complex/output";
                             ctx.ShowPlaceholders = false;
                         });
                 }));
@@ -194,7 +194,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Configuration
             transformers.Should().HaveCount(1);
 
             var context = TestHost.Services.GetRequiredService<ProjectContext>();
-            context.OutputPath.Should().Be("complex/output");
+            context.DocumentationRootPath.Should().Be("complex/output");
         }
 
         [TestMethod]
@@ -318,17 +318,17 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Configuration
         {
             // Arrange
             var services = new ServiceCollection();
-            services.AddSingleton(new ProjectContext { OutputPath = "original" });
+            services.AddSingleton(new ProjectContext { DocumentationRootPath = "original" });
             var builder = new DotNetDocsBuilder(services);
 
             // Act
-            builder.ConfigureContext(ctx => ctx.OutputPath = "replaced");
+            builder.ConfigureContext(ctx => ctx.DocumentationRootPath = "replaced");
             builder.Build();
             using var serviceProvider = services.BuildServiceProvider();
 
             // Assert
             var context = serviceProvider.GetRequiredService<ProjectContext>();
-            context.OutputPath.Should().Be("replaced");
+            context.DocumentationRootPath.Should().Be("replaced");
         }
 
         #endregion
@@ -349,7 +349,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Configuration
                 .UseYamlRenderer()
                 .AddEnricher<TestEnricher>()
                 .AddTransformer<TestTransformer>()
-                .ConfigureContext(ctx => ctx.OutputPath = "chained");
+                .ConfigureContext(ctx => ctx.DocumentationRootPath = "chained");
 
             // Assert
             result.Should().BeSameAs(builder);
@@ -362,17 +362,17 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Configuration
         private class TestRenderer : IDocRenderer
         {
             public string OutputFormat => "Test";
-            public Task RenderAsync(DocAssembly model, string outputPath, ProjectContext context) => Task.CompletedTask;
+            public Task RenderAsync(DocAssembly model) => Task.CompletedTask;
         }
 
         private class TestEnricher : IDocEnricher
         {
-            public Task EnrichAsync(DocEntity entity, ProjectContext context) => Task.CompletedTask;
+            public Task EnrichAsync(DocEntity entity) => Task.CompletedTask;
         }
 
         private class TestTransformer : IDocTransformer
         {
-            public Task TransformAsync(DocEntity entity, ProjectContext context) => Task.CompletedTask;
+            public Task TransformAsync(DocEntity entity) => Task.CompletedTask;
         }
 
         #endregion

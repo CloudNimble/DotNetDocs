@@ -12,6 +12,7 @@ using CloudNimble.DotNetDocs.Tests.Shared;
 using CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios;
 using FluentAssertions;
 using Microsoft.CodeAnalysis;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
@@ -27,8 +28,19 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
         #region Fields
 
         private string _testOutputPath = null!;
-        private MarkdownRenderer _renderer = null!;
-        private ProjectContext _context = null!;
+
+        #endregion
+
+        #region Helper Methods
+
+        private MarkdownRenderer GetMarkdownRenderer()
+        {
+            var renderer = GetServices<IDocRenderer>()
+                .OfType<MarkdownRenderer>()
+                .FirstOrDefault();
+            renderer.Should().NotBeNull("MarkdownRenderer should be registered in DI");
+            return renderer!;
+        }
 
         #endregion
 
@@ -39,16 +51,21 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
         {
             _testOutputPath = Path.Combine(Path.GetTempPath(), $"MDRendererTest_{Guid.NewGuid()}");
             Directory.CreateDirectory(_testOutputPath);
-            _context = new ProjectContext
+
+            // Configure services for DI
+            TestHostBuilder.ConfigureServices((context, services) =>
             {
-                OutputPath = _testOutputPath
-            };
-            _renderer = new MarkdownRenderer(_context);
+                services.AddDotNetDocsCore();
+            });
+
+            TestSetup();
         }
 
         [TestCleanup]
         public void TestCleanup()
         {
+            TestTearDown();
+
             if (Directory.Exists(_testOutputPath))
             {
                 Directory.Delete(_testOutputPath, true);
@@ -70,7 +87,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             var context = new ProjectContext();
 
             // Act
-            await _renderer.RenderAsync(model, _testOutputPath, context);
+            await GetMarkdownRenderer().RenderAsync(model);
 
             // Assert - Compare against baseline
             var baselinePath = Path.Combine(projectPath, "Baselines", "MarkdownRenderer", "FileMode", "index.md");
@@ -104,7 +121,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             var context = new ProjectContext();
 
             // Act
-            await _renderer.RenderAsync(model, _testOutputPath, context);
+            await GetMarkdownRenderer().RenderAsync(model);
 
             // Assert
             foreach (var ns in model.Namespaces)
@@ -127,7 +144,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             var context = new ProjectContext();
 
             // Act
-            await _renderer.RenderAsync(model, _testOutputPath, context);
+            await GetMarkdownRenderer().RenderAsync(model);
 
             // Assert
             foreach (var ns in model.Namespaces)
@@ -150,43 +167,10 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
         public async Task RenderAsync_WithNullModel_ThrowsArgumentNullException()
         {
             // Arrange
-            var context = new ProjectContext();
+            var renderer = GetMarkdownRenderer();
 
             // Act
-            Func<Task> act = async () => await _renderer.RenderAsync(null!, _testOutputPath, context);
-
-            // Assert
-            await act.Should().ThrowAsync<ArgumentNullException>();
-        }
-
-        [TestMethod]
-        public async Task RenderAsync_WithNullOutputPath_ThrowsArgumentNullException()
-        {
-            // Arrange
-            var assemblyPath = typeof(SampleClass).Assembly.Location;
-            var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
-            using var manager = new AssemblyManager(assemblyPath, xmlPath);
-            var model = await manager.DocumentAsync();
-            var context = new ProjectContext();
-
-            // Act
-            Func<Task> act = async () => await _renderer.RenderAsync(model, null!, context);
-
-            // Assert
-            await act.Should().ThrowAsync<ArgumentNullException>();
-        }
-
-        [TestMethod]
-        public async Task RenderAsync_WithNullContext_ThrowsArgumentNullException()
-        {
-            // Arrange
-            var assemblyPath = typeof(SampleClass).Assembly.Location;
-            var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
-            using var manager = new AssemblyManager(assemblyPath, xmlPath);
-            var model = await manager.DocumentAsync();
-
-            // Act
-            Func<Task> act = async () => await _renderer.RenderAsync(model, _testOutputPath, null!);
+            Func<Task> act = async () => await renderer.RenderAsync(null!);
 
             // Assert
             await act.Should().ThrowAsync<ArgumentNullException>();
@@ -207,7 +191,8 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             {
                 // Act
                 Directory.Exists(nonExistentPath).Should().BeFalse();
-                await _renderer.RenderAsync(model, nonExistentPath, context);
+                var renderer = GetMarkdownRenderer();
+                await renderer.RenderAsync(model);
 
                 // Assert
                 Directory.Exists(nonExistentPath).Should().BeTrue();
@@ -237,7 +222,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             var context = new ProjectContext();
 
             // Act
-            await _renderer.RenderAsync(model, _testOutputPath, context);
+            await GetMarkdownRenderer().RenderAsync(model);
 
             // Assert
             var content = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, "index.md"));
@@ -257,7 +242,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             var context = new ProjectContext();
 
             // Act
-            await _renderer.RenderAsync(model, _testOutputPath, context);
+            await GetMarkdownRenderer().RenderAsync(model);
 
             // Assert
             var content = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, "index.md"));
@@ -277,7 +262,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             var context = new ProjectContext();
 
             // Act
-            await _renderer.RenderAsync(model, _testOutputPath, context);
+            await GetMarkdownRenderer().RenderAsync(model);
 
             // Assert
             var content = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, "index.md"));
@@ -304,7 +289,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             var context = new ProjectContext();
 
             // Act
-            await _renderer.RenderAsync(model, _testOutputPath, context);
+            await GetMarkdownRenderer().RenderAsync(model);
 
             // Assert
             var content = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, "index.md"));
@@ -328,7 +313,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             var context = new ProjectContext();
 
             // Act
-            await _renderer.RenderAsync(model, _testOutputPath, context);
+            await GetMarkdownRenderer().RenderAsync(model);
 
             // Assert
             var ns = model.Namespaces.First(n => n.Types.Any(t => t.Symbol.Name == "ClassWithMethods"));
@@ -373,7 +358,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
                 using var manager = new AssemblyManager(assemblyPath, xmlPath);
                 var model = await manager.DocumentAsync();
 
-                await renderer.RenderAsync(model, tempOutputPath, context);
+                await renderer.RenderAsync(model);
 
                 // Create baselines directory
                 var baselinesDir = Path.Combine(projectPath, "Baselines", "MarkdownRenderer", "FileMode");
@@ -420,7 +405,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
                 using var manager = new AssemblyManager(assemblyPath, xmlPath);
                 var model = await manager.DocumentAsync();
 
-                await renderer.RenderAsync(model, tempOutputPath, context);
+                await renderer.RenderAsync(model);
 
                 // Create baselines directory
                 var baselinesDir = Path.Combine(projectPath, "Baselines", "MarkdownRenderer", "FolderMode");
@@ -481,7 +466,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             var renderer = new MarkdownRenderer(context);
 
             // Act
-            await renderer.RenderAsync(model, _testOutputPath, context);
+            await renderer.RenderAsync(model);
 
             // Assert
             var files = Directory.GetFiles(_testOutputPath, "*.md");
@@ -504,7 +489,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             var renderer = new MarkdownRenderer(context);
 
             // Act
-            await renderer.RenderAsync(model, _testOutputPath, context);
+            await renderer.RenderAsync(model);
 
             // Assert
             var files = Directory.GetFiles(_testOutputPath, "*.md");
@@ -527,7 +512,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             var renderer = new MarkdownRenderer(context);
 
             // Act
-            await renderer.RenderAsync(model, _testOutputPath, context);
+            await renderer.RenderAsync(model);
 
             // Assert
             var files = Directory.GetFiles(_testOutputPath, "*.md");
@@ -550,7 +535,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             var renderer = new MarkdownRenderer(context);
 
             // Act
-            await renderer.RenderAsync(model, _testOutputPath, context);
+            await renderer.RenderAsync(model);
 
             // Assert
             // Check folder structure exists
@@ -592,7 +577,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             var renderer = new MarkdownRenderer(context);
 
             // Act
-            await renderer.RenderAsync(model, _testOutputPath, context);
+            await renderer.RenderAsync(model);
 
             // Assert
             // Verify folder structure uses path separators, not the configured separator
@@ -633,7 +618,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
                 var model = await manager.DocumentAsync(projectContext);
 
                 // Act
-                await renderer.RenderAsync(model, testOutputPath, projectContext);
+                await renderer.RenderAsync(model);
 
                 // Assert - Verify folder structure
                 var cloudNimbleDir = Path.Combine(testOutputPath, "CloudNimble");
@@ -723,8 +708,9 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
         public async Task RenderAssemblyAsync_Should_Create_Index_File()
         {
             var assembly = GetTestsDotSharedAssembly();
+            var renderer = GetMarkdownRenderer();
 
-            await _renderer.RenderAssemblyAsync(assembly, _testOutputPath);
+            await renderer.RenderAssemblyAsync(assembly, _testOutputPath);
 
             var indexPath = Path.Combine(_testOutputPath, "index.md");
             File.Exists(indexPath).Should().BeTrue();
@@ -734,8 +720,9 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
         public async Task RenderAssemblyAsync_Should_Include_Assembly_Name()
         {
             var assembly = GetTestsDotSharedAssembly();
+            var renderer = GetMarkdownRenderer();
 
-            await _renderer.RenderAssemblyAsync(assembly, _testOutputPath);
+            await renderer.RenderAssemblyAsync(assembly, _testOutputPath);
 
             var indexPath = Path.Combine(_testOutputPath, "index.md");
             var content = await File.ReadAllTextAsync(indexPath);
@@ -747,8 +734,9 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
         {
             var assembly = GetTestsDotSharedAssembly();
             assembly.Usage = "This is the assembly usage documentation.";
+            var renderer = GetMarkdownRenderer();
 
-            await _renderer.RenderAssemblyAsync(assembly, _testOutputPath);
+            await renderer.RenderAssemblyAsync(assembly, _testOutputPath);
 
             var content = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, "index.md"));
             content.Should().Contain("## Usage");
@@ -759,8 +747,9 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
         public async Task RenderAssemblyAsync_Should_List_Namespaces()
         {
             var assembly = GetTestsDotSharedAssembly();
+            var renderer = GetMarkdownRenderer();
 
-            await _renderer.RenderAssemblyAsync(assembly, _testOutputPath);
+            await renderer.RenderAssemblyAsync(assembly, _testOutputPath);
 
             var content = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, "index.md"));
             content.Should().Contain("## Namespaces");
@@ -769,7 +758,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
                 var namespaceName = ns.Symbol.IsGlobalNamespace ? "global" : ns.Symbol.ToDisplayString();
                 content.Should().Contain($"- [{namespaceName}]");
             }
-            
+
             // Global namespace should never be in the list
             assembly.Namespaces.Should().NotContain(ns => ns.Symbol.IsGlobalNamespace);
         }
@@ -782,15 +771,17 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
         public async Task RenderNamespaceAsync_Should_Create_Namespace_File()
         {
             var assembly = GetTestsDotSharedAssembly();
-            
-            assembly.Namespaces.Should().NotBeEmpty("Test assembly should contain namespaces");
-            
-            var ns = assembly.Namespaces.First();
 
-            await _renderer.RenderNamespaceAsync(ns, _testOutputPath);
+            assembly.Namespaces.Should().NotBeEmpty("Test assembly should contain namespaces");
+
+            var ns = assembly.Namespaces.First();
+            var renderer = GetMarkdownRenderer();
+            var context = GetService<ProjectContext>();
+
+            await renderer.RenderNamespaceAsync(ns, _testOutputPath);
 
             var namespaceName = string.IsNullOrEmpty(ns.Name) ? "global" : ns.Name;
-            var nsPath = Path.Combine(_testOutputPath, $"{namespaceName.Replace('.', _context.FileNamingOptions.NamespaceSeparator)}.md");
+            var nsPath = Path.Combine(_testOutputPath, $"{namespaceName.Replace('.', context.FileNamingOptions.NamespaceSeparator)}.md");
             File.Exists(nsPath).Should().BeTrue();
         }
 
@@ -798,15 +789,17 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
         public async Task RenderNamespaceAsync_Should_List_Types_By_Category()
         {
             var assembly = GetTestsDotSharedAssembly();
-            
-            assembly.Namespaces.Should().NotBeEmpty("Test assembly should contain namespaces");
-            
-            var ns = assembly.Namespaces.First();
 
-            await _renderer.RenderNamespaceAsync(ns, _testOutputPath);
+            assembly.Namespaces.Should().NotBeEmpty("Test assembly should contain namespaces");
+
+            var ns = assembly.Namespaces.First();
+            var renderer = GetMarkdownRenderer();
+            var context = GetService<ProjectContext>();
+
+            await renderer.RenderNamespaceAsync(ns, _testOutputPath);
 
             var namespaceName = string.IsNullOrEmpty(ns.Name) ? "global" : ns.Name;
-            var nsPath = Path.Combine(_testOutputPath, $"{namespaceName.Replace('.', _context.FileNamingOptions.NamespaceSeparator)}.md");
+            var nsPath = Path.Combine(_testOutputPath, $"{namespaceName.Replace('.', context.FileNamingOptions.NamespaceSeparator)}.md");
             var content = await File.ReadAllTextAsync(nsPath);
 
             content.Should().Contain("## Types");
@@ -829,19 +822,21 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
         {
             var assembly = GetTestsDotSharedAssembly();
             var ns = assembly.Namespaces.FirstOrDefault(n => n.Types.Any());
-            
-            ns.Should().NotBeNull("Test assembly should contain a namespace with types");
-            
-            var type = ns!.Types.First();
 
-            await _renderer.RenderTypeAsync(type, ns, _testOutputPath);
+            ns.Should().NotBeNull("Test assembly should contain a namespace with types");
+
+            var type = ns!.Types.First();
+            var renderer = GetMarkdownRenderer();
+            var context = GetService<ProjectContext>();
+
+            await renderer.RenderTypeAsync(type, ns, _testOutputPath);
 
             var safeNamespace = string.IsNullOrEmpty(ns.Name) ? "global" : ns.Name;
             var safeTypeName = type!.Symbol.Name
                 .Replace('<', '_')
                 .Replace('>', '_')
                 .Replace('`', '_');
-            var separator = _context.FileNamingOptions.NamespaceSeparator;
+            var separator = context.FileNamingOptions.NamespaceSeparator;
             var fileName = $"{safeNamespace.Replace('.', separator)}.{safeTypeName}.md";
             var typePath = Path.Combine(_testOutputPath, fileName);
             File.Exists(typePath).Should().BeTrue();
@@ -852,19 +847,21 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
         {
             var assembly = GetTestsDotSharedAssembly();
             var ns = assembly.Namespaces.FirstOrDefault(n => n.Types.Any());
-            
-            ns.Should().NotBeNull("Test assembly should contain a namespace with types");
-            
-            var type = ns!.Types.First();
 
-            await _renderer.RenderTypeAsync(type, ns, _testOutputPath);
+            ns.Should().NotBeNull("Test assembly should contain a namespace with types");
+
+            var type = ns!.Types.First();
+            var renderer = GetMarkdownRenderer();
+            var context = GetService<ProjectContext>();
+
+            await renderer.RenderTypeAsync(type, ns, _testOutputPath);
 
             var safeNamespace = string.IsNullOrEmpty(ns.Name) ? "global" : ns.Name;
             var safeTypeName = type!.Symbol.Name
                 .Replace('<', '_')
                 .Replace('>', '_')
                 .Replace('`', '_');
-            var separator = _context.FileNamingOptions.NamespaceSeparator;
+            var separator = context.FileNamingOptions.NamespaceSeparator;
             var fileName = $"{safeNamespace.Replace('.', separator)}.{safeTypeName}.md";
             var typePath = Path.Combine(_testOutputPath, fileName);
             var content = await File.ReadAllTextAsync(typePath);
@@ -881,19 +878,21 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
         {
             var assembly = GetTestsDotSharedAssembly();
             var ns = assembly.Namespaces.FirstOrDefault(n => n.Types.Any());
-            
-            ns.Should().NotBeNull("Test assembly should contain a namespace with types");
-            
-            var type = ns!.Types.First();
 
-            await _renderer.RenderTypeAsync(type, ns, _testOutputPath);
+            ns.Should().NotBeNull("Test assembly should contain a namespace with types");
+
+            var type = ns!.Types.First();
+            var renderer = GetMarkdownRenderer();
+            var context = GetService<ProjectContext>();
+
+            await renderer.RenderTypeAsync(type, ns, _testOutputPath);
 
             var safeNamespace = string.IsNullOrEmpty(ns.Name) ? "global" : ns.Name;
             var safeTypeName = type!.Symbol.Name
                 .Replace('<', '_')
                 .Replace('>', '_')
                 .Replace('`', '_');
-            var separator = _context.FileNamingOptions.NamespaceSeparator;
+            var separator = context.FileNamingOptions.NamespaceSeparator;
             var fileName = $"{safeNamespace.Replace('.', separator)}.{safeTypeName}.md";
             var typePath = Path.Combine(_testOutputPath, fileName);
             var content = await File.ReadAllTextAsync(typePath);
@@ -909,19 +908,21 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             var type = assembly.Namespaces
                 .SelectMany(n => n.Types)
                 .FirstOrDefault(t => t.Symbol.Name == "ClassWithMethods");
-            
-            type.Should().NotBeNull("ClassWithMethods should exist in test assembly");
-            
-            var ns = assembly.Namespaces.First(n => n.Types.Contains(type!));
 
-            await _renderer.RenderTypeAsync(type!, ns, _testOutputPath);
+            type.Should().NotBeNull("ClassWithMethods should exist in test assembly");
+
+            var ns = assembly.Namespaces.First(n => n.Types.Contains(type!));
+            var renderer = GetMarkdownRenderer();
+            var context = GetService<ProjectContext>();
+
+            await renderer.RenderTypeAsync(type!, ns, _testOutputPath);
 
             var safeNamespace = string.IsNullOrEmpty(ns.Name) ? "global" : ns.Name;
             var safeTypeName = type!.Symbol.Name
                 .Replace('<', '_')
                 .Replace('>', '_')
                 .Replace('`', '_');
-            var separator = _context.FileNamingOptions.NamespaceSeparator;
+            var separator = context.FileNamingOptions.NamespaceSeparator;
             var fileName = $"{safeNamespace.Replace('.', separator)}.{safeTypeName}.md";
             var typePath = Path.Combine(_testOutputPath, fileName);
             var content = await File.ReadAllTextAsync(typePath);
@@ -938,17 +939,18 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
         public void RenderMember_Should_Include_Member_Name()
         {
             var assembly = GetTestsDotSharedAssembly();
-            
+
             assembly.Namespaces.Should().NotBeEmpty("Test assembly should contain namespaces");
             assembly.Namespaces.First().Types.Should().NotBeEmpty("First namespace should contain types");
-            
+
             var type = assembly.Namespaces.First().Types.First();
             var member = type.Members.FirstOrDefault(m => m.Symbol.Kind == SymbolKind.Method);
-            
+
             member.Should().NotBeNull("Test assembly should contain a method");
             var sb = new StringBuilder();
+            var renderer = GetMarkdownRenderer();
 
-            _renderer.RenderMember(sb, member!);
+            renderer.RenderMember(sb, member!);
 
             var result = sb.ToString();
             result.Should().Contain($"### {member!.Symbol.Name}");
@@ -958,17 +960,18 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
         public void RenderMember_Should_Include_Syntax_Section()
         {
             var assembly = GetTestsDotSharedAssembly();
-            
+
             assembly.Namespaces.Should().NotBeEmpty("Test assembly should contain namespaces");
             assembly.Namespaces.First().Types.Should().NotBeEmpty("First namespace should contain types");
-            
+
             var type = assembly.Namespaces.First().Types.First();
             var member = type.Members.FirstOrDefault(m => m.Symbol.Kind == SymbolKind.Method);
-            
+
             member.Should().NotBeNull("Test assembly should contain a method");
             var sb = new StringBuilder();
+            var renderer = GetMarkdownRenderer();
 
-            _renderer.RenderMember(sb, member!);
+            renderer.RenderMember(sb, member!);
 
             var result = sb.ToString();
             result.Should().Contain("#### Syntax");
@@ -982,13 +985,14 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             var type = assembly.Namespaces
                 .SelectMany(n => n.Types)
                 .FirstOrDefault(t => t.Symbol.Name == "ClassWithMethods");
-            
+
             type.Should().NotBeNull("ClassWithMethods should exist in test assembly");
             var member = type!.Members.FirstOrDefault(m => m.Symbol.Name == "Calculate");
             member.Should().NotBeNull("Calculate method should exist in ClassWithMethods");
             var sb = new StringBuilder();
+            var renderer = GetMarkdownRenderer();
 
-            _renderer.RenderMember(sb, member!);
+            renderer.RenderMember(sb, member!);
 
             var result = sb.ToString();
             result.Should().Contain("#### Parameters");
@@ -1003,13 +1007,14 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             var type = assembly.Namespaces
                 .SelectMany(n => n.Types)
                 .FirstOrDefault(t => t.Symbol.Name == "ClassWithMethods");
-            
+
             type.Should().NotBeNull("ClassWithMethods should exist in test assembly");
             var member = type!.Members.FirstOrDefault(m => m.Symbol.Name == "Calculate");
             member.Should().NotBeNull("Calculate method should exist in ClassWithMethods");
             var sb = new StringBuilder();
+            var renderer = GetMarkdownRenderer();
 
-            _renderer.RenderMember(sb, member!);
+            renderer.RenderMember(sb, member!);
 
             var result = sb.ToString();
             result.Should().Contain("#### Returns");
@@ -1023,14 +1028,15 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             var type = assembly.Namespaces
                 .SelectMany(n => n.Types)
                 .FirstOrDefault(t => t.Symbol.Name == "ClassWithProperties");
-            
+
             type.Should().NotBeNull("ClassWithProperties should exist in test assembly");
-            
+
             var member = type!.Members.FirstOrDefault(m => m.Symbol.Kind == SymbolKind.Property);
             member.Should().NotBeNull("ClassWithProperties should contain a property");
             var sb = new StringBuilder();
+            var renderer = GetMarkdownRenderer();
 
-            _renderer.RenderMember(sb, member!);
+            renderer.RenderMember(sb, member!);
 
             var result = sb.ToString();
             result.Should().Contain("#### Property Value");
@@ -1044,13 +1050,14 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             var type = assembly.Namespaces
                 .SelectMany(n => n.Types)
                 .FirstOrDefault(t => t.Symbol.Name == "ClassWithMethods");
-            
+
             type.Should().NotBeNull("ClassWithMethods should exist in test assembly");
             var member = type!.Members.FirstOrDefault(m => m.Symbol.Name == "Calculate");
             member.Should().NotBeNull("Calculate method should exist in ClassWithMethods");
             var sb = new StringBuilder();
+            var renderer = GetMarkdownRenderer();
 
-            _renderer.RenderMember(sb, member!);
+            renderer.RenderMember(sb, member!);
 
             var result = sb.ToString();
             if (!string.IsNullOrWhiteSpace(member!.Usage))

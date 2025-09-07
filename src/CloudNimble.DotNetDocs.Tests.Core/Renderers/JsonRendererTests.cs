@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using CloudNimble.Breakdance.Assemblies;
@@ -10,6 +11,7 @@ using CloudNimble.DotNetDocs.Tests.Shared;
 using CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios;
 using CloudNimble.DotNetDocs.Tests.Shared.Parameters;
 using FluentAssertions;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
@@ -25,7 +27,19 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
         #region Fields
 
         private string _testOutputPath = null!;
-        private JsonRenderer _renderer = null!;
+
+        #endregion
+
+        #region Helper Methods
+
+        private JsonRenderer GetJsonRenderer()
+        {
+            var renderer = GetServices<IDocRenderer>()
+                .OfType<JsonRenderer>()
+                .FirstOrDefault();
+            renderer.Should().NotBeNull("JsonRenderer should be registered in DI");
+            return renderer!;
+        }
 
         #endregion
 
@@ -36,12 +50,21 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
         {
             _testOutputPath = Path.Combine(Path.GetTempPath(), $"JsonRendererTest_{Guid.NewGuid()}");
             Directory.CreateDirectory(_testOutputPath);
-            _renderer = new JsonRenderer();
+
+            // Configure services for DI
+            TestHostBuilder.ConfigureServices((context, services) =>
+            {
+                services.AddDotNetDocsCore();
+            });
+
+            TestSetup();
         }
 
         [TestCleanup]
         public void TestCleanup()
         {
+            TestTearDown();
+
             if (Directory.Exists(_testOutputPath))
             {
                 Directory.Delete(_testOutputPath, true);
@@ -63,7 +86,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             var context = new ProjectContext();
 
             // Act
-            await _renderer.RenderAsync(model, _testOutputPath, context);
+            await GetJsonRenderer().RenderAsync(model);
 
             // Assert - Compare against baseline
             var baselinePath = Path.Combine(projectPath, "Baselines", "JsonRenderer", "documentation.json");
@@ -98,7 +121,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             var context = new ProjectContext();
 
             // Act
-            await _renderer.RenderAsync(model, _testOutputPath, context);
+            await GetJsonRenderer().RenderAsync(model);
 
             // Assert
             var jsonPath = Path.Combine(_testOutputPath, "documentation.json");
@@ -121,7 +144,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             var context = new ProjectContext();
 
             // Act
-            await _renderer.RenderAsync(model, _testOutputPath, context);
+            await GetJsonRenderer().RenderAsync(model);
 
             // Assert
             var json = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, "documentation.json"), TestContext.CancellationTokenSource.Token);
@@ -146,12 +169,12 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             var context = new ProjectContext();
 
             // Act
-            await _renderer.RenderAsync(model, _testOutputPath, context);
+            await GetJsonRenderer().RenderAsync(model);
 
             // Assert
             foreach (var ns in model.Namespaces)
             {
-                var fileName = _renderer.GetNamespaceFileName(ns, "json");
+                var fileName = GetJsonRenderer().GetNamespaceFileName(ns, "json");
                 var nsPath = Path.Combine(_testOutputPath, fileName);
                 File.Exists(nsPath).Should().BeTrue($"Namespace file {fileName} should exist");
                 
@@ -165,43 +188,10 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
         public async Task RenderAsync_WithNullModel_ThrowsArgumentNullException()
         {
             // Arrange
-            var context = new ProjectContext();
+            var renderer = GetJsonRenderer();
 
             // Act
-            Func<Task> act = async () => await _renderer.RenderAsync(null!, _testOutputPath, context);
-
-            // Assert
-            await act.Should().ThrowAsync<ArgumentNullException>();
-        }
-
-        [TestMethod]
-        public async Task RenderAsync_WithNullOutputPath_ThrowsArgumentNullException()
-        {
-            // Arrange
-            var assemblyPath = typeof(SampleClass).Assembly.Location;
-            var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
-            using var manager = new AssemblyManager(assemblyPath, xmlPath);
-            var model = await manager.DocumentAsync();
-            var context = new ProjectContext();
-
-            // Act
-            Func<Task> act = async () => await _renderer.RenderAsync(model, null!, context);
-
-            // Assert
-            await act.Should().ThrowAsync<ArgumentNullException>();
-        }
-
-        [TestMethod]
-        public async Task RenderAsync_WithNullContext_ThrowsArgumentNullException()
-        {
-            // Arrange
-            var assemblyPath = typeof(SampleClass).Assembly.Location;
-            var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
-            using var manager = new AssemblyManager(assemblyPath, xmlPath);
-            var model = await manager.DocumentAsync();
-
-            // Act
-            Func<Task> act = async () => await _renderer.RenderAsync(model, _testOutputPath, null!);
+            Func<Task> act = async () => await renderer.RenderAsync(null!);
 
             // Assert
             await act.Should().ThrowAsync<ArgumentNullException>();
@@ -222,7 +212,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             var context = new ProjectContext();
 
             // Act
-            await _renderer.RenderAsync(model, _testOutputPath, context);
+            await GetJsonRenderer().RenderAsync(model);
 
             // Assert
             var json = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, "documentation.json"));
@@ -249,7 +239,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             var context = new ProjectContext();
 
             // Act
-            await _renderer.RenderAsync(model, _testOutputPath, context);
+            await GetJsonRenderer().RenderAsync(model);
 
             // Assert
             var json = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, "documentation.json"), TestContext.CancellationTokenSource.Token);
@@ -286,7 +276,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             var context = new ProjectContext();
 
             // Act
-            await _renderer.RenderAsync(model, _testOutputPath, context);
+            await GetJsonRenderer().RenderAsync(model);
 
             // Assert
             var json = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, "documentation.json"), TestContext.CancellationTokenSource.Token);
@@ -333,7 +323,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             var context = new ProjectContext();
 
             // Act
-            await _renderer.RenderAsync(model, _testOutputPath, context);
+            await GetJsonRenderer().RenderAsync(model);
 
             // Assert
             var json = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, "documentation.json"));
@@ -387,7 +377,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             var context = new ProjectContext();
 
             // Act
-            await _renderer.RenderAsync(model, _testOutputPath, context);
+            await GetJsonRenderer().RenderAsync(model);
 
             // Assert
             var json = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, "documentation.json"), TestContext.CancellationTokenSource.Token);
@@ -415,7 +405,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
         public async Task GenerateJsonBaseline(string projectPath)
         {
             // Setup
-            var renderer = new JsonRenderer();
+            var renderer = GetJsonRenderer();
             var tempOutputPath = Path.Combine(Path.GetTempPath(), $"JsonBaseline_{Guid.NewGuid()}");
             Directory.CreateDirectory(tempOutputPath);
 
@@ -426,9 +416,8 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
                 var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
                 using var manager = new AssemblyManager(assemblyPath, xmlPath);
                 var model = await manager.DocumentAsync();
-                var context = new ProjectContext();
 
-                await renderer.RenderAsync(model, tempOutputPath, context);
+                await renderer.RenderAsync(model);
 
                 // Create baselines directory
                 var baselinesDir = Path.Combine(projectPath, "Baselines", "JsonRenderer");

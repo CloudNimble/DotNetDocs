@@ -64,7 +64,7 @@ Creates placeholder conceptual documentation files for a single assembly.
 #### Syntax
 
 ```csharp
-public System.Threading.Tasks.Task CreateConceptualFilesAsync(string assemblyPath, string xmlPath, string outputPath)
+public System.Threading.Tasks.Task CreateConceptualFilesAsync(string assemblyPath, string xmlPath)
 ```
 
 #### Parameters
@@ -73,7 +73,6 @@ public System.Threading.Tasks.Task CreateConceptualFilesAsync(string assemblyPat
 |------|------|-------------|
 | `assemblyPath` | `string` | The path to the assembly file. |
 | `xmlPath` | `string` | The path to the XML documentation file. |
-| `outputPath` | `string` | The base output path for conceptual files. |
 
 #### Returns
 
@@ -87,7 +86,7 @@ Creates placeholder conceptual documentation files for multiple assemblies.
 #### Syntax
 
 ```csharp
-public System.Threading.Tasks.Task CreateConceptualFilesAsync(System.Collections.Generic.IEnumerable<(string, string)> assemblies, string outputPath)
+public System.Threading.Tasks.Task CreateConceptualFilesAsync(System.Collections.Generic.IEnumerable<(string, string)> assemblies)
 ```
 
 #### Parameters
@@ -95,7 +94,6 @@ public System.Threading.Tasks.Task CreateConceptualFilesAsync(System.Collections
 | Name | Type | Description |
 |------|------|-------------|
 | `assemblies` | `System.Collections.Generic.IEnumerable<(string, string)>` | The collection of assembly and XML path pairs. |
-| `outputPath` | `string` | The base output path for conceptual files. |
 
 #### Returns
 

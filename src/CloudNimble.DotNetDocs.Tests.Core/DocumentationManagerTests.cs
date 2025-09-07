@@ -1,9 +1,12 @@
 using CloudNimble.Breakdance.Assemblies;
 using CloudNimble.DotNetDocs.Core;
+using CloudNimble.DotNetDocs.Tests.Shared;
 using CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios;
 using FluentAssertions;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -15,7 +18,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core
     /// Tests for DocumentationManager, which orchestrates the documentation pipeline.
     /// </summary>
     [TestClass]
-    public class DocumentationManagerTests : BreakdanceTestBase
+    public class DocumentationManagerTests : DotNetDocsTestBase
     {
 
         #region Private Fields
@@ -23,6 +26,44 @@ namespace CloudNimble.DotNetDocs.Tests.Core
         private string? _tempDirectory;
         private string? _testAssemblyPath;
         private string? _testXmlPath;
+
+        #endregion
+
+        #region Helper Methods
+
+        private DocumentationManager GetDocumentationManager()
+        {
+            var manager = GetService<DocumentationManager>();
+            manager.Should().NotBeNull("DocumentationManager should be registered in DI");
+            return manager!;
+        }
+
+        #endregion
+
+        #region Test Lifecycle
+
+        [TestInitialize]
+        public void TestInitialize()
+        {
+            Setup();
+
+            // Configure services for DI
+            TestHostBuilder.ConfigureServices((context, services) =>
+            {
+                services.AddDotNetDocsCore(ctx =>
+                {
+                    ctx.DocumentationRootPath = Path.Combine(_tempDirectory ?? Path.GetTempPath(), "output");
+                });
+            });
+
+            TestSetup();
+        }
+
+        [TestCleanup]
+        public void TestCleanup()
+        {
+            TestTearDown();
+        }
 
         #endregion
 
@@ -34,12 +75,9 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             // Arrange
             await CreateConceptualContentAsync();
 
-            var manager = new DocumentationManager([], [], []);
-            var context = new ProjectContext
-            {
-                ConceptualPath = Path.Combine(_tempDirectory!, "conceptual"),
-                OutputPath = Path.Combine(_tempDirectory!, "output")
-            };
+            var manager = GetDocumentationManager();
+            var context = GetService<ProjectContext>();
+            context.ConceptualPath = Path.Combine(_tempDirectory!, "conceptual");
 
             // Since ProcessAsync runs the full pipeline, we'll test LoadConceptual directly
             // Get the model first from AssemblyManager
@@ -47,7 +85,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             var model = await assemblyManager.DocumentAsync(context);
 
             // Apply conceptual loading directly
-            await manager.LoadConceptualAsync(model, context.ConceptualPath!, context);
+            await manager.LoadConceptualAsync(model);
 
             // Assert
             var testClass = model.Namespaces
@@ -68,19 +106,16 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             // Arrange
             await CreateConceptualContentAsync();
 
-            var manager = new DocumentationManager([], [], []);
-            var context = new ProjectContext
-            {
-                ConceptualPath = Path.Combine(_tempDirectory!, "conceptual"),
-                OutputPath = Path.Combine(_tempDirectory!, "output")
-            };
+            var manager = GetDocumentationManager();
+            var context = GetService<ProjectContext>();
+            context.ConceptualPath = Path.Combine(_tempDirectory!, "conceptual");
 
             // Get the model first from AssemblyManager
             using var assemblyManager = new AssemblyManager(_testAssemblyPath!, _testXmlPath!);
             var model = await assemblyManager.DocumentAsync(context);
 
             // Apply conceptual loading directly
-            await manager.LoadConceptualAsync(model, context.ConceptualPath!, context);
+            await manager.LoadConceptualAsync(model);
 
             // Assert
             var method = model.Namespaces
@@ -103,20 +138,18 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             var transformer = new TestTransformer("Transformer");
             var renderer = new TestRenderer("Renderer");
 
+            var context = GetService<ProjectContext>();
+            context.ConceptualPath = Path.Combine(_tempDirectory!, "conceptual");
+
             var manager = new DocumentationManager(
+                context,
                 [enricher],
                 [transformer],
                 [renderer]
             );
 
-            var context = new ProjectContext
-            {
-                ConceptualPath = Path.Combine(_tempDirectory!, "conceptual"),
-                OutputPath = Path.Combine(_tempDirectory!, "output")
-            };
-
             // Act
-            await manager.ProcessAsync(_testAssemblyPath!, _testXmlPath!, context);
+            await manager.ProcessAsync(_testAssemblyPath!, _testXmlPath!);
 
             // Assert
             enricher.Executed.Should().BeTrue();
@@ -130,20 +163,17 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             // Arrange
             await CreateConceptualContentWithPlaceholdersAsync();
 
-            var manager = new DocumentationManager([], [], []);
-            var context = new ProjectContext
-            {
-                ConceptualPath = Path.Combine(_tempDirectory!, "conceptual"),
-                OutputPath = Path.Combine(_tempDirectory!, "output"),
-                ShowPlaceholders = false // Hide placeholders
-            };
+            var manager = GetDocumentationManager();
+            var context = GetService<ProjectContext>();
+            context.ConceptualPath = Path.Combine(_tempDirectory!, "conceptual");
+            context.ShowPlaceholders = false; // Hide placeholders
 
             // Get the model first from AssemblyManager
             using var assemblyManager = new AssemblyManager(_testAssemblyPath!, _testXmlPath!);
             var model = await assemblyManager.DocumentAsync(context);
 
             // Apply conceptual loading
-            await manager.LoadConceptualAsync(model, context.ConceptualPath!, context);
+            await manager.LoadConceptualAsync(model);
 
             // Assert - properties that had placeholder content should not contain the placeholder text
             var testClass = model.Namespaces
@@ -168,20 +198,17 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             // Arrange
             await CreateConceptualContentWithPlaceholdersAsync();
 
-            var manager = new DocumentationManager([], [], []);
-            var context = new ProjectContext
-            {
-                ConceptualPath = Path.Combine(_tempDirectory!, "conceptual"),
-                OutputPath = Path.Combine(_tempDirectory!, "output"),
-                ShowPlaceholders = true // Show placeholders
-            };
+            var manager = GetDocumentationManager();
+            var context = GetService<ProjectContext>();
+            context.ConceptualPath = Path.Combine(_tempDirectory!, "conceptual");
+            context.ShowPlaceholders = true; // Show placeholders
 
             // Get the model first from AssemblyManager
             using var assemblyManager = new AssemblyManager(_testAssemblyPath!, _testXmlPath!);
             var model = await assemblyManager.DocumentAsync(context);
 
             // Apply conceptual loading
-            await manager.LoadConceptualAsync(model, context.ConceptualPath!, context);
+            await manager.LoadConceptualAsync(model);
 
             // Assert - placeholder content should be included
             var testClass = model.Namespaces
@@ -205,20 +232,17 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             // Arrange
             await CreateMixedPlaceholderContentAsync();
 
-            var manager = new DocumentationManager([], [], []);
-            var context = new ProjectContext
-            {
-                ConceptualPath = Path.Combine(_tempDirectory!, "conceptual"),
-                OutputPath = Path.Combine(_tempDirectory!, "output"),
-                ShowPlaceholders = false // Hide placeholders
-            };
+            var manager = GetDocumentationManager();
+            var context = GetService<ProjectContext>();
+            context.ConceptualPath = Path.Combine(_tempDirectory!, "conceptual");
+            context.ShowPlaceholders = false; // Hide placeholders
 
             // Get the model first from AssemblyManager
             using var assemblyManager = new AssemblyManager(_testAssemblyPath!, _testXmlPath!);
             var model = await assemblyManager.DocumentAsync(context);
 
             // Apply conceptual loading
-            await manager.LoadConceptualAsync(model, context.ConceptualPath!, context);
+            await manager.LoadConceptualAsync(model);
 
             // Assert
             var testClass = model.Namespaces
@@ -242,20 +266,17 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             // Arrange
             await CreateNestedNamespacePlaceholderContentAsync();
 
-            var manager = new DocumentationManager([], [], []);
-            var context = new ProjectContext
-            {
-                ConceptualPath = Path.Combine(_tempDirectory!, "conceptual"),
-                OutputPath = Path.Combine(_tempDirectory!, "output"),
-                ShowPlaceholders = false // Hide placeholders
-            };
+            var manager = GetDocumentationManager();
+            var context = GetService<ProjectContext>();
+            context.ConceptualPath = Path.Combine(_tempDirectory!, "conceptual");
+            context.ShowPlaceholders = false; // Hide placeholders
 
             // Get the model first from AssemblyManager
             using var assemblyManager = new AssemblyManager(_testAssemblyPath!, _testXmlPath!);
             var model = await assemblyManager.DocumentAsync(context);
 
             // Apply conceptual loading
-            await manager.LoadConceptualAsync(model, context.ConceptualPath!, context);
+            await manager.LoadConceptualAsync(model);
 
             // Assert - namespace level documentation
             var ns = model.Namespaces.FirstOrDefault(n => n.Name == "CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios");
@@ -275,20 +296,17 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             // Arrange
             await CreateMemberPlaceholderContentAsync();
 
-            var manager = new DocumentationManager([], [], []);
-            var context = new ProjectContext
-            {
-                ConceptualPath = Path.Combine(_tempDirectory!, "conceptual"),
-                OutputPath = Path.Combine(_tempDirectory!, "output"),
-                ShowPlaceholders = false // Hide placeholders
-            };
+            var manager = GetDocumentationManager();
+            var context = GetService<ProjectContext>();
+            context.ConceptualPath = Path.Combine(_tempDirectory!, "conceptual");
+            context.ShowPlaceholders = false; // Hide placeholders
 
             // Get the model first from AssemblyManager
             using var assemblyComponent = new AssemblyManager(_testAssemblyPath!, _testXmlPath!);
             var model = await assemblyComponent.DocumentAsync(context);
 
             // Apply conceptual loading
-            await manager.LoadConceptualAsync(model, context.ConceptualPath!, context);
+            await manager.LoadConceptualAsync(model);
 
             // Assert - member level documentation
             var method = model.Namespaces
@@ -311,20 +329,17 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             // Arrange
             await CreateParameterPlaceholderContentAsync();
 
-            var manager = new DocumentationManager([], [], []);
-            var context = new ProjectContext
-            {
-                ConceptualPath = Path.Combine(_tempDirectory!, "conceptual"),
-                OutputPath = Path.Combine(_tempDirectory!, "output"),
-                ShowPlaceholders = false // Hide placeholders
-            };
+            var manager = GetDocumentationManager();
+            var context = GetService<ProjectContext>();
+            context.ConceptualPath = Path.Combine(_tempDirectory!, "conceptual");
+            context.ShowPlaceholders = false; // Hide placeholders
 
             // Get the model first from AssemblyManager
             using var assemblyManager = new AssemblyManager(_testAssemblyPath!, _testXmlPath!);
             var model = await assemblyManager.DocumentAsync(context);
 
             // Apply conceptual loading
-            await manager.LoadConceptualAsync(model, context.ConceptualPath!, context);
+            await manager.LoadConceptualAsync(model);
 
             // Assert - parameter level documentation
             var method = model.Namespaces
@@ -353,25 +368,9 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             // Use the real Tests.Shared assembly and its XML documentation
             _testAssemblyPath = typeof(SimpleClass).Assembly.Location;
             _testXmlPath = Path.ChangeExtension(_testAssemblyPath, ".xml");
-            
+
             _tempDirectory = Path.Combine(Path.GetTempPath(), $"DocManagerTests_{Guid.NewGuid()}");
             Directory.CreateDirectory(_tempDirectory);
-        }
-
-        [TestCleanup]
-        public void Cleanup()
-        {
-            if (!string.IsNullOrWhiteSpace(_tempDirectory) && Directory.Exists(_tempDirectory))
-            {
-                try
-                {
-                    Directory.Delete(_tempDirectory, recursive: true);
-                }
-                catch
-                {
-                    // Best effort cleanup
-                }
-            }
         }
 
         #endregion
@@ -538,7 +537,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core
                 Name = name;
             }
 
-            public Task EnrichAsync(DocEntity entity, ProjectContext context)
+            public Task EnrichAsync(DocEntity entity)
             {
                 Executed = true;
                 return Task.CompletedTask;
@@ -555,7 +554,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core
                 Name = name;
             }
 
-            public Task TransformAsync(DocEntity entity, ProjectContext context)
+            public Task TransformAsync(DocEntity entity)
             {
                 Executed = true;
                 return Task.CompletedTask;
@@ -572,7 +571,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core
                 Name = name;
             }
 
-            public Task RenderAsync(DocAssembly model, string outputPath, ProjectContext context)
+            public Task RenderAsync(DocAssembly model)
             {
                 Executed = true;
                 return Task.CompletedTask;

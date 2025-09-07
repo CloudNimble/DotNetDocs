@@ -78,14 +78,14 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Extensions
             TestHostBuilder.ConfigureServices(services => 
                 services.AddDotNetDocs(context =>
                 {
-                    context.OutputPath = expectedPath;
+                    context.DocumentationRootPath = expectedPath;
                     context.ShowPlaceholders = expectedShowPlaceholders;
                 }));
             TestSetup();
 
             // Assert
             var projectContext = TestHost.Services.GetRequiredService<ProjectContext>();
-            projectContext.OutputPath.Should().Be(expectedPath);
+            projectContext.DocumentationRootPath.Should().Be(expectedPath);
             projectContext.ShowPlaceholders.Should().Be(expectedShowPlaceholders);
         }
 
@@ -154,13 +154,13 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Extensions
             TestHostBuilder.ConfigureServices(services => 
                 services.AddDotNetDocsCore(context =>
                 {
-                    context.OutputPath = expectedPath;
+                    context.DocumentationRootPath = expectedPath;
                 }));
             TestSetup();
 
             // Assert
             var projectContext = TestHost.Services.GetRequiredService<ProjectContext>();
-            projectContext.OutputPath.Should().Be(expectedPath);
+            projectContext.DocumentationRootPath.Should().Be(expectedPath);
         }
 
         #endregion
@@ -596,17 +596,17 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Extensions
         private class TestRenderer : IDocRenderer
         {
             public string OutputFormat => "Test";
-            public Task RenderAsync(DocAssembly model, string outputPath, ProjectContext context) => Task.CompletedTask;
+            public Task RenderAsync(DocAssembly model) => Task.CompletedTask;
         }
 
         private class TestEnricher : IDocEnricher
         {
-            public Task EnrichAsync(DocEntity entity, ProjectContext context) => Task.CompletedTask;
+            public Task EnrichAsync(DocEntity entity) => Task.CompletedTask;
         }
 
         private class TestTransformer : IDocTransformer
         {
-            public Task TransformAsync(DocEntity entity, ProjectContext context) => Task.CompletedTask;
+            public Task TransformAsync(DocEntity entity) => Task.CompletedTask;
         }
 
         #endregion

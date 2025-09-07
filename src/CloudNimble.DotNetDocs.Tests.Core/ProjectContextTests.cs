@@ -34,8 +34,8 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             context.IncludedMembers.Should().Contain(Accessibility.Public);
             context.References.Should().BeEmpty();
             context.ShowPlaceholders.Should().BeTrue();
-            context.OutputPath.Should().Be("docs");
-            context.ConceptualPath.Should().BeNull();
+            context.DocumentationRootPath.Should().Be("docs");
+            context.ConceptualPath.Should().Be("conceptual");
             context.FileNamingOptions.Should().NotBeNull();
             context.FileNamingOptions.NamespaceMode.Should().Be(NamespaceMode.File);
             context.FileNamingOptions.NamespaceSeparator.Should().Be('-');
@@ -290,14 +290,14 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             var context = new ProjectContext
             {
                 ConceptualPath = "/custom/conceptual",
-                OutputPath = "/custom/output",
+                DocumentationRootPath = "/custom/output",
                 ShowPlaceholders = false,
                 FileNamingOptions = new FileNamingOptions(NamespaceMode.Folder, '_')
             };
 
             // Assert
             context.ConceptualPath.Should().Be("/custom/conceptual");
-            context.OutputPath.Should().Be("/custom/output");
+            context.DocumentationRootPath.Should().Be("/custom/output");
             context.ShowPlaceholders.Should().BeFalse();
             context.FileNamingOptions.NamespaceMode.Should().Be(NamespaceMode.Folder);
             context.FileNamingOptions.NamespaceSeparator.Should().Be('_');

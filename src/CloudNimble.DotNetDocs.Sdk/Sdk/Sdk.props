@@ -37,9 +37,10 @@
         <DocumentationType Condition="'$(DocumentationType)' == '' AND Exists('$(DocumentationRoot)hugo.toml')">Hugo</DocumentationType>
         <DocumentationType Condition="'$(DocumentationType)' == ''">Generic</DocumentationType>
 
-        <!-- Default output path for generated documentation -->
+        <!-- Default output paths for generated documentation -->
         <ApiReferencePath Condition="'$(ApiReferencePath)' == '' AND '$(DocumentationType)' == 'Mintlify'">api-reference</ApiReferencePath>
         <ApiReferencePath Condition="'$(ApiReferencePath)' == ''">api-reference</ApiReferencePath>
+        <ConceptualPath Condition="'$(ConceptualPath)' == ''">conceptual</ConceptualPath>
 
         <!-- Default namespace mode for documentation generation -->
         <NamespaceMode Condition="'$(NamespaceMode)' == ''">Folder</NamespaceMode>

@@ -56,7 +56,7 @@ Renders the documentation assembly to JSON files.
 #### Syntax
 
 ```csharp
-public System.Threading.Tasks.Task RenderAsync(CloudNimble.DotNetDocs.Core.DocAssembly model, string outputPath, CloudNimble.DotNetDocs.Core.ProjectContext context)
+public System.Threading.Tasks.Task RenderAsync(CloudNimble.DotNetDocs.Core.DocAssembly model)
 ```
 
 #### Parameters
@@ -64,8 +64,6 @@ public System.Threading.Tasks.Task RenderAsync(CloudNimble.DotNetDocs.Core.DocAs
 | Name | Type | Description |
 |------|------|-------------|
 | `model` | `CloudNimble.DotNetDocs.Core.DocAssembly` | The documentation assembly to render. |
-| `outputPath` | `string` | The path where JSON files should be generated. |
-| `context` | `CloudNimble.DotNetDocs.Core.ProjectContext` | The project context providing rendering settings. |
 
 #### Returns
 

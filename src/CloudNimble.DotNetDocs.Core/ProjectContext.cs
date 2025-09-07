@@ -31,20 +31,17 @@ namespace CloudNimble.DotNetDocs.Core
         #region Properties
 
         /// <summary>
+        /// Gets or sets the path to the API reference documentation.
+        /// </summary>
+        public string ApiReferencePath { get; set; } = "api-reference";
+
+        /// <summary>
         /// Gets or sets the path to the conceptual documentation folder.
         /// </summary>
         /// <value>
         /// The file system path to the folder containing conceptual documentation files.
         /// </value>
-        public string? ConceptualPath { get; set; }
-
-        /// <summary>
-        /// Gets or sets the file naming options for documentation generation.
-        /// </summary>
-        /// <value>
-        /// Configuration for how documentation files are named and organized.
-        /// </value>
-        public FileNamingOptions FileNamingOptions { get; set; } = new FileNamingOptions();
+        public string ConceptualPath { get; set; } = "conceptual";
 
         /// <summary>
         /// Gets or sets the output path for generated documentation.
@@ -52,32 +49,7 @@ namespace CloudNimble.DotNetDocs.Core
         /// <value>
         /// The file system path where documentation output will be generated.
         /// </value>
-        public string OutputPath { get; set; } = "docs";
-
-        /// <summary>
-        /// Gets or sets the collection of paths to referenced assemblies.
-        /// </summary>
-        /// <value>
-        /// A collection of file system paths to assemblies referenced by the project being documented.
-        /// </value>
-        public List<string> References { get; set; } = [];
-
-        /// <summary>
-        /// Gets or sets whether to show placeholder content in the documentation.
-        /// </summary>
-        /// <value>
-        /// When true (default), placeholder content is included. When false, files containing the
-        /// TODO marker comment are skipped during loading.
-        /// </value>
-        public bool ShowPlaceholders { get; set; } = true;
-
-        /// <summary>
-        /// Gets or sets the list of member accessibilities to include in documentation.
-        /// </summary>
-        /// <value>
-        /// List of accessibility levels to include. Defaults to Public only.
-        /// </value>
-        public List<Accessibility> IncludedMembers { get; set; }
+        public string DocumentationRootPath { get; set; } = "docs";
 
         /// <summary>
         /// Gets or sets the list of type patterns to exclude from documentation.
@@ -101,6 +73,39 @@ namespace CloudNimble.DotNetDocs.Core
         /// }
         /// </example>
         public HashSet<string> ExcludedTypes { get; set; }
+
+        /// <summary>
+        /// Gets or sets the file naming options for documentation generation.
+        /// </summary>
+        /// <value>
+        /// Configuration for how documentation files are named and organized.
+        /// </value>
+        public FileNamingOptions FileNamingOptions { get; set; } = new FileNamingOptions();
+
+        /// <summary>
+        /// Gets or sets the list of member accessibilities to include in documentation.
+        /// </summary>
+        /// <value>
+        /// List of accessibility levels to include. Defaults to Public only.
+        /// </value>
+        public List<Accessibility> IncludedMembers { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of paths to referenced assemblies.
+        /// </summary>
+        /// <value>
+        /// A collection of file system paths to assemblies referenced by the project being documented.
+        /// </value>
+        public List<string> References { get; set; } = [];
+
+        /// <summary>
+        /// Gets or sets whether to show placeholder content in the documentation.
+        /// </summary>
+        /// <value>
+        /// When true (default), placeholder content is included. When false, files containing the
+        /// TODO marker comment are skipped during loading.
+        /// </value>
+        public bool ShowPlaceholders { get; set; } = true;
 
         #endregion
 

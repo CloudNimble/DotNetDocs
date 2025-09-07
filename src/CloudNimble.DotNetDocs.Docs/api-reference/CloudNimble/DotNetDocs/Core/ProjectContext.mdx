@@ -79,6 +79,20 @@ public ProjectContext(System.Collections.Generic.List<Microsoft.CodeAnalysis.Acc
 
 ## Properties
 
+### ApiReferencePath
+
+Gets or sets the path to the API reference documentation.
+
+#### Syntax
+
+```csharp
+public string ApiReferencePath { get; set; }
+```
+
+#### Property Value
+
+Type: `string`
+
 ### ConceptualPath
 
 Gets or sets the path to the conceptual documentation folder.
@@ -91,8 +105,23 @@ public string ConceptualPath { get; set; }
 
 #### Property Value
 
-Type: `string?`
+Type: `string`
 The file system path to the folder containing conceptual documentation files.
+
+### DocumentationRootPath
+
+Gets or sets the output path for generated documentation.
+
+#### Syntax
+
+```csharp
+public string DocumentationRootPath { get; set; }
+```
+
+#### Property Value
+
+Type: `string`
+The file system path where documentation output will be generated.
 
 ### ExcludedTypes
 
@@ -157,21 +186,6 @@ public System.Collections.Generic.List<Microsoft.CodeAnalysis.Accessibility> Inc
 
 Type: `System.Collections.Generic.List<Microsoft.CodeAnalysis.Accessibility>`
 List of accessibility levels to include. Defaults to Public only.
-
-### OutputPath
-
-Gets or sets the output path for generated documentation.
-
-#### Syntax
-
-```csharp
-public string OutputPath { get; set; }
-```
-
-#### Property Value
-
-Type: `string`
-The file system path where documentation output will be generated.
 
 ### References
 

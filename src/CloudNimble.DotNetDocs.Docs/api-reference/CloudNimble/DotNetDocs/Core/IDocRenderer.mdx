@@ -30,12 +30,12 @@ Implementations of this interface generate specific output formats (Markdown, JS
 
 ### RenderAsync
 
-Renders the documentation assembly to the specified output path.
+Renders the documentation assembly to the output path specified in the project context.
 
 #### Syntax
 
 ```csharp
-System.Threading.Tasks.Task RenderAsync(CloudNimble.DotNetDocs.Core.DocAssembly model, string outputPath, CloudNimble.DotNetDocs.Core.ProjectContext context)
+System.Threading.Tasks.Task RenderAsync(CloudNimble.DotNetDocs.Core.DocAssembly model)
 ```
 
 #### Parameters
@@ -43,8 +43,6 @@ System.Threading.Tasks.Task RenderAsync(CloudNimble.DotNetDocs.Core.DocAssembly 
 | Name | Type | Description |
 |------|------|-------------|
 | `model` | `CloudNimble.DotNetDocs.Core.DocAssembly` | The documentation assembly to render. |
-| `outputPath` | `string` | The path where output should be generated. |
-| `context` | `CloudNimble.DotNetDocs.Core.ProjectContext` | The project context providing rendering settings. |
 
 #### Returns
 

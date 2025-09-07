@@ -31,12 +31,14 @@ namespace CloudNimble.DotNetDocs.Tools
                 string outputPath = args[1];
                 string namespaceMode = args.Length >= 3 ? args[2] : "File";
                 string documentationType = args.Length >= 4 ? args[3] : "Default";
+                string apiReferencePath = args.Length >= 5 ? args[4] : "api-reference";
 
                 Console.WriteLine($"🔧 Starting documentation generation...");
                 Console.WriteLine($"📁 Assembly list: {assemblyListFile}");
                 Console.WriteLine($"📂 Output path: {outputPath}");
                 Console.WriteLine($"🏷️  Namespace mode: {namespaceMode}");
                 Console.WriteLine($"📄 Documentation type: {documentationType}");
+                Console.WriteLine($"📚 API Reference path: {apiReferencePath}");
 
                 // Read assembly list
                 if (!File.Exists(assemblyListFile))
@@ -83,7 +85,8 @@ namespace CloudNimble.DotNetDocs.Tools
                         // Register DotNetDocs services
                         services.AddDotNetDocsCore(context =>
                         {
-                            context.OutputPath = outputPath;
+                            context.DocumentationRootPath = outputPath;
+                            context.ApiReferencePath = apiReferencePath;
                             context.FileNamingOptions.NamespaceMode = Enum.Parse<NamespaceMode>(namespaceMode);
                         });
 
