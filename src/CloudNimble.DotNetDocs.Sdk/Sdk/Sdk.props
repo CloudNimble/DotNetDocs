@@ -68,7 +68,21 @@
 
     <!-- Import the NoTargets SDK props for no-compile behavior -->
     <!-- NoTargets SDK files are bundled in the Sdk/NoTargets folder -->
-    <Import Project="$(MSBuildThisFileDirectory)NoTargets\Sdk.props" />
+    <!-- First try the local NoTargets folder (for packaged SDK) -->
+    <Import Project="$(MSBuildThisFileDirectory)NoTargets\Sdk.props" 
+            Condition="Exists('$(MSBuildThisFileDirectory)NoTargets\Sdk.props')" />
+    
+    <!-- Fallback: Try common NuGet package locations if local doesn't exist -->
+    <PropertyGroup Condition="!Exists('$(MSBuildThisFileDirectory)NoTargets\Sdk.props')">
+        <!-- Try standard NuGet cache location -->
+        <_NoTargetsFallbackPath>$(UserProfile)\.nuget\packages\microsoft.build.notargets\3.7.0\Sdk\Sdk.props</_NoTargetsFallbackPath>
+        <!-- For CI environments that might use different cache -->
+        <_NoTargetsFallbackPath Condition="!Exists('$(_NoTargetsFallbackPath)')">$(NuGetPackageRoot)microsoft.build.notargets\3.7.0\Sdk\Sdk.props</_NoTargetsFallbackPath>
+    </PropertyGroup>
+    
+    <!-- Import from NuGet cache if found -->
+    <Import Project="$(_NoTargetsFallbackPath)" 
+            Condition="!Exists('$(MSBuildThisFileDirectory)NoTargets\Sdk.props') and Exists('$(_NoTargetsFallbackPath)')" />
     
     <!-- Advanced Feature 2: Auto-Include Patterns by Documentation Type -->
     <!-- Common files for all documentation types -->

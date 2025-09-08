@@ -15,7 +15,21 @@
 
     <!-- Import the NoTargets SDK targets for no-compile behavior -->
     <!-- NoTargets SDK files are bundled in the Sdk/NoTargets folder -->
-    <Import Project="$(MSBuildThisFileDirectory)NoTargets\Sdk.targets" />
+    <!-- First try the local NoTargets folder (for packaged SDK) -->
+    <Import Project="$(MSBuildThisFileDirectory)NoTargets\Sdk.targets" 
+            Condition="Exists('$(MSBuildThisFileDirectory)NoTargets\Sdk.targets')" />
+    
+    <!-- Fallback: Try common NuGet package locations if local doesn't exist -->
+    <PropertyGroup Condition="!Exists('$(MSBuildThisFileDirectory)NoTargets\Sdk.targets')">
+        <!-- Try standard NuGet cache location -->
+        <_NoTargetsTargetsFallbackPath>$(UserProfile)\.nuget\packages\microsoft.build.notargets\3.7.0\Sdk\Sdk.targets</_NoTargetsTargetsFallbackPath>
+        <!-- For CI environments that might use different cache -->
+        <_NoTargetsTargetsFallbackPath Condition="!Exists('$(_NoTargetsTargetsFallbackPath)')">$(NuGetPackageRoot)microsoft.build.notargets\3.7.0\Sdk\Sdk.targets</_NoTargetsTargetsFallbackPath>
+    </PropertyGroup>
+    
+    <!-- Import from NuGet cache if found -->
+    <Import Project="$(_NoTargetsTargetsFallbackPath)" 
+            Condition="!Exists('$(MSBuildThisFileDirectory)NoTargets\Sdk.targets') and Exists('$(_NoTargetsTargetsFallbackPath)')" />
     
     <!-- Load compiled MSBuild tasks only during actual builds, not design-time builds -->
     <!-- DesignTimeBuild is set by Visual Studio during design-time builds -->
