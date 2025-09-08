@@ -20,7 +20,8 @@
       "mcp__playwright__browser_evaluate",
       "mcp__playwright__browser_click",
       "mcp__playwright__browser_close",
-      "mcp__github__get_file_contents"
+      "mcp__github__get_file_contents",
+      "mcp__github__search_code"
     ],
     "deny": [],
     "ask": [],
