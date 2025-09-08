@@ -1,9 +1,8 @@
-<Project Sdk="Microsoft.Build.NoTargets/3.7.0">
+﻿<Project Sdk="Microsoft.Build.NoTargets/3.7.0">
 
     <!--<Sdk Name="CloudNimble.DotNetDocs.Sdk" Version="1.0.0-preview.11" />-->
 
     <PropertyGroup>
-        <!-- Tell Visual Studio this is an SDK-style project -->
         <KeepLocalOutput>true</KeepLocalOutput>
         <DocumentationType>Mintlify</DocumentationType>
         <GenerateDocumentation>true</GenerateDocumentation>
@@ -13,6 +12,15 @@
 
     <ItemGroup>
         <Folder Include="guides\" />
+    </ItemGroup>
+    
+    <!-- RWM: Everything below this line is only necessary because we're building the SDK in the same solution. -->
+    <ItemGroup>
+        <!-- Reference the SDK project to ensure it builds first and copies NoTargets files -->
+        <!-- PrivateAssets="all" ensures SDK isn't included as a runtime dependency -->
+        <ProjectReference Include="..\CloudNimble.DotNetDocs.Sdk\CloudNimble.DotNetDocs.Sdk.csproj" 
+                          PrivateAssets="all" 
+                          ReferenceOutputAssembly="false" />
     </ItemGroup>
 
     <!--For local development, use local SDK files-->
