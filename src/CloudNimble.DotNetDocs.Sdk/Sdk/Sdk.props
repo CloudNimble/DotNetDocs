@@ -1,6 +1,6 @@
 <Project>
     <!-- ============================================================================
-       CloudNimble.Build.Documentation SDK - Props
+       CloudNimble.DotNer SDK - Props
        
        Provides MSBuild SDK support for documentation projects (.docsproj)
        Enables documentation files to be included in Visual Studio solutions
@@ -17,7 +17,12 @@
 
         <!-- Default target framework -->
         <TargetFramework Condition="'$(TargetFramework)' == ''">net8.0</TargetFramework>
-
+        
+        <!-- Suppress all NuGet warnings about vulnerable packages and framework references -->
+        <NoWarn>$(NoWarn);NU1903;NU1902;NU1901;NU1604;NU1603;NU1605</NoWarn>
+        <WarningsNotAsErrors>$(WarningsNotAsErrors);NU1903;NU1902;NU1901;NU1604;NU1603;NU1605</WarningsNotAsErrors>
+        <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+        
         <!-- Disable packaging and publishing by default -->
         <IsPackable Condition="'$(IsPackable)' == ''">false</IsPackable>
         <IsPublishable Condition="'$(IsPublishable)' == ''">false</IsPublishable>
@@ -64,9 +69,8 @@
     <!-- Import the NoTargets SDK props for no-compile behavior -->
     <!-- NoTargets SDK files are bundled in the Sdk/NoTargets folder -->
     <Import Project="$(MSBuildThisFileDirectory)NoTargets\Sdk.props" />
-
+    
     <!-- Advanced Feature 2: Auto-Include Patterns by Documentation Type -->
-
     <!-- Common files for all documentation types -->
     <ItemGroup>
         <None Include="$(DocumentationRoot)README.md" Condition="Exists('$(DocumentationRoot)README.md')" />

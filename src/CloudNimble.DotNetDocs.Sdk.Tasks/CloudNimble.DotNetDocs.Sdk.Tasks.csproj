@@ -1,0 +1,48 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <GenerateDocumentationFile>false</GenerateDocumentationFile>
+        <IsPackable>false</IsPackable>
+        <Description>MSBuild tasks for CloudNimble.DotNetDocs.Sdk</Description>
+        
+        <!-- Ensure all dependencies are copied to output -->
+        <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+        
+        <!-- Suppress warnings about MSBuild packages -->
+        <NoWarn>$(NoWarn);NU1701</NoWarn>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <!-- MSBuild task dependencies -->
+        <PackageReference Include="Microsoft.Build" Version="17.*" />
+        <PackageReference Include="Microsoft.Build.Utilities.Core" Version="17.*" />
+        <PackageReference Include="Microsoft.Build.Framework" Version="17.*" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.*" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <!-- Reference our core libraries -->
+        <ProjectReference Include="..\CloudNimble.DotNetDocs.Core\CloudNimble.DotNetDocs.Core.csproj" />
+        <ProjectReference Include="..\CloudNimble.DotNetDocs.Mintlify\CloudNimble.DotNetDocs.Mintlify.csproj" />
+    </ItemGroup>
+
+    <!-- Copy System.Runtime from the .NET runtime after build -->
+    <Target Name="CopySystemRuntime" AfterTargets="Build">
+        <!-- Just copy System.Runtime.dll from the current runtime -->
+        <Copy SourceFiles="$(MicrosoftNETCoreAppRuntimePackRidDir)System.Runtime.dll"
+              DestinationFolder="$(OutputPath)"
+              SkipUnchangedFiles="true"
+              Condition="Exists('$(MicrosoftNETCoreAppRuntimePackRidDir)System.Runtime.dll')" />
+              
+        <!-- Fallback: Copy from dotnet installation -->
+        <Exec Command="copy /Y &quot;$(DOTNET_ROOT)\shared\Microsoft.NETCore.App\8.0.*\System.Runtime.dll&quot; &quot;$(OutputPath)&quot;"
+              Condition="!Exists('$(OutputPath)System.Runtime.dll')"
+              ContinueOnError="true"
+              IgnoreExitCode="true" />
+              
+        <Message Text="System.Runtime.dll copied to $(OutputPath)" Importance="high" 
+                 Condition="Exists('$(OutputPath)System.Runtime.dll')" />
+    </Target>
+
+</Project>

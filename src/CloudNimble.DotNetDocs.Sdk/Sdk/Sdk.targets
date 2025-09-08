@@ -9,11 +9,30 @@
     <!-- Debug: Confirm targets file is loaded -->
     <Target Name="DotNetDocsTargetsLoaded" BeforeTargets="Build">
         <Message Text="🔧 DotNetDocs.Sdk targets loaded successfully" Importance="high" />
+        <Message Text="📦 Using .NET 8.0 task assemblies (forward compatible)" Importance="high" />
+        <Message Text="   MSBuild: $(MSBuildVersion) ($(MSBuildRuntimeType))" Importance="normal" />
     </Target>
 
     <!-- Import the NoTargets SDK targets for no-compile behavior -->
     <!-- NoTargets SDK files are bundled in the Sdk/NoTargets folder -->
     <Import Project="$(MSBuildThisFileDirectory)NoTargets\Sdk.targets" />
+    
+    <!-- Load compiled MSBuild tasks only during actual builds, not design-time builds -->
+    <!-- DesignTimeBuild is set by Visual Studio during design-time builds -->
+    <UsingTask TaskName="CloudNimble.DotNetDocs.Sdk.Tasks.DiscoverDocumentedProjectsTask" 
+               AssemblyFile="$(MSBuildThisFileDirectory)..\tasks\net8.0\CloudNimble.DotNetDocs.Sdk.Tasks.dll"
+               Condition="'$(DesignTimeBuild)' != 'true'" />
+    <UsingTask TaskName="CloudNimble.DotNetDocs.Sdk.Tasks.GenerateDocumentationTask" 
+               AssemblyFile="$(MSBuildThisFileDirectory)..\tasks\net8.0\CloudNimble.DotNetDocs.Sdk.Tasks.dll"
+               Condition="'$(DesignTimeBuild)' != 'true'" />
+    
+    <!-- Clean up any implicit package references that might cause warnings -->
+    <Target Name="RemoveImplicitPackageReferences" BeforeTargets="CollectPackageReferences">
+        <ItemGroup>
+            <PackageReference Remove="NETStandard.Library" />
+            <PackageReference Remove="Microsoft.NETCore.App" />
+        </ItemGroup>
+    </Target>
 
 
     <!-- Debug: Show GenerateDocumentation property value -->
@@ -22,7 +41,7 @@
     </Target>
 
     <!-- Documentation project validation and information -->
-    <Target Name="ValidateDocumentationProject" AfterTargets="Build">
+    <Target Name="ValidateDocumentationProject" BeforeTargets="Build">
         <Message Text="✅ Documentation project: $(MSBuildProjectName)" Importance="high" />
         <Message Text="📄 Documentation type: $(DocumentationType)" Importance="high" />
         <Message Text="📂 Documentation root: $(DocumentationRoot)" Importance="high" Condition="'$(DocumentationRoot)' != '$(MSBuildProjectDirectory)\'" />
@@ -32,28 +51,18 @@
     </Target>
 
     <!-- Discover documented projects in solution for documentation generation -->
-    <Target Name="DiscoverDocumentedProjects" Condition="'$(GenerateDocumentation)' == 'true'" BeforeTargets="ValidateDocumentationProject">
+    <Target Name="DiscoverDocumentedProjects" Condition="'$(GenerateDocumentation)' == 'true'" AfterTargets="ValidateDocumentationProject">
         <Message Text="🔍 Discovering documented projects in solution..." Importance="high" />
 
-        <!-- Find all .csproj files in parent directory (sibling projects) -->
-        <ItemGroup>
-            <AllProjectFiles Include="$(MSBuildProjectDirectory)\..\**\*.csproj" />
-            <!-- Exclude the docs project itself -->
-            <AllProjectFiles Remove="$(MSBuildProjectDirectory)\..\$(MSBuildProjectName)\*.csproj" />
-            <!-- Exclude test projects by pattern (projects can override with GenerateDotNetDocs property) -->
-            <AllProjectFiles Remove="$(MSBuildProjectDirectory)\..\**\*.Tests.*\*.csproj" />
-            <AllProjectFiles Remove="$(MSBuildProjectDirectory)\..\**\*.Test\*.csproj" />
-        </ItemGroup>
+        <!-- Use compiled task to discover projects -->
+        <CloudNimble.DotNetDocs.Sdk.Tasks.DiscoverDocumentedProjectsTask
+            SolutionDir="$(MSBuildProjectDirectory)\.."
+            ExcludePatterns="*.Tests.*;*.Test">
+            <Output TaskParameter="DocumentedProjects" ItemName="DocumentedProjects" />
+        </CloudNimble.DotNetDocs.Sdk.Tasks.DiscoverDocumentedProjectsTask>
 
-        <Message Text="   Found @(AllProjectFiles->Count()) non-test project files" Importance="normal" />
+        <Message Text="   Found @(DocumentedProjects->Count()) documented projects" Importance="normal" />
 
-        <!-- 
-        For now, use pattern-based discovery with property override capability:
-        - Include all non-test projects by default
-        - Projects can opt-in with <GenerateDotNetDocs>true</GenerateDotNetDocs>
-        - Projects can opt-out with <GenerateDotNetDocs>false</GenerateDotNetDocs> or <IsPackable>false</IsPackable>
-        - In the future, we can enhance this with inline tasks when MSBuild support improves
-        -->
         <ItemGroup>
             <DocumentedProjects Include="@(AllProjectFiles)" />
         </ItemGroup>
@@ -83,40 +92,44 @@
 
         <!-- Extract assembly paths from built projects (only main project assemblies) -->
         <ItemGroup>
-            <!-- Get assembly paths for net8.0 target framework - only main project assemblies -->
-            <AssemblyPaths Include="%(DocumentedProjects.RootDir)%(DocumentedProjects.Directory)bin\Release\net8.0\%(DocumentedProjects.Filename).dll" />
-            <XmlDocPaths Include="%(DocumentedProjects.RootDir)%(DocumentedProjects.Directory)bin\Release\net8.0\%(DocumentedProjects.Filename).xml" />
+            <!-- Get assembly paths using the actual target framework from each project -->
+            <AssemblyPaths Include="%(DocumentedProjects.RootDir)%(DocumentedProjects.Directory)bin\$(Configuration)\%(DocumentedProjects.TargetFramework)\%(DocumentedProjects.Filename).dll" />
+            <XmlDocPaths Include="%(DocumentedProjects.RootDir)%(DocumentedProjects.Directory)bin\$(Configuration)\%(DocumentedProjects.TargetFramework)\%(DocumentedProjects.Filename).xml" />
         </ItemGroup>
 
         <Message Text="📁 Found @(AssemblyPaths->Count()) assemblies for documentation generation" Importance="normal" />
+        
+        <!-- Debug: Show assembly paths -->
+        <Message Text="   Assembly: %(AssemblyPaths.Identity)" Importance="normal" />
 
         <!-- Call DocumentationManager to process assemblies -->
         <PropertyGroup>
-            <DocumentationManagerAssembly>$(MSBuildThisFileDirectory)..\..\CloudNimble.DotNetDocs.Core\bin\Release\net8.0\CloudNimble.DotNetDocs.Core.dll</DocumentationManagerAssembly>
             <DocumentationRootPath>$(MSBuildProjectDirectory)</DocumentationRootPath>
-            <DocumentationGeneratorTool>$(MSBuildThisFileDirectory)..\..\CloudNimble.DotNetDocs.Tools\bin\Release\net8.0\CloudNimble.DotNetDocs.Tools.dll</DocumentationGeneratorTool>
             <NamespaceModeProperty>$(NamespaceMode)</NamespaceModeProperty>
         </PropertyGroup>
 
-        <!-- Create assembly list file for DocumentationManager -->
+        <!-- Create assembly list file for DocumentationManager (for debugging) -->
         <WriteLinesToFile File="$(MSBuildProjectDirectory)\assembly-list.txt"
                          Lines="@(AssemblyPaths)"
                          Overwrite="true"
                          Condition="'$(Configuration)' == 'Debug'" />
 
-        <Message Text="📝 Created assembly list: $(MSBuildProjectDirectory)\assembly-list.txt" Importance="normal" />
-        <Message Text="🔧 Calling DocumentationManager.ProcessAsync with @(AssemblyPaths->Count()) assemblies" Importance="high" />
+        <Message Text="📝 Created assembly list: $(MSBuildProjectDirectory)\assembly-list.txt" Importance="normal" Condition="'$(Configuration)' == 'Debug'" />
+        <Message Text="🔧 Calling GenerateDocumentationTask with @(AssemblyPaths->Count()) assemblies" Importance="high" />
 
-        <!-- Call DocumentationManager via Tools project -->
-        <Exec Command="dotnet run --project &quot;$(MSBuildThisFileDirectory)..\..\CloudNimble.DotNetDocs.Tools\CloudNimble.DotNetDocs.Tools.csproj&quot; --framework net8.0 -- &quot;$(MSBuildProjectDirectory)\assembly-list.txt&quot; &quot;$(DocumentationRootPath)&quot; &quot;$(NamespaceModeProperty)&quot; &quot;$(DocumentationType)&quot; &quot;$(ApiReferencePath)&quot;"
-              ContinueOnError="true"
-              WorkingDirectory="$(MSBuildProjectDirectory)">
-            <Output TaskParameter="ExitCode" PropertyName="DocGenExitCode" />
-        </Exec>
+        <!-- Use compiled task to generate documentation -->
+        <CloudNimble.DotNetDocs.Sdk.Tasks.GenerateDocumentationTask
+            Assemblies="@(AssemblyPaths)"
+            OutputPath="$(DocumentationRootPath)"
+            DocumentationType="$(DocumentationType)"
+            NamespaceMode="$(NamespaceMode)"
+            ApiReferencePath="$(ApiReferencePath)">
+            <Output TaskParameter="GeneratedFiles" ItemName="GeneratedDocumentationFiles" />
+        </CloudNimble.DotNetDocs.Sdk.Tasks.GenerateDocumentationTask>
 
         <!-- Check result -->
-        <Message Text="✅ Documentation generation completed (Exit Code: $(DocGenExitCode))" Importance="high" Condition="'$(DocGenExitCode)' == '0'" />
-        <Message Text="❌ Documentation generation failed (Exit Code: $(DocGenExitCode))" Importance="high" Condition="'$(DocGenExitCode)' != '0'" />
+        <Message Text="✅ Documentation generation completed successfully" Importance="high" />
+        <Message Text="📄 Generated @(GeneratedDocumentationFiles->Count()) documentation files" Importance="normal" Condition="@(GeneratedDocumentationFiles->Count()) > 0" />
 
         <!-- DocumentationManager integration complete - merged model processing enabled -->
     </Target>
@@ -131,16 +144,6 @@
         <Message Text="⚠️ Mintlify generation not yet implemented" Importance="normal" />
     </Target>
 
-    <!-- Optional: Markdown linting -->
-    <Target Name="LintMarkdown"
-            Condition="'$(LintMarkdown)' == 'true'"
-            AfterTargets="Build">
-        <Message Text="🔍 Linting Markdown files..." Importance="high" />
-        <Exec Command="markdownlint **/*.md"
-              WorkingDirectory="$(DocumentationRoot)"
-              ContinueOnError="true"
-              IgnoreExitCode="true" />
-    </Target>
 
     <!-- Optional: Link validation -->
     <Target Name="ValidateLinks"
@@ -238,6 +241,39 @@
         <Message Text="   📝 Markdown files: @(MarkdownFiles->Count())" Importance="high" />
         <Message Text="   🖼️ Image files: @(ImageFiles->Count())" Importance="high" />
     </Target>
+
+    <!-- Override GetTargetPath to provide a marker file for terminal logger -->
+    <!-- This overrides the empty GetTargetPath from NoTargets SDK -->
+    <Target Name="GetTargetPath" Returns="@(TargetPathItem)">
+        <PropertyGroup>
+            <!-- Create a marker file path that represents our documentation output -->
+            <!-- This needs to be a file path, not a directory, to avoid MSB3024 error -->
+            <TargetPath>$(MSBuildProjectDirectory)\bin\$(Configuration)\$(MSBuildProjectName).docmarker</TargetPath>
+        </PropertyGroup>
+        <ItemGroup>
+            <TargetPathItem Include="$(TargetPath)">
+                <TargetFramework>$(TargetFramework)</TargetFramework>
+            </TargetPathItem>
+        </ItemGroup>
+    </Target>
+
+    <!-- Override GetTargetPathWithTargetPlatformMoniker as well -->
+    <Target Name="GetTargetPathWithTargetPlatformMoniker" Returns="@(TargetPathWithTargetPlatformMoniker)">
+        <PropertyGroup>
+            <!-- Use the same marker file path as GetTargetPath -->
+            <TargetPath>$(MSBuildProjectDirectory)\bin\$(Configuration)\$(MSBuildProjectName).docmarker</TargetPath>
+        </PropertyGroup>
+        <ItemGroup>
+            <TargetPathWithTargetPlatformMoniker Include="$(TargetPath)">
+                <TargetPlatformMoniker>$(TargetPlatformMoniker)</TargetPlatformMoniker>
+                <TargetFramework>$(TargetFramework)</TargetFramework>
+            </TargetPathWithTargetPlatformMoniker>
+        </ItemGroup>
+    </Target>
+    
+    <!-- Override CopyFilesToOutputDirectory to prevent the copy operation entirely -->
+    <!-- Since we're a documentation project, we don't need to copy files to output -->
+    <Target Name="CopyFilesToOutputDirectory" />
 
 
 

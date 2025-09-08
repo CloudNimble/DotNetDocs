@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.Build.NoTargets/3.7.0">
 
     <PropertyGroup>
-        <TargetFramework>net10.0</TargetFramework>
+        <TargetFramework>net8.0</TargetFramework>
         <GenerateDocumentationFile>false</GenerateDocumentationFile>
         <Description>
             MSBuild SDK for DotNetDocs projects (.docsproj) - provides a clean way to include documentation in .NET
@@ -14,7 +14,7 @@
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 
         <!-- Suppress warnings about SDK packages -->
-        <NoWarn>$(NoWarn);NU5128;CS2008;</NoWarn>
+        <NoWarn>$(NoWarn);NU5128;CS2008;NU1701;NU5100</NoWarn>
 
         <!-- Don't include assemblies in package -->
         <IncludeBuildOutput>false</IncludeBuildOutput>
@@ -24,6 +24,20 @@
         <!-- Don't create symbols package for SDK projects -->
         <IncludeSymbols>false</IncludeSymbols>
     </PropertyGroup>
+
+    <ItemGroup>
+        <!-- Include Microsoft.Build.NoTargets for bundling its SDK files -->
+        <PackageReference Include="Microsoft.Build.NoTargets"
+                          Version="3.7.0"
+                          PrivateAssets="all"
+                          GeneratePathProperty="true" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <!-- Reference the tasks project to ensure it builds first -->
+        <ProjectReference Include="..\CloudNimble.DotNetDocs.Sdk.Tasks\CloudNimble.DotNetDocs.Sdk.Tasks.csproj" 
+                          PrivateAssets="all" />
+    </ItemGroup>
 
     <ItemGroup>
         <!-- Pack the SDK files -->
@@ -48,7 +62,7 @@
             <NoTargetsFiles Include="$(NoTargetsSourcePath)\**\*" />
         </ItemGroup>
 
-        <Copy SourceFiles="@(NoTargetsFiles)" 
+        <Copy SourceFiles="@(NoTargetsFiles)"
               DestinationFiles="@(NoTargetsFiles->'$(NoTargetsDestPath)\%(RecursiveDir)%(Filename)%(Extension)')"
               SkipUnchangedFiles="true" />
     </Target>
@@ -60,12 +74,19 @@
         </ItemGroup>
     </Target>
 
-    <ItemGroup>
-        <!-- Include Microsoft.Build.NoTargets for bundling its SDK files -->
-        <PackageReference Include="Microsoft.Build.NoTargets"
-                          Version="3.7.0"
-                          PrivateAssets="all"
-                          GeneratePathProperty="true" />
-    </ItemGroup>
+
+    <!-- Copy compiled tasks and dependencies to package -->
+    <Target Name="CopyTasksToPackage" AfterTargets="Build" BeforeTargets="GenerateNuspec">
+        <ItemGroup>
+            <!-- Include task assemblies for net8.0 only (forward compatible with newer runtimes) -->
+            <TaskFiles Include="..\CloudNimble.DotNetDocs.Sdk.Tasks\bin\$(Configuration)\net8.0\*.dll" />
+        </ItemGroup>
+        
+        <Message Text="Including task assemblies in package for net8.0 (forward compatible)" Importance="high" />
+        
+        <ItemGroup>
+            <None Include="..\CloudNimble.DotNetDocs.Sdk.Tasks\bin\$(Configuration)\net8.0\*.dll" Pack="true" PackagePath="tasks/net8.0" />
+        </ItemGroup>
+    </Target>
 
 </Project>

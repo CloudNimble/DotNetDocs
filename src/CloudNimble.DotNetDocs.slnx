@@ -8,7 +8,7 @@
     <Project Path="CloudNimble.DotNetDocs.Core/CloudNimble.DotNetDocs.Core.csproj" />
   </Folder>
   <Folder Name="/Docs/">
-    <Project Path="CloudNimble.DotNetDocs.Docs/CloudNimble.DotNetDocs.Docs.csproj" Type="C#" />
+    <Project Path="CloudNimble.DotNetDocs.Docs/CloudNimble.DotNetDocs.Docs.csproj" Id="3f8d2e67-9a4b-4c3e-b8f1-7d5c9e2a8b45" />
   </Folder>
   <Folder Name="/Plugins/">
     <Project Path="CloudNimble.DotNetDocs.Plugins.AI/CloudNimble.DotNetDocs.Plugins.AI.csproj" Id="d02be6be-f430-42de-af74-09e49a3ce04b" />
@@ -54,6 +54,7 @@
     <Project Path="Mintlify.Tests.Core/Mintlify.Tests.Core.csproj" />
   </Folder>
   <Folder Name="/Tools/">
+    <Project Path="CloudNimble.DotNetDocs.Sdk.Tasks/CloudNimble.DotNetDocs.Sdk.Tasks.csproj" />
     <Project Path="CloudNimble.DotNetDocs.Sdk/CloudNimble.DotNetDocs.Sdk.csproj" Id="1c0ccd22-7736-4d5f-b0d7-ca1cc639e57b" />
     <Project Path="CloudNimble.DotNetDocs.Tools/CloudNimble.DotNetDocs.Tools.csproj" Id="21420dd3-cad5-4c8d-8630-2acde605cf48" />
   </Folder>

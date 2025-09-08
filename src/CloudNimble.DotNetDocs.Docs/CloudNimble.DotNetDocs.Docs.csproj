@@ -1,9 +1,9 @@
-<Project>
-    <!--<Sdk Name="DotNetDocs.Sdk" Version="1.0.0-preview.10" />-->
+<Project Sdk="Microsoft.Build.NoTargets/3.7.0">
 
-    <Import Project="$(MSBuildThisFileDirectory)..\CloudNimble.DotNetDocs.Sdk\Sdk\Sdk.props" />
-    <Import Project="$(MSBuildThisFileDirectory)..\CloudNimble.DotNetDocs.Sdk\Sdk\Sdk.targets" />
+    <!--<Sdk Name="CloudNimble.DotNetDocs.Sdk" Version="1.0.0-preview.11" />-->
+
     <PropertyGroup>
+        <!-- Tell Visual Studio this is an SDK-style project -->
         <KeepLocalOutput>true</KeepLocalOutput>
         <DocumentationType>Mintlify</DocumentationType>
         <GenerateDocumentation>true</GenerateDocumentation>
@@ -14,4 +14,8 @@
     <ItemGroup>
         <Folder Include="guides\" />
     </ItemGroup>
+
+    <!--For local development, use local SDK files-->
+    <Import Project="$(MSBuildThisFileDirectory)..\CloudNimble.DotNetDocs.Sdk\Sdk\Sdk.props" />
+    <Import Project="$(MSBuildThisFileDirectory)..\CloudNimble.DotNetDocs.Sdk\Sdk\Sdk.targets" />
 </Project>
