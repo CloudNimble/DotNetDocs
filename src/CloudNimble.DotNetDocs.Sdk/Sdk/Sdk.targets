@@ -9,8 +9,9 @@
     <!-- Debug: Confirm targets file is loaded -->
     <Target Name="DotNetDocsTargetsLoaded" BeforeTargets="Build">
         <Message Text="🔧 DotNetDocs.Sdk targets loaded successfully" Importance="high" />
-        <Message Text="📦 Using .NET 8.0 task assemblies (forward compatible)" Importance="high" />
+        <Message Text="📦 Using task assemblies from: $(_DotNetDocsTasksFolder)" Importance="high" />
         <Message Text="   MSBuild: $(MSBuildVersion) ($(MSBuildRuntimeType))" Importance="normal" />
+        <Message Text="   Task assembly exists: $([System.IO.File]::Exists('$(_DotNetDocsTasksAssembly)'))" Importance="normal" />
     </Target>
 
     <!-- Import the NoTargets SDK targets for no-compile behavior -->
@@ -31,14 +32,26 @@
     <Import Project="$(_NoTargetsTargetsFallbackPath)" 
             Condition="!Exists('$(MSBuildThisFileDirectory)NoTargets\Sdk.targets') and Exists('$(_NoTargetsTargetsFallbackPath)')" />
     
+    <!-- Determine which task assembly to load based on MSBuild runtime -->
+    <PropertyGroup>
+        <!-- Detect the MSBuild runtime version -->
+        <_DotNetDocsTasksFolder Condition="'$(MSBuildRuntimeType)' == 'Core' AND Exists('$(MSBuildThisFileDirectory)..\tasks\net9.0')">$(MSBuildThisFileDirectory)..\tasks\net9.0</_DotNetDocsTasksFolder>
+        <_DotNetDocsTasksFolder Condition="'$(MSBuildRuntimeType)' == 'Core' AND '$(_DotNetDocsTasksFolder)' == '' AND Exists('$(MSBuildThisFileDirectory)..\tasks\net8.0')">$(MSBuildThisFileDirectory)..\tasks\net8.0</_DotNetDocsTasksFolder>
+        <_DotNetDocsTasksFolder Condition="'$(MSBuildRuntimeType)' == 'Full' AND Exists('$(MSBuildThisFileDirectory)..\tasks\net472')">$(MSBuildThisFileDirectory)..\tasks\net472</_DotNetDocsTasksFolder>
+        <!-- Fallback to net8.0 if nothing else matches -->
+        <_DotNetDocsTasksFolder Condition="'$(_DotNetDocsTasksFolder)' == ''">$(MSBuildThisFileDirectory)..\tasks\net8.0</_DotNetDocsTasksFolder>
+        
+        <_DotNetDocsTasksAssembly>$(_DotNetDocsTasksFolder)\CloudNimble.DotNetDocs.Sdk.Tasks.dll</_DotNetDocsTasksAssembly>
+    </PropertyGroup>
+    
     <!-- Load compiled MSBuild tasks only during actual builds, not design-time builds -->
     <!-- DesignTimeBuild is set by Visual Studio during design-time builds -->
     <UsingTask TaskName="CloudNimble.DotNetDocs.Sdk.Tasks.DiscoverDocumentedProjectsTask" 
-               AssemblyFile="$(MSBuildThisFileDirectory)..\tasks\net8.0\CloudNimble.DotNetDocs.Sdk.Tasks.dll"
-               Condition="'$(DesignTimeBuild)' != 'true'" />
+               AssemblyFile="$(_DotNetDocsTasksAssembly)"
+               Condition="'$(DesignTimeBuild)' != 'true' AND Exists('$(_DotNetDocsTasksAssembly)')" />
     <UsingTask TaskName="CloudNimble.DotNetDocs.Sdk.Tasks.GenerateDocumentationTask" 
-               AssemblyFile="$(MSBuildThisFileDirectory)..\tasks\net8.0\CloudNimble.DotNetDocs.Sdk.Tasks.dll"
-               Condition="'$(DesignTimeBuild)' != 'true'" />
+               AssemblyFile="$(_DotNetDocsTasksAssembly)"
+               Condition="'$(DesignTimeBuild)' != 'true' AND Exists('$(_DotNetDocsTasksAssembly)')" />
     
     <!-- Clean up any implicit package references that might cause warnings -->
     <Target Name="RemoveImplicitPackageReferences" BeforeTargets="CollectPackageReferences">

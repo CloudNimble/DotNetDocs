@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using CloudNimble.DotNetDocs.Core;
 using CloudNimble.DotNetDocs.Core.Renderers.YamlConverters;
 using Microsoft.CodeAnalysis;
 using YamlDotNet.Serialization;
@@ -27,7 +28,8 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
             .ConfigureDefaultValuesHandling(DefaultValuesHandling.OmitNull | DefaultValuesHandling.OmitDefaults | DefaultValuesHandling.OmitEmptyCollections)
             .DisableAliases()
             .IgnoreFields()
-            .WithMaximumRecursion(5)  // Limit recursion depth to prevent cycles
+            // Prevent circular references by setting max recursion depth
+            .WithMaximumRecursion(50)
             // Type converters for Roslyn types to ensure proper serialization
             .WithTypeConverter(new SymbolTypeConverter())  // Handle ISymbol types first
             .WithTypeConverter(new AccessibilityTypeConverter())

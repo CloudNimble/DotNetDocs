@@ -1,14 +1,17 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using Microsoft.Build.Framework;
+using Microsoft.Build.Utilities;
+
+#if NET8_0_OR_GREATER
 using CloudNimble.DotNetDocs.Core;
 using CloudNimble.DotNetDocs.Core.Configuration;
 using CloudNimble.DotNetDocs.Core.Renderers;
 using CloudNimble.DotNetDocs.Mintlify;
-using Microsoft.Build.Framework;
-using Microsoft.Build.Utilities;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+#endif
 
 namespace CloudNimble.DotNetDocs.Sdk.Tasks
 {
@@ -72,6 +75,19 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
                 Log.LogMessage(MessageImportance.Normal, $"🏷️ Namespace mode: {NamespaceMode}");
                 Log.LogMessage(MessageImportance.Normal, $"📄 Documentation type: {DocumentationType}");
                 Log.LogMessage(MessageImportance.Normal, $"📚 API Reference path: {ApiReferencePath}");
+
+#if NETSTANDARD2_0 || NETFRAMEWORK
+                // .NET Framework fallback - just create placeholder files for now
+                Log.LogWarning("Documentation generation on .NET Framework MSBuild is limited. Please use dotnet build for full functionality.");
+                
+                // Create a simple placeholder file to indicate the task ran
+                var placeholderPath = Path.Combine(OutputPath, ApiReferencePath, "README.md");
+                Directory.CreateDirectory(Path.GetDirectoryName(placeholderPath));
+                File.WriteAllText(placeholderPath, "# API Documentation\n\nPlease build with `dotnet build` for full documentation generation.");
+                
+                GeneratedFiles = new[] { new TaskItem(placeholderPath) };
+                return true;
+#else
 
                 // Filter assemblies to only those with XML documentation
                 var assemblyPairs = new List<(string assemblyPath, string xmlPath)>();
@@ -204,6 +220,7 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
                 }
 
                 return true;
+#endif
             }
             catch (Exception ex)
             {

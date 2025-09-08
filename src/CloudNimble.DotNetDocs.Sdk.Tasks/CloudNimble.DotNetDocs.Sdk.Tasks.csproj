@@ -1,7 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
+        <!-- Multi-target to support different MSBuild hosts -->
+        <TargetFrameworks>net10.0;net9.0;net8.0;netstandard2.0</TargetFrameworks>
         <GenerateDocumentationFile>false</GenerateDocumentationFile>
         <IsPackable>false</IsPackable>
         <Description>MSBuild tasks for CloudNimble.DotNetDocs.Sdk</Description>
@@ -15,34 +16,33 @@
 
     <ItemGroup>
         <!-- MSBuild task dependencies -->
-        <PackageReference Include="Microsoft.Build" Version="17.*" />
-        <PackageReference Include="Microsoft.Build.Utilities.Core" Version="17.*" />
-        <PackageReference Include="Microsoft.Build.Framework" Version="17.*" />
+        <!-- MSBuild SDK references with PrivateAssets to avoid conflicts -->
+        <PackageReference Include="Microsoft.Build" Version="17.*" PrivateAssets="all" ExcludeAssets="runtime" />
+        <PackageReference Include="Microsoft.Build.Utilities.Core" Version="17.*" PrivateAssets="all" ExcludeAssets="runtime" />
+        <PackageReference Include="Microsoft.Build.Framework" Version="17.*" PrivateAssets="all" />
+    </ItemGroup>
+
+    <!-- Framework-specific dependencies -->
+    <ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.*" />
     </ItemGroup>
 
-    <ItemGroup>
-        <!-- Reference our core libraries -->
+    <ItemGroup Condition="'$(TargetFramework)' == 'net9.0'">
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.*" />
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(TargetFramework)' == 'net10.0'">
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.*-*" />
+    </ItemGroup>
+
+    <ItemGroup  Condition="'$(TargetFramework)' != 'netstandard2.0'">
         <ProjectReference Include="..\CloudNimble.DotNetDocs.Core\CloudNimble.DotNetDocs.Core.csproj" />
         <ProjectReference Include="..\CloudNimble.DotNetDocs.Mintlify\CloudNimble.DotNetDocs.Mintlify.csproj" />
     </ItemGroup>
 
-    <!-- Copy System.Runtime from the .NET runtime after build -->
-    <Target Name="CopySystemRuntime" AfterTargets="Build">
-        <!-- Just copy System.Runtime.dll from the current runtime -->
-        <Copy SourceFiles="$(MicrosoftNETCoreAppRuntimePackRidDir)System.Runtime.dll"
-              DestinationFolder="$(OutputPath)"
-              SkipUnchangedFiles="true"
-              Condition="Exists('$(MicrosoftNETCoreAppRuntimePackRidDir)System.Runtime.dll')" />
-              
-        <!-- Fallback: Copy from dotnet installation -->
-        <Exec Command="copy /Y &quot;$(DOTNET_ROOT)\shared\Microsoft.NETCore.App\8.0.*\System.Runtime.dll&quot; &quot;$(OutputPath)&quot;"
-              Condition="!Exists('$(OutputPath)System.Runtime.dll')"
-              ContinueOnError="true"
-              IgnoreExitCode="true" />
-              
-        <Message Text="System.Runtime.dll copied to $(OutputPath)" Importance="high" 
-                 Condition="Exists('$(OutputPath)System.Runtime.dll')" />
-    </Target>
+    <!-- For .NET Framework, we'll implement a simpler fallback -->
+    <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+        <PackageReference Include="System.ValueTuple" Version="4.*" />
+    </ItemGroup>
 
 </Project>

@@ -59,7 +59,14 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             // Configure services for DI
             TestHostBuilder.ConfigureServices((context, services) =>
             {
-                services.AddDotNetDocsCore();
+                services.AddDotNetDocsPipeline(pipeline =>
+                {
+                    pipeline.UseYamlRenderer()
+                        .ConfigureContext(ctx =>
+                        {
+                            ctx.DocumentationRootPath = _testOutputPath;
+                        });
+                });
             });
 
             TestSetup();

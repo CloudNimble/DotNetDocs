@@ -40,8 +40,9 @@ namespace CloudNimble.DotNetDocs.Core.Renderers.YamlConverters
         /// <param name="serializer">The serializer.</param>
         public void WriteYaml(IEmitter emitter, object? value, Type type, ObjectSerializer serializer)
         {
-            // Do not serialize ISymbol - just skip it
-            emitter.Emit(new Scalar("null"));
+            // Do not serialize ISymbol - emit null scalar
+            // This prevents traversing the ISymbol object graph which causes circular references
+            emitter.Emit(new Scalar(AnchorName.Empty, TagName.Empty, "null", ScalarStyle.Plain, true, false));
         }
         
     }

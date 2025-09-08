@@ -362,8 +362,9 @@ namespace CloudNimble.DotNetDocs.Tests.Core
 
         #region Setup and Cleanup
 
-        [TestInitialize]
-        public void Setup()
+        // TestInitialize is already defined in the Test Lifecycle region above
+        // This method is now called from TestInitialize
+        private void Setup()
         {
             // Use the real Tests.Shared assembly and its XML documentation
             _testAssemblyPath = typeof(SimpleClass).Assembly.Location;

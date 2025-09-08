@@ -6,6 +6,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using CloudNimble.Breakdance.Assemblies;
 using CloudNimble.DotNetDocs.Core;
+using CloudNimble.DotNetDocs.Core.Configuration;
 using CloudNimble.DotNetDocs.Core.Renderers;
 using CloudNimble.DotNetDocs.Tests.Shared;
 using CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios;
@@ -54,7 +55,14 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             // Configure services for DI
             TestHostBuilder.ConfigureServices((context, services) =>
             {
-                services.AddDotNetDocsCore();
+                services.AddDotNetDocsPipeline(pipeline =>
+                {
+                    pipeline.UseJsonRenderer()
+                        .ConfigureContext(ctx =>
+                        {
+                            ctx.DocumentationRootPath = _testOutputPath;
+                        });
+                });
             });
 
             TestSetup();
