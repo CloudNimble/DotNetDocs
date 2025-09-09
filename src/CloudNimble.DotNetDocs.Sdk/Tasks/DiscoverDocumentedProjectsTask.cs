@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using CloudNimble.EasyAF.MSBuild;
 using Microsoft.Build.Evaluation;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
@@ -43,7 +42,7 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
         /// Gets or sets the discovered projects that should be documented.
         /// </summary>
         [Output]
-        public ITaskItem[] DocumentedProjects { get; set; } = Array.Empty<ITaskItem>();
+        public ITaskItem[] DocumentedProjects { get; set; } = [];
 
         #endregion
 
@@ -59,11 +58,16 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
             {
                 Log.LogMessage(MessageImportance.High, $"🔍 Discovering documented projects in {SolutionDir}...");
 
-                // Ensure MSBuild is registered using EasyAF's helper
-                MSBuildProjectManager.EnsureMSBuildRegistered();
-
                 var documentedProjects = new List<ITaskItem>();
-                var projectFiles = Directory.GetFiles(SolutionDir, "*.csproj", SearchOption.AllDirectories);
+                
+                // Search for all .NET project file types and filter out excluded patterns
+                var projectExtensions = new[] { "*.csproj", "*.vbproj", "*.fsproj" };
+                var projectFiles = projectExtensions
+                    .SelectMany(ext => Directory.GetFiles(SolutionDir, ext, SearchOption.AllDirectories))
+                    .Where(file => ExcludePatterns == null || !ExcludePatterns.Any(pattern => 
+                        Path.GetFileNameWithoutExtension(file).Contains(pattern.Replace("*", ""), StringComparison.OrdinalIgnoreCase)))
+                    .ToArray();
+                
                 var projectCollection = new ProjectCollection();
 
                 // Set up global properties for evaluation
@@ -75,27 +79,9 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
                 foreach (var projectFile in projectFiles)
                 {
                     var projectName = Path.GetFileNameWithoutExtension(projectFile);
-                    
-                    // Skip excluded patterns (check against project name, not full path)
-                    if (ExcludePatterns != null && ExcludePatterns.Any(pattern => 
-                        projectName.Contains(pattern.Replace("*", ""), StringComparison.OrdinalIgnoreCase)))
-                    {
-                        Log.LogMessage(MessageImportance.Low, $"   ⏭️ Skipping excluded project: {projectName}");
-                        continue;
-                    }
 
                     try
                     {
-                        // Use MSBuildProjectManager to load the project
-                        var manager = new MSBuildProjectManager(projectFile);
-                        manager.Load(preserveFormatting: false);
-
-                        if (!manager.IsLoaded)
-                        {
-                            Log.LogWarning($"Could not load project {projectFile}: {string.Join(", ", manager.ProjectErrors.Select(e => e.ErrorText))}");
-                            continue;
-                        }
-
                         // Create an evaluated project to get computed property values
                         var project = new Project(projectFile, globalProperties, null, projectCollection);
 
@@ -166,7 +152,7 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
                 // Clean up the project collection
                 projectCollection.UnloadAllProjects();
 
-                DocumentedProjects = documentedProjects.ToArray();
+                DocumentedProjects = [.. documentedProjects];
                 Log.LogMessage(MessageImportance.High, $"📊 Found {DocumentedProjects.Length} documented projects");
 
                 return true;
