@@ -99,11 +99,12 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             await GetMintlifyRenderer().RenderAsync(model);
 
             // Assert
+            var context = GetService<ProjectContext>();
+            var renderer = GetMintlifyRenderer();
             foreach (var ns in model.Namespaces)
             {
-                var namespaceName = string.IsNullOrEmpty(ns.Name) ? "global" : ns.Name;
-                var nsFileName = $"{namespaceName.Replace('.', '-').ToLower()}.mdx";
-                var nsPath = Path.Combine(_testOutputPath, "api-reference", nsFileName);
+                var nsFileName = renderer.GetNamespaceFileName(ns, "mdx");
+                var nsPath = Path.Combine(_testOutputPath, context.ApiReferencePath, nsFileName);
                 File.Exists(nsPath).Should().BeTrue($"Namespace file {nsFileName} should exist");
             }
         }
@@ -121,11 +122,12 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             await GetMintlifyRenderer().RenderAsync(model);
 
             // Assert
+            var context = GetService<ProjectContext>();
+            var renderer = GetMintlifyRenderer();
             foreach (var ns in model.Namespaces)
             {
-                var namespaceName = string.IsNullOrEmpty(ns.Name) ? "global" : ns.Name;
-                var nsFileName = $"{namespaceName.Replace('.', '-').ToLower()}.mdx";
-                var nsPath = Path.Combine(_testOutputPath, "api-reference", nsFileName);
+                var nsFileName = renderer.GetNamespaceFileName(ns, "mdx");
+                var nsPath = Path.Combine(_testOutputPath, context.ApiReferencePath, nsFileName);
                 File.Exists(nsPath).Should().BeTrue($"Namespace file {nsFileName} should exist");
             }
         }
@@ -223,7 +225,7 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             await GetMintlifyRenderer().RenderAsync(model);
 
             // Assert - Check that type files have appropriate icons
-            var sampleClassFile = Directory.GetFiles(_testOutputPath, "*SampleClass.mdx").FirstOrDefault();
+            var sampleClassFile = Directory.GetFiles(Path.Combine(_testOutputPath, "api-reference"), "*SampleClass.mdx").FirstOrDefault();
             sampleClassFile.Should().NotBeNull();
             
             var content = await File.ReadAllTextAsync(sampleClassFile!, TestContext.CancellationTokenSource.Token);
@@ -249,7 +251,7 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             await GetMintlifyRenderer().RenderAsync(model);
 
             // Assert
-            var content = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, "index.mdx"), TestContext.CancellationTokenSource.Token);
+            var content = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, "api-reference", "index.mdx"), TestContext.CancellationTokenSource.Token);
             content.Should().Contain("## Usage");
             content.Should().Contain("This is assembly usage documentation");
         }
@@ -269,7 +271,7 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             await GetMintlifyRenderer().RenderAsync(model);
 
             // Assert
-            var content = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, "index.mdx"), TestContext.CancellationTokenSource.Token);
+            var content = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, "api-reference", "index.mdx"), TestContext.CancellationTokenSource.Token);
             content.Should().Contain("## Examples");
             content.Should().Contain("Example code here");
         }
@@ -289,7 +291,7 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             await GetMintlifyRenderer().RenderAsync(model);
 
             // Assert
-            var content = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, "index.mdx"), TestContext.CancellationTokenSource.Token);
+            var content = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, "api-reference", "index.mdx"), TestContext.CancellationTokenSource.Token);
             content.Should().Contain("## Related APIs");
             content.Should().Contain("- System.Object");
             content.Should().Contain("- System.String");
@@ -316,7 +318,7 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             await GetMintlifyRenderer().RenderAsync(model);
 
             // Assert
-            var content = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, "index.mdx"), TestContext.CancellationTokenSource.Token);
+            var content = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, "api-reference", "index.mdx"), TestContext.CancellationTokenSource.Token);
             content.Should().Contain($"# {model.AssemblyName}");
             content.Should().NotContain("## Overview");
             content.Should().NotContain("## Examples");
@@ -342,8 +344,8 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             // Assert
             var ns = model.Namespaces.First(n => n.Types.Any(t => t.Symbol.Name == "ClassWithMethods"));
             var namespaceName = string.IsNullOrEmpty(ns.Name) ? "global" : ns.Name;
-            var typeFileName = $"{namespaceName.Replace('.', context.FileNamingOptions.NamespaceSeparator)}.ClassWithMethods.mdx";
-            var content = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, typeFileName), TestContext.CancellationTokenSource.Token);
+            var typeFileName = $"{namespaceName.Replace('.', '-')}.ClassWithMethods.mdx";
+            var content = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, "api-reference", typeFileName), TestContext.CancellationTokenSource.Token);
             
             content.Should().Contain("```csharp");
             content.Should().Contain("public");
@@ -372,7 +374,8 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             var context = new ProjectContext
             {
                 FileNamingOptions = new FileNamingOptions(NamespaceMode.File, '-'),
-                DocumentationRootPath = tempOutputPath
+                DocumentationRootPath = tempOutputPath,
+                ApiReferencePath = string.Empty
             };
             var options = Options.Create(new MintlifyRendererOptions());
             var docsJsonManager = new DocsJsonManager();
@@ -423,7 +426,8 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             var context = new ProjectContext
             {
                 FileNamingOptions = new FileNamingOptions(NamespaceMode.Folder, '-'),
-                DocumentationRootPath = tempOutputPath
+                DocumentationRootPath = tempOutputPath,
+                ApiReferencePath = string.Empty
             };
             var options = Options.Create(new MintlifyRendererOptions());
             var docsJsonManager = new DocsJsonManager();
@@ -493,7 +497,9 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             
             var context = new ProjectContext
             {
-                FileNamingOptions = new FileNamingOptions(NamespaceMode.File, '-')
+                FileNamingOptions = new FileNamingOptions(NamespaceMode.File, '-'),
+                DocumentationRootPath = _testOutputPath,
+                ApiReferencePath = string.Empty
             };
             var options = Options.Create(new MintlifyRendererOptions());
             var docsJsonManager = new DocsJsonManager();
@@ -518,7 +524,9 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             
             var context = new ProjectContext
             {
-                FileNamingOptions = new FileNamingOptions(NamespaceMode.File, '_')
+                FileNamingOptions = new FileNamingOptions(NamespaceMode.File, '_'),
+                DocumentationRootPath = _testOutputPath,
+                ApiReferencePath = string.Empty
             };
             var options = Options.Create(new MintlifyRendererOptions());
             var docsJsonManager = new DocsJsonManager();
@@ -543,7 +551,9 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             
             var context = new ProjectContext
             {
-                FileNamingOptions = new FileNamingOptions(NamespaceMode.File, '.')
+                FileNamingOptions = new FileNamingOptions(NamespaceMode.File, '.'),
+                DocumentationRootPath = _testOutputPath,
+                ApiReferencePath = string.Empty
             };
             var options = Options.Create(new MintlifyRendererOptions());
             var docsJsonManager = new DocsJsonManager();
@@ -568,7 +578,9 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             
             var context = new ProjectContext
             {
-                FileNamingOptions = new FileNamingOptions(NamespaceMode.Folder)
+                FileNamingOptions = new FileNamingOptions(NamespaceMode.Folder),
+                DocumentationRootPath = _testOutputPath,
+                ApiReferencePath = string.Empty
             };
             var options = Options.Create(new MintlifyRendererOptions());
             var docsJsonManager = new DocsJsonManager();
@@ -612,7 +624,9 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             // Set a separator that should be ignored in Folder mode
             var context = new ProjectContext
             {
-                FileNamingOptions = new FileNamingOptions(NamespaceMode.Folder, '_')
+                FileNamingOptions = new FileNamingOptions(NamespaceMode.Folder, '_'),
+                DocumentationRootPath = _testOutputPath,
+                ApiReferencePath = string.Empty
             };
             var options = Options.Create(new MintlifyRendererOptions());
             var docsJsonManager = new DocsJsonManager();
@@ -644,7 +658,8 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             var context = new ProjectContext
             {
                 FileNamingOptions = new FileNamingOptions(NamespaceMode.Folder),
-                DocumentationRootPath = testOutputPath
+                DocumentationRootPath = testOutputPath,
+                ApiReferencePath = string.Empty
             };
             var options = Options.Create(new MintlifyRendererOptions());
             var docsJsonManager = new DocsJsonManager();
@@ -659,7 +674,8 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
                 var projectContext = new ProjectContext([Accessibility.Public, Accessibility.Internal])
                 {
                     ShowPlaceholders = false,
-                    FileNamingOptions = new FileNamingOptions(NamespaceMode.Folder)
+                    FileNamingOptions = new FileNamingOptions(NamespaceMode.Folder),
+                    ApiReferencePath = string.Empty
                 };
                 var model = await manager.DocumentAsync(projectContext);
 
@@ -758,7 +774,8 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
 
             await GetMintlifyRenderer().RenderAssemblyAsync(assembly, _testOutputPath);
 
-            var indexPath = Path.Combine(_testOutputPath, "index.mdx");
+            var context = GetService<ProjectContext>();
+            var indexPath = Path.Combine(_testOutputPath, context.ApiReferencePath, "index.mdx");
             File.Exists(indexPath).Should().BeTrue();
             
             // Check frontmatter
@@ -775,7 +792,8 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
 
             await GetMintlifyRenderer().RenderAssemblyAsync(assembly, _testOutputPath);
 
-            var indexPath = Path.Combine(_testOutputPath, "index.mdx");
+            var context = GetService<ProjectContext>();
+            var indexPath = Path.Combine(_testOutputPath, context.ApiReferencePath, "index.mdx");
             var content = await File.ReadAllTextAsync(indexPath, TestContext.CancellationTokenSource.Token);
             content.Should().Contain($"# {assembly.AssemblyName}");
         }
@@ -788,7 +806,7 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
 
             await GetMintlifyRenderer().RenderAssemblyAsync(assembly, _testOutputPath);
 
-            var content = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, "index.mdx"), TestContext.CancellationTokenSource.Token);
+            var content = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, "api-reference", "index.mdx"), TestContext.CancellationTokenSource.Token);
             content.Should().Contain("## Usage");
             content.Should().Contain(assembly.Usage);
         }
@@ -800,7 +818,7 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
 
             await GetMintlifyRenderer().RenderAssemblyAsync(assembly, _testOutputPath);
 
-            var content = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, "index.mdx"), TestContext.CancellationTokenSource.Token);
+            var content = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, "api-reference", "index.mdx"), TestContext.CancellationTokenSource.Token);
             content.Should().Contain("## Namespaces");
             foreach (var ns in assembly.Namespaces)
             {

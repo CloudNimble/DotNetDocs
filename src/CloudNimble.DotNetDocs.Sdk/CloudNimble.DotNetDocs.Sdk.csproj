@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <!-- Multi-target for compatibility -->
-        <TargetFrameworks>net8.0;netstandard2.0</TargetFrameworks>
+        <TargetFrameworks>net8.0;net472</TargetFrameworks>
         <GenerateDocumentationFile>false</GenerateDocumentationFile>
         <Description>
             MSBuild SDK for DotNetDocs projects (.docsproj) - provides a clean way to include documentation in .NET
@@ -30,7 +30,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <!-- MSBuild task dependencies - don't include in package dependencies -->
+        <!-- MSBuild task dependencies -->
+        <PackageReference Include="EasyAF.MSBuild" Version="3.*-*" />
         <PackageReference Include="Microsoft.Build.Framework" Version="17.*" PrivateAssets="all" />
         <PackageReference Include="Microsoft.Build.Utilities.Core" Version="17.*" PrivateAssets="all" ExcludeAssets="runtime" />
         <PackageReference Include="System.Collections.Immutable" Version="9.*" PrivateAssets="all" />
@@ -47,12 +48,12 @@
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.*" />
     </ItemGroup>
 
-    <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+    <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
         <PackageReference Include="System.ValueTuple" Version="4.*" />
     </ItemGroup>
 
     <!-- Project references that will become NuGet dependencies -->
-    <ItemGroup Condition="'$(TargetFramework)' != 'netstandard2.0'">
+    <ItemGroup Condition="'$(TargetFramework)' != 'net472'">
         <ProjectReference Include="..\CloudNimble.DotNetDocs.Core\CloudNimble.DotNetDocs.Core.csproj" />
         <ProjectReference Include="..\CloudNimble.DotNetDocs.Mintlify\CloudNimble.DotNetDocs.Mintlify.csproj" />
     </ItemGroup>

@@ -50,7 +50,7 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
         /// </summary>
         /// <param name="ns">The namespace to get the name for.</param>
         /// <returns>A safe namespace name, using "global" for the global namespace.</returns>
-        internal string GetSafeNamespaceName(DocNamespace ns)
+        public string GetSafeNamespaceName(DocNamespace ns)
         {
             return string.IsNullOrEmpty(ns.Name) ? "global" : ns.Name;
         }
@@ -137,7 +137,7 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
         /// <param name="extension">The file extension (without the dot).</param>
         /// <returns>A safe file name for the namespace.</returns>
         /// <remarks>This method is deprecated. Use GetNamespaceFilePath instead.</remarks>
-        internal string GetNamespaceFileName(DocNamespace ns, string extension)
+        public string GetNamespaceFileName(DocNamespace ns, string extension)
         {
             var namespaceName = GetSafeNamespaceName(ns);
             return $"{namespaceName.Replace('.', FileNamingOptions.NamespaceSeparator)}.{extension}";
@@ -151,7 +151,7 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
         /// <param name="extension">The file extension (without the dot).</param>
         /// <returns>A safe file name for the type.</returns>
         /// <remarks>This method is deprecated. Use GetTypeFilePath instead.</remarks>
-        protected string GetTypeFileName(DocType type, DocNamespace ns, string extension)
+        public string GetTypeFileName(DocType type, DocNamespace ns, string extension)
         {
             var namespaceName = GetSafeNamespaceName(ns);
             var typeName = GetSafeTypeName(type);

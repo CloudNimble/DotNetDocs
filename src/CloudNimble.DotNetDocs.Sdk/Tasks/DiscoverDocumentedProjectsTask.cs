@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using CloudNimble.EasyAF.MSBuild;
+using Microsoft.Build.Evaluation;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 
@@ -57,39 +59,102 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
             {
                 Log.LogMessage(MessageImportance.High, $"🔍 Discovering documented projects in {SolutionDir}...");
 
+                // Ensure MSBuild is registered using EasyAF's helper
+                MSBuildProjectManager.EnsureMSBuildRegistered();
+
                 var documentedProjects = new List<ITaskItem>();
                 var projectFiles = Directory.GetFiles(SolutionDir, "*.csproj", SearchOption.AllDirectories);
+                var projectCollection = new ProjectCollection();
+
+                // Set up global properties for evaluation
+                var globalProperties = new Dictionary<string, string>
+                {
+                    { "Configuration", Configuration }
+                };
 
                 foreach (var projectFile in projectFiles)
                 {
-                    // Skip excluded patterns
-                    if (ExcludePatterns != null && ExcludePatterns.Any(pattern => projectFile.Contains(pattern)))
+                    var projectName = Path.GetFileNameWithoutExtension(projectFile);
+                    
+                    // Skip excluded patterns (check against project name, not full path)
+                    if (ExcludePatterns != null && ExcludePatterns.Any(pattern => 
+                        projectName.Contains(pattern.Replace("*", ""), StringComparison.OrdinalIgnoreCase)))
                     {
-                        Log.LogMessage(MessageImportance.Low, $"   ⏭️ Skipping excluded project: {Path.GetFileName(projectFile)}");
+                        Log.LogMessage(MessageImportance.Low, $"   ⏭️ Skipping excluded project: {projectName}");
                         continue;
                     }
 
                     try
                     {
-                        // For MSBuild tasks, we'll use a simplified approach
-                        // Parse the project file to check for GenerateDocumentationFile
-                        var projectContent = File.ReadAllText(projectFile);
-                        if (projectContent.Contains("<GenerateDocumentationFile>true</GenerateDocumentationFile>", StringComparison.OrdinalIgnoreCase))
+                        // Use MSBuildProjectManager to load the project
+                        var manager = new MSBuildProjectManager(projectFile);
+                        manager.Load(preserveFormatting: false);
+
+                        if (!manager.IsLoaded)
                         {
+                            Log.LogWarning($"Could not load project {projectFile}: {string.Join(", ", manager.ProjectErrors.Select(e => e.ErrorText))}");
+                            continue;
+                        }
+
+                        // Create an evaluated project to get computed property values
+                        var project = new Project(projectFile, globalProperties, null, projectCollection);
+
+                        try
+                        {
+                            // Check if it's a test project (IsTestProject=true)
+                            var isTestProject = project.GetPropertyValue("IsTestProject");
+                            if (string.Equals(isTestProject, "true", StringComparison.OrdinalIgnoreCase))
+                            {
+                                Log.LogMessage(MessageImportance.Low, $"   ⏭️ Skipping test project: {projectName}");
+                                continue;
+                            }
+
+                            // Check if it's packable (IsPackable != false)
+                            // Projects are packable by default unless explicitly set to false
+                            var isPackable = project.GetPropertyValue("IsPackable");
+                            if (string.Equals(isPackable, "false", StringComparison.OrdinalIgnoreCase))
+                            {
+                                Log.LogMessage(MessageImportance.Low, $"   ⏭️ Skipping non-packable project: {projectName}");
+                                continue;
+                            }
+
+                            // This is a project we should document
                             var item = new TaskItem(projectFile);
-                            // Set basic metadata
-                            var projectName = Path.GetFileNameWithoutExtension(projectFile);
-                            item.SetMetadata("AssemblyName", projectName);
+                            
+                            // Set metadata from the evaluated project
+                            var assemblyName = project.GetPropertyValue("AssemblyName");
+                            if (string.IsNullOrEmpty(assemblyName))
+                            {
+                                assemblyName = projectName;
+                            }
+                            
+                            var targetFramework = project.GetPropertyValue("TargetFramework");
+                            if (string.IsNullOrEmpty(targetFramework))
+                            {
+                                // For multi-targeted projects, use TargetFrameworks and pick the first one
+                                var targetFrameworks = project.GetPropertyValue("TargetFrameworks");
+                                if (!string.IsNullOrEmpty(targetFrameworks))
+                                {
+                                    targetFramework = targetFrameworks.Split(';')[0].Trim();
+                                }
+                                else
+                                {
+                                    targetFramework = TargetFramework; // Use default
+                                }
+                            }
+
+                            item.SetMetadata("AssemblyName", assemblyName);
                             item.SetMetadata("OutputPath", $"bin\\{Configuration}");
-                            item.SetMetadata("TargetFramework", TargetFramework);
-                            item.SetMetadata("TargetPath", $"bin\\{Configuration}\\{TargetFramework}\\{projectName}.dll");
+                            item.SetMetadata("TargetFramework", targetFramework);
+                            item.SetMetadata("TargetPath", $"bin\\{Configuration}\\{targetFramework}\\{assemblyName}.dll");
 
                             documentedProjects.Add(item);
-                            Log.LogMessage(MessageImportance.High, $"   ✅ Found documented project: {Path.GetFileName(projectFile)}");
+                            Log.LogMessage(MessageImportance.High, $"   ✅ Found packable project: {projectName}");
                         }
-                        else
+                        finally
                         {
-                            Log.LogMessage(MessageImportance.Low, $"   ⏭️ Skipping undocumented project: {Path.GetFileName(projectFile)}");
+                            // Always unload the project to free resources
+                            projectCollection.UnloadProject(project);
                         }
                     }
                     catch (Exception ex)
@@ -97,6 +162,9 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
                         Log.LogWarning($"Could not evaluate project {projectFile}: {ex.Message}");
                     }
                 }
+
+                // Clean up the project collection
+                projectCollection.UnloadAllProjects();
 
                 DocumentedProjects = documentedProjects.ToArray();
                 Log.LogMessage(MessageImportance.High, $"📊 Found {DocumentedProjects.Length} documented projects");
