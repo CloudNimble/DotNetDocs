@@ -4,6 +4,8 @@ using System.IO;
 using System.Linq;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
+using CloudNimble.EasyAF.MSBuild;
+
 
 #if NET8_0_OR_GREATER
 using CloudNimble.DotNetDocs.Core;
@@ -29,7 +31,7 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
         /// Gets or sets the assemblies to generate documentation for.
         /// </summary>
         [Required]
-        public ITaskItem[] Assemblies { get; set; } = Array.Empty<ITaskItem>();
+        public ITaskItem[] Assemblies { get; set; } = [];
 
         /// <summary>
         /// Gets or sets the output path for the generated documentation.
@@ -66,7 +68,7 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
         /// Gets or sets the list of generated files (output).
         /// </summary>
         [Output]
-        public ITaskItem[] GeneratedFiles { get; set; } = Array.Empty<ITaskItem>();
+        public ITaskItem[] GeneratedFiles { get; set; } = [];
 
         #endregion
 
@@ -173,19 +175,19 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
                 Log.LogMessage(MessageImportance.High, "📊 Documentation Statistics:");
                 Log.LogMessage(MessageImportance.High, $"   📄 Documentation type: {DocumentationType}");
                 
-                if (markdownFiles.Any())
+                if (markdownFiles.Count is not 0)
                 {
-                    Log.LogMessage(MessageImportance.High, $"   📝 Markdown files: {markdownFiles.Distinct().Count()}");
+                    Log.LogMessage(MessageImportance.High, $"   📝 Markdown files: {markdownFiles!.Distinct().Count()}");
                 }
                 
-                if (imageFiles.Any())
+                if (imageFiles.Count is not 0)
                 {
-                    Log.LogMessage(MessageImportance.High, $"   🖼️ Image files: {imageFiles.Distinct().Count()}");
+                    Log.LogMessage(MessageImportance.High, $"   🖼️ Image files: {imageFiles!.Distinct().Count()}");
                 }
 
                 // Return generated files as output
                 var allGeneratedFiles = markdownFiles.Concat(imageFiles).Distinct();
-                GeneratedFiles = allGeneratedFiles.Select(f => new TaskItem(f)).ToArray();
+                GeneratedFiles = [.. allGeneratedFiles.Select(f => new TaskItem(f))];
 
                 return processedCount > 0;
             }
