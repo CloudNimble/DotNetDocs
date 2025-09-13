@@ -71,6 +71,29 @@
         <Message Text="Built CloudNimble.DotNetDocs.Sdk.Tasks" Importance="high" />
     </Target>
 
+    <!-- Automatically push SDK package to local feed after pack -->
+    <Target Name="PushToLocalFeed" AfterTargets="Pack" Condition="'$(Configuration)' == 'Release' or '$(Configuration)' == 'Debug'">
+        <PropertyGroup>
+            <!-- Use LOCAL_NUGET_FEED env var if set, otherwise use default local path -->
+            <LocalFeedPath Condition="'$(LOCAL_NUGET_FEED)' != ''">$(LOCAL_NUGET_FEED)</LocalFeedPath>
+            <LocalFeedPath Condition="'$(LOCAL_NUGET_FEED)' == ''">$([System.IO.Path]::Combine('$(MSBuildThisFileDirectory)', '..', '..', 'local-nuget-feed'))</LocalFeedPath>
+            <PackageOutputPath>$(MSBuildProjectDirectory)\bin\$(Configuration)\$(PackageId).$(PackageVersion).nupkg</PackageOutputPath>
+        </PropertyGroup>
+        
+        <!-- Create local feed directory if it doesn't exist -->
+        <MakeDir Directories="$(LocalFeedPath)" />
+        
+        <!-- Push the package to local feed -->
+        <Exec Command="dotnet nuget push &quot;$(PackageOutputPath)&quot; --source &quot;$(LocalFeedPath)&quot; --skip-duplicate"
+              ContinueOnError="true"
+              ConsoleToMSBuild="true">
+            <Output TaskParameter="ExitCode" PropertyName="ErrorCode" />
+        </Exec>
+        
+        <Message Text="📦 Pushed $(PackageId).$(PackageVersion) to local feed at $(LocalFeedPath)" Importance="high" Condition="'$(ErrorCode)' == '0'" />
+        <Message Text="⚠️ Package already exists in local feed or push failed (this is OK for local development)" Importance="normal" Condition="'$(ErrorCode)' != '0'" />
+    </Target>
+
     <!-- Include NoTargets SDK files directly from package in NuGet -->
     <Target Name="IncludeNoTargetsInPackage" BeforeTargets="GenerateNuspec">
         <PropertyGroup>

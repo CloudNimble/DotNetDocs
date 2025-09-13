@@ -126,14 +126,59 @@ jobs:
         
         Write-Host "📦 Final version: $version"
 
+    - name: Setup local NuGet feed
+      shell: pwsh
+      run: |
+        $localFeedPath = "${{ vars.LOCAL_NUGET_FEED }}"
+        if ([string]::IsNullOrEmpty($localFeedPath)) {
+          $localFeedPath = "${{ github.workspace }}\local-nuget-feed"
+        }
+        New-Item -Path $localFeedPath -ItemType Directory -Force
+        Write-Host "📁 Created local NuGet feed at: $localFeedPath"
+        echo "LOCAL_NUGET_FEED=$localFeedPath" >> $env:GITHUB_ENV
+
+    - name: Update NuGet.config for CI
+      shell: pwsh
+      run: |
+        $nugetConfig = @"
+<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+  <packageSources>
+    <clear />
+    <add key="nuget.org" value="https://api.nuget.org/v3/index.json" protocolVersion="3" />
+    <add key="local-feed" value="${{ env.LOCAL_FEED_PATH }}" />
+  </packageSources>
+  <packageSourceMapping>
+    <!-- Map DotNetDocs SDK packages to local feed during development -->
+    <packageSource key="local-feed">
+      <package pattern="DotNetDocs.*" />
+    </packageSource>
+    <!-- All other packages from nuget.org -->
+    <packageSource key="nuget.org">
+      <package pattern="*" />
+    </packageSource>
+  </packageSourceMapping>
+</configuration>
+"@
+        $nugetConfig | Out-File -FilePath "${{ github.workspace }}\NuGet.config" -Encoding utf8
+        Write-Host "✅ Updated NuGet.config for CI build"
+
+    - name: Build SDK project first
+      shell: pwsh
+      run: |
+        Write-Host "🔨 Building DotNetDocs.Sdk with version ${{ steps.version.outputs.VERSION }}"
+        dotnet build src/CloudNimble.DotNetDocs.Sdk/CloudNimble.DotNetDocs.Sdk.csproj --configuration Release /p:Version=${{ steps.version.outputs.VERSION }} /p:PackageVersion=${{ steps.version.outputs.VERSION }}
+        dotnet pack src/CloudNimble.DotNetDocs.Sdk/CloudNimble.DotNetDocs.Sdk.csproj --configuration Release --no-build --output "${{ env.LOCAL_FEED_PATH }}" /p:PackageVersion=${{ steps.version.outputs.VERSION }}
+        Write-Host "📦 SDK package created and pushed to local feed"
+
     - name: Restore dependencies
       run: dotnet restore ${{ env.SOLUTION_FILE }}
 
     - name: Build solution (first pass - no docs)
-      run: dotnet build ${{ env.SOLUTION_FILE }} --configuration Release --no-restore /p:Version=${{ steps.version.outputs.VERSION }}
+      run: dotnet build ${{ env.SOLUTION_FILE }} --configuration Release --no-restore /p:Version=${{ steps.version.outputs.VERSION }} /p:PackageVersion=${{ steps.version.outputs.VERSION }}
 
     - name: Generate documentation (second pass - now SDK assembly exists)
-      run: dotnet build src/CloudNimble.DotNetDocs.Docs/CloudNimble.DotNetDocs.Docs.csproj --configuration Release --no-restore
+      run: dotnet build src/CloudNimble.DotNetDocs.Docs/CloudNimble.DotNetDocs.Docs.docsproj --configuration Release --no-restore /p:PackageVersion=${{ steps.version.outputs.VERSION }}
 
     - name: Test
       working-directory: src

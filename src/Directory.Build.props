@@ -33,7 +33,7 @@
         <PackageId>$(MSBuildProjectName.Replace('CloudNimble.', ''))</PackageId>
         <Product>DotNetDocs</Product>
         <AssemblyVersion>1.0.0.0</AssemblyVersion>
-        <PackageVersion>1.0-alpha.1</PackageVersion>
+        <PackageVersion Condition="'$(PackageVersion)' == ''">1.0.0-preview.11</PackageVersion>
         <Authors>CloudNimble</Authors>
         <Company>CloudNimble, Inc.</Company>
         <RpmPackageVendor>CloudNimble</RpmPackageVendor>

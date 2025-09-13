@@ -74,6 +74,15 @@ If you create any temporary new files, scripts, or helper files for iteration, c
 
 * You must always specify the Configuration when calling `dotnet` commands against a project or solution.
 
+## Important Windows File System Notes
+
+* NEVER redirect output to `nul` on Windows. The string "nul" is a reserved device name in Windows and will create an undeletable file.
+  * Instead of `> nul`, use `> $null` in PowerShell or `> NUL` (uppercase) in cmd.
+  * Better yet, avoid output redirection entirely when not necessary.
+* When checking if files/directories exist, use proper error handling instead of redirecting to nul.
+* Example of what NOT to do: `dir /s /b "pattern" 2>nul`
+* Example of what TO do: `dir /s /b "pattern" 2>&1 | Out-Null` or simply let errors display.
+
 # Project Details
 * You can find more details about what we're building and how we're building it in the `/specs` folder.
 
