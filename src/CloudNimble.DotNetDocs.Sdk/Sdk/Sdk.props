@@ -50,6 +50,12 @@
         <!-- Default namespace mode for documentation generation -->
         <NamespaceMode Condition="'$(NamespaceMode)' == ''">Folder</NamespaceMode>
 
+        <!-- Mintlify-specific configuration -->
+        <MintlifyNavigationMode Condition="'$(MintlifyNavigationMode)' == '' AND '$(DocumentationType)' == 'Mintlify'">Unified</MintlifyNavigationMode>
+        <MintlifyUnifiedGroupName Condition="'$(MintlifyUnifiedGroupName)' == '' AND '$(DocumentationType)' == 'Mintlify'">API Reference</MintlifyUnifiedGroupName>
+        <!-- Optional path to external docs.json template (auto-detect if exists) -->
+        <DocsJsonTemplatePath Condition="'$(DocsJsonTemplatePath)' == '' AND '$(DocumentationType)' == 'Mintlify' AND Exists('$(DocumentationRoot)docs-template.json')">$(DocumentationRoot)docs-template.json</DocsJsonTemplatePath>
+
         <!-- Output redirection - keep documentation folders clean -->
         <KeepLocalOutput Condition="'$(KeepLocalOutput)' == ''">false</KeepLocalOutput>
 

@@ -271,6 +271,67 @@ public void Merge(Mintlify.Core.Models.DocsJsonConfig other, bool combineBasePro
 This method performs a shallow merge, with the other configuration taking precedence
             for non-null values. Navigation structures are combined intelligently.
 
+### MergeNavigation
+
+Merges navigation from another NavigationConfig into the current configuration's navigation.
+
+#### Syntax
+
+```csharp
+public void MergeNavigation(Mintlify.Core.Models.NavigationConfig sourceNavigation, Mintlify.Core.Models.MergeOptions options = null)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `sourceNavigation` | `Mintlify.Core.Models.NavigationConfig` | The navigation configuration to merge from. |
+| `options` | `Mintlify.Core.Models.MergeOptions?` | Optional merge options to control merge behavior. |
+
+#### Exceptions
+
+| Exception | Description |
+|-----------|-------------|
+| `ArgumentNullException` | Thrown when sourceNavigation is null. |
+| `InvalidOperationException` | Thrown when no configuration is loaded. |
+
+#### Remarks
+
+This method intelligently merges navigation structures, combining groups with the same name
+            and deduplicating page references. Use the MergeOptions parameter to control specific
+            behaviors like how empty groups are handled.
+
+### MergeNavigation
+
+Merges navigation from an existing docs.json file into the current configuration.
+
+#### Syntax
+
+```csharp
+public void MergeNavigation(string filePath, Mintlify.Core.Models.MergeOptions options = null)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `filePath` | `string` | The path to the docs.json file containing navigation to merge. |
+| `options` | `Mintlify.Core.Models.MergeOptions?` | Optional merge options to control merge behavior. |
+
+#### Exceptions
+
+| Exception | Description |
+|-----------|-------------|
+| `ArgumentException` | Thrown when filePath is null or whitespace. |
+| `InvalidOperationException` | Thrown when no configuration is loaded. |
+| `FileNotFoundException` | Thrown when the specified file does not exist. |
+
+#### Remarks
+
+This method loads navigation from an external docs.json file and merges it into the
+            current configuration. Only the navigation structure is merged; other configuration
+            properties are not affected.
+
 ### PopulateNavigationFromPath
 
 Populates the navigation structure from a directory path by scanning for MDX files.

@@ -304,6 +304,67 @@ namespace Mintlify.Core
         }
 
         /// <summary>
+        /// Merges navigation from another NavigationConfig into the current configuration's navigation.
+        /// </summary>
+        /// <param name="sourceNavigation">The navigation configuration to merge from.</param>
+        /// <param name="options">Optional merge options to control merge behavior.</param>
+        /// <exception cref="ArgumentNullException">Thrown when sourceNavigation is null.</exception>
+        /// <exception cref="InvalidOperationException">Thrown when no configuration is loaded.</exception>
+        /// <remarks>
+        /// This method intelligently merges navigation structures, combining groups with the same name
+        /// and deduplicating page references. Use the MergeOptions parameter to control specific
+        /// behaviors like how empty groups are handled.
+        /// </remarks>
+        public void MergeNavigation(NavigationConfig sourceNavigation, MergeOptions? options = null)
+        {
+            Ensure.ArgumentNotNull(sourceNavigation, nameof(sourceNavigation));
+
+            if (Configuration is null)
+            {
+                throw new InvalidOperationException("No configuration is loaded. Load a configuration before merging navigation.");
+            }
+
+            Configuration.Navigation ??= new NavigationConfig();
+            MergeNavigation(Configuration.Navigation, sourceNavigation, options);
+        }
+
+        /// <summary>
+        /// Merges navigation from an existing docs.json file into the current configuration.
+        /// </summary>
+        /// <param name="filePath">The path to the docs.json file containing navigation to merge.</param>
+        /// <param name="options">Optional merge options to control merge behavior.</param>
+        /// <exception cref="ArgumentException">Thrown when filePath is null or whitespace.</exception>
+        /// <exception cref="InvalidOperationException">Thrown when no configuration is loaded.</exception>
+        /// <exception cref="FileNotFoundException">Thrown when the specified file does not exist.</exception>
+        /// <remarks>
+        /// This method loads navigation from an external docs.json file and merges it into the
+        /// current configuration. Only the navigation structure is merged; other configuration
+        /// properties are not affected.
+        /// </remarks>
+        public void MergeNavigation(string filePath, MergeOptions? options = null)
+        {
+            Ensure.ArgumentNotNullOrWhiteSpace(filePath, nameof(filePath));
+
+            if (Configuration is null)
+            {
+                throw new InvalidOperationException("No configuration is loaded. Load a configuration before merging navigation.");
+            }
+
+            if (!File.Exists(filePath))
+            {
+                throw new FileNotFoundException($"The specified docs.json file does not exist: {filePath}", filePath);
+            }
+
+            var content = File.ReadAllText(filePath);
+            var otherConfig = JsonSerializer.Deserialize<DocsJsonConfig>(content, MintlifyConstants.JsonSerializerOptions);
+            
+            if (otherConfig?.Navigation is not null)
+            {
+                MergeNavigation(otherConfig.Navigation, options);
+            }
+        }
+
+        /// <summary>
         /// Populates the navigation structure from a directory path by scanning for MDX files.
         /// </summary>
         /// <param name="path">The directory path to scan for documentation files.</param>

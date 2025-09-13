@@ -10,8 +10,6 @@ items:
 - name: CloudNimble.DotNetDocs.Tests.Shared.AccessModifiers
   href: index.yaml
   types:
-  - name: InternalClass
-    kind: Class
   - name: MixedAccessClass
     kind: Class
 - name: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios

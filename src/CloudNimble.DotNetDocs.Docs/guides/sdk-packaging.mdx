@@ -1,0 +1,285 @@
+---
+title: MSBuild SDK Packaging Best Practices
+description: Learn how to properly structure and package MSBuild SDKs with compiled tasks to avoid file lock issues
+---
+
+# MSBuild SDK Packaging Best Practices
+
+Building MSBuild SDKs with compiled tasks presents unique challenges, particularly around file locking during development. This guide documents Microsoft's patterns and best practices for creating robust, maintainable MSBuild SDK packages.
+
+## The File Lock Problem
+
+When developing MSBuild SDKs that include compiled tasks, a common issue arises:
+
+1. The SDK project compiles its task assemblies
+2. The same build process attempts to load those assemblies
+3. MSBuild locks the loaded assemblies in memory
+4. Subsequent builds fail because the compiler cannot overwrite locked files
+
+This creates a frustrating development cycle where you must kill MSBuild processes or restart Visual Studio between builds.
+
+## Microsoft's Solution Pattern
+
+Microsoft addresses this challenge through architectural separation and careful build orchestration.
+
+### 1. Separation of Concerns Architecture
+
+Microsoft separates SDK projects into distinct components:
+
+- **Task Projects** (`Microsoft.NET.Build.Tasks`) - Contains compiled MSBuild tasks
+- **SDK Projects** (`Microsoft.Build.NoTargets`) - Contains props/targets files and SDK structure  
+- **Test Projects** - Separate unit test projects for each component
+
+This separation ensures that task compilation and SDK packaging never occur in the same build context.
+
+### 2. The NoTargets Pattern
+
+Microsoft created `Microsoft.Build.NoTargets` specifically for projects that don't compile assemblies but need MSBuild integration:
+
+```xml
+<Project Sdk="Microsoft.Build.NoTargets">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <PackageType>MSBuildSdk</PackageType>
+    <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
+</Project>
+```
+
+This SDK type prevents assembly compilation while maintaining full MSBuild extensibility.
+
+### 3. Task Assembly Packaging Configuration
+
+For SDKs with compiled tasks, Microsoft uses specific packaging properties:
+
+```xml
+<PropertyGroup>
+  <!-- Tasks go in 'tasks' folder, not 'lib' -->
+  <BuildOutputTargetFolder>tasks</BuildOutputTargetFolder>
+  
+  <!-- Mark as SDK package -->
+  <DevelopmentDependency>true</DevelopmentDependency>
+  <PackageType>MSBuildSdk</PackageType>
+  
+  <!-- Include build output in package -->
+  <IncludeBuildOutput>true</IncludeBuildOutput>
+  
+  <!-- Suppress NuGet warnings about SDK packages -->
+  <NoWarn>$(NoWarn);NU5128;NU5100</NoWarn>
+  
+  <!-- Don't create symbols package -->
+  <IncludeSymbols>false</IncludeSymbols>
+</PropertyGroup>
+```
+
+### 4. Standard Directory Structure
+
+Microsoft's SDK packages follow this consistent structure:
+
+```
+package/
+├── Sdk/
+│   ├── Sdk.props          # Imported at project start
+│   └── Sdk.targets        # Imported at project end
+├── tasks/
+│   ├── net472/           # .NET Framework tasks
+│   │   ├── TaskAssembly.dll
+│   │   └── Dependencies.dll
+│   └── net8.0/           # .NET Core/5+ tasks
+│       ├── TaskAssembly.dll
+│       └── Dependencies.dll
+├── build/
+│   ├── PackageName.props
+│   └── PackageName.targets
+└── buildMultiTargeting/
+    ├── PackageName.props
+    └── PackageName.targets
+```
+
+### 5. Multi-Stage Build Process
+
+Microsoft avoids file locks through a multi-stage approach:
+
+1. **Stage 1**: Build task assemblies in an isolated project
+2. **Stage 2**: Package pre-built assemblies into the SDK
+3. **Stage 3**: Test the packaged SDK in a separate solution
+
+The key insight: **The SDK project never compiles and uses its own tasks simultaneously**.
+
+### 6. Runtime-Aware Task Loading
+
+In Sdk.targets files, Microsoft uses runtime detection for task loading:
+
+```xml
+<PropertyGroup>
+  <!-- Determine which runtime we're on -->
+  <_DotNetDocsTaskFramework Condition="'$(MSBuildRuntimeType)' == 'Core'">net8.0</_DotNetDocsTaskFramework>
+  <_DotNetDocsTaskFramework Condition="'$(MSBuildRuntimeType)' == 'Full'">net472</_DotNetDocsTaskFramework>
+  <_DotNetDocsTaskFramework Condition="'$(_DotNetDocsTaskFramework)' == ''">net8.0</_DotNetDocsTaskFramework>
+  
+  <!-- Set task assembly path -->
+  <_DotNetDocsTasksFolder>$(MSBuildThisFileDirectory)..\tasks\$(_DotNetDocsTaskFramework)</_DotNetDocsTasksFolder>
+  <_DotNetDocsTasksAssembly>$(_DotNetDocsTasksFolder)\CloudNimble.DotNetDocs.Sdk.dll</_DotNetDocsTasksAssembly>
+</PropertyGroup>
+
+<!-- Load tasks conditionally -->
+<UsingTask TaskName="GenerateDocumentationTask" 
+           AssemblyFile="$(_DotNetDocsTasksAssembly)"
+           Condition="Exists('$(_DotNetDocsTasksAssembly)')" />
+```
+
+### 7. Development vs. Package Detection
+
+Microsoft SDKs intelligently detect their execution context:
+
+```xml
+<PropertyGroup>
+  <!-- Check if we're running from a package -->
+  <_IsPackaged Condition="Exists('$(MSBuildThisFileDirectory)..\tasks')">true</_IsPackaged>
+  
+  <!-- Check if we're in development (source) mode -->
+  <_IsDevelopment Condition="Exists('$(MSBuildThisFileDirectory)..\Tasks\*.cs')">true</_IsDevelopment>
+  
+  <!-- Use different paths based on context -->
+  <_TaskAssembly Condition="'$(_IsPackaged)' == 'true'">
+    $(MSBuildThisFileDirectory)..\tasks\$(_TaskFramework)\Assembly.dll
+  </_TaskAssembly>
+  <_TaskAssembly Condition="'$(_IsDevelopment)' == 'true'">
+    $(MSBuildThisFileDirectory)..\bin\$(Configuration)\$(_TaskFramework)\Assembly.dll
+  </_TaskAssembly>
+</PropertyGroup>
+```
+
+### 8. Preventing Circular Dependencies
+
+The fundamental principle: **The SDK project must never load its own compiled tasks during its own build**.
+
+Strategies to achieve this:
+
+```xml
+<!-- Skip task loading during self-build -->
+<PropertyGroup>
+  <LoadDotNetDocsTasks Condition="'$(MSBuildProjectName)' == 'CloudNimble.DotNetDocs.Sdk'">false</LoadDotNetDocsTasks>
+  <LoadDotNetDocsTasks Condition="'$(LoadDotNetDocsTasks)' == ''">true</LoadDotNetDocsTasks>
+</PropertyGroup>
+
+<UsingTask TaskName="MyTask" 
+           AssemblyFile="$(_TaskAssembly)"
+           Condition="'$(LoadDotNetDocsTasks)' == 'true'" />
+```
+
+## Recommended Solution Architecture
+
+For a robust MSBuild SDK with compiled tasks, use this three-project structure:
+
+### Project 1: Task Library
+`CloudNimble.DotNetDocs.Sdk.Tasks.csproj`
+```xml
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net472;net8.0</TargetFrameworks>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Build.Framework" Version="17.*" />
+    <PackageReference Include="Microsoft.Build.Utilities.Core" Version="17.*" />
+  </ItemGroup>
+</Project>
+```
+
+### Project 2: SDK Package
+`CloudNimble.DotNetDocs.Sdk.csproj`
+```xml
+<Project Sdk="Microsoft.Build.NoTargets">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <PackageType>MSBuildSdk</PackageType>
+    <DevelopmentDependency>true</DevelopmentDependency>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <!-- Include SDK files -->
+    <None Include="Sdk\**" Pack="true" PackagePath="Sdk" />
+    
+    <!-- Include pre-built task assemblies -->
+    <None Include="..\CloudNimble.DotNetDocs.Sdk.Tasks\bin\$(Configuration)\net472\*.dll"
+          Pack="true" 
+          PackagePath="tasks\net472" />
+    <None Include="..\CloudNimble.DotNetDocs.Sdk.Tasks\bin\$(Configuration)\net8.0\*.dll"
+          Pack="true" 
+          PackagePath="tasks\net8.0" />
+  </ItemGroup>
+</Project>
+```
+
+### Project 3: Integration Tests
+`CloudNimble.DotNetDocs.Sdk.Tests.csproj`
+```xml
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <!-- Reference the SDK package, not the projects -->
+    <PackageReference Include="CloudNimble.DotNetDocs.Sdk" Version="*" />
+  </ItemGroup>
+</Project>
+```
+
+## Development Workflow
+
+1. **Build Tasks First**: Always build the tasks project independently
+2. **Then Package**: Build the SDK project to create the package
+3. **Test Separately**: Use a different solution to test the packaged SDK
+4. **Use Local Feeds**: Configure a local NuGet feed for development testing
+
+```bash
+# Build script example
+dotnet build CloudNimble.DotNetDocs.Sdk.Tasks.csproj -c Release
+dotnet pack CloudNimble.DotNetDocs.Sdk.csproj -c Release
+dotnet nuget push *.nupkg -s local-feed
+```
+
+## Additional Best Practices
+
+### Disable Node Reuse During Development
+
+Add to `Directory.Build.props` in your development folder:
+
+```xml
+<PropertyGroup Condition="'$(DOTNET_CLI_CONTEXT_VERBOSE)' == 'true'">
+  <MSBUILDDISABLENODEREUSE>1</MSBUILDDISABLENODEREUSE>
+</PropertyGroup>
+```
+
+### Use Intermediate Output Directories
+
+Avoid conflicts by using unique output paths:
+
+```xml
+<PropertyGroup>
+  <BaseIntermediateOutputPath>$(MSBuildThisFileDirectory)obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
+  <BaseOutputPath>$(MSBuildThisFileDirectory)bin\$(MSBuildProjectName)\</BaseOutputPath>
+</PropertyGroup>
+```
+
+### Version Your Task Assemblies
+
+Include version numbers in task assembly paths during development:
+
+```xml
+<PropertyGroup>
+  <TaskVersion>1.0.0</TaskVersion>
+  <_TaskAssembly>$(MSBuildThisFileDirectory)..\tasks\$(TaskVersion)\$(_TaskFramework)\Assembly.dll</_TaskAssembly>
+</PropertyGroup>
+```
+
+## Conclusion
+
+By following Microsoft's patterns of separation, staged builds, and careful dependency management, you can create robust MSBuild SDKs without encountering file lock issues. The key is ensuring your SDK project never attempts to compile and load its own tasks within the same build context.
+
+Remember: **Separate concerns, build in stages, and test in isolation**.

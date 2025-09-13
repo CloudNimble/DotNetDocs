@@ -1,8 +1,8 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.Build.NoTargets/3.7.0">
 
     <PropertyGroup>
-        <!-- Multi-target for compatibility -->
-        <TargetFrameworks>net10.0;net9.0;net8.0;net472</TargetFrameworks>
+        <!-- SDK packages don't compile code -->
+        <TargetFramework>netstandard2.0</TargetFramework>
         <GenerateDocumentationFile>false</GenerateDocumentationFile>
         <Description>
             MSBuild SDK for DotNetDocs projects (.docsproj) - provides a clean way to include documentation in .NET
@@ -16,62 +16,60 @@
 
         <!-- Suppress warnings about SDK packages -->
         <NoWarn>$(NoWarn);NU5128;CS2008;NU1701;NU5100</NoWarn>
-
-        <!-- Include build output in tasks folder instead of lib -->
-        <IncludeBuildOutput>true</IncludeBuildOutput>
-        <BuildOutputTargetFolder>tasks</BuildOutputTargetFolder>
-        <ContentTargetFolders>.</ContentTargetFolders>
         
         <!-- Don't create symbols package for SDK projects -->
         <IncludeSymbols>false</IncludeSymbols>
         
-        <!-- Copy dependencies for task execution -->
-        <!--<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>-->
+        <!-- Suppress dependencies when packing -->
+        <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
     </PropertyGroup>
 
     <ItemGroup>
-        <!-- MSBuild task dependencies -->
-        <PackageReference Include="EasyAF.MSBuild" Version="3.*-*" />
-        <PackageReference Include="Microsoft.Build.Framework" Version="17.*" PrivateAssets="all" />
-        <PackageReference Include="Microsoft.Build.Utilities.Core" Version="17.*" PrivateAssets="all" ExcludeAssets="runtime" />
-        <PackageReference Include="System.Collections.Immutable" Version="9.*" PrivateAssets="all" />
-        <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.*" />
-
         <!-- Include Microsoft.Build.NoTargets for bundling its SDK files -->
         <PackageReference Include="Microsoft.Build.NoTargets"
-                          Version="3.7.0"
+                          Version="3.7.*"
                           PrivateAssets="all"
                           GeneratePathProperty="true" />
-    </ItemGroup>
-
-    <!-- Framework-specific dependencies -->
-    <ItemGroup Condition="'$(TargetFramework)' == 'net10.0'">
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.*-*" />
-    </ItemGroup>
-
-    <ItemGroup Condition="'$(TargetFramework)' == 'net9.0'">
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.*" />
-    </ItemGroup>
-
-    <ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.*" />
-    </ItemGroup>
-
-    <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
-        <PackageReference Include="System.ValueTuple" Version="4.*" />
-    </ItemGroup>
-
-    <!-- Project references that will become NuGet dependencies -->
-    <ItemGroup Condition="'$(TargetFramework)' != 'net472'">
-        <ProjectReference Include="..\CloudNimble.DotNetDocs.Core\CloudNimble.DotNetDocs.Core.csproj" />
-        <ProjectReference Include="..\CloudNimble.DotNetDocs.Mintlify\CloudNimble.DotNetDocs.Mintlify.csproj" />
     </ItemGroup>
 
     <ItemGroup>
         <!-- Pack the SDK files -->
         <None Include="Sdk\**" Pack="true" PackagePath="Sdk" />
         <None Include="build\**" Pack="true" PackagePath="build" />
+        
+        <!-- Include pre-built task assemblies directly (only during packaging) -->
+        <!-- .NET 8.0 tasks -->
+        <None Include="..\CloudNimble.DotNetDocs.Sdk.Tasks\bin\$(Configuration)\net8.0\*.dll"
+              Pack="true"
+              PackagePath="tasks\net8.0"
+              Visible="false" />
+              
+        <!-- .NET 9.0 tasks -->
+        <None Include="..\CloudNimble.DotNetDocs.Sdk.Tasks\bin\$(Configuration)\net9.0\*.dll"
+              Pack="true"
+              PackagePath="tasks\net9.0"
+              Visible="false" />
+              
+        <!-- .NET 10.0 tasks -->
+        <None Include="..\CloudNimble.DotNetDocs.Sdk.Tasks\bin\$(Configuration)\net10.0\*.dll"
+              Pack="true"
+              PackagePath="tasks\net10.0"
+              Visible="false" />
+              
+        <!-- .NET Framework 4.7.2 tasks -->
+        <None Include="..\CloudNimble.DotNetDocs.Sdk.Tasks\bin\$(Configuration)\net472\*.dll"
+              Pack="true"
+              PackagePath="tasks\net472"
+              Visible="false" />
     </ItemGroup>
+    
+    <!-- Build the tasks project before packing this SDK -->
+    <Target Name="BuildTasksProject" BeforeTargets="Pack">
+        <MSBuild Projects="..\CloudNimble.DotNetDocs.Sdk.Tasks\CloudNimble.DotNetDocs.Sdk.Tasks.csproj"
+                 Targets="Build"
+                 Properties="Configuration=$(Configuration)" />
+        <Message Text="Built CloudNimble.DotNetDocs.Sdk.Tasks" Importance="high" />
+    </Target>
 
     <!-- Include NoTargets SDK files directly from package in NuGet -->
     <Target Name="IncludeNoTargetsInPackage" BeforeTargets="GenerateNuspec">
@@ -85,16 +83,6 @@
         </ItemGroup>
         
         <Message Text="Including NoTargets SDK files in package from $(NoTargetsSourcePath)" Importance="normal" />
-    </Target>
-
-
-     <!--Provide GetTargetPath for project references--> 
-    <Target Name="GetTargetPath" Returns="@(TargetPathItem)">
-        <ItemGroup>
-            <TargetPathItem Include="$(TargetPath)">
-                <TargetFramework>$(TargetFramework)</TargetFramework>
-            </TargetPathItem>
-        </ItemGroup>
     </Target>
 
 </Project>

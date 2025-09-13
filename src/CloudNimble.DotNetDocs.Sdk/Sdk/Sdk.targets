@@ -6,14 +6,6 @@
         Includes validation, generation, and integration targets.
         ============================================================================ -->
 
-    <!-- Debug: Confirm targets file is loaded -->
-    <Target Name="DotNetDocsTargetsLoaded" BeforeTargets="Build">
-        <Message Text="🔧 DotNetDocs.Sdk targets loaded successfully" Importance="high" />
-        <Message Text="   MSBuild: $(MSBuildVersion) ($(MSBuildRuntimeType))" Importance="normal" />
-        <Message Text="   Looking for tasks at: $(_DotNetDocsTasksAssembly)" Importance="high" />
-        <Message Text="   Task assembly exists: $([System.IO.File]::Exists('$(_DotNetDocsTasksAssembly)'))" Importance="high" />
-    </Target>
-
     <!-- Import the NoTargets SDK targets for no-compile behavior -->
     <!-- NoTargets SDK files are bundled in the Sdk/NoTargets folder -->
     <!-- First try the local NoTargets folder (for packaged SDK) -->
@@ -38,42 +30,19 @@
         <_DotNetDocsTaskFramework Condition="'$(MSBuildRuntimeType)' == 'Core'">net8.0</_DotNetDocsTaskFramework>
         <_DotNetDocsTaskFramework Condition="'$(MSBuildRuntimeType)' == 'Full'">net472</_DotNetDocsTaskFramework>
         <_DotNetDocsTaskFramework Condition="'$(_DotNetDocsTaskFramework)' == ''">net8.0</_DotNetDocsTaskFramework>
-    </PropertyGroup>
-    
-    <!-- Determine if we're in local development or packaged SDK -->
-    <!-- Check if the Tasks source file exists (which means we're in development) -->
-    <PropertyGroup>
-        <_IsLocalDevelopment Condition="Exists('$(MSBuildThisFileDirectory)..\Tasks\GenerateDocumentationTask.cs')">true</_IsLocalDevelopment>
-        <_IsLocalDevelopment Condition="'$(_IsLocalDevelopment)' == ''">false</_IsLocalDevelopment>
-    </PropertyGroup>
-    
-    <!-- Set task assembly path based on development vs packaged state -->
-    <PropertyGroup Condition="'$(_IsLocalDevelopment)' == 'true'">
-        <!-- For local development, use the bin folder directly -->
-        <_DotNetDocsTasksFolder>$(MSBuildThisFileDirectory)..\bin\$(Configuration)\$(_DotNetDocsTaskFramework)</_DotNetDocsTasksFolder>
-        <_DotNetDocsTasksAssembly>$(_DotNetDocsTasksFolder)\CloudNimble.DotNetDocs.Sdk.dll</_DotNetDocsTasksAssembly>
-    </PropertyGroup>
-    
-    <PropertyGroup Condition="'$(_IsLocalDevelopment)' != 'true'">
-        <!-- For packaged SDK, use the tasks folder -->
+        
+        <!-- Tasks are always loaded from the packaged location -->
         <_DotNetDocsTasksFolder>$(MSBuildThisFileDirectory)..\tasks\$(_DotNetDocsTaskFramework)</_DotNetDocsTasksFolder>
-        <_DotNetDocsTasksAssembly>$(_DotNetDocsTasksFolder)\CloudNimble.DotNetDocs.Sdk.dll</_DotNetDocsTasksAssembly>
+        <_DotNetDocsTasksAssembly>$(_DotNetDocsTasksFolder)\CloudNimble.DotNetDocs.Sdk.Tasks.dll</_DotNetDocsTasksAssembly>
     </PropertyGroup>
     
-    <!-- Override GenerateDocumentation if task assembly doesn't exist yet -->
-    <!-- This handles the first build scenario where the SDK hasn't been built yet -->
-    <PropertyGroup>
-        <GenerateDocumentation Condition="!Exists('$(_DotNetDocsTasksAssembly)')">false</GenerateDocumentation>
-    </PropertyGroup>
-    
-    <!-- Load compiled MSBuild tasks only when GenerateDocumentation is true -->
-    <!-- Since we set GenerateDocumentation to false when the assembly doesn't exist, this is sufficient -->
+    <!-- Load compiled MSBuild tasks when they exist -->
     <UsingTask TaskName="CloudNimble.DotNetDocs.Sdk.Tasks.DiscoverDocumentedProjectsTask" 
                AssemblyFile="$(_DotNetDocsTasksAssembly)"
-               Condition="'$(GenerateDocumentation)' == 'true'" />
+               Condition="Exists('$(_DotNetDocsTasksAssembly)') AND '$(GenerateDocumentation)' == 'true'" />
     <UsingTask TaskName="CloudNimble.DotNetDocs.Sdk.Tasks.GenerateDocumentationTask" 
                AssemblyFile="$(_DotNetDocsTasksAssembly)"
-               Condition="'$(GenerateDocumentation)' == 'true'" />
+               Condition="Exists('$(_DotNetDocsTasksAssembly)') AND '$(GenerateDocumentation)' == 'true'" />
     
     <!-- Clean up any implicit package references that might cause warnings -->
     <Target Name="RemoveImplicitPackageReferences" BeforeTargets="CollectPackageReferences">
@@ -81,12 +50,6 @@
             <PackageReference Remove="NETStandard.Library" />
             <PackageReference Remove="Microsoft.NETCore.App" />
         </ItemGroup>
-    </Target>
-
-
-    <!-- Debug: Show GenerateDocumentation property value -->
-    <Target Name="DebugGenerateDocumentation" BeforeTargets="ValidateDocumentationProject">
-        <Message Text="🔧 GenerateDocumentation property: '$(GenerateDocumentation)'" Importance="high" />
     </Target>
 
     <!-- Documentation project validation and information -->
@@ -166,7 +129,12 @@
             OutputPath="$(DocumentationRootPath)"
             DocumentationType="$(DocumentationType)"
             NamespaceMode="$(NamespaceMode)"
-            ApiReferencePath="$(ApiReferencePath)">
+            ApiReferencePath="$(ApiReferencePath)"
+            MintlifyNavigationMode="$(MintlifyNavigationMode)"
+            MintlifyUnifiedGroupName="$(MintlifyUnifiedGroupName)"
+            DocsJsonTemplatePath="$(DocsJsonTemplatePath)"
+            MintlifyTemplate="$(MintlifyTemplate)"
+            SolutionName="$(_SolutionName)">
             <Output TaskParameter="GeneratedFiles" ItemName="GeneratedDocumentationFiles" />
         </CloudNimble.DotNetDocs.Sdk.Tasks.GenerateDocumentationTask>
 

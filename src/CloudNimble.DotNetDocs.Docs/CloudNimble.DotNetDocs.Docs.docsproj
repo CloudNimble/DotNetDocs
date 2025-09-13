@@ -1,0 +1,26 @@
+﻿<Project Sdk="DotNetDocs.Sdk/1.0.0-alpha.1">
+
+    <PropertyGroup>
+        <KeepLocalOutput>true</KeepLocalOutput>
+        <DocumentationType>Mintlify</DocumentationType>
+        <GenerateDocumentation>true</GenerateDocumentation>
+        <NamespaceMode>Folder</NamespaceMode>
+        <ShowDocumentationStats>true</ShowDocumentationStats>
+        <!-- Exclude test projects from documentation -->
+        <ExcludePatterns>Tests.Shared</ExcludePatterns>
+		
+		<MintlifyNavigationMode>Unified</MintlifyNavigationMode>
+		<MintlifyTemplate>
+			<Name>DotNetDocs.com</Name>
+			<Theme>mint</Theme>
+			<Colors>
+				<Primary>#0D9373</Primary>
+			</Colors>
+		</MintlifyTemplate>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Folder Include="guides\" />
+    </ItemGroup>
+
+</Project>

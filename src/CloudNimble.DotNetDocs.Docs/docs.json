@@ -2,7 +2,7 @@
   "colors": {
     "primary": "#0D9373"
   },
-  "name": "CloudNimble.DotNetDocs.Tests.Shared",
+  "name": "DotNetDocs.com",
   "navigation": {
     "pages": [
       "index",
@@ -19,58 +19,176 @@
                 "icon": "folder-tree",
                 "pages": [
                   {
-                    "group": "Tests",
+                    "group": "Core",
                     "icon": "folder-tree",
                     "pages": [
+                      "api-reference/CloudNimble/DotNetDocs/Core/index",
+                      "api-reference/CloudNimble/DotNetDocs/Core/AssemblyManager",
+                      "api-reference/CloudNimble/DotNetDocs/Core/DocAssembly",
+                      "api-reference/CloudNimble/DotNetDocs/Core/DocConstants",
+                      "api-reference/CloudNimble/DotNetDocs/Core/DocEntity",
+                      "api-reference/CloudNimble/DotNetDocs/Core/DocException",
+                      "api-reference/CloudNimble/DotNetDocs/Core/DocMember",
+                      "api-reference/CloudNimble/DotNetDocs/Core/DocNamespace",
+                      "api-reference/CloudNimble/DotNetDocs/Core/DocParameter",
+                      "api-reference/CloudNimble/DotNetDocs/Core/DocType",
+                      "api-reference/CloudNimble/DotNetDocs/Core/DocTypeParameter",
+                      "api-reference/CloudNimble/DotNetDocs/Core/DocumentationManager",
+                      "api-reference/CloudNimble/DotNetDocs/Core/IDocEnricher",
+                      "api-reference/CloudNimble/DotNetDocs/Core/IDocRenderer",
+                      "api-reference/CloudNimble/DotNetDocs/Core/IDocTransformer",
+                      "api-reference/CloudNimble/DotNetDocs/Core/ProjectContext",
                       {
-                        "group": "Shared",
+                        "group": "Configuration",
                         "icon": "folder-tree",
                         "pages": [
-                          "api-reference/CloudNimble/DotNetDocs/Tests/Shared/index",
-                          "api-reference/CloudNimble/DotNetDocs/Tests/Shared/DotNetDocsTestBase",
-                          "api-reference/CloudNimble/DotNetDocs/Tests/Shared/SampleClass",
+                          "api-reference/CloudNimble/DotNetDocs/Core/Configuration/index",
+                          "api-reference/CloudNimble/DotNetDocs/Core/Configuration/DotNetDocsBuilder",
+                          "api-reference/CloudNimble/DotNetDocs/Core/Configuration/DotNetDocsMintlify_DotNetDocsBuilderExtensions",
+                          "api-reference/CloudNimble/DotNetDocs/Core/Configuration/FileNamingOptions",
+                          "api-reference/CloudNimble/DotNetDocs/Core/Configuration/NamespaceMode"
+                        ]
+                      },
+                      {
+                        "group": "Renderers",
+                        "icon": "folder-tree",
+                        "pages": [
+                          "api-reference/CloudNimble/DotNetDocs/Core/Renderers/index",
+                          "api-reference/CloudNimble/DotNetDocs/Core/Renderers/JsonRenderer",
+                          "api-reference/CloudNimble/DotNetDocs/Core/Renderers/JsonRendererOptions",
+                          "api-reference/CloudNimble/DotNetDocs/Core/Renderers/MarkdownRenderer",
+                          "api-reference/CloudNimble/DotNetDocs/Core/Renderers/RendererBase",
+                          "api-reference/CloudNimble/DotNetDocs/Core/Renderers/YamlRenderer",
                           {
-                            "group": "AccessModifiers",
+                            "group": "YamlConverters",
                             "icon": "folder-tree",
                             "pages": [
-                              "api-reference/CloudNimble/DotNetDocs/Tests/Shared/AccessModifiers/index",
-                              "api-reference/CloudNimble/DotNetDocs/Tests/Shared/AccessModifiers/MixedAccessClass"
-                            ]
-                          },
-                          {
-                            "group": "BasicScenarios",
-                            "icon": "folder-tree",
-                            "pages": [
-                              "api-reference/CloudNimble/DotNetDocs/Tests/Shared/BasicScenarios/index",
-                              "api-reference/CloudNimble/DotNetDocs/Tests/Shared/BasicScenarios/BaseClass",
-                              "api-reference/CloudNimble/DotNetDocs/Tests/Shared/BasicScenarios/ClassWithMethods",
-                              "api-reference/CloudNimble/DotNetDocs/Tests/Shared/BasicScenarios/ClassWithProperties",
-                              "api-reference/CloudNimble/DotNetDocs/Tests/Shared/BasicScenarios/DerivedClass",
-                              "api-reference/CloudNimble/DotNetDocs/Tests/Shared/BasicScenarios/DisposableClass",
-                              "api-reference/CloudNimble/DotNetDocs/Tests/Shared/BasicScenarios/SimpleClass"
-                            ]
-                          },
-                          {
-                            "group": "EdgeCases",
-                            "icon": "folder-tree",
-                            "pages": [
-                              "api-reference/CloudNimble/DotNetDocs/Tests/Shared/EdgeCases/index",
-                              "api-reference/CloudNimble/DotNetDocs/Tests/Shared/EdgeCases/ClassWithFullDocs",
-                              "api-reference/CloudNimble/DotNetDocs/Tests/Shared/EdgeCases/ClassWithMinimalDocs",
-                              "api-reference/CloudNimble/DotNetDocs/Tests/Shared/EdgeCases/ClassWithNoDocs",
-                              "api-reference/CloudNimble/DotNetDocs/Tests/Shared/EdgeCases/ClassWithSpecialCharacters"
-                            ]
-                          },
-                          {
-                            "group": "Parameters",
-                            "icon": "folder-tree",
-                            "pages": [
-                              "api-reference/CloudNimble/DotNetDocs/Tests/Shared/Parameters/index",
-                              "api-reference/CloudNimble/DotNetDocs/Tests/Shared/Parameters/ParameterVariations"
+                              "api-reference/CloudNimble/DotNetDocs/Core/Renderers/YamlConverters/index",
+                              "api-reference/CloudNimble/DotNetDocs/Core/Renderers/YamlConverters/AccessibilityTypeConverter",
+                              "api-reference/CloudNimble/DotNetDocs/Core/Renderers/YamlConverters/RefKindTypeConverter",
+                              "api-reference/CloudNimble/DotNetDocs/Core/Renderers/YamlConverters/SymbolKindTypeConverter",
+                              "api-reference/CloudNimble/DotNetDocs/Core/Renderers/YamlConverters/SymbolTypeConverter",
+                              "api-reference/CloudNimble/DotNetDocs/Core/Renderers/YamlConverters/TypeKindTypeConverter"
                             ]
                           }
                         ]
                       }
+                    ]
+                  },
+                  {
+                    "group": "Mintlify",
+                    "icon": "folder-tree",
+                    "pages": [
+                      "api-reference/CloudNimble/DotNetDocs/Mintlify/index",
+                      "api-reference/CloudNimble/DotNetDocs/Mintlify/MintlifyIcons",
+                      "api-reference/CloudNimble/DotNetDocs/Mintlify/MintlifyRenderer",
+                      "api-reference/CloudNimble/DotNetDocs/Mintlify/MintlifyRendererOptions",
+                      "api-reference/CloudNimble/DotNetDocs/Mintlify/NavigationMode"
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "group": "Microsoft",
+            "icon": "folder-tree",
+            "pages": [
+              {
+                "group": "Extensions",
+                "icon": "folder-tree",
+                "pages": [
+                  {
+                    "group": "DependencyInjection",
+                    "icon": "folder-tree",
+                    "pages": [
+                      "api-reference/Microsoft/Extensions/DependencyInjection/index",
+                      "api-reference/Microsoft/Extensions/DependencyInjection/DotNetDocsCore_IServiceCollectionExtensions",
+                      "api-reference/Microsoft/Extensions/DependencyInjection/DotNetDocsMintlify_IServiceCollectionExtensions"
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "group": "Mintlify",
+            "icon": "folder-tree",
+            "pages": [
+              {
+                "group": "Core",
+                "icon": "folder-tree",
+                "pages": [
+                  "api-reference/Mintlify/Core/index",
+                  "api-reference/Mintlify/Core/DocsJsonManager",
+                  "api-reference/Mintlify/Core/DocsJsonValidator",
+                  "api-reference/Mintlify/Core/MintlifyConstants",
+                  "api-reference/Mintlify/Core/MintlifyOptions",
+                  {
+                    "group": "Converters",
+                    "icon": "folder-tree",
+                    "pages": [
+                      "api-reference/Mintlify/Core/Converters/index",
+                      "api-reference/Mintlify/Core/Converters/ApiConfigConverter",
+                      "api-reference/Mintlify/Core/Converters/BackgroundImageConverter",
+                      "api-reference/Mintlify/Core/Converters/ColorConverter",
+                      "api-reference/Mintlify/Core/Converters/IconConverter",
+                      "api-reference/Mintlify/Core/Converters/NavigationJsonConverter",
+                      "api-reference/Mintlify/Core/Converters/NavigationPageConverter",
+                      "api-reference/Mintlify/Core/Converters/NavigationPageListConverter",
+                      "api-reference/Mintlify/Core/Converters/PrimaryNavigationConverter"
+                    ]
+                  },
+                  {
+                    "group": "Models",
+                    "icon": "folder-tree",
+                    "pages": [
+                      "api-reference/Mintlify/Core/Models/index",
+                      "api-reference/Mintlify/Core/Models/AnchorConfig",
+                      "api-reference/Mintlify/Core/Models/ApiConfig",
+                      "api-reference/Mintlify/Core/Models/ApiExamplesConfig",
+                      "api-reference/Mintlify/Core/Models/ApiParamsConfig",
+                      "api-reference/Mintlify/Core/Models/ApiPlaygroundConfig",
+                      "api-reference/Mintlify/Core/Models/AppearanceConfig",
+                      "api-reference/Mintlify/Core/Models/BackgroundConfig",
+                      "api-reference/Mintlify/Core/Models/BannerConfig",
+                      "api-reference/Mintlify/Core/Models/ColorPairConfig",
+                      "api-reference/Mintlify/Core/Models/ColorsConfig",
+                      "api-reference/Mintlify/Core/Models/ContextualConfig",
+                      "api-reference/Mintlify/Core/Models/DocsJsonConfig",
+                      "api-reference/Mintlify/Core/Models/DropdownConfig",
+                      "api-reference/Mintlify/Core/Models/Error404Config",
+                      "api-reference/Mintlify/Core/Models/ErrorsConfig",
+                      "api-reference/Mintlify/Core/Models/FaviconConfig",
+                      "api-reference/Mintlify/Core/Models/FaviconConfigJsonConverter",
+                      "api-reference/Mintlify/Core/Models/FontsConfig",
+                      "api-reference/Mintlify/Core/Models/FooterConfig",
+                      "api-reference/Mintlify/Core/Models/FooterLink",
+                      "api-reference/Mintlify/Core/Models/FooterLinkGroup",
+                      "api-reference/Mintlify/Core/Models/FrontMatterConfig",
+                      "api-reference/Mintlify/Core/Models/GlobalAnchorConfig",
+                      "api-reference/Mintlify/Core/Models/GlobalDropdownConfig",
+                      "api-reference/Mintlify/Core/Models/GlobalLanguageConfig",
+                      "api-reference/Mintlify/Core/Models/GlobalNavigationConfig",
+                      "api-reference/Mintlify/Core/Models/GlobalTabConfig",
+                      "api-reference/Mintlify/Core/Models/GlobalVersionConfig",
+                      "api-reference/Mintlify/Core/Models/GroupConfig",
+                      "api-reference/Mintlify/Core/Models/IconsConfig",
+                      "api-reference/Mintlify/Core/Models/IntegrationsConfig",
+                      "api-reference/Mintlify/Core/Models/LanguageConfig",
+                      "api-reference/Mintlify/Core/Models/LogoConfig",
+                      "api-reference/Mintlify/Core/Models/MdxAuthConfig",
+                      "api-reference/Mintlify/Core/Models/MdxConfig",
+                      "api-reference/Mintlify/Core/Models/MergeOptions",
+                      "api-reference/Mintlify/Core/Models/NavbarConfig",
+                      "api-reference/Mintlify/Core/Models/NavbarLink",
+                      "api-reference/Mintlify/Core/Models/NavigationConfig",
+                      "api-reference/Mintlify/Core/Models/RedirectConfig",
+                      "api-reference/Mintlify/Core/Models/SearchConfig",
+                      "api-reference/Mintlify/Core/Models/SeoConfig",
+                      "api-reference/Mintlify/Core/Models/StylingConfig",
+                      "api-reference/Mintlify/Core/Models/TabConfig",
+                      "api-reference/Mintlify/Core/Models/VersionConfig"
                     ]
                   }
                 ]

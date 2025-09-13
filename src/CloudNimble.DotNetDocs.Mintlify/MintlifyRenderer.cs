@@ -69,17 +69,25 @@ namespace CloudNimble.DotNetDocs.Mintlify
             var apiOutputPath = Path.Combine(Context.DocumentationRootPath, Context.ApiReferencePath);
             Console.WriteLine($"📝 Rendering documentation to: {apiOutputPath}");
 
-            // Initialize DocsJsonManager if enabled
+            // Initialize DocsJsonManager if enabled (only on first call)
             DocsJsonConfig? docsConfig = null;
             if (_options.GenerateDocsJson && _docsJsonManager is not null)
             {
-                docsConfig = _options.Template ?? DocsJsonManager.CreateDefault(
-                    model.AssemblyName ?? "API Documentation",
-                    "mint"
-                );
-                // Load configuration using JSON serialization
-                var json = JsonSerializer.Serialize(docsConfig, MintlifyConstants.JsonSerializerOptions);
-                _docsJsonManager.Load(json);
+                // Only initialize if not already configured
+                if (_docsJsonManager.Configuration == null)
+                {
+                    docsConfig = _options.Template ?? DocsJsonManager.CreateDefault(
+                        model.AssemblyName ?? "API Documentation",
+                        "mint"
+                    );
+                    // Load configuration using JSON serialization
+                    var json = JsonSerializer.Serialize(docsConfig, MintlifyConstants.JsonSerializerOptions);
+                    _docsJsonManager.Load(json);
+                }
+                else
+                {
+                    docsConfig = _docsJsonManager.Configuration;
+                }
             }
 
             // Ensure all necessary directories exist based on the file naming mode
@@ -122,34 +130,90 @@ namespace CloudNimble.DotNetDocs.Mintlify
         internal void BuildNavigationStructure(DocsJsonConfig config, DocAssembly model)
         {
             config.Navigation ??= new NavigationConfig();
-            config.Navigation.Pages =
-            [
-                // Add the index page (assembly overview)
-                "index",
-            ];
-
-            // Create "API Reference" root group
-            var apiReferenceGroup = new GroupConfig
+            
+            // Initialize Pages if null, but don't reset if already populated
+            if (config.Navigation.Pages == null)
             {
-                Group = "API Reference",
-                Icon = _options.IncludeIcons ? "code" : null,
-                Pages = []
-            };
-
-            // Build navigation based on file/folder mode
-            if (Context.FileNamingOptions.NamespaceMode == NamespaceMode.Folder)
-            {
-                BuildFolderModeNavigation(apiReferenceGroup.Pages, model);
+                config.Navigation.Pages =
+                [
+                    // Add the index page (assembly overview)
+                    "index",
+                ];
             }
-            else
+            
+            // Make sure we have the index page
+            if (config.Navigation.Pages.Count == 0 || (config.Navigation.Pages[0] as string) != "index")
             {
-                BuildFileModeNavigation(apiReferenceGroup.Pages, model);
+                config.Navigation.Pages.Insert(0, "index");
             }
 
-            // Only add the API Reference group if it has content
-            if (apiReferenceGroup.Pages.Count != 0)
+            if (_options.NavigationMode == NavigationMode.Unified)
             {
-                config.Navigation.Pages.Add(apiReferenceGroup);
+                // Find or create the API Reference group
+                var apiReferenceGroup = config.Navigation.Pages
+                    .OfType<GroupConfig>()
+                    .FirstOrDefault(g => g.Group == _options.UnifiedGroupName);
+                
+                if (apiReferenceGroup == null)
+                {
+                    apiReferenceGroup = new GroupConfig
+                    {
+                        Group = _options.UnifiedGroupName,
+                        Icon = _options.IncludeIcons ? "code" : null,
+                        Pages = []
+                    };
+                    config.Navigation.Pages.Add(apiReferenceGroup);
+                }
+
+                // Build navigation based on file/folder mode
+                if (Context.FileNamingOptions.NamespaceMode == NamespaceMode.Folder)
+                {
+                    BuildFolderModeNavigation(apiReferenceGroup.Pages!, model);
+                }
+                else
+                {
+                    BuildFileModeNavigation(apiReferenceGroup.Pages!, model);
+                }
+            }
+            else // NavigationMode.ByAssembly
+            {
+                // Group namespaces by assembly name
+                var namespacesByAssembly = model.Namespaces
+                    .SelectMany(ns => ns.Types.Select(t => new { Namespace = ns, Type = t }))
+                    .GroupBy(x => x.Type.AssemblyName ?? "Unknown")
+                    .OrderBy(g => g.Key);
+
+                foreach (var assemblyGroup in namespacesByAssembly)
+                {
+                    var assemblyNav = new GroupConfig
+                    {
+                        Group = assemblyGroup.Key,
+                        Icon = _options.IncludeIcons ? "package" : null,
+                        Pages = []
+                    };
+
+                    // Get unique namespaces for this assembly
+                    var assemblyNamespaces = assemblyGroup
+                        .Select(x => x.Namespace)
+                        .Distinct()
+                        .OrderBy(ns => ns.Name)
+                        .ToList();
+
+                    // Build navigation for this assembly's namespaces
+                    if (Context.FileNamingOptions.NamespaceMode == NamespaceMode.Folder)
+                    {
+                        BuildFolderModeNavigation(assemblyNav.Pages, assemblyNamespaces);
+                    }
+                    else
+                    {
+                        BuildFileModeNavigation(assemblyNav.Pages, assemblyNamespaces);
+                    }
+
+                    if (assemblyNav.Pages.Count != 0)
+                    {
+                        config.Navigation.Pages.Add(assemblyNav);
+                    }
+                }
             }
         }
 
@@ -164,6 +228,47 @@ namespace CloudNimble.DotNetDocs.Mintlify
             foreach (var ns in model.Namespaces.OrderBy(n => n.Name))
             {
                 var namespaceName = base.GetSafeNamespaceName(ns);
+                var group = new GroupConfig
+                {
+                    Group = ns.Name ?? "global",
+                    Icon = _options.IncludeIcons ? MintlifyIcons.GetIconForNamespace(ns) : null,
+                    Pages = []
+                };
+
+                // Add namespace overview page
+                var apiOutputPath = Path.Combine(Context.DocumentationRootPath, Context.ApiReferencePath);
+                var nsFilePath = GetNamespaceFilePath(ns, apiOutputPath, "mdx");
+                var nsRelativePath = Path.GetRelativePath(Context.DocumentationRootPath, nsFilePath)
+                    .Replace(Path.DirectorySeparatorChar, '/')
+                    .Replace(".mdx", "");
+                group.Pages.Add(nsRelativePath);
+
+                // Add type pages
+                foreach (var type in ns.Types.OrderBy(t => t.Name))
+                {
+                    var typeFilePath = GetTypeFilePath(type, ns, apiOutputPath, "mdx");
+                    var typeRelativePath = Path.GetRelativePath(Context.DocumentationRootPath, typeFilePath)
+                        .Replace(Path.DirectorySeparatorChar, '/')
+                        .Replace(".mdx", "");
+                    group.Pages.Add(typeRelativePath);
+                }
+
+                if (group.Pages.Count != 0)
+                {
+                    pages.Add(group);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Builds navigation for File mode (flat structure) for a list of namespaces.
+        /// </summary>
+        /// <param name="pages">The pages list to populate.</param>
+        /// <param name="namespaces">The namespaces to build navigation for.</param>
+        internal void BuildFileModeNavigation(List<object> pages, List<DocNamespace> namespaces)
+        {
+            foreach (var ns in namespaces.OrderBy(n => n.Name))
+            {
                 var group = new GroupConfig
                 {
                     Group = ns.Name ?? "global",
@@ -260,6 +365,75 @@ namespace CloudNimble.DotNetDocs.Mintlify
                             .Replace(Path.DirectorySeparatorChar, '/')
                             .Replace(".mdx", "");
                         currentLevel.Add(typeRelativePath);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Builds navigation for Folder mode (hierarchical structure) for a list of namespaces.
+        /// </summary>
+        /// <param name="pages">The pages list to populate.</param>
+        /// <param name="namespaces">The namespaces to build navigation for.</param>
+        internal void BuildFolderModeNavigation(List<object> pages, List<DocNamespace> namespaces)
+        {
+            // Group namespaces by their hierarchical structure
+            var namespaceTree = new Dictionary<string, GroupConfig>();
+
+            foreach (var ns in namespaces.OrderBy(n => n.Name))
+            {
+                var namespaceName = base.GetSafeNamespaceName(ns);
+                var parts = namespaceName.Split('.');
+                
+                // Build nested structure for namespace hierarchy
+                var currentLevel = pages;
+                GroupConfig? parentGroup = null;
+                string currentPath = "";
+
+                for (int i = 0; i < parts.Length; i++)
+                {
+                    currentPath = i == 0 ? parts[i] : $"{currentPath}.{parts[i]}";
+                    
+                    // Check if this level already exists
+                    var existingGroup = currentLevel?.OfType<GroupConfig>()
+                        .FirstOrDefault(g => g.Group == parts[i]);
+                    
+                    if (existingGroup == null)
+                    {
+                        // Create new group for this level
+                        existingGroup = new GroupConfig
+                        {
+                            Group = parts[i],
+                            Icon = _options.IncludeIcons && i == 0 ? MintlifyIcons.GetIconForNamespace(ns) : null,
+                            Pages = []
+                        };
+                        currentLevel?.Add(existingGroup);
+                    }
+                    
+                    parentGroup = existingGroup;
+                    currentLevel = existingGroup.Pages;
+                }
+
+                // Add namespace overview page if it's a complete namespace
+                if (parentGroup != null && ns.Name == currentPath)
+                {
+                    var apiOutputPath = Path.Combine(Context.DocumentationRootPath, Context.ApiReferencePath);
+                    var nsFilePath = GetNamespaceFilePath(ns, apiOutputPath, "mdx");
+                    var nsRelativePath = Path.GetRelativePath(Context.DocumentationRootPath, nsFilePath)
+                        .Replace(Path.DirectorySeparatorChar, '/')
+                        .Replace(".mdx", "");
+                    
+                    // Add overview page first
+                    currentLevel?.Insert(0, nsRelativePath);
+                    
+                    // Add type pages
+                    foreach (var type in ns.Types.OrderBy(t => t.Name))
+                    {
+                        var typeFilePath = GetTypeFilePath(type, ns, apiOutputPath, "mdx");
+                        var typeRelativePath = Path.GetRelativePath(Context.DocumentationRootPath, typeFilePath)
+                            .Replace(Path.DirectorySeparatorChar, '/')
+                            .Replace(".mdx", "");
+                        currentLevel?.Add(typeRelativePath);
                     }
                 }
             }

@@ -103,7 +103,10 @@ namespace CloudNimble.DotNetDocs.Core
         /// <summary>
         /// Gets the path to the XML documentation file.
         /// </summary>
-        public string XmlPath { get; init; }
+        /// <remarks>
+        /// May be null if no XML documentation file is available.
+        /// </remarks>
+        public string? XmlPath { get; init; }
 
         /// <summary>
         /// Gets the previously used included members for caching.
@@ -121,7 +124,11 @@ namespace CloudNimble.DotNetDocs.Core
         /// <param name="xmlPath">Path to the XML documentation file.</param>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="assemblyPath"/> or <paramref name="xmlPath"/> is null.</exception>
         /// <exception cref="ArgumentException">Thrown when <paramref name="assemblyPath"/> or <paramref name="xmlPath"/> is empty or whitespace.</exception>
-        /// <exception cref="FileNotFoundException">Thrown when <paramref name="assemblyPath"/> or <paramref name="xmlPath"/> does not exist.</exception>
+        /// <exception cref="FileNotFoundException">Thrown when <paramref name="assemblyPath"/> does not exist.</exception>
+        /// <remarks>
+        /// If the XML documentation file does not exist, processing will continue without XML documentation.
+        /// A warning will be added to the Errors collection.
+        /// </remarks>
         public AssemblyManager(string assemblyPath, string xmlPath)
         {
             ArgumentException.ThrowIfNullOrWhiteSpace(assemblyPath);
@@ -131,13 +138,21 @@ namespace CloudNimble.DotNetDocs.Core
             {
                 throw new FileNotFoundException("Assembly file not found.", nameof(assemblyPath));
             }
+            
+            // Handle missing XML documentation gracefully
             if (!File.Exists(xmlPath))
             {
-                throw new FileNotFoundException("XML documentation file not found.", nameof(xmlPath));
+                // Add a warning but continue processing
+                Errors.Add(new CompilerError(xmlPath, 0, 0, "DOC001", 
+                    $"XML documentation file not found: {Path.GetFileName(xmlPath)}. Processing will continue without XML documentation."));
+                XmlPath = null; // Mark as null to indicate no XML is available
+            }
+            else
+            {
+                XmlPath = xmlPath;
             }
 
             AssemblyPath = assemblyPath;
-            XmlPath = xmlPath;
             AssemblyName = Path.GetFileNameWithoutExtension(assemblyPath);
             LastModified = DateTime.MinValue;
         }
@@ -586,10 +601,13 @@ namespace CloudNimble.DotNetDocs.Core
                 .WithOptions(compilationOptions)
                 .AddSyntaxTrees(syntaxTrees);
 
-            // Add the target assembly with its XML documentation
+            // Add the target assembly with its XML documentation (if available)
+            var documentationProvider = XmlPath != null && File.Exists(XmlPath) 
+                ? XmlDocumentationProvider.CreateFromFile(XmlPath)
+                : null;
             var targetReference = MetadataReference.CreateFromFile(
                 AssemblyPath, 
-                documentation: XmlDocumentationProvider.CreateFromFile(XmlPath));
+                documentation: documentationProvider);
             compilation = compilation.AddReferences(targetReference);
 
             // Add all provided references
