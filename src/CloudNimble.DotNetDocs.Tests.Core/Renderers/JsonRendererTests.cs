@@ -408,8 +408,8 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
 
         #region Baseline Generation
 
-        [TestMethod]
-        [DataRow(projectPath)]
+        //[TestMethod]
+        //[DataRow(projectPath)]
         [BreakdanceManifestGenerator]
         public async Task GenerateJsonBaseline(string projectPath)
         {

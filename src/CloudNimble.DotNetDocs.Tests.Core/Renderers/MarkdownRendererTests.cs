@@ -334,127 +334,6 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
 
         #endregion
 
-        #region Baseline Generation
-
-        //[TestMethod]
-        //[DataRow(projectPath)]
-        [BreakdanceManifestGenerator]
-        public async Task GenerateMarkdownBaselines(string projectPath)
-        {
-            // Generate baselines for both FileMode and FolderMode
-            await GenerateFileModeBaselines(projectPath);
-            await GenerateFolderModeBaselines(projectPath);
-        }
-
-        private async Task GenerateFileModeBaselines(string projectPath)
-        {
-            // Setup with FileMode context
-            var context = new ProjectContext
-            {
-                FileNamingOptions = new FileNamingOptions(NamespaceMode.File, '-')
-            };
-            var renderer = new MarkdownRenderer(context);
-            var tempOutputPath = Path.Combine(Path.GetTempPath(), $"MDBaseline_FileMode_{Guid.NewGuid()}");
-            Directory.CreateDirectory(tempOutputPath);
-
-            try
-            {
-                // Generate baseline for SimpleClass documentation
-                var assemblyPath = typeof(SimpleClass).Assembly.Location;
-                var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
-                using var manager = new AssemblyManager(assemblyPath, xmlPath);
-                var model = await manager.DocumentAsync();
-
-                await renderer.RenderAsync(model);
-
-                // Create baselines directory
-                var baselinesDir = Path.Combine(projectPath, "Baselines", "MarkdownRenderer", "FileMode");
-                if (Directory.Exists(baselinesDir))
-                {
-                    Directory.Delete(baselinesDir, true);
-                }
-                Directory.CreateDirectory(baselinesDir);
-
-                // Copy all rendered files to baselines
-                foreach (var file in Directory.GetFiles(tempOutputPath, "*.md", SearchOption.AllDirectories))
-                {
-                    var fileName = Path.GetFileName(file);
-                    var content = await File.ReadAllTextAsync(file);
-                    var baselinePath = Path.Combine(baselinesDir, fileName);
-                    await File.WriteAllTextAsync(baselinePath, content);
-                }
-            }
-            finally
-            {
-                if (Directory.Exists(tempOutputPath))
-                {
-                    Directory.Delete(tempOutputPath, true);
-                }
-            }
-        }
-
-        private async Task GenerateFolderModeBaselines(string projectPath)
-        {
-            // Setup with FolderMode context
-            var context = new ProjectContext
-            {
-                FileNamingOptions = new FileNamingOptions(NamespaceMode.Folder, '-')
-            };
-            var renderer = new MarkdownRenderer(context);
-            var tempOutputPath = Path.Combine(Path.GetTempPath(), $"MDBaseline_FolderMode_{Guid.NewGuid()}");
-            Directory.CreateDirectory(tempOutputPath);
-
-            try
-            {
-                // Generate baseline for SimpleClass documentation
-                var assemblyPath = typeof(SimpleClass).Assembly.Location;
-                var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
-                using var manager = new AssemblyManager(assemblyPath, xmlPath);
-                var model = await manager.DocumentAsync();
-
-                await renderer.RenderAsync(model);
-
-                // Create baselines directory
-                var baselinesDir = Path.Combine(projectPath, "Baselines", "MarkdownRenderer", "FolderMode");
-                if (Directory.Exists(baselinesDir))
-                {
-                    Directory.Delete(baselinesDir, true);
-                }
-                Directory.CreateDirectory(baselinesDir);
-
-                // Copy entire folder structure preserving hierarchy
-                CopyDirectoryRecursive(tempOutputPath, baselinesDir);
-            }
-            finally
-            {
-                if (Directory.Exists(tempOutputPath))
-                {
-                    Directory.Delete(tempOutputPath, true);
-                }
-            }
-        }
-
-        private static void CopyDirectoryRecursive(string sourceDir, string destDir)
-        {
-            // Copy all files from the source directory
-            foreach (var file in Directory.GetFiles(sourceDir))
-            {
-                var destFile = Path.Combine(destDir, Path.GetFileName(file));
-                File.Copy(file, destFile, true);
-            }
-
-            // Recursively copy subdirectories
-            foreach (var subDir in Directory.GetDirectories(sourceDir))
-            {
-                var dirName = Path.GetFileName(subDir);
-                var destSubDir = Path.Combine(destDir, dirName);
-                Directory.CreateDirectory(destSubDir);
-                CopyDirectoryRecursive(subDir, destSubDir);
-            }
-        }
-
-        #endregion
-
         #region FileNamingOptions Tests
 
         [TestMethod]
@@ -1074,6 +953,96 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
         }
 
         #endregion
+
+        #region Baseline Generation
+
+        //[TestMethod]
+        //[DataRow(projectPath)]
+        [BreakdanceManifestGenerator]
+        public async Task GenerateMarkdownBaselines(string projectPath)
+        {
+            // Generate baselines for both FileMode and FolderMode
+            await GenerateFileModeBaselines(projectPath);
+            await GenerateFolderModeBaselines(projectPath);
+        }
+
+        private async Task GenerateFileModeBaselines(string projectPath)
+        {
+            // Create baselines directory
+            var baselinesDir = Path.Combine(projectPath, "Baselines", "MarkdownRenderer", "FileMode");
+            if (Directory.Exists(baselinesDir))
+            {
+                Directory.Delete(baselinesDir, true);
+            }
+            Directory.CreateDirectory(baselinesDir);
+            
+            // Setup with FileMode context to write directly to baselines
+            var context = new ProjectContext
+            {
+                FileNamingOptions = new FileNamingOptions(NamespaceMode.File, '-'),
+                DocumentationRootPath = baselinesDir,
+                ApiReferencePath = string.Empty
+            };
+            var renderer = new MarkdownRenderer(context);
+
+            // Generate baseline for SimpleClass documentation
+            var assemblyPath = typeof(SimpleClass).Assembly.Location;
+            var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
+            using var manager = new AssemblyManager(assemblyPath, xmlPath);
+            var model = await manager.DocumentAsync();
+
+            await renderer.RenderAsync(model);
+        }
+
+        private async Task GenerateFolderModeBaselines(string projectPath)
+        {
+            // Create baselines directory
+            var baselinesDir = Path.Combine(projectPath, "Baselines", "MarkdownRenderer", "FolderMode");
+            if (Directory.Exists(baselinesDir))
+            {
+                Directory.Delete(baselinesDir, true);
+            }
+            Directory.CreateDirectory(baselinesDir);
+            
+            // Setup with FolderMode context to write directly to baselines
+            var context = new ProjectContext
+            {
+                FileNamingOptions = new FileNamingOptions(NamespaceMode.Folder, '-'),
+                DocumentationRootPath = baselinesDir,
+                ApiReferencePath = string.Empty
+            };
+            var renderer = new MarkdownRenderer(context);
+
+            // Generate baseline for SimpleClass documentation
+            var assemblyPath = typeof(SimpleClass).Assembly.Location;
+            var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
+            using var manager = new AssemblyManager(assemblyPath, xmlPath);
+            var model = await manager.DocumentAsync();
+
+            await renderer.RenderAsync(model);
+        }
+
+        private static void CopyDirectoryRecursive(string sourceDir, string destDir)
+        {
+            // Copy all files from the source directory
+            foreach (var file in Directory.GetFiles(sourceDir))
+            {
+                var destFile = Path.Combine(destDir, Path.GetFileName(file));
+                File.Copy(file, destFile, true);
+            }
+
+            // Recursively copy subdirectories
+            foreach (var subDir in Directory.GetDirectories(sourceDir))
+            {
+                var dirName = Path.GetFileName(subDir);
+                var destSubDir = Path.Combine(destDir, dirName);
+                Directory.CreateDirectory(destSubDir);
+                CopyDirectoryRecursive(subDir, destSubDir);
+            }
+        }
+
+        #endregion
+
 
     }
 

@@ -17,7 +17,6 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
             WriteIndented = true,
             DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            ReferenceHandler = ReferenceHandler.Preserve,
             Converters =
             {
                 new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)

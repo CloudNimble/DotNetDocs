@@ -698,7 +698,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
                 var assemblyPath = typeof(SampleClass).Assembly.Location;
                 var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
                 using var manager = new AssemblyManager(assemblyPath, xmlPath);
-                var projectContext = new ProjectContext([Accessibility.Public, Accessibility.Internal]) 
+                var projectContext = new ProjectContext([Accessibility.Public]) 
                 { 
                     ShowPlaceholders = false,
                     FileNamingOptions = new FileNamingOptions(NamespaceMode.Folder),
