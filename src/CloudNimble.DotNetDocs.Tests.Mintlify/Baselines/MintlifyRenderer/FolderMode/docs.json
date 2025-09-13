@@ -7,9 +7,15 @@
     "pages": [
       "index",
       {
-        "group": "API Reference",
-        "icon": "code",
+        "group": "Getting Started",
         "pages": [
+          "quickstart"
+        ]
+      },
+      {
+        "group": "API Reference",
+        "pages": [
+          "api-reference/index",
           {
             "group": "CloudNimble",
             "icon": "folder-tree",

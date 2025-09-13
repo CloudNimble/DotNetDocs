@@ -61,6 +61,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
                         .ConfigureContext(ctx =>
                         {
                             ctx.DocumentationRootPath = _testOutputPath;
+                            ctx.ApiReferencePath = string.Empty;
                         });
                 });
             });
@@ -192,13 +193,17 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
             using var manager = new AssemblyManager(assemblyPath, xmlPath);
             var model = await manager.DocumentAsync();
-            var context = new ProjectContext();
+            var context = new ProjectContext
+            {
+                DocumentationRootPath = nonExistentPath,
+                ApiReferencePath = string.Empty
+            };
+            var renderer = new MarkdownRenderer(context);
 
             try
             {
                 // Act
                 Directory.Exists(nonExistentPath).Should().BeFalse();
-                var renderer = GetMarkdownRenderer();
                 await renderer.RenderAsync(model);
 
                 // Assert
@@ -347,7 +352,9 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             
             var context = new ProjectContext
             {
-                FileNamingOptions = new FileNamingOptions(NamespaceMode.File, '-')
+                FileNamingOptions = new FileNamingOptions(NamespaceMode.File, '-'),
+                DocumentationRootPath = _testOutputPath,
+                ApiReferencePath = string.Empty
             };
             var renderer = new MarkdownRenderer(context);
 
@@ -370,7 +377,9 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             
             var context = new ProjectContext
             {
-                FileNamingOptions = new FileNamingOptions(NamespaceMode.File, '_')
+                FileNamingOptions = new FileNamingOptions(NamespaceMode.File, '_'),
+                DocumentationRootPath = _testOutputPath,
+                ApiReferencePath = string.Empty
             };
             var renderer = new MarkdownRenderer(context);
 
@@ -393,7 +402,9 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             
             var context = new ProjectContext
             {
-                FileNamingOptions = new FileNamingOptions(NamespaceMode.File, '.')
+                FileNamingOptions = new FileNamingOptions(NamespaceMode.File, '.'),
+                DocumentationRootPath = _testOutputPath,
+                ApiReferencePath = string.Empty
             };
             var renderer = new MarkdownRenderer(context);
 
@@ -416,7 +427,9 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             
             var context = new ProjectContext
             {
-                FileNamingOptions = new FileNamingOptions(NamespaceMode.Folder)
+                FileNamingOptions = new FileNamingOptions(NamespaceMode.Folder),
+                DocumentationRootPath = _testOutputPath,
+                ApiReferencePath = string.Empty
             };
             var renderer = new MarkdownRenderer(context);
 
@@ -458,7 +471,9 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             // Set a separator that should be ignored in Folder mode
             var context = new ProjectContext
             {
-                FileNamingOptions = new FileNamingOptions(NamespaceMode.Folder, '_')
+                FileNamingOptions = new FileNamingOptions(NamespaceMode.Folder, '_'),
+                DocumentationRootPath = _testOutputPath,
+                ApiReferencePath = string.Empty
             };
             var renderer = new MarkdownRenderer(context);
 
@@ -483,12 +498,14 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
         public async Task RenderAsync_WithFolderMode_MatchesFolderStructureBaseline()
         {
             // Arrange
+            var testOutputPath = Path.Combine(Path.GetTempPath(), $"MDFolderBaseline_{Guid.NewGuid()}");
             var context = new ProjectContext
             {
-                FileNamingOptions = new FileNamingOptions(NamespaceMode.Folder)
+                FileNamingOptions = new FileNamingOptions(NamespaceMode.Folder),
+                DocumentationRootPath = testOutputPath,
+                ApiReferencePath = string.Empty
             };
             var renderer = new MarkdownRenderer(context);
-            var testOutputPath = Path.Combine(Path.GetTempPath(), $"MDFolderBaseline_{Guid.NewGuid()}");
 
             try
             {
