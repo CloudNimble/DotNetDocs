@@ -140,7 +140,27 @@ jobs:
     - name: Update NuGet.config for CI
       shell: pwsh
       run: |
-        "$localFeed = '${{ env.LOCAL_NUGET_FEED }}'; $nugetConfig = @'<?xml version=\"1.0\" encoding=\"utf-8\"?><configuration><packageSources><clear /><add key=\"nuget.org\" value=\"https://api.nuget.org/v3/index.json\" protocolVersion=\"3\" /><add key=\"local-feed\" value=\"$localFeed\" /></packageSources><packageSourceMapping><!-- Map DotNetDocs SDK packages to local feed during development --><packageSource key=\"local-feed\"><package pattern=\"DotNetDocs.*\" /></packageSource><!-- All other packages from nuget.org --><packageSource key=\"nuget.org\"><package pattern=\"*\" /></packageSource></packageSourceMapping></configuration>'; $nugetConfig | Out-File -FilePath '${{ github.workspace }}\NuGet.config' -Encoding utf8; Write-Host '✅ Updated NuGet.config for CI build'"
+        $localFeed = "${{ env.LOCAL_NUGET_FEED }}"
+        $configPath = "${{ github.workspace }}\NuGet.config"
+        "<?xml version=`"1.0`" encoding=`"utf-8`"?>" | Out-File -FilePath $configPath -Encoding utf8
+        "<configuration>" | Add-Content -Path $configPath -Encoding utf8
+        "  <packageSources>" | Add-Content -Path $configPath -Encoding utf8
+        "    <clear />" | Add-Content -Path $configPath -Encoding utf8
+        "    <add key=`"nuget.org`" value=`"https://api.nuget.org/v3/index.json`" protocolVersion=`"3`" />" | Add-Content -Path $configPath -Encoding utf8
+        "    <add key=`"local-feed`" value=`"$localFeed`" />" | Add-Content -Path $configPath -Encoding utf8
+        "  </packageSources>" | Add-Content -Path $configPath -Encoding utf8
+        "  <packageSourceMapping>" | Add-Content -Path $configPath -Encoding utf8
+        "    <!-- Map DotNetDocs SDK packages to local feed during development -->" | Add-Content -Path $configPath -Encoding utf8
+        "    <packageSource key=`"local-feed`">" | Add-Content -Path $configPath -Encoding utf8
+        "      <package pattern=`"DotNetDocs.*`" />" | Add-Content -Path $configPath -Encoding utf8
+        "    </packageSource>" | Add-Content -Path $configPath -Encoding utf8
+        "    <!-- All other packages from nuget.org -->" | Add-Content -Path $configPath -Encoding utf8
+        "    <packageSource key=`"nuget.org`">" | Add-Content -Path $configPath -Encoding utf8
+        "      <package pattern=`"*`" />" | Add-Content -Path $configPath -Encoding utf8
+        "    </packageSource>" | Add-Content -Path $configPath -Encoding utf8
+        "  </packageSourceMapping>" | Add-Content -Path $configPath -Encoding utf8
+        "</configuration>" | Add-Content -Path $configPath -Encoding utf8
+        Write-Host "✅ Updated NuGet.config for CI build"
 
     - name: Build SDK project first
       shell: pwsh
