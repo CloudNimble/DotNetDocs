@@ -24,7 +24,7 @@ namespace CloudNimble.DotNetDocs.Mintlify
     /// frontmatter with icons, tags, and SEO metadata. Optionally generates docs.json
     /// navigation configuration for Mintlify documentation sites.
     /// </remarks>
-    public class MintlifyRenderer : RendererBase, IDocRenderer
+    public class MintlifyRenderer : MarkdownRendererBase, IDocRenderer
     {
 
         #region Fields
@@ -871,7 +871,7 @@ namespace CloudNimble.DotNetDocs.Mintlify
             if (!string.IsNullOrWhiteSpace(type.BaseType))
             {
                 sb.AppendLine();
-                sb.AppendLine($"**Inheritance:** {type.BaseType}");
+                sb.AppendLine($"**Inheritance:** {EscapeTypeNameForMarkdown(type.BaseType)}");
             }
 
             // TODO: Add interface information when available in DocType
@@ -1085,7 +1085,7 @@ namespace CloudNimble.DotNetDocs.Mintlify
                 sb.AppendLine("|------|------|-------------|");
                 foreach (var param in member.Parameters)
                 {
-                    var paramType = param.TypeName ?? "unknown";
+                    var paramType = EscapeTypeNameForMarkdown(param.TypeName ?? "unknown");
                     var description = !string.IsNullOrWhiteSpace(param.Usage) ? param.Usage : param.Summary ?? "-";
                     sb.AppendLine($"| `{param.Name}` | `{paramType}` | {description} |");
                 }
@@ -1098,7 +1098,7 @@ namespace CloudNimble.DotNetDocs.Mintlify
             {
                 sb.AppendLine("#### Returns");
                 sb.AppendLine();
-                sb.AppendLine($"Type: `{member.ReturnTypeName}`");
+                sb.AppendLine($"Type: `{EscapeTypeNameForMarkdown(member.ReturnTypeName)}`");
                 if (!string.IsNullOrWhiteSpace(member.Returns))
                 {
                     sb.AppendLine(member.Returns);
@@ -1111,7 +1111,7 @@ namespace CloudNimble.DotNetDocs.Mintlify
             {
                 sb.AppendLine("#### Property Value");
                 sb.AppendLine();
-                sb.AppendLine($"Type: `{member.ReturnTypeName}`");
+                sb.AppendLine($"Type: `{EscapeTypeNameForMarkdown(member.ReturnTypeName)}`");
                 if (!string.IsNullOrWhiteSpace(member.Value))
                 {
                     sb.AppendLine(member.Value);

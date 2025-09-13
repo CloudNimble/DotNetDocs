@@ -83,7 +83,7 @@ public System.Collections.Generic.KeyValuePair<TKey, TValue> GenericMethodWithMu
 
 #### Returns
 
-Type: `System.Collections.Generic.KeyValuePair<TKey, TValue>`
+Type: `System.Collections.Generic.KeyValuePair&lt;TKey, TValue&gt;`
 A key-value pair.
 
 #### Type Parameters
@@ -130,7 +130,7 @@ public string MethodWithNullables(System.Nullable<int> nullableInt, string nulla
 
 | Name | Type | Description |
 |------|------|-------------|
-| `nullableInt` | `System.Nullable<int>` | An optional nullable integer. |
+| `nullableInt` | `System.Nullable&lt;int&gt;` | An optional nullable integer. |
 | `nullableString` | `string?` | An optional nullable string. |
 
 #### Returns
