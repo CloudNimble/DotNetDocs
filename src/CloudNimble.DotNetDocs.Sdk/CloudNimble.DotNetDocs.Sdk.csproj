@@ -63,8 +63,8 @@
               Visible="false" />
     </ItemGroup>
     
-    <!-- Build the tasks project before packing this SDK -->
-    <Target Name="BuildTasksProject" BeforeTargets="Pack">
+    <!-- Build the tasks project before packing this SDK (but not when NoBuild is set) -->
+    <Target Name="BuildTasksProject" BeforeTargets="Pack" Condition="'$(NoBuild)' != 'true'">
         <MSBuild Projects="..\CloudNimble.DotNetDocs.Sdk.Tasks\CloudNimble.DotNetDocs.Sdk.Tasks.csproj"
                  Targets="Build"
                  Properties="Configuration=$(Configuration)" />
