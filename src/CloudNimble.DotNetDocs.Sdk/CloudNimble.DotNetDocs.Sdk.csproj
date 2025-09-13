@@ -75,8 +75,8 @@
     <Target Name="PushToLocalFeed" AfterTargets="Pack" Condition="'$(Configuration)' == 'Release' or '$(Configuration)' == 'Debug'">
         <PropertyGroup>
             <!-- Use LOCAL_NUGET_FEED env var if set, otherwise use default local path -->
-            <LocalFeedPath Condition="'$(LOCAL_NUGET_FEED)' != ''">$(LOCAL_NUGET_FEED)</LocalFeedPath>
-            <LocalFeedPath Condition="'$(LOCAL_NUGET_FEED)' == ''">$([System.IO.Path]::Combine('$(MSBuildThisFileDirectory)', '..', '..', 'local-nuget-feed'))</LocalFeedPath>
+            <LocalFeedPath Condition="'$(LOCAL_NUGET_FEED)' != ''">$([System.IO.Path]::GetFullPath('$(LOCAL_NUGET_FEED)'))</LocalFeedPath>
+            <LocalFeedPath Condition="'$(LOCAL_NUGET_FEED)' == ''">$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\..\local-nuget-feed'))</LocalFeedPath>
             <PackageOutputPath>$(MSBuildProjectDirectory)\bin\$(Configuration)\$(PackageId).$(PackageVersion).nupkg</PackageOutputPath>
         </PropertyGroup>
         
