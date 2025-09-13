@@ -140,29 +140,7 @@ jobs:
     - name: Update NuGet.config for CI
       shell: pwsh
       run: |
-        $localFeed = "${{ env.LOCAL_NUGET_FEED }}"
-        $nugetConfig = @"
-<?xml version="1.0" encoding="utf-8"?>
-<configuration>
-  <packageSources>
-    <clear />
-    <add key="nuget.org" value="https://api.nuget.org/v3/index.json" protocolVersion="3" />
-    <add key="local-feed" value="$localFeed" />
-  </packageSources>
-  <packageSourceMapping>
-    <!-- Map DotNetDocs SDK packages to local feed during development -->
-    <packageSource key="local-feed">
-      <package pattern="DotNetDocs.*" />
-    </packageSource>
-    <!-- All other packages from nuget.org -->
-    <packageSource key="nuget.org">
-      <package pattern="*" />
-    </packageSource>
-  </packageSourceMapping>
-</configuration>
-"@
-        $nugetConfig | Out-File -FilePath "${{ github.workspace }}\NuGet.config" -Encoding utf8
-        Write-Host "✅ Updated NuGet.config for CI build"
+        "$localFeed = '${{ env.LOCAL_NUGET_FEED }}'; $nugetConfig = @'<?xml version=\"1.0\" encoding=\"utf-8\"?><configuration><packageSources><clear /><add key=\"nuget.org\" value=\"https://api.nuget.org/v3/index.json\" protocolVersion=\"3\" /><add key=\"local-feed\" value=\"$localFeed\" /></packageSources><packageSourceMapping><!-- Map DotNetDocs SDK packages to local feed during development --><packageSource key=\"local-feed\"><package pattern=\"DotNetDocs.*\" /></packageSource><!-- All other packages from nuget.org --><packageSource key=\"nuget.org\"><package pattern=\"*\" /></packageSource></packageSourceMapping></configuration>'; $nugetConfig | Out-File -FilePath '${{ github.workspace }}\NuGet.config' -Encoding utf8; Write-Host '✅ Updated NuGet.config for CI build'"
 
     - name: Build SDK project first
       shell: pwsh
