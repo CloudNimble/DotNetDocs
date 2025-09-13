@@ -166,6 +166,9 @@ jobs:
       shell: pwsh
       run: |
         Write-Host "🔨 Building DotNetDocs.Sdk with version ${{ steps.version.outputs.VERSION }}"
+        Write-Host "📦 First, restore the SDK Tasks project dependencies..."
+        dotnet restore src/CloudNimble.DotNetDocs.Sdk.Tasks/CloudNimble.DotNetDocs.Sdk.Tasks.csproj
+        Write-Host "🔧 Now building the SDK project..."
         dotnet build src/CloudNimble.DotNetDocs.Sdk/CloudNimble.DotNetDocs.Sdk.csproj --configuration Release /p:Version=${{ steps.version.outputs.VERSION }} /p:PackageVersion=${{ steps.version.outputs.VERSION }}
         dotnet pack src/CloudNimble.DotNetDocs.Sdk/CloudNimble.DotNetDocs.Sdk.csproj --configuration Release --no-build --output "${{ env.LOCAL_NUGET_FEED }}" /p:PackageVersion=${{ steps.version.outputs.VERSION }}
         Write-Host "📦 SDK package created and pushed to local feed"
