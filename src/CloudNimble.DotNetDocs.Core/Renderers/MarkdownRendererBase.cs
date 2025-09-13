@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace CloudNimble.DotNetDocs.Core.Renderers
+﻿namespace CloudNimble.DotNetDocs.Core.Renderers
 {
 
     /// <summary>
@@ -26,23 +22,25 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
         #region Protected Methods
 
         /// <summary>
-        /// Escapes generic type syntax for safe rendering in Markdown/MDX.
+        /// Escapes XML/HTML tag syntax for safe rendering in Markdown/MDX.
         /// </summary>
-        /// <param name="typeName">The type name potentially containing generic syntax.</param>
-        /// <returns>The escaped type name safe for MDX rendering.</returns>
+        /// <param name="stringToEscape">The string potentially containing XML/HTML tag syntax or generic type brackets.</param>
+        /// <returns>The escaped string safe for MDX rendering.</returns>
         /// <remarks>
-        /// Converts angle brackets in generic type syntax to HTML entities.
-        /// For example, JsonConverter&lt;object&gt; becomes JsonConverter&amp;lt;object&amp;gt;
+        /// Converts angle brackets to HTML entities to prevent MDX parser interpretation as JSX/HTML tags.
+        /// This handles both generic type syntax (e.g., JsonConverter&lt;object&gt;) and XML documentation tags
+        /// (e.g., &lt;see cref="..."&gt;) by converting them to JsonConverter&amp;lt;object&amp;gt; and
+        /// &amp;lt;see cref="..."&amp;gt; respectively.
         /// </remarks>
-        protected static string EscapeTypeNameForMarkdown(string? typeName)
+        protected static string EscapeXmlTagsInString(string? stringToEscape)
         {
-            if (string.IsNullOrWhiteSpace(typeName))
+            if (string.IsNullOrWhiteSpace(stringToEscape))
             {
-                return typeName ?? string.Empty;
+                return stringToEscape ?? string.Empty;
             }
 
             // Replace angle brackets with HTML entities
-            return typeName.Replace("<", "&lt;").Replace(">", "&gt;");
+            return stringToEscape.Replace("<", "&lt;").Replace(">", "&gt;");
         }
 
         #endregion

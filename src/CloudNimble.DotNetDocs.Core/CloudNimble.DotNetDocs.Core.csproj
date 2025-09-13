@@ -33,10 +33,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Transformers\" />
-    </ItemGroup>
-
-    <ItemGroup>
         <InternalsVisibleTo Include="CloudNimble.DotNetDocs.Mintlify" />
     </ItemGroup>
 

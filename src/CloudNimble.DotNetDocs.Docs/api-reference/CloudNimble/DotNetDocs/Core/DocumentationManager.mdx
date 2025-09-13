@@ -46,9 +46,9 @@ public DocumentationManager(CloudNimble.DotNetDocs.Core.ProjectContext projectCo
 | Name | Type | Description |
 |------|------|-------------|
 | `projectContext` | `CloudNimble.DotNetDocs.Core.ProjectContext` | The project context containing configuration settings. |
-| `enrichers` | `System.Collections.Generic.IEnumerable<CloudNimble.DotNetDocs.Core.IDocEnricher>?` | The enrichers to apply to documentation entities. |
-| `transformers` | `System.Collections.Generic.IEnumerable<CloudNimble.DotNetDocs.Core.IDocTransformer>?` | The transformers to apply to the documentation model. |
-| `renderers` | `System.Collections.Generic.IEnumerable<CloudNimble.DotNetDocs.Core.IDocRenderer>?` | The renderers to generate output formats. |
+| `enrichers` | `System.Collections.Generic.IEnumerable&lt;CloudNimble.DotNetDocs.Core.IDocEnricher&gt;?` | The enrichers to apply to documentation entities. |
+| `transformers` | `System.Collections.Generic.IEnumerable&lt;CloudNimble.DotNetDocs.Core.IDocTransformer&gt;?` | The transformers to apply to the documentation model. |
+| `renderers` | `System.Collections.Generic.IEnumerable&lt;CloudNimble.DotNetDocs.Core.IDocRenderer&gt;?` | The renderers to generate output formats. |
 
 #### Remarks
 
@@ -93,7 +93,7 @@ public System.Threading.Tasks.Task CreateConceptualFilesAsync(System.Collections
 
 | Name | Type | Description |
 |------|------|-------------|
-| `assemblies` | `System.Collections.Generic.IEnumerable<(string, string)>` | The collection of assembly and XML path pairs. |
+| `assemblies` | `System.Collections.Generic.IEnumerable&lt;(string, string)&gt;` | The collection of assembly and XML path pairs. |
 
 #### Returns
 
@@ -146,7 +146,7 @@ public System.Threading.Tasks.Task ProcessAsync(System.Collections.Generic.IEnum
 
 | Name | Type | Description |
 |------|------|-------------|
-| `assemblies` | `System.Collections.Generic.IEnumerable<(string, string)>` | The collection of assembly and XML path pairs. |
+| `assemblies` | `System.Collections.Generic.IEnumerable&lt;(string, string)&gt;` | The collection of assembly and XML path pairs. |
 
 #### Returns
 

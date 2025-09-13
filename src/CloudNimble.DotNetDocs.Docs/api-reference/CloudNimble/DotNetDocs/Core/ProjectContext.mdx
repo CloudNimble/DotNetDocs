@@ -74,7 +74,7 @@ public ProjectContext(System.Collections.Generic.List<Microsoft.CodeAnalysis.Acc
 
 | Name | Type | Description |
 |------|------|-------------|
-| `includedMembers` | `System.Collections.Generic.List<Microsoft.CodeAnalysis.Accessibility?>?` | List of member accessibilities to include. Defaults to Public if null. |
+| `includedMembers` | `System.Collections.Generic.List&lt;Microsoft.CodeAnalysis.Accessibility?&gt;?` | List of member accessibilities to include. Defaults to Public if null. |
 | `references` | `string[]?` | Paths to referenced assemblies. |
 
 ## Properties
@@ -135,7 +135,7 @@ public System.Collections.Generic.HashSet<string> ExcludedTypes { get; set; }
 
 #### Property Value
 
-Type: `System.Collections.Generic.HashSet<string>`
+Type: `System.Collections.Generic.HashSet&lt;string&gt;`
 Set of type patterns to exclude. Supports wildcards (*) for flexible matching.
             This is useful for filtering out compiler-generated or test framework-injected types.
 
@@ -184,7 +184,7 @@ public System.Collections.Generic.List<Microsoft.CodeAnalysis.Accessibility> Inc
 
 #### Property Value
 
-Type: `System.Collections.Generic.List<Microsoft.CodeAnalysis.Accessibility>`
+Type: `System.Collections.Generic.List&lt;Microsoft.CodeAnalysis.Accessibility&gt;`
 List of accessibility levels to include. Defaults to Public only.
 
 ### References
@@ -199,7 +199,7 @@ public System.Collections.Generic.List<string> References { get; set; }
 
 #### Property Value
 
-Type: `System.Collections.Generic.List<string>`
+Type: `System.Collections.Generic.List&lt;string&gt;`
 A collection of file system paths to assemblies referenced by the project being documented.
 
 ### ShowPlaceholders

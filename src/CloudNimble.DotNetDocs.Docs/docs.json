@@ -57,6 +57,7 @@
                           "api-reference/CloudNimble/DotNetDocs/Core/Renderers/JsonRenderer",
                           "api-reference/CloudNimble/DotNetDocs/Core/Renderers/JsonRendererOptions",
                           "api-reference/CloudNimble/DotNetDocs/Core/Renderers/MarkdownRenderer",
+                          "api-reference/CloudNimble/DotNetDocs/Core/Renderers/MarkdownRendererBase",
                           "api-reference/CloudNimble/DotNetDocs/Core/Renderers/RendererBase",
                           "api-reference/CloudNimble/DotNetDocs/Core/Renderers/YamlRenderer",
                           {

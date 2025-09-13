@@ -71,6 +71,18 @@
         <Message Text="Built CloudNimble.DotNetDocs.Sdk.Tasks" Importance="high" />
     </Target>
 
+    <!-- When NoBuild is set, verify task assemblies exist from previous build -->
+    <Target Name="VerifyTaskAssemblies" BeforeTargets="Pack" Condition="'$(NoBuild)' == 'true'">
+        <ItemGroup>
+            <RequiredTaskFiles Include="..\CloudNimble.DotNetDocs.Sdk.Tasks\bin\$(Configuration)\**\*.dll" />
+        </ItemGroup>
+
+        <Error Text="Task assemblies not found in bin folder. The Tasks project must be built before packing the SDK with --no-build."
+               Condition="!Exists('@(RequiredTaskFiles)')" />
+
+        <Message Text="Using pre-built task assemblies from bin folder (NoBuild=true)" Importance="high" />
+    </Target>
+
     <!-- Automatically push SDK package to local feed after pack -->
     <Target Name="PushToLocalFeed" AfterTargets="Pack" Condition="'$(Configuration)' == 'Release' or '$(Configuration)' == 'Debug'">
         <PropertyGroup>

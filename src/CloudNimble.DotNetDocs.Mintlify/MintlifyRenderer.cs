@@ -130,7 +130,7 @@ namespace CloudNimble.DotNetDocs.Mintlify
         internal void BuildNavigationStructure(DocsJsonConfig config, DocAssembly model)
         {
             config.Navigation ??= new NavigationConfig();
-            
+
             // Initialize Pages if null, but don't reset if already populated
             if (config.Navigation.Pages == null)
             {
@@ -140,7 +140,7 @@ namespace CloudNimble.DotNetDocs.Mintlify
                     "index",
                 ];
             }
-            
+
             // Make sure we have the index page
             if (config.Navigation.Pages.Count == 0 || (config.Navigation.Pages[0] as string) != "index")
             {
@@ -153,7 +153,7 @@ namespace CloudNimble.DotNetDocs.Mintlify
                 var apiReferenceGroup = config.Navigation.Pages
                     .OfType<GroupConfig>()
                     .FirstOrDefault(g => g.Group == _options.UnifiedGroupName);
-                
+
                 if (apiReferenceGroup == null)
                 {
                     apiReferenceGroup = new GroupConfig
@@ -315,7 +315,7 @@ namespace CloudNimble.DotNetDocs.Mintlify
             {
                 var namespaceName = base.GetSafeNamespaceName(ns);
                 var parts = namespaceName.Split('.');
-                
+
                 // Build nested structure for namespace hierarchy
                 var currentLevel = pages;
                 GroupConfig? parentGroup = null;
@@ -325,7 +325,7 @@ namespace CloudNimble.DotNetDocs.Mintlify
                 {
                     var part = parts[i];
                     currentPath = i == 0 ? part : $"{currentPath}.{part}";
-                    
+
                     // Find or create group at this level
                     var existingGroup = currentLevel
                         .OfType<GroupConfig>()
@@ -384,7 +384,7 @@ namespace CloudNimble.DotNetDocs.Mintlify
             {
                 var namespaceName = base.GetSafeNamespaceName(ns);
                 var parts = namespaceName.Split('.');
-                
+
                 // Build nested structure for namespace hierarchy
                 var currentLevel = pages;
                 GroupConfig? parentGroup = null;
@@ -393,11 +393,11 @@ namespace CloudNimble.DotNetDocs.Mintlify
                 for (int i = 0; i < parts.Length; i++)
                 {
                     currentPath = i == 0 ? parts[i] : $"{currentPath}.{parts[i]}";
-                    
+
                     // Check if this level already exists
                     var existingGroup = currentLevel?.OfType<GroupConfig>()
                         .FirstOrDefault(g => g.Group == parts[i]);
-                    
+
                     if (existingGroup == null)
                     {
                         // Create new group for this level
@@ -409,7 +409,7 @@ namespace CloudNimble.DotNetDocs.Mintlify
                         };
                         currentLevel?.Add(existingGroup);
                     }
-                    
+
                     parentGroup = existingGroup;
                     currentLevel = existingGroup.Pages;
                 }
@@ -422,10 +422,10 @@ namespace CloudNimble.DotNetDocs.Mintlify
                     var nsRelativePath = Path.GetRelativePath(Context.DocumentationRootPath, nsFilePath)
                         .Replace(Path.DirectorySeparatorChar, '/')
                         .Replace(".mdx", "");
-                    
+
                     // Add overview page first
                     currentLevel?.Insert(0, nsRelativePath);
-                    
+
                     // Add type pages
                     foreach (var type in ns.Types.OrderBy(t => t.Name))
                     {
@@ -470,13 +470,13 @@ namespace CloudNimble.DotNetDocs.Mintlify
                     .Replace("\n", " ")
                     .Replace("\"", "'")
                     .Trim();
-                
+
                 // Limit to 160 characters for SEO
                 if (description.Length > 160)
                 {
                     description = string.Concat(description.AsSpan(0, 157), "...");
                 }
-                
+
                 sb.AppendLine($"description: \"{description}\"");
             }
 
@@ -533,30 +533,30 @@ namespace CloudNimble.DotNetDocs.Mintlify
 
             // Add keywords for better searchability
             var keywords = new List<string>();
-            
+
             if (entity is DocType typeForKeywords)
             {
                 keywords.Add(typeForKeywords.Name);
-                
+
                 if (!string.IsNullOrWhiteSpace(typeForKeywords.FullName))
                 {
                     keywords.Add(typeForKeywords.FullName);
                 }
-                
+
                 if (parentNamespace != null)
                 {
                     keywords.Add(parentNamespace.Name ?? "");
                 }
-                
+
                 // Add type kind as keyword
                 keywords.Add(typeForKeywords.TypeKind.ToString().ToLower());
-                
+
                 // Add base type and interfaces as keywords
                 if (!string.IsNullOrWhiteSpace(typeForKeywords.BaseType))
                 {
                     keywords.Add(typeForKeywords.BaseType);
                 }
-                
+
                 if (typeForKeywords.RelatedApis?.Any() == true)
                 {
                     keywords.AddRange(typeForKeywords.RelatedApis.Take(5)); // Limit to avoid too many keywords
@@ -566,7 +566,7 @@ namespace CloudNimble.DotNetDocs.Mintlify
             {
                 keywords.Add(ns.Name ?? "");
                 keywords.Add("namespace");
-                
+
                 // Add major type names as keywords
                 if (ns.Types?.Any() == true)
                 {
@@ -864,14 +864,14 @@ namespace CloudNimble.DotNetDocs.Mintlify
             // Type metadata section
             sb.AppendLine("## Definition");
             sb.AppendLine();
-            sb.AppendLine($"**Namespace:** {ns.Name}");
-            sb.AppendLine();
             sb.AppendLine($"**Assembly:** {(type.AssemblyName is not null ? $"{type.AssemblyName}.dll" : "Unknown")}");
+            sb.AppendLine();
+            sb.AppendLine($"**Namespace:** {ns.Name}");
 
             if (!string.IsNullOrWhiteSpace(type.BaseType))
             {
                 sb.AppendLine();
-                sb.AppendLine($"**Inheritance:** {EscapeTypeNameForMarkdown(type.BaseType)}");
+                sb.AppendLine($"**Inheritance:** {EscapeXmlTagsInString(type.BaseType)}");
             }
 
             // TODO: Add interface information when available in DocType
@@ -1085,7 +1085,7 @@ namespace CloudNimble.DotNetDocs.Mintlify
                 sb.AppendLine("|------|------|-------------|");
                 foreach (var param in member.Parameters)
                 {
-                    var paramType = EscapeTypeNameForMarkdown(param.TypeName ?? "unknown");
+                    var paramType = EscapeXmlTagsInString(param.TypeName ?? "unknown");
                     var description = !string.IsNullOrWhiteSpace(param.Usage) ? param.Usage : param.Summary ?? "-";
                     sb.AppendLine($"| `{param.Name}` | `{paramType}` | {description} |");
                 }
@@ -1098,7 +1098,7 @@ namespace CloudNimble.DotNetDocs.Mintlify
             {
                 sb.AppendLine("#### Returns");
                 sb.AppendLine();
-                sb.AppendLine($"Type: `{EscapeTypeNameForMarkdown(member.ReturnTypeName)}`");
+                sb.AppendLine($"Type: `{EscapeXmlTagsInString(member.ReturnTypeName)}`");
                 if (!string.IsNullOrWhiteSpace(member.Returns))
                 {
                     sb.AppendLine(member.Returns);
@@ -1111,7 +1111,7 @@ namespace CloudNimble.DotNetDocs.Mintlify
             {
                 sb.AppendLine("#### Property Value");
                 sb.AppendLine();
-                sb.AppendLine($"Type: `{EscapeTypeNameForMarkdown(member.ReturnTypeName)}`");
+                sb.AppendLine($"Type: `{EscapeXmlTagsInString(member.ReturnTypeName)}`");
                 if (!string.IsNullOrWhiteSpace(member.Value))
                 {
                     sb.AppendLine(member.Value);
@@ -1222,12 +1222,12 @@ namespace CloudNimble.DotNetDocs.Mintlify
                 return text;
 
             var lines = text.Split('\n');
-            
+
             // Skip the first line when calculating minimum indentation since it's often already correct
             // (XML doc comments often start with content on the same line as the tag)
             int minIndent = int.MaxValue;
             bool skipFirst = true;
-            
+
             foreach (var line in lines)
             {
                 if (skipFirst)
@@ -1235,10 +1235,10 @@ namespace CloudNimble.DotNetDocs.Mintlify
                     skipFirst = false;
                     continue;
                 }
-                
+
                 if (string.IsNullOrWhiteSpace(line))
                     continue;
-                    
+
                 int indent = 0;
                 foreach (var ch in line)
                 {
@@ -1247,21 +1247,21 @@ namespace CloudNimble.DotNetDocs.Mintlify
                     else
                         break;
                 }
-                
+
                 if (indent < minIndent)
                     minIndent = indent;
             }
-            
+
             // If no indentation found, return original text
             if (minIndent == int.MaxValue || minIndent == 0)
                 return text;
-            
+
             // Process lines: keep first line as-is, remove indentation from subsequent lines
             var result = new StringBuilder();
             for (int i = 0; i < lines.Length; i++)
             {
                 var line = lines[i];
-                
+
                 if (i == 0)
                 {
                     // Keep first line as-is
@@ -1280,7 +1280,7 @@ namespace CloudNimble.DotNetDocs.Mintlify
                     result.AppendLine(line.TrimStart());
                 }
             }
-            
+
             return result.ToString().TrimEnd();
         }
 
