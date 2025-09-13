@@ -2,9 +2,9 @@
 
 ## Definition
 
-**Namespace:** CloudNimble.DotNetDocs.Tests.Shared.EdgeCases
-
 **Assembly:** CloudNimble.DotNetDocs.Tests.Shared.dll
+
+**Namespace:** CloudNimble.DotNetDocs.Tests.Shared.EdgeCases
 
 **Inheritance:** System.Object
 

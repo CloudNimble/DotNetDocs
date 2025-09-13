@@ -2,9 +2,9 @@
 
 ## Definition
 
-**Namespace:** CloudNimble.DotNetDocs.Tests.Shared.AccessModifiers
-
 **Assembly:** CloudNimble.DotNetDocs.Tests.Shared.dll
+
+**Namespace:** CloudNimble.DotNetDocs.Tests.Shared.AccessModifiers
 
 **Inheritance:** System.Object
 

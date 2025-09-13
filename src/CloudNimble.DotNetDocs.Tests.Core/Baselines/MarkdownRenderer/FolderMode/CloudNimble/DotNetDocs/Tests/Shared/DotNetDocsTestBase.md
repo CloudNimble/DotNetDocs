@@ -2,9 +2,9 @@
 
 ## Definition
 
-**Namespace:** CloudNimble.DotNetDocs.Tests.Shared
-
 **Assembly:** CloudNimble.DotNetDocs.Tests.Shared.dll
+
+**Namespace:** CloudNimble.DotNetDocs.Tests.Shared
 
 **Inheritance:** CloudNimble.Breakdance.Extensions.MSTest2.BreakdanceMSTestBase
 

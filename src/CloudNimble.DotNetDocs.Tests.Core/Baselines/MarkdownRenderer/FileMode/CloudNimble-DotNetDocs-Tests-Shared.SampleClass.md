@@ -2,9 +2,9 @@
 
 ## Definition
 
-**Namespace:** CloudNimble.DotNetDocs.Tests.Shared
-
 **Assembly:** CloudNimble.DotNetDocs.Tests.Shared.dll
+
+**Namespace:** CloudNimble.DotNetDocs.Tests.Shared
 
 **Inheritance:** System.Object
 

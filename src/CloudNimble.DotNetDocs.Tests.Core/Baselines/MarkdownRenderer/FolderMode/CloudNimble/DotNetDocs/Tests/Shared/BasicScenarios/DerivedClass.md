@@ -2,9 +2,9 @@
 
 ## Definition
 
-**Namespace:** CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios
-
 **Assembly:** CloudNimble.DotNetDocs.Tests.Shared.dll
+
+**Namespace:** CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios
 
 **Inheritance:** CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.BaseClass
 
