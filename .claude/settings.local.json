@@ -22,7 +22,10 @@
       "mcp__playwright__browser_close",
       "mcp__github__get_file_contents",
       "mcp__github__search_code",
-      "mcp__github__list_workflows"
+      "mcp__github__list_workflows",
+      "Bash(git push:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
     ],
     "deny": [],
     "ask": [],
