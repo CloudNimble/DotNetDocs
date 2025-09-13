@@ -146,7 +146,7 @@ jobs:
   <packageSources>
     <clear />
     <add key="nuget.org" value="https://api.nuget.org/v3/index.json" protocolVersion="3" />
-    <add key="local-feed" value="${{ env.LOCAL_FEED_PATH }}" />
+    <add key="local-feed" value="${{ env.LOCAL_NUGET_FEED }}" />
   </packageSources>
   <packageSourceMapping>
     <!-- Map DotNetDocs SDK packages to local feed during development -->
@@ -168,7 +168,7 @@ jobs:
       run: |
         Write-Host "🔨 Building DotNetDocs.Sdk with version ${{ steps.version.outputs.VERSION }}"
         dotnet build src/CloudNimble.DotNetDocs.Sdk/CloudNimble.DotNetDocs.Sdk.csproj --configuration Release /p:Version=${{ steps.version.outputs.VERSION }} /p:PackageVersion=${{ steps.version.outputs.VERSION }}
-        dotnet pack src/CloudNimble.DotNetDocs.Sdk/CloudNimble.DotNetDocs.Sdk.csproj --configuration Release --no-build --output "${{ env.LOCAL_FEED_PATH }}" /p:PackageVersion=${{ steps.version.outputs.VERSION }}
+        dotnet pack src/CloudNimble.DotNetDocs.Sdk/CloudNimble.DotNetDocs.Sdk.csproj --configuration Release --no-build --output "${{ env.LOCAL_NUGET_FEED }}" /p:PackageVersion=${{ steps.version.outputs.VERSION }}
         Write-Host "📦 SDK package created and pushed to local feed"
 
     - name: Restore dependencies
