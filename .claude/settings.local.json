@@ -25,7 +25,8 @@
       "mcp__github__list_workflows",
       "Bash(git push:*)",
       "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "mcp__github__list_workflow_jobs"
     ],
     "deny": [],
     "ask": [],
