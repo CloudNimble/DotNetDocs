@@ -132,9 +132,9 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
             {
                 sb.AppendLine("## See Also");
                 sb.AppendLine();
-                foreach (var api in assembly.SeeAlso)
+                foreach (var reference in assembly.SeeAlso)
                 {
-                    sb.AppendLine($"- {api}");
+                    sb.AppendLine($"- {reference.ToMarkdownLink()}");
                 }
                 sb.AppendLine();
             }
@@ -228,9 +228,9 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
             {
                 sb.AppendLine("## See Also");
                 sb.AppendLine();
-                foreach (var api in ns.SeeAlso)
+                foreach (var reference in ns.SeeAlso)
                 {
-                    sb.AppendLine($"- {api}");
+                    sb.AppendLine($"- {reference.ToMarkdownLink()}");
                 }
                 sb.AppendLine();
             }
@@ -495,9 +495,9 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
             {
                 sb.AppendLine("## See Also");
                 sb.AppendLine();
-                foreach (var api in type.SeeAlso)
+                foreach (var reference in type.SeeAlso)
                 {
-                    sb.AppendLine($"- {api}");
+                    sb.AppendLine($"- {reference.ToMarkdownLink()}");
                 }
                 sb.AppendLine();
             }
@@ -650,9 +650,9 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
             {
                 sb.AppendLine("#### See Also");
                 sb.AppendLine();
-                foreach (var api in member.SeeAlso)
+                foreach (var reference in member.SeeAlso)
                 {
-                    sb.AppendLine($"- {api}");
+                    sb.AppendLine($"- {reference.ToMarkdownLink()}");
                 }
                 sb.AppendLine();
             }

@@ -32,12 +32,18 @@ Represents shared documentation properties for assemblies, namespaces, types, me
 ## Examples
 
 ```csharp
-var docType = new DocType(symbol)
-{
-    Summary = "Represents a logging service.",
-    Usage = "Use this class for application logging.",
-    Examples = "```csharp\nLogger.LogInfo(\"Message\");\n```"
-};
+
+```csharp
+&lt;![CDATA[
+            var docType = new DocType(symbol)
+            {
+                Summary = "Represents a logging service.",
+                Usage = "Use this class for application logging.",
+                Examples = "```csharp\nLogger.LogInfo(\"Message\");\n```"
+            };
+            ]]&gt;
+```
+
 ```
 
 ## Properties
@@ -100,7 +106,7 @@ public string Examples { get; set; }
 #### Property Value
 
 Type: `string?`
-Markdown content containing code examples from XML <example> tags.
+Markdown content containing code examples from XML &lt;example&gt; tags.
 
 ### Exceptions
 
@@ -115,7 +121,7 @@ public System.Collections.Generic.ICollection<CloudNimble.DotNetDocs.Core.DocExc
 #### Property Value
 
 Type: `System.Collections.Generic.ICollection&lt;CloudNimble.DotNetDocs.Core.DocException&gt;?`
-Collection of exception documentation from XML <exception> tags.
+Collection of exception documentation from XML &lt;exception&gt; tags.
 
 ### IncludedMembers
 
@@ -190,7 +196,7 @@ public string Remarks { get; set; }
 #### Property Value
 
 Type: `string?`
-Content from the XML documentation's <remarks> element.
+Content from the XML documentation's &lt;remarks&gt; element.
 
 ### Returns
 
@@ -205,7 +211,7 @@ public string Returns { get; set; }
 #### Property Value
 
 Type: `string?`
-Description of the return value from XML <returns> tag.
+Description of the return value from XML &lt;returns&gt; tag.
 
 ### SeeAlso
 
@@ -214,13 +220,13 @@ Gets or sets the collection of see-also references.
 #### Syntax
 
 ```csharp
-public System.Collections.Generic.ICollection<string> SeeAlso { get; set; }
+public System.Collections.Generic.ICollection<CloudNimble.DotNetDocs.Core.DocReference> SeeAlso { get; set; }
 ```
 
 #### Property Value
 
-Type: `System.Collections.Generic.ICollection&lt;string&gt;?`
-Collection of related items from XML <seealso> tags.
+Type: `System.Collections.Generic.ICollection&lt;CloudNimble.DotNetDocs.Core.DocReference&gt;?`
+Collection of related items from XML &lt;seealso&gt; tags.
 
 ### Summary
 
@@ -235,7 +241,7 @@ public string Summary { get; set; }
 #### Property Value
 
 Type: `string?`
-Brief description of what the API element IS, from XML <summary> tag.
+Brief description of what the API element IS, from XML &lt;summary&gt; tag.
 
 ### TypeParameters
 
@@ -250,7 +256,7 @@ public System.Collections.Generic.ICollection<CloudNimble.DotNetDocs.Core.DocTyp
 #### Property Value
 
 Type: `System.Collections.Generic.ICollection&lt;CloudNimble.DotNetDocs.Core.DocTypeParameter&gt;?`
-Collection of type parameter documentation from XML <typeparam> tags.
+Collection of type parameter documentation from XML &lt;typeparam&gt; tags.
 
 ### Usage
 
@@ -280,7 +286,7 @@ public string Value { get; set; }
 #### Property Value
 
 Type: `string?`
-Description of what the property represents from XML <value> tag.
+Description of what the property represents from XML &lt;value&gt; tag.
 
 ## Methods
 

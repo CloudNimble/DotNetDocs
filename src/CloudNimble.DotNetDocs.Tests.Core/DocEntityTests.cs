@@ -124,7 +124,11 @@ namespace CloudNimble.DotNetDocs.Tests.Core
                 new() { Name = "T", Description = "Type parameter" }
             };
 
-            entity.SeeAlso = new List<string> { "RelatedType", "AnotherType" };
+            entity.SeeAlso = new List<DocReference>
+            {
+                new DocReference("T:RelatedType"),
+                new DocReference("T:AnotherType")
+            };
 
             entity.Summary.Should().Be("Brief description");
             entity.Remarks.Should().Be("Additional remarks");

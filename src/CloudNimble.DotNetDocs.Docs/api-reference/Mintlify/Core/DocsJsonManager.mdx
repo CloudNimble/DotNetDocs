@@ -33,7 +33,7 @@ This class provides comprehensive support for loading, validating, and modifying
 
 ### .ctor
 
-Initializes a new instance of the  class.
+Initializes a new instance of the [DocsJsonManager](../DocsJsonManager.md) class.
 
 #### Syntax
 
@@ -43,7 +43,7 @@ public DocsJsonManager()
 
 ### .ctor
 
-Initializes a new instance of the  class with the specified file path.
+Initializes a new instance of the [DocsJsonManager](../DocsJsonManager.md) class with the specified file path.
 
 #### Syntax
 
@@ -78,7 +78,7 @@ public Mintlify.Core.Models.DocsJsonConfig Configuration { get; internal set; }
 #### Property Value
 
 Type: `Mintlify.Core.Models.DocsJsonConfig?`
-The  instance loaded from the file system or string content.
+The `DocsJsonConfig` instance loaded from the file system or string content.
             Returns null if no configuration has been loaded or if loading failed.
 
 ### ConfigurationErrors
@@ -94,7 +94,7 @@ public System.Collections.Generic.List<System.CodeDom.Compiler.CompilerError> Co
 #### Property Value
 
 Type: `System.Collections.Generic.List&lt;System.CodeDom.Compiler.CompilerError&gt;`
-A collection of  instances representing validation errors,
+A collection of [`CompilerError`](https://learn.microsoft.com/dotnet/api/system.codedom.compiler.compilererror) instances representing validation errors,
             parsing failures, or other issues encountered during configuration loading.
 
 ### FilePath
@@ -195,7 +195,7 @@ public static Mintlify.Core.Models.DocsJsonConfig CreateDefault(string name, str
 #### Returns
 
 Type: `Mintlify.Core.Models.DocsJsonConfig`
-A new  instance with default values.
+A new `DocsJsonConfig` instance with default values.
 
 #### Exceptions
 
@@ -359,14 +359,18 @@ public void PopulateNavigationFromPath(string path, string[] fileExtensions = nu
 
 #### Remarks
 
+
+
 This method scans the specified directory recursively and builds a navigation structure
-            based on the folder hierarchy and MDX files found. The method includes several advanced features:Directory Exclusions: Automatically excludes 'node_modules', 'conceptual', 
-            'overrides', and any directories starting with '.' (dot directories).File Processing: Only includes .mdx files by default. .md files 
-            generate warnings and are excluded from navigation.Index File Priority: Files named 'index' appear first in each directory's navigation.Enhanced Sorting: Multi-level sorting with index files first, 
-            then regular files, then directories, all sorted alphabetically within their category.Navigation Override: If a directory contains 'navigation.json', 
-            the user assumes complete control over that directory and all subdirectories. The JSON file should 
-            contain a complete GroupConfig object.The method preserves the directory structure in the navigation while applying these intelligent 
+            based on the folder hierarchy and MDX files found. The method includes several advanced features:
+
+
+
+
+The method preserves the directory structure in the navigation while applying these intelligent 
             processing rules to create clean, organized documentation.
+
+
 
 ### Save
 

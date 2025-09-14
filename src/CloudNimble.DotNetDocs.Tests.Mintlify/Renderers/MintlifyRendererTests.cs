@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using CloudNimble.Breakdance.Assemblies;
 using CloudNimble.DotNetDocs.Core;
 using CloudNimble.DotNetDocs.Core.Configuration;
+using CloudNimble.DotNetDocs.Core.Transformers;
 using CloudNimble.DotNetDocs.Mintlify;
 using CloudNimble.DotNetDocs.Tests.Shared;
 using CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios;
@@ -360,132 +361,91 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
 
         #region Baseline Generation
 
-        //[TestMethod]
-        //[DataRow(projectPath)]
+        [TestMethod]
+        [DataRow(projectPath)]
         [BreakdanceManifestGenerator]
         public async Task GenerateMintlifyBaselines(string projectPath)
         {
-            // Generate baselines for both FileMode and FolderMode
             await GenerateFileModeBaselines(projectPath);
             await GenerateFolderModeBaselines(projectPath);
         }
 
         private async Task GenerateFileModeBaselines(string projectPath)
         {
-            // Setup with FileMode context
-            var tempOutputPath = Path.Combine(Path.GetTempPath(), $"MintlifyBaseline_FileMode_{Guid.NewGuid()}");
-            Directory.CreateDirectory(tempOutputPath);
+            var baselinesDir = Path.Combine(projectPath, "Baselines", "MintlifyRenderer", "FileMode");
+            if (Directory.Exists(baselinesDir))
+            {
+                Directory.Delete(baselinesDir, true);
+            }
+            Directory.CreateDirectory(baselinesDir);
 
-            var context = new ProjectContext
+            var services = new ServiceCollection();
+            services.AddSingleton<ProjectContext>(sp => new ProjectContext
             {
                 FileNamingOptions = new FileNamingOptions(NamespaceMode.File, '-'),
-                DocumentationRootPath = tempOutputPath,
+                DocumentationRootPath = baselinesDir,
                 ApiReferencePath = string.Empty
-            };
-            var options = Options.Create(new MintlifyRendererOptions());
-            var docsJsonManager = new DocsJsonManager();
-            var renderer = new MintlifyRenderer(context, options, docsJsonManager);
+            });
+            services.AddTransient<MintlifyRenderer>();
+            services.AddTransient<MarkdownXmlTransformer>();
+            services.AddSingleton<DocumentationManager>();
 
-            try
-            {
-                // Generate baseline for SimpleClass documentation
-                var assemblyPath = typeof(SimpleClass).Assembly.Location;
-                var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
-                using var manager = new AssemblyManager(assemblyPath, xmlPath);
-                var model = await manager.DocumentAsync();
+            var serviceProvider = services.BuildServiceProvider();
+            var documentationManager = serviceProvider.GetRequiredService<DocumentationManager>();
 
-                await renderer.RenderAsync(model);
+            var assemblyPath = typeof(SimpleClass).Assembly.Location;
+            var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
 
-                // Create baselines directory
-                var baselinesDir = Path.Combine(projectPath, "Baselines", "MintlifyRenderer", "FileMode");
-                if (Directory.Exists(baselinesDir))
-                {
-                    Directory.Delete(baselinesDir, true);
-                }
-                Directory.CreateDirectory(baselinesDir);
-
-                // Copy all rendered files to baselines
-                foreach (var file in Directory.GetFiles(tempOutputPath, "*.mdx", SearchOption.AllDirectories))
-                {
-                    var fileName = Path.GetFileName(file);
-                    var content = await File.ReadAllTextAsync(file, TestContext.CancellationTokenSource.Token);
-                    var baselinePath = Path.Combine(baselinesDir, fileName);
-                    await File.WriteAllTextAsync(baselinePath, content, TestContext.CancellationTokenSource.Token);
-                }
-            }
-            finally
-            {
-                if (Directory.Exists(tempOutputPath))
-                {
-                    Directory.Delete(tempOutputPath, true);
-                }
-            }
+            await documentationManager.ProcessAsync(assemblyPath, xmlPath);
         }
 
         private async Task GenerateFolderModeBaselines(string projectPath)
         {
-            // Setup with FolderMode context
-            var tempOutputPath = Path.Combine(Path.GetTempPath(), $"MintlifyBaseline_FolderMode_{Guid.NewGuid()}");
-            Directory.CreateDirectory(tempOutputPath);
+            var baselinesDir = Path.Combine(projectPath, "Baselines", "MintlifyRenderer", "FolderMode");
+            if (Directory.Exists(baselinesDir))
+            {
+                Directory.Delete(baselinesDir, true);
+            }
+            Directory.CreateDirectory(baselinesDir);
 
-            var context = new ProjectContext
+            var services = new ServiceCollection();
+            services.AddSingleton<ProjectContext>(sp => new ProjectContext
             {
                 FileNamingOptions = new FileNamingOptions(NamespaceMode.Folder, '-'),
-                DocumentationRootPath = tempOutputPath,
+                DocumentationRootPath = baselinesDir,
                 ApiReferencePath = string.Empty
-            };
-            var options = Options.Create(new MintlifyRendererOptions());
-            var docsJsonManager = new DocsJsonManager();
-            var renderer = new MintlifyRenderer(context, options, docsJsonManager);
+            });
+            services.AddTransient<MintlifyRenderer>();
+            services.AddTransient<MarkdownXmlTransformer>();
+            services.AddSingleton<DocumentationManager>();
 
-            try
-            {
-                // Generate baseline for SimpleClass documentation
-                var assemblyPath = typeof(SimpleClass).Assembly.Location;
-                var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
-                using var manager = new AssemblyManager(assemblyPath, xmlPath);
-                var model = await manager.DocumentAsync();
+            var serviceProvider = services.BuildServiceProvider();
+            var documentationManager = serviceProvider.GetRequiredService<DocumentationManager>();
 
-                await renderer.RenderAsync(model);
+            var assemblyPath = typeof(SimpleClass).Assembly.Location;
+            var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
 
-                // Create baselines directory
-                var baselinesDir = Path.Combine(projectPath, "Baselines", "MintlifyRenderer", "FolderMode");
-                if (Directory.Exists(baselinesDir))
-                {
-                    Directory.Delete(baselinesDir, true);
-                }
-                Directory.CreateDirectory(baselinesDir);
-
-                // Copy entire folder structure preserving hierarchy
-                CopyDirectoryRecursive(tempOutputPath, baselinesDir);
-            }
-            finally
-            {
-                if (Directory.Exists(tempOutputPath))
-                {
-                    Directory.Delete(tempOutputPath, true);
-                }
-            }
+            await documentationManager.ProcessAsync(assemblyPath, xmlPath);
         }
 
-        private static void CopyDirectoryRecursive(string sourceDir, string destDir)
-        {
-            // Copy all files from the source directory
-            foreach (var file in Directory.GetFiles(sourceDir))
-            {
-                var destFile = Path.Combine(destDir, Path.GetFileName(file));
-                File.Copy(file, destFile, true);
-            }
+        //private static void CopyDirectoryRecursive(string sourceDir, string destDir)
+        //{
+        //    // Copy all files from the source directory
+        //    foreach (var file in Directory.GetFiles(sourceDir))
+        //    {
+        //        var destFile = Path.Combine(destDir, Path.GetFileName(file));
+        //        File.Copy(file, destFile, true);
+        //    }
 
-            // Recursively copy subdirectories
-            foreach (var subDir in Directory.GetDirectories(sourceDir))
-            {
-                var dirName = Path.GetFileName(subDir);
-                var destSubDir = Path.Combine(destDir, dirName);
-                Directory.CreateDirectory(destSubDir);
-                CopyDirectoryRecursive(subDir, destSubDir);
-            }
-        }
+        //    // Recursively copy subdirectories
+        //    foreach (var subDir in Directory.GetDirectories(sourceDir))
+        //    {
+        //        var dirName = Path.GetFileName(subDir);
+        //        var destSubDir = Path.Combine(destDir, dirName);
+        //        Directory.CreateDirectory(destSubDir);
+        //        CopyDirectoryRecursive(subDir, destSubDir);
+        //    }
+        //}
 
         #endregion
 

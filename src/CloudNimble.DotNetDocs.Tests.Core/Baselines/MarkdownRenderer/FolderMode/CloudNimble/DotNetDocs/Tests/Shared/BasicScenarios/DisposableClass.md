@@ -24,10 +24,14 @@ This class demonstrates how interface implementation is documented.
 
 ## Examples
 
+
+```csharp
 using (var disposable = new DisposableClass())
-            {
-                disposable.UseResource();
-            }
+{
+    disposable.UseResource();
+}
+```
+
 
 ## Constructors
 

@@ -26,33 +26,42 @@ Represents MSBuild project context for source intent in documentation generation
 ## Remarks
 
 Provides metadata such as referenced assembly paths and the conceptual documentation folder path.
-             Used by  to enhance metadata extraction.
-             
-             // Default (public members only)
+             Used by `ProjectContext)` to enhance metadata extraction.
+             &lt;example&gt;
+  
+```csharp
+// Default (public members only)
              var context = new ProjectContext("ref1.dll", "ref2.dll") { ConceptualPath = "conceptual" };
             
              // Include public and internal members
              var context = new ProjectContext([Accessibility.Public, Accessibility.Internal], "ref1.dll", "ref2.dll");
             
              var model = await manager.DocumentAsync("MyLib.dll", "MyLib.xml", context);
+```
+
+&lt;/example&gt;
 
 ## Examples
 
 ```csharp
+
+```csharp
 // Default (public members only)
-var context = new ProjectContext("ref1.dll", "ref2.dll") { ConceptualPath = "conceptual" };
+             var context = new ProjectContext("ref1.dll", "ref2.dll") { ConceptualPath = "conceptual" };
+            
+             // Include public and internal members
+             var context = new ProjectContext([Accessibility.Public, Accessibility.Internal], "ref1.dll", "ref2.dll");
+            
+             var model = await manager.DocumentAsync("MyLib.dll", "MyLib.xml", context);
+```
 
-// Include public and internal members
-var context = new ProjectContext([Accessibility.Public, Accessibility.Internal], "ref1.dll", "ref2.dll");
-
-var model = await manager.DocumentAsync("MyLib.dll", "MyLib.xml", context);
 ```
 
 ## Constructors
 
 ### .ctor
 
-Initializes a new instance of  with default settings.
+Initializes a new instance of [ProjectContext](../ProjectContext.md) with default settings.
 
 #### Syntax
 
@@ -62,7 +71,7 @@ public ProjectContext()
 
 ### .ctor
 
-Initializes a new instance of  with optional included members and referenced assemblies.
+Initializes a new instance of [ProjectContext](../ProjectContext.md) with optional included members and referenced assemblies.
 
 #### Syntax
 
@@ -142,11 +151,11 @@ Set of type patterns to exclude. Supports wildcards (*) for flexible matching.
 #### Examples
 
 ```csharp
-ExcludedTypes = new HashSet<string> 
-{ 
-    "*.MicrosoftTestingPlatformEntryPoint",  // Matches in any namespace
-    "*.SelfRegisteredExtensions",             // Matches in any namespace
-    "System.Runtime.CompilerServices.*"       // Matches any type in this namespace
+ExcludedTypes = new HashSet&lt;string&gt; 
+{ 
+    "*.MicrosoftTestingPlatformEntryPoint",  // Matches in any namespace
+    "*.SelfRegisteredExtensions",             // Matches in any namespace
+    "System.Runtime.CompilerServices.*"       // Matches any type in this namespace
 }
 ```
 
@@ -266,9 +275,9 @@ The folder path representation of the namespace.
 
 #### Remarks
 
-When  is ,
+When `NamespaceMode` is `Folder`,
             this returns a path with folders for each namespace part (e.g., "System/Collections/Generic").
-            When using , this returns an empty string as no folder
+            When using `File`, this returns an empty string as no folder
             structure is created.
 
 ### GetSafeNamespaceName

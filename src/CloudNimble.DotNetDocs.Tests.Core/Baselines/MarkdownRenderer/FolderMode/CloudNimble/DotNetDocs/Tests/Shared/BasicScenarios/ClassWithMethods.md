@@ -24,8 +24,12 @@ Contains methods with different signatures, parameters, and return types.
 
 ## Examples
 
+
+```csharp
 var obj = new ClassWithMethods();
-            var result = obj.Calculate(5, 10);
+var result = obj.Calculate(5, 10);
+```
+
 
 ## Constructors
 
@@ -63,7 +67,11 @@ The sum of a and b.
 
 #### Examples
 
+
+```csharp
 var result = Calculate(3, 4); // Returns 7
+```
+
 
 ### GetConditionalValue
 

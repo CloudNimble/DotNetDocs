@@ -1,5 +1,6 @@
 using System;
 using CloudNimble.DotNetDocs.Core;
+using CloudNimble.DotNetDocs.Core.Transformers;
 using CloudNimble.DotNetDocs.Mintlify;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Mintlify.Core;
@@ -22,6 +23,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <returns>The service collection for chaining.</returns>
         /// <remarks>
         /// Registers MintlifyRenderer as Scoped implementation of IDocRenderer.
+        /// Also registers MarkdownXmlTransformer to process XML documentation tags.
         /// </remarks>
         /// <example>
         /// <code>
@@ -31,6 +33,7 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IServiceCollection AddMintlifyRenderer(this IServiceCollection services)
         {
             services.TryAddEnumerable(ServiceDescriptor.Scoped<IDocRenderer, MintlifyRenderer>());
+            services.TryAddEnumerable(ServiceDescriptor.Scoped<IDocTransformer, MarkdownXmlTransformer>());
             return services;
         }
 
@@ -44,6 +47,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <list type="bullet">
         /// <item><description>MintlifyRenderer as Scoped implementation of IDocRenderer</description></item>
         /// <item><description>DocsJsonManager as Scoped service for navigation generation</description></item>
+        /// <item><description>MarkdownXmlTransformer for processing XML documentation tags</description></item>
         /// </list>
         /// </remarks>
         /// <example>
@@ -55,10 +59,13 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             // Register the Mintlify renderer
             services.TryAddEnumerable(ServiceDescriptor.Scoped<IDocRenderer, MintlifyRenderer>());
-            
+
+            // Register the MarkdownXmlTransformer for processing XML documentation tags
+            services.TryAddEnumerable(ServiceDescriptor.Scoped<IDocTransformer, MarkdownXmlTransformer>());
+
             // Register DocsJsonManager for navigation generation
             services.TryAddScoped<DocsJsonManager>();
-            
+
             return services;
         }
 
@@ -106,6 +113,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <remarks>
         /// Registers the custom renderer as Scoped implementation of IDocRenderer.
         /// The renderer must inherit from MintlifyRenderer.
+        /// Also registers MarkdownXmlTransformer to process XML documentation tags.
         /// </remarks>
         /// <example>
         /// <code>
@@ -116,6 +124,7 @@ namespace Microsoft.Extensions.DependencyInjection
             where TRenderer : MintlifyRenderer
         {
             services.TryAddEnumerable(ServiceDescriptor.Scoped<IDocRenderer, TRenderer>());
+            services.TryAddEnumerable(ServiceDescriptor.Scoped<IDocTransformer, MarkdownXmlTransformer>());
             services.TryAddScoped<DocsJsonManager>();
             return services;
         }

@@ -24,8 +24,12 @@ This class inherits from BaseClass and overrides some members.
 
 ## Examples
 
+
+```csharp
 var derived = new DerivedClass();
-            var result = derived.VirtualMethod();
+var result = derived.VirtualMethod();
+```
+
 
 ## Constructors
 

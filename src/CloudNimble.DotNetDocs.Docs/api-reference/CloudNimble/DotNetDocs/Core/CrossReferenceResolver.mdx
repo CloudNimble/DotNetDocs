@@ -1,0 +1,111 @@
+---
+title: CrossReferenceResolver
+description: "Resolves cross-references in documentation to their target entities and generates appropriate links."
+icon: file-brackets-curly
+keywords: ['CrossReferenceResolver', 'CloudNimble.DotNetDocs.Core.CrossReferenceResolver', 'CloudNimble.DotNetDocs.Core', 'class', 'System.Object']
+---
+
+## Definition
+
+**Assembly:** CloudNimble.DotNetDocs.Core.dll
+
+**Namespace:** CloudNimble.DotNetDocs.Core
+
+**Inheritance:** System.Object
+
+## Syntax
+
+```csharp
+CloudNimble.DotNetDocs.Core.CrossReferenceResolver
+```
+
+## Summary
+
+Resolves cross-references in documentation to their target entities and generates appropriate links.
+
+## Remarks
+
+This class builds a comprehensive map of all documentation entities and their identifiers,
+            allowing for resolution of see and seealso references to the correct relative paths and anchors.
+            It handles all types of references including types, members, parameters, and external references.
+
+## Constructors
+
+### .ctor
+
+Initializes a new instance of the [CrossReferenceResolver](../CrossReferenceResolver.md) class.
+
+#### Syntax
+
+```csharp
+public CrossReferenceResolver(CloudNimble.DotNetDocs.Core.ProjectContext context)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `context` | `CloudNimble.DotNetDocs.Core.ProjectContext` | The project context containing configuration and file naming options. |
+
+## Methods
+
+### BuildReferenceMap
+
+Builds the reference map from a documentation assembly.
+
+#### Syntax
+
+```csharp
+public void BuildReferenceMap(CloudNimble.DotNetDocs.Core.DocAssembly assembly)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `assembly` | `CloudNimble.DotNetDocs.Core.DocAssembly` | The documentation assembly to index. |
+
+### ResolveReference
+
+Resolves a documentation reference to a DocReference object with full path and anchor information.
+
+#### Syntax
+
+```csharp
+public CloudNimble.DotNetDocs.Core.DocReference ResolveReference(string rawReference, string currentPath)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `rawReference` | `string` | The raw reference string (e.g., "T:System.String" or "F:NamespaceMode.File"). |
+| `currentPath` | `string` | The current document path for calculating relative paths. |
+
+#### Returns
+
+Type: `CloudNimble.DotNetDocs.Core.DocReference`
+A resolved DocReference object.
+
+### ResolveReferences
+
+Resolves all references in a collection of raw reference strings.
+
+#### Syntax
+
+```csharp
+public System.Collections.Generic.ICollection<CloudNimble.DotNetDocs.Core.DocReference> ResolveReferences(System.Collections.Generic.IEnumerable<string> rawReferences, string currentPath)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `rawReferences` | `System.Collections.Generic.IEnumerable&lt;string&gt;` | The collection of raw reference strings. |
+| `currentPath` | `string` | The current document path for calculating relative paths. |
+
+#### Returns
+
+Type: `System.Collections.Generic.ICollection&lt;CloudNimble.DotNetDocs.Core.DocReference&gt;`
+A collection of resolved DocReference objects.
+

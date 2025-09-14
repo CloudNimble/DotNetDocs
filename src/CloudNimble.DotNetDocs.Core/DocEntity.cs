@@ -134,7 +134,7 @@ namespace CloudNimble.DotNetDocs.Core
         /// Gets or sets the collection of see-also references.
         /// </summary>
         /// <value>Collection of related items from XML &lt;seealso&gt; tags.</value>
-        public ICollection<string>? SeeAlso { get; set; }
+        public ICollection<DocReference>? SeeAlso { get; set; }
 
         /// <summary>
         /// Gets or sets the summary from XML documentation.

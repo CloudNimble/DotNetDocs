@@ -26,24 +26,30 @@ Manages assembly metadata extraction using Roslyn for API documentation generati
 ## Remarks
 
 Extracts metadata from a single .NET assembly and its XML documentation file, building an in-memory model
-            () with interconnected types, members, and parameters. Supports conceptual content
+            (`DocAssembly`) with interconnected types, members, and parameters. Supports conceptual content
             loading from a specified folder. Designed for multi-targeting .NET 10.0, 9.0, and 8.0. One instance per assembly
-            is required, with paths specified at construction for incremental build support. Implements 
+            is required, with paths specified at construction for incremental build support. Implements [`IDisposable`](https://learn.microsoft.com/dotnet/api/system.idisposable)
             to release memory used by the compilation and model.
 
 ## Examples
 
 ```csharp
-using var manager = new AssemblyManager("MyLib.dll", "MyLib.xml");
-var context = new ProjectContext("ref1.dll", "ref2.dll") { ConceptualPath = "conceptual" };
-var model = await manager.DocumentAsync(context);
+
+```csharp
+&lt;![CDATA[
+            using var manager = new AssemblyManager("MyLib.dll", "MyLib.xml");
+            var context = new ProjectContext("ref1.dll", "ref2.dll") { ConceptualPath = "conceptual" };
+            var model = await manager.DocumentAsync(context);
+            ]]&gt;
+```
+
 ```
 
 ## Constructors
 
 ### .ctor
 
-Initializes a new instance of  for a specific assembly.
+Initializes a new instance of [AssemblyManager](../AssemblyManager.md) for a specific assembly.
 
 #### Syntax
 
@@ -62,9 +68,9 @@ public AssemblyManager(string assemblyPath, string xmlPath)
 
 | Exception | Description |
 |-----------|-------------|
-| `ArgumentNullException` | Thrown when  or  is null. |
-| `ArgumentException` | Thrown when  or  is empty or whitespace. |
-| `FileNotFoundException` | Thrown when  does not exist. |
+| `ArgumentNullException` | Thrown when *assemblyPath* or *xmlPath* is null. |
+| `ArgumentException` | Thrown when *assemblyPath* or *xmlPath* is empty or whitespace. |
+| `FileNotFoundException` | Thrown when *assemblyPath* does not exist. |
 
 #### Remarks
 
@@ -196,7 +202,7 @@ public System.Threading.Tasks.Task<CloudNimble.DotNetDocs.Core.DocAssembly> Docu
 #### Returns
 
 Type: `System.Threading.Tasks.Task&lt;CloudNimble.DotNetDocs.Core.DocAssembly&gt;`
-A task representing the asynchronous operation, containing the  model.
+A task representing the asynchronous operation, containing the `DocAssembly` model.
 
 ## Related APIs
 

@@ -25,8 +25,12 @@ These are remarks about the SimpleClass. They provide additional context
 
 ## Examples
 
+
+```csharp
 var simple = new SimpleClass();
-            simple.DoWork();
+simple.DoWork();
+```
+
 
 ## Constructors
 

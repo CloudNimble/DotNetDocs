@@ -51,12 +51,17 @@ The service collection for chaining.
 #### Examples
 
 ```csharp
+
+```csharp
 services.AddMintlifyRenderer();
+```
+
 ```
 
 #### Remarks
 
 Registers MintlifyRenderer as Scoped implementation of IDocRenderer.
+            Also registers MarkdownXmlTransformer to process XML documentation tags.
 
 ### AddMintlifyRenderer
 
@@ -86,13 +91,18 @@ The service collection for chaining.
 #### Examples
 
 ```csharp
-services.AddMintlifyRenderer<CustomMintlifyRenderer>();
+
+```csharp
+services.AddMintlifyRenderer&lt;CustomMintlifyRenderer&gt;();
+```
+
 ```
 
 #### Remarks
 
 Registers the custom renderer as Scoped implementation of IDocRenderer.
             The renderer must inherit from MintlifyRenderer.
+            Also registers MarkdownXmlTransformer to process XML documentation tags.
 
 ### AddMintlifyServices
 
@@ -118,12 +128,21 @@ The service collection for chaining.
 #### Examples
 
 ```csharp
+
+```csharp
 services.AddMintlifyServices();
+```
+
 ```
 
 #### Remarks
 
-This method registers:MintlifyRenderer as Scoped implementation of IDocRendererDocsJsonManager as Scoped service for navigation generation
+
+
+This method registers:
+
+
+
 
 ### AddMintlifyServices
 
@@ -150,14 +169,23 @@ The service collection for chaining.
 #### Examples
 
 ```csharp
-services.AddMintlifyServices(options =>
-{
-    options.GenerateDocsJson = true;
-    options.IncludeIcons = true;
-});
+
+```csharp
+services.AddMintlifyServices(options =&gt;
+            {
+                options.GenerateDocsJson = true;
+                options.IncludeIcons = true;
+            });
+```
+
 ```
 
 #### Remarks
 
-This method registers:MintlifyRenderer as Scoped implementation of IDocRendererDocsJsonManager as Scoped service for navigation generationMintlifyOptions configuration
+
+
+This method registers:
+
+
+
 

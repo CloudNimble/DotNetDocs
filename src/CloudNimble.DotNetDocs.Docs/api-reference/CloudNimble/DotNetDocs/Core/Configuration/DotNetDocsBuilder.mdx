@@ -32,7 +32,7 @@ Provides a fluent API for registering renderers, enrichers, transformers,
 
 ### .ctor
 
-Initializes a new instance of the  class.
+Initializes a new instance of the [DotNetDocsBuilder](../DotNetDocsBuilder.md) class.
 
 #### Syntax
 
@@ -76,7 +76,11 @@ The builder for chaining.
 #### Examples
 
 ```csharp
-pipeline.AddEnricher<ConceptualContentEnricher>();
+
+```csharp
+pipeline.AddEnricher&lt;ConceptualContentEnricher&gt;();
+```
+
 ```
 
 #### Remarks
@@ -105,7 +109,11 @@ The builder for chaining.
 #### Examples
 
 ```csharp
-pipeline.AddRenderer<MyCustomRenderer>();
+
+```csharp
+pipeline.AddRenderer&lt;MyCustomRenderer&gt;();
+```
+
 ```
 
 #### Remarks
@@ -134,7 +142,11 @@ The builder for chaining.
 #### Examples
 
 ```csharp
-pipeline.AddTransformer<InheritDocTransformer>();
+
+```csharp
+pipeline.AddTransformer&lt;InheritDocTransformer&gt;();
+```
+
 ```
 
 #### Remarks
@@ -165,11 +177,15 @@ The builder for chaining.
 #### Examples
 
 ```csharp
-pipeline.ConfigureContext(ctx =>
-{
-    ctx.OutputPath = "docs/api";
-    ctx.ShowPlaceholders = false;
-});
+
+```csharp
+pipeline.ConfigureContext(ctx =&gt;
+            {
+                ctx.OutputPath = "docs/api";
+                ctx.ShowPlaceholders = false;
+            });
+```
+
 ```
 
 ### UseJsonRenderer
@@ -196,11 +212,15 @@ The builder for chaining.
 #### Examples
 
 ```csharp
-pipeline.UseJsonRenderer(options =>
-{
-    options.WriteIndented = true;
-    options.IncludeNullValues = false;
-});
+
+```csharp
+pipeline.UseJsonRenderer(options =&gt;
+            {
+                options.WriteIndented = true;
+                options.IncludeNullValues = false;
+            });
+```
+
 ```
 
 ### UseMarkdownRenderer
@@ -221,8 +241,16 @@ The builder for chaining.
 #### Examples
 
 ```csharp
+
+```csharp
 pipeline.UseMarkdownRenderer();
 ```
+
+```
+
+#### Remarks
+
+Also registers MarkdownXmlTransformer to process XML documentation tags.
 
 ### UseYamlRenderer
 
@@ -242,6 +270,10 @@ The builder for chaining.
 #### Examples
 
 ```csharp
+
+```csharp
 pipeline.UseYamlRenderer();
+```
+
 ```
 

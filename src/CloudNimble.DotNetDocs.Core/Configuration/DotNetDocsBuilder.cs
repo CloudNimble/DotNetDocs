@@ -1,5 +1,6 @@
 using System;
 using CloudNimble.DotNetDocs.Core.Renderers;
+using CloudNimble.DotNetDocs.Core.Transformers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -172,6 +173,9 @@ namespace CloudNimble.DotNetDocs.Core.Configuration
         /// Adds the Markdown renderer to the pipeline.
         /// </summary>
         /// <returns>The builder for chaining.</returns>
+        /// <remarks>
+        /// Also registers MarkdownXmlTransformer to process XML documentation tags.
+        /// </remarks>
         /// <example>
         /// <code>
         /// pipeline.UseMarkdownRenderer();
@@ -179,6 +183,7 @@ namespace CloudNimble.DotNetDocs.Core.Configuration
         /// </example>
         public DotNetDocsBuilder UseMarkdownRenderer()
         {
+            AddTransformer<MarkdownXmlTransformer>();
             return AddRenderer<MarkdownRenderer>();
         }
 

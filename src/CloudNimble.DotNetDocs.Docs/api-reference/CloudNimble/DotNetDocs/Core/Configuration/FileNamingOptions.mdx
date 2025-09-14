@@ -33,7 +33,7 @@ This class controls the file naming strategy for rendered documentation, includi
 
 ### .ctor
 
-Initializes a new instance of the  class with default settings.
+Initializes a new instance of the [FileNamingOptions](../FileNamingOptions.md) class with default settings.
 
 #### Syntax
 
@@ -43,7 +43,7 @@ public FileNamingOptions()
 
 ### .ctor
 
-Initializes a new instance of the  class with the specified settings.
+Initializes a new instance of the [FileNamingOptions](../FileNamingOptions.md) class with the specified settings.
 
 #### Syntax
 
@@ -73,7 +73,7 @@ public CloudNimble.DotNetDocs.Core.Configuration.NamespaceMode NamespaceMode { g
 #### Property Value
 
 Type: `CloudNimble.DotNetDocs.Core.Configuration.NamespaceMode`
-The namespace organization mode. Default is .
+The namespace organization mode. Default is `File`.
 
 #### Remarks
 
@@ -97,8 +97,8 @@ The separator character. Default is '-'.
 
 #### Remarks
 
-This setting is only used when  is set to .
-            When using , this setting is ignored as namespaces
+This setting is only used when [NamespaceMode](../NamespaceMode.md) is set to `File`.
+            When using `Folder`, this setting is ignored as namespaces
             are organized into actual folder hierarchies.
             Common values include '-' (hyphen), '_' (underscore), or '.' (period).
 
@@ -106,7 +106,7 @@ This setting is only used when  is set to .
 
 ### Clone
 
-Creates a copy of the current  instance.
+Creates a copy of the current [FileNamingOptions](../FileNamingOptions.md) instance.
 
 #### Syntax
 

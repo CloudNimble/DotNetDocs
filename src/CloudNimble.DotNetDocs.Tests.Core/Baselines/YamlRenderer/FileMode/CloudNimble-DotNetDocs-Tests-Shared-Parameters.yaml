@@ -43,8 +43,10 @@ types:
     signature: public string MethodWithOptionalParam(string required, int optional = 42)
     displayName: CloudNimble.DotNetDocs.Tests.Shared.Parameters.ParameterVariations.MethodWithOptionalParam(string, int)
     examples: >-
-      var result1 = MethodWithOptionalParam("test");      // Uses default value 42
+      <code>
+                  var result1 = MethodWithOptionalParam("test");      // Uses default value 42
                   var result2 = MethodWithOptionalParam("test", 100); // Uses provided value
+                  </code>
     returns: A formatted string combining both parameters.
     summary: A method with an optional parameter.
   - accessibility: Public
@@ -73,8 +75,10 @@ types:
     signature: public int MethodWithParams(params int[] values)
     displayName: CloudNimble.DotNetDocs.Tests.Shared.Parameters.ParameterVariations.MethodWithParams(params int[])
     examples: >-
-      var sum1 = MethodWithParams(1, 2, 3);        // Returns 6
+      <code>
+                  var sum1 = MethodWithParams(1, 2, 3);        // Returns 6
                   var sum2 = MethodWithParams(new[] { 1, 2 }); // Returns 3
+                  </code>
     returns: The sum of all provided values.
     summary: A method with a params array.
   - accessibility: Public
@@ -164,8 +168,10 @@ types:
     signature: public string GenericMethod<T>(T value)
     displayName: CloudNimble.DotNetDocs.Tests.Shared.Parameters.ParameterVariations.GenericMethod<T>(T)
     examples: >-
-      var result1 = GenericMethod<int>(42);
+      <code>
+                  var result1 = GenericMethod&lt;int&gt;(42);
                   var result2 = GenericMethod("hello");
+                  </code>
     returns: The string representation of the value.
     summary: A generic method with a type parameter.
     typeParameters:

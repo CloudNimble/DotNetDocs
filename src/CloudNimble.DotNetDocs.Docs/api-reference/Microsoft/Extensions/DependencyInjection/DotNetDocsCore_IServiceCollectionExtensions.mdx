@@ -55,7 +55,11 @@ The service collection for chaining.
 #### Examples
 
 ```csharp
-services.AddDocEnricher<ConceptualContentEnricher>();
+
+```csharp
+services.AddDocEnricher&lt;ConceptualContentEnricher&gt;();
+```
+
 ```
 
 #### Remarks
@@ -91,7 +95,11 @@ The service collection for chaining.
 #### Examples
 
 ```csharp
-services.AddDocRenderer<MyCustomRenderer>();
+
+```csharp
+services.AddDocRenderer&lt;MyCustomRenderer&gt;();
+```
+
 ```
 
 #### Remarks
@@ -126,7 +134,11 @@ The service collection for chaining.
 #### Examples
 
 ```csharp
-services.AddDocTransformer<InheritDocTransformer>();
+
+```csharp
+services.AddDocTransformer&lt;InheritDocTransformer&gt;();
+```
+
 ```
 
 #### Remarks
@@ -159,11 +171,15 @@ The service collection for chaining.
 #### Examples
 
 ```csharp
-services.AddDotNetDocs(context =>
-{
-    context.OutputPath = "docs/api";
-    context.ShowPlaceholders = false;
-});
+
+```csharp
+services.AddDotNetDocs(context =&gt;
+            {
+                context.OutputPath = "docs/api";
+                context.ShowPlaceholders = false;
+            });
+```
+
 ```
 
 #### Remarks
@@ -172,6 +188,7 @@ This method registers:
             - ProjectContext as Singleton
             - DocumentationManager as Scoped
             - All built-in renderers (Markdown, JSON, YAML) as Scoped
+            - MarkdownXmlTransformer for processing XML documentation tags
 
 ### AddDotNetDocsCore
 
@@ -198,11 +215,15 @@ The service collection for chaining.
 #### Examples
 
 ```csharp
-services.AddDotNetDocsCore(context =>
-{
-    context.OutputPath = "docs";
-});
-services.AddMarkdownRenderer();
+
+```csharp
+services.AddDotNetDocsCore(context =&gt;
+            {
+                context.OutputPath = "docs";
+            });
+            services.AddMarkdownRenderer();
+```
+
 ```
 
 #### Remarks
@@ -237,14 +258,18 @@ The service collection for chaining.
 #### Examples
 
 ```csharp
-services.AddDotNetDocsPipeline(pipeline =>
-{
-    pipeline
-        .UseMarkdownRenderer()
-        .UseJsonRenderer(options => options.WriteIndented = true)
-        .AddEnricher<MyCustomEnricher>()
-        .ConfigureContext(ctx => ctx.OutputPath = "docs");
-});
+
+```csharp
+services.AddDotNetDocsPipeline(pipeline =&gt;
+            {
+                pipeline
+                    .UseMarkdownRenderer()
+                    .UseJsonRenderer(options =&gt; options.WriteIndented = true)
+                    .AddEnricher&lt;MyCustomEnricher&gt;()
+                    .ConfigureContext(ctx =&gt; ctx.OutputPath = "docs");
+            });
+```
+
 ```
 
 ### AddJsonRenderer
@@ -272,11 +297,15 @@ The service collection for chaining.
 #### Examples
 
 ```csharp
-services.AddJsonRenderer(options =>
-{
-    options.WriteIndented = true;
-    options.IncludeNullValues = false;
-});
+
+```csharp
+services.AddJsonRenderer(options =&gt;
+            {
+                options.WriteIndented = true;
+                options.IncludeNullValues = false;
+            });
+```
+
 ```
 
 #### Remarks
@@ -307,6 +336,7 @@ The service collection for chaining.
 #### Remarks
 
 Registers MarkdownRenderer as Scoped implementation of IDocRenderer.
+            Also registers MarkdownXmlTransformer to process XML documentation tags.
 
 ### AddYamlRenderer
 

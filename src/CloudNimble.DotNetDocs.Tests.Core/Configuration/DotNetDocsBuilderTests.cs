@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using CloudNimble.DotNetDocs.Core;
 using CloudNimble.DotNetDocs.Core.Configuration;
 using CloudNimble.DotNetDocs.Core.Renderers;
+using CloudNimble.DotNetDocs.Core.Transformers;
 using CloudNimble.DotNetDocs.Tests.Shared;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
@@ -191,7 +192,9 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Configuration
             enrichers.Should().HaveCount(1);
 
             var transformers = TestHost.Services.GetServices<IDocTransformer>().ToList();
-            transformers.Should().HaveCount(1);
+            transformers.Should().HaveCount(2, "UseMarkdownRenderer now adds MarkdownXmlTransformer plus our TestTransformer");
+            transformers.Should().Contain(t => t is MarkdownXmlTransformer);
+            transformers.Should().Contain(t => t is TestTransformer);
 
             var context = TestHost.Services.GetRequiredService<ProjectContext>();
             context.DocumentationRootPath.Should().Be("complex/output");

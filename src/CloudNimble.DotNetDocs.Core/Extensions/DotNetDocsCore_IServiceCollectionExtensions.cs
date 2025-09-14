@@ -2,6 +2,7 @@ using System;
 using CloudNimble.DotNetDocs.Core;
 using CloudNimble.DotNetDocs.Core.Configuration;
 using CloudNimble.DotNetDocs.Core.Renderers;
+using CloudNimble.DotNetDocs.Core.Transformers;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -35,26 +36,30 @@ namespace Microsoft.Extensions.DependencyInjection
         /// - ProjectContext as Singleton
         /// - DocumentationManager as Scoped
         /// - All built-in renderers (Markdown, JSON, YAML) as Scoped
+        /// - MarkdownXmlTransformer for processing XML documentation tags
         /// </remarks>
-        public static IServiceCollection AddDotNetDocs(this IServiceCollection services, 
+        public static IServiceCollection AddDotNetDocs(this IServiceCollection services,
             Action<ProjectContext>? configureContext = null)
         {
             // Register core services
-            services.TryAddSingleton(sp => 
+            services.TryAddSingleton(sp =>
             {
                 var context = new ProjectContext();
                 configureContext?.Invoke(context);
                 return context;
             });
-            
+
             // Register all built-in renderers (only if not already registered)
             services.TryAddEnumerable(ServiceDescriptor.Scoped<IDocRenderer, MarkdownRenderer>());
             services.TryAddEnumerable(ServiceDescriptor.Scoped<IDocRenderer, JsonRenderer>());
             services.TryAddEnumerable(ServiceDescriptor.Scoped<IDocRenderer, YamlRenderer>());
-            
+
+            // Register the MarkdownXmlTransformer for processing XML documentation tags
+            services.TryAddEnumerable(ServiceDescriptor.Scoped<IDocTransformer, MarkdownXmlTransformer>());
+
             // Register DocumentationManager
             services.TryAddScoped<DocumentationManager>();
-            
+
             return services;
         }
 
@@ -131,10 +136,12 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <returns>The service collection for chaining.</returns>
         /// <remarks>
         /// Registers MarkdownRenderer as Scoped implementation of IDocRenderer.
+        /// Also registers MarkdownXmlTransformer to process XML documentation tags.
         /// </remarks>
         public static IServiceCollection AddMarkdownRenderer(this IServiceCollection services)
         {
             services.TryAddEnumerable(ServiceDescriptor.Scoped<IDocRenderer, MarkdownRenderer>());
+            services.TryAddEnumerable(ServiceDescriptor.Scoped<IDocTransformer, MarkdownXmlTransformer>());
             return services;
         }
 

@@ -448,7 +448,10 @@ namespaces:
       returnTypeName: int
       signature: public int Calculate(int a, int b)
       displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ClassWithMethods.Calculate(int, int)
-      examples: var result = Calculate(3, 4); // Returns 7
+      examples: >-
+        <code>
+                    var result = Calculate(3, 4); // Returns 7
+                    </code>
       returns: The sum of a and b.
       summary: Calculates the sum of two numbers.
     - accessibility: Public
@@ -534,8 +537,10 @@ namespaces:
     typeKind: Class
     displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ClassWithMethods
     examples: >-
-      var obj = new ClassWithMethods();
+      <code>
+                  var obj = new ClassWithMethods();
                   var result = obj.Calculate(5, 10);
+                  </code>
     remarks: Contains methods with different signatures, parameters, and return types.
     summary: A class demonstrating various method documentation scenarios.
   - baseType: System.Object
@@ -779,8 +784,10 @@ namespaces:
     typeKind: Class
     displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass
     examples: >-
-      var derived = new DerivedClass();
+      <code>
+                  var derived = new DerivedClass();
                   var result = derived.VirtualMethod();
+                  </code>
     remarks: This class inherits from BaseClass and overrides some members.
     summary: A derived class for testing inheritance documentation.
   - baseType: System.Object
@@ -858,10 +865,12 @@ namespaces:
     typeKind: Class
     displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DisposableClass
     examples: >-
-      using (var disposable = new DisposableClass())
+      <code>
+                  using (var disposable = new DisposableClass())
                   {
                       disposable.UseResource();
                   }
+                  </code>
     relatedApis:
     - System.IDisposable
     remarks: This class demonstrates how interface implementation is documented.
@@ -891,8 +900,10 @@ namespaces:
     typeKind: Class
     displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.SimpleClass
     examples: >-
-      var simple = new SimpleClass();
+      <code>
+                  var simple = new SimpleClass();
                   simple.DoWork();
+                  </code>
     remarks: >-
       These are remarks about the SimpleClass. They provide additional context
                   and information beyond what's in the summary.
@@ -1051,9 +1062,9 @@ namespaces:
       returnTypeName: string
       signature: public string MethodWithSpecialChars(string input)
       displayName: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithSpecialCharacters.MethodWithSpecialChars(string)
-      remarks: This method handles <, >, & characters properly.
-      returns: A string with & ampersands.
-      summary: 'A method with special characters in docs: <T> generics.'
+      remarks: This method handles &lt;, &gt;, &amp; characters properly.
+      returns: A string with &amp; ampersands.
+      summary: 'A method with special characters in docs: &lt;T&gt; generics.'
     - accessibility: Public
       memberKind: Method
       methodKind: Constructor
@@ -1068,13 +1079,15 @@ namespaces:
     typeKind: Class
     displayName: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithSpecialCharacters
     examples: >-
-      // Using generics: List<string>
-                  var list = new List<string>();
-                  if (x > 0 && y < 10) { }
+      <code>
+                  // Using generics: List&lt;string&gt;
+                  var list = new List&lt;string&gt;();
+                  if (x &gt; 0 &amp;&amp; y &lt; 10) { }
+                  </code>
     remarks: >-
-      This tests handling of XML special characters like <tag> and &entity;.
+      This tests handling of XML special characters like &lt;tag&gt; and &amp;entity;.
                   Also tests "quotes" and 'apostrophes'.
-    summary: "A class with special characters in documentation: <, >, &, \", '."
+    summary: "A class with special characters in documentation: &lt;, &gt;, &amp;, \", '."
   - baseType: System.Object
     members:
     - accessibility: Public
@@ -1152,12 +1165,26 @@ namespaces:
       - description: Thrown when number is negative.
         type: ArgumentOutOfRangeException
       examples: >-
-        var result = ComplexMethod("hello", 5);
+        <code>
+                    var result = ComplexMethod("hello", 5);
                     Console.WriteLine(result);
-      remarks: This method performs complex processing.First, it validates the input.Then, it processes the data.Finally, it returns the result.
+                    </code>
+      remarks: >-
+        <para>This method performs complex processing.</para><list type="bullet">
+          <item>
+            <description>First, it validates the input.</description>
+          </item>
+          <item>
+            <description>Then, it processes the data.</description>
+          </item>
+          <item>
+            <description>Finally, it returns the result.</description>
+          </item>
+        </list>
       returns: A processed result string.
       seeAlso:
-      - System.String.Format(System.String,System.Object[])
+      - rawReference: M:System.String.Format(System.String,System.Object[])
+        referenceType: Method
       summary: A complex method with full documentation.
     - accessibility: Public
       memberKind: Method
@@ -1182,12 +1209,16 @@ namespaces:
     typeKind: Class
     displayName: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithFullDocs
     examples: >-
-      var fullDocs = new ClassWithFullDocs();
+      <code>
+                  var fullDocs = new ClassWithFullDocs();
                   fullDocs.ComplexMethod("test", 42);
-    remarks: This class demonstrates all available XML documentation tags.It includes multiple paragraphs in the remarks section.
+                  </code>
+    remarks: <para>This class demonstrates all available XML documentation tags.</para><para>It includes multiple paragraphs in the remarks section.</para>
     seeAlso:
-    - CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithMinimalDocs
-    - System.String
+    - rawReference: T:CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithMinimalDocs
+      referenceType: Type
+    - rawReference: T:System.String
+      referenceType: Type
     summary: A class with comprehensive XML documentation tags.
   displayName: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases
 - name: CloudNimble.DotNetDocs.Tests.Shared.Parameters
@@ -1235,8 +1266,10 @@ namespaces:
       signature: public string MethodWithOptionalParam(string required, int optional = 42)
       displayName: CloudNimble.DotNetDocs.Tests.Shared.Parameters.ParameterVariations.MethodWithOptionalParam(string, int)
       examples: >-
-        var result1 = MethodWithOptionalParam("test");      // Uses default value 42
+        <code>
+                    var result1 = MethodWithOptionalParam("test");      // Uses default value 42
                     var result2 = MethodWithOptionalParam("test", 100); // Uses provided value
+                    </code>
       returns: A formatted string combining both parameters.
       summary: A method with an optional parameter.
     - accessibility: Public
@@ -1265,8 +1298,10 @@ namespaces:
       signature: public int MethodWithParams(params int[] values)
       displayName: CloudNimble.DotNetDocs.Tests.Shared.Parameters.ParameterVariations.MethodWithParams(params int[])
       examples: >-
-        var sum1 = MethodWithParams(1, 2, 3);        // Returns 6
+        <code>
+                    var sum1 = MethodWithParams(1, 2, 3);        // Returns 6
                     var sum2 = MethodWithParams(new[] { 1, 2 }); // Returns 3
+                    </code>
       returns: The sum of all provided values.
       summary: A method with a params array.
     - accessibility: Public
@@ -1356,8 +1391,10 @@ namespaces:
       signature: public string GenericMethod<T>(T value)
       displayName: CloudNimble.DotNetDocs.Tests.Shared.Parameters.ParameterVariations.GenericMethod<T>(T)
       examples: >-
-        var result1 = GenericMethod<int>(42);
+        <code>
+                    var result1 = GenericMethod&lt;int&gt;(42);
                     var result2 = GenericMethod("hello");
+                    </code>
       returns: The string representation of the value.
       summary: A generic method with a type parameter.
       typeParameters:

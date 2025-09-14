@@ -20,12 +20,24 @@ A class with comprehensive XML documentation tags.
 
 ## Remarks
 
-This class demonstrates all available XML documentation tags.It includes multiple paragraphs in the remarks section.
+
+
+This class demonstrates all available XML documentation tags.
+
+
+
+It includes multiple paragraphs in the remarks section.
+
+
 
 ## Examples
 
+
+```csharp
 var fullDocs = new ClassWithFullDocs();
-            fullDocs.ComplexMethod("test", 42);
+fullDocs.ComplexMethod("test", 42);
+```
+
 
 ## Constructors
 
@@ -91,19 +103,28 @@ A processed result string.
 
 #### Examples
 
+
+```csharp
 var result = ComplexMethod("hello", 5);
-            Console.WriteLine(result);
+Console.WriteLine(result);
+```
+
 
 #### Remarks
 
-This method performs complex processing.First, it validates the input.Then, it processes the data.Finally, it returns the result.
+
+
+This method performs complex processing.
+
+
+
 
 #### See Also
 
-- System.String.Format(System.String,System.Object[])
+- [Object[])](https://learn.microsoft.com/dotnet/api/system.string.format(system.string,system.object[]))
 
 ## See Also
 
-- CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithMinimalDocs
-- System.String
+- [ClassWithMinimalDocs](ClassWithMinimalDocs)
+- [String](https://learn.microsoft.com/dotnet/api/system.string)
 

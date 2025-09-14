@@ -1,4 +1,5 @@
 using System;
+using CloudNimble.DotNetDocs.Core.Transformers;
 using CloudNimble.DotNetDocs.Mintlify;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -25,6 +26,7 @@ namespace CloudNimble.DotNetDocs.Core.Configuration
         /// <list type="bullet">
         /// <item><description>MintlifyRenderer for generating MDX documentation</description></item>
         /// <item><description>DocsJsonManager for navigation generation</description></item>
+        /// <item><description>MarkdownXmlTransformer for processing XML documentation tags</description></item>
         /// </list>
         /// </remarks>
         /// <example>
@@ -43,7 +45,10 @@ namespace CloudNimble.DotNetDocs.Core.Configuration
 
             // Register DocsJsonManager for navigation generation
             builder._services.TryAddScoped<DocsJsonManager>();
-            
+
+            // Add the MarkdownXmlTransformer for processing XML documentation tags
+            builder.AddTransformer<MarkdownXmlTransformer>();
+
             // Add the renderer using the builder's AddRenderer method
             return builder.AddRenderer<MintlifyRenderer>();
         }
@@ -60,6 +65,7 @@ namespace CloudNimble.DotNetDocs.Core.Configuration
         /// <item><description>MintlifyRenderer for generating MDX documentation</description></item>
         /// <item><description>DocsJsonManager for navigation generation</description></item>
         /// <item><description>MintlifyOptions configuration</description></item>
+        /// <item><description>MarkdownXmlTransformer for processing XML documentation tags</description></item>
         /// </list>
         /// </remarks>
         /// <example>
@@ -87,7 +93,10 @@ namespace CloudNimble.DotNetDocs.Core.Configuration
 
             // Register DocsJsonManager for navigation generation
             builder._services.TryAddScoped<DocsJsonManager>();
-            
+
+            // Add the MarkdownXmlTransformer for processing XML documentation tags
+            builder.AddTransformer<MarkdownXmlTransformer>();
+
             // Add the renderer using the builder's AddRenderer method
             return builder.AddRenderer<MintlifyRenderer>();
         }
@@ -100,7 +109,11 @@ namespace CloudNimble.DotNetDocs.Core.Configuration
         /// <returns>The builder for chaining.</returns>
         /// <remarks>
         /// <para>The renderer must inherit from MintlifyRenderer.</para>
-        /// <para>This method also registers DocsJsonManager for navigation generation.</para>
+        /// <para>This method also registers:</para>
+        /// <list type="bullet">
+        /// <item><description>DocsJsonManager for navigation generation</description></item>
+        /// <item><description>MarkdownXmlTransformer for processing XML documentation tags</description></item>
+        /// </list>
         /// </remarks>
         /// <example>
         /// <code>
@@ -119,7 +132,10 @@ namespace CloudNimble.DotNetDocs.Core.Configuration
 
             // Register DocsJsonManager for navigation generation
             builder._services.TryAddScoped<DocsJsonManager>();
-            
+
+            // Add the MarkdownXmlTransformer for processing XML documentation tags
+            builder.AddTransformer<MarkdownXmlTransformer>();
+
             // Add the custom renderer using the builder's AddRenderer method
             return builder.AddRenderer<TRenderer>();
         }

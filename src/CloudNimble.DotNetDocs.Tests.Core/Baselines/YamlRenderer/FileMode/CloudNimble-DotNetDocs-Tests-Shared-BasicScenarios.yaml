@@ -119,7 +119,10 @@ types:
     returnTypeName: int
     signature: public int Calculate(int a, int b)
     displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ClassWithMethods.Calculate(int, int)
-    examples: var result = Calculate(3, 4); // Returns 7
+    examples: >-
+      <code>
+                  var result = Calculate(3, 4); // Returns 7
+                  </code>
     returns: The sum of a and b.
     summary: Calculates the sum of two numbers.
   - accessibility: Public
@@ -205,8 +208,10 @@ types:
   typeKind: Class
   displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ClassWithMethods
   examples: >-
-    var obj = new ClassWithMethods();
+    <code>
+                var obj = new ClassWithMethods();
                 var result = obj.Calculate(5, 10);
+                </code>
   remarks: Contains methods with different signatures, parameters, and return types.
   summary: A class demonstrating various method documentation scenarios.
 - baseType: System.Object
@@ -450,8 +455,10 @@ types:
   typeKind: Class
   displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass
   examples: >-
-    var derived = new DerivedClass();
+    <code>
+                var derived = new DerivedClass();
                 var result = derived.VirtualMethod();
+                </code>
   remarks: This class inherits from BaseClass and overrides some members.
   summary: A derived class for testing inheritance documentation.
 - baseType: System.Object
@@ -529,10 +536,12 @@ types:
   typeKind: Class
   displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DisposableClass
   examples: >-
-    using (var disposable = new DisposableClass())
+    <code>
+                using (var disposable = new DisposableClass())
                 {
                     disposable.UseResource();
                 }
+                </code>
   relatedApis:
   - System.IDisposable
   remarks: This class demonstrates how interface implementation is documented.
@@ -562,8 +571,10 @@ types:
   typeKind: Class
   displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.SimpleClass
   examples: >-
-    var simple = new SimpleClass();
+    <code>
+                var simple = new SimpleClass();
                 simple.DoWork();
+                </code>
   remarks: >-
     These are remarks about the SimpleClass. They provide additional context
                 and information beyond what's in the summary.

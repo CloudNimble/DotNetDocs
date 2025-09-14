@@ -51,17 +51,26 @@ The builder for chaining.
 #### Examples
 
 ```csharp
-services.AddDotNetDocsPipeline(pipeline =>
-{
-    pipeline
-        .UseMintlifyRenderer()
-        .ConfigureContext(ctx => ctx.OutputPath = "docs/api");
-});
+
+```csharp
+services.AddDotNetDocsPipeline(pipeline =&gt;
+            {
+                pipeline
+                    .UseMintlifyRenderer()
+                    .ConfigureContext(ctx =&gt; ctx.OutputPath = "docs/api");
+            });
+```
+
 ```
 
 #### Remarks
 
-This method registers:MintlifyRenderer for generating MDX documentationDocsJsonManager for navigation generation
+
+
+This method registers:
+
+
+
 
 ### UseMintlifyRenderer
 
@@ -88,21 +97,30 @@ The builder for chaining.
 #### Examples
 
 ```csharp
-services.AddDotNetDocsPipeline(pipeline =>
-{
-    pipeline
-        .UseMintlifyRenderer(options =>
-        {
-            options.GenerateDocsJson = true;
-            options.IncludeIcons = true;
-        })
-        .ConfigureContext(ctx => ctx.OutputPath = "docs/api");
-});
+
+```csharp
+services.AddDotNetDocsPipeline(pipeline =&gt;
+            {
+                pipeline
+                    .UseMintlifyRenderer(options =&gt;
+                    {
+                        options.GenerateDocsJson = true;
+                        options.IncludeIcons = true;
+                    })
+                    .ConfigureContext(ctx =&gt; ctx.OutputPath = "docs/api");
+            });
+```
+
 ```
 
 #### Remarks
 
-This method registers:MintlifyRenderer for generating MDX documentationDocsJsonManager for navigation generationMintlifyOptions configuration
+
+
+This method registers:
+
+
+
 
 ### UseMintlifyRenderer
 
@@ -132,15 +150,28 @@ The builder for chaining.
 #### Examples
 
 ```csharp
-services.AddDotNetDocsPipeline(pipeline =>
-{
-    pipeline
-        .UseMintlifyRenderer<CustomMintlifyRenderer>()
-        .ConfigureContext(ctx => ctx.OutputPath = "docs");
-});
+
+```csharp
+services.AddDotNetDocsPipeline(pipeline =&gt;
+            {
+                pipeline
+                    .UseMintlifyRenderer&lt;CustomMintlifyRenderer&gt;()
+                    .ConfigureContext(ctx =&gt; ctx.OutputPath = "docs");
+            });
+```
+
 ```
 
 #### Remarks
 
-The renderer must inherit from MintlifyRenderer.This method also registers DocsJsonManager for navigation generation.
+
+
+The renderer must inherit from MintlifyRenderer.
+
+
+
+This method also registers:
+
+
+
 

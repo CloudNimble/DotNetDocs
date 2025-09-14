@@ -61,8 +61,12 @@ The string representation of the value.
 
 #### Examples
 
-var result1 = GenericMethod<int>(42);
-            var result2 = GenericMethod("hello");
+
+```csharp
+var result1 = GenericMethod&lt;int&gt;(42);
+var result2 = GenericMethod("hello");
+```
+
 
 ### GenericMethodWithMultipleTypes
 
@@ -162,8 +166,12 @@ A formatted string combining both parameters.
 
 #### Examples
 
+
+```csharp
 var result1 = MethodWithOptionalParam("test");      // Uses default value 42
-            var result2 = MethodWithOptionalParam("test", 100); // Uses provided value
+var result2 = MethodWithOptionalParam("test", 100); // Uses provided value
+```
+
 
 ### MethodWithOut
 
@@ -210,8 +218,12 @@ The sum of all provided values.
 
 #### Examples
 
+
+```csharp
 var sum1 = MethodWithParams(1, 2, 3);        // Returns 6
-            var sum2 = MethodWithParams(new[] { 1, 2 }); // Returns 3
+var sum2 = MethodWithParams(new[] { 1, 2 }); // Returns 3
+```
+
 
 ### MethodWithRef
 

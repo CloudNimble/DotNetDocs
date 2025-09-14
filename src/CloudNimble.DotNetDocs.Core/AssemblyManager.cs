@@ -202,53 +202,65 @@ namespace CloudNimble.DotNetDocs.Core
         }
 
         /// <summary>
-        /// Extracts the summary text from XML documentation.
+        /// Extracts inner XML content from an XElement, preserving nested XML tags.
         /// </summary>
-        /// <param name="doc">The parsed XML documentation.</param>
-        /// <returns>The summary text, or empty string if not found.</returns>
-        internal string? ExtractSummary(XDocument? doc) =>
-            doc?.Descendants("summary").FirstOrDefault()?.Value.Trim();
-
-        /// <summary>
-        /// Extracts the examples text from XML documentation.
-        /// </summary>
-        /// <param name="doc">The parsed XML documentation.</param>
-        /// <returns>The examples text, or empty string if not found.</returns>
-        internal string? ExtractExamples(XDocument? doc) =>
-            doc?.Descendants("example").FirstOrDefault()?.Value.Trim();
-
-        /// <summary>
-        /// Extracts the remarks/best practices text from XML documentation.
-        /// </summary>
-        /// <param name="doc">The parsed XML documentation.</param>
-        /// <returns>The remarks text, or empty string if not found.</returns>
-        internal string? ExtractRemarks(XDocument? doc) =>
-            doc?.Descendants("remarks").FirstOrDefault()?.Value.Trim();
-
-        /// <summary>
-        /// Extracts parameter documentation from XML documentation.
-        /// </summary>
-        /// <param name="doc">The parsed XML documentation.</param>
-        /// <param name="parameterName">The name of the parameter.</param>
-        /// <returns>The parameter documentation, or empty string if not found.</returns>
-        internal string ExtractParameterDocumentation(XDocument? doc, string parameterName) =>
-            doc?.Descendants("param")
-                .FirstOrDefault(e => e.Attribute("name")?.Value == parameterName)
-                ?.Value.Trim() ?? string.Empty;
-
-        /// <summary>
-        /// Extracts the returns documentation from XML documentation.
-        /// </summary>
-        /// <param name="doc">The parsed XML documentation.</param>
-        /// <returns>The returns text, or null if not found.</returns>
-        internal string? ExtractReturns(XDocument? doc)
+        /// <param name="element">The XML element to extract content from.</param>
+        /// <returns>The inner XML as a string, or null if element is null.</returns>
+        internal string? ExtractInnerXml(XElement? element)
         {
-            var returns = doc?.Descendants("returns").FirstOrDefault()?.Value.Trim();
-            return string.IsNullOrWhiteSpace(returns) ? null : returns;
+            if (element == null)
+                return null;
+
+            // Get all nodes and concatenate them, preserving XML tags
+            var innerXml = string.Concat(element.Nodes().Select(n => n.ToString()));
+            var trimmed = innerXml?.Trim();
+            return string.IsNullOrWhiteSpace(trimmed) ? null : trimmed;
         }
 
         /// <summary>
-        /// Extracts exception documentation from XML documentation.
+        /// Extracts the summary text from XML documentation, preserving inner XML tags.
+        /// </summary>
+        /// <param name="doc">The parsed XML documentation.</param>
+        /// <returns>The summary text with preserved XML tags, or empty string if not found.</returns>
+        internal string? ExtractSummary(XDocument? doc) =>
+            ExtractInnerXml(doc?.Descendants("summary").FirstOrDefault());
+
+        /// <summary>
+        /// Extracts the examples text from XML documentation, preserving inner XML tags.
+        /// </summary>
+        /// <param name="doc">The parsed XML documentation.</param>
+        /// <returns>The examples text with preserved XML tags, or empty string if not found.</returns>
+        internal string? ExtractExamples(XDocument? doc) =>
+            ExtractInnerXml(doc?.Descendants("example").FirstOrDefault());
+
+        /// <summary>
+        /// Extracts the remarks/best practices text from XML documentation, preserving inner XML tags.
+        /// </summary>
+        /// <param name="doc">The parsed XML documentation.</param>
+        /// <returns>The remarks text with preserved XML tags, or empty string if not found.</returns>
+        internal string? ExtractRemarks(XDocument? doc) =>
+            ExtractInnerXml(doc?.Descendants("remarks").FirstOrDefault());
+
+        /// <summary>
+        /// Extracts parameter documentation from XML documentation, preserving inner XML tags.
+        /// </summary>
+        /// <param name="doc">The parsed XML documentation.</param>
+        /// <param name="parameterName">The name of the parameter.</param>
+        /// <returns>The parameter documentation with preserved XML tags, or empty string if not found.</returns>
+        internal string ExtractParameterDocumentation(XDocument? doc, string parameterName) =>
+            ExtractInnerXml(doc?.Descendants("param")
+                .FirstOrDefault(e => e.Attribute("name")?.Value == parameterName)) ?? string.Empty;
+
+        /// <summary>
+        /// Extracts the returns documentation from XML documentation, preserving inner XML tags.
+        /// </summary>
+        /// <param name="doc">The parsed XML documentation.</param>
+        /// <returns>The returns text with preserved XML tags, or null if not found.</returns>
+        internal string? ExtractReturns(XDocument? doc) =>
+            ExtractInnerXml(doc?.Descendants("returns").FirstOrDefault());
+
+        /// <summary>
+        /// Extracts exception documentation from XML documentation, preserving inner XML tags.
         /// </summary>
         /// <param name="doc">The parsed XML documentation.</param>
         /// <returns>Collection of exception documentation, or null if none found.</returns>
@@ -258,7 +270,7 @@ namespace CloudNimble.DotNetDocs.Core
                 .Select(e => new DocException
                 {
                     Type = e.Attribute("cref")?.Value?.Replace("T:", "")?.Split('.').LastOrDefault(),
-                    Description = e.Value.Trim()
+                    Description = ExtractInnerXml(e) ?? string.Empty
                 })
                 .Where(e => !string.IsNullOrWhiteSpace(e.Type))
                 .ToList();
@@ -267,7 +279,7 @@ namespace CloudNimble.DotNetDocs.Core
         }
 
         /// <summary>
-        /// Extracts type parameter documentation from XML documentation.
+        /// Extracts type parameter documentation from XML documentation, preserving inner XML tags.
         /// </summary>
         /// <param name="doc">The parsed XML documentation.</param>
         /// <returns>Collection of type parameter documentation, or null if none found.</returns>
@@ -277,7 +289,7 @@ namespace CloudNimble.DotNetDocs.Core
                 .Select(e => new DocTypeParameter
                 {
                     Name = e.Attribute("name")?.Value,
-                    Description = e.Value.Trim()
+                    Description = ExtractInnerXml(e) ?? string.Empty
                 })
                 .Where(p => !string.IsNullOrWhiteSpace(p.Name))
                 .ToList();
@@ -286,27 +298,24 @@ namespace CloudNimble.DotNetDocs.Core
         }
 
         /// <summary>
-        /// Extracts the value documentation from XML documentation (for properties).
+        /// Extracts the value documentation from XML documentation (for properties), preserving inner XML tags.
         /// </summary>
         /// <param name="doc">The parsed XML documentation.</param>
-        /// <returns>The value text, or null if not found.</returns>
-        internal string? ExtractValue(XDocument? doc)
-        {
-            var value = doc?.Descendants("value").FirstOrDefault()?.Value.Trim();
-            return string.IsNullOrWhiteSpace(value) ? null : value;
-        }
+        /// <returns>The value text with preserved XML tags, or null if not found.</returns>
+        internal string? ExtractValue(XDocument? doc) =>
+            ExtractInnerXml(doc?.Descendants("value").FirstOrDefault());
 
         /// <summary>
         /// Extracts see-also references from XML documentation.
         /// </summary>
         /// <param name="doc">The parsed XML documentation.</param>
         /// <returns>Collection of see-also references, or null if none found.</returns>
-        internal ICollection<string>? ExtractSeeAlso(XDocument? doc)
+        internal ICollection<DocReference>? ExtractSeeAlso(XDocument? doc)
         {
             var seeAlso = doc?.Descendants("seealso")
-                .Select(e => e.Attribute("cref")?.Value?.Replace("T:", "")?.Replace("M:", "")?.Replace("P:", "")?.Replace("F:", "")?.Replace("E:", ""))
+                .Select(e => e.Attribute("cref")?.Value)
                 .Where(s => !string.IsNullOrWhiteSpace(s))
-                .Cast<string>()
+                .Select(s => new DocReference(s!))
                 .ToList();
 
             return seeAlso?.Any() == true ? seeAlso : null;
