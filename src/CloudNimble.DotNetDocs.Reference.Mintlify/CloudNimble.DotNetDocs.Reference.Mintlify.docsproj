@@ -1,6 +1,5 @@
-﻿<Project Sdk="DotNetDocs.Sdk/1.0.0-preview.13">
+﻿<Project Sdk="DotNetDocs.Sdk/1.0.0-preview.14">
 	<PropertyGroup>
-
         <KeepLocalOutput>true</KeepLocalOutput>
         <DocumentationType>Mintlify</DocumentationType>
         <GenerateMintlifyDocs>true</GenerateMintlifyDocs>

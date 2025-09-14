@@ -15,6 +15,17 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
     public class DiscoverDocumentedProjectsTask : Task
     {
 
+        #region Fields
+
+        Dictionary<string, bool> _propertiesToEvaluate = new()
+        {
+            { "IsTestProject", false }, // Exclude test projects
+            { "IsPackable", true }, // Include only packable projects (default is true)
+            { "ExcludeFromDocumentation", false } // Exclude projects explicitly marked to be excluded
+        };
+
+        #endregion
+
         #region Properties
 
         /// <summary>
@@ -59,15 +70,15 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
                 Log.LogMessage(MessageImportance.High, $"🔍 Discovering documented projects in {SolutionDir}...");
 
                 var documentedProjects = new List<ITaskItem>();
-                
+
                 // Search for all .NET project file types and filter out excluded patterns
                 var projectExtensions = new[] { "*.csproj", "*.vbproj", "*.fsproj" };
                 var projectFiles = projectExtensions
                     .SelectMany(ext => Directory.GetFiles(SolutionDir, ext, SearchOption.AllDirectories))
-                    .Where(file => ExcludePatterns == null || !ExcludePatterns.Any(pattern => 
+                    .Where(file => ExcludePatterns == null || !ExcludePatterns.Any(pattern =>
                         Path.GetFileNameWithoutExtension(file).Contains(pattern.Replace("*", ""), StringComparison.OrdinalIgnoreCase)))
                     .ToArray();
-                
+
                 var projectCollection = new ProjectCollection();
 
                 // Set up global properties for evaluation
@@ -87,33 +98,33 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
 
                         try
                         {
-                            // Check if it's a test project (IsTestProject=true)
-                            var isTestProject = project.GetPropertyValue("IsTestProject");
-                            if (string.Equals(isTestProject, "true", StringComparison.OrdinalIgnoreCase))
-                            {
-                                Log.LogMessage(MessageImportance.Low, $"   ⏭️ Skipping test project: {projectName}");
-                                continue;
-                            }
 
-                            // Check if it's packable (IsPackable != false)
-                            // Projects are packable by default unless explicitly set to false
-                            var isPackable = project.GetPropertyValue("IsPackable");
-                            if (string.Equals(isPackable, "false", StringComparison.OrdinalIgnoreCase))
+                            bool shouldSkip = false;
+                            foreach (var prop in _propertiesToEvaluate)
                             {
-                                Log.LogMessage(MessageImportance.Low, $"   ⏭️ Skipping non-packable project: {projectName}");
-                                continue;
+                                var propValue = project.GetPropertyValue(prop.Key);
+                                if (string.Equals(propValue, "true", StringComparison.OrdinalIgnoreCase) != prop.Value)
+                                {
+                                    Log.LogMessage(MessageImportance.Low, $"   ⏭️ Skipping project {projectName} due to property {prop.Key}={propValue}");
+                                    shouldSkip = true;
+                                    break;
+                                }
+                            }
+                            if (shouldSkip)
+                            {
+                                continue; // Skip to next project
                             }
 
                             // This is a project we should document
                             var item = new TaskItem(projectFile);
-                            
+
                             // Set metadata from the evaluated project
                             var assemblyName = project.GetPropertyValue("AssemblyName");
                             if (string.IsNullOrEmpty(assemblyName))
                             {
                                 assemblyName = projectName;
                             }
-                            
+
                             var targetFramework = project.GetPropertyValue("TargetFramework");
                             if (string.IsNullOrEmpty(targetFramework))
                             {

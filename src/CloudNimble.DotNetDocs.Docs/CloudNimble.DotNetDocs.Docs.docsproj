@@ -1,4 +1,4 @@
-﻿<Project Sdk="DotNetDocs.Sdk/1.0.0-preview.13">
+﻿<Project Sdk="DotNetDocs.Sdk/1.0.0-preview.14">
 
 	<PropertyGroup>
         <KeepLocalOutput>true</KeepLocalOutput>
@@ -7,7 +7,7 @@
         <NamespaceMode>Folder</NamespaceMode>
         <ShowDocumentationStats>true</ShowDocumentationStats>
         <!-- Exclude test projects from documentation -->
-        <ExcludePatterns>Tests.Shared</ExcludePatterns>
+        <ExcludePatterns>Tests.Shared;*.Sdk</ExcludePatterns>
 		
 		<MintlifyNavigationMode>Unified</MintlifyNavigationMode>
 		<MintlifyTemplate>

@@ -69,7 +69,7 @@
         <!-- Use compiled task to discover projects -->
         <CloudNimble.DotNetDocs.Sdk.Tasks.DiscoverDocumentedProjectsTask
             SolutionDir="$(MSBuildProjectDirectory)\.."
-            ExcludePatterns="*.Tests.*;*.Test">
+            ExcludePatterns="$(ExcludePatterns)">
             <Output TaskParameter="DocumentedProjects" ItemName="DocumentedProjects" />
         </CloudNimble.DotNetDocs.Sdk.Tasks.DiscoverDocumentedProjectsTask>
 
@@ -82,19 +82,11 @@
         <Message Text="   Projects: @(_ProjectNames, ', ')" Importance="normal" />
     </Target>
 
-    <!-- Build discovered projects and generate documentation -->
+    <!-- Generate documentation from existing assemblies -->
     <Target Name="GenerateDocumentation"
             Condition="'$(GenerateDocumentation)' == 'true'"
-            AfterTargets="Build"
             DependsOnTargets="DiscoverDocumentedProjects">
-        <Message Text="🚀 Generating unified documentation from solution..." Importance="high" />
-
-        <!-- Build all documented projects to ensure assemblies are up to date -->
-        <MSBuild Projects="@(DocumentedProjects)"
-                 Targets="Restore;Build"
-                 ContinueOnError="false" />
-
-        <Message Text="✅ Successfully built @(DocumentedProjects->Count()) projects" Importance="normal" />
+        <Message Text="🚀 Generating documentation from existing assemblies..." Importance="high" />
 
         <!-- Extract assembly paths from built projects (only main project assemblies) -->
         <ItemGroup>
@@ -145,100 +137,9 @@
         <!-- DocumentationManager integration complete - merged model processing enabled -->
     </Target>
 
-    <!-- Optional: Mintlify integration -->
-    <Target Name="GenerateMintlifyDocs"
-            Condition="'$(GenerateMintlifyDocs)' == 'true' AND '$(DocumentationType)' == 'Mintlify'"
-            AfterTargets="Build">
-        <Message Text="🚀 Generating Mintlify documentation..." Importance="high" />
-
-        <!-- TODO: Implement Mintlify documentation generation -->
-        <Message Text="⚠️ Mintlify generation not yet implemented" Importance="normal" />
-    </Target>
-
-
-    <!-- Optional: Link validation -->
-    <Target Name="ValidateLinks"
-            Condition="'$(ValidateLinks)' == 'true'"
-            AfterTargets="Build">
-        <Message Text="🔗 Validating documentation links..." Importance="high" />
-        <!-- This would require a custom tool or script -->
-        <Message Text="Link validation not implemented yet - install markdown-link-check or similar tool" Importance="low" />
-    </Target>
-
-    <!-- Optional: Documentation preview -->
-    <Target Name="PreviewDocumentation"
-            Condition="'$(PreviewDocumentation)' == 'true'"
-            AfterTargets="Build">
-        <Message Text="👀 Starting documentation preview..." Importance="high" />
-
-        <!-- Mintlify preview -->
-        <Exec Command="mint dev"
-              WorkingDirectory="$(DocumentationRoot)"
-              ContinueOnError="true"
-              IgnoreExitCode="true"
-              Condition="'$(DocumentationType)' == 'Mintlify'" />
-
-        <!-- DocFX preview -->
-        <Exec Command="docfx --serve"
-              WorkingDirectory="$(DocumentationRoot)"
-              ContinueOnError="true"
-              IgnoreExitCode="true"
-              Condition="'$(DocumentationType)' == 'DocFX'" />
-
-        <!-- MkDocs preview -->
-        <Exec Command="mkdocs serve"
-              WorkingDirectory="$(DocumentationRoot)"
-              ContinueOnError="true"
-              IgnoreExitCode="true"
-              Condition="'$(DocumentationType)' == 'MkDocs'" />
-
-        <!-- Jekyll preview -->
-        <Exec Command="bundle exec jekyll serve"
-              WorkingDirectory="$(DocumentationRoot)"
-              ContinueOnError="true"
-              IgnoreExitCode="true"
-              Condition="'$(DocumentationType)' == 'Jekyll'" />
-
-        <!-- Hugo preview -->
-        <Exec Command="hugo server"
-              WorkingDirectory="$(DocumentationRoot)"
-              ContinueOnError="true"
-              IgnoreExitCode="true"
-              Condition="'$(DocumentationType)' == 'Hugo'" />
-    </Target>
-
-    <!-- Optional: Generate PDF documentation -->
-    <Target Name="GeneratePdf"
-            Condition="'$(GeneratePdf)' == 'true'"
-            AfterTargets="Build">
-        <Message Text="📄 Generating PDF documentation..." Importance="high" />
-        <!-- This would require pandoc or similar tool -->
-        <Message Text="PDF generation not implemented yet - install pandoc or similar tool" Importance="low" />
-    </Target>
-
-    <!-- Optional: Documentation deployment -->
-    <Target Name="DeployDocumentation"
-            Condition="'$(DeployDocumentation)' == 'true'"
-            AfterTargets="Build">
-        <Message Text="🚀 Deploying documentation..." Importance="high" />
-
-        <!-- Mintlify deployment -->
-        <Exec Command="mint deploy"
-              WorkingDirectory="$(DocumentationRoot)"
-              ContinueOnError="true"
-              IgnoreExitCode="false"
-              Condition="'$(DocumentationType)' == 'Mintlify'" />
-
-        <!-- GitHub Pages deployment (generic) -->
-        <Message Text="Configure GitHub Actions or other CI/CD for deployment"
-                 Importance="normal"
-                 Condition="'$(DocumentationType)' != 'Mintlify'" />
-    </Target>
-
     <!-- Documentation project statistics -->
     <Target Name="DocumentationStats"
-            Condition="'$(ShowDocumentationStats)' == 'true'"
-            AfterTargets="Build">
+            Condition="'$(ShowDocumentationStats)' == 'true'">
         <Message Text="📊 Documentation Statistics:" Importance="high" />
 
         <ItemGroup>
@@ -285,6 +186,12 @@
     <!-- Override CopyFilesToOutputDirectory to prevent the copy operation entirely -->
     <!-- Since we're a documentation project, we don't need to copy files to output -->
     <Target Name="CopyFilesToOutputDirectory" />
+
+    <!-- Define a Build target that runs documentation generation -->
+    <!-- This allows 'dotnet build' and Visual Studio builds to work -->
+    <Target Name="Build" DependsOnTargets="ValidateDocumentationProject;GenerateDocumentation;DocumentationStats">
+        <Message Text="✅ Documentation build completed" Importance="high" />
+    </Target>
 
 
 
