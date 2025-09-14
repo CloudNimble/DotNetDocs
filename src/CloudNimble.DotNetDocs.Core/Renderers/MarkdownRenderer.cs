@@ -100,7 +100,7 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
             {
                 sb.AppendLine("## Examples");
                 sb.AppendLine();
-                sb.AppendLine(assembly.Examples);
+                sb.AppendLine(RemoveIndentation(assembly.Examples));
                 sb.AppendLine();
             }
 
@@ -188,7 +188,7 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
             {
                 sb.AppendLine("## Examples");
                 sb.AppendLine();
-                sb.AppendLine(ns.Examples);
+                sb.AppendLine(RemoveIndentation(ns.Examples));
                 sb.AppendLine();
             }
 
@@ -392,7 +392,7 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
             {
                 sb.AppendLine("## Examples");
                 sb.AppendLine();
-                sb.AppendLine(type.Examples);
+                sb.AppendLine(RemoveIndentation(type.Examples));
                 sb.AppendLine();
             }
 
@@ -616,7 +616,7 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
             {
                 sb.AppendLine("#### Examples");
                 sb.AppendLine();
-                sb.AppendLine(member.Examples);
+                sb.AppendLine(RemoveIndentation(member.Examples));
                 sb.AppendLine();
             }
 

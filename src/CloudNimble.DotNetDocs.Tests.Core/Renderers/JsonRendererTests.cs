@@ -6,7 +6,6 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using CloudNimble.Breakdance.Assemblies;
 using CloudNimble.DotNetDocs.Core;
-using CloudNimble.DotNetDocs.Core.Configuration;
 using CloudNimble.DotNetDocs.Core.Renderers;
 using CloudNimble.DotNetDocs.Tests.Shared;
 using CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios;
@@ -91,11 +90,10 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             // Arrange
             var assemblyPath = typeof(SimpleClass).Assembly.Location;
             var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
-            using var manager = new AssemblyManager(assemblyPath, xmlPath);
-            var model = await manager.DocumentAsync();
+            var documentationManager = GetService<DocumentationManager>();
 
             // Act
-            await GetJsonRenderer().RenderAsync(model);
+            await documentationManager.ProcessAsync(assemblyPath, xmlPath);
 
             // Assert - Compare against baseline
             var baselinePath = Path.Combine(projectPath, "Baselines", "JsonRenderer", "documentation.json");
@@ -125,11 +123,10 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             // Arrange
             var assemblyPath = typeof(SampleClass).Assembly.Location;
             var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
-            using var manager = new AssemblyManager(assemblyPath, xmlPath);
-            var model = await manager.DocumentAsync();
+            var documentationManager = GetService<DocumentationManager>();
 
             // Act
-            await GetJsonRenderer().RenderAsync(model);
+            await documentationManager.ProcessAsync(assemblyPath, xmlPath);
 
             // Assert
             var context = GetService<ProjectContext>();
@@ -146,8 +143,9 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             // Arrange
             var assemblyPath = typeof(SampleClass).Assembly.Location;
             var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
+            var context = GetService<ProjectContext>();
             using var manager = new AssemblyManager(assemblyPath, xmlPath);
-            var model = await manager.DocumentAsync();
+            var model = await manager.DocumentAsync(context);
             model.Usage = "Test usage";
             model.Examples = "Test examples";
 
@@ -155,10 +153,9 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             await GetJsonRenderer().RenderAsync(model);
 
             // Assert
-            var context = GetService<ProjectContext>();
             var json = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, "documentation.json"), TestContext.CancellationTokenSource.Token);
             using var document = JsonDocument.Parse(json);
-            
+
             // DocAssembly is serialized directly, so root element is the assembly
             var root = document.RootElement;
             root.GetProperty("assemblyName").GetString().Should().Be(model.AssemblyName);
@@ -173,21 +170,21 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             // Arrange
             var assemblyPath = typeof(SampleClass).Assembly.Location;
             var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
+            var context = GetService<ProjectContext>();
             using var manager = new AssemblyManager(assemblyPath, xmlPath);
-            var model = await manager.DocumentAsync();
+            var model = await manager.DocumentAsync(context);
 
             // Act
             await GetJsonRenderer().RenderAsync(model);
 
             // Assert
-            var context = GetService<ProjectContext>();
             var renderer = GetJsonRenderer();
             foreach (var ns in model.Namespaces)
             {
                 var fileName = renderer.GetNamespaceFileName(ns, "json");
                 var nsPath = Path.Combine(_testOutputPath, fileName);
                 File.Exists(nsPath).Should().BeTrue($"Namespace file {fileName} should exist");
-                
+
                 var json = await File.ReadAllTextAsync(nsPath, TestContext.CancellationTokenSource.Token);
                 Action act = () => JsonDocument.Parse(json);
                 act.Should().NotThrow();
@@ -217,20 +214,18 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             // Arrange
             var assemblyPath = typeof(SampleClass).Assembly.Location;
             var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
-            using var manager = new AssemblyManager(assemblyPath, xmlPath);
-            var model = await manager.DocumentAsync();
+            var documentationManager = GetService<DocumentationManager>();
 
             // Act
-            await GetJsonRenderer().RenderAsync(model);
+            await documentationManager.ProcessAsync(assemblyPath, xmlPath);
 
             // Assert
-            var context = GetService<ProjectContext>();
             var json = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, "documentation.json"));
             using var document = JsonDocument.Parse(json);
-            
+
             var namespaces = document.RootElement.GetProperty("namespaces");
             namespaces.GetArrayLength().Should().BePositive();
-            
+
             foreach (var ns in namespaces.EnumerateArray())
             {
                 ns.TryGetProperty("name", out _).Should().BeTrue();
@@ -244,20 +239,18 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             // Arrange
             var assemblyPath = typeof(ClassWithMethods).Assembly.Location;
             var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
-            using var manager = new AssemblyManager(assemblyPath, xmlPath);
-            var model = await manager.DocumentAsync();
+            var documentationManager = GetService<DocumentationManager>();
 
             // Act
-            await GetJsonRenderer().RenderAsync(model);
+            await documentationManager.ProcessAsync(assemblyPath, xmlPath);
 
             // Assert
-            var context = GetService<ProjectContext>();
             var json = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, "documentation.json"), TestContext.CancellationTokenSource.Token);
             using var document = JsonDocument.Parse(json);
-            
+
             var namespaces = document.RootElement.GetProperty("namespaces");
             var hasTypes = false;
-            
+
             foreach (var ns in namespaces.EnumerateArray())
             {
                 if (ns.TryGetProperty("types", out var types))
@@ -271,7 +264,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
                     }
                 }
             }
-            
+
             hasTypes.Should().BeTrue("At least one type should be present");
         }
 
@@ -281,32 +274,30 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             // Arrange
             var assemblyPath = typeof(ClassWithProperties).Assembly.Location;
             var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
-            using var manager = new AssemblyManager(assemblyPath, xmlPath);
-            var model = await manager.DocumentAsync();
+            var documentationManager = GetService<DocumentationManager>();
 
             // Act
-            await GetJsonRenderer().RenderAsync(model);
+            await documentationManager.ProcessAsync(assemblyPath, xmlPath);
 
             // Assert
-            var context = GetService<ProjectContext>();
             var json = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, "documentation.json"), TestContext.CancellationTokenSource.Token);
             using var document = JsonDocument.Parse(json);
-            
+
             var namespaces = document.RootElement.GetProperty("namespaces");
             var hasMembers = false;
-            
+
             foreach (var ns in namespaces.EnumerateArray())
             {
                 if (ns.TryGetProperty("types", out var types))
                 {
                     foreach (var type in types.EnumerateArray())
                     {
-                        if (type.GetProperty("name").GetString() == "ClassWithProperties" && 
+                        if (type.GetProperty("name").GetString() == "ClassWithProperties" &&
                             type.TryGetProperty("members", out var members))
                         {
                             hasMembers = true;
                             members.GetArrayLength().Should().BePositive();
-                            
+
                             foreach (var member in members.EnumerateArray())
                             {
                                 member.TryGetProperty("name", out _).Should().BeTrue();
@@ -318,7 +309,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
                     }
                 }
             }
-            
+
             hasMembers.Should().BeTrue("ClassWithProperties should have members");
         }
 
@@ -328,20 +319,18 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             // Arrange
             var assemblyPath = typeof(ParameterVariations).Assembly.Location;
             var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
-            using var manager = new AssemblyManager(assemblyPath, xmlPath);
-            var model = await manager.DocumentAsync();
+            var documentationManager = GetService<DocumentationManager>();
 
             // Act
-            await GetJsonRenderer().RenderAsync(model);
+            await documentationManager.ProcessAsync(assemblyPath, xmlPath);
 
             // Assert
-            var context = GetService<ProjectContext>();
             var json = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, "documentation.json"));
             using var document = JsonDocument.Parse(json);
-            
+
             var namespaces = document.RootElement.GetProperty("namespaces");
             var hasParameters = false;
-            
+
             foreach (var ns in namespaces.EnumerateArray())
             {
                 if (ns.TryGetProperty("types", out var types))
@@ -352,12 +341,12 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
                         {
                             foreach (var member in members.EnumerateArray())
                             {
-                                if (member.TryGetProperty("parameters", out var parameters) && 
+                                if (member.TryGetProperty("parameters", out var parameters) &&
                                     parameters.ValueKind == JsonValueKind.Array &&
                                     parameters.GetArrayLength() > 0)
                                 {
                                     hasParameters = true;
-                                    
+
                                     foreach (var param in parameters.EnumerateArray())
                                     {
                                         param.TryGetProperty("name", out _).Should().BeTrue();
@@ -370,7 +359,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
                     }
                 }
             }
-            
+
             hasParameters.Should().BeTrue("At least one method with parameters should be present");
         }
 
@@ -380,8 +369,9 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             // Arrange
             var assemblyPath = typeof(SampleClass).Assembly.Location;
             var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
+            var context = GetService<ProjectContext>();
             using var manager = new AssemblyManager(assemblyPath, xmlPath);
-            var model = await manager.DocumentAsync();
+            var model = await manager.DocumentAsync(context);
             model.BestPractices = "Test best practices";
             model.RelatedApis = new List<string> { "System.Object" };
 
@@ -389,17 +379,16 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             await GetJsonRenderer().RenderAsync(model);
 
             // Assert
-            var context = GetService<ProjectContext>();
             var json = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, "documentation.json"), TestContext.CancellationTokenSource.Token);
             using var document = JsonDocument.Parse(json);
-            
+
             // DocAssembly is serialized directly at root level
             var root = document.RootElement;
-            
+
             // Properties should be camelCase
             root.TryGetProperty("bestPractices", out _).Should().BeTrue();
             root.TryGetProperty("relatedApis", out _).Should().BeTrue();
-            
+
             // Should not be PascalCase
             root.TryGetProperty("BestPractices", out _).Should().BeFalse();
             root.TryGetProperty("RelatedApis", out _).Should().BeFalse();
@@ -409,49 +398,47 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
 
         #region Baseline Generation
 
+        /// <summary>
+        /// Generates baseline files for the JsonRenderer.
+        /// This method is marked with [BreakdanceManifestGenerator] and is called by the Breakdance tool
+        /// to generate baseline files for comparison in unit tests.
+        /// </summary>
+        /// <param name="projectPath">The root path of the test project where baselines will be stored.</param>
+        /// <remarks>
+        /// This method uses Dependency Injection to get the ProjectContext and JsonRenderer instances.
+        /// It modifies the context properties to configure the output location,
+        /// then uses the renderer from DI (which ensures all dependencies are properly injected).
+        ///
+        /// The baseline generation intentionally does NOT use DocumentationManager.ProcessAsync because
+        /// these are unit test baselines for the renderer itself, not integration test baselines.
+        /// The renderer should be tested in isolation without transformers applied.
+        ///
+        /// JSON output is not affected by FileNamingOptions, so only one baseline is generated.
+        /// </remarks>
         //[TestMethod]
         //[DataRow(projectPath)]
         [BreakdanceManifestGenerator]
         public async Task GenerateJsonBaseline(string projectPath)
         {
-            // Setup
+            var baselinesDir = Path.Combine(projectPath, "Baselines", "JsonRenderer");
+            if (!Directory.Exists(baselinesDir))
+            {
+                Directory.CreateDirectory(baselinesDir);
+            }
+
+            // Get context from DI and modify it for baseline generation
+            var context = GetService<ProjectContext>();
+            context.DocumentationRootPath = baselinesDir;
+
+            // Get renderer from DI to ensure all dependencies are properly injected
             var renderer = GetJsonRenderer();
-            var tempOutputPath = Path.Combine(Path.GetTempPath(), $"JsonBaseline_{Guid.NewGuid()}");
-            Directory.CreateDirectory(tempOutputPath);
 
-            try
-            {
-                // Generate baseline for SimpleClass documentation
-                var assemblyPath = typeof(SimpleClass).Assembly.Location;
-                var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
-                using var manager = new AssemblyManager(assemblyPath, xmlPath);
-                var model = await manager.DocumentAsync();
+            var assemblyPath = typeof(SimpleClass).Assembly.Location;
+            var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
+            var manager = new AssemblyManager(assemblyPath, xmlPath);
+            var assembly = await manager.DocumentAsync(context);
 
-                await renderer.RenderAsync(model);
-
-                // Create baselines directory
-                var baselinesDir = Path.Combine(projectPath, "Baselines", "JsonRenderer");
-                if (!Directory.Exists(baselinesDir))
-                {
-                    Directory.CreateDirectory(baselinesDir);
-                }
-
-                // Copy JSON file to baseline
-                var jsonFile = Path.Combine(tempOutputPath, "documentation.json");
-                if (File.Exists(jsonFile))
-                {
-                    var content = await File.ReadAllTextAsync(jsonFile);
-                    var baselinePath = Path.Combine(baselinesDir, "documentation.json");
-                    await File.WriteAllTextAsync(baselinePath, content);
-                }
-            }
-            finally
-            {
-                if (Directory.Exists(tempOutputPath))
-                {
-                    Directory.Delete(tempOutputPath, true);
-                }
-            }
+            await renderer.RenderAsync(assembly);
         }
 
         #endregion

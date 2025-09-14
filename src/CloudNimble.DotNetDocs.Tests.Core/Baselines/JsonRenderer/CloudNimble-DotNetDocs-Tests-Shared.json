@@ -1,0 +1,354 @@
+{
+  "name": "CloudNimble.DotNetDocs.Tests.Shared",
+  "types": [
+    {
+      "baseType": "CloudNimble.Breakdance.Extensions.MSTest2.BreakdanceMSTestBase",
+      "members": [
+        {
+          "accessibility": "public",
+          "memberKind": "field",
+          "name": "projectPath",
+          "parameters": [],
+          "returnTypeName": "string",
+          "signature": "public const string projectPath",
+          "displayName": "CloudNimble.DotNetDocs.Tests.Shared.DotNetDocsTestBase.projectPath"
+        },
+        {
+          "accessibility": "public",
+          "memberKind": "method",
+          "methodKind": "ordinary",
+          "name": "GetTestsDotSharedAssembly",
+          "parameters": [],
+          "returnType": {
+            "members": [],
+            "assemblyName": "CloudNimble.DotNetDocs.Core",
+            "fullName": "CloudNimble.DotNetDocs.Core.DocAssembly",
+            "name": "DocAssembly",
+            "signature": "CloudNimble.DotNetDocs.Core.DocAssembly",
+            "typeKind": "error",
+            "displayName": "CloudNimble.DotNetDocs.Core.DocAssembly"
+          },
+          "returnTypeName": "CloudNimble.DotNetDocs.Core.DocAssembly",
+          "signature": "public CloudNimble.DotNetDocs.Core.DocAssembly GetTestsDotSharedAssembly()",
+          "displayName": "CloudNimble.DotNetDocs.Tests.Shared.DotNetDocsTestBase.GetTestsDotSharedAssembly()"
+        },
+        {
+          "accessibility": "public",
+          "memberKind": "method",
+          "methodKind": "constructor",
+          "name": ".ctor",
+          "parameters": [],
+          "returnTypeName": "void",
+          "signature": "public DotNetDocsTestBase()",
+          "displayName": "CloudNimble.DotNetDocs.Tests.Shared.DotNetDocsTestBase.DotNetDocsTestBase()"
+        }
+      ],
+      "assemblyName": "CloudNimble.DotNetDocs.Tests.Shared",
+      "fullName": "CloudNimble.DotNetDocs.Tests.Shared.DotNetDocsTestBase",
+      "name": "DotNetDocsTestBase",
+      "signature": "CloudNimble.DotNetDocs.Tests.Shared.DotNetDocsTestBase",
+      "typeKind": "class",
+      "displayName": "CloudNimble.DotNetDocs.Tests.Shared.DotNetDocsTestBase",
+      "relatedApis": []
+    },
+    {
+      "baseType": "System.Object",
+      "members": [
+        {
+          "accessibility": "public",
+          "memberKind": "method",
+          "methodKind": "propertyGet",
+          "name": "get_Name",
+          "parameters": [],
+          "returnType": {
+            "members": [],
+            "assemblyName": "System.Private.CoreLib",
+            "fullName": "string",
+            "name": "String",
+            "signature": "string",
+            "typeKind": "class",
+            "displayName": "string"
+          },
+          "returnTypeName": "string",
+          "signature": "public string Name.get",
+          "displayName": "CloudNimble.DotNetDocs.Tests.Shared.SampleClass.Name.get"
+        },
+        {
+          "accessibility": "public",
+          "memberKind": "method",
+          "methodKind": "propertySet",
+          "name": "set_Name",
+          "parameters": [
+            {
+              "hasDefaultValue": false,
+              "isOptional": false,
+              "isParams": false,
+              "name": "value",
+              "parameterType": {
+                "members": [],
+                "assemblyName": "System.Private.CoreLib",
+                "fullName": "string",
+                "name": "String",
+                "signature": "string",
+                "typeKind": "class",
+                "displayName": "string"
+              },
+              "typeName": "string",
+              "displayName": "string value",
+              "usage": ""
+            }
+          ],
+          "returnTypeName": "void",
+          "signature": "public void Name.set",
+          "displayName": "CloudNimble.DotNetDocs.Tests.Shared.SampleClass.Name.set"
+        },
+        {
+          "accessibility": "public",
+          "memberKind": "method",
+          "methodKind": "propertyGet",
+          "name": "get_Value",
+          "parameters": [],
+          "returnType": {
+            "members": [],
+            "assemblyName": "System.Private.CoreLib",
+            "fullName": "int",
+            "name": "Int32",
+            "signature": "int",
+            "typeKind": "struct",
+            "displayName": "int"
+          },
+          "returnTypeName": "int",
+          "signature": "public int Value.get",
+          "displayName": "CloudNimble.DotNetDocs.Tests.Shared.SampleClass.Value.get"
+        },
+        {
+          "accessibility": "public",
+          "memberKind": "method",
+          "methodKind": "propertySet",
+          "name": "set_Value",
+          "parameters": [
+            {
+              "hasDefaultValue": false,
+              "isOptional": false,
+              "isParams": false,
+              "name": "value",
+              "parameterType": {
+                "members": [],
+                "assemblyName": "System.Private.CoreLib",
+                "fullName": "int",
+                "name": "Int32",
+                "signature": "int",
+                "typeKind": "struct",
+                "displayName": "int"
+              },
+              "typeName": "int",
+              "displayName": "int value",
+              "usage": ""
+            }
+          ],
+          "returnTypeName": "void",
+          "signature": "public void Value.set",
+          "displayName": "CloudNimble.DotNetDocs.Tests.Shared.SampleClass.Value.set"
+        },
+        {
+          "accessibility": "public",
+          "memberKind": "method",
+          "methodKind": "ordinary",
+          "name": "DoSomething",
+          "parameters": [
+            {
+              "hasDefaultValue": false,
+              "isOptional": false,
+              "isParams": false,
+              "name": "input",
+              "parameterType": {
+                "members": [],
+                "assemblyName": "System.Private.CoreLib",
+                "fullName": "string",
+                "name": "String",
+                "signature": "string",
+                "typeKind": "class",
+                "displayName": "string"
+              },
+              "typeName": "string",
+              "displayName": "string input",
+              "usage": "The input parameter."
+            }
+          ],
+          "returnType": {
+            "members": [],
+            "assemblyName": "System.Private.CoreLib",
+            "fullName": "string",
+            "name": "String",
+            "signature": "string",
+            "typeKind": "class",
+            "displayName": "string"
+          },
+          "returnTypeName": "string",
+          "signature": "public string DoSomething(string input)",
+          "displayName": "CloudNimble.DotNetDocs.Tests.Shared.SampleClass.DoSomething(string)",
+          "returns": "The result of the operation.",
+          "summary": "Performs a sample operation."
+        },
+        {
+          "accessibility": "public",
+          "memberKind": "method",
+          "methodKind": "ordinary",
+          "name": "GetDisplay",
+          "parameters": [],
+          "returnType": {
+            "members": [],
+            "assemblyName": "System.Private.CoreLib",
+            "fullName": "string",
+            "name": "String",
+            "signature": "string",
+            "typeKind": "class",
+            "displayName": "string"
+          },
+          "returnTypeName": "string",
+          "signature": "public string GetDisplay()",
+          "displayName": "CloudNimble.DotNetDocs.Tests.Shared.SampleClass.GetDisplay()",
+          "returns": "A formatted string containing the name and value.",
+          "summary": "Gets the display value."
+        },
+        {
+          "accessibility": "public",
+          "memberKind": "method",
+          "methodKind": "ordinary",
+          "name": "MethodWithOptional",
+          "parameters": [
+            {
+              "hasDefaultValue": false,
+              "isOptional": false,
+              "isParams": false,
+              "name": "required",
+              "parameterType": {
+                "members": [],
+                "assemblyName": "System.Private.CoreLib",
+                "fullName": "string",
+                "name": "String",
+                "signature": "string",
+                "typeKind": "class",
+                "displayName": "string"
+              },
+              "typeName": "string",
+              "displayName": "string required",
+              "usage": "Required parameter."
+            },
+            {
+              "defaultValue": "42",
+              "hasDefaultValue": true,
+              "isOptional": true,
+              "isParams": false,
+              "name": "optional",
+              "parameterType": {
+                "members": [],
+                "assemblyName": "System.Private.CoreLib",
+                "fullName": "int",
+                "name": "Int32",
+                "signature": "int",
+                "typeKind": "struct",
+                "displayName": "int"
+              },
+              "typeName": "int",
+              "displayName": "int optional",
+              "usage": "Optional parameter with default value."
+            }
+          ],
+          "returnType": {
+            "members": [],
+            "assemblyName": "System.Private.CoreLib",
+            "fullName": "string",
+            "name": "String",
+            "signature": "string",
+            "typeKind": "class",
+            "displayName": "string"
+          },
+          "returnTypeName": "string",
+          "signature": "public string MethodWithOptional(string required, int optional = 42)",
+          "displayName": "CloudNimble.DotNetDocs.Tests.Shared.SampleClass.MethodWithOptional(string, int)",
+          "returns": "Combined result.",
+          "summary": "Method with optional parameter."
+        },
+        {
+          "accessibility": "public",
+          "memberKind": "method",
+          "methodKind": "ordinary",
+          "name": "MethodWithParams",
+          "parameters": [
+            {
+              "hasDefaultValue": false,
+              "isOptional": false,
+              "isParams": true,
+              "name": "values",
+              "parameterType": {
+                "members": [],
+                "fullName": "int[]",
+                "name": "",
+                "signature": "int[]",
+                "typeKind": "array",
+                "displayName": "int[]"
+              },
+              "typeName": "int[]",
+              "displayName": "params int[] values",
+              "usage": "Variable number of values."
+            }
+          ],
+          "returnType": {
+            "members": [],
+            "assemblyName": "System.Private.CoreLib",
+            "fullName": "int",
+            "name": "Int32",
+            "signature": "int",
+            "typeKind": "struct",
+            "displayName": "int"
+          },
+          "returnTypeName": "int",
+          "signature": "public int MethodWithParams(params int[] values)",
+          "displayName": "CloudNimble.DotNetDocs.Tests.Shared.SampleClass.MethodWithParams(params int[])",
+          "returns": "Sum of values.",
+          "summary": "Method with params array."
+        },
+        {
+          "accessibility": "public",
+          "memberKind": "method",
+          "methodKind": "constructor",
+          "name": ".ctor",
+          "parameters": [],
+          "returnTypeName": "void",
+          "signature": "public SampleClass()",
+          "displayName": "CloudNimble.DotNetDocs.Tests.Shared.SampleClass.SampleClass()"
+        },
+        {
+          "accessibility": "public",
+          "memberKind": "property",
+          "name": "Name",
+          "parameters": [],
+          "returnTypeName": "string",
+          "signature": "public string Name { get; set; }",
+          "displayName": "CloudNimble.DotNetDocs.Tests.Shared.SampleClass.Name",
+          "summary": "Gets or sets the name."
+        },
+        {
+          "accessibility": "public",
+          "memberKind": "property",
+          "name": "Value",
+          "parameters": [],
+          "returnTypeName": "int",
+          "signature": "public int Value { get; set; }",
+          "displayName": "CloudNimble.DotNetDocs.Tests.Shared.SampleClass.Value",
+          "summary": "Gets or sets the value."
+        }
+      ],
+      "assemblyName": "CloudNimble.DotNetDocs.Tests.Shared",
+      "fullName": "CloudNimble.DotNetDocs.Tests.Shared.SampleClass",
+      "name": "SampleClass",
+      "signature": "CloudNimble.DotNetDocs.Tests.Shared.SampleClass",
+      "typeKind": "class",
+      "displayName": "CloudNimble.DotNetDocs.Tests.Shared.SampleClass",
+      "relatedApis": [],
+      "summary": "A sample class for testing documentation generation."
+    }
+  ],
+  "displayName": "CloudNimble.DotNetDocs.Tests.Shared"
+}

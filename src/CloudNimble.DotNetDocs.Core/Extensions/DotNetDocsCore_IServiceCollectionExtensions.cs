@@ -41,13 +41,7 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IServiceCollection AddDotNetDocs(this IServiceCollection services,
             Action<ProjectContext>? configureContext = null)
         {
-            // Register core services
-            services.TryAddSingleton(sp =>
-            {
-                var context = new ProjectContext();
-                configureContext?.Invoke(context);
-                return context;
-            });
+            services.AddDotNetDocsCore(configureContext);
 
             // Register all built-in renderers (only if not already registered)
             services.TryAddEnumerable(ServiceDescriptor.Scoped<IDocRenderer, MarkdownRenderer>());
@@ -56,9 +50,6 @@ namespace Microsoft.Extensions.DependencyInjection
 
             // Register the MarkdownXmlTransformer for processing XML documentation tags
             services.TryAddEnumerable(ServiceDescriptor.Scoped<IDocTransformer, MarkdownXmlTransformer>());
-
-            // Register DocumentationManager
-            services.TryAddScoped<DocumentationManager>();
 
             return services;
         }

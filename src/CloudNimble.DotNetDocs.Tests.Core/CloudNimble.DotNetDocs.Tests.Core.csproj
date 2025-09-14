@@ -22,5 +22,9 @@
         <AssemblyAttribute Include="CloudNimble.Breakdance.Assemblies.BreakdanceTestAssembly" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="IntegrationTests\" />
+    </ItemGroup>
+
 
 </Project>

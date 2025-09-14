@@ -93,26 +93,25 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             // Arrange
             var assemblyPath = typeof(SimpleClass).Assembly.Location;
             var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
-            using var manager = new AssemblyManager(assemblyPath, xmlPath);
-            var model = await manager.DocumentAsync();
+            var documentationManager = GetService<DocumentationManager>();
 
             // Act
-            await GetYamlRenderer().RenderAsync(model);
+            await documentationManager.ProcessAsync(assemblyPath, xmlPath);
 
             // Assert - Compare against baseline
             var baselinePath = Path.Combine(projectPath, "Baselines", "YamlRenderer", "FileMode", "documentation.yaml");
             var context = GetService<ProjectContext>();
             var actualPath = Path.Combine(_testOutputPath, context.ApiReferencePath, "documentation.yaml");
-            
+
             if (File.Exists(baselinePath))
             {
                 var baseline = await File.ReadAllTextAsync(baselinePath);
                 var actual = await File.ReadAllTextAsync(actualPath);
-                
+
                 // Normalize line endings for cross-platform compatibility
                 var normalizedActual = actual.ReplaceLineEndings(Environment.NewLine);
                 var normalizedBaseline = baseline.ReplaceLineEndings(Environment.NewLine);
-                
+
                 normalizedActual.Should().Be(normalizedBaseline,
                     "YAML output has changed. If this is intentional, regenerate baselines using 'dotnet breakdance generate'");
             }
@@ -128,11 +127,10 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             // Arrange
             var assemblyPath = typeof(SampleClass).Assembly.Location;
             var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
-            using var manager = new AssemblyManager(assemblyPath, xmlPath);
-            var model = await manager.DocumentAsync();
+            var documentationManager = GetService<DocumentationManager>();
 
             // Act
-            await GetYamlRenderer().RenderAsync(model);
+            await documentationManager.ProcessAsync(assemblyPath, xmlPath);
 
             // Assert
             var context = GetService<ProjectContext>();
@@ -146,17 +144,16 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             // Arrange
             var assemblyPath = typeof(SampleClass).Assembly.Location;
             var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
-            using var manager = new AssemblyManager(assemblyPath, xmlPath);
-            var model = await manager.DocumentAsync();
+            var documentationManager = GetService<DocumentationManager>();
 
             // Act
-            await GetYamlRenderer().RenderAsync(model);
+            await documentationManager.ProcessAsync(assemblyPath, xmlPath);
 
             // Assert
             var context = GetService<ProjectContext>();
             var yamlPath = Path.Combine(_testOutputPath, context.ApiReferencePath, "documentation.yaml");
             var yaml = await File.ReadAllTextAsync(yamlPath);
-            
+
             Action act = () => _yamlDeserializer.Deserialize<Dictionary<string, object>>(yaml);
             act.Should().NotThrow();
         }
@@ -167,8 +164,9 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             // Arrange
             var assemblyPath = typeof(SampleClass).Assembly.Location;
             var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
+            var context = GetService<ProjectContext>();
             using var manager = new AssemblyManager(assemblyPath, xmlPath);
-            var model = await manager.DocumentAsync();
+            var model = await manager.DocumentAsync(context);
             model.Usage = "Test usage";
             model.Examples = "Test examples";
             model.BestPractices = "Test best practices";
@@ -177,10 +175,9 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             await GetYamlRenderer().RenderAsync(model);
 
             // Assert
-            var context = GetService<ProjectContext>();
             var yaml = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, context.ApiReferencePath, "documentation.yaml"));
             var document = _yamlDeserializer.Deserialize<Dictionary<string, object>>(yaml);
-            
+
             // DocAssembly is serialized directly at root level
             document.Should().ContainKey("assemblyName");
             document["assemblyName"].Should().Be(model.AssemblyName);
@@ -197,21 +194,21 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             // Arrange
             var assemblyPath = typeof(SampleClass).Assembly.Location;
             var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
+            var context = GetService<ProjectContext>();
             using var manager = new AssemblyManager(assemblyPath, xmlPath);
-            var model = await manager.DocumentAsync();
+            var model = await manager.DocumentAsync(context);
 
             // Act
             await GetYamlRenderer().RenderAsync(model);
 
             // Assert
-            var context = GetService<ProjectContext>();
             var renderer = GetYamlRenderer();
             foreach (var ns in model.Namespaces)
             {
                 var nsFileName = renderer.GetNamespaceFileName(ns, "yaml");
                 var nsPath = Path.Combine(_testOutputPath, context.ApiReferencePath, nsFileName);
                 File.Exists(nsPath).Should().BeTrue($"Namespace file {nsFileName} should exist");
-                
+
                 var yaml = await File.ReadAllTextAsync(nsPath);
                 Action act = () => _yamlDeserializer.Deserialize<Dictionary<string, object>>(yaml);
                 act.Should().NotThrow();
@@ -241,24 +238,23 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             // Arrange
             var assemblyPath = typeof(SampleClass).Assembly.Location;
             var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
-            using var manager = new AssemblyManager(assemblyPath, xmlPath);
-            var model = await manager.DocumentAsync();
+            var documentationManager = GetService<DocumentationManager>();
 
             // Act
-            await GetYamlRenderer().RenderAsync(model);
+            await documentationManager.ProcessAsync(assemblyPath, xmlPath);
 
             // Assert
             var context = GetService<ProjectContext>();
             var tocPath = Path.Combine(_testOutputPath, context.ApiReferencePath, "toc.yaml");
             var yaml = await File.ReadAllTextAsync(tocPath);
             var toc = _yamlDeserializer.Deserialize<Dictionary<string, object>>(yaml);
-            
+
             toc.Should().ContainKey("title");
             toc.Should().ContainKey("items");
             var items = toc["items"] as List<object>;
             items.Should().NotBeNull();
             items.Should().HaveCountGreaterThan(0);
-            
+
             foreach (var item in items.Cast<Dictionary<object, object>>())
             {
                 item.Should().ContainKey("name");
@@ -273,21 +269,20 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             // Arrange
             var assemblyPath = typeof(ClassWithMethods).Assembly.Location;
             var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
-            using var manager = new AssemblyManager(assemblyPath, xmlPath);
-            var model = await manager.DocumentAsync();
+            var documentationManager = GetService<DocumentationManager>();
 
             // Act
-            await GetYamlRenderer().RenderAsync(model);
+            await documentationManager.ProcessAsync(assemblyPath, xmlPath);
 
             // Assert
             var context = GetService<ProjectContext>();
             var yaml = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, context.ApiReferencePath, "documentation.yaml"));
             var document = _yamlDeserializer.Deserialize<Dictionary<string, object>>(yaml);
-            
+
             // DocAssembly is serialized directly at root level
             var namespaces = document["namespaces"] as List<object>;
             namespaces.Should().NotBeNull();
-            
+
             var hasTypes = false;
             foreach (var ns in namespaces.Cast<Dictionary<object, object>>())
             {
@@ -306,7 +301,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
                     }
                 }
             }
-            
+
             hasTypes.Should().BeTrue("At least one type should be present");
         }
 
@@ -316,20 +311,19 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             // Arrange
             var assemblyPath = typeof(ClassWithProperties).Assembly.Location;
             var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
-            using var manager = new AssemblyManager(assemblyPath, xmlPath);
-            var model = await manager.DocumentAsync();
+            var documentationManager = GetService<DocumentationManager>();
 
             // Act
-            await GetYamlRenderer().RenderAsync(model);
+            await documentationManager.ProcessAsync(assemblyPath, xmlPath);
 
             // Assert
             var context = GetService<ProjectContext>();
             var yaml = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, context.ApiReferencePath, "documentation.yaml"));
             var document = _yamlDeserializer.Deserialize<Dictionary<string, object>>(yaml);
-            
+
             // DocAssembly is serialized directly at root level
             var namespaces = document["namespaces"] as List<object>;
-            
+
             // Instead of looking for a "modifiers" field, verify that member metadata is properly serialized
             // Modifiers are encoded in other properties like accessibility, methodKind, etc.
             var hasMembers = false;
@@ -359,7 +353,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
                     }
                 }
             }
-            
+
             hasMembers.Should().BeTrue("ClassWithProperties should have members");
         }
 
@@ -369,20 +363,19 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             // Arrange
             var assemblyPath = typeof(ParameterVariations).Assembly.Location;
             var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
-            using var manager = new AssemblyManager(assemblyPath, xmlPath);
-            var model = await manager.DocumentAsync();
+            var documentationManager = GetService<DocumentationManager>();
 
             // Act
-            await GetYamlRenderer().RenderAsync(model);
+            await documentationManager.ProcessAsync(assemblyPath, xmlPath);
 
             // Assert
             var context = GetService<ProjectContext>();
             var yaml = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, context.ApiReferencePath, "documentation.yaml"));
             var document = _yamlDeserializer.Deserialize<Dictionary<string, object>>(yaml);
-            
+
             // DocAssembly is serialized directly at root level
             var namespaces = document["namespaces"] as List<object>;
-            
+
             var hasParameters = false;
             foreach (var ns in namespaces.Cast<Dictionary<object, object>>())
             {
@@ -407,7 +400,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
                                             param.Should().ContainKey("name");
                                             // parameterType or typeName should exist
                                             (param.ContainsKey("parameterType") || param.ContainsKey("typeName")).Should().BeTrue();
-                                            
+
                                             // These properties are only present when true or when hasDefaultValue is true
                                             // We just need to verify the structure is correct when they exist
                                             if (param.ContainsKey("isOptional"))
@@ -436,7 +429,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
                     }
                 }
             }
-            
+
             hasParameters.Should().BeTrue("At least one method with parameters should be present");
         }
 
@@ -446,8 +439,9 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             // Arrange
             var assemblyPath = typeof(SampleClass).Assembly.Location;
             var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
+            var context = GetService<ProjectContext>();
             using var manager = new AssemblyManager(assemblyPath, xmlPath);
-            var model = await manager.DocumentAsync();
+            var model = await manager.DocumentAsync(context);
             model.BestPractices = "Test best practices";
             model.RelatedApis = new List<string> { "System.Object" };
 
@@ -455,10 +449,9 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             await GetYamlRenderer().RenderAsync(model);
 
             // Assert
-            var context = GetService<ProjectContext>();
             var yaml = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, context.ApiReferencePath, "documentation.yaml"));
             var document = _yamlDeserializer.Deserialize<Dictionary<string, object>>(yaml);
-            
+
             // DocAssembly is serialized directly at root level
             // Properties should be camelCase
             document.Should().ContainKey("bestPractices");
@@ -475,23 +468,30 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             // Arrange
             var assemblyPath = typeof(SampleClass).Assembly.Location;
             var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
-            using var manager = new AssemblyManager(assemblyPath, xmlPath);
-            var model = await manager.DocumentAsync();
+            var documentationManager = GetService<DocumentationManager>();
 
-            var context = new ProjectContext
+            var context = GetService<ProjectContext>();
+            var originalFileNamingOptions = context.FileNamingOptions;
+            var originalApiReferencePath = context.ApiReferencePath;
+
+            context.FileNamingOptions = new FileNamingOptions(NamespaceMode.File, '-');
+            context.ApiReferencePath = string.Empty;
+
+            try
             {
-                FileNamingOptions = new FileNamingOptions(NamespaceMode.File, '-'),
-                DocumentationRootPath = _testOutputPath,
-                ApiReferencePath = string.Empty
-            };
-            var renderer = new YamlRenderer(context);
+                // Act
+                await documentationManager.ProcessAsync(assemblyPath, xmlPath);
 
-            // Act
-            await renderer.RenderAsync(model);
-
-            // Assert
-            var files = Directory.GetFiles(_testOutputPath, "*.yaml");
-            files.Should().Contain(f => Path.GetFileName(f).Contains("CloudNimble-DotNetDocs-Tests-Shared"));
+                // Assert
+                var files = Directory.GetFiles(_testOutputPath, "*.yaml");
+                files.Should().Contain(f => Path.GetFileName(f).Contains("CloudNimble-DotNetDocs-Tests-Shared"));
+            }
+            finally
+            {
+                // Restore original settings
+                context.FileNamingOptions = originalFileNamingOptions;
+                context.ApiReferencePath = originalApiReferencePath;
+            }
         }
 
         [TestMethod]
@@ -500,23 +500,30 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             // Arrange
             var assemblyPath = typeof(SampleClass).Assembly.Location;
             var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
-            using var manager = new AssemblyManager(assemblyPath, xmlPath);
-            var model = await manager.DocumentAsync();
+            var documentationManager = GetService<DocumentationManager>();
 
-            var context = new ProjectContext
+            var context = GetService<ProjectContext>();
+            var originalFileNamingOptions = context.FileNamingOptions;
+            var originalApiReferencePath = context.ApiReferencePath;
+
+            context.FileNamingOptions = new FileNamingOptions(NamespaceMode.File, '_');
+            context.ApiReferencePath = string.Empty;
+
+            try
             {
-                FileNamingOptions = new FileNamingOptions(NamespaceMode.File, '_'),
-                DocumentationRootPath = _testOutputPath,
-                ApiReferencePath = string.Empty
-            };
-            var renderer = new YamlRenderer(context);
+                // Act
+                await documentationManager.ProcessAsync(assemblyPath, xmlPath);
 
-            // Act
-            await renderer.RenderAsync(model);
-
-            // Assert
-            var files = Directory.GetFiles(_testOutputPath, "*.yaml");
-            files.Should().Contain(f => Path.GetFileName(f).Contains("CloudNimble_DotNetDocs_Tests_Shared"));
+                // Assert
+                var files = Directory.GetFiles(_testOutputPath, "*.yaml");
+                files.Should().Contain(f => Path.GetFileName(f).Contains("CloudNimble_DotNetDocs_Tests_Shared"));
+            }
+            finally
+            {
+                // Restore original settings
+                context.FileNamingOptions = originalFileNamingOptions;
+                context.ApiReferencePath = originalApiReferencePath;
+            }
         }
 
         [TestMethod]
@@ -525,23 +532,30 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             // Arrange
             var assemblyPath = typeof(SampleClass).Assembly.Location;
             var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
-            using var manager = new AssemblyManager(assemblyPath, xmlPath);
-            var model = await manager.DocumentAsync();
+            var documentationManager = GetService<DocumentationManager>();
 
-            var context = new ProjectContext
+            var context = GetService<ProjectContext>();
+            var originalFileNamingOptions = context.FileNamingOptions;
+            var originalApiReferencePath = context.ApiReferencePath;
+
+            context.FileNamingOptions = new FileNamingOptions(NamespaceMode.File, '.');
+            context.ApiReferencePath = string.Empty;
+
+            try
             {
-                FileNamingOptions = new FileNamingOptions(NamespaceMode.File, '.'),
-                DocumentationRootPath = _testOutputPath,
-                ApiReferencePath = string.Empty
-            };
-            var renderer = new YamlRenderer(context);
+                // Act
+                await documentationManager.ProcessAsync(assemblyPath, xmlPath);
 
-            // Act
-            await renderer.RenderAsync(model);
-
-            // Assert
-            var files = Directory.GetFiles(_testOutputPath, "*.yaml");
-            files.Should().Contain(f => Path.GetFileName(f).Contains("CloudNimble.DotNetDocs.Tests.Shared"));
+                // Assert
+                var files = Directory.GetFiles(_testOutputPath, "*.yaml");
+                files.Should().Contain(f => Path.GetFileName(f).Contains("CloudNimble.DotNetDocs.Tests.Shared"));
+            }
+            finally
+            {
+                // Restore original settings
+                context.FileNamingOptions = originalFileNamingOptions;
+                context.ApiReferencePath = originalApiReferencePath;
+            }
         }
 
         [TestMethod]
@@ -550,43 +564,50 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             // Arrange
             var assemblyPath = typeof(SampleClass).Assembly.Location;
             var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
-            using var manager = new AssemblyManager(assemblyPath, xmlPath);
-            var model = await manager.DocumentAsync();
+            var documentationManager = GetService<DocumentationManager>();
 
-            var context = new ProjectContext
+            var context = GetService<ProjectContext>();
+            var originalFileNamingOptions = context.FileNamingOptions;
+            var originalApiReferencePath = context.ApiReferencePath;
+
+            context.FileNamingOptions = new FileNamingOptions(NamespaceMode.Folder);
+            context.ApiReferencePath = string.Empty;
+
+            try
             {
-                FileNamingOptions = new FileNamingOptions(NamespaceMode.Folder),
-                DocumentationRootPath = _testOutputPath,
-                ApiReferencePath = string.Empty
-            };
-            var renderer = new YamlRenderer(context);
+                // Act
+                await documentationManager.ProcessAsync(assemblyPath, xmlPath);
 
-            // Act
-            await renderer.RenderAsync(model);
+                // Assert
+                // Check folder structure exists
+                var cloudNimbleDir = Path.Combine(_testOutputPath, "CloudNimble");
+                Directory.Exists(cloudNimbleDir).Should().BeTrue();
 
-            // Assert
-            // Check folder structure exists
-            var cloudNimbleDir = Path.Combine(_testOutputPath, "CloudNimble");
-            Directory.Exists(cloudNimbleDir).Should().BeTrue();
-            
-            var dotNetDocsDir = Path.Combine(cloudNimbleDir, "DotNetDocs");
-            Directory.Exists(dotNetDocsDir).Should().BeTrue();
-            
-            var testsDir = Path.Combine(dotNetDocsDir, "Tests");
-            Directory.Exists(testsDir).Should().BeTrue();
-            
-            var sharedDir = Path.Combine(testsDir, "Shared");
-            Directory.Exists(sharedDir).Should().BeTrue();
-            
-            // Check that index.yaml exists in namespace folder
-            var indexFile = Path.Combine(sharedDir, "index.yaml");
-            File.Exists(indexFile).Should().BeTrue();
-            
-            // YAML renderer includes types within namespace files, not as separate files
-            // So we just check that the namespace file exists
-            var content = await File.ReadAllTextAsync(indexFile);
-            content.Should().NotBeNullOrWhiteSpace();
-            content.Should().Contain("types", "Namespace file should include types");
+                var dotNetDocsDir = Path.Combine(cloudNimbleDir, "DotNetDocs");
+                Directory.Exists(dotNetDocsDir).Should().BeTrue();
+
+                var testsDir = Path.Combine(dotNetDocsDir, "Tests");
+                Directory.Exists(testsDir).Should().BeTrue();
+
+                var sharedDir = Path.Combine(testsDir, "Shared");
+                Directory.Exists(sharedDir).Should().BeTrue();
+
+                // Check that index.yaml exists in namespace folder
+                var indexFile = Path.Combine(sharedDir, "index.yaml");
+                File.Exists(indexFile).Should().BeTrue();
+
+                // YAML renderer includes types within namespace files, not as separate files
+                // So we just check that the namespace file exists
+                var content = await File.ReadAllTextAsync(indexFile);
+                content.Should().NotBeNullOrWhiteSpace();
+                content.Should().Contain("types", "Namespace file should include types");
+            }
+            finally
+            {
+                // Restore original settings
+                context.FileNamingOptions = originalFileNamingOptions;
+                context.ApiReferencePath = originalApiReferencePath;
+            }
         }
 
         [TestMethod]
@@ -595,29 +616,36 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             // Arrange
             var assemblyPath = typeof(SampleClass).Assembly.Location;
             var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
-            using var manager = new AssemblyManager(assemblyPath, xmlPath);
-            var model = await manager.DocumentAsync();
+            var documentationManager = GetService<DocumentationManager>();
+
+            var context = GetService<ProjectContext>();
+            var originalFileNamingOptions = context.FileNamingOptions;
+            var originalApiReferencePath = context.ApiReferencePath;
 
             // Set a separator that should be ignored in Folder mode
-            var context = new ProjectContext
+            context.FileNamingOptions = new FileNamingOptions(NamespaceMode.Folder, '_');
+            context.ApiReferencePath = string.Empty;
+
+            try
             {
-                FileNamingOptions = new FileNamingOptions(NamespaceMode.Folder, '_'),
-                DocumentationRootPath = _testOutputPath,
-                ApiReferencePath = string.Empty
-            };
-            var renderer = new YamlRenderer(context);
+                // Act
+                await documentationManager.ProcessAsync(assemblyPath, xmlPath);
 
-            // Act
-            await renderer.RenderAsync(model);
+                // Assert
+                // Verify folder structure uses path separators, not the configured separator
+                var cloudNimbleDir = Path.Combine(_testOutputPath, "CloudNimble");
+                Directory.Exists(cloudNimbleDir).Should().BeTrue();
 
-            // Assert
-            // Verify folder structure uses path separators, not the configured separator
-            var cloudNimbleDir = Path.Combine(_testOutputPath, "CloudNimble");
-            Directory.Exists(cloudNimbleDir).Should().BeTrue();
-            
-            // Should NOT have a folder named "CloudNimble_DotNetDocs_Tests_Shared"
-            var wrongDir = Path.Combine(_testOutputPath, "CloudNimble_DotNetDocs_Tests_Shared");
-            Directory.Exists(wrongDir).Should().BeFalse();
+                // Should NOT have a folder named "CloudNimble_DotNetDocs_Tests_Shared"
+                var wrongDir = Path.Combine(_testOutputPath, "CloudNimble_DotNetDocs_Tests_Shared");
+                Directory.Exists(wrongDir).Should().BeFalse();
+            }
+            finally
+            {
+                // Restore original settings
+                context.FileNamingOptions = originalFileNamingOptions;
+                context.ApiReferencePath = originalApiReferencePath;
+            }
         }
 
         [TestMethod]
@@ -625,35 +653,35 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
         {
             // Test various web-safe separator characters
             var separators = new[] { '-', '_', '.' };
-            
+
+            var context = GetService<ProjectContext>();
+            var originalFileNamingOptions = context.FileNamingOptions;
+            var originalApiReferencePath = context.ApiReferencePath;
+            var originalPath = context.DocumentationRootPath;
+
             foreach (var separator in separators)
             {
                 // Arrange
                 var assemblyPath = typeof(SampleClass).Assembly.Location;
                 var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
-                using var manager = new AssemblyManager(assemblyPath, xmlPath);
-                    var model = await manager.DocumentAsync();
-                
+                var documentationManager = GetService<DocumentationManager>();
+
                 var testPath = Path.Combine(Path.GetTempPath(), $"YamlTest_{separator}_{Guid.NewGuid()}");
                 Directory.CreateDirectory(testPath);
-                
-                var context = new ProjectContext
-                {
-                    FileNamingOptions = new FileNamingOptions(NamespaceMode.File, separator),
-                    DocumentationRootPath = testPath,
-                    ApiReferencePath = string.Empty
-                };
-                var renderer = new YamlRenderer(context);
+
+                context.FileNamingOptions = new FileNamingOptions(NamespaceMode.File, separator);
+                context.DocumentationRootPath = testPath;
+                context.ApiReferencePath = string.Empty;
 
                 try
                 {
                     // Act
-                    await renderer.RenderAsync(model);
+                    await documentationManager.ProcessAsync(assemblyPath, xmlPath);
 
                     // Assert
                     var files = Directory.GetFiles(testPath, "*.yaml");
                     files.Should().NotBeEmpty($"Files should be created with separator '{separator}'");
-                    
+
                     // Verify all files have valid web-safe names
                     foreach (var file in files)
                     {
@@ -671,6 +699,11 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
                     }
                 }
             }
+
+            // Restore original settings
+            context.FileNamingOptions = originalFileNamingOptions;
+            context.DocumentationRootPath = originalPath;
+            context.ApiReferencePath = originalApiReferencePath;
         }
 
         #endregion
@@ -680,51 +713,43 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
         [TestMethod]
         public async Task RenderAsync_WithFolderMode_MatchesFolderStructureBaseline()
         {
-            // Arrange
             var testOutputPath = Path.Combine(Path.GetTempPath(), $"YamlFolderBaseline_{Guid.NewGuid()}");
-            Directory.CreateDirectory(testOutputPath);
-            
-            var context = new ProjectContext
-            {
-                FileNamingOptions = new FileNamingOptions(NamespaceMode.Folder),
-                DocumentationRootPath = testOutputPath,
-                ApiReferencePath = string.Empty
-            };
-            var renderer = new YamlRenderer(context);
+
+            // Use the test's DI container and update the context
+            var context = GetService<ProjectContext>();
+            var originalFileNamingOptions = context.FileNamingOptions;
+            var originalPath = context.DocumentationRootPath;
+            var originalApiReferencePath = context.ApiReferencePath;
+
+            context.FileNamingOptions = new FileNamingOptions(NamespaceMode.Folder);
+            context.DocumentationRootPath = testOutputPath;
+            context.ApiReferencePath = string.Empty;
 
             try
             {
-                // Get the test model
+                // Process the assembly through DocumentationManager to apply transformations
                 var assemblyPath = typeof(SampleClass).Assembly.Location;
                 var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
-                using var manager = new AssemblyManager(assemblyPath, xmlPath);
-                var projectContext = new ProjectContext([Accessibility.Public]) 
-                { 
-                    ShowPlaceholders = false,
-                    FileNamingOptions = new FileNamingOptions(NamespaceMode.Folder),
-                    ApiReferencePath = string.Empty
-                };
-                var model = await manager.DocumentAsync(projectContext);
 
-                // Act
-                await renderer.RenderAsync(model);
+                var documentationManager = GetService<DocumentationManager>();
+                await documentationManager.ProcessAsync(assemblyPath, xmlPath);
 
                 // Assert - Verify folder structure
                 var cloudNimbleDir = Path.Combine(testOutputPath, "CloudNimble");
                 Directory.Exists(cloudNimbleDir).Should().BeTrue();
-                
+
                 var dotNetDocsDir = Path.Combine(cloudNimbleDir, "DotNetDocs");
                 Directory.Exists(dotNetDocsDir).Should().BeTrue();
-                
+
                 var testsDir = Path.Combine(dotNetDocsDir, "Tests");
                 Directory.Exists(testsDir).Should().BeTrue();
-                
+
                 var sharedDir = Path.Combine(testsDir, "Shared");
                 Directory.Exists(sharedDir).Should().BeTrue();
 
                 // Verify namespace index files exist
                 File.Exists(Path.Combine(sharedDir, "index.yaml")).Should().BeTrue();
-                
+
                 // Verify sub-namespace folders
                 var basicScenariosDir = Path.Combine(sharedDir, "BasicScenarios");
                 Directory.Exists(basicScenariosDir).Should().BeTrue();
@@ -734,17 +759,22 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
                 await CompareYamlWithFolderBaseline(
                     Path.Combine(sharedDir, "index.yaml"),
                     "CloudNimble/DotNetDocs/Tests/Shared/index.yaml");
-                
+
                 await CompareYamlWithFolderBaseline(
                     Path.Combine(basicScenariosDir, "index.yaml"),
                     "CloudNimble/DotNetDocs/Tests/Shared/BasicScenarios/index.yaml");
-                
+
                 // Verify TOC structure
                 var tocPath = Path.Combine(testOutputPath, "toc.yaml");
                 File.Exists(tocPath).Should().BeTrue();
             }
             finally
             {
+                // Restore original settings
+                context.FileNamingOptions = originalFileNamingOptions;
+                context.DocumentationRootPath = originalPath;
+                context.ApiReferencePath = originalApiReferencePath;
+
                 // Cleanup
                 if (Directory.Exists(testOutputPath))
                 {
@@ -792,6 +822,21 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
 
         #region Baseline Generation
 
+        /// <summary>
+        /// Generates baseline files for the YamlRenderer in both FileMode and FolderMode.
+        /// This method is marked with [BreakdanceManifestGenerator] and is called by the Breakdance tool
+        /// to generate baseline files for comparison in unit tests.
+        /// </summary>
+        /// <param name="projectPath">The root path of the test project where baselines will be stored.</param>
+        /// <remarks>
+        /// This method uses Dependency Injection to get the ProjectContext and YamlRenderer instances.
+        /// It modifies the context properties to configure the output location and file naming options,
+        /// then uses the renderer from DI (which ensures all dependencies are properly injected).
+        ///
+        /// The baseline generation intentionally does NOT use DocumentationManager.ProcessAsync because
+        /// these are unit test baselines for the renderer itself, not integration test baselines.
+        /// The renderer should be tested in isolation without transformers applied.
+        /// </remarks>
         //[TestMethod]
         //[DataRow(projectPath)]
         [BreakdanceManifestGenerator]
@@ -801,124 +846,89 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             await GenerateFileModeBaselines(projectPath);
             await GenerateFolderModeBaselines(projectPath);
         }
-        
+
+        /// <summary>
+        /// Generates baseline files for YamlRenderer in FileMode configuration.
+        /// </summary>
+        /// <param name="projectPath">The root path of the test project where baselines will be stored.</param>
+        /// <remarks>
+        /// This method:
+        /// 1. Gets the ProjectContext from DI to ensure consistent configuration
+        /// 2. Modifies the context properties for FileMode output
+        /// 3. Gets the YamlRenderer from DI with all dependencies properly injected
+        /// 4. Uses AssemblyManager directly (not DocumentationManager) to generate documentation
+        ///    without transformers, as these are unit test baselines for the renderer alone
+        /// 5. Does not restore context values since this runs in an isolated Breakdance process
+        /// </remarks>
         private async Task GenerateFileModeBaselines(string projectPath)
         {
-            // Setup with FileMode context
-            var tempOutputPath = Path.Combine(Path.GetTempPath(), $"YamlBaseline_FileMode_{Guid.NewGuid()}");
-            Directory.CreateDirectory(tempOutputPath);
-
-            var context = new ProjectContext
+            var baselinesDir = Path.Combine(projectPath, "Baselines", "YamlRenderer", "FileMode");
+            if (Directory.Exists(baselinesDir))
             {
-                FileNamingOptions = new FileNamingOptions(NamespaceMode.File, '-'),
-                DocumentationRootPath = tempOutputPath,
-                ApiReferencePath = string.Empty
-            };
-            var renderer = new YamlRenderer(context);
-
-            try
-            {
-                // Generate baseline for SimpleClass documentation
-                var assemblyPath = typeof(SimpleClass).Assembly.Location;
-                var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
-                using var manager = new AssemblyManager(assemblyPath, xmlPath);
-                var model = await manager.DocumentAsync();
-
-                await renderer.RenderAsync(model);
-
-                // Create baselines directory
-                var baselinesDir = Path.Combine(projectPath, "Baselines", "YamlRenderer", "FileMode");
-                if (!Directory.Exists(baselinesDir))
-                {
-                    Directory.CreateDirectory(baselinesDir);
-                }
-
-                // Copy YAML files to baseline
-                foreach (var file in Directory.GetFiles(tempOutputPath, "*.yaml"))
-                {
-                    var fileName = Path.GetFileName(file);
-                    var content = await File.ReadAllTextAsync(file);
-                    var baselinePath = Path.Combine(baselinesDir, fileName);
-                    await File.WriteAllTextAsync(baselinePath, content);
-                }
+                Directory.Delete(baselinesDir, true);
             }
-            finally
-            {
-                if (Directory.Exists(tempOutputPath))
-                {
-                    Directory.Delete(tempOutputPath, true);
-                }
-            }
+            Directory.CreateDirectory(baselinesDir);
+
+            // Get context from DI and modify it for baseline generation
+            var context = GetService<ProjectContext>();
+            context.FileNamingOptions = new FileNamingOptions(NamespaceMode.File, '-');
+            context.DocumentationRootPath = baselinesDir;
+            context.ApiReferencePath = string.Empty;
+
+            // Get renderer from DI to ensure all dependencies are properly injected
+            var renderer = GetService<IDocRenderer>();
+            renderer.Should()
+                .NotBeNull("YamlRenderer should be registered in DI")
+                .And.BeOfType<YamlRenderer>("Registered IDocRenderer should be YamlRenderer");
+
+            var assemblyPath = typeof(SimpleClass).Assembly.Location;
+            var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
+            var manager = new AssemblyManager(assemblyPath, xmlPath);
+            var assembly = await manager.DocumentAsync(context);
+
+            await renderer.RenderAsync(assembly);
         }
-        
+
+        /// <summary>
+        /// Generates baseline files for YamlRenderer in FolderMode configuration.
+        /// </summary>
+        /// <param name="projectPath">The root path of the test project where baselines will be stored.</param>
+        /// <remarks>
+        /// This method:
+        /// 1. Gets the ProjectContext from DI to ensure consistent configuration
+        /// 2. Modifies the context properties for FolderMode output
+        /// 3. Gets the YamlRenderer from DI with all dependencies properly injected
+        /// 4. Uses AssemblyManager directly (not DocumentationManager) to generate documentation
+        ///    without transformers, as these are unit test baselines for the renderer alone
+        /// 5. Does not restore context values since this runs in an isolated Breakdance process
+        /// </remarks>
         private async Task GenerateFolderModeBaselines(string projectPath)
         {
-            // Setup with FolderMode context
-            var tempOutputPath = Path.Combine(Path.GetTempPath(), $"YamlBaseline_FolderMode_{Guid.NewGuid()}");
-            Directory.CreateDirectory(tempOutputPath);
-
-            var context = new ProjectContext([Accessibility.Public, Accessibility.Internal])
+            var baselinesDir = Path.Combine(projectPath, "Baselines", "YamlRenderer", "FolderMode");
+            if (Directory.Exists(baselinesDir))
             {
-                ShowPlaceholders = false,
-                FileNamingOptions = new FileNamingOptions(NamespaceMode.Folder),
-                DocumentationRootPath = tempOutputPath,
-                ApiReferencePath = string.Empty
-            };
-            var renderer = new YamlRenderer(context);
-
-            try
-            {
-                // Generate baseline for SimpleClass documentation
-                var assemblyPath = typeof(SimpleClass).Assembly.Location;
-                var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
-                using var manager = new AssemblyManager(assemblyPath, xmlPath);
-                var model = await manager.DocumentAsync();
-
-                await renderer.RenderAsync(model);
-
-                // Create baselines directory
-                var baselinesDir = Path.Combine(projectPath, "Baselines", "YamlRenderer", "FolderMode");
-                if (Directory.Exists(baselinesDir))
-                {
-                    Directory.Delete(baselinesDir, true);
-                }
-                Directory.CreateDirectory(baselinesDir);
-
-                // Copy entire folder structure preserving hierarchy
-                CopyDirectoryRecursive(tempOutputPath, baselinesDir);
+                Directory.Delete(baselinesDir, true);
             }
-            finally
-            {
-                if (Directory.Exists(tempOutputPath))
-                {
-                    Directory.Delete(tempOutputPath, true);
-                }
-            }
-        }
-        
-        private void CopyDirectoryRecursive(string sourceDir, string targetDir)
-        {
-            Directory.CreateDirectory(targetDir);
+            Directory.CreateDirectory(baselinesDir);
 
-            // Copy files
-            foreach (var file in Directory.GetFiles(sourceDir))
-            {
-                var fileName = Path.GetFileName(file);
-                var destFile = Path.Combine(targetDir, fileName);
-                File.Copy(file, destFile, true);
-            }
+            // Get context from DI and modify it for baseline generation
+            var context = GetService<ProjectContext>();
+            context.FileNamingOptions = new FileNamingOptions(NamespaceMode.Folder, '-');
+            context.DocumentationRootPath = baselinesDir;
+            context.ApiReferencePath = string.Empty;
 
-            // Copy subdirectories
-            foreach (var subDir in Directory.GetDirectories(sourceDir))
-            {
-                var dirName = Path.GetFileName(subDir);
-                var destDir = Path.Combine(targetDir, dirName);
-                CopyDirectoryRecursive(subDir, destDir);
-            }
+            // Get renderer from DI to ensure all dependencies are properly injected
+            var renderer = GetYamlRenderer();
+
+            var assemblyPath = typeof(SimpleClass).Assembly.Location;
+            var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
+            var manager = new AssemblyManager(assemblyPath, xmlPath);
+            var assembly = await manager.DocumentAsync(context);
+
+            await renderer.RenderAsync(assembly);
         }
 
         #endregion
-
 
     }
 

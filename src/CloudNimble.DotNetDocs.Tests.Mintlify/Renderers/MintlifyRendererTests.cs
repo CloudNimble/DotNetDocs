@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using CloudNimble.Breakdance.Assemblies;
 using CloudNimble.DotNetDocs.Core;
 using CloudNimble.DotNetDocs.Core.Configuration;
-using CloudNimble.DotNetDocs.Core.Transformers;
+using CloudNimble.DotNetDocs.Core.Renderers;
 using CloudNimble.DotNetDocs.Mintlify;
 using CloudNimble.DotNetDocs.Tests.Shared;
 using CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios;
@@ -93,15 +93,19 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             // Arrange
             var assemblyPath = typeof(SampleClass).Assembly.Location;
             var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
-            using var manager = new AssemblyManager(assemblyPath, xmlPath);
-            var model = await manager.DocumentAsync();
+            var documentationManager = GetService<DocumentationManager>();
 
             // Act
-            await GetMintlifyRenderer().RenderAsync(model);
+            await documentationManager.ProcessAsync(assemblyPath, xmlPath);
 
             // Assert
             var context = GetService<ProjectContext>();
             var renderer = GetMintlifyRenderer();
+
+            // Get model to check namespaces (for assertion only)
+            using var manager = new AssemblyManager(assemblyPath, xmlPath);
+            var model = await manager.DocumentAsync(context);
+
             foreach (var ns in model.Namespaces)
             {
                 var nsFileName = renderer.GetNamespaceFileName(ns, "mdx");
@@ -116,15 +120,19 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             // Arrange
             var assemblyPath = typeof(SampleClass).Assembly.Location;
             var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
-            using var manager = new AssemblyManager(assemblyPath, xmlPath);
-            var model = await manager.DocumentAsync();
+            var documentationManager = GetService<DocumentationManager>();
 
             // Act
-            await GetMintlifyRenderer().RenderAsync(model);
+            await documentationManager.ProcessAsync(assemblyPath, xmlPath);
 
             // Assert
             var context = GetService<ProjectContext>();
             var renderer = GetMintlifyRenderer();
+
+            // Get model to check namespaces (for assertion only)
+            using var manager = new AssemblyManager(assemblyPath, xmlPath);
+            var model = await manager.DocumentAsync(context);
+
             foreach (var ns in model.Namespaces)
             {
                 var nsFileName = renderer.GetNamespaceFileName(ns, "mdx");
@@ -193,13 +201,16 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             // Arrange
             var assemblyPath = typeof(SampleClass).Assembly.Location;
             var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
-            using var manager = new AssemblyManager(assemblyPath, xmlPath);
-            var model = await manager.DocumentAsync();
+            var documentationManager = GetService<DocumentationManager>();
 
             // Act
-            await GetMintlifyRenderer().RenderAsync(model);
+            await documentationManager.ProcessAsync(assemblyPath, xmlPath);
 
             // Assert
+            var context = GetService<ProjectContext>();
+            using var manager = new AssemblyManager(assemblyPath, xmlPath);
+            var model = await manager.DocumentAsync(context);
+
             foreach (var ns in model.Namespaces)
             {
                 foreach (var type in ns.Types)
@@ -222,17 +233,15 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             // Arrange
             var assemblyPath = typeof(SampleClass).Assembly.Location;
             var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
-            using var manager = new AssemblyManager(assemblyPath, xmlPath);
-            var model = await manager.DocumentAsync();
-            var context = new ProjectContext();
+            var documentationManager = GetService<DocumentationManager>();
 
             // Act
-            await GetMintlifyRenderer().RenderAsync(model);
+            await documentationManager.ProcessAsync(assemblyPath, xmlPath);
 
             // Assert - Check that type files have appropriate icons
             var sampleClassFile = Directory.GetFiles(_testOutputPath, "*SampleClass.mdx").FirstOrDefault();
             sampleClassFile.Should().NotBeNull();
-            
+
             var content = await File.ReadAllTextAsync(sampleClassFile!, TestContext.CancellationTokenSource.Token);
             content.Should().Contain("icon: file-brackets-curly", "Class should use file-code icon");
         }
@@ -247,10 +256,10 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             // Arrange
             var assemblyPath = typeof(SampleClass).Assembly.Location;
             var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
+            var context = GetService<ProjectContext>();
             using var manager = new AssemblyManager(assemblyPath, xmlPath);
-            var model = await manager.DocumentAsync();
+            var model = await manager.DocumentAsync(context);
             model.Usage = "This is assembly usage documentation";
-            var context = new ProjectContext();
 
             // Act
             await GetMintlifyRenderer().RenderAsync(model);
@@ -267,10 +276,10 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             // Arrange
             var assemblyPath = typeof(SampleClass).Assembly.Location;
             var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
+            var context = GetService<ProjectContext>();
             using var manager = new AssemblyManager(assemblyPath, xmlPath);
-            var model = await manager.DocumentAsync();
+            var model = await manager.DocumentAsync(context);
             model.Examples = "Example code here";
-            var context = new ProjectContext();
 
             // Act
             await GetMintlifyRenderer().RenderAsync(model);
@@ -287,10 +296,10 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             // Arrange
             var assemblyPath = typeof(SampleClass).Assembly.Location;
             var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
+            var context = GetService<ProjectContext>();
             using var manager = new AssemblyManager(assemblyPath, xmlPath);
-            var model = await manager.DocumentAsync();
+            var model = await manager.DocumentAsync(context);
             model.RelatedApis = new List<string> { "System.Object", "System.String" };
-            var context = new ProjectContext();
 
             // Act
             await GetMintlifyRenderer().RenderAsync(model);
@@ -308,8 +317,9 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             // Arrange
             var assemblyPath = typeof(SampleClass).Assembly.Location;
             var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
+            var context = GetService<ProjectContext>();
             using var manager = new AssemblyManager(assemblyPath, xmlPath);
-            var model = await manager.DocumentAsync();
+            var model = await manager.DocumentAsync(context);
             // Clear all optional documentation
             model.Usage = string.Empty;
             model.Examples = string.Empty;
@@ -317,7 +327,6 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             model.Patterns = string.Empty;
             model.Considerations = string.Empty;
             model.RelatedApis = new List<string>();
-            var context = new ProjectContext();
 
             // Act
             await GetMintlifyRenderer().RenderAsync(model);
@@ -340,112 +349,24 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             // Arrange
             var assemblyPath = typeof(ClassWithMethods).Assembly.Location;
             var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
-            using var manager = new AssemblyManager(assemblyPath, xmlPath);
-            var model = await manager.DocumentAsync();
-            var context = new ProjectContext();
+            var documentationManager = GetService<DocumentationManager>();
 
             // Act
-            await GetMintlifyRenderer().RenderAsync(model);
+            await documentationManager.ProcessAsync(assemblyPath, xmlPath);
 
             // Assert
+            var context = GetService<ProjectContext>();
+            using var manager = new AssemblyManager(assemblyPath, xmlPath);
+            var model = await manager.DocumentAsync(context);
+
             var ns = model.Namespaces.First(n => n.Types.Any(t => t.Symbol.Name == "ClassWithMethods"));
             var namespaceName = string.IsNullOrEmpty(ns.Name) ? "global" : ns.Name;
             var typeFileName = $"{namespaceName.Replace('.', '-')}.ClassWithMethods.mdx";
             var content = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, typeFileName), TestContext.CancellationTokenSource.Token);
-            
+
             content.Should().Contain("```csharp");
             content.Should().Contain("public");
         }
-
-        #endregion
-
-        #region Baseline Generation
-
-        [TestMethod]
-        [DataRow(projectPath)]
-        [BreakdanceManifestGenerator]
-        public async Task GenerateMintlifyBaselines(string projectPath)
-        {
-            await GenerateFileModeBaselines(projectPath);
-            await GenerateFolderModeBaselines(projectPath);
-        }
-
-        private async Task GenerateFileModeBaselines(string projectPath)
-        {
-            var baselinesDir = Path.Combine(projectPath, "Baselines", "MintlifyRenderer", "FileMode");
-            if (Directory.Exists(baselinesDir))
-            {
-                Directory.Delete(baselinesDir, true);
-            }
-            Directory.CreateDirectory(baselinesDir);
-
-            var services = new ServiceCollection();
-            services.AddSingleton<ProjectContext>(sp => new ProjectContext
-            {
-                FileNamingOptions = new FileNamingOptions(NamespaceMode.File, '-'),
-                DocumentationRootPath = baselinesDir,
-                ApiReferencePath = string.Empty
-            });
-            services.AddTransient<MintlifyRenderer>();
-            services.AddTransient<MarkdownXmlTransformer>();
-            services.AddSingleton<DocumentationManager>();
-
-            var serviceProvider = services.BuildServiceProvider();
-            var documentationManager = serviceProvider.GetRequiredService<DocumentationManager>();
-
-            var assemblyPath = typeof(SimpleClass).Assembly.Location;
-            var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
-
-            await documentationManager.ProcessAsync(assemblyPath, xmlPath);
-        }
-
-        private async Task GenerateFolderModeBaselines(string projectPath)
-        {
-            var baselinesDir = Path.Combine(projectPath, "Baselines", "MintlifyRenderer", "FolderMode");
-            if (Directory.Exists(baselinesDir))
-            {
-                Directory.Delete(baselinesDir, true);
-            }
-            Directory.CreateDirectory(baselinesDir);
-
-            var services = new ServiceCollection();
-            services.AddSingleton<ProjectContext>(sp => new ProjectContext
-            {
-                FileNamingOptions = new FileNamingOptions(NamespaceMode.Folder, '-'),
-                DocumentationRootPath = baselinesDir,
-                ApiReferencePath = string.Empty
-            });
-            services.AddTransient<MintlifyRenderer>();
-            services.AddTransient<MarkdownXmlTransformer>();
-            services.AddSingleton<DocumentationManager>();
-
-            var serviceProvider = services.BuildServiceProvider();
-            var documentationManager = serviceProvider.GetRequiredService<DocumentationManager>();
-
-            var assemblyPath = typeof(SimpleClass).Assembly.Location;
-            var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
-
-            await documentationManager.ProcessAsync(assemblyPath, xmlPath);
-        }
-
-        //private static void CopyDirectoryRecursive(string sourceDir, string destDir)
-        //{
-        //    // Copy all files from the source directory
-        //    foreach (var file in Directory.GetFiles(sourceDir))
-        //    {
-        //        var destFile = Path.Combine(destDir, Path.GetFileName(file));
-        //        File.Copy(file, destFile, true);
-        //    }
-
-        //    // Recursively copy subdirectories
-        //    foreach (var subDir in Directory.GetDirectories(sourceDir))
-        //    {
-        //        var dirName = Path.GetFileName(subDir);
-        //        var destSubDir = Path.Combine(destDir, dirName);
-        //        Directory.CreateDirectory(destSubDir);
-        //        CopyDirectoryRecursive(subDir, destSubDir);
-        //    }
-        //}
 
         #endregion
 
@@ -457,25 +378,30 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             // Arrange
             var assemblyPath = typeof(SampleClass).Assembly.Location;
             var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
-            using var manager = new AssemblyManager(assemblyPath, xmlPath);
-            var model = await manager.DocumentAsync();
-            
-            var context = new ProjectContext
+            var documentationManager = GetService<DocumentationManager>();
+
+            var context = GetService<ProjectContext>();
+            var originalFileNamingOptions = context.FileNamingOptions;
+            var originalApiReferencePath = context.ApiReferencePath;
+
+            context.FileNamingOptions = new FileNamingOptions(NamespaceMode.File, '-');
+            context.ApiReferencePath = string.Empty;
+
+            try
             {
-                FileNamingOptions = new FileNamingOptions(NamespaceMode.File, '-'),
-                DocumentationRootPath = _testOutputPath,
-                ApiReferencePath = string.Empty
-            };
-            var options = Options.Create(new MintlifyRendererOptions());
-            var docsJsonManager = new DocsJsonManager();
-            var renderer = new MintlifyRenderer(context, options, docsJsonManager);
+                // Act
+                await documentationManager.ProcessAsync(assemblyPath, xmlPath);
 
-            // Act
-            await renderer.RenderAsync(model);
-
-            // Assert
-            var files = Directory.GetFiles(_testOutputPath, "*.mdx");
-            files.Should().Contain(f => Path.GetFileName(f).Contains("CloudNimble-DotNetDocs-Tests-Shared"));
+                // Assert
+                var files = Directory.GetFiles(_testOutputPath, "*.mdx");
+                files.Should().Contain(f => Path.GetFileName(f).Contains("CloudNimble-DotNetDocs-Tests-Shared"));
+            }
+            finally
+            {
+                // Restore original settings
+                context.FileNamingOptions = originalFileNamingOptions;
+                context.ApiReferencePath = originalApiReferencePath;
+            }
         }
 
         [TestMethod]
@@ -484,25 +410,30 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             // Arrange
             var assemblyPath = typeof(SampleClass).Assembly.Location;
             var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
-            using var manager = new AssemblyManager(assemblyPath, xmlPath);
-            var model = await manager.DocumentAsync();
-            
-            var context = new ProjectContext
+            var documentationManager = GetService<DocumentationManager>();
+
+            var context = GetService<ProjectContext>();
+            var originalFileNamingOptions = context.FileNamingOptions;
+            var originalApiReferencePath = context.ApiReferencePath;
+
+            context.FileNamingOptions = new FileNamingOptions(NamespaceMode.File, '_');
+            context.ApiReferencePath = string.Empty;
+
+            try
             {
-                FileNamingOptions = new FileNamingOptions(NamespaceMode.File, '_'),
-                DocumentationRootPath = _testOutputPath,
-                ApiReferencePath = string.Empty
-            };
-            var options = Options.Create(new MintlifyRendererOptions());
-            var docsJsonManager = new DocsJsonManager();
-            var renderer = new MintlifyRenderer(context, options, docsJsonManager);
+                // Act
+                await documentationManager.ProcessAsync(assemblyPath, xmlPath);
 
-            // Act
-            await renderer.RenderAsync(model);
-
-            // Assert
-            var files = Directory.GetFiles(_testOutputPath, "*.mdx");
-            files.Should().Contain(f => Path.GetFileName(f).Contains("CloudNimble_DotNetDocs_Tests_Shared"));
+                // Assert
+                var files = Directory.GetFiles(_testOutputPath, "*.mdx");
+                files.Should().Contain(f => Path.GetFileName(f).Contains("CloudNimble_DotNetDocs_Tests_Shared"));
+            }
+            finally
+            {
+                // Restore original settings
+                context.FileNamingOptions = originalFileNamingOptions;
+                context.ApiReferencePath = originalApiReferencePath;
+            }
         }
 
         [TestMethod]
@@ -511,25 +442,30 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             // Arrange
             var assemblyPath = typeof(SampleClass).Assembly.Location;
             var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
-            using var manager = new AssemblyManager(assemblyPath, xmlPath);
-            var model = await manager.DocumentAsync();
-            
-            var context = new ProjectContext
+            var documentationManager = GetService<DocumentationManager>();
+
+            var context = GetService<ProjectContext>();
+            var originalFileNamingOptions = context.FileNamingOptions;
+            var originalApiReferencePath = context.ApiReferencePath;
+
+            context.FileNamingOptions = new FileNamingOptions(NamespaceMode.File, '.');
+            context.ApiReferencePath = string.Empty;
+
+            try
             {
-                FileNamingOptions = new FileNamingOptions(NamespaceMode.File, '.'),
-                DocumentationRootPath = _testOutputPath,
-                ApiReferencePath = string.Empty
-            };
-            var options = Options.Create(new MintlifyRendererOptions());
-            var docsJsonManager = new DocsJsonManager();
-            var renderer = new MintlifyRenderer(context, options, docsJsonManager);
+                // Act
+                await documentationManager.ProcessAsync(assemblyPath, xmlPath);
 
-            // Act
-            await renderer.RenderAsync(model);
-
-            // Assert
-            var files = Directory.GetFiles(_testOutputPath, "*.mdx");
-            files.Should().Contain(f => Path.GetFileName(f).Contains("CloudNimble.DotNetDocs.Tests.Shared"));
+                // Assert
+                var files = Directory.GetFiles(_testOutputPath, "*.mdx");
+                files.Should().Contain(f => Path.GetFileName(f).Contains("CloudNimble.DotNetDocs.Tests.Shared"));
+            }
+            finally
+            {
+                // Restore original settings
+                context.FileNamingOptions = originalFileNamingOptions;
+                context.ApiReferencePath = originalApiReferencePath;
+            }
         }
 
         [TestMethod]
@@ -538,43 +474,48 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             // Arrange
             var assemblyPath = typeof(SampleClass).Assembly.Location;
             var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
-            using var manager = new AssemblyManager(assemblyPath, xmlPath);
-            var model = await manager.DocumentAsync();
-            
-            var context = new ProjectContext
+            var documentationManager = GetService<DocumentationManager>();
+
+            var context = GetService<ProjectContext>();
+            var originalFileNamingOptions = context.FileNamingOptions;
+            var originalApiReferencePath = context.ApiReferencePath;
+
+            context.FileNamingOptions = new FileNamingOptions(NamespaceMode.Folder);
+            context.ApiReferencePath = string.Empty;
+
+            try
             {
-                FileNamingOptions = new FileNamingOptions(NamespaceMode.Folder),
-                DocumentationRootPath = _testOutputPath,
-                ApiReferencePath = string.Empty
-            };
-            var options = Options.Create(new MintlifyRendererOptions());
-            var docsJsonManager = new DocsJsonManager();
-            var renderer = new MintlifyRenderer(context, options, docsJsonManager);
+                // Act
+                await documentationManager.ProcessAsync(assemblyPath, xmlPath);
 
-            // Act
-            await renderer.RenderAsync(model);
+                // Assert
+                // Check folder structure exists
+                var cloudNimbleDir = Path.Combine(_testOutputPath, "CloudNimble");
+                Directory.Exists(cloudNimbleDir).Should().BeTrue();
 
-            // Assert
-            // Check folder structure exists
-            var cloudNimbleDir = Path.Combine(_testOutputPath, "CloudNimble");
-            Directory.Exists(cloudNimbleDir).Should().BeTrue();
-            
-            var dotNetDocsDir = Path.Combine(cloudNimbleDir, "DotNetDocs");
-            Directory.Exists(dotNetDocsDir).Should().BeTrue();
-            
-            var testsDir = Path.Combine(dotNetDocsDir, "Tests");
-            Directory.Exists(testsDir).Should().BeTrue();
-            
-            var sharedDir = Path.Combine(testsDir, "Shared");
-            Directory.Exists(sharedDir).Should().BeTrue();
-            
-            // Check that index.mdx exists in namespace folder
-            var indexFile = Path.Combine(sharedDir, "index.mdx");
-            File.Exists(indexFile).Should().BeTrue();
-            
-            // Check that type files exist in namespace folder
-            var typeFiles = Directory.GetFiles(sharedDir, "*.mdx");
-            typeFiles.Should().Contain(f => Path.GetFileName(f) != "index.mdx", "Type files should exist alongside index.mdx");
+                var dotNetDocsDir = Path.Combine(cloudNimbleDir, "DotNetDocs");
+                Directory.Exists(dotNetDocsDir).Should().BeTrue();
+
+                var testsDir = Path.Combine(dotNetDocsDir, "Tests");
+                Directory.Exists(testsDir).Should().BeTrue();
+
+                var sharedDir = Path.Combine(testsDir, "Shared");
+                Directory.Exists(sharedDir).Should().BeTrue();
+
+                // Check that index.mdx exists in namespace folder
+                var indexFile = Path.Combine(sharedDir, "index.mdx");
+                File.Exists(indexFile).Should().BeTrue();
+
+                // Check that type files exist in namespace folder
+                var typeFiles = Directory.GetFiles(sharedDir, "*.mdx");
+                typeFiles.Should().Contain(f => Path.GetFileName(f) != "index.mdx", "Type files should exist alongside index.mdx");
+            }
+            finally
+            {
+                // Restore original settings
+                context.FileNamingOptions = originalFileNamingOptions;
+                context.ApiReferencePath = originalApiReferencePath;
+            }
         }
 
         [TestMethod]
@@ -583,31 +524,36 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             // Arrange
             var assemblyPath = typeof(SampleClass).Assembly.Location;
             var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
-            using var manager = new AssemblyManager(assemblyPath, xmlPath);
-            var model = await manager.DocumentAsync();
-            
+            var documentationManager = GetService<DocumentationManager>();
+
+            var context = GetService<ProjectContext>();
+            var originalFileNamingOptions = context.FileNamingOptions;
+            var originalApiReferencePath = context.ApiReferencePath;
+
             // Set a separator that should be ignored in Folder mode
-            var context = new ProjectContext
+            context.FileNamingOptions = new FileNamingOptions(NamespaceMode.Folder, '_');
+            context.ApiReferencePath = string.Empty;
+
+            try
             {
-                FileNamingOptions = new FileNamingOptions(NamespaceMode.Folder, '_'),
-                DocumentationRootPath = _testOutputPath,
-                ApiReferencePath = string.Empty
-            };
-            var options = Options.Create(new MintlifyRendererOptions());
-            var docsJsonManager = new DocsJsonManager();
-            var renderer = new MintlifyRenderer(context, options, docsJsonManager);
+                // Act
+                await documentationManager.ProcessAsync(assemblyPath, xmlPath);
 
-            // Act
-            await renderer.RenderAsync(model);
+                // Assert
+                // Verify folder structure uses path separators, not the configured separator
+                var cloudNimbleDir = Path.Combine(_testOutputPath, "CloudNimble");
+                Directory.Exists(cloudNimbleDir).Should().BeTrue();
 
-            // Assert
-            // Verify folder structure uses path separators, not the configured separator
-            var cloudNimbleDir = Path.Combine(_testOutputPath, "CloudNimble");
-            Directory.Exists(cloudNimbleDir).Should().BeTrue();
-            
-            // Should NOT have a folder named "CloudNimble_DotNetDocs_Tests_Shared"
-            var wrongDir = Path.Combine(_testOutputPath, "CloudNimble_DotNetDocs_Tests_Shared");
-            Directory.Exists(wrongDir).Should().BeFalse();
+                // Should NOT have a folder named "CloudNimble_DotNetDocs_Tests_Shared"
+                var wrongDir = Path.Combine(_testOutputPath, "CloudNimble_DotNetDocs_Tests_Shared");
+                Directory.Exists(wrongDir).Should().BeFalse();
+            }
+            finally
+            {
+                // Restore original settings
+                context.FileNamingOptions = originalFileNamingOptions;
+                context.ApiReferencePath = originalApiReferencePath;
+            }
         }
 
         #endregion
@@ -1117,6 +1063,130 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
 
 
         #endregion
+
+        #region Baseline Generation
+
+        /// <summary>
+        /// Generates baseline files for the MintlifyRenderer in both FileMode and FolderMode.
+        /// This method is marked with [BreakdanceManifestGenerator] and is called by the Breakdance tool
+        /// to generate baseline files for comparison in unit tests.
+        /// </summary>
+        /// <param name="projectPath">The root path of the test project where baselines will be stored.</param>
+        /// <remarks>
+        /// This method uses Dependency Injection to get the ProjectContext and MintlifyRenderer instances.
+        /// It modifies the context properties to configure the output location and file naming options,
+        /// then uses the renderer from DI (which ensures all dependencies are properly injected,
+        /// including MintlifyRendererOptions and DocsJsonManager).
+        ///
+        /// The baseline generation intentionally does NOT use DocumentationManager.ProcessAsync because
+        /// these are unit test baselines for the renderer itself, not integration test baselines.
+        /// The renderer should be tested in isolation without transformers applied.
+        /// </remarks>
+        //[TestMethod]
+        //[DataRow(projectPath)]
+        [BreakdanceManifestGenerator]
+        public async Task GenerateMintlifyBaselines(string projectPath)
+        {
+            await GenerateFileModeBaselines(projectPath);
+            await GenerateFolderModeBaselines(projectPath);
+        }
+
+        /// <summary>
+        /// Generates baseline files for MintlifyRenderer in FileMode configuration.
+        /// </summary>
+        /// <param name="projectPath">The root path of the test project where baselines will be stored.</param>
+        /// <remarks>
+        /// This method:
+        /// 1. Gets the ProjectContext from DI to ensure consistent configuration
+        /// 2. Modifies the context properties for FileMode output
+        /// 3. Gets the MintlifyRenderer from DI with all dependencies properly injected
+        /// 4. Uses AssemblyManager directly (not DocumentationManager) to generate documentation
+        ///    without transformers, as these are unit test baselines for the renderer alone
+        /// 5. Does not restore context values since this runs in an isolated Breakdance process
+        /// </remarks>
+        private async Task GenerateFileModeBaselines(string projectPath)
+        {
+            var baselinesDir = Path.Combine(projectPath, "Baselines", "MintlifyRenderer", "FileMode");
+            if (Directory.Exists(baselinesDir))
+            {
+                Directory.Delete(baselinesDir, true);
+            }
+            Directory.CreateDirectory(baselinesDir);
+
+            var context = GetService<ProjectContext>();
+            context.FileNamingOptions = new FileNamingOptions(NamespaceMode.File, '-');
+            context.DocumentationRootPath = baselinesDir;
+
+            var renderer = GetMintlifyRenderer();
+
+            var assemblyPath = typeof(SimpleClass).Assembly.Location;
+            var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
+            var manager = new AssemblyManager(assemblyPath, xmlPath);
+            var assembly = await manager.DocumentAsync(context);
+
+            await renderer.RenderAsync(assembly);
+        }
+
+        /// <summary>
+        /// Generates baseline files for MintlifyRenderer in FolderMode configuration.
+        /// </summary>
+        /// <param name="projectPath">The root path of the test project where baselines will be stored.</param>
+        /// <remarks>
+        /// This method:
+        /// 1. Gets the ProjectContext from DI to ensure consistent configuration
+        /// 2. Modifies the context properties for FolderMode output
+        /// 3. Gets the MintlifyRenderer from DI with all dependencies properly injected
+        /// 4. Uses AssemblyManager directly (not DocumentationManager) to generate documentation
+        ///    without transformers, as these are unit test baselines for the renderer alone
+        /// 5. Does not restore context values since this runs in an isolated Breakdance process
+        /// </remarks>
+        private async Task GenerateFolderModeBaselines(string projectPath)
+        {
+            var baselinesDir = Path.Combine(projectPath, "Baselines", "MintlifyRenderer", "FolderMode");
+            if (Directory.Exists(baselinesDir))
+            {
+                Directory.Delete(baselinesDir, true);
+            }
+            Directory.CreateDirectory(baselinesDir);
+
+            // Get context from DI and modify it for baseline generation
+            var context = GetService<ProjectContext>();
+            context.FileNamingOptions = new FileNamingOptions(NamespaceMode.Folder, '-');
+            context.DocumentationRootPath = baselinesDir;
+            context.ApiReferencePath = string.Empty;
+
+            // Get renderer from DI to ensure all dependencies are properly injected
+            var renderer = GetMintlifyRenderer();
+
+            var assemblyPath = typeof(SimpleClass).Assembly.Location;
+            var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
+            var manager = new AssemblyManager(assemblyPath, xmlPath);
+            var assembly = await manager.DocumentAsync(context);
+
+            await renderer.RenderAsync(assembly);
+        }
+
+        //private static void CopyDirectoryRecursive(string sourceDir, string destDir)
+        //{
+        //    // Copy all files from the source directory
+        //    foreach (var file in Directory.GetFiles(sourceDir))
+        //    {
+        //        var destFile = Path.Combine(destDir, Path.GetFileName(file));
+        //        File.Copy(file, destFile, true);
+        //    }
+
+        //    // Recursively copy subdirectories
+        //    foreach (var subDir in Directory.GetDirectories(sourceDir))
+        //    {
+        //        var dirName = Path.GetFileName(subDir);
+        //        var destSubDir = Path.Combine(destDir, dirName);
+        //        Directory.CreateDirectory(destSubDir);
+        //        CopyDirectoryRecursive(subDir, destSubDir);
+        //    }
+        //}
+
+        #endregion
+
 
     }
 

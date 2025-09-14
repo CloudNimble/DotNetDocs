@@ -224,24 +224,24 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
         protected string GetMethodSignature(IMethodSymbol method)
         {
             var sb = new StringBuilder();
-            
+
             // Access modifiers
             sb.Append(GetAccessModifier(method.DeclaredAccessibility));
-            
+
             // Modifiers
             if (method.IsStatic) sb.Append(" static");
             if (method.IsVirtual) sb.Append(" virtual");
             if (method.IsOverride) sb.Append(" override");
             if (method.IsAbstract) sb.Append(" abstract");
             if (method.IsAsync) sb.Append(" async");
-            
+
             // Return type and name
             if (method.MethodKind != MethodKind.Constructor)
             {
                 sb.Append($" {method.ReturnType.ToDisplayString()}");
             }
             sb.Append($" {method.Name}");
-            
+
             // Type parameters
             if (method.IsGenericMethod)
             {
@@ -249,12 +249,12 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
                 sb.Append(string.Join(", ", method.TypeParameters.Select(t => t.Name)));
                 sb.Append('>');
             }
-            
+
             // Parameters
             sb.Append('(');
             sb.Append(string.Join(", ", method.Parameters.Select(p => $"{p.Type.ToDisplayString()} {p.Name}")));
             sb.Append(')');
-            
+
             return sb.ToString();
         }
 
@@ -266,16 +266,16 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
         protected string GetPropertySignature(IPropertySymbol property)
         {
             var sb = new StringBuilder();
-            
+
             sb.Append(GetAccessModifier(property.DeclaredAccessibility));
-            
+
             if (property.IsStatic) sb.Append(" static");
             if (property.IsVirtual) sb.Append(" virtual");
             if (property.IsOverride) sb.Append(" override");
             if (property.IsAbstract) sb.Append(" abstract");
-            
+
             sb.Append($" {property.Type.ToDisplayString()} {property.Name}");
-            
+
             sb.Append(" { ");
             if (property.GetMethod is not null)
             {
@@ -294,7 +294,7 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
                 sb.Append("set; ");
             }
             sb.Append('}');
-            
+
             return sb.ToString();
         }
 
@@ -306,16 +306,16 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
         protected string GetFieldSignature(IFieldSymbol field)
         {
             var sb = new StringBuilder();
-            
+
             sb.Append(GetAccessModifier(field.DeclaredAccessibility));
-            
+
             // Const fields are implicitly static, so don't add "static" for const fields
             if (field.IsStatic && !field.IsConst) sb.Append(" static");
             if (field.IsReadOnly) sb.Append(" readonly");
             if (field.IsConst) sb.Append(" const");
-            
+
             sb.Append($" {field.Type.ToDisplayString()} {field.Name}");
-            
+
             return sb.ToString();
         }
 
@@ -327,16 +327,16 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
         protected string GetEventSignature(IEventSymbol evt)
         {
             var sb = new StringBuilder();
-            
+
             sb.Append(GetAccessModifier(evt.DeclaredAccessibility));
-            
+
             if (evt.IsStatic) sb.Append(" static");
             if (evt.IsVirtual) sb.Append(" virtual");
             if (evt.IsOverride) sb.Append(" override");
             if (evt.IsAbstract) sb.Append(" abstract");
-            
+
             sb.Append($" event {evt.Type.ToDisplayString()} {evt.Name}");
-            
+
             return sb.ToString();
         }
 
@@ -348,15 +348,15 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
         protected string GetTypeSignature(DocType type)
         {
             var sb = new StringBuilder();
-            
+
             // Access modifiers
             sb.Append(GetAccessModifier(type.Symbol.DeclaredAccessibility));
-            
+
             // Type modifiers
             if (type.Symbol.IsStatic) sb.Append(" static");
             if (type.Symbol.IsAbstract && type.Symbol.TypeKind != TypeKind.Interface) sb.Append(" abstract");
             if (type.Symbol.IsSealed && type.Symbol.TypeKind != TypeKind.Struct) sb.Append(" sealed");
-            
+
             // Type kind
             sb.Append(type.Symbol.TypeKind switch
             {
@@ -367,9 +367,9 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
                 TypeKind.Delegate => " delegate",
                 _ => ""
             });
-            
+
             sb.Append($" {type.Symbol.Name}");
-            
+
             // Type parameters (for named types)
             if (type.Symbol is INamedTypeSymbol namedType && namedType.TypeParameters.Any())
             {
@@ -377,30 +377,107 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
                 sb.Append(string.Join(", ", namedType.TypeParameters.Select(t => t.Name)));
                 sb.Append('>');
             }
-            
+
             // Base type and interfaces (for classes and structs)
-            var hasBaseType = type.Symbol.BaseType is not null && 
+            var hasBaseType = type.Symbol.BaseType is not null &&
                              type.Symbol.BaseType.SpecialType != SpecialType.System_Object &&
                              type.Symbol.BaseType.SpecialType != SpecialType.System_ValueType &&
                              type.Symbol.TypeKind == TypeKind.Class;
-            
+
             var interfaces = type.Symbol.AllInterfaces;
-            
+
             if (hasBaseType || interfaces.Any())
             {
                 sb.Append(" : ");
                 var inheritance = new List<string>();
-                
+
                 if (hasBaseType)
                 {
                     inheritance.Add(type.Symbol.BaseType!.ToDisplayString());
                 }
-                
+
                 inheritance.AddRange(interfaces.Select(i => i.ToDisplayString()));
                 sb.Append(string.Join(", ", inheritance));
             }
-            
+
             return sb.ToString();
+        }
+
+        #endregion
+
+        #region Protected Static Methods
+
+        /// <summary>
+        /// Removes common leading indentation from multi-line text content.
+        /// </summary>
+        /// <param name="text">The text to remove indentation from.</param>
+        /// <returns>The text with common indentation removed.</returns>
+        internal static string RemoveIndentation(string text)
+        {
+            if (string.IsNullOrWhiteSpace(text))
+                return text;
+
+            var lines = text.Split('\n');
+
+            // Skip the first line when calculating minimum indentation since it's often already correct
+            // (XML doc comments often start with content on the same line as the tag)
+            int minIndent = int.MaxValue;
+            bool skipFirst = true;
+
+            foreach (var line in lines)
+            {
+                if (skipFirst)
+                {
+                    skipFirst = false;
+                    continue;
+                }
+
+                if (string.IsNullOrWhiteSpace(line))
+                    continue;
+
+                int indent = 0;
+                foreach (var ch in line)
+                {
+                    if (ch == ' ' || ch == '\t')
+                        indent++;
+                    else
+                        break;
+                }
+
+                if (indent < minIndent)
+                    minIndent = indent;
+            }
+
+            // If no indentation found, return original text
+            if (minIndent == int.MaxValue || minIndent == 0)
+                return text;
+
+            // Process lines: keep first line as-is, remove indentation from subsequent lines
+            var result = new StringBuilder();
+            for (int i = 0; i < lines.Length; i++)
+            {
+                var line = lines[i];
+
+                if (i == 0)
+                {
+                    // Keep first line as-is
+                    result.AppendLine(line);
+                }
+                else if (string.IsNullOrWhiteSpace(line))
+                {
+                    result.AppendLine();
+                }
+                else if (line.Length > minIndent)
+                {
+                    result.AppendLine(line.Substring(minIndent));
+                }
+                else
+                {
+                    result.AppendLine(line.TrimStart());
+                }
+            }
+
+            return result.ToString().TrimEnd();
         }
 
         #endregion

@@ -413,7 +413,7 @@ namespace CloudNimble.DotNetDocs.Core.Transformers
                 // Replace ``` with \`\`\` so they display as literal backticks in the code block
                 code = code.Replace("```", "\\`\\`\\`");
 
-                return string.IsNullOrEmpty(code) ? "" : $"\n```{language}\n{code}\n```\n";
+                return string.IsNullOrEmpty(code) ? "" : $"```{language}\n{code}\n```";
             });
 
             return text;

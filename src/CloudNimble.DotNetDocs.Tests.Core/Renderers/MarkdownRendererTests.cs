@@ -1001,8 +1001,23 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
 
         #region Baseline Generation
 
-        [TestMethod]
-        [DataRow(projectPath)]
+        /// <summary>
+        /// Generates baseline files for the MarkdownRenderer in both FileMode and FolderMode.
+        /// This method is marked with [BreakdanceManifestGenerator] and is called by the Breakdance tool
+        /// to generate baseline files for comparison in unit tests.
+        /// </summary>
+        /// <param name="projectPath">The root path of the test project where baselines will be stored.</param>
+        /// <remarks>
+        /// This method uses Dependency Injection to get the ProjectContext and MarkdownRenderer instances.
+        /// It modifies the context properties to configure the output location and file naming options,
+        /// then uses the renderer from DI (which ensures all dependencies are properly injected).
+        ///
+        /// The baseline generation intentionally does NOT use DocumentationManager.ProcessAsync because
+        /// these are unit test baselines for the renderer itself, not integration test baselines.
+        /// The renderer should be tested in isolation without transformers applied.
+        /// </remarks>
+        //[TestMethod]
+        //[DataRow(projectPath)]
         [BreakdanceManifestGenerator]
         public async Task GenerateMarkdownBaselines(string projectPath)
         {
@@ -1010,6 +1025,19 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             await GenerateFolderModeBaselines(projectPath);
         }
 
+        /// <summary>
+        /// Generates baseline files for MarkdownRenderer in FileMode configuration.
+        /// </summary>
+        /// <param name="projectPath">The root path of the test project where baselines will be stored.</param>
+        /// <remarks>
+        /// This method:
+        /// 1. Gets the ProjectContext from DI to ensure consistent configuration
+        /// 2. Modifies the context properties for FileMode output
+        /// 3. Gets the MarkdownRenderer from DI with all dependencies properly injected
+        /// 4. Uses AssemblyManager directly (not DocumentationManager) to generate documentation
+        ///    without transformers, as these are unit test baselines for the renderer alone
+        /// 5. Does not restore context values since this runs in an isolated Breakdance process
+        /// </remarks>
         private async Task GenerateFileModeBaselines(string projectPath)
         {
             var baselinesDir = Path.Combine(projectPath, "Baselines", "MarkdownRenderer", "FileMode");
@@ -1019,13 +1047,16 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             }
             Directory.CreateDirectory(baselinesDir);
 
-            var context = new ProjectContext
-            {
-                FileNamingOptions = new FileNamingOptions(NamespaceMode.File, '-'),
-                DocumentationRootPath = baselinesDir,
-                ApiReferencePath = string.Empty
-            };
-            var renderer = new MarkdownRenderer(context);
+            // Get context from DI and modify it for baseline generation
+            var context = GetService<ProjectContext>();
+            context.Should().NotBeNull("ProjectContext should be registered in DI");
+
+            context.FileNamingOptions = new FileNamingOptions(NamespaceMode.File, '-');
+            context.DocumentationRootPath = baselinesDir;
+            context.ApiReferencePath = string.Empty;
+
+            // Get renderer from DI to ensure all dependencies are properly injected
+            var renderer = GetMarkdownRenderer();
 
             var assemblyPath = typeof(SimpleClass).Assembly.Location;
             var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
@@ -1035,6 +1066,19 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             await renderer.RenderAsync(assembly);
         }
 
+        /// <summary>
+        /// Generates baseline files for MarkdownRenderer in FolderMode configuration.
+        /// </summary>
+        /// <param name="projectPath">The root path of the test project where baselines will be stored.</param>
+        /// <remarks>
+        /// This method:
+        /// 1. Gets the ProjectContext from DI to ensure consistent configuration
+        /// 2. Modifies the context properties for FolderMode output
+        /// 3. Gets the MarkdownRenderer from DI with all dependencies properly injected
+        /// 4. Uses AssemblyManager directly (not DocumentationManager) to generate documentation
+        ///    without transformers, as these are unit test baselines for the renderer alone
+        /// 5. Does not restore context values since this runs in an isolated Breakdance process
+        /// </remarks>
         private async Task GenerateFolderModeBaselines(string projectPath)
         {
             var baselinesDir = Path.Combine(projectPath, "Baselines", "MarkdownRenderer", "FolderMode");
@@ -1044,13 +1088,14 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             }
             Directory.CreateDirectory(baselinesDir);
 
-            var context = new ProjectContext
-            {
-                FileNamingOptions = new FileNamingOptions(NamespaceMode.Folder, '-'),
-                DocumentationRootPath = baselinesDir,
-                ApiReferencePath = string.Empty
-            };
-            var renderer = new MarkdownRenderer(context);
+            // Get context from DI and modify it for baseline generation
+            var context = GetService<ProjectContext>();
+            context.FileNamingOptions = new FileNamingOptions(NamespaceMode.Folder, '-');
+            context.DocumentationRootPath = baselinesDir;
+            context.ApiReferencePath = string.Empty;
+
+            // Get renderer from DI to ensure all dependencies are properly injected
+            var renderer = GetMarkdownRenderer();
 
             var assemblyPath = typeof(SimpleClass).Assembly.Location;
             var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
