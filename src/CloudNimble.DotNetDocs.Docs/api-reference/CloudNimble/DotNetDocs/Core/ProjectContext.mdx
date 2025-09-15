@@ -27,17 +27,6 @@ Represents MSBuild project context for source intent in documentation generation
 
 Provides metadata such as referenced assembly paths and the conceptual documentation folder path.
              Used by `ProjectContext)` to enhance metadata extraction.
-             &lt;example&gt;
-  ```csharp
-// Default (public members only)
-var context = new ProjectContext("ref1.dll", "ref2.dll") { ConceptualPath = "conceptual" };
-
-// Include public and internal members
-var context = new ProjectContext([Accessibility.Public, Accessibility.Internal], "ref1.dll", "ref2.dll");
-
-var model = await manager.DocumentAsync("MyLib.dll", "MyLib.xml", context);
-```
-&lt;/example&gt;
 
 ## Examples
 

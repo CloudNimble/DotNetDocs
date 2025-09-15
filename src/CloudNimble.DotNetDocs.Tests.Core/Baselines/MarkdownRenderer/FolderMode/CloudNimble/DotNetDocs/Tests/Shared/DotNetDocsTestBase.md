@@ -38,13 +38,3 @@ public CloudNimble.DotNetDocs.Core.DocAssembly GetTestsDotSharedAssembly()
 
 Type: `CloudNimble.DotNetDocs.Core.DocAssembly`
 
-## Fields
-
-### projectPath
-
-#### Syntax
-
-```csharp
-public const string projectPath
-```
-

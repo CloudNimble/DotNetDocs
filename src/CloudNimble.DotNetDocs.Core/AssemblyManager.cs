@@ -218,6 +218,32 @@ namespace CloudNimble.DotNetDocs.Core
         }
 
         /// <summary>
+        /// Extracts inner XML content from an XElement, preserving nested XML tags but excluding specified tags and their content.
+        /// </summary>
+        /// <param name="element">The XML element to extract content from.</param>
+        /// <param name="excludeTags">Tag names to exclude from the output (including all their content).</param>
+        /// <returns>The inner XML as a string with excluded tags and their content removed, or null if element is null.</returns>
+        internal string? ExtractInnerXmlExcluding(XElement? element, params string[] excludeTags)
+        {
+            if (element == null)
+                return null;
+
+            // Clone the element to avoid modifying the original
+            var cloned = new XElement(element);
+
+            // Remove all excluded tags and their content
+            foreach (var tag in excludeTags)
+            {
+                cloned.Descendants(tag).Remove();
+            }
+
+            // Get all nodes and concatenate them, preserving XML tags
+            var innerXml = string.Concat(cloned.Nodes().Select(n => n.ToString()));
+            var trimmed = innerXml?.Trim();
+            return string.IsNullOrWhiteSpace(trimmed) ? null : trimmed;
+        }
+
+        /// <summary>
         /// Extracts the summary text from XML documentation, preserving inner XML tags.
         /// </summary>
         /// <param name="doc">The parsed XML documentation.</param>
@@ -234,12 +260,12 @@ namespace CloudNimble.DotNetDocs.Core
             ExtractInnerXml(doc?.Descendants("example").FirstOrDefault());
 
         /// <summary>
-        /// Extracts the remarks/best practices text from XML documentation, preserving inner XML tags.
+        /// Extracts the remarks/best practices text from XML documentation, preserving inner XML tags but excluding example tags.
         /// </summary>
         /// <param name="doc">The parsed XML documentation.</param>
-        /// <returns>The remarks text with preserved XML tags, or empty string if not found.</returns>
+        /// <returns>The remarks text with preserved XML tags (excluding example tags and their content), or empty string if not found.</returns>
         internal string? ExtractRemarks(XDocument? doc) =>
-            ExtractInnerXml(doc?.Descendants("remarks").FirstOrDefault());
+            ExtractInnerXmlExcluding(doc?.Descendants("remarks").FirstOrDefault(), "example");
 
         /// <summary>
         /// Extracts parameter documentation from XML documentation, preserving inner XML tags.

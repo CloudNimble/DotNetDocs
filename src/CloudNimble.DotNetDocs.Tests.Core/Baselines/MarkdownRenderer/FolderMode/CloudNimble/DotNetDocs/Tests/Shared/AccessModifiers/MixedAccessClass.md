@@ -65,15 +65,3 @@ public string PublicMethod()
 Type: `string`
 A string indicating this is a public method.
 
-## Fields
-
-### PublicField
-
-A public field.
-
-#### Syntax
-
-```csharp
-public string PublicField
-```
-
