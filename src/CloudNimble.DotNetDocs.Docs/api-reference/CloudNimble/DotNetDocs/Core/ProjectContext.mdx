@@ -53,7 +53,7 @@ var model = await manager.DocumentAsync("MyLib.dll", "MyLib.xml", context);
 
 ## Constructors
 
-### .ctor
+### <Icon icon="hammer" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} />  .ctor
 
 Initializes a new instance of [ProjectContext](/api-reference/CloudNimble/DotNetDocs/Core/ProjectContext) with default settings.
 
@@ -63,7 +63,7 @@ Initializes a new instance of [ProjectContext](/api-reference/CloudNimble/DotNet
 public ProjectContext()
 ```
 
-### .ctor
+### <Icon icon="hammer" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} />  .ctor
 
 Initializes a new instance of [ProjectContext](/api-reference/CloudNimble/DotNetDocs/Core/ProjectContext) with optional included members and referenced assemblies.
 
@@ -82,7 +82,7 @@ public ProjectContext(System.Collections.Generic.List<Microsoft.CodeAnalysis.Acc
 
 ## Properties
 
-### ApiReferencePath
+### <Icon icon="tag" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} />  ApiReferencePath
 
 Gets or sets the path to the API reference documentation.
 
@@ -96,7 +96,7 @@ public string ApiReferencePath { get; set; }
 
 Type: `string`
 
-### ConceptualPath
+### <Icon icon="tag" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} />  ConceptualPath
 
 Gets or sets the path to the conceptual documentation folder.
 
@@ -111,7 +111,7 @@ public string ConceptualPath { get; set; }
 Type: `string`
 The file system path to the folder containing conceptual documentation files.
 
-### DocumentationRootPath
+### <Icon icon="tag" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} />  DocumentationRootPath
 
 Gets or sets the output path for generated documentation.
 
@@ -126,7 +126,7 @@ public string DocumentationRootPath { get; set; }
 Type: `string`
 The file system path where documentation output will be generated.
 
-### ExcludedTypes
+### <Icon icon="tag" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} />  ExcludedTypes
 
 Gets or sets the list of type patterns to exclude from documentation.
 
@@ -158,7 +158,7 @@ Patterns can use wildcards:
             - "Namespace.*.TypeName" matches TypeName in any sub-namespace of Namespace
             - "Full.Namespace.TypeName" matches exact fully qualified type name
 
-### FileNamingOptions
+### <Icon icon="tag" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} />  FileNamingOptions
 
 Gets or sets the file naming options for documentation generation.
 
@@ -173,7 +173,7 @@ public CloudNimble.DotNetDocs.Core.Configuration.FileNamingOptions FileNamingOpt
 Type: `CloudNimble.DotNetDocs.Core.Configuration.FileNamingOptions`
 Configuration for how documentation files are named and organized.
 
-### IncludedMembers
+### <Icon icon="tag" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} />  IncludedMembers
 
 Gets or sets the list of member accessibilities to include in documentation.
 
@@ -188,7 +188,23 @@ public System.Collections.Generic.List<Microsoft.CodeAnalysis.Accessibility> Inc
 Type: `System.Collections.Generic.List<Microsoft.CodeAnalysis.Accessibility>`
 List of accessibility levels to include. Defaults to Public only.
 
-### References
+### <Icon icon="tag" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} />  IncludeFields
+
+Gets or sets whether to include fields in the documentation.
+
+#### Syntax
+
+```csharp
+public bool IncludeFields { get; set; }
+```
+
+#### Property Value
+
+Type: `bool`
+When true, public fields (including constants) are included in the documentation.
+            Defaults to false since fields are generally discouraged in favor of properties.
+
+### <Icon icon="tag" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} />  References
 
 Gets or sets the collection of paths to referenced assemblies.
 
@@ -203,7 +219,7 @@ public System.Collections.Generic.List<string> References { get; set; }
 Type: `System.Collections.Generic.List<string>`
 A collection of file system paths to assemblies referenced by the project being documented.
 
-### ShowPlaceholders
+### <Icon icon="tag" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} />  ShowPlaceholders
 
 Gets or sets whether to show placeholder content in the documentation.
 
@@ -221,7 +237,7 @@ When true (default), placeholder content is included. When false, files containi
 
 ## Methods
 
-### EnsureOutputDirectoryStructure
+### <Icon icon="function" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} />  EnsureOutputDirectoryStructure
 
 Ensures that the output directory structure exists for all namespaces in the assembly model.
 
@@ -244,7 +260,7 @@ This method creates the necessary folder structure when using Folder mode.
             In File mode, it simply ensures the base output directory exists.
             This centralizes folder creation logic so renderers can assume directories exist.
 
-### GetNamespaceFolderPath
+### <Icon icon="function" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} />  GetNamespaceFolderPath
 
 Converts a namespace string to a folder path based on the configured file naming options.
 
@@ -272,7 +288,7 @@ When [FileNamingOptions.NamespaceMode](/api-reference/CloudNimble/DotNetDocs/Cor
             When using [NamespaceMode.File](/api-reference/CloudNimble/DotNetDocs/Core/Configuration/NamespaceMode#file), this returns an empty string as no folder
             structure is created.
 
-### GetSafeNamespaceName
+### <Icon icon="function" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} />  GetSafeNamespaceName
 
 Gets the safe namespace name for a given namespace symbol.
 
@@ -293,7 +309,7 @@ public string GetSafeNamespaceName(Microsoft.CodeAnalysis.INamespaceSymbol names
 Type: `string`
 A safe namespace name, using "global" for the global namespace.
 
-### GetTypeFilePath
+### <Icon icon="function" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} />  GetTypeFilePath
 
 Gets the full file path for a type, including namespace folder structure if in Folder mode.
 
@@ -320,7 +336,7 @@ The file path for the type.
 In Folder mode: "System.Text.Json.JsonSerializer" becomes "System/Text/Json/JsonSerializer.md"
             In File mode: "System.Text.Json.JsonSerializer" becomes "System_Text_Json_JsonSerializer.md" (using configured separator)
 
-### IsTypeExcluded
+### <Icon icon="function" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} />  IsTypeExcluded
 
 Checks if a type should be excluded from documentation based on exclusion patterns.
 

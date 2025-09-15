@@ -30,7 +30,7 @@ Provides a fluent API for registering renderers, enrichers, transformers,
 
 ## Constructors
 
-### .ctor
+### <Icon icon="hammer" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} />  .ctor
 
 Initializes a new instance of the [DotNetDocsBuilder](/api-reference/CloudNimble/DotNetDocs/Core/Configuration/DotNetDocsBuilder) class.
 
@@ -54,7 +54,7 @@ public DotNetDocsBuilder(Microsoft.Extensions.DependencyInjection.IServiceCollec
 
 ## Methods
 
-### AddEnricher
+### <Icon icon="function" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} />  AddEnricher
 
 Adds a custom enricher to the pipeline.
 
@@ -83,7 +83,7 @@ pipeline.AddEnricher&lt;ConceptualContentEnricher&gt;();
 
 Enrichers add conceptual content to documentation entities.
 
-### AddRenderer
+### <Icon icon="function" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} />  AddRenderer
 
 Adds a custom renderer to the pipeline.
 
@@ -112,7 +112,7 @@ pipeline.AddRenderer&lt;MyCustomRenderer&gt;();
 
 Renderers generate output in specific formats (e.g., Markdown, JSON, YAML).
 
-### AddTransformer
+### <Icon icon="function" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} />  AddTransformer
 
 Adds a custom transformer to the pipeline.
 
@@ -141,7 +141,7 @@ pipeline.AddTransformer&lt;InheritDocTransformer&gt;();
 
 Transformers modify the documentation model before rendering.
 
-### ConfigureContext
+### <Icon icon="function" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} />  ConfigureContext
 
 Configures the ProjectContext for the pipeline.
 
@@ -172,7 +172,7 @@ pipeline.ConfigureContext(ctx =&gt;
 });
 ```
 
-### UseJsonRenderer
+### <Icon icon="function" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} />  UseJsonRenderer
 
 Adds the JSON renderer to the pipeline.
 
@@ -203,7 +203,7 @@ pipeline.UseJsonRenderer(options =&gt;
 });
 ```
 
-### UseMarkdownRenderer
+### <Icon icon="function" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} />  UseMarkdownRenderer
 
 Adds the Markdown renderer to the pipeline.
 
@@ -228,7 +228,7 @@ pipeline.UseMarkdownRenderer();
 
 Also registers MarkdownXmlTransformer to process XML documentation tags.
 
-### UseYamlRenderer
+### <Icon icon="function" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} />  UseYamlRenderer
 
 Adds the YAML renderer to the pipeline.
 

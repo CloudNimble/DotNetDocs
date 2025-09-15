@@ -83,6 +83,15 @@ namespace CloudNimble.DotNetDocs.Core
         public FileNamingOptions FileNamingOptions { get; set; } = new FileNamingOptions();
 
         /// <summary>
+        /// Gets or sets whether to include fields in the documentation.
+        /// </summary>
+        /// <value>
+        /// When true, public fields (including constants) are included in the documentation.
+        /// Defaults to false since fields are generally discouraged in favor of properties.
+        /// </value>
+        public bool IncludeFields { get; set; } = false;
+
+        /// <summary>
         /// Gets or sets the list of member accessibilities to include in documentation.
         /// </summary>
         /// <value>

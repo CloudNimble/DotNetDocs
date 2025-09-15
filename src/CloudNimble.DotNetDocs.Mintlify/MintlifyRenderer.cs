@@ -29,6 +29,16 @@ namespace CloudNimble.DotNetDocs.Mintlify
 
         #region Fields
 
+        /// <summary>
+        /// The icon size to use for member headers (properties, methods, etc.) in the generated MDX.
+        /// </summary>
+        private const int MemberIconSize = 24;
+
+        /// <summary>
+        /// The icon type to use for member headers (properties, methods, etc.) in the generated MDX.
+        /// </summary>
+        private const string MemberIconType = "duotone";
+
         private readonly MintlifyRendererOptions _options;
         private readonly DocsJsonManager? _docsJsonManager;
 
@@ -1013,14 +1023,18 @@ namespace CloudNimble.DotNetDocs.Mintlify
                 }
             }
 
-            var fields = type.Members.Where(m => m.MemberKind == Microsoft.CodeAnalysis.SymbolKind.Field).ToList();
-            if (fields.Any())
+            // Only render fields if explicitly requested
+            if (Context.IncludeFields)
             {
-                sb.AppendLine("## Fields");
-                sb.AppendLine();
-                foreach (var field in fields.OrderBy(f => f.Name))
+                var fields = type.Members.Where(m => m.MemberKind == Microsoft.CodeAnalysis.SymbolKind.Field).ToList();
+                if (fields.Any())
                 {
-                    RenderMember(sb, field);
+                    sb.AppendLine("## Fields");
+                    sb.AppendLine();
+                    foreach (var field in fields.OrderBy(f => f.Name))
+                    {
+                        RenderMember(sb, field);
+                    }
                 }
             }
 
@@ -1066,7 +1080,11 @@ namespace CloudNimble.DotNetDocs.Mintlify
 
         internal void RenderMember(StringBuilder sb, DocMember member)
         {
-            sb.AppendLine($"### {member.Name}");
+            // Get the primary color from the template configuration or use default
+            var primaryColor = _options?.Template?.Colors?.Primary ?? "#0D9373";
+
+            // Add the member header with icon including iconType, color, size, and margin
+            sb.AppendLine($"### <Icon icon=\"{MintlifyIcons.GetIconForMember(member)}\" iconType=\"{MemberIconType}\" color=\"{primaryColor}\" size={{{MemberIconSize}}} style={{{{ paddingRight: '8px' }}}} />  {member.Name}");
             sb.AppendLine();
 
             // Summary/Description

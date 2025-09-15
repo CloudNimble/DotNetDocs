@@ -465,14 +465,18 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
                 }
             }
 
-            var fields = type.Members.Where(m => m.MemberKind == Microsoft.CodeAnalysis.SymbolKind.Field).ToList();
-            if (fields.Any())
+            // Only render fields if explicitly requested
+            if (Context.IncludeFields)
             {
-                sb.AppendLine("## Fields");
-                sb.AppendLine();
-                foreach (var field in fields.OrderBy(f => f.Name))
+                var fields = type.Members.Where(m => m.MemberKind == Microsoft.CodeAnalysis.SymbolKind.Field).ToList();
+                if (fields.Any())
                 {
-                    RenderMember(sb, field);
+                    sb.AppendLine("## Fields");
+                    sb.AppendLine();
+                    foreach (var field in fields.OrderBy(f => f.Name))
+                    {
+                        RenderMember(sb, field);
+                    }
                 }
             }
 
