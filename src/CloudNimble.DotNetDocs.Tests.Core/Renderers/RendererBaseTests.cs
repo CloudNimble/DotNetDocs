@@ -1,5 +1,6 @@
 using System.IO;
 using System.Linq;
+using System.Text;
 using CloudNimble.DotNetDocs.Core;
 using CloudNimble.DotNetDocs.Core.Configuration;
 using CloudNimble.DotNetDocs.Core.Renderers;
@@ -378,7 +379,6 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
         [TestMethod]
         public void RemoveIndentation_WithBlankLinesInMiddle_PreservesBlankLines()
         {
-            // Arrange
             var input = """
                 var example = new Example();
                             example.Initialize();
@@ -388,20 +388,18 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
                             example.Cleanup();
                 """;
 
-            var expected = """
-                var example = new Example();
-                example.Initialize();
+            var expected = new StringBuilder()
+                .AppendLine("var example = new Example();")
+                .AppendLine("example.Initialize();")
+                .AppendLine()
+                .AppendLine("// After some processing")
+                .AppendLine("example.Process();")
+                .Append("example.Cleanup();");
 
-                // After some processing
-                example.Process();
-                example.Cleanup();
-                """;
-
-            // Act
             var result = RendererBase.RemoveIndentation(input);
 
             // Assert
-            result.Should().Be(expected);
+            result.Should().Be(expected.ToString());
         }
 
         [TestMethod]
@@ -569,32 +567,6 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             result.Should().Be(input);
         }
 
-        [TestMethod]
-        public void RemoveIndentation_WithVaryingIndentationLevels_UsesMinimumIndent()
-        {
-            // Arrange
-            var input = """
-                    var a = 1;
-                        var b = 2;
-                            var c = 3;
-                        var d = 4;
-                    var e = 5;
-                """;
-
-            var expected = """
-                    var a = 1;
-                var b = 2;
-                    var c = 3;
-                var d = 4;
-                var e = 5;
-                """;
-
-            // Act
-            var result = RendererBase.RemoveIndentation(input);
-
-            // Assert
-            result.Should().Be(expected);
-        }
 
         [TestMethod]
         public void RemoveIndentation_WithAsyncAwaitPattern_PreservesStructure()

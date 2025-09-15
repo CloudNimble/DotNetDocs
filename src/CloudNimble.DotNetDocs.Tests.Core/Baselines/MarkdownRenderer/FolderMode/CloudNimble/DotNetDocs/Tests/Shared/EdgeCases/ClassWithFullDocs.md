@@ -116,6 +116,35 @@ Console.WriteLine(result);
 
 - `Object[])`
 
+### ProcessNumbers
+
+Filters and transforms a collection of numbers.
+
+#### Syntax
+
+```csharp
+public System.Collections.Generic.IEnumerable<object> ProcessNumbers()
+```
+
+#### Returns
+
+Type: `System.Collections.Generic.IEnumerable&lt;object&gt;`
+A collection of transformed numbers.
+
+#### Examples
+
+<code>
+var numbers = Enumerable.Range(1, 10)
+    .Where(x =&gt; x % 2 == 0)
+    .Select(x =&gt; new
+    {
+        Number = x,
+        Square = x * x,
+        Cube = x * x * x
+    })
+    .ToList();
+</code>
+
 ## See Also
 
 - `ClassWithMinimalDocs`

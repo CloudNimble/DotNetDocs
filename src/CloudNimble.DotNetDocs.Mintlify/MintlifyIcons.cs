@@ -1,7 +1,6 @@
 using CloudNimble.DotNetDocs.Core;
 using Microsoft.CodeAnalysis;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace CloudNimble.DotNetDocs.Mintlify;
 

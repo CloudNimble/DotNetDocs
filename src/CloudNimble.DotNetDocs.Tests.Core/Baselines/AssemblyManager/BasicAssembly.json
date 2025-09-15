@@ -1657,6 +1657,28 @@
             {
               "accessibility": "public",
               "memberKind": "method",
+              "methodKind": "ordinary",
+              "name": "ProcessNumbers",
+              "parameters": [],
+              "returnType": {
+                "members": [],
+                "assemblyName": "System.Runtime",
+                "fullName": "System.Collections.Generic.IEnumerable<object>",
+                "name": "IEnumerable",
+                "signature": "System.Collections.Generic.IEnumerable<object>",
+                "typeKind": "error",
+                "displayName": "System.Collections.Generic.IEnumerable<object>"
+              },
+              "returnTypeName": "System.Collections.Generic.IEnumerable<object>",
+              "signature": "public System.Collections.Generic.IEnumerable<object> ProcessNumbers()",
+              "displayName": "CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithFullDocs.ProcessNumbers()",
+              "examples": "<code>\r\n            var numbers = Enumerable.Range(1, 10)\r\n                .Where(x =&gt; x % 2 == 0)\r\n                .Select(x =&gt; new\r\n                {\r\n                    Number = x,\r\n                    Square = x * x,\r\n                    Cube = x * x * x\r\n                })\r\n                .ToList();\r\n            </code>",
+              "returns": "A collection of transformed numbers.",
+              "summary": "Filters and transforms a collection of numbers."
+            },
+            {
+              "accessibility": "public",
+              "memberKind": "method",
               "methodKind": "constructor",
               "name": ".ctor",
               "parameters": [],

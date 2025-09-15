@@ -1,0 +1,51 @@
+---
+title: IDocTransformer
+description: "Defines a transformation step in the documentation processing pipeline."
+icon: plug
+keywords: ['IDocTransformer', 'CloudNimble.DotNetDocs.Core.IDocTransformer', 'CloudNimble.DotNetDocs.Core', 'interface']
+---
+
+## Definition
+
+**Assembly:** CloudNimble.DotNetDocs.Core.dll
+
+**Namespace:** CloudNimble.DotNetDocs.Core
+
+## Syntax
+
+```csharp
+CloudNimble.DotNetDocs.Core.IDocTransformer
+```
+
+## Summary
+
+Defines a transformation step in the documentation processing pipeline.
+
+## Remarks
+
+Implementations of this interface modify the documentation model before rendering,
+            applying customizations such as overrides and transformations.
+
+## Methods
+
+### TransformAsync
+
+Transforms a documentation entity.
+
+#### Syntax
+
+```csharp
+System.Threading.Tasks.Task TransformAsync(CloudNimble.DotNetDocs.Core.DocEntity entity)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `entity` | `CloudNimble.DotNetDocs.Core.DocEntity` | The documentation entity to transform. |
+
+#### Returns
+
+Type: `System.Threading.Tasks.Task`
+A task representing the asynchronous transformation operation.
+

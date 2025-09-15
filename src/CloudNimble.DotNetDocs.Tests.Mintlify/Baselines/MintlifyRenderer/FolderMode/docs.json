@@ -1,0 +1,141 @@
+{
+  "colors": {
+    "primary": "#0D9373"
+  },
+  "name": "CloudNimble.DotNetDocs.Tests.Shared",
+  "navigation": {
+    "pages": [
+      "index",
+      {
+        "group": "Getting Started",
+        "pages": [
+          "quickstart"
+        ]
+      },
+      {
+        "group": "API Reference",
+        "pages": [
+          "api-reference/index",
+          {
+            "group": "CloudNimble.DotNetDocs.Tests.Shared",
+            "icon": "folder-tree",
+            "pages": [
+              "CloudNimble-DotNetDocs-Tests-Shared",
+              "CloudNimble-DotNetDocs-Tests-Shared.DotNetDocsTestBase",
+              "CloudNimble-DotNetDocs-Tests-Shared.SampleClass"
+            ]
+          },
+          {
+            "group": "CloudNimble.DotNetDocs.Tests.Shared.AccessModifiers",
+            "icon": "folder-tree",
+            "pages": [
+              "CloudNimble-DotNetDocs-Tests-Shared-AccessModifiers",
+              "CloudNimble-DotNetDocs-Tests-Shared-AccessModifiers.MixedAccessClass"
+            ]
+          },
+          {
+            "group": "CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios",
+            "icon": "folder-tree",
+            "pages": [
+              "CloudNimble-DotNetDocs-Tests-Shared-BasicScenarios",
+              "CloudNimble-DotNetDocs-Tests-Shared-BasicScenarios.BaseClass",
+              "CloudNimble-DotNetDocs-Tests-Shared-BasicScenarios.ClassWithMethods",
+              "CloudNimble-DotNetDocs-Tests-Shared-BasicScenarios.ClassWithProperties",
+              "CloudNimble-DotNetDocs-Tests-Shared-BasicScenarios.DerivedClass",
+              "CloudNimble-DotNetDocs-Tests-Shared-BasicScenarios.DisposableClass",
+              "CloudNimble-DotNetDocs-Tests-Shared-BasicScenarios.SimpleClass"
+            ]
+          },
+          {
+            "group": "CloudNimble.DotNetDocs.Tests.Shared.EdgeCases",
+            "icon": "folder-tree",
+            "pages": [
+              "CloudNimble-DotNetDocs-Tests-Shared-EdgeCases",
+              "CloudNimble-DotNetDocs-Tests-Shared-EdgeCases.ClassWithFullDocs",
+              "CloudNimble-DotNetDocs-Tests-Shared-EdgeCases.ClassWithMinimalDocs",
+              "CloudNimble-DotNetDocs-Tests-Shared-EdgeCases.ClassWithNoDocs",
+              "CloudNimble-DotNetDocs-Tests-Shared-EdgeCases.ClassWithSpecialCharacters"
+            ]
+          },
+          {
+            "group": "CloudNimble.DotNetDocs.Tests.Shared.Parameters",
+            "icon": "folder-tree",
+            "pages": [
+              "CloudNimble-DotNetDocs-Tests-Shared-Parameters",
+              "CloudNimble-DotNetDocs-Tests-Shared-Parameters.ParameterVariations"
+            ]
+          },
+          {
+            "group": "CloudNimble",
+            "icon": "folder-tree",
+            "pages": [
+              {
+                "group": "DotNetDocs",
+                "icon": "folder-tree",
+                "pages": [
+                  {
+                    "group": "Tests",
+                    "icon": "folder-tree",
+                    "pages": [
+                      {
+                        "group": "Shared",
+                        "icon": "folder-tree",
+                        "pages": [
+                          "CloudNimble/DotNetDocs/Tests/Shared/index",
+                          "CloudNimble/DotNetDocs/Tests/Shared/DotNetDocsTestBase",
+                          "CloudNimble/DotNetDocs/Tests/Shared/SampleClass",
+                          {
+                            "group": "AccessModifiers",
+                            "icon": "folder-tree",
+                            "pages": [
+                              "CloudNimble/DotNetDocs/Tests/Shared/AccessModifiers/index",
+                              "CloudNimble/DotNetDocs/Tests/Shared/AccessModifiers/MixedAccessClass"
+                            ]
+                          },
+                          {
+                            "group": "BasicScenarios",
+                            "icon": "folder-tree",
+                            "pages": [
+                              "CloudNimble/DotNetDocs/Tests/Shared/BasicScenarios/index",
+                              "CloudNimble/DotNetDocs/Tests/Shared/BasicScenarios/BaseClass",
+                              "CloudNimble/DotNetDocs/Tests/Shared/BasicScenarios/ClassWithMethods",
+                              "CloudNimble/DotNetDocs/Tests/Shared/BasicScenarios/ClassWithProperties",
+                              "CloudNimble/DotNetDocs/Tests/Shared/BasicScenarios/DerivedClass",
+                              "CloudNimble/DotNetDocs/Tests/Shared/BasicScenarios/DisposableClass",
+                              "CloudNimble/DotNetDocs/Tests/Shared/BasicScenarios/SimpleClass"
+                            ]
+                          },
+                          {
+                            "group": "EdgeCases",
+                            "icon": "folder-tree",
+                            "pages": [
+                              "CloudNimble/DotNetDocs/Tests/Shared/EdgeCases/index",
+                              "CloudNimble/DotNetDocs/Tests/Shared/EdgeCases/ClassWithFullDocs",
+                              "CloudNimble/DotNetDocs/Tests/Shared/EdgeCases/ClassWithMinimalDocs",
+                              "CloudNimble/DotNetDocs/Tests/Shared/EdgeCases/ClassWithNoDocs",
+                              "CloudNimble/DotNetDocs/Tests/Shared/EdgeCases/ClassWithSpecialCharacters"
+                            ]
+                          },
+                          {
+                            "group": "Parameters",
+                            "icon": "folder-tree",
+                            "pages": [
+                              "CloudNimble/DotNetDocs/Tests/Shared/Parameters/index",
+                              "CloudNimble/DotNetDocs/Tests/Shared/Parameters/ParameterVariations"
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "mint"
+}

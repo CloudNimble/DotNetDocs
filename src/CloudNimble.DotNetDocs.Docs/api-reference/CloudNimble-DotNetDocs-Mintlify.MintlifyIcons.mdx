@@ -1,0 +1,630 @@
+---
+title: MintlifyIcons
+description: "Provides FontAwesome 7 icon mappings for different .NET documentation entities in Mintlify."
+icon: bolt
+tag: "STATIC"
+keywords: ['MintlifyIcons', 'CloudNimble.DotNetDocs.Mintlify.MintlifyIcons', 'CloudNimble.DotNetDocs.Mintlify', 'class', 'System.Object']
+---
+
+## Definition
+
+**Assembly:** CloudNimble.DotNetDocs.Mintlify.dll
+
+**Namespace:** CloudNimble.DotNetDocs.Mintlify
+
+**Inheritance:** System.Object
+
+## Syntax
+
+```csharp
+CloudNimble.DotNetDocs.Mintlify.MintlifyIcons
+```
+
+## Summary
+
+Provides FontAwesome 7 icon mappings for different .NET documentation entities in Mintlify.
+
+## Methods
+
+### GetIconForAccessibility
+
+Gets the icon for an Accessibility enum value.
+
+#### Syntax
+
+```csharp
+public static string GetIconForAccessibility(Microsoft.CodeAnalysis.Accessibility accessibility)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `accessibility` | `Microsoft.CodeAnalysis.Accessibility` | The accessibility level. |
+
+#### Returns
+
+Type: `string`
+The FontAwesome icon name.
+
+### GetIconForAccessModifier
+
+Gets the icon for an access modifier.
+
+#### Syntax
+
+```csharp
+public static string GetIconForAccessModifier(string accessModifier)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `accessModifier` | `string` | The access modifier string. |
+
+#### Returns
+
+Type: `string`
+The FontAwesome icon name.
+
+### GetIconForAssembly
+
+Gets the appropriate icon for a DocAssembly.
+
+#### Syntax
+
+```csharp
+public static string GetIconForAssembly(CloudNimble.DotNetDocs.Core.DocAssembly assembly)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `assembly` | `CloudNimble.DotNetDocs.Core.DocAssembly` | The documentation assembly. |
+
+#### Returns
+
+Type: `string`
+The FontAwesome icon name.
+
+### GetIconForEntity
+
+Gets the appropriate icon for a DocEntity based on its type.
+
+#### Syntax
+
+```csharp
+public static string GetIconForEntity(CloudNimble.DotNetDocs.Core.DocEntity entity)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `entity` | `CloudNimble.DotNetDocs.Core.DocEntity` | The documentation entity. |
+
+#### Returns
+
+Type: `string`
+The FontAwesome icon name.
+
+### GetIconForMember
+
+Gets the icon for a DocMember based on its kind and characteristics.
+
+#### Syntax
+
+```csharp
+public static string GetIconForMember(CloudNimble.DotNetDocs.Core.DocMember member)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `member` | `CloudNimble.DotNetDocs.Core.DocMember` | The documentation member. |
+
+#### Returns
+
+Type: `string`
+The FontAwesome icon name.
+
+### GetIconForMethod
+
+Gets the icon for a DocMember method, considering special characteristics.
+
+#### Syntax
+
+```csharp
+public static string GetIconForMethod(CloudNimble.DotNetDocs.Core.DocMember docMember)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `docMember` | `CloudNimble.DotNetDocs.Core.DocMember` | The documentation member (should be a method). |
+
+#### Returns
+
+Type: `string`
+The FontAwesome icon name.
+
+### GetIconForNamespace
+
+Gets the icon for a DocNamespace based on whether it has types.
+
+#### Syntax
+
+```csharp
+public static string GetIconForNamespace(CloudNimble.DotNetDocs.Core.DocNamespace ns)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `ns` | `CloudNimble.DotNetDocs.Core.DocNamespace` | The documentation namespace. |
+
+#### Returns
+
+Type: `string`
+The FontAwesome icon name.
+
+### GetIconForNamespaceSegment
+
+Gets an icon based on the namespace segment for organization-specific icons.
+
+#### Syntax
+
+```csharp
+public static string GetIconForNamespaceSegment(string namespaceName)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `namespaceName` | `string` | The full namespace name. |
+
+#### Returns
+
+Type: `string`
+The FontAwesome icon name based on common patterns.
+
+### GetIconForType
+
+Gets the icon for a DocType based on its kind and characteristics.
+
+#### Syntax
+
+```csharp
+public static string GetIconForType(CloudNimble.DotNetDocs.Core.DocType docType)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `docType` | `CloudNimble.DotNetDocs.Core.DocType` | The documentation type. |
+
+#### Returns
+
+Type: `string`
+The FontAwesome icon name.
+
+### GetIconForTypeByName
+
+Gets an appropriate icon based on common type naming patterns.
+
+#### Syntax
+
+```csharp
+public static string GetIconForTypeByName(string typeName)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `typeName` | `string` | The type name. |
+
+#### Returns
+
+Type: `string`
+A FontAwesome icon based on the type name pattern.
+
+## Fields
+
+### AbstractClass
+
+FontAwesome icon for abstract class documentation.
+
+#### Syntax
+
+```csharp
+public const string AbstractClass
+```
+
+### Assembly
+
+FontAwesome icon for assembly documentation.
+
+#### Syntax
+
+```csharp
+public const string Assembly
+```
+
+### AsyncMethod
+
+FontAwesome icon for async method documentation.
+
+#### Syntax
+
+```csharp
+public const string AsyncMethod
+```
+
+### Class
+
+FontAwesome icon for class documentation.
+
+#### Syntax
+
+```csharp
+public const string Class
+```
+
+### Constant
+
+FontAwesome icon for constant field documentation.
+
+#### Syntax
+
+```csharp
+public const string Constant
+```
+
+### Constructor
+
+FontAwesome icon for constructor documentation.
+
+#### Syntax
+
+```csharp
+public const string Constructor
+```
+
+### Delegate
+
+FontAwesome icon for delegate documentation.
+
+#### Syntax
+
+```csharp
+public const string Delegate
+```
+
+### Enum
+
+FontAwesome icon for enum documentation.
+
+#### Syntax
+
+```csharp
+public const string Enum
+```
+
+### Error
+
+FontAwesome icon for error documentation sections.
+
+#### Syntax
+
+```csharp
+public const string Error
+```
+
+### Event
+
+FontAwesome icon for event documentation.
+
+#### Syntax
+
+```csharp
+public const string Event
+```
+
+### Example
+
+FontAwesome icon for example documentation sections.
+
+#### Syntax
+
+```csharp
+public const string Example
+```
+
+### ExtensionMethod
+
+FontAwesome icon for extension method documentation.
+
+#### Syntax
+
+```csharp
+public const string ExtensionMethod
+```
+
+### Field
+
+FontAwesome icon for field documentation.
+
+#### Syntax
+
+```csharp
+public const string Field
+```
+
+### GenericType
+
+FontAwesome icon for generic type documentation.
+
+#### Syntax
+
+```csharp
+public const string GenericType
+```
+
+### Globe
+
+Default FontAwesome icon for miscellaneous documentation.
+
+#### Syntax
+
+```csharp
+public const string Globe
+```
+
+### Indexer
+
+FontAwesome icon for indexer documentation.
+
+#### Syntax
+
+```csharp
+public const string Indexer
+```
+
+### Interface
+
+FontAwesome icon for interface documentation.
+
+#### Syntax
+
+```csharp
+public const string Interface
+```
+
+### Internal
+
+FontAwesome icon for internal access modifier.
+
+#### Syntax
+
+```csharp
+public const string Internal
+```
+
+### Method
+
+FontAwesome icon for method documentation.
+
+#### Syntax
+
+```csharp
+public const string Method
+```
+
+### Namespace
+
+FontAwesome icon for namespace documentation.
+
+#### Syntax
+
+```csharp
+public const string Namespace
+```
+
+### Namespace_Empty
+
+FontAwesome icon for empty namespace documentation.
+
+#### Syntax
+
+```csharp
+public const string Namespace_Empty
+```
+
+### Namespace_Populated
+
+FontAwesome icon for populated namespace documentation.
+
+#### Syntax
+
+```csharp
+public const string Namespace_Populated
+```
+
+### Note
+
+FontAwesome icon for note documentation sections.
+
+#### Syntax
+
+```csharp
+public const string Note
+```
+
+### Operator
+
+FontAwesome icon for operator documentation.
+
+#### Syntax
+
+```csharp
+public const string Operator
+```
+
+### OverrideMethod
+
+FontAwesome icon for override method documentation.
+
+#### Syntax
+
+```csharp
+public const string OverrideMethod
+```
+
+### Package
+
+FontAwesome icon for package documentation.
+
+#### Syntax
+
+```csharp
+public const string Package
+```
+
+### Private
+
+FontAwesome icon for private access modifier.
+
+#### Syntax
+
+```csharp
+public const string Private
+```
+
+### Property
+
+FontAwesome icon for property documentation.
+
+#### Syntax
+
+```csharp
+public const string Property
+```
+
+### Protected
+
+FontAwesome icon for protected access modifier.
+
+#### Syntax
+
+```csharp
+public const string Protected
+```
+
+### ProtectedInternal
+
+FontAwesome icon for protected internal access modifier.
+
+#### Syntax
+
+```csharp
+public const string ProtectedInternal
+```
+
+### Public
+
+FontAwesome icon for public access modifier.
+
+#### Syntax
+
+```csharp
+public const string Public
+```
+
+### Record
+
+FontAwesome icon for record documentation.
+
+#### Syntax
+
+```csharp
+public const string Record
+```
+
+### Reference
+
+FontAwesome icon for reference documentation.
+
+#### Syntax
+
+```csharp
+public const string Reference
+```
+
+### SealedClass
+
+FontAwesome icon for sealed class documentation.
+
+#### Syntax
+
+```csharp
+public const string SealedClass
+```
+
+### StaticClass
+
+FontAwesome icon for static class documentation.
+
+#### Syntax
+
+```csharp
+public const string StaticClass
+```
+
+### StaticMember
+
+FontAwesome icon for static member documentation.
+
+#### Syntax
+
+```csharp
+public const string StaticMember
+```
+
+### Struct
+
+FontAwesome icon for struct documentation.
+
+#### Syntax
+
+```csharp
+public const string Struct
+```
+
+### VirtualMethod
+
+FontAwesome icon for virtual method documentation.
+
+#### Syntax
+
+```csharp
+public const string VirtualMethod
+```
+
+### Warning
+
+FontAwesome icon for warning documentation sections.
+
+#### Syntax
+
+```csharp
+public const string Warning
+```
+

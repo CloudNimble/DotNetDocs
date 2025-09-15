@@ -8,7 +8,6 @@ using CloudNimble.Breakdance.Assemblies;
 using CloudNimble.DotNetDocs.Core;
 using CloudNimble.DotNetDocs.Core.Configuration;
 using CloudNimble.DotNetDocs.Core.Renderers;
-using CloudNimble.DotNetDocs.Core.Transformers;
 using CloudNimble.DotNetDocs.Tests.Shared;
 using CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios;
 using FluentAssertions;
@@ -544,8 +543,10 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
                 var assemblyPath = typeof(SampleClass).Assembly.Location;
                 var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
 
-                var documentationManager = GetService<DocumentationManager>();
-                await documentationManager.ProcessAsync(assemblyPath, xmlPath);
+                var manager = new AssemblyManager(assemblyPath, xmlPath);
+                var assembly = await manager.DocumentAsync(context);
+
+                await renderer.RenderAsync(assembly); 
 
                 var cloudNimbleDir = Path.Combine(testOutputPath, "CloudNimble");
                 Directory.Exists(cloudNimbleDir).Should().BeTrue();

@@ -1,0 +1,83 @@
+---
+title: StylingConfig
+description: "Represents the styling configuration for various UI elements in the Mintlify documentation site."
+icon: file-brackets-curly
+keywords: ['StylingConfig', 'Mintlify.Core.Models.StylingConfig', 'Mintlify.Core.Models', 'class', 'System.Object']
+---
+
+## Definition
+
+**Assembly:** Mintlify.Core.dll
+
+**Namespace:** Mintlify.Core.Models
+
+**Inheritance:** System.Object
+
+## Syntax
+
+```csharp
+Mintlify.Core.Models.StylingConfig
+```
+
+## Summary
+
+Represents the styling configuration for various UI elements in the Mintlify documentation site.
+
+## Remarks
+
+This configuration controls the visual styling of specific components such as
+            breadcrumbs, section eyebrows, and code blocks throughout the documentation.
+
+## Constructors
+
+### .ctor
+
+#### Syntax
+
+```csharp
+public StylingConfig()
+```
+
+## Properties
+
+### Codeblocks
+
+Gets or sets the code block theme.
+
+#### Syntax
+
+```csharp
+public string Codeblocks { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+
+#### Remarks
+
+Valid values are "system" or "dark". The "system" option uses a theme that
+            matches the current light/dark mode, while "dark" always uses a dark theme
+            for code blocks regardless of the site's appearance mode. Defaults to "system".
+
+### Eyebrows
+
+Gets or sets the eyebrows style for content sections.
+
+#### Syntax
+
+```csharp
+public string Eyebrows { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+
+#### Remarks
+
+Valid values are "section" or "breadcrumbs". This controls the style of the
+            small text that appears above page titles and section headers. "section" shows
+            the current section name, while "breadcrumbs" shows the full navigation path.
+            Defaults to "section".
+

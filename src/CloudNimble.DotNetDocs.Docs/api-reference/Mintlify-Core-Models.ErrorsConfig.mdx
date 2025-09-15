@@ -1,0 +1,61 @@
+---
+title: ErrorsConfig
+description: "Represents the error pages configuration for the Mintlify documentation site."
+icon: file-brackets-curly
+keywords: ['ErrorsConfig', 'Mintlify.Core.Models.ErrorsConfig', 'Mintlify.Core.Models', 'class', 'System.Object']
+---
+
+## Definition
+
+**Assembly:** Mintlify.Core.dll
+
+**Namespace:** Mintlify.Core.Models
+
+**Inheritance:** System.Object
+
+## Syntax
+
+```csharp
+Mintlify.Core.Models.ErrorsConfig
+```
+
+## Summary
+
+Represents the error pages configuration for the Mintlify documentation site.
+
+## Remarks
+
+This configuration controls how various error conditions are handled,
+            including 404 (Not Found) errors and their behavior.
+
+## Constructors
+
+### .ctor
+
+#### Syntax
+
+```csharp
+public ErrorsConfig()
+```
+
+## Properties
+
+### NotFound
+
+Gets or sets the configuration for 404 (Not Found) error handling.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.Error404Config NotFound { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.Error404Config?`
+
+#### Remarks
+
+Defines how the site behaves when users attempt to access pages that don't exist.
+            This includes options for automatic redirection and custom error page behavior.
+

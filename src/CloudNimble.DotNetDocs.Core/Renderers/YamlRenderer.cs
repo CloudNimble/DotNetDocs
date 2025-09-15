@@ -2,7 +2,6 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using CloudNimble.DotNetDocs.Core;
 using CloudNimble.DotNetDocs.Core.Renderers.YamlConverters;
 using Microsoft.CodeAnalysis;
 using YamlDotNet.Serialization;

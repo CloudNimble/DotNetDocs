@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using System.Linq;
+
 namespace CloudNimble.DotNetDocs.Tests.Shared.EdgeCases
 {
 
@@ -63,6 +66,37 @@ namespace CloudNimble.DotNetDocs.Tests.Shared.EdgeCases
                 throw new ArgumentOutOfRangeException(nameof(number), "Number must be non-negative.");
             }
             return $"{text}: {number}";
+        }
+
+        /// <summary>
+        /// Filters and transforms a collection of numbers.
+        /// </summary>
+        /// <returns>A collection of transformed numbers.</returns>
+        /// <example>
+        /// <code>
+        /// var numbers = Enumerable.Range(1, 10)
+        ///     .Where(x => x % 2 == 0)
+        ///     .Select(x => new
+        ///     {
+        ///         Number = x,
+        ///         Square = x * x,
+        ///         Cube = x * x * x
+        ///     })
+        ///     .ToList();
+        /// </code>
+        /// </example>
+        public IEnumerable<object> ProcessNumbers()
+        {
+            var numbers = Enumerable.Range(1, 10)
+                .Where(x => x % 2 == 0)
+                .Select(x => new
+                {
+                    Number = x,
+                    Square = x * x,
+                    Cube = x * x * x
+                })
+                .ToList();
+            return numbers;
         }
 
         #endregion

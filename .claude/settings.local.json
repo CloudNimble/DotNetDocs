@@ -26,7 +26,9 @@
       "Bash(git push:*)",
       "Bash(git add:*)",
       "Bash(git commit:*)",
-      "mcp__github__list_workflow_jobs"
+      "mcp__github__list_workflow_jobs",
+      "Read(//d/GitHub/DotNetDocs/**)",
+      "Bash(Select-Object Name, LastWriteTime)"
     ],
     "deny": [],
     "ask": [],

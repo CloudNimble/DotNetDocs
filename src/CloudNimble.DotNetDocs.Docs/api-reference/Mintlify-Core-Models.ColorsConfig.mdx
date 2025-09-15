@@ -1,0 +1,87 @@
+---
+title: ColorsConfig
+description: "Represents the color configuration for Mintlify themes."
+icon: file-brackets-curly
+keywords: ['ColorsConfig', 'Mintlify.Core.Models.ColorsConfig', 'Mintlify.Core.Models', 'class', 'System.Object']
+---
+
+## Definition
+
+**Assembly:** Mintlify.Core.dll
+
+**Namespace:** Mintlify.Core.Models
+
+**Inheritance:** System.Object
+
+## Syntax
+
+```csharp
+Mintlify.Core.Models.ColorsConfig
+```
+
+## Summary
+
+Represents the color configuration for Mintlify themes.
+
+## Remarks
+
+The colors to use in your documentation. At the very least, you must define the primary color.
+
+## Constructors
+
+### .ctor
+
+#### Syntax
+
+```csharp
+public ColorsConfig()
+```
+
+## Properties
+
+### Dark
+
+Gets or sets the dark color of the theme in hex format. Used for light mode.
+
+#### Syntax
+
+```csharp
+public string Dark { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+
+### Light
+
+Gets or sets the light color of the theme in hex format. Used for dark mode.
+
+#### Syntax
+
+```csharp
+public string Light { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+
+### Primary
+
+Gets or sets the primary color of the theme in hex format.
+
+#### Syntax
+
+```csharp
+public string Primary { get; set; }
+```
+
+#### Property Value
+
+Type: `string`
+
+#### Remarks
+
+This is a required field. Must be a valid hex color in format #RRGGBB or #RGB.
+

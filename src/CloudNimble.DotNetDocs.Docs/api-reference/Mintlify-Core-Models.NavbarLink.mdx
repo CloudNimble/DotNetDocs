@@ -1,0 +1,100 @@
+---
+title: NavbarLink
+description: "Represents a navigation link in the Mintlify navbar."
+icon: file-brackets-curly
+keywords: ['NavbarLink', 'Mintlify.Core.Models.NavbarLink', 'Mintlify.Core.Models', 'class', 'System.Object']
+---
+
+## Definition
+
+**Assembly:** Mintlify.Core.dll
+
+**Namespace:** Mintlify.Core.Models
+
+**Inheritance:** System.Object
+
+## Syntax
+
+```csharp
+Mintlify.Core.Models.NavbarLink
+```
+
+## Summary
+
+Represents a navigation link in the Mintlify navbar.
+
+## Remarks
+
+Each navbar link consists of a label, optional icon, and destination URL.
+            These links provide quick access to important pages or external resources.
+
+## Constructors
+
+### .ctor
+
+#### Syntax
+
+```csharp
+public NavbarLink()
+```
+
+## Properties
+
+### Href
+
+Gets or sets the destination URL for the navigation link.
+
+#### Syntax
+
+```csharp
+public string Href { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+
+#### Remarks
+
+Can be an absolute URL (https://example.com) or a relative path (/docs/page).
+            This determines where users navigate when clicking the link.
+
+### Icon
+
+Gets or sets the icon to display alongside the navigation link.
+
+#### Syntax
+
+```csharp
+public object Icon { get; set; }
+```
+
+#### Property Value
+
+Type: `object?`
+
+#### Remarks
+
+Can be a string icon name from the configured icon library, or an object
+            with detailed icon configuration including style and library properties.
+            The icon appears before the label text.
+
+### Label
+
+Gets or sets the display text for the navigation link.
+
+#### Syntax
+
+```csharp
+public string Label { get; set; }
+```
+
+#### Property Value
+
+Type: `string`
+
+#### Remarks
+
+This text appears in the navbar and should be concise and descriptive
+            of the link's destination. This is a required field.
+

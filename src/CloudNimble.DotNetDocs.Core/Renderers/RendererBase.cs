@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -417,67 +418,106 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
             if (string.IsNullOrWhiteSpace(text))
                 return text;
 
-            var lines = text.Split('\n');
+            ReadOnlySpan<char> span = text.AsSpan();
+            var lines = new List<Range>();
 
-            // Skip the first line when calculating minimum indentation since it's often already correct
-            // (XML doc comments often start with content on the same line as the tag)
-            int minIndent = int.MaxValue;
-            bool skipFirst = true;
-
-            foreach (var line in lines)
+            // Find all line ranges efficiently
+            int start = 0;
+            for (int i = 0; i < span.Length; i++)
             {
-                if (skipFirst)
+                if (span[i] == '\n')
                 {
-                    skipFirst = false;
-                    continue;
+                    lines.Add(start..i);
+                    start = i + 1;
                 }
-
-                if (string.IsNullOrWhiteSpace(line))
-                    continue;
-
-                int indent = 0;
-                foreach (var ch in line)
-                {
-                    if (ch == ' ' || ch == '\t')
-                        indent++;
-                    else
-                        break;
-                }
-
-                if (indent < minIndent)
-                    minIndent = indent;
             }
+            if (start < span.Length)
+                lines.Add(start..span.Length);
 
-            // If no indentation found, return original text
-            if (minIndent == int.MaxValue || minIndent == 0)
+            if (lines.Count == 0)
                 return text;
 
-            // Process lines: keep first line as-is, remove indentation from subsequent lines
-            var result = new StringBuilder();
-            for (int i = 0; i < lines.Length; i++)
+            // Step 1: Count leading whitespace in first line
+            ReadOnlySpan<char> firstLine = span[lines[0]].TrimEnd("\r\n");
+            int firstLineIndent = 0;
+            foreach (var ch in firstLine)
             {
-                var line = lines[i];
+                if (ch is ' ' or '\t')
+                    firstLineIndent++;
+                else
+                    break;
+            }
 
-                if (i == 0)
+            // Pre-calculate capacity for StringBuilder
+            var resultBuilder = new StringBuilder(text.Length);
+
+            // Process first line - remove its indentation if any
+            if (firstLineIndent > 0 && firstLine.Length > firstLineIndent)
+            {
+                resultBuilder.Append(firstLine[firstLineIndent..].TrimEnd());
+            }
+            else
+            {
+                resultBuilder.Append(firstLine.TrimEnd());
+            }
+
+            if (lines.Count == 1)
+                return resultBuilder.ToString();
+
+            // Step 2: After removing first line indent from line 2, count its remaining indent
+            int secondLineBaseIndent = 0;
+            if (lines.Count > 1)
+            {
+                ReadOnlySpan<char> secondLine = span[lines[1]].TrimEnd("\r\n");
+
+                // Skip past the first line's indentation amount
+                int pos = Math.Min(firstLineIndent, secondLine.Length);
+
+                // Count remaining indentation after removing first line's indent
+                for (int i = pos; i < secondLine.Length; i++)
                 {
-                    // Keep first line as-is
-                    result.AppendLine(line);
+                    if (secondLine[i] is ' ' or '\t')
+                        secondLineBaseIndent++;
+                    else
+                    {
+                        // Check if first non-whitespace char is '.'
+                        if (secondLine[i] == '.')
+                        {
+                            secondLineBaseIndent = Math.Max(0, secondLineBaseIndent - 4);
+                        }
+                        break;
+                    }
                 }
-                else if (string.IsNullOrWhiteSpace(line))
+            }
+
+            // Step 3: Process remaining lines
+            for (int i = 1; i < lines.Count; i++)
+            {
+                ReadOnlySpan<char> line = span[lines[i]].TrimEnd("\r\n");
+                resultBuilder.AppendLine();
+
+                if (line.IsEmpty)
+                    continue;
+
+                // Remove first line indent + second line base indent
+                int totalIndentToRemove = firstLineIndent + secondLineBaseIndent;
+
+                if (line.Length > totalIndentToRemove)
                 {
-                    result.AppendLine();
+                    resultBuilder.Append(line[totalIndentToRemove..].TrimEnd());
                 }
-                else if (line.Length > minIndent)
+                else if (line.Length > firstLineIndent)
                 {
-                    result.AppendLine(line.Substring(minIndent));
+                    // If we can't remove all the indent, at least remove what we can
+                    resultBuilder.Append(line[firstLineIndent..].TrimEnd());
                 }
                 else
                 {
-                    result.AppendLine(line.TrimStart());
+                    resultBuilder.Append(line.TrimEnd());
                 }
             }
 
-            return result.ToString().TrimEnd();
+            return resultBuilder.ToString();
         }
 
         #endregion

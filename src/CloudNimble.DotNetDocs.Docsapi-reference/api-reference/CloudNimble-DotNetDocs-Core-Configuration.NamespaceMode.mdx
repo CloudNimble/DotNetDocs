@@ -1,0 +1,67 @@
+---
+title: NamespaceMode
+description: "Specifies how namespaces should be organized in the output file structure."
+icon: lock
+tag: "SEALED"
+keywords: ['NamespaceMode', 'CloudNimble.DotNetDocs.Core.Configuration.NamespaceMode', 'CloudNimble.DotNetDocs.Core.Configuration', 'class', 'System.Enum']
+---
+
+## Definition
+
+**Assembly:** CloudNimble.DotNetDocs.Core.dll
+
+**Namespace:** CloudNimble.DotNetDocs.Core.Configuration
+
+**Inheritance:** System.Enum
+
+## Syntax
+
+```csharp
+CloudNimble.DotNetDocs.Core.Configuration.NamespaceMode
+```
+
+## Summary
+
+Specifies how namespaces should be organized in the output file structure.
+
+## Fields
+
+### File
+
+Each namespace is rendered as a single file in the root output directory.
+
+#### Syntax
+
+```csharp
+public const CloudNimble.DotNetDocs.Core.Configuration.NamespaceMode File
+```
+
+#### Remarks
+
+When using File mode, namespace names in filenames are separated by the configured separator character.
+            For example, "System.Collections.Generic" becomes "System-Collections-Generic.md" with a '-' separator.
+
+### Folder
+
+Each namespace is rendered in its own folder hierarchy matching the namespace structure.
+
+#### Syntax
+
+```csharp
+public const CloudNimble.DotNetDocs.Core.Configuration.NamespaceMode Folder
+```
+
+#### Remarks
+
+When using Folder mode, the namespace separator setting is ignored and the namespace hierarchy
+            is preserved as a folder structure. For example, "System.Collections.Generic" would create
+            the folder structure "System/Collections/Generic/" with documentation files inside.
+
+### value__
+
+#### Syntax
+
+```csharp
+public int value__
+```
+

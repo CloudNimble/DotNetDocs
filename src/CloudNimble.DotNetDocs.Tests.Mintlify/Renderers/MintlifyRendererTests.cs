@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using CloudNimble.Breakdance.Assemblies;
 using CloudNimble.DotNetDocs.Core;
 using CloudNimble.DotNetDocs.Core.Configuration;
-using CloudNimble.DotNetDocs.Core.Renderers;
 using CloudNimble.DotNetDocs.Mintlify;
 using CloudNimble.DotNetDocs.Tests.Shared;
 using CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios;
@@ -1186,7 +1185,6 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
         //}
 
         #endregion
-
 
     }
 

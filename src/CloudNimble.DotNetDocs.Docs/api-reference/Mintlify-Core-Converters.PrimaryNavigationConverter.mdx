@@ -1,0 +1,118 @@
+---
+title: PrimaryNavigationConverter
+description: "Handles JSON conversion for primary navigation properties that can be different types of objects."
+icon: file-brackets-curly
+keywords: ['PrimaryNavigationConverter', 'Mintlify.Core.Converters.PrimaryNavigationConverter', 'Mintlify.Core.Converters', 'class', 'System.Text.Json.Serialization.JsonConverter<object>']
+---
+
+## Definition
+
+**Assembly:** Mintlify.Core.dll
+
+**Namespace:** Mintlify.Core.Converters
+
+**Inheritance:** System.Text.Json.Serialization.JsonConverter&lt;object&gt;
+
+## Syntax
+
+```csharp
+Mintlify.Core.Converters.PrimaryNavigationConverter
+```
+
+## Summary
+
+Handles JSON conversion for primary navigation properties that can be different types of objects.
+
+## Remarks
+
+Primary navigation in Mintlify NavbarConfig can be specified as:
+            - Object: Button configuration with type, label, and href properties
+            - Object: GitHub configuration with type and href properties
+            - Object: Other custom navigation configurations
+
+## Constructors
+
+### .ctor
+
+#### Syntax
+
+```csharp
+public PrimaryNavigationConverter()
+```
+
+## Methods
+
+### CanConvert
+
+Determines whether the specified type can be converted by this converter.
+
+#### Syntax
+
+```csharp
+public override bool CanConvert(System.Type typeToConvert)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `typeToConvert` | `System.Type` | The type to convert. |
+
+#### Returns
+
+Type: `bool`
+True if the type is object; otherwise, false.
+
+### Read
+
+Reads and converts the JSON to a primary navigation object.
+
+#### Syntax
+
+```csharp
+public override object Read(ref System.Text.Json.Utf8JsonReader reader, System.Type typeToConvert, System.Text.Json.JsonSerializerOptions options)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `reader` | `System.Text.Json.Utf8JsonReader` | The JSON reader. |
+| `typeToConvert` | `System.Type` | The type to convert to. |
+| `options` | `System.Text.Json.JsonSerializerOptions` | The serializer options. |
+
+#### Returns
+
+Type: `object?`
+A Dictionary for primary navigation configuration objects.
+
+#### Exceptions
+
+| Exception | Description |
+|-----------|-------------|
+| `JsonException` | Thrown when the JSON token type is not supported. |
+
+### Write
+
+Writes the primary navigation object to JSON.
+
+#### Syntax
+
+```csharp
+public override void Write(System.Text.Json.Utf8JsonWriter writer, object value, System.Text.Json.JsonSerializerOptions options)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `writer` | `System.Text.Json.Utf8JsonWriter` | The JSON writer. |
+| `value` | `object` | The value to write. |
+| `options` | `System.Text.Json.JsonSerializerOptions` | The serializer options. |
+
+#### Exceptions
+
+| Exception | Description |
+|-----------|-------------|
+| `JsonException` | Thrown when the value type is not supported. |
+

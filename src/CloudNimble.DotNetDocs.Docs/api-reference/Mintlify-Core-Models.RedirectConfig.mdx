@@ -1,0 +1,103 @@
+---
+title: RedirectConfig
+description: "Represents a URL redirect configuration for the Mintlify documentation site."
+icon: file-brackets-curly
+keywords: ['RedirectConfig', 'Mintlify.Core.Models.RedirectConfig', 'Mintlify.Core.Models', 'class', 'System.Object']
+---
+
+## Definition
+
+**Assembly:** Mintlify.Core.dll
+
+**Namespace:** Mintlify.Core.Models
+
+**Inheritance:** System.Object
+
+## Syntax
+
+```csharp
+Mintlify.Core.Models.RedirectConfig
+```
+
+## Summary
+
+Represents a URL redirect configuration for the Mintlify documentation site.
+
+## Remarks
+
+This configuration defines how requests to specific paths should be redirected
+            to different URLs, useful for maintaining backward compatibility or reorganizing content.
+
+## Constructors
+
+### .ctor
+
+#### Syntax
+
+```csharp
+public RedirectConfig()
+```
+
+## Properties
+
+### Destination
+
+Gets or sets the destination path where requests should be redirected.
+
+#### Syntax
+
+```csharp
+public string Destination { get; set; }
+```
+
+#### Property Value
+
+Type: `string`
+
+#### Remarks
+
+Specifies where users should be redirected when they visit the source path.
+            Can be a relative path (e.g., "/new-page") or an absolute URL
+            (e.g., "https://example.com/page"). This is a required field.
+
+### Permanent
+
+Gets or sets whether the redirect is permanent (301) or temporary (302).
+
+#### Syntax
+
+```csharp
+public System.Nullable<bool> Permanent { get; set; }
+```
+
+#### Property Value
+
+Type: `System.Nullable&lt;bool&gt;`
+
+#### Remarks
+
+When true, returns a 301 (Moved Permanently) status code, indicating to search
+            engines that the move is permanent. When false or not specified, returns a 302
+            (Found) status code for temporary redirects. Permanent redirects are better for SEO
+            when content has permanently moved.
+
+### Source
+
+Gets or sets the source path that should be redirected.
+
+#### Syntax
+
+```csharp
+public string Source { get; set; }
+```
+
+#### Property Value
+
+Type: `string`
+
+#### Remarks
+
+Specifies the original path that users might visit. When a request is made
+            to this path, it will be automatically redirected to the destination.
+            Should be a relative path starting with "/" (e.g., "/old-page"). This is a required field.
+

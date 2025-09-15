@@ -1,0 +1,82 @@
+---
+title: BannerConfig
+description: "Represents the banner configuration for displaying announcements or notifications in the Mintlify documentation site."
+icon: file-brackets-curly
+keywords: ['BannerConfig', 'Mintlify.Core.Models.BannerConfig', 'Mintlify.Core.Models', 'class', 'System.Object']
+---
+
+## Definition
+
+**Assembly:** Mintlify.Core.dll
+
+**Namespace:** Mintlify.Core.Models
+
+**Inheritance:** System.Object
+
+## Syntax
+
+```csharp
+Mintlify.Core.Models.BannerConfig
+```
+
+## Summary
+
+Represents the banner configuration for displaying announcements or notifications in the Mintlify documentation site.
+
+## Remarks
+
+This configuration allows you to display a banner at the top of your documentation
+            for important announcements, updates, or notifications. The banner supports MDX formatting.
+
+## Constructors
+
+### .ctor
+
+#### Syntax
+
+```csharp
+public BannerConfig()
+```
+
+## Properties
+
+### Content
+
+Gets or sets the content to display in the banner.
+
+#### Syntax
+
+```csharp
+public string Content { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+
+#### Remarks
+
+The text or MDX content that will be displayed in the banner. MDX formatting
+            is supported, allowing for rich content including links, emphasis, and other
+            formatting. This content should be concise but informative.
+
+### Dismissible
+
+Gets or sets whether to show a dismiss button on the banner.
+
+#### Syntax
+
+```csharp
+public System.Nullable<bool> Dismissible { get; set; }
+```
+
+#### Property Value
+
+Type: `System.Nullable&lt;bool&gt;?`
+
+#### Remarks
+
+When true, displays a dismiss button (X) on the right side of the banner,
+            allowing users to close the banner. When false or not specified, the banner
+            cannot be dismissed by users and will always be visible.
+

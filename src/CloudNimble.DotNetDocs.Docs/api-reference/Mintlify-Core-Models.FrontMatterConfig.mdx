@@ -1,0 +1,500 @@
+---
+title: FrontMatterConfig
+description: "Represents frontmatter configuration for Mintlify documentation pages."
+icon: file-brackets-curly
+keywords: ['FrontMatterConfig', 'Mintlify.Core.Models.FrontMatterConfig', 'Mintlify.Core.Models', 'class', 'System.Object']
+---
+
+## Definition
+
+**Assembly:** Mintlify.Core.dll
+
+**Namespace:** Mintlify.Core.Models
+
+**Inheritance:** System.Object
+
+## Syntax
+
+```csharp
+Mintlify.Core.Models.FrontMatterConfig
+```
+
+## Summary
+
+Represents frontmatter configuration for Mintlify documentation pages.
+
+## Remarks
+
+This class contains all the documented frontmatter properties supported by Mintlify.
+            These properties control page appearance, navigation, and behavior in the Mintlify documentation site.
+            For more information, see the Mintlify documentation at https://mintlify.com/docs/content/overview.
+
+## Constructors
+
+### .ctor
+
+#### Syntax
+
+```csharp
+public FrontMatterConfig()
+```
+
+## Properties
+
+### Canonical
+
+Gets or sets the canonical URL for SEO.
+
+#### Syntax
+
+```csharp
+public string Canonical { get; set; }
+```
+
+#### Property Value
+
+Type: `string`
+
+#### Remarks
+
+Helps prevent duplicate content issues by specifying the canonical version of the page.
+
+### Classes
+
+Gets or sets custom CSS classes for the page.
+
+#### Syntax
+
+```csharp
+public System.Collections.Generic.List<string> Classes { get; set; }
+```
+
+#### Property Value
+
+Type: `System.Collections.Generic.List&lt;string&gt;`
+
+#### Remarks
+
+Additional CSS classes to apply to the page for custom styling.
+
+### Data
+
+Gets or sets custom data attributes.
+
+#### Syntax
+
+```csharp
+public System.Collections.Generic.Dictionary<string, string> Data { get; set; }
+```
+
+#### Property Value
+
+Type: `System.Collections.Generic.Dictionary&lt;string, string&gt;`
+
+#### Remarks
+
+Custom data attributes to add to the page for analytics or custom JavaScript.
+
+### Deprecated
+
+Gets or sets a value indicating whether the page is deprecated.
+
+#### Syntax
+
+```csharp
+public System.Nullable<bool> Deprecated { get; set; }
+```
+
+#### Property Value
+
+Type: `System.Nullable&lt;bool&gt;`
+
+#### Remarks
+
+When true, displays a deprecation notice on the page.
+
+### Description
+
+Gets or sets the description of the page.
+
+#### Syntax
+
+```csharp
+public string Description { get; set; }
+```
+
+#### Property Value
+
+Type: `string`
+
+#### Remarks
+
+Used for SEO meta descriptions and page summaries.
+
+### Groups
+
+Gets or sets the groups that can access this page.
+
+#### Syntax
+
+```csharp
+public System.Collections.Generic.List<string> Groups { get; set; }
+```
+
+#### Property Value
+
+Type: `System.Collections.Generic.List&lt;string&gt;`
+
+#### Remarks
+
+Used for access control in authenticated documentation sites.
+
+### Hidden
+
+Gets or sets a value indicating whether the page should be hidden from navigation.
+
+#### Syntax
+
+```csharp
+public System.Nullable<bool> Hidden { get; set; }
+```
+
+#### Property Value
+
+Type: `System.Nullable&lt;bool&gt;`
+
+#### Remarks
+
+When true, the page is accessible by direct URL but not shown in navigation menus.
+
+### Icon
+
+Gets or sets the icon for the page.
+
+#### Syntax
+
+```csharp
+public string Icon { get; set; }
+```
+
+#### Property Value
+
+Type: `string`
+
+#### Remarks
+
+Can be a FontAwesome icon name, Lucide icon name, or a custom icon path.
+            Examples: "cube", "book", "settings", "star".
+
+### IconType
+
+Gets or sets the icon type.
+
+#### Syntax
+
+```csharp
+public string IconType { get; set; }
+```
+
+#### Property Value
+
+Type: `string`
+
+#### Remarks
+
+Specifies the icon style. Common values: "solid", "regular", "light", "duotone".
+
+### Meta
+
+Gets or sets additional meta tags for the page.
+
+#### Syntax
+
+```csharp
+public System.Collections.Generic.Dictionary<string, string> Meta { get; set; }
+```
+
+#### Property Value
+
+Type: `System.Collections.Generic.Dictionary&lt;string, string&gt;`
+
+#### Remarks
+
+Dictionary of additional meta tag name/content pairs for custom SEO or social media tags.
+
+### Mode
+
+Gets or sets the layout mode for the page.
+
+#### Syntax
+
+```csharp
+public string Mode { get; set; }
+```
+
+#### Property Value
+
+Type: `string`
+
+#### Remarks
+
+Controls the page layout. Common values: "wide", "centered".
+
+### OgDescription
+
+Gets or sets the OpenGraph description.
+
+#### Syntax
+
+```csharp
+public string OgDescription { get; set; }
+```
+
+#### Property Value
+
+Type: `string`
+
+#### Remarks
+
+Description used when the page is shared on social media platforms.
+
+### OgImage
+
+Gets or sets the OpenGraph image URL.
+
+#### Syntax
+
+```csharp
+public string OgImage { get; set; }
+```
+
+#### Property Value
+
+Type: `string`
+
+#### Remarks
+
+Image used when the page is shared on social media platforms.
+
+### OgTitle
+
+Gets or sets the OpenGraph title.
+
+#### Syntax
+
+```csharp
+public string OgTitle { get; set; }
+```
+
+#### Property Value
+
+Type: `string`
+
+#### Remarks
+
+Title used when the page is shared on social media platforms.
+
+### Order
+
+Gets or sets the navigation order.
+
+#### Syntax
+
+```csharp
+public System.Nullable<int> Order { get; set; }
+```
+
+#### Property Value
+
+Type: `System.Nullable&lt;int&gt;`
+
+#### Remarks
+
+Numeric value to control the order of pages in navigation. Lower numbers appear first.
+
+### Public
+
+Gets or sets a value indicating whether the page is public.
+
+#### Syntax
+
+```csharp
+public System.Nullable<bool> Public { get; set; }
+```
+
+#### Property Value
+
+Type: `System.Nullable&lt;bool&gt;`
+
+#### Remarks
+
+Controls visibility in public documentation sites.
+
+### Robots
+
+Gets or sets the robots meta tag content.
+
+#### Syntax
+
+```csharp
+public string Robots { get; set; }
+```
+
+#### Property Value
+
+Type: `string`
+
+#### Remarks
+
+Controls search engine indexing. Common values: "index,follow", "noindex,nofollow".
+
+### SidebarTitle
+
+Gets or sets the sidebar title.
+
+#### Syntax
+
+```csharp
+public string SidebarTitle { get; set; }
+```
+
+#### Property Value
+
+Type: `string`
+
+#### Remarks
+
+Shorter title used in the sidebar navigation. If not specified, the main title is used.
+
+### Tag
+
+Gets or sets the tag for the page.
+
+#### Syntax
+
+```csharp
+public string Tag { get; set; }
+```
+
+#### Property Value
+
+Type: `string`
+
+#### Remarks
+
+Displays a tag badge next to the title. Common values: "NEW", "BETA", "DEPRECATED".
+
+### Title
+
+Gets or sets the title of the page.
+
+#### Syntax
+
+```csharp
+public string Title { get; set; }
+```
+
+#### Property Value
+
+Type: `string`
+
+#### Remarks
+
+This is the main heading displayed at the top of the page and used in navigation.
+
+### Url
+
+Gets or sets the external URL for the page.
+
+#### Syntax
+
+```csharp
+public string Url { get; set; }
+```
+
+#### Property Value
+
+Type: `string`
+
+#### Remarks
+
+If specified, clicking on this page in navigation will redirect to this URL instead of showing content.
+
+### Version
+
+Gets or sets the version for the page.
+
+#### Syntax
+
+```csharp
+public string Version { get; set; }
+```
+
+#### Property Value
+
+Type: `string`
+
+#### Remarks
+
+Used for version-specific documentation.
+
+## Methods
+
+### Create
+
+Creates a FrontMatterConfig with basic title and description, properly escaped.
+
+#### Syntax
+
+```csharp
+public static Mintlify.Core.Models.FrontMatterConfig Create(string title, string description = null)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `title` | `string` | The page title. |
+| `description` | `string?` | The page description. |
+
+#### Returns
+
+Type: `Mintlify.Core.Models.FrontMatterConfig`
+A new FrontMatterConfig instance.
+
+### EscapeYamlValue
+
+Escapes a value for safe use in YAML frontmatter.
+
+#### Syntax
+
+```csharp
+public static string EscapeYamlValue(string value)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `value` | `string` | The value to escape. |
+
+#### Returns
+
+Type: `string`
+The escaped value, properly quoted if necessary.
+
+### ToYaml
+
+Generates YAML frontmatter from this configuration.
+
+#### Syntax
+
+```csharp
+public string ToYaml()
+```
+
+#### Returns
+
+Type: `string`
+The YAML frontmatter as a string, including delimiters.
+

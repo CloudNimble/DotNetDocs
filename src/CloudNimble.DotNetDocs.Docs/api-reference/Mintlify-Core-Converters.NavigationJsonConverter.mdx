@@ -1,0 +1,77 @@
+---
+title: NavigationJsonConverter
+description: "Custom JSON converter for navigation that outputs simple array format for Mintlify compatibility."
+icon: file-brackets-curly
+keywords: ['NavigationJsonConverter', 'Mintlify.Core.Converters.NavigationJsonConverter', 'Mintlify.Core.Converters', 'class', 'System.Text.Json.Serialization.JsonConverter<Mintlify.Core.Models.NavigationConfig>']
+---
+
+## Definition
+
+**Assembly:** Mintlify.Core.dll
+
+**Namespace:** Mintlify.Core.Converters
+
+**Inheritance:** System.Text.Json.Serialization.JsonConverter&lt;Mintlify.Core.Models.NavigationConfig&gt;
+
+## Syntax
+
+```csharp
+Mintlify.Core.Converters.NavigationJsonConverter
+```
+
+## Summary
+
+Custom JSON converter for navigation that outputs simple array format for Mintlify compatibility.
+
+## Constructors
+
+### .ctor
+
+#### Syntax
+
+```csharp
+public NavigationJsonConverter()
+```
+
+## Methods
+
+### Read
+
+Reads navigation from JSON, supporting both array and object formats.
+
+#### Syntax
+
+```csharp
+public override Mintlify.Core.Models.NavigationConfig Read(ref System.Text.Json.Utf8JsonReader reader, System.Type typeToConvert, System.Text.Json.JsonSerializerOptions options)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `reader` | `System.Text.Json.Utf8JsonReader` | - |
+| `typeToConvert` | `System.Type` | - |
+| `options` | `System.Text.Json.JsonSerializerOptions` | - |
+
+#### Returns
+
+Type: `Mintlify.Core.Models.NavigationConfig?`
+
+### Write
+
+Writes navigation to JSON in the appropriate format for Mintlify compatibility.
+
+#### Syntax
+
+```csharp
+public override void Write(System.Text.Json.Utf8JsonWriter writer, Mintlify.Core.Models.NavigationConfig value, System.Text.Json.JsonSerializerOptions options)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `writer` | `System.Text.Json.Utf8JsonWriter` | - |
+| `value` | `Mintlify.Core.Models.NavigationConfig` | - |
+| `options` | `System.Text.Json.JsonSerializerOptions` | - |
+

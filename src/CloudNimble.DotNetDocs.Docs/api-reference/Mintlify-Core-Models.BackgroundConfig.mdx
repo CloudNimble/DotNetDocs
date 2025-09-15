@@ -1,0 +1,100 @@
+---
+title: BackgroundConfig
+description: "Represents the background configuration for the Mintlify documentation site."
+icon: file-brackets-curly
+keywords: ['BackgroundConfig', 'Mintlify.Core.Models.BackgroundConfig', 'Mintlify.Core.Models', 'class', 'System.Object']
+---
+
+## Definition
+
+**Assembly:** Mintlify.Core.dll
+
+**Namespace:** Mintlify.Core.Models
+
+**Inheritance:** System.Object
+
+## Syntax
+
+```csharp
+Mintlify.Core.Models.BackgroundConfig
+```
+
+## Summary
+
+Represents the background configuration for the Mintlify documentation site.
+
+## Remarks
+
+This configuration controls the background appearance including images, decorations,
+            and colors for the documentation site.
+
+## Constructors
+
+### .ctor
+
+#### Syntax
+
+```csharp
+public BackgroundConfig()
+```
+
+## Properties
+
+### Color
+
+Gets or sets the background color configuration.
+
+#### Syntax
+
+```csharp
+public object Color { get; set; }
+```
+
+#### Property Value
+
+Type: `object?`
+
+#### Remarks
+
+Can be a hex color string or an object with color configuration properties.
+            This controls the base background color of the documentation site.
+
+### Decoration
+
+Gets or sets the background decoration style.
+
+#### Syntax
+
+```csharp
+public string Decoration { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+
+#### Remarks
+
+Valid values are "gradient", "grid", or "windows". This adds decorative
+            background patterns to enhance the visual appearance of the site.
+
+### Image
+
+Gets or sets the background image configuration.
+
+#### Syntax
+
+```csharp
+public object Image { get; set; }
+```
+
+#### Property Value
+
+Type: `object?`
+
+#### Remarks
+
+Can be a string URL for a single image, or an object with "light" and "dark" 
+            properties for different images in each mode. Should be an absolute URL or 
+            relative path to the image file.
+

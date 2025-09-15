@@ -28,40 +28,34 @@ Represents MSBuild project context for source intent in documentation generation
 Provides metadata such as referenced assembly paths and the conceptual documentation folder path.
              Used by `ProjectContext)` to enhance metadata extraction.
              &lt;example&gt;
-  
-```csharp
+  ```csharp
 // Default (public members only)
-             var context = new ProjectContext("ref1.dll", "ref2.dll") { ConceptualPath = "conceptual" };
-            
-             // Include public and internal members
-             var context = new ProjectContext([Accessibility.Public, Accessibility.Internal], "ref1.dll", "ref2.dll");
-            
-             var model = await manager.DocumentAsync("MyLib.dll", "MyLib.xml", context);
-```
+var context = new ProjectContext("ref1.dll", "ref2.dll") { ConceptualPath = "conceptual" };
 
+// Include public and internal members
+var context = new ProjectContext([Accessibility.Public, Accessibility.Internal], "ref1.dll", "ref2.dll");
+
+var model = await manager.DocumentAsync("MyLib.dll", "MyLib.xml", context);
+```
 &lt;/example&gt;
 
 ## Examples
 
 ```csharp
-
-```csharp
 // Default (public members only)
-             var context = new ProjectContext("ref1.dll", "ref2.dll") { ConceptualPath = "conceptual" };
-            
-             // Include public and internal members
-             var context = new ProjectContext([Accessibility.Public, Accessibility.Internal], "ref1.dll", "ref2.dll");
-            
-             var model = await manager.DocumentAsync("MyLib.dll", "MyLib.xml", context);
-```
+var context = new ProjectContext("ref1.dll", "ref2.dll") { ConceptualPath = "conceptual" };
 
+// Include public and internal members
+var context = new ProjectContext([Accessibility.Public, Accessibility.Internal], "ref1.dll", "ref2.dll");
+
+var model = await manager.DocumentAsync("MyLib.dll", "MyLib.xml", context);
 ```
 
 ## Constructors
 
 ### .ctor
 
-Initializes a new instance of [ProjectContext](../ProjectContext.md) with default settings.
+Initializes a new instance of [ProjectContext](ProjectContext) with default settings.
 
 #### Syntax
 
@@ -71,7 +65,7 @@ public ProjectContext()
 
 ### .ctor
 
-Initializes a new instance of [ProjectContext](../ProjectContext.md) with optional included members and referenced assemblies.
+Initializes a new instance of [ProjectContext](ProjectContext) with optional included members and referenced assemblies.
 
 #### Syntax
 
@@ -150,14 +144,12 @@ Set of type patterns to exclude. Supports wildcards (*) for flexible matching.
 
 #### Examples
 
-```csharp
-ExcludedTypes = new HashSet&lt;string&gt; 
-{ 
-    "*.MicrosoftTestingPlatformEntryPoint",  // Matches in any namespace
-    "*.SelfRegisteredExtensions",             // Matches in any namespace
-    "System.Runtime.CompilerServices.*"       // Matches any type in this namespace
+ExcludedTypes = new HashSet&lt;string&gt;
+{
+    "*.MicrosoftTestingPlatformEntryPoint",  // Matches in any namespace
+    "*.SelfRegisteredExtensions",             // Matches in any namespace
+    "System.Runtime.CompilerServices.*"       // Matches any type in this namespace
 }
-```
 
 #### Remarks
 
@@ -275,9 +267,9 @@ The folder path representation of the namespace.
 
 #### Remarks
 
-When `NamespaceMode` is `Folder`,
+When [FileNamingOptions.NamespaceMode](../CloudNimble/DotNetDocs/Core/Configuration/FileNamingOptions#namespacemode) is [NamespaceMode.Folder](../CloudNimble/DotNetDocs/Core/Configuration/NamespaceMode#folder),
             this returns a path with folders for each namespace part (e.g., "System/Collections/Generic").
-            When using `File`, this returns an empty string as no folder
+            When using [NamespaceMode.File](../CloudNimble/DotNetDocs/Core/Configuration/NamespaceMode#file), this returns an empty string as no folder
             structure is created.
 
 ### GetSafeNamespaceName

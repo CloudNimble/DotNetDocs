@@ -277,6 +277,34 @@ types:
     summary: A complex method with full documentation.
   - accessibility: Public
     memberKind: Method
+    methodKind: Ordinary
+    name: ProcessNumbers
+    returnType:
+      assemblyName: System.Runtime
+      fullName: System.Collections.Generic.IEnumerable<object>
+      name: IEnumerable
+      signature: System.Collections.Generic.IEnumerable<object>
+      typeKind: Error
+      displayName: System.Collections.Generic.IEnumerable<object>
+    returnTypeName: System.Collections.Generic.IEnumerable<object>
+    signature: public System.Collections.Generic.IEnumerable<object> ProcessNumbers()
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithFullDocs.ProcessNumbers()
+    examples: >-
+      <code>
+                  var numbers = Enumerable.Range(1, 10)
+                      .Where(x =&gt; x % 2 == 0)
+                      .Select(x =&gt; new
+                      {
+                          Number = x,
+                          Square = x * x,
+                          Cube = x * x * x
+                      })
+                      .ToList();
+                  </code>
+    returns: A collection of transformed numbers.
+    summary: Filters and transforms a collection of numbers.
+  - accessibility: Public
+    memberKind: Method
     methodKind: Constructor
     name: .ctor
     returnTypeName: void

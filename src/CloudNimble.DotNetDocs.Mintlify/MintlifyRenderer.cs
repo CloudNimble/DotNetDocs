@@ -624,9 +624,7 @@ namespace CloudNimble.DotNetDocs.Mintlify
             {
                 sb.AppendLine("## Examples");
                 sb.AppendLine();
-                sb.AppendLine("```csharp");
                 sb.AppendLine(RemoveIndentation(assembly.Examples));
-                sb.AppendLine("```");
                 sb.AppendLine();
             }
 
@@ -717,9 +715,7 @@ namespace CloudNimble.DotNetDocs.Mintlify
             {
                 sb.AppendLine("## Examples");
                 sb.AppendLine();
-                sb.AppendLine("```csharp");
                 sb.AppendLine(RemoveIndentation(ns.Examples));
-                sb.AppendLine("```");
                 sb.AppendLine();
             }
 
@@ -925,9 +921,7 @@ namespace CloudNimble.DotNetDocs.Mintlify
             {
                 sb.AppendLine("## Examples");
                 sb.AppendLine();
-                sb.AppendLine("```csharp");
                 sb.AppendLine(RemoveIndentation(type.Examples));
-                sb.AppendLine("```");
                 sb.AppendLine();
             }
 
@@ -1151,9 +1145,7 @@ namespace CloudNimble.DotNetDocs.Mintlify
             {
                 sb.AppendLine("#### Examples");
                 sb.AppendLine();
-                sb.AppendLine("```csharp");
                 sb.AppendLine(RemoveIndentation(member.Examples));
-                sb.AppendLine("```");
                 sb.AppendLine();
             }
 
