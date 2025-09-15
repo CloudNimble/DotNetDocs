@@ -15,7 +15,7 @@ namespace CloudNimble.DotNetDocs.Core.Transformers
     /// converting XML documentation tags to their Markdown equivalents. It uses performance-optimized
     /// regex patterns to skip strings without XML tags and builds cross-references in a single pass.
     /// </remarks>
-    public class MarkdownXmlTransformer : IDocTransformer
+    public partial class MarkdownXmlTransformer : IDocTransformer
     {
 
         #region Fields
@@ -27,107 +27,92 @@ namespace CloudNimble.DotNetDocs.Core.Transformers
         /// <summary>
         /// Compiled regex for quick detection of any XML documentation tags.
         /// </summary>
-        private static readonly Regex HasXmlTags = new(
-            @"<(?:see|c|code|para|b|i|br|list|item|paramref|typeparamref|exception|returns|summary|remarks|example|value)",
-            RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        [GeneratedRegex(@"<(?:see|c|code|para|b|i|br|list|item|paramref|typeparamref|exception|returns|summary|remarks|example|value)", RegexOptions.IgnoreCase)]
+        private static partial Regex HasXmlTags();
 
         /// <summary>
         /// Pattern for see cref tags.
         /// </summary>
-        private static readonly Regex SeeRefPattern = new(
-            @"<see\s+cref=""([^""]+)""\s*/?>",
-            RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        [GeneratedRegex(@"<see\s+cref=""([^""]+)""\s*/?>", RegexOptions.IgnoreCase)]
+        private static partial Regex SeeRefPattern();
 
         /// <summary>
         /// Pattern for see href tags with optional text.
         /// </summary>
-        private static readonly Regex SeeHrefPattern = new(
-            @"<see\s+href=""([^""]+)""(?:\s*/>|>(.*?)</see>)",
-            RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        [GeneratedRegex(@"<see\s+href=""([^""]+)""(?:\s*/>|>(.*?)</see>)", RegexOptions.IgnoreCase)]
+        private static partial Regex SeeHrefPattern();
 
         /// <summary>
         /// Pattern for see langword tags.
         /// </summary>
-        private static readonly Regex SeeLangwordPattern = new(
-            @"<see\s+langword=""([^""]+)""\s*/?>",
-            RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        [GeneratedRegex(@"<see\s+langword=""([^""]+)""\s*/?>", RegexOptions.IgnoreCase)]
+        private static partial Regex SeeLangwordPattern();
 
         /// <summary>
         /// Pattern for paramref name tags.
         /// </summary>
-        private static readonly Regex ParamRefPattern = new(
-            @"<paramref\s+name=""([^""]+)""\s*/?>",
-            RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        [GeneratedRegex(@"<paramref\s+name=""([^""]+)""\s*/?>", RegexOptions.IgnoreCase)]
+        private static partial Regex ParamRefPattern();
 
         /// <summary>
         /// Pattern for typeparamref name tags.
         /// </summary>
-        private static readonly Regex TypeParamRefPattern = new(
-            @"<typeparamref\s+name=""([^""]+)""\s*/?>",
-            RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        [GeneratedRegex(@"<typeparamref\s+name=""([^""]+)""\s*/?>", RegexOptions.IgnoreCase)]
+        private static partial Regex TypeParamRefPattern();
 
         /// <summary>
         /// Pattern for c inline code tags.
         /// </summary>
-        private static readonly Regex InlineCodePattern = new(
-            @"<c>(.*?)</c>",
-            RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
+        [GeneratedRegex(@"<c>(.*?)</c>", RegexOptions.IgnoreCase | RegexOptions.Singleline)]
+        private static partial Regex InlineCodePattern();
 
         /// <summary>
         /// Pattern for code block tags with optional language attribute.
         /// </summary>
-        private static readonly Regex CodeBlockPattern = new(
-            @"<code(?:\s+language=""([^""]+)"")?\s*>(.*?)</code>",
-            RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
+        [GeneratedRegex(@"<code(?:\s+language=""([^""]+)"")?\s*>(.*?)</code>", RegexOptions.IgnoreCase | RegexOptions.Singleline)]
+        private static partial Regex CodeBlockPattern();
 
         /// <summary>
         /// Pattern for para tags.
         /// </summary>
-        private static readonly Regex ParaPattern = new(
-            @"<para>(.*?)</para>",
-            RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
+        [GeneratedRegex(@"<para>(.*?)</para>", RegexOptions.IgnoreCase | RegexOptions.Singleline)]
+        private static partial Regex ParaPattern();
 
         /// <summary>
         /// Pattern for bold tags.
         /// </summary>
-        private static readonly Regex BoldPattern = new(
-            @"<b>(.*?)</b>",
-            RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
+        [GeneratedRegex(@"<b>(.*?)</b>", RegexOptions.IgnoreCase | RegexOptions.Singleline)]
+        private static partial Regex BoldPattern();
 
         /// <summary>
         /// Pattern for italic tags.
         /// </summary>
-        private static readonly Regex ItalicPattern = new(
-            @"<i>(.*?)</i>",
-            RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
+        [GeneratedRegex(@"<i>(.*?)</i>", RegexOptions.IgnoreCase | RegexOptions.Singleline)]
+        private static partial Regex ItalicPattern();
 
         /// <summary>
         /// Pattern for line break tags.
         /// </summary>
-        private static readonly Regex LineBreakPattern = new(
-            @"<br\s*/?>",
-            RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        [GeneratedRegex(@"<br\s*/?>", RegexOptions.IgnoreCase)]
+        private static partial Regex LineBreakPattern();
 
         /// <summary>
         /// Pattern for list structures.
         /// </summary>
-        private static readonly Regex ListPattern = new(
-            @"<list\s+type=""(bullet|number|table)""[^>]*>(.*?)</list>",
-            RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
+        [GeneratedRegex(@"<list\s+type=""(bullet|number|table)""[^>]*>(.*?)</list>", RegexOptions.IgnoreCase | RegexOptions.Singleline)]
+        private static partial Regex ListPattern();
 
         /// <summary>
         /// Pattern for list items.
         /// </summary>
-        private static readonly Regex ListItemPattern = new(
-            @"<item>(?:<term>(.*?)</term>)?(?:<description>(.*?)</description>)?</item>",
-            RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
+        [GeneratedRegex(@"<item>(?:<term>(.*?)</term>)?(?:<description>(.*?)</description>)?</item>", RegexOptions.IgnoreCase | RegexOptions.Singleline)]
+        private static partial Regex ListItemPattern();
 
         /// <summary>
         /// Pattern for list headers (for tables).
         /// </summary>
-        private static readonly Regex ListHeaderPattern = new(
-            @"<listheader>(?:<term>(.*?)</term>)?(?:<description>(.*?)</description>)?</listheader>",
-            RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
+        [GeneratedRegex(@"<listheader>(?:<term>(.*?)</term>)?(?:<description>(.*?)</description>)?</listheader>", RegexOptions.IgnoreCase | RegexOptions.Singleline)]
+        private static partial Regex ListHeaderPattern();
 
         // Performance metrics (optional)
         private int _stringsProcessed;
@@ -326,7 +311,7 @@ namespace CloudNimble.DotNetDocs.Core.Transformers
             }
 
             // Quick check - skip processing if no XML tags present
-            if (!HasXmlTags.IsMatch(text))
+            if (!HasXmlTags().IsMatch(text))
             {
                 _stringsSkipped++;
                 return text;
@@ -353,7 +338,7 @@ namespace CloudNimble.DotNetDocs.Core.Transformers
         protected virtual string ConvertSeeReferences(string text, Dictionary<string, DocEntity> references)
         {
             // Convert <see cref=""/> tags
-            text = SeeRefPattern.Replace(text, match =>
+            text = SeeRefPattern().Replace(text, match =>
             {
                 var typeRef = match.Groups[1].Value;
                 var docRef = _resolver.ResolveReference(typeRef, _currentPath ?? string.Empty);
@@ -361,7 +346,7 @@ namespace CloudNimble.DotNetDocs.Core.Transformers
             });
 
             // Convert <see href=""/> tags
-            text = SeeHrefPattern.Replace(text, match =>
+            text = SeeHrefPattern().Replace(text, match =>
             {
                 var url = match.Groups[1].Value;
                 var linkText = match.Groups[2].Success ? match.Groups[2].Value : "link";
@@ -369,7 +354,7 @@ namespace CloudNimble.DotNetDocs.Core.Transformers
             });
 
             // Convert <see langword=""/> tags
-            text = SeeLangwordPattern.Replace(text, match =>
+            text = SeeLangwordPattern().Replace(text, match =>
             {
                 var keyword = match.Groups[1].Value.ToLowerInvariant();
                 var url = GetLanguageKeywordUrl(keyword);
@@ -385,14 +370,14 @@ namespace CloudNimble.DotNetDocs.Core.Transformers
         protected virtual string ConvertCodeTags(string text)
         {
             // Convert <c></c> inline code tags
-            text = InlineCodePattern.Replace(text, match =>
+            text = InlineCodePattern().Replace(text, match =>
             {
                 var code = match.Groups[1].Value.Trim();
                 return string.IsNullOrEmpty(code) ? "" : $"`{code}`";
             });
 
             // Convert <code></code> block tags (including those with CDATA)
-            text = CodeBlockPattern.Replace(text, match =>
+            text = CodeBlockPattern().Replace(text, match =>
             {
                 var language = match.Groups[1].Success ? match.Groups[1].Value : "csharp";
                 var code = match.Groups[2].Value;
@@ -422,7 +407,7 @@ namespace CloudNimble.DotNetDocs.Core.Transformers
         /// </summary>
         /// <param name="code">The code block to process.</param>
         /// <returns>The code block with common indentation removed.</returns>
-        private static string RemoveCommonIndentation(string code)
+        internal static string RemoveCommonIndentation(string code)
         {
             if (string.IsNullOrWhiteSpace(code))
                 return code;
@@ -482,14 +467,14 @@ namespace CloudNimble.DotNetDocs.Core.Transformers
         protected virtual string ConvertReferenceParams(string text)
         {
             // Convert <paramref name=""/> tags
-            text = ParamRefPattern.Replace(text, match =>
+            text = ParamRefPattern().Replace(text, match =>
             {
                 var paramName = match.Groups[1].Value;
                 return $"*{paramName}*";
             });
 
             // Convert <typeparamref name=""/> tags
-            text = TypeParamRefPattern.Replace(text, match =>
+            text = TypeParamRefPattern().Replace(text, match =>
             {
                 var typeParamName = match.Groups[1].Value;
                 return $"*{typeParamName}*";
@@ -504,28 +489,28 @@ namespace CloudNimble.DotNetDocs.Core.Transformers
         protected virtual string ConvertFormattingTags(string text)
         {
             // Convert <para></para> tags
-            text = ParaPattern.Replace(text, match =>
+            text = ParaPattern().Replace(text, match =>
             {
                 var content = match.Groups[1].Value;
                 return $"\n\n{content}\n\n";
             });
 
             // Convert <b></b> bold tags
-            text = BoldPattern.Replace(text, match =>
+            text = BoldPattern().Replace(text, match =>
             {
                 var content = match.Groups[1].Value;
                 return $"**{content}**";
             });
 
             // Convert <i></i> italic tags
-            text = ItalicPattern.Replace(text, match =>
+            text = ItalicPattern().Replace(text, match =>
             {
                 var content = match.Groups[1].Value;
                 return $"*{content}*";
             });
 
             // Convert <br/> line break tags
-            text = LineBreakPattern.Replace(text, "  \n");
+            text = LineBreakPattern().Replace(text, "  \n");
 
             return text;
         }
@@ -535,18 +520,18 @@ namespace CloudNimble.DotNetDocs.Core.Transformers
         /// </summary>
         protected virtual string ConvertLists(string text)
         {
-            return ListPattern.Replace(text, match =>
+            return ListPattern().Replace(text, match =>
             {
                 var listType = match.Groups[1].Value.ToLowerInvariant();
                 var listContent = match.Groups[2].Value;
 
-                var items = ListItemPattern.Matches(listContent);
+                var items = ListItemPattern().Matches(listContent);
                 var result = new StringBuilder();
 
                 if (listType == "table")
                 {
                     // Check for list header
-                    var headerMatch = ListHeaderPattern.Match(listContent);
+                    var headerMatch = ListHeaderPattern().Match(listContent);
                     if (headerMatch.Success)
                     {
                         // Table format
@@ -716,11 +701,47 @@ namespace CloudNimble.DotNetDocs.Core.Transformers
         /// <summary>
         /// Escapes any remaining XML tags that weren't processed.
         /// </summary>
+        /// <remarks>
+        /// This method preserves content inside backticks (inline code) to avoid double-escaping.
+        /// </remarks>
         protected virtual string EscapeRemainingXmlTags(string text)
         {
-            // Use the existing method from RendererBase
-            return text.Replace("<", "&lt;").Replace(">", "&gt;");
+            // Regex to match content inside backticks (inline code)
+            var result = new StringBuilder();
+            var lastIndex = 0;
+
+            // Find all backtick-enclosed sections
+            var matches = BacktickPattern().Matches(text);
+
+            foreach (Match match in matches)
+            {
+                // Escape content before this backtick section
+                if (match.Index > lastIndex)
+                {
+                    var beforeBacktick = text.Substring(lastIndex, match.Index - lastIndex);
+                    result.Append(beforeBacktick.Replace("<", "&lt;").Replace(">", "&gt;"));
+                }
+
+                // Preserve content inside backticks without escaping
+                result.Append(match.Value);
+                lastIndex = match.Index + match.Length;
+            }
+
+            // Escape any remaining content after the last backtick section
+            if (lastIndex < text.Length)
+            {
+                var remaining = text.Substring(lastIndex);
+                result.Append(remaining.Replace("<", "&lt;").Replace(">", "&gt;"));
+            }
+
+            return result.ToString();
         }
+
+        /// <summary>
+        /// Pattern for matching content inside backticks (inline code).
+        /// </summary>
+        [GeneratedRegex(@"`[^`]+`", RegexOptions.None)]
+        private static partial Regex BacktickPattern();
 
         #endregion
 

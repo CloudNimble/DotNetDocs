@@ -149,7 +149,7 @@ public static Microsoft.Extensions.DependencyInjection.IServiceCollection AddDot
 | Name | Type | Description |
 |------|------|-------------|
 | `services` | `Microsoft.Extensions.DependencyInjection.IServiceCollection` | The service collection. |
-| `configureContext` | `System.Action&lt;CloudNimble.DotNetDocs.Core.ProjectContext&gt;?` | Optional action to configure the ProjectContext. |
+| `configureContext` | `System.Action<CloudNimble.DotNetDocs.Core.ProjectContext>?` | Optional action to configure the ProjectContext. |
 
 #### Returns
 
@@ -189,7 +189,7 @@ public static Microsoft.Extensions.DependencyInjection.IServiceCollection AddDot
 | Name | Type | Description |
 |------|------|-------------|
 | `services` | `Microsoft.Extensions.DependencyInjection.IServiceCollection` | The service collection. |
-| `configureContext` | `System.Action&lt;CloudNimble.DotNetDocs.Core.ProjectContext&gt;?` | Optional action to configure the ProjectContext. |
+| `configureContext` | `System.Action<CloudNimble.DotNetDocs.Core.ProjectContext>?` | Optional action to configure the ProjectContext. |
 
 #### Returns
 
@@ -228,7 +228,7 @@ public static Microsoft.Extensions.DependencyInjection.IServiceCollection AddDot
 | Name | Type | Description |
 |------|------|-------------|
 | `services` | `Microsoft.Extensions.DependencyInjection.IServiceCollection` | The service collection. |
-| `configurePipeline` | `System.Action&lt;CloudNimble.DotNetDocs.Core.Configuration.DotNetDocsBuilder&gt;` | Action to configure the documentation pipeline. |
+| `configurePipeline` | `System.Action<CloudNimble.DotNetDocs.Core.Configuration.DotNetDocsBuilder>` | Action to configure the documentation pipeline. |
 
 #### Returns
 
@@ -263,7 +263,7 @@ public static Microsoft.Extensions.DependencyInjection.IServiceCollection AddJso
 | Name | Type | Description |
 |------|------|-------------|
 | `services` | `Microsoft.Extensions.DependencyInjection.IServiceCollection` | The service collection. |
-| `configureOptions` | `System.Action&lt;CloudNimble.DotNetDocs.Core.Renderers.JsonRendererOptions&gt;?` | Optional action to configure JsonRendererOptions. |
+| `configureOptions` | `System.Action<CloudNimble.DotNetDocs.Core.Renderers.JsonRendererOptions>?` | Optional action to configure JsonRendererOptions. |
 
 #### Returns
 

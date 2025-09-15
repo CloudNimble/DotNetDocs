@@ -165,6 +165,10 @@ namespace CloudNimble.DotNetDocs.Core
 
         #region Internal Methods
 
+        /// <summary>
+        /// Indexes a namespace and all its types in the reference map.
+        /// </summary>
+        /// <param name="ns">The namespace to index.</param>
         internal void IndexNamespace(DocNamespace ns)
         {
             var nsId = GetNamespaceDocumentationId(ns);
@@ -177,6 +181,11 @@ namespace CloudNimble.DotNetDocs.Core
             }
         }
 
+        /// <summary>
+        /// Indexes a type and all its members in the reference map.
+        /// </summary>
+        /// <param name="type">The type to index.</param>
+        /// <param name="ns">The parent namespace of the type.</param>
         internal void IndexType(DocType type, DocNamespace ns)
         {
             var typeId = GetTypeDocumentationId(type);
@@ -202,6 +211,12 @@ namespace CloudNimble.DotNetDocs.Core
             }
         }
 
+        /// <summary>
+        /// Indexes a member in the reference map with multiple lookup keys.
+        /// </summary>
+        /// <param name="member">The member to index.</param>
+        /// <param name="parentType">The parent type containing the member.</param>
+        /// <param name="ns">The namespace containing the parent type.</param>
         internal void IndexMember(DocMember member, DocType parentType, DocNamespace ns)
         {
             var memberId = GetMemberDocumentationId(member, parentType);
@@ -226,6 +241,12 @@ namespace CloudNimble.DotNetDocs.Core
             }
         }
 
+        /// <summary>
+        /// Adds an entity to the reference map with its documentation ID and path.
+        /// </summary>
+        /// <param name="entity">The entity to add to the map.</param>
+        /// <param name="id">The documentation ID for the entity.</param>
+        /// <param name="path">The relative path to the entity's documentation.</param>
         internal void AddToReferenceMap(DocEntity entity, string id, string path)
         {
             if (!string.IsNullOrWhiteSpace(id))
@@ -235,22 +256,43 @@ namespace CloudNimble.DotNetDocs.Core
             }
         }
 
+        /// <summary>
+        /// Gets the documentation ID for an assembly using the A: prefix.
+        /// </summary>
+        /// <param name="assembly">The assembly to get the ID for.</param>
+        /// <returns>The documentation ID in the format "A:AssemblyName".</returns>
         internal string GetAssemblyDocumentationId(DocAssembly assembly)
         {
             return $"A:{assembly.AssemblyName}";
         }
 
+        /// <summary>
+        /// Gets the documentation ID for a namespace using the N: prefix.
+        /// </summary>
+        /// <param name="ns">The namespace to get the ID for.</param>
+        /// <returns>The documentation ID in the format "N:NamespaceName".</returns>
         internal string GetNamespaceDocumentationId(DocNamespace ns)
         {
             return $"N:{ns.Name}";
         }
 
+        /// <summary>
+        /// Gets the documentation ID for a type using the T: prefix.
+        /// </summary>
+        /// <param name="type">The type to get the ID for.</param>
+        /// <returns>The documentation ID in the format "T:FullTypeName".</returns>
         internal string GetTypeDocumentationId(DocType type)
         {
             var fullName = type.FullName ?? type.Name;
             return $"T:{fullName}";
         }
 
+        /// <summary>
+        /// Gets the documentation ID for a member using the appropriate prefix (F:, P:, M:, E:).
+        /// </summary>
+        /// <param name="member">The member to get the ID for.</param>
+        /// <param name="parentType">The parent type containing the member.</param>
+        /// <returns>The documentation ID in the format "Prefix:TypeName.MemberName".</returns>
         internal string GetMemberDocumentationId(DocMember member, DocType parentType)
         {
             var fullTypeName = parentType.FullName ?? parentType.Name;
@@ -267,6 +309,11 @@ namespace CloudNimble.DotNetDocs.Core
             return $"{prefix}{fullTypeName}.{member.Name}";
         }
 
+        /// <summary>
+        /// Gets the documentation file path for a namespace based on the configured naming mode.
+        /// </summary>
+        /// <param name="ns">The namespace to get the path for.</param>
+        /// <returns>The relative path to the namespace documentation file.</returns>
         internal string GetNamespacePath(DocNamespace ns)
         {
             var namespaceName = ns.Name ?? "Global";
@@ -283,6 +330,12 @@ namespace CloudNimble.DotNetDocs.Core
             }
         }
 
+        /// <summary>
+        /// Gets the documentation file path for a type based on the configured naming mode.
+        /// </summary>
+        /// <param name="type">The type to get the path for.</param>
+        /// <param name="ns">The parent namespace of the type.</param>
+        /// <returns>The relative path to the type documentation file.</returns>
         internal string GetTypePath(DocType type, DocNamespace ns)
         {
             var namespaceName = ns.Name ?? "Global";
@@ -299,28 +352,37 @@ namespace CloudNimble.DotNetDocs.Core
             }
         }
 
+        /// <summary>
+        /// Gets a root-relative path from one document to another, including the API reference path prefix.
+        /// </summary>
+        /// <param name="fromPath">The current document path (unused for root-relative paths).</param>
+        /// <param name="toPath">The target document path.</param>
+        /// <returns>A root-relative path including the API reference path prefix.</returns>
         internal string GetRelativePath(string fromPath, string toPath)
         {
-            // For now, use a simple ../ prefix
-            // In a more sophisticated implementation, we'd calculate the actual relative path
-            if (string.IsNullOrWhiteSpace(fromPath) || string.IsNullOrWhiteSpace(toPath))
+            // Use root-relative paths starting with /
+            // This ensures all links work regardless of the current document's depth
+            if (string.IsNullOrWhiteSpace(toPath))
             {
-                return $"../{toPath}";
+                return $"/{_context.ApiReferencePath}";
             }
 
-            // If paths are in the same directory, just use the filename
-            var fromDir = Path.GetDirectoryName(fromPath)?.Replace('\\', '/') ?? string.Empty;
-            var toDir = Path.GetDirectoryName(toPath)?.Replace('\\', '/') ?? string.Empty;
+            // Ensure the path starts with the API reference path for root-relative
+            var cleanPath = toPath.Replace('\\', '/');
 
-            if (fromDir == toDir)
-            {
-                return Path.GetFileName(toPath);
-            }
+            // Prepend the API reference path
+            var apiRefPath = _context.ApiReferencePath?.Replace('\\', '/').Trim('/') ?? "api-reference";
+            cleanPath = $"/{apiRefPath}/{cleanPath.TrimStart('/')}";
 
-            // Otherwise, use ../ to go up and then the target path
-            return $"../{toPath}";
+            return cleanPath;
         }
 
+        /// <summary>
+        /// Gets the anchor for a documentation reference, typically for member references.
+        /// </summary>
+        /// <param name="reference">The raw reference string.</param>
+        /// <param name="entity">The resolved entity, if found.</param>
+        /// <returns>The anchor string for member references, or null for types and namespaces.</returns>
         internal string? GetAnchor(string reference, DocEntity entity)
         {
             // For member references, generate an anchor
@@ -353,6 +415,12 @@ namespace CloudNimble.DotNetDocs.Core
             return null;
         }
 
+        /// <summary>
+        /// Gets a human-readable display name for a documentation reference.
+        /// </summary>
+        /// <param name="reference">The raw reference string.</param>
+        /// <param name="entity">The resolved entity.</param>
+        /// <returns>A formatted display name suitable for rendering in documentation.</returns>
         internal string GetDisplayName(string reference, DocEntity entity)
         {
             // For members, include the type name for clarity
@@ -384,6 +452,11 @@ namespace CloudNimble.DotNetDocs.Core
             return entity.DisplayName ?? GetSimpleTypeName(reference);
         }
 
+        /// <summary>
+        /// Strips the documentation prefix (T:, M:, F:, P:, E:, N:, A:) from a reference string.
+        /// </summary>
+        /// <param name="reference">The reference string that may contain a prefix.</param>
+        /// <returns>The reference string without the prefix.</returns>
         internal string StripPrefix(string reference)
         {
             if (reference.Contains(':'))
@@ -393,6 +466,11 @@ namespace CloudNimble.DotNetDocs.Core
             return reference;
         }
 
+        /// <summary>
+        /// Gets the simple name of a type by removing the namespace prefix.
+        /// </summary>
+        /// <param name="typeName">The fully qualified type name.</param>
+        /// <returns>The simple type name without namespace.</returns>
         internal string GetSimpleTypeName(string typeName)
         {
             var lastDot = typeName.LastIndexOf('.');
@@ -403,6 +481,11 @@ namespace CloudNimble.DotNetDocs.Core
             return typeName;
         }
 
+        /// <summary>
+        /// Determines whether a type name represents a .NET Framework or Microsoft type.
+        /// </summary>
+        /// <param name="typeName">The type name to check.</param>
+        /// <returns>True if the type is from System, Microsoft, or Windows namespaces; otherwise, false.</returns>
         internal bool IsFrameworkType(string typeName)
         {
             return typeName.StartsWith("System.") ||
@@ -410,6 +493,11 @@ namespace CloudNimble.DotNetDocs.Core
                    typeName.StartsWith("Windows.");
         }
 
+        /// <summary>
+        /// Generates a Microsoft Learn documentation URL for a .NET Framework type.
+        /// </summary>
+        /// <param name="typeName">The fully qualified type name.</param>
+        /// <returns>The URL to the type's documentation on Microsoft Learn.</returns>
         internal string GetFrameworkDocumentationUrl(string typeName)
         {
             // Remove generic arity - replace `1 with -1, `2 with -2, etc.

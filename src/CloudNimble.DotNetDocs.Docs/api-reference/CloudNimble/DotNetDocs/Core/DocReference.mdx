@@ -33,7 +33,7 @@ This class encapsulates all information needed to resolve and render a documenta
 
 ### .ctor
 
-Initializes a new instance of the [DocReference](DocReference) class.
+Initializes a new instance of the [DocReference](/api-reference/CloudNimble/DotNetDocs/Core/DocReference) class.
 
 #### Syntax
 
@@ -43,7 +43,7 @@ public DocReference()
 
 ### .ctor
 
-Initializes a new instance of the [DocReference](DocReference) class with a raw reference.
+Initializes a new instance of the [DocReference](/api-reference/CloudNimble/DotNetDocs/Core/DocReference) class with a raw reference.
 
 #### Syntax
 
@@ -148,7 +148,7 @@ The classification of this reference.
 
 ### RelativePath
 
-Gets or sets the resolved relative path to the target documentation.
+Gets or sets the resolved root-relative path to the target documentation.
 
 #### Syntax
 
@@ -159,11 +159,11 @@ public string RelativePath { get; set; }
 #### Property Value
 
 Type: `string?`
-The relative path from the current document to the target, or null if unresolved.
+The root-relative path to the target document (starting with /), or null if unresolved.
 
 #### Examples
 
-../Configuration/NamespaceMode.md
+/Configuration/NamespaceMode.md
 
 ### TargetEntity
 

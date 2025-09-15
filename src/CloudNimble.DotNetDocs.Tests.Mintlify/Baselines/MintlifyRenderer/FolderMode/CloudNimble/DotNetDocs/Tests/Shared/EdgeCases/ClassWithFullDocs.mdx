@@ -29,12 +29,10 @@ A class with comprehensive XML documentation tags.
 
 ## Examples
 
-```csharp
 <code>
 var fullDocs = new ClassWithFullDocs();
 fullDocs.ComplexMethod("test", 42);
 </code>
-```
 
 ## Constructors
 
@@ -100,12 +98,10 @@ A processed result string.
 
 #### Examples
 
-```csharp
 <code>
 var result = ComplexMethod("hello", 5);
 Console.WriteLine(result);
 </code>
-```
 
 #### Remarks
 
@@ -137,12 +133,11 @@ public System.Collections.Generic.IEnumerable<object> ProcessNumbers()
 
 #### Returns
 
-Type: `System.Collections.Generic.IEnumerable&lt;object&gt;`
+Type: `System.Collections.Generic.IEnumerable<object>`
 A collection of transformed numbers.
 
 #### Examples
 
-```csharp
 <code>
 var numbers = Enumerable.Range(1, 10)
     .Where(x =&gt; x % 2 == 0)
@@ -154,7 +149,6 @@ var numbers = Enumerable.Range(1, 10)
     })
     .ToList();
 </code>
-```
 
 ## See Also
 

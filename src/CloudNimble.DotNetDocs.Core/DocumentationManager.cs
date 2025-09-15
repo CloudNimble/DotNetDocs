@@ -151,7 +151,7 @@ namespace CloudNimble.DotNetDocs.Core
         /// </summary>
         /// <param name="assemblies">The collection of DocAssembly models to merge.</param>
         /// <returns>A task representing the asynchronous merge operation.</returns>
-        private async Task<DocAssembly> MergeDocAssembliesAsync(List<DocAssembly> assemblies)
+        internal async Task<DocAssembly> MergeDocAssembliesAsync(List<DocAssembly> assemblies)
         {
             if (assemblies.Count == 0)
             {
@@ -185,7 +185,7 @@ namespace CloudNimble.DotNetDocs.Core
         /// <param name="mergedAssembly">The assembly being merged into.</param>
         /// <param name="sourceNamespace">The namespace to merge.</param>
         /// <returns>A task representing the asynchronous merge operation.</returns>
-        private async Task MergeNamespaceAsync(DocAssembly mergedAssembly, DocNamespace sourceNamespace)
+        internal async Task MergeNamespaceAsync(DocAssembly mergedAssembly, DocNamespace sourceNamespace)
         {
             // Find existing namespace or create new one
             var existingNamespace = mergedAssembly.Namespaces.FirstOrDefault(ns =>
@@ -220,7 +220,7 @@ namespace CloudNimble.DotNetDocs.Core
         /// <param name="mergedNamespace">The namespace being merged into.</param>
         /// <param name="sourceType">The type to merge.</param>
         /// <returns>A task representing the asynchronous merge operation.</returns>
-        private async Task MergeTypeAsync(DocNamespace mergedNamespace, DocType sourceType)
+        internal async Task MergeTypeAsync(DocNamespace mergedNamespace, DocType sourceType)
         {
             // Find existing type or create new one
             var existingType = mergedNamespace.Types.FirstOrDefault(t =>
@@ -255,7 +255,7 @@ namespace CloudNimble.DotNetDocs.Core
         /// <param name="mergedType">The type being merged into.</param>
         /// <param name="sourceMember">The member to merge.</param>
         /// <returns>A task representing the asynchronous merge operation.</returns>
-        private Task MergeMemberAsync(DocType mergedType, DocMember sourceMember)
+        internal Task MergeMemberAsync(DocType mergedType, DocMember sourceMember)
         {
             // Find existing member or create new one
             var existingMember = mergedType.Members.FirstOrDefault(m =>

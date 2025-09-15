@@ -677,8 +677,26 @@ namespace CloudNimble.DotNetDocs.Mintlify
             sb.AppendLine();
             foreach (var ns in assembly.Namespaces)
             {
-                var nsFileName = Path.GetFileName(GetNamespaceFilePath(ns, outputPath, "mdx"));
-                sb.AppendLine($"- [{ns.Name}]({nsFileName})");
+                // Get the safe namespace name
+                var namespaceName = GetSafeNamespaceName(ns);
+                // Get the folder path for the namespace
+                var folderPath = Context.GetNamespaceFolderPath(namespaceName);
+
+                // Build the link based on the namespace mode
+                string link;
+                if (FileNamingOptions.NamespaceMode == NamespaceMode.Folder)
+                {
+                    // For folder mode, link to the folder (Mintlify will automatically find index.mdx)
+                    // Remove trailing slash if present to ensure clean links
+                    link = folderPath.Replace('\\', '/').TrimEnd('/');
+                }
+                else
+                {
+                    // For file mode, use the file name with the separator
+                    link = $"{namespaceName.Replace('.', FileNamingOptions.NamespaceSeparator)}.mdx";
+                }
+
+                sb.AppendLine($"- [{ns.Name}]({link})");
             }
 
             var filePath = Path.Combine(outputPath, "index.mdx");
@@ -867,7 +885,8 @@ namespace CloudNimble.DotNetDocs.Mintlify
             if (!string.IsNullOrWhiteSpace(type.BaseType))
             {
                 sb.AppendLine();
-                sb.AppendLine($"**Inheritance:** {EscapeXmlTagsInString(type.BaseType)}");
+                // Escape angle brackets for generic types to prevent MDX parsing errors
+                sb.AppendLine($"**Inheritance:** {type.BaseType.Replace("<", "&lt;").Replace(">", "&gt;")}");
             }
 
             // TODO: Add interface information when available in DocType
@@ -1079,7 +1098,7 @@ namespace CloudNimble.DotNetDocs.Mintlify
                 sb.AppendLine("|------|------|-------------|");
                 foreach (var param in member.Parameters)
                 {
-                    var paramType = EscapeXmlTagsInString(param.TypeName ?? "unknown");
+                    var paramType = param.TypeName ?? "unknown";
                     var description = !string.IsNullOrWhiteSpace(param.Usage) ? param.Usage : param.Summary ?? "-";
                     sb.AppendLine($"| `{param.Name}` | `{paramType}` | {description} |");
                 }
@@ -1092,7 +1111,7 @@ namespace CloudNimble.DotNetDocs.Mintlify
             {
                 sb.AppendLine("#### Returns");
                 sb.AppendLine();
-                sb.AppendLine($"Type: `{EscapeXmlTagsInString(member.ReturnTypeName)}`");
+                sb.AppendLine($"Type: `{member.ReturnTypeName}`");
                 if (!string.IsNullOrWhiteSpace(member.Returns))
                 {
                     sb.AppendLine(member.Returns);
@@ -1105,7 +1124,7 @@ namespace CloudNimble.DotNetDocs.Mintlify
             {
                 sb.AppendLine("#### Property Value");
                 sb.AppendLine();
-                sb.AppendLine($"Type: `{EscapeXmlTagsInString(member.ReturnTypeName)}`");
+                sb.AppendLine($"Type: `{member.ReturnTypeName}`");
                 if (!string.IsNullOrWhiteSpace(member.Value))
                 {
                     sb.AppendLine(member.Value);

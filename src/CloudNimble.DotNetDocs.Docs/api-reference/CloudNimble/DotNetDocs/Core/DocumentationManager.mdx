@@ -26,14 +26,14 @@ Orchestrates the documentation pipeline for one or more assemblies.
 ## Remarks
 
 This class manages the complete documentation lifecycle including enrichment,
-            transformation, and rendering. It handles [AssemblyManager](AssemblyManager) creation,
+            transformation, and rendering. It handles [AssemblyManager](/api-reference/CloudNimble/DotNetDocs/Core/AssemblyManager) creation,
             usage, and disposal for processing assemblies.
 
 ## Constructors
 
 ### .ctor
 
-Initializes a new instance of the [DocumentationManager](DocumentationManager) class.
+Initializes a new instance of the [DocumentationManager](/api-reference/CloudNimble/DotNetDocs/Core/DocumentationManager) class.
 
 #### Syntax
 
@@ -46,9 +46,9 @@ public DocumentationManager(CloudNimble.DotNetDocs.Core.ProjectContext projectCo
 | Name | Type | Description |
 |------|------|-------------|
 | `projectContext` | `CloudNimble.DotNetDocs.Core.ProjectContext` | The project context containing configuration settings. |
-| `enrichers` | `System.Collections.Generic.IEnumerable&lt;CloudNimble.DotNetDocs.Core.IDocEnricher&gt;?` | The enrichers to apply to documentation entities. |
-| `transformers` | `System.Collections.Generic.IEnumerable&lt;CloudNimble.DotNetDocs.Core.IDocTransformer&gt;?` | The transformers to apply to the documentation model. |
-| `renderers` | `System.Collections.Generic.IEnumerable&lt;CloudNimble.DotNetDocs.Core.IDocRenderer&gt;?` | The renderers to generate output formats. |
+| `enrichers` | `System.Collections.Generic.IEnumerable<CloudNimble.DotNetDocs.Core.IDocEnricher>?` | The enrichers to apply to documentation entities. |
+| `transformers` | `System.Collections.Generic.IEnumerable<CloudNimble.DotNetDocs.Core.IDocTransformer>?` | The transformers to apply to the documentation model. |
+| `renderers` | `System.Collections.Generic.IEnumerable<CloudNimble.DotNetDocs.Core.IDocRenderer>?` | The renderers to generate output formats. |
 
 #### Remarks
 
@@ -93,7 +93,7 @@ public System.Threading.Tasks.Task CreateConceptualFilesAsync(System.Collections
 
 | Name | Type | Description |
 |------|------|-------------|
-| `assemblies` | `System.Collections.Generic.IEnumerable&lt;(string, string)&gt;` | The collection of assembly and XML path pairs. |
+| `assemblies` | `System.Collections.Generic.IEnumerable<(string, string)>` | The collection of assembly and XML path pairs. |
 
 #### Returns
 
@@ -102,7 +102,7 @@ A task representing the asynchronous operation.
 
 ### Dispose
 
-Disposes of all cached [AssemblyManager](AssemblyManager) instances.
+Disposes of all cached [AssemblyManager](/api-reference/CloudNimble/DotNetDocs/Core/AssemblyManager) instances.
 
 #### Syntax
 
@@ -146,7 +146,7 @@ public System.Threading.Tasks.Task ProcessAsync(System.Collections.Generic.IEnum
 
 | Name | Type | Description |
 |------|------|-------------|
-| `assemblies` | `System.Collections.Generic.IEnumerable&lt;(string, string)&gt;` | The collection of assembly and XML path pairs. |
+| `assemblies` | `System.Collections.Generic.IEnumerable<(string, string)>` | The collection of assembly and XML path pairs. |
 
 #### Returns
 

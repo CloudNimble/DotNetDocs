@@ -33,7 +33,7 @@ This class provides comprehensive support for loading, validating, and modifying
 
 ### .ctor
 
-Initializes a new instance of the [DocsJsonManager](DocsJsonManager) class.
+Initializes a new instance of the [DocsJsonManager](/api-reference/Mintlify/Core/DocsJsonManager) class.
 
 #### Syntax
 
@@ -43,7 +43,7 @@ public DocsJsonManager()
 
 ### .ctor
 
-Initializes a new instance of the [DocsJsonManager](DocsJsonManager) class with the specified file path.
+Initializes a new instance of the [DocsJsonManager](/api-reference/Mintlify/Core/DocsJsonManager) class with the specified file path.
 
 #### Syntax
 
@@ -78,7 +78,7 @@ public Mintlify.Core.Models.DocsJsonConfig Configuration { get; internal set; }
 #### Property Value
 
 Type: `Mintlify.Core.Models.DocsJsonConfig?`
-The [DocsJsonConfig](../Mintlify/Core/Models/DocsJsonConfig) instance loaded from the file system or string content.
+The [DocsJsonConfig](/api-reference/Mintlify/Core/Models/DocsJsonConfig) instance loaded from the file system or string content.
             Returns null if no configuration has been loaded or if loading failed.
 
 ### ConfigurationErrors
@@ -93,7 +93,7 @@ public System.Collections.Generic.List<System.CodeDom.Compiler.CompilerError> Co
 
 #### Property Value
 
-Type: `System.Collections.Generic.List&lt;System.CodeDom.Compiler.CompilerError&gt;`
+Type: `System.Collections.Generic.List<System.CodeDom.Compiler.CompilerError>`
 A collection of [CompilerError](https://learn.microsoft.com/dotnet/api/system.codedom.compiler.compilererror) instances representing validation errors,
             parsing failures, or other issues encountered during configuration loading.
 
@@ -195,7 +195,7 @@ public static Mintlify.Core.Models.DocsJsonConfig CreateDefault(string name, str
 #### Returns
 
 Type: `Mintlify.Core.Models.DocsJsonConfig`
-A new [DocsJsonConfig](../Mintlify/Core/Models/DocsJsonConfig) instance with default values.
+A new [DocsJsonConfig](/api-reference/Mintlify/Core/Models/DocsJsonConfig) instance with default values.
 
 #### Exceptions
 

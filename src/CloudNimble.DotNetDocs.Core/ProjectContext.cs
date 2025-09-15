@@ -260,7 +260,7 @@ namespace CloudNimble.DotNetDocs.Core
         /// <param name="typeName">The fully qualified type name.</param>
         /// <param name="pattern">The pattern with optional wildcards (*).</param>
         /// <returns>True if the type name matches the pattern; otherwise, false.</returns>
-        private static bool MatchesPattern(string typeName, string pattern)
+        internal static bool MatchesPattern(string typeName, string pattern)
         {
             // Convert wildcard pattern to regex pattern
             // Escape special regex characters except *

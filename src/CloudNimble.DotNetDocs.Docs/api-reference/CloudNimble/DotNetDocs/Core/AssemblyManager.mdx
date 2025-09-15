@@ -26,7 +26,7 @@ Manages assembly metadata extraction using Roslyn for API documentation generati
 ## Remarks
 
 Extracts metadata from a single .NET assembly and its XML documentation file, building an in-memory model
-            ([DocAssembly](DocAssembly)) with interconnected types, members, and parameters. Supports conceptual content
+            ([DocAssembly](/api-reference/CloudNimble/DotNetDocs/Core/DocAssembly)) with interconnected types, members, and parameters. Supports conceptual content
             loading from a specified folder. Designed for multi-targeting .NET 10.0, 9.0, and 8.0. One instance per assembly
             is required, with paths specified at construction for incremental build support. Implements [IDisposable](https://learn.microsoft.com/dotnet/api/system.idisposable)
             to release memory used by the compilation and model.
@@ -43,7 +43,7 @@ var model = await manager.DocumentAsync(context);
 
 ### .ctor
 
-Initializes a new instance of [AssemblyManager](AssemblyManager) for a specific assembly.
+Initializes a new instance of [AssemblyManager](/api-reference/CloudNimble/DotNetDocs/Core/AssemblyManager) for a specific assembly.
 
 #### Syntax
 
@@ -127,7 +127,7 @@ public System.Collections.Generic.List<System.CodeDom.Compiler.CompilerError> Er
 
 #### Property Value
 
-Type: `System.Collections.Generic.List&lt;System.CodeDom.Compiler.CompilerError&gt;`
+Type: `System.Collections.Generic.List<System.CodeDom.Compiler.CompilerError>`
 
 #### Remarks
 
@@ -195,8 +195,8 @@ public System.Threading.Tasks.Task<CloudNimble.DotNetDocs.Core.DocAssembly> Docu
 
 #### Returns
 
-Type: `System.Threading.Tasks.Task&lt;CloudNimble.DotNetDocs.Core.DocAssembly&gt;`
-A task representing the asynchronous operation, containing the [DocAssembly](DocAssembly) model.
+Type: `System.Threading.Tasks.Task<CloudNimble.DotNetDocs.Core.DocAssembly>`
+A task representing the asynchronous operation, containing the [DocAssembly](/api-reference/CloudNimble/DotNetDocs/Core/DocAssembly) model.
 
 ## Related APIs
 

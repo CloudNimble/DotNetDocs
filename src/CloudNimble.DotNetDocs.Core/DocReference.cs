@@ -48,10 +48,10 @@ namespace CloudNimble.DotNetDocs.Core
         public ReferenceType ReferenceType { get; set; }
 
         /// <summary>
-        /// Gets or sets the resolved relative path to the target documentation.
+        /// Gets or sets the resolved root-relative path to the target documentation.
         /// </summary>
-        /// <value>The relative path from the current document to the target, or null if unresolved.</value>
-        /// <example>../Configuration/NamespaceMode.md</example>
+        /// <value>The root-relative path to the target document (starting with /), or null if unresolved.</value>
+        /// <example>/Configuration/NamespaceMode.md</example>
         public string? RelativePath { get; set; }
 
         /// <summary>
@@ -161,57 +161,6 @@ namespace CloudNimble.DotNetDocs.Core
 
         #endregion
 
-    }
-
-    /// <summary>
-    /// Specifies the type of documentation reference.
-    /// </summary>
-    public enum ReferenceType
-    {
-        /// <summary>
-        /// Unknown or unrecognized reference type.
-        /// </summary>
-        Unknown,
-
-        /// <summary>
-        /// Reference to a type (class, interface, struct, enum, delegate).
-        /// </summary>
-        Type,
-
-        /// <summary>
-        /// Reference to a field or enum member.
-        /// </summary>
-        Field,
-
-        /// <summary>
-        /// Reference to a property.
-        /// </summary>
-        Property,
-
-        /// <summary>
-        /// Reference to a method.
-        /// </summary>
-        Method,
-
-        /// <summary>
-        /// Reference to an event.
-        /// </summary>
-        Event,
-
-        /// <summary>
-        /// Reference to a namespace.
-        /// </summary>
-        Namespace,
-
-        /// <summary>
-        /// External reference (URL).
-        /// </summary>
-        External,
-
-        /// <summary>
-        /// Reference to a .NET Framework type.
-        /// </summary>
-        Framework
     }
 
 }

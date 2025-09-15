@@ -1152,7 +1152,6 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             var context = GetService<ProjectContext>();
             context.FileNamingOptions = new FileNamingOptions(NamespaceMode.Folder, '-');
             context.DocumentationRootPath = baselinesDir;
-            context.ApiReferencePath = string.Empty;
 
             // Get renderer from DI to ensure all dependencies are properly injected
             var renderer = GetMintlifyRenderer();

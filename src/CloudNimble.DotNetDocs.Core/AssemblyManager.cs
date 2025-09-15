@@ -188,7 +188,7 @@ namespace CloudNimble.DotNetDocs.Core
 
         #endregion
 
-        #region Private Methods
+        #region Internal Methods
 
         /// <summary>
         /// Extracts and parses XML documentation from a symbol.

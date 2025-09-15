@@ -78,7 +78,13 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
 
         #region Private Methods
 
-        private async Task RenderNamespaceFileAsync(DocNamespace ns, string outputPath)
+        /// <summary>
+        /// Renders a single namespace to a JSON file.
+        /// </summary>
+        /// <param name="ns">The namespace to render.</param>
+        /// <param name="outputPath">The output directory path.</param>
+        /// <returns>A task representing the asynchronous render operation.</returns>
+        internal async Task RenderNamespaceFileAsync(DocNamespace ns, string outputPath)
         {
             // Serialize the DocNamespace directly - it already has all the properties we need
             var fileName = GetNamespaceFileName(ns, "json");

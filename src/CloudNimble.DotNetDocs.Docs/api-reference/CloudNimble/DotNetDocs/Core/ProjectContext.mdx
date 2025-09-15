@@ -55,7 +55,7 @@ var model = await manager.DocumentAsync("MyLib.dll", "MyLib.xml", context);
 
 ### .ctor
 
-Initializes a new instance of [ProjectContext](ProjectContext) with default settings.
+Initializes a new instance of [ProjectContext](/api-reference/CloudNimble/DotNetDocs/Core/ProjectContext) with default settings.
 
 #### Syntax
 
@@ -65,7 +65,7 @@ public ProjectContext()
 
 ### .ctor
 
-Initializes a new instance of [ProjectContext](ProjectContext) with optional included members and referenced assemblies.
+Initializes a new instance of [ProjectContext](/api-reference/CloudNimble/DotNetDocs/Core/ProjectContext) with optional included members and referenced assemblies.
 
 #### Syntax
 
@@ -77,7 +77,7 @@ public ProjectContext(System.Collections.Generic.List<Microsoft.CodeAnalysis.Acc
 
 | Name | Type | Description |
 |------|------|-------------|
-| `includedMembers` | `System.Collections.Generic.List&lt;Microsoft.CodeAnalysis.Accessibility?&gt;?` | List of member accessibilities to include. Defaults to Public if null. |
+| `includedMembers` | `System.Collections.Generic.List<Microsoft.CodeAnalysis.Accessibility?>?` | List of member accessibilities to include. Defaults to Public if null. |
 | `references` | `string[]?` | Paths to referenced assemblies. |
 
 ## Properties
@@ -138,7 +138,7 @@ public System.Collections.Generic.HashSet<string> ExcludedTypes { get; set; }
 
 #### Property Value
 
-Type: `System.Collections.Generic.HashSet&lt;string&gt;`
+Type: `System.Collections.Generic.HashSet<string>`
 Set of type patterns to exclude. Supports wildcards (*) for flexible matching.
             This is useful for filtering out compiler-generated or test framework-injected types.
 
@@ -185,7 +185,7 @@ public System.Collections.Generic.List<Microsoft.CodeAnalysis.Accessibility> Inc
 
 #### Property Value
 
-Type: `System.Collections.Generic.List&lt;Microsoft.CodeAnalysis.Accessibility&gt;`
+Type: `System.Collections.Generic.List<Microsoft.CodeAnalysis.Accessibility>`
 List of accessibility levels to include. Defaults to Public only.
 
 ### References
@@ -200,7 +200,7 @@ public System.Collections.Generic.List<string> References { get; set; }
 
 #### Property Value
 
-Type: `System.Collections.Generic.List&lt;string&gt;`
+Type: `System.Collections.Generic.List<string>`
 A collection of file system paths to assemblies referenced by the project being documented.
 
 ### ShowPlaceholders
@@ -267,9 +267,9 @@ The folder path representation of the namespace.
 
 #### Remarks
 
-When [FileNamingOptions.NamespaceMode](../CloudNimble/DotNetDocs/Core/Configuration/FileNamingOptions#namespacemode) is [NamespaceMode.Folder](../CloudNimble/DotNetDocs/Core/Configuration/NamespaceMode#folder),
+When [FileNamingOptions.NamespaceMode](/api-reference/CloudNimble/DotNetDocs/Core/Configuration/FileNamingOptions#namespacemode) is [NamespaceMode.Folder](/api-reference/CloudNimble/DotNetDocs/Core/Configuration/NamespaceMode#folder),
             this returns a path with folders for each namespace part (e.g., "System/Collections/Generic").
-            When using [NamespaceMode.File](../CloudNimble/DotNetDocs/Core/Configuration/NamespaceMode#file), this returns an empty string as no folder
+            When using [NamespaceMode.File](/api-reference/CloudNimble/DotNetDocs/Core/Configuration/NamespaceMode#file), this returns an empty string as no folder
             structure is created.
 
 ### GetSafeNamespaceName
