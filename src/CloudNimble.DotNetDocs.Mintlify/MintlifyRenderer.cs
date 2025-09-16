@@ -516,8 +516,8 @@ namespace CloudNimble.DotNetDocs.Mintlify
             // Add tags for special characteristics
             if (entity is DocType type)
             {
-                // Check for enum first, as enums are sealed by default
-                if (type.TypeKind == Microsoft.CodeAnalysis.TypeKind.Enum)
+                // Check for enum first (including DocEnum instances)
+                if (type is DocEnum || type.TypeKind == Microsoft.CodeAnalysis.TypeKind.Enum)
                 {
                     sb.AppendLine("tag: \"ENUM\"");
                 }
@@ -849,7 +849,7 @@ namespace CloudNimble.DotNetDocs.Mintlify
                     sb.AppendLine();
                 }
 
-                var enums = ns.Types.Where(t => t.TypeKind == Microsoft.CodeAnalysis.TypeKind.Enum).ToList();
+                var enums = ns.Types.Where(t => t is DocEnum || t.TypeKind == Microsoft.CodeAnalysis.TypeKind.Enum).ToList();
                 if (enums.Any())
                 {
                     sb.AppendLine("### Enums");

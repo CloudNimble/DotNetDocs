@@ -306,6 +306,12 @@ public static class MintlifyIcons
     /// <returns>The FontAwesome icon name.</returns>
     public static string GetIconForType(DocType docType)
     {
+        // Check for DocEnum first (metadata-loaded enums)
+        if (docType is DocEnum)
+        {
+            return Enum;
+        }
+
         // Check type kind first for non-class types
         if (docType.TypeKind != TypeKind.Class)
         {

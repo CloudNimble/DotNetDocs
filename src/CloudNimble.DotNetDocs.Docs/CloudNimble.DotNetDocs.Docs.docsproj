@@ -1,4 +1,4 @@
-﻿<Project Sdk="DotNetDocs.Sdk/1.0.0-preview.18">
+﻿<Project Sdk="DotNetDocs.Sdk/1.0.0-preview.19">
 
 	<PropertyGroup>
         <KeepLocalOutput>true</KeepLocalOutput>

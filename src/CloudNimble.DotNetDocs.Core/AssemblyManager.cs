@@ -408,7 +408,6 @@ namespace CloudNimble.DotNetDocs.Core
 
             if (isEnum)
             {
-                Console.WriteLine($"DEBUG: Creating DocEnum for {type.Name} with TypeKind={type.TypeKind}, BaseType={type.BaseType?.Name}");
                 var docEnum = new DocEnum(type)
                 {
                     Name = type.Name,
@@ -494,7 +493,6 @@ namespace CloudNimble.DotNetDocs.Core
             }
             else
             {
-                Console.WriteLine($"DEBUG: Creating DocType (not enum) for {type.Name} with TypeKind={type.TypeKind}");
                 docType = new DocType(type)
                 {
                     Name = type.Name,
