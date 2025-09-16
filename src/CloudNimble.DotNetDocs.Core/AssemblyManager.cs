@@ -432,15 +432,45 @@ namespace CloudNimble.DotNetDocs.Core
                     .Any(a => a.AttributeClass?.ToDisplayString() == "System.FlagsAttribute");
 
                 // Get underlying type
-                if (type is INamedTypeSymbol namedType && namedType.EnumUnderlyingType != null)
+                if (type is INamedTypeSymbol namedType)
                 {
-                    docEnum.UnderlyingType = new DocReference
+                    ITypeSymbol? underlyingType = namedType.EnumUnderlyingType;
+
+                    // Fallback: For metadata-loaded enums, infer from constant value type
+                    if (underlyingType == null)
                     {
-                        RawReference = $"T:{namedType.EnumUnderlyingType.ToDisplayString()}",
-                        DisplayName = GetFriendlyTypeName(namedType.EnumUnderlyingType),
-                        IsResolved = true,
-                        ReferenceType = ReferenceType.Framework
-                    };
+                        var firstConstField = type.GetMembers()
+                            .OfType<IFieldSymbol>()
+                            .FirstOrDefault(f => f.IsConst && f.HasConstantValue);
+
+                        if (firstConstField?.ConstantValue != null)
+                        {
+                            // Determine underlying type from the constant value's actual type
+                            underlyingType = firstConstField.ConstantValue switch
+                            {
+                                byte => compilation.GetSpecialType(SpecialType.System_Byte),
+                                sbyte => compilation.GetSpecialType(SpecialType.System_SByte),
+                                short => compilation.GetSpecialType(SpecialType.System_Int16),
+                                ushort => compilation.GetSpecialType(SpecialType.System_UInt16),
+                                int => compilation.GetSpecialType(SpecialType.System_Int32),
+                                uint => compilation.GetSpecialType(SpecialType.System_UInt32),
+                                long => compilation.GetSpecialType(SpecialType.System_Int64),
+                                ulong => compilation.GetSpecialType(SpecialType.System_UInt64),
+                                _ => compilation.GetSpecialType(SpecialType.System_Int32) // Default to int
+                            };
+                        }
+                    }
+
+                    if (underlyingType != null)
+                    {
+                        docEnum.UnderlyingType = new DocReference
+                        {
+                            RawReference = $"T:{underlyingType.ToDisplayString()}",
+                            DisplayName = GetFriendlyTypeName(underlyingType),
+                            IsResolved = true,
+                            ReferenceType = ReferenceType.Framework
+                        };
+                    }
                 }
 
                 // Extract enum values

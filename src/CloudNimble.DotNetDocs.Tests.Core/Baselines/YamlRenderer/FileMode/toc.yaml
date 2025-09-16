@@ -38,6 +38,17 @@ items:
     kind: Class
   - name: ClassWithFullDocs
     kind: Class
+- name: CloudNimble.DotNetDocs.Tests.Shared.Enums
+  href: CloudNimble-DotNetDocs-Tests-Shared-Enums.yaml
+  types:
+  - name: ByteEnum
+    kind: Class
+  - name: FlagsEnum
+    kind: Class
+  - name: LongEnum
+    kind: Class
+  - name: SimpleEnum
+    kind: Class
 - name: CloudNimble.DotNetDocs.Tests.Shared.Parameters
   href: CloudNimble-DotNetDocs-Tests-Shared-Parameters.yaml
   types:

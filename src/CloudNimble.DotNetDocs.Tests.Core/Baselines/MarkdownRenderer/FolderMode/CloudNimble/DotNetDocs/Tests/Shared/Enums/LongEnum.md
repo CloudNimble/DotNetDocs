@@ -18,6 +18,8 @@ CloudNimble.DotNetDocs.Tests.Shared.Enums.LongEnum
 
 An enum with long underlying type for large values.
 
+**Underlying Type:** long
+
 ## Values
 
 | Name | Value | Description |

@@ -23,6 +23,8 @@ An enum with byte underlying type.
 This enum uses a byte as its underlying type to save memory.
             Values are limited to 0-255.
 
+**Underlying Type:** byte
+
 ## Values
 
 | Name | Value | Description |
