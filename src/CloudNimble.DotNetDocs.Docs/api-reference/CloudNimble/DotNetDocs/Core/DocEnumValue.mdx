@@ -1,0 +1,96 @@
+---
+title: DocEnumValue
+description: "Represents a single value within an enum type."
+icon: file-brackets-curly
+keywords: ['DocEnumValue', 'CloudNimble.DotNetDocs.Core.DocEnumValue', 'CloudNimble.DotNetDocs.Core', 'class', 'CloudNimble.DotNetDocs.Core.DocEntity']
+---
+
+## Definition
+
+**Assembly:** CloudNimble.DotNetDocs.Core.dll
+
+**Namespace:** CloudNimble.DotNetDocs.Core
+
+**Inheritance:** CloudNimble.DotNetDocs.Core.DocEntity
+
+## Syntax
+
+```csharp
+CloudNimble.DotNetDocs.Core.DocEnumValue
+```
+
+## Summary
+
+Represents a single value within an enum type.
+
+## Remarks
+
+Inherits from [DocEntity](/api-reference/CloudNimble/DotNetDocs/Core/DocEntity) to provide standard documentation properties
+            while adding enum-specific properties like the numeric value.
+
+## Constructors
+
+### <Icon icon="hammer" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} />  .ctor
+
+Initializes a new instance of the [DocEnumValue](/api-reference/CloudNimble/DotNetDocs/Core/DocEnumValue) class.
+
+#### Syntax
+
+```csharp
+public DocEnumValue(Microsoft.CodeAnalysis.IFieldSymbol symbol)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `symbol` | `Microsoft.CodeAnalysis.IFieldSymbol` | The Roslyn field symbol representing the enum value. |
+
+## Properties
+
+### <Icon icon="tag" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} />  Name
+
+Gets or sets the name of the enum value.
+
+#### Syntax
+
+```csharp
+public string Name { get; set; }
+```
+
+#### Property Value
+
+Type: `string`
+The identifier name of the enum member.
+
+### <Icon icon="tag" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} />  NumericValue
+
+Gets or sets the numeric value of the enum member.
+
+#### Syntax
+
+```csharp
+public string NumericValue { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+The numeric value as a string to preserve formatting (e.g., "0x10" for hex values).
+            May be null if the value is implicitly assigned.
+
+### <Icon icon="tag" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} />  Symbol
+
+Gets the Roslyn symbol for the enum field.
+
+#### Syntax
+
+```csharp
+public Microsoft.CodeAnalysis.IFieldSymbol Symbol { get; }
+```
+
+#### Property Value
+
+Type: `Microsoft.CodeAnalysis.IFieldSymbol?`
+The underlying Roslyn field symbol containing metadata.
+

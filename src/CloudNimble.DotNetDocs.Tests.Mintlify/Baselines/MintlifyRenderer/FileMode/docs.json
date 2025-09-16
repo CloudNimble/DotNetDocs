@@ -58,6 +58,17 @@
             ]
           },
           {
+            "group": "CloudNimble.DotNetDocs.Tests.Shared.Enums",
+            "icon": "folder-tree",
+            "pages": [
+              "CloudNimble-DotNetDocs-Tests-Shared-Enums",
+              "CloudNimble-DotNetDocs-Tests-Shared-Enums.ByteEnum",
+              "CloudNimble-DotNetDocs-Tests-Shared-Enums.FlagsEnum",
+              "CloudNimble-DotNetDocs-Tests-Shared-Enums.LongEnum",
+              "CloudNimble-DotNetDocs-Tests-Shared-Enums.SimpleEnum"
+            ]
+          },
+          {
             "group": "CloudNimble.DotNetDocs.Tests.Shared.Parameters",
             "icon": "folder-tree",
             "pages": [

@@ -516,7 +516,12 @@ namespace CloudNimble.DotNetDocs.Mintlify
             // Add tags for special characteristics
             if (entity is DocType type)
             {
-                if (type.Symbol.IsAbstract && type.TypeKind != Microsoft.CodeAnalysis.TypeKind.Interface)
+                // Check for enum first, as enums are sealed by default
+                if (type.TypeKind == Microsoft.CodeAnalysis.TypeKind.Enum)
+                {
+                    sb.AppendLine("tag: \"ENUM\"");
+                }
+                else if (type.Symbol.IsAbstract && type.TypeKind != Microsoft.CodeAnalysis.TypeKind.Interface)
                 {
                     sb.AppendLine("tag: \"ABSTRACT\"");
                 }
@@ -978,62 +983,81 @@ namespace CloudNimble.DotNetDocs.Mintlify
                 sb.AppendLine();
             }
 
-            // Render members
-            var constructors = type.Members.Where(m => m.MemberKind == Microsoft.CodeAnalysis.SymbolKind.Method && m.MethodKind == Microsoft.CodeAnalysis.MethodKind.Constructor).ToList();
-            if (constructors.Any())
+            // Render enum values if this is an enum
+            if (type is DocEnum enumType)
             {
-                sb.AppendLine("## Constructors");
-                sb.AppendLine();
-                foreach (var ctor in constructors)
+                if (enumType.Values.Any())
                 {
-                    RenderMember(sb, ctor);
-                }
-            }
-
-            var properties = type.Members.Where(m => m.MemberKind == Microsoft.CodeAnalysis.SymbolKind.Property).ToList();
-            if (properties.Any())
-            {
-                sb.AppendLine("## Properties");
-                sb.AppendLine();
-                foreach (var prop in properties.OrderBy(p => p.Name))
-                {
-                    RenderMember(sb, prop);
-                }
-            }
-
-            var methods = type.Members.Where(m => m.MemberKind == Microsoft.CodeAnalysis.SymbolKind.Method && m.MethodKind == Microsoft.CodeAnalysis.MethodKind.Ordinary).ToList();
-            if (methods.Any())
-            {
-                sb.AppendLine("## Methods");
-                sb.AppendLine();
-                foreach (var method in methods.OrderBy(m => m.Name))
-                {
-                    RenderMember(sb, method);
-                }
-            }
-
-            var events = type.Members.Where(m => m.MemberKind == Microsoft.CodeAnalysis.SymbolKind.Event).ToList();
-            if (events.Any())
-            {
-                sb.AppendLine("## Events");
-                sb.AppendLine();
-                foreach (var evt in events.OrderBy(e => e.Name))
-                {
-                    RenderMember(sb, evt);
-                }
-            }
-
-            // Only render fields if explicitly requested
-            if (Context.IncludeFields)
-            {
-                var fields = type.Members.Where(m => m.MemberKind == Microsoft.CodeAnalysis.SymbolKind.Field).ToList();
-                if (fields.Any())
-                {
-                    sb.AppendLine("## Fields");
+                    sb.AppendLine("## Values");
                     sb.AppendLine();
-                    foreach (var field in fields.OrderBy(f => f.Name))
+                    sb.AppendLine("| Name | Value | Description |");
+                    sb.AppendLine("|------|-------|-------------|");
+                    foreach (var enumValue in enumType.Values)
                     {
-                        RenderMember(sb, field);
+                        sb.AppendLine($"| `{enumValue.Name}` | {enumValue.NumericValue ?? ""} | {enumValue.Summary ?? ""} |");
+                    }
+                    sb.AppendLine();
+                }
+            }
+            // Render members for non-enum types
+            else
+            {
+                var constructors = type.Members.Where(m => m.MemberKind == Microsoft.CodeAnalysis.SymbolKind.Method && m.MethodKind == Microsoft.CodeAnalysis.MethodKind.Constructor).ToList();
+                if (constructors.Any())
+                {
+                    sb.AppendLine("## Constructors");
+                    sb.AppendLine();
+                    foreach (var ctor in constructors)
+                    {
+                        RenderMember(sb, ctor);
+                    }
+                }
+
+                var properties = type.Members.Where(m => m.MemberKind == Microsoft.CodeAnalysis.SymbolKind.Property).ToList();
+                if (properties.Any())
+                {
+                    sb.AppendLine("## Properties");
+                    sb.AppendLine();
+                    foreach (var prop in properties.OrderBy(p => p.Name))
+                    {
+                        RenderMember(sb, prop);
+                    }
+                }
+
+                var methods = type.Members.Where(m => m.MemberKind == Microsoft.CodeAnalysis.SymbolKind.Method && m.MethodKind == Microsoft.CodeAnalysis.MethodKind.Ordinary).ToList();
+                if (methods.Any())
+                {
+                    sb.AppendLine("## Methods");
+                    sb.AppendLine();
+                    foreach (var method in methods.OrderBy(m => m.Name))
+                    {
+                        RenderMember(sb, method);
+                    }
+                }
+
+                var events = type.Members.Where(m => m.MemberKind == Microsoft.CodeAnalysis.SymbolKind.Event).ToList();
+                if (events.Any())
+                {
+                    sb.AppendLine("## Events");
+                    sb.AppendLine();
+                    foreach (var evt in events.OrderBy(e => e.Name))
+                    {
+                        RenderMember(sb, evt);
+                    }
+                }
+
+                // Only render fields if explicitly requested
+                if (Context.IncludeFields)
+                {
+                    var fields = type.Members.Where(m => m.MemberKind == Microsoft.CodeAnalysis.SymbolKind.Field).ToList();
+                    if (fields.Any())
+                    {
+                        sb.AppendLine("## Fields");
+                        sb.AppendLine();
+                        foreach (var field in fields.OrderBy(f => f.Name))
+                        {
+                            RenderMember(sb, field);
+                        }
                     }
                 }
             }

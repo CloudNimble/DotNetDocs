@@ -1081,9 +1081,9 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
         /// these are unit test baselines for the renderer itself, not integration test baselines.
         /// The renderer should be tested in isolation without transformers applied.
         /// </remarks>
-        //[TestMethod]
+        [TestMethod]
         //[DataRow(projectPath)]
-        [BreakdanceManifestGenerator]
+        //[BreakdanceManifestGenerator]
         public async Task GenerateMintlifyBaselines(string projectPath)
         {
             await GenerateFileModeBaselines(projectPath);

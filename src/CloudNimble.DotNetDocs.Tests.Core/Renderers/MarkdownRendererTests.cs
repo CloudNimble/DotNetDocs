@@ -1017,8 +1017,109 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
         /// these are unit test baselines for the renderer itself, not integration test baselines.
         /// The renderer should be tested in isolation without transformers applied.
         /// </remarks>
-        //[TestMethod]
-        //[DataRow(projectPath)]
+        [TestMethod]
+        public async Task RenderTypeAsync_Should_Include_Enum_Values()
+        {
+            var assembly = GetTestsDotSharedAssembly();
+
+            // Find the SimpleEnum type
+            var enumType = assembly.Namespaces
+                .SelectMany(n => n.Types)
+                .FirstOrDefault(t => t.Name == "SimpleEnum");
+
+            enumType.Should().NotBeNull("SimpleEnum should exist in test assembly");
+            enumType.Should().BeOfType<DocEnum>("SimpleEnum should be a DocEnum instance");
+
+            var docEnum = enumType as DocEnum;
+            docEnum!.Values.Should().NotBeEmpty("Enum should have values");
+            docEnum.Values.Should().HaveCount(5, "SimpleEnum should have 5 values");
+
+            // Verify enum values
+            var noneValue = docEnum.Values.FirstOrDefault(v => v.Name == "None");
+            noneValue.Should().NotBeNull("None value should exist");
+            noneValue!.NumericValue.Should().Be("0");
+
+            var thirdValue = docEnum.Values.FirstOrDefault(v => v.Name == "Third");
+            thirdValue.Should().NotBeNull("Third value should exist");
+            thirdValue!.NumericValue.Should().Be("10");
+
+            // Render the enum type
+            var renderer = GetMarkdownRenderer();
+            await renderer.RenderTypeAsync(enumType!, assembly.Namespaces.First(n => n.Types.Contains(enumType!)), _testOutputPath);
+
+            var outputFile = Path.Combine(_testOutputPath, "CloudNimble-DotNetDocs-Tests-Shared-Enums-SimpleEnum.md");
+            File.Exists(outputFile).Should().BeTrue("Output file should exist");
+
+            var content = await File.ReadAllTextAsync(outputFile);
+
+            // Check that enum values section is present
+            content.Should().Contain("## Values", "Should have Values section");
+            content.Should().Contain("| Name | Value | Description |", "Should have enum values table header");
+            content.Should().Contain("| None | 0 |", "Should include None value");
+            content.Should().Contain("| First | 1 |", "Should include First value");
+            content.Should().Contain("| Second | 2 |", "Should include Second value");
+            content.Should().Contain("| Third | 10 |", "Should include Third value");
+            content.Should().Contain("| Fourth | 11 |", "Should include Fourth value");
+        }
+
+        [TestMethod]
+        public async Task RenderTypeAsync_Should_Include_Flags_Attribute()
+        {
+            var assembly = GetTestsDotSharedAssembly();
+
+            // Find the FlagsEnum type
+            var flagsEnum = assembly.Namespaces
+                .SelectMany(n => n.Types)
+                .FirstOrDefault(t => t.Name == "FlagsEnum");
+
+            flagsEnum.Should().NotBeNull("FlagsEnum should exist in test assembly");
+            flagsEnum.Should().BeOfType<DocEnum>("FlagsEnum should be a DocEnum instance");
+
+            var docEnum = flagsEnum as DocEnum;
+            docEnum!.IsFlags.Should().BeTrue("FlagsEnum should have IsFlags set to true");
+
+            // Render the enum type
+            var renderer = GetMarkdownRenderer();
+            await renderer.RenderTypeAsync(flagsEnum!, assembly.Namespaces.First(n => n.Types.Contains(flagsEnum!)), _testOutputPath);
+
+            var outputFile = Path.Combine(_testOutputPath, "CloudNimble-DotNetDocs-Tests-Shared-Enums-FlagsEnum.md");
+            var content = await File.ReadAllTextAsync(outputFile);
+
+            // Check that Flags attribute is mentioned
+            content.Should().Contain("[Flags]", "Should indicate Flags attribute");
+            content.Should().Contain("| All | 15 |", "Should include All value (Read | Write | Execute | Delete = 15)");
+        }
+
+        [TestMethod]
+        public async Task RenderTypeAsync_Should_Show_Correct_Underlying_Type()
+        {
+            var assembly = GetTestsDotSharedAssembly();
+
+            // Find the ByteEnum type
+            var byteEnum = assembly.Namespaces
+                .SelectMany(n => n.Types)
+                .FirstOrDefault(t => t.Name == "ByteEnum");
+
+            byteEnum.Should().NotBeNull("ByteEnum should exist in test assembly");
+            byteEnum.Should().BeOfType<DocEnum>("ByteEnum should be a DocEnum instance");
+
+            var docEnum = byteEnum as DocEnum;
+            docEnum!.UnderlyingType.Should().NotBeNull("ByteEnum should have an underlying type");
+            docEnum.UnderlyingType.DisplayName.Should().Be("byte", "ByteEnum should have byte as underlying type");
+
+            // Render the enum type
+            var renderer = GetMarkdownRenderer();
+            await renderer.RenderTypeAsync(byteEnum!, assembly.Namespaces.First(n => n.Types.Contains(byteEnum!)), _testOutputPath);
+
+            var outputFile = Path.Combine(_testOutputPath, "CloudNimble-DotNetDocs-Tests-Shared-Enums-ByteEnum.md");
+            var content = await File.ReadAllTextAsync(outputFile);
+
+            // Check that underlying type is shown
+            content.Should().Contain("**Underlying Type:** byte", "Should show byte as underlying type");
+        }
+
+        [TestMethod]
+        [DataRow(projectPath)]
         [BreakdanceManifestGenerator]
         public async Task GenerateMarkdownBaselines(string projectPath)
         {

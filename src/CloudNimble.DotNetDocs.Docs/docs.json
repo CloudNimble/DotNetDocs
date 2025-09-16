@@ -28,6 +28,8 @@
                       "api-reference/CloudNimble/DotNetDocs/Core/DocAssembly",
                       "api-reference/CloudNimble/DotNetDocs/Core/DocConstants",
                       "api-reference/CloudNimble/DotNetDocs/Core/DocEntity",
+                      "api-reference/CloudNimble/DotNetDocs/Core/DocEnum",
+                      "api-reference/CloudNimble/DotNetDocs/Core/DocEnumValue",
                       "api-reference/CloudNimble/DotNetDocs/Core/DocException",
                       "api-reference/CloudNimble/DotNetDocs/Core/DocMember",
                       "api-reference/CloudNimble/DotNetDocs/Core/DocNamespace",

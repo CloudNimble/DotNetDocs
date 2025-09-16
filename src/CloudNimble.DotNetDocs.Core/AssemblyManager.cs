@@ -398,23 +398,92 @@ namespace CloudNimble.DotNetDocs.Core
         {
             var doc = ExtractDocumentationXml(type);
 
-            var docType = new DocType(type)
+            DocType docType;
+
+            // Create DocEnum for enum types
+            // Note: When loading from metadata (compiled DLL), enums appear as sealed classes with const fields
+            // We need to detect this pattern since TypeKind.Enum is not preserved in metadata
+            var isEnum = type.TypeKind == TypeKind.Enum ||
+                         (type.TypeKind == TypeKind.Class && type.IsSealed && type.BaseType?.Name == "Enum");
+
+            if (isEnum)
             {
-                Name = type.Name,
-                FullName = type.ToDisplayString(),
-                DisplayName = type.ToDisplayString(),
-                Signature = type.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat),
-                TypeKind = type.TypeKind,
-                AssemblyName = type.ContainingAssembly?.Name,
-                Summary = ExtractSummary(doc),
-                Returns = ExtractReturns(doc),
-                Exceptions = ExtractExceptions(doc),
-                TypeParameters = ExtractTypeParameters(doc),
-                Value = ExtractValue(doc),
-                SeeAlso = ExtractSeeAlso(doc),
-                Examples = ExtractExamples(doc),
-                Remarks = ExtractRemarks(doc)
-            };
+                Console.WriteLine($"DEBUG: Creating DocEnum for {type.Name} with TypeKind={type.TypeKind}, BaseType={type.BaseType?.Name}");
+                var docEnum = new DocEnum(type)
+                {
+                    Name = type.Name,
+                    FullName = type.ToDisplayString(),
+                    DisplayName = type.ToDisplayString(),
+                    Signature = type.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat),
+                    TypeKind = type.TypeKind,
+                    AssemblyName = type.ContainingAssembly?.Name,
+                    Summary = ExtractSummary(doc),
+                    Returns = ExtractReturns(doc),
+                    Exceptions = ExtractExceptions(doc),
+                    TypeParameters = ExtractTypeParameters(doc),
+                    Value = ExtractValue(doc),
+                    SeeAlso = ExtractSeeAlso(doc),
+                    Examples = ExtractExamples(doc),
+                    Remarks = ExtractRemarks(doc)
+                };
+
+                // Check for Flags attribute
+                docEnum.IsFlags = type.GetAttributes()
+                    .Any(a => a.AttributeClass?.ToDisplayString() == "System.FlagsAttribute");
+
+                // Get underlying type
+                if (type is INamedTypeSymbol namedType && namedType.EnumUnderlyingType != null)
+                {
+                    docEnum.UnderlyingType = new DocReference
+                    {
+                        RawReference = $"T:{namedType.EnumUnderlyingType.ToDisplayString()}",
+                        DisplayName = GetFriendlyTypeName(namedType.EnumUnderlyingType),
+                        IsResolved = true,
+                        ReferenceType = ReferenceType.Framework
+                    };
+                }
+
+                // Extract enum values
+                foreach (var member in type.GetMembers().OfType<IFieldSymbol>().Where(f => f.IsConst))
+                {
+                    var memberDoc = ExtractDocumentationXml(member);
+                    var enumValue = new DocEnumValue(member)
+                    {
+                        Name = member.Name,
+                        DisplayName = member.ToDisplayString(),
+                        NumericValue = member.ConstantValue?.ToString(),
+                        Summary = ExtractSummary(memberDoc),
+                        Remarks = ExtractRemarks(memberDoc),
+                        Examples = ExtractExamples(memberDoc),
+                        SeeAlso = ExtractSeeAlso(memberDoc)
+                    };
+                    docEnum.Values.Add(enumValue);
+                }
+
+                docType = docEnum;
+            }
+            else
+            {
+                Console.WriteLine($"DEBUG: Creating DocType (not enum) for {type.Name} with TypeKind={type.TypeKind}");
+                docType = new DocType(type)
+                {
+                    Name = type.Name,
+                    FullName = type.ToDisplayString(),
+                    DisplayName = type.ToDisplayString(),
+                    Signature = type.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat),
+                    TypeKind = type.TypeKind,
+                    AssemblyName = type.ContainingAssembly?.Name,
+                    Summary = ExtractSummary(doc),
+                    Returns = ExtractReturns(doc),
+                    Exceptions = ExtractExceptions(doc),
+                    TypeParameters = ExtractTypeParameters(doc),
+                    Value = ExtractValue(doc),
+                    SeeAlso = ExtractSeeAlso(doc),
+                    Examples = ExtractExamples(doc),
+                    Remarks = ExtractRemarks(doc)
+                };
+            }
+
             docType.IncludedMembers = includedMembers;
 
             typeMap[type.ToDisplayString()] = docType;
@@ -428,9 +497,11 @@ namespace CloudNimble.DotNetDocs.Core
             // Set related APIs (e.g., all interfaces as strings)
             docType.RelatedApis = type.AllInterfaces.Select(i => i.ToDisplayString()).ToList();
 
-            // Resolve members
+            // Resolve members (skip for enums as they use Values collection instead)
             // The bridge compilation with IgnoresAccessChecksTo allows us to see all members including internals
-            foreach (var member in type.GetMembers().Where(m => docType.IncludedMembers.Contains(m.DeclaredAccessibility) && !m.IsImplicitlyDeclared))
+            if (type.TypeKind != TypeKind.Enum)
+            {
+                foreach (var member in type.GetMembers().Where(m => docType.IncludedMembers.Contains(m.DeclaredAccessibility) && !m.IsImplicitlyDeclared))
             {
                 DocMember? docMember = null;
 
@@ -575,13 +646,43 @@ namespace CloudNimble.DotNetDocs.Core
                      };
                  }
 
-                if (docMember is not null)
-                {
-                    docType.Members.Add(docMember);
+                    if (docMember is not null)
+                    {
+                        docType.Members.Add(docMember);
+                    }
                 }
             }
 
             return docType;
+        }
+
+        /// <summary>
+        /// Gets a friendly display name for a type (e.g., "int" instead of "System.Int32").
+        /// </summary>
+        /// <param name="type">The type symbol to get a friendly name for.</param>
+        /// <returns>A friendly type name suitable for display.</returns>
+        internal static string GetFriendlyTypeName(ITypeSymbol type)
+        {
+            return type.SpecialType switch
+            {
+                SpecialType.System_Boolean => "bool",
+                SpecialType.System_Byte => "byte",
+                SpecialType.System_SByte => "sbyte",
+                SpecialType.System_Char => "char",
+                SpecialType.System_Decimal => "decimal",
+                SpecialType.System_Double => "double",
+                SpecialType.System_Single => "float",
+                SpecialType.System_Int32 => "int",
+                SpecialType.System_UInt32 => "uint",
+                SpecialType.System_Int64 => "long",
+                SpecialType.System_UInt64 => "ulong",
+                SpecialType.System_Int16 => "short",
+                SpecialType.System_UInt16 => "ushort",
+                SpecialType.System_Object => "object",
+                SpecialType.System_String => "string",
+                SpecialType.System_Void => "void",
+                _ => type.ToDisplayString()
+            };
         }
 
         /// <summary>

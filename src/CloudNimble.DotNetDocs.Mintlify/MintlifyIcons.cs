@@ -306,6 +306,20 @@ public static class MintlifyIcons
     /// <returns>The FontAwesome icon name.</returns>
     public static string GetIconForType(DocType docType)
     {
+        // Check type kind first for non-class types
+        if (docType.TypeKind != TypeKind.Class)
+        {
+            return docType.TypeKind switch
+            {
+                TypeKind.Interface => Interface,
+                TypeKind.Struct => Struct,
+                TypeKind.Enum => Enum,
+                TypeKind.Delegate => Delegate,
+                _ => Class
+            };
+        }
+
+        // For classes, check for special characteristics
         // Check for generic types
         if (docType.Symbol is INamedTypeSymbol namedType && namedType.IsGenericType)
             return GenericType;
@@ -315,23 +329,14 @@ public static class MintlifyIcons
             return StaticClass;
 
         // Check for abstract class
-        if (docType.Symbol.IsAbstract && docType.TypeKind == TypeKind.Class)
+        if (docType.Symbol.IsAbstract)
             return AbstractClass;
 
         // Check for sealed class
-        if (docType.Symbol.IsSealed && docType.TypeKind == TypeKind.Class && !docType.Symbol.IsStatic)
+        if (docType.Symbol.IsSealed && !docType.Symbol.IsStatic)
             return SealedClass;
 
-        // Check type kind
-        return docType.TypeKind switch
-        {
-            TypeKind.Class => Class,
-            TypeKind.Interface => Interface,
-            TypeKind.Struct => Struct,
-            TypeKind.Enum => Enum,
-            TypeKind.Delegate => Delegate,
-            _ => Class
-        };
+        return Class;
     }
 
     /// <summary>
