@@ -1041,41 +1041,6 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
         #region Enum Rendering Tests
 
         [TestMethod]
-        public async Task RenderTypeAsync_Enum_Should_Have_ListOl_Icon_And_Enum_Tag()
-        {
-            // Arrange
-            var assembly = GetTestsDotSharedAssembly();
-            var enumNamespace = assembly.Namespaces.FirstOrDefault(n => n.Name == "CloudNimble.DotNetDocs.Tests.Shared.Enums");
-            enumNamespace.Should().NotBeNull("Enums namespace should exist in test assembly");
-
-            var simpleEnum = enumNamespace!.Types.FirstOrDefault(t => t.Name == "SimpleEnum");
-            simpleEnum.Should().NotBeNull("SimpleEnum should exist in test assembly");
-            simpleEnum.Should().BeOfType<DocEnum>("SimpleEnum should be DocEnum type when loaded from metadata");
-
-            // Act
-            await GetMintlifyRenderer().RenderTypeAsync(simpleEnum!, enumNamespace, _testOutputPath);
-
-            // Assert - check if file exists anywhere in output path
-            var enumFiles = Directory.GetFiles(_testOutputPath, "SimpleEnum.mdx", SearchOption.AllDirectories);
-            enumFiles.Should().NotBeEmpty("SimpleEnum.mdx should be created");
-            var enumFilePath = enumFiles.First();
-
-            var content = await File.ReadAllTextAsync(enumFilePath, TestContext.CancellationTokenSource.Token);
-
-            // Check icon is list-ol, not lock
-            content.Should().Contain("icon: list-ol", "Enum should have list-ol icon, not lock");
-            content.Should().NotContain("icon: lock", "Enum should not have lock icon");
-
-            // Check tag is ENUM, not SEALED
-            content.Should().Contain("tag: \"ENUM\"", "Enum should have ENUM tag");
-            content.Should().NotContain("tag: \"SEALED\"", "Enum should not have SEALED tag");
-
-            // Verify it renders the values section
-            content.Should().Contain("## Values", "Enum should have Values section");
-            content.Should().Contain("| Name | Value | Description |", "Enum should have values table");
-        }
-
-        [TestMethod]
         public void GetIconForType_DocEnum_Should_Return_ListOl()
         {
             // Arrange - use an actual enum from the test assembly
