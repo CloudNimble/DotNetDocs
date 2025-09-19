@@ -16,11 +16,20 @@
 			<Colors>
 				<Primary>#0D9373</Primary>
 			</Colors>
+			<Navigation>
+				<Pages>
+					<Groups>
+						<Group>
+							
+						</Group>
+					</Groups>
+				</Pages>			
+			</Navigation>
+				
+
+					
+				
 		</MintlifyTemplate>
     </PropertyGroup>
-
-    <ItemGroup>
-        <Folder Include="guides\" />
-    </ItemGroup>
 
 </Project>

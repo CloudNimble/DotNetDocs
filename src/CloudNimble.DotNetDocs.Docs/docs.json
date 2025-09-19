@@ -8,13 +8,43 @@
       {
         "group": "Getting Started",
         "pages": [
-          "index"
+          "index",
+          "quickstart"
         ]
       },
       {
         "group": "Guides",
         "pages": [
-          "guides/sdk-packaging"
+          "guides/index",
+          "guides/conceptual-docs",
+          "guides/pipeline"
+        ]
+      },
+      {
+        "group": "Providers",
+        "pages": [
+          "providers/index",
+          {
+            "group": "Mintlify",
+            "icon": "/mintlify.svg",
+            "tag": "PARTNER",
+            "pages": [
+              "providers/mintlify/index"
+            ]
+          }
+        ]
+      },
+      {
+        "group": "Plugins",
+        "pages": [
+          "plugins/index"
+        ]
+      },
+      {
+        "group": "Learnings",
+        "pages": [
+          "learnings/bridge-assemblies",
+          "learnings/sdk-packaging"
         ]
       },
       {
