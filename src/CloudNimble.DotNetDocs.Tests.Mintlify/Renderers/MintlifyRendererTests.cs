@@ -1087,6 +1087,144 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
 
         #endregion
 
+        #region Additional MDX Content Discovery Tests
+
+        [TestMethod]
+        public async Task RenderAsync_WithAdditionalMdxFiles_IncludesThemInNavigation()
+        {
+            // Arrange - Create additional MDX files in the documentation root
+            var testMdxFile = Path.Combine(_testOutputPath, "getting-started.mdx");
+            await File.WriteAllTextAsync(testMdxFile, "---\ntitle: Getting Started\n---\n# Getting Started\n\nThis is additional content.", TestContext.CancellationTokenSource.Token);
+
+            var subDir = Path.Combine(_testOutputPath, "guides");
+            Directory.CreateDirectory(subDir);
+            var guideMdxFile = Path.Combine(subDir, "tutorial.mdx");
+            await File.WriteAllTextAsync(guideMdxFile, "---\ntitle: Tutorial\n---\n# Tutorial\n\nThis is a tutorial.", TestContext.CancellationTokenSource.Token);
+
+            var assemblyPath = typeof(SampleClass).Assembly.Location;
+            var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
+            using var manager = new AssemblyManager(assemblyPath, xmlPath);
+            var model = await manager.DocumentAsync();
+            
+            var renderer = GetMintlifyRenderer();
+            
+            // Act
+            await renderer.RenderAsync(model);
+            
+            // Assert
+            var docsJsonPath = Path.Combine(_testOutputPath, "docs.json");
+            File.Exists(docsJsonPath).Should().BeTrue("docs.json should be created");
+            
+            var docsJsonContent = await File.ReadAllTextAsync(docsJsonPath, TestContext.CancellationTokenSource.Token);
+            docsJsonContent.Should().Contain("getting-started", "Additional MDX file should be included in navigation");
+            docsJsonContent.Should().Contain("guides", "Subdirectory with MDX files should be included in navigation");
+            docsJsonContent.Should().Contain("tutorial", "Tutorial file should be included in navigation");
+        }
+
+        [TestMethod]
+        public async Task RenderAsync_WithExistingIndexMdx_DoesNotDuplicateIndex()
+        {
+            // Arrange - Create an existing index.mdx file in the root
+            var existingIndexFile = Path.Combine(_testOutputPath, "index.mdx");
+            await File.WriteAllTextAsync(existingIndexFile, "---\ntitle: Custom Index\n---\n# Custom Index\n\nThis is a custom index page.", TestContext.CancellationTokenSource.Token);
+
+            var assemblyPath = typeof(SampleClass).Assembly.Location;
+            var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
+            using var manager = new AssemblyManager(assemblyPath, xmlPath);
+            var model = await manager.DocumentAsync();
+            
+            var renderer = GetMintlifyRenderer();
+            
+            // Act
+            await renderer.RenderAsync(model);
+            
+            // Assert
+            var docsJsonPath = Path.Combine(_testOutputPath, "docs.json");
+            File.Exists(docsJsonPath).Should().BeTrue("docs.json should be created");
+            
+            var docsJsonContent = await File.ReadAllTextAsync(docsJsonPath, TestContext.CancellationTokenSource.Token);
+            
+            // Count occurrences of "index" in the navigation
+            var indexCount = docsJsonContent.Split("\"index\"").Length - 1;
+            indexCount.Should().Be(1, "Index should only appear once in navigation when existing index.mdx file is present");
+        }
+
+        [TestMethod]
+        public async Task RenderAsync_WithApiReferenceFolder_ExcludesFromDiscovery()
+        {
+            // Arrange - Create an api-reference folder with MDX files that should be excluded
+            var apiReferenceDir = Path.Combine(_testOutputPath, "api-reference");
+            Directory.CreateDirectory(apiReferenceDir);
+            var apiFile = Path.Combine(apiReferenceDir, "some-api.mdx");
+            await File.WriteAllTextAsync(apiFile, "---\ntitle: Some API\n---\n# Some API\n\nThis should be excluded.", TestContext.CancellationTokenSource.Token);
+
+            // Also add a legitimate additional file
+            var guidesDir = Path.Combine(_testOutputPath, "guides");
+            Directory.CreateDirectory(guidesDir);
+            var guideFile = Path.Combine(guidesDir, "tutorial.mdx");
+            await File.WriteAllTextAsync(guideFile, "---\ntitle: Tutorial\n---\n# Tutorial\n\nThis should be included.", TestContext.CancellationTokenSource.Token);
+
+            var assemblyPath = typeof(SampleClass).Assembly.Location;
+            var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
+            using var manager = new AssemblyManager(assemblyPath, xmlPath);
+            var model = await manager.DocumentAsync();
+            
+            var renderer = GetMintlifyRenderer();
+            
+            // Act
+            await renderer.RenderAsync(model);
+            
+            // Assert
+            var docsJsonPath = Path.Combine(_testOutputPath, "docs.json");
+            File.Exists(docsJsonPath).Should().BeTrue("docs.json should be created");
+            
+            var docsJsonContent = await File.ReadAllTextAsync(docsJsonPath, TestContext.CancellationTokenSource.Token);
+            
+            // Should contain the guides content but NOT the api-reference content from discovery
+            docsJsonContent.Should().Contain("guides", "Guides folder should be discovered");
+            docsJsonContent.Should().Contain("tutorial", "Tutorial file should be discovered");
+            
+            // Should NOT contain duplicate api-reference content from discovery
+            // (The generated API Reference should only appear once with the "code" icon)
+            var apiReferenceCount = System.Text.RegularExpressions.Regex.Matches(docsJsonContent, "\"API Reference\"").Count;
+            apiReferenceCount.Should().Be(1, "API Reference should only appear once (from generation, not discovery)");
+            
+            // Verify the single API Reference group has the code icon (meaning it's the generated one)
+            docsJsonContent.Should().Contain("\"group\": \"API Reference\"", "API Reference group should exist");
+            docsJsonContent.Should().Contain("\"icon\": \"code\"", "Generated API Reference should have code icon");
+        }
+
+        [TestMethod]
+        public async Task RenderAsync_WithEmptyDocumentationRoot_WorksAsBeforeWithOnlyGeneratedIndex()
+        {
+            // Arrange - No additional MDX files, just the standard test scenario
+            var assemblyPath = typeof(SampleClass).Assembly.Location;
+            var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
+            using var manager = new AssemblyManager(assemblyPath, xmlPath);
+            var model = await manager.DocumentAsync();
+            
+            var renderer = GetMintlifyRenderer();
+            
+            // Act
+            await renderer.RenderAsync(model);
+            
+            // Assert
+            var docsJsonPath = Path.Combine(_testOutputPath, "docs.json");
+            File.Exists(docsJsonPath).Should().BeTrue("docs.json should be created");
+            
+            var docsJsonContent = await File.ReadAllTextAsync(docsJsonPath, TestContext.CancellationTokenSource.Token);
+            
+            // Should contain the generated index and API reference content, but no additional content
+            docsJsonContent.Should().Contain("\"index\"", "Generated index should be present");
+            docsJsonContent.Should().Contain("API Reference", "API Reference group should be present");
+            
+            // Should not contain any additional navigation items
+            docsJsonContent.Should().NotContain("getting-started", "No additional content should be discovered");
+            docsJsonContent.Should().NotContain("guides", "No additional content should be discovered");
+        }
+
+        #endregion
+
         #region Baseline Generation
 
         /// <summary>

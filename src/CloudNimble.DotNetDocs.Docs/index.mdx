@@ -1,0 +1,186 @@
+---
+title: Introduction
+description: Transform your .NET libraries and applications with beautiful documentation
+icon: rocket
+---
+
+# Welcome to DotNetDocs 🚀
+
+**The modern documentation platform that transforms your .NET XML documentation into beautiful, interactive documentation sites.**
+
+DotNetDocs bridges the gap between your carefully crafted XML documentation comments and stunning, user-friendly documentation websites. Built with developer experience in mind, it seamlessly integrates with your existing .NET workflow while delivering documentation that your users will actually love to read.
+
+## ✨ What Makes DotNetDocs Special
+
+<CardGroup cols={2}>
+  <Card title="🎨 Multiple Output Formats" icon="palette">
+    Generate beautiful Mintlify sites, clean Markdown, structured JSON, or YAML - all from your existing XML documentation
+  </Card>
+  <Card title="🔧 MSBuild Integration" icon="gear">
+    Seamlessly integrate into your build process with MSBuild tasks and .NET CLI tools
+  </Card>
+  <Card title="🏗️ Flexible Architecture" icon="cubes">
+    Modular design supports custom renderers, transformers, and extensibility patterns
+  </Card>
+  <Card title="⚡ Developer-First" icon="code">
+    Zero configuration required - works out of the box with sensible defaults and powerful customization
+  </Card>
+</CardGroup>
+
+## 🚀 Quick Start
+
+Get up and running with DotNetDocs in just a few commands:
+
+<CodeGroup>
+```bash Install via .NET CLI
+dotnet tool install --global CloudNimble.DotNetDocs.Tools
+```
+
+```bash Generate Documentation
+dotnet easyaf mintlify --assembly-list assemblies.txt --output docs/
+```
+
+```xml MSBuild Integration
+<PackageReference Include="CloudNimble.DotNetDocs.Sdk.Tasks" Version="*" />
+```
+</CodeGroup>
+
+## 📚 Supported Output Formats
+
+### 🎯 Mintlify Integration
+Create stunning documentation sites with Mintlify's modern design system:
+- **Interactive Navigation** - Automatically generated from your namespace structure
+- **Code Syntax Highlighting** - Beautiful rendering of your C# signatures and examples
+- **Search Integration** - Built-in search across all your API documentation
+- **Responsive Design** - Perfect on desktop, tablet, and mobile devices
+
+### 📄 Traditional Formats
+- **Markdown** - Clean, readable documentation for GitHub, GitLab, or any markdown processor
+- **JSON** - Structured data for custom integrations and tooling
+- **YAML** - Configuration-friendly format for documentation pipelines
+
+## 🎨 Customization Options
+
+### File Organization Modes
+<Tabs>
+  <Tab title="Folder Mode">
+    ```
+    📁 docs/
+    ├── 📁 MyNamespace/
+    │   ├── 📄 index.mdx
+    │   ├── 📄 MyClass.mdx
+    │   └── 📁 SubNamespace/
+    │       └── 📄 AnotherClass.mdx
+    └── 📄 index.mdx
+    ```
+    Mirrors your namespace structure as folders
+  </Tab>
+  
+  <Tab title="File Mode">
+    ```
+    📁 docs/
+    ├── 📄 index.mdx
+    ├── 📄 MyNamespace.MyClass.mdx
+    ├── 📄 MyNamespace.SubNamespace.AnotherClass.mdx
+    └── 📄 MyNamespace.SubNamespace.mdx
+    ```
+    Flat structure with namespace prefixes
+  </Tab>
+</Tabs>
+
+### Mintlify Themes & Branding
+- **Custom Colors** - Match your brand identity
+- **Logo Integration** - Light and dark mode logo support
+- **Icon Customization** - Rich icon library for types and members
+- **Navigation Control** - Unified or assembly-grouped organization
+
+## 🔧 Advanced Features
+
+### Smart Content Discovery
+DotNetDocs automatically discovers and integrates:
+- Existing MDX files in your documentation folder
+- Custom navigation structures via `navigation.json`
+- Conceptual documentation alongside API references
+- Asset files and resources
+
+### Extensible Architecture
+```csharp
+// Custom renderer example
+services.AddDotNetDocsPipeline(pipeline =>
+{
+    pipeline.UseCustomRenderer<MyRenderer>()
+           .AddTransformer<MyTransformer>()
+           .ConfigureContext(ctx => { /* ... */ });
+});
+```
+
+### MSBuild Task Integration
+```xml
+<Target Name="GenerateDocs" AfterTargets="Build">
+  <DiscoverDocumentedProjectsTask 
+    SolutionDir="$(SolutionDir)" 
+    Configuration="$(Configuration)" />
+  <GenerateDocumentationTask 
+    Assemblies="@(DocumentedProjects)"
+    OutputPath="$(OutputPath)\docs"
+    DocumentationType="Mintlify" />
+</Target>
+```
+
+## 🏆 Why Choose DotNetDocs?
+
+<AccordionGroup>
+  <Accordion title="🎯 Designed for .NET Developers">
+    Built by .NET developers, for .NET developers. Understands generics, nullable reference types, async patterns, and modern C# features out of the box.
+  </Accordion>
+  
+  <Accordion title="🚀 Zero Configuration">
+    Works immediately with your existing XML documentation. No complex setup, no migration required - just point it at your assemblies and go.
+  </Accordion>
+  
+  <Accordion title="📈 Scales with Your Project">
+    From single assemblies to large enterprise solutions with hundreds of projects. Handles complex inheritance hierarchies and cross-assembly references.
+  </Accordion>
+  
+  <Accordion title="🔧 Extensible & Customizable">
+    Plugin architecture allows custom renderers, transformers, and content processors. Integrate with your existing documentation workflow.
+  </Accordion>
+</AccordionGroup>
+
+## 🛠️ Getting Started
+
+Ready to transform your documentation? Check out our comprehensive guides:
+
+<CardGroup cols={3}>
+  <Card title="📖 Quick Start Guide" href="/getting-started">
+    Get DotNetDocs running in minutes with our step-by-step guide
+  </Card>
+  <Card title="🎨 Mintlify Setup" href="/mintlify-guide">
+    Create beautiful documentation sites with Mintlify integration
+  </Card>
+  <Card title="⚙️ Configuration" href="/configuration">
+    Customize DotNetDocs to match your project's needs
+  </Card>
+</CardGroup>
+
+<CardGroup cols={3}>
+  <Card title="🔧 MSBuild Tasks" href="/msbuild-integration">
+    Integrate documentation generation into your build process
+  </Card>
+  <Card title="🚀 CI/CD Integration" href="/cicd-setup">
+    Automate documentation deployment with GitHub Actions
+  </Card>
+  <Card title="📚 API Reference" href="/api-reference">
+    Complete API documentation for extending DotNetDocs
+  </Card>
+</CardGroup>
+
+---
+
+<Note>
+**Ready to get started?** Install DotNetDocs today and join the growing community of .NET developers creating beautiful documentation with ease.
+
+```bash
+dotnet tool install --global CloudNimble.DotNetDocs.Tools
+```
+</Note>

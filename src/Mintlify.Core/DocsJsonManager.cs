@@ -369,6 +369,7 @@ namespace Mintlify.Core
         /// </summary>
         /// <param name="path">The directory path to scan for documentation files.</param>
         /// <param name="fileExtensions">The file extensions to include (defaults to .mdx only).</param>
+        /// <param name="includeApiReference">Whether to include the 'api-reference' directory in discovery (defaults to false).</param>
         /// <exception cref="ArgumentException">Thrown when path is null or whitespace.</exception>
         /// <exception cref="InvalidOperationException">Thrown when no configuration is loaded.</exception>
         /// <exception cref="DirectoryNotFoundException">Thrown when the specified path does not exist.</exception>
@@ -376,8 +377,10 @@ namespace Mintlify.Core
         /// <para>This method scans the specified directory recursively and builds a navigation structure
         /// based on the folder hierarchy and MDX files found. The method includes several advanced features:</para>
         /// <list type="bullet">
+        /// <item><description><strong>Root File Grouping:</strong> Files in the root directory are automatically 
+        /// grouped under "Getting Started" and placed at the top of the navigation.</description></item>
         /// <item><description><strong>Directory Exclusions:</strong> Automatically excludes 'node_modules', 'conceptual', 
-        /// 'overrides', and any directories starting with '.' (dot directories).</description></item>
+        /// 'overrides', 'api-reference' (unless includeApiReference is true), and any directories starting with '.' (dot directories).</description></item>
         /// <item><description><strong>File Processing:</strong> Only includes .mdx files by default. .md files 
         /// generate warnings and are excluded from navigation.</description></item>
         /// <item><description><strong>Index File Priority:</strong> Files named 'index' appear first in each directory's navigation.</description></item>
@@ -390,7 +393,7 @@ namespace Mintlify.Core
         /// <para>The method preserves the directory structure in the navigation while applying these intelligent 
         /// processing rules to create clean, organized documentation.</para>
         /// </remarks>
-        public void PopulateNavigationFromPath(string path, string[]? fileExtensions = null)
+        public void PopulateNavigationFromPath(string path, string[]? fileExtensions = null, bool includeApiReference = false)
         {
             Ensure.ArgumentNotNullOrWhiteSpace(path, nameof(path));
 
@@ -413,7 +416,7 @@ namespace Mintlify.Core
             Configuration.Navigation.Pages.Clear();
 
             // Populate from directory structure
-            PopulateNavigationFromDirectory(path, Configuration.Navigation.Pages, path, fileExtensions);
+            PopulateNavigationFromDirectory(path, Configuration.Navigation.Pages, path, fileExtensions, includeApiReference, true);
         }
 
         /// <summary>
@@ -1093,6 +1096,8 @@ namespace Mintlify.Core
         /// <param name="pages">The list of pages to populate with navigation items.</param>
         /// <param name="rootPath">The root path for calculating relative URLs.</param>
         /// <param name="fileExtensions">The file extensions to include in processing.</param>
+        /// <param name="includeApiReference">Whether to include the 'api-reference' directory in discovery (defaults to false).</param>
+        /// <param name="groupRootFiles">Whether to group root-level files under "Getting Started" (defaults to false).</param>
         /// <remarks>
         /// <para>This internal method implements the core navigation generation logic with the following processing order:</para>
         /// <list type="number">
@@ -1109,7 +1114,7 @@ namespace Mintlify.Core
         /// </list>
         /// <para>Warning messages are added to ConfigurationErrors for .md files encountered during processing.</para>
         /// </remarks>
-        internal void PopulateNavigationFromDirectory(string currentPath, List<object> pages, string rootPath, string[] fileExtensions)
+        internal void PopulateNavigationFromDirectory(string currentPath, List<object> pages, string rootPath, string[] fileExtensions, bool includeApiReference = false, bool groupRootFiles = false)
         {
             // Check for navigation.json override first
             var navigationJsonPath = Path.Combine(currentPath, "navigation.json");
@@ -1178,13 +1183,14 @@ namespace Mintlify.Core
             foreach (var directory in Directory.GetDirectories(currentPath))
             {
                 var dirName = Path.GetFileName(directory);
-                // Skip hidden directories and excluded directories
+                // Skip hidden directories, excluded directories, and optionally api-reference
                 if (!dirName.StartsWith(".") &&
 #if NETSTANDARD2_0
-                    !ExcludedDirectories.Any(excluded => string.Equals(excluded, dirName, StringComparison.OrdinalIgnoreCase))
+                    !ExcludedDirectories.Any(excluded => string.Equals(excluded, dirName, StringComparison.OrdinalIgnoreCase)) &&
 #else
-                    !ExcludedDirectories.Contains(dirName, StringComparer.OrdinalIgnoreCase)
+                    !ExcludedDirectories.Contains(dirName, StringComparer.OrdinalIgnoreCase) &&
 #endif
+                    (includeApiReference || !string.Equals(dirName, "api-reference", StringComparison.OrdinalIgnoreCase))
                     )
                 {
                     entries.Add((dirName, directory, true));
@@ -1207,7 +1213,7 @@ namespace Mintlify.Core
                 if (isDirectory)
                 {
                     var subPages = new List<object>();
-                    PopulateNavigationFromDirectory(path, subPages, rootPath, fileExtensions);
+                    PopulateNavigationFromDirectory(path, subPages, rootPath, fileExtensions, includeApiReference);
 
                     if (subPages.Any())
                     {
@@ -1241,8 +1247,27 @@ namespace Mintlify.Core
                     // Remove file extension
                     url = Path.ChangeExtension(url, null).TrimEnd('.');
 
-                    // Include all files (index files now come first due to sorting)
-                    pages.Add(url);
+                    // If we're processing root files and groupRootFiles is true, group them
+                    if (groupRootFiles && currentPath.Equals(rootPath, StringComparison.OrdinalIgnoreCase))
+                    {
+                        // Find or create "Getting Started" group
+                        var gettingStartedGroup = pages.OfType<GroupConfig>().FirstOrDefault(g => g.Group == "Getting Started");
+                        if (gettingStartedGroup == null)
+                        {
+                            gettingStartedGroup = new GroupConfig
+                            {
+                                Group = "Getting Started",
+                                Pages = new List<object>()
+                            };
+                            pages.Insert(0, gettingStartedGroup); // Insert at beginning to keep it at top
+                        }
+                        gettingStartedGroup.Pages!.Add(url);
+                    }
+                    else
+                    {
+                        // Include all files (index files now come first due to sorting)
+                        pages.Add(url);
+                    }
                 }
             }
         }

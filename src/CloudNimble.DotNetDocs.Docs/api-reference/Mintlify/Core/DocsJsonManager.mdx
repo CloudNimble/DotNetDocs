@@ -339,7 +339,7 @@ Populates the navigation structure from a directory path by scanning for MDX fil
 #### Syntax
 
 ```csharp
-public void PopulateNavigationFromPath(string path, string[] fileExtensions = null)
+public void PopulateNavigationFromPath(string path, string[] fileExtensions = null, bool includeApiReference = false)
 ```
 
 #### Parameters
@@ -348,6 +348,7 @@ public void PopulateNavigationFromPath(string path, string[] fileExtensions = nu
 |------|------|-------------|
 | `path` | `string` | The directory path to scan for documentation files. |
 | `fileExtensions` | `string[]?` | The file extensions to include (defaults to .mdx only). |
+| `includeApiReference` | `bool` | Whether to include the 'api-reference' directory in discovery (defaults to false). |
 
 #### Exceptions
 

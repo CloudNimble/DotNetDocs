@@ -121,6 +121,10 @@ namespace CloudNimble.DotNetDocs.Mintlify
             // Generate docs.json if enabled
             if (_options.GenerateDocsJson && _docsJsonManager is not null && _docsJsonManager.Configuration is not null)
             {
+                // First: Discover existing MDX files in documentation root
+                _docsJsonManager.PopulateNavigationFromPath(Context.DocumentationRootPath, new[] { ".mdx" });
+                
+                // Second: Add API reference content to existing navigation
                 BuildNavigationStructure(_docsJsonManager.Configuration, model);
                 // Write docs.json to the DocumentationRootPath
                 var docsJsonPath = Path.Combine(Context.DocumentationRootPath, "docs.json");
@@ -151,11 +155,7 @@ namespace CloudNimble.DotNetDocs.Mintlify
                 ];
             }
 
-            // Make sure we have the index page
-            if (config.Navigation.Pages.Count == 0 || (config.Navigation.Pages[0] as string) != "index")
-            {
-                config.Navigation.Pages.Insert(0, "index");
-            }
+            // Note: Index page handling is now done by PopulateNavigationFromPath
 
             if (_options.NavigationMode == NavigationMode.Unified)
             {

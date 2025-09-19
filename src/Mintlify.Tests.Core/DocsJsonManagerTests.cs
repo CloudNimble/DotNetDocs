@@ -1461,24 +1461,36 @@ namespace Mintlify.Tests.Core
                 manager.PopulateNavigationFromPath(tempPath);
 
                 manager.Configuration!.Navigation.Should().NotBeNull();
-                manager.Configuration!.Navigation!.Pages!.Should().HaveCount(4); // index + changelog + 2 groups
-
-                // Check index and changelog pages
-                manager.Configuration!.Navigation!.Pages!.Should().Contain("index");
-                manager.Configuration!.Navigation!.Pages!.Should().Contain("changelog");
+                manager.Configuration!.Navigation!.Pages!.Should().HaveCount(2); // Getting Started group + Api Reference group
 
                 // Check groups
                 var groups = manager.Configuration!.Navigation!.Pages!.OfType<GroupConfig>().ToList();
                 groups.Should().HaveCount(2);
 
-                var apiGroup = groups.FirstOrDefault(g => g.Group == "Api Reference");
-                apiGroup.Should().NotBeNull();
-                apiGroup!.Pages.Should().HaveCount(1);
-                apiGroup!.Pages.Should().Contain("api-reference/overview");
-
+                // Check Getting Started group (for root files)
                 var gettingStartedGroup = groups.FirstOrDefault(g => g.Group == "Getting Started");
                 gettingStartedGroup.Should().NotBeNull();
-                gettingStartedGroup!.Pages.Should().HaveCount(2);
+                gettingStartedGroup!.Pages.Should().HaveCount(2); // index + changelog
+                gettingStartedGroup!.Pages.Should().Contain("index");
+                gettingStartedGroup!.Pages.Should().Contain("changelog");
+
+                // Check Api Reference group (for api-reference directory, but should be excluded by default)
+                // Since api-reference is excluded by default, we should not have it
+                var apiGroup = groups.FirstOrDefault(g => g.Group == "Api Reference");
+                apiGroup.Should().BeNull();
+
+                // The other group should be the getting-started directory
+                var gettingStartedDirGroup = groups.FirstOrDefault(g => g.Group == "Getting Started" && g != gettingStartedGroup);
+                if (gettingStartedDirGroup == null)
+                {
+                    // If we only have one "Getting Started" group, it should contain both root files and directory files
+                    gettingStartedGroup!.Pages.Should().HaveCount(4); // index + changelog + installation + quickstart
+                }
+                else
+                {
+                    gettingStartedDirGroup.Should().NotBeNull();
+                    gettingStartedDirGroup!.Pages.Should().HaveCount(2); // installation + quickstart
+                }
             }
             finally
             {
@@ -2141,6 +2153,141 @@ namespace Mintlify.Tests.Core
                 apiGroup.Should().NotBeNull();
                 apiGroup!.Icon.Should().Be("api");
                 apiGroup!.Pages.Should().Contain("docs/api/overview");
+            }
+            finally
+            {
+                if (Directory.Exists(tempPath))
+                    Directory.Delete(tempPath, true);
+            }
+        }
+
+        /// <summary>
+        /// Tests that PopulateNavigationFromPath groups root files under "Getting Started".
+        /// </summary>
+        [TestMethod]
+        public void PopulateNavigationFromPath_RootFiles_GroupsUnderGettingStarted()
+        {
+            var tempPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+
+            try
+            {
+                Directory.CreateDirectory(tempPath);
+                Directory.CreateDirectory(Path.Combine(tempPath, "guides"));
+
+                // Create root files
+                File.WriteAllText(Path.Combine(tempPath, "index.mdx"), "# Index");
+                File.WriteAllText(Path.Combine(tempPath, "quickstart.mdx"), "# Quickstart");
+                File.WriteAllText(Path.Combine(tempPath, "installation.mdx"), "# Installation");
+
+                // Create subdirectory files
+                File.WriteAllText(Path.Combine(tempPath, "guides", "tutorial.mdx"), "# Tutorial");
+
+                var manager = new DocsJsonManager();
+                manager.Configuration = DocsJsonManager.CreateDefault("Test");
+
+                manager.PopulateNavigationFromPath(tempPath);
+
+                var pages = manager.Configuration!.Navigation!.Pages!;
+                pages.Should().HaveCount(2); // Getting Started group + Guides group
+
+                // Check Getting Started group
+                var gettingStartedGroup = pages.OfType<GroupConfig>().FirstOrDefault(g => g.Group == "Getting Started");
+                gettingStartedGroup.Should().NotBeNull();
+                gettingStartedGroup!.Pages.Should().HaveCount(3);
+                gettingStartedGroup!.Pages![0].Should().Be("index"); // Index should be first
+                gettingStartedGroup!.Pages.Should().Contain("quickstart");
+                gettingStartedGroup!.Pages.Should().Contain("installation");
+
+                // Check Guides group
+                var guidesGroup = pages.OfType<GroupConfig>().FirstOrDefault(g => g.Group == "Guides");
+                guidesGroup.Should().NotBeNull();
+                guidesGroup!.Pages.Should().Contain("guides/tutorial");
+
+                // Verify Getting Started appears first
+                pages[0].Should().BeSameAs(gettingStartedGroup);
+            }
+            finally
+            {
+                if (Directory.Exists(tempPath))
+                    Directory.Delete(tempPath, true);
+            }
+        }
+
+        /// <summary>
+        /// Tests that PopulateNavigationFromPath handles empty root directory correctly.
+        /// </summary>
+        [TestMethod]
+        public void PopulateNavigationFromPath_NoRootFiles_DoesNotCreateGettingStartedGroup()
+        {
+            var tempPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+
+            try
+            {
+                Directory.CreateDirectory(tempPath);
+                Directory.CreateDirectory(Path.Combine(tempPath, "guides"));
+
+                // Create only subdirectory files, no root files
+                File.WriteAllText(Path.Combine(tempPath, "guides", "tutorial.mdx"), "# Tutorial");
+
+                var manager = new DocsJsonManager();
+                manager.Configuration = DocsJsonManager.CreateDefault("Test");
+
+                manager.PopulateNavigationFromPath(tempPath);
+
+                var pages = manager.Configuration!.Navigation!.Pages!;
+                pages.Should().HaveCount(1); // Only Guides group
+
+                // Should not have Getting Started group
+                var gettingStartedGroup = pages.OfType<GroupConfig>().FirstOrDefault(g => g.Group == "Getting Started");
+                gettingStartedGroup.Should().BeNull();
+
+                // Should have Guides group
+                var guidesGroup = pages.OfType<GroupConfig>().FirstOrDefault(g => g.Group == "Guides");
+                guidesGroup.Should().NotBeNull();
+                guidesGroup!.Pages.Should().Contain("guides/tutorial");
+            }
+            finally
+            {
+                if (Directory.Exists(tempPath))
+                    Directory.Delete(tempPath, true);
+            }
+        }
+
+        /// <summary>
+        /// Tests that PopulateNavigationFromPath maintains index priority in Getting Started group.
+        /// </summary>
+        [TestMethod]
+        public void PopulateNavigationFromPath_RootFilesWithIndex_IndexAppearsFirstInGettingStarted()
+        {
+            var tempPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+
+            try
+            {
+                Directory.CreateDirectory(tempPath);
+
+                // Create root files in non-alphabetical order
+                File.WriteAllText(Path.Combine(tempPath, "zebra.mdx"), "# Zebra");
+                File.WriteAllText(Path.Combine(tempPath, "apple.mdx"), "# Apple");
+                File.WriteAllText(Path.Combine(tempPath, "index.mdx"), "# Index");
+                File.WriteAllText(Path.Combine(tempPath, "banana.mdx"), "# Banana");
+
+                var manager = new DocsJsonManager();
+                manager.Configuration = DocsJsonManager.CreateDefault("Test");
+
+                manager.PopulateNavigationFromPath(tempPath);
+
+                var pages = manager.Configuration!.Navigation!.Pages!;
+                pages.Should().HaveCount(1); // Getting Started group only
+
+                var gettingStartedGroup = pages.OfType<GroupConfig>().FirstOrDefault(g => g.Group == "Getting Started");
+                gettingStartedGroup.Should().NotBeNull();
+                gettingStartedGroup!.Pages.Should().HaveCount(4);
+
+                // Verify sorting: index first, then alphabetical
+                gettingStartedGroup!.Pages![0].Should().Be("index");
+                gettingStartedGroup!.Pages![1].Should().Be("apple");
+                gettingStartedGroup!.Pages![2].Should().Be("banana");
+                gettingStartedGroup!.Pages![3].Should().Be("zebra");
             }
             finally
             {

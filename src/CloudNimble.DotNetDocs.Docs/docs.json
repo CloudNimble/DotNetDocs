@@ -5,7 +5,18 @@
   "name": "DotNetDocs.com",
   "navigation": {
     "pages": [
-      "index",
+      {
+        "group": "Getting Started",
+        "pages": [
+          "index"
+        ]
+      },
+      {
+        "group": "Guides",
+        "pages": [
+          "guides/sdk-packaging"
+        ]
+      },
       {
         "group": "API Reference",
         "icon": "code",
