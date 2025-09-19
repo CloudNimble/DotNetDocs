@@ -11,8 +11,8 @@
 		
 		<MintlifyNavigationMode>Unified</MintlifyNavigationMode>
 		<MintlifyTemplate>
-			<Name>DotNetDocs.com</Name>
-			<Theme>mint</Theme>
+			<Name>DotNetDocs</Name>
+			<Theme>maple</Theme>
 			<Colors>
 				<Primary>#0D9373</Primary>
 			</Colors>

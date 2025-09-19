@@ -1,6 +1,384 @@
 ---
-title: Beating Visibility Issues with Bridge Assemblies
+title: "Bridge Assemblies: The Key to LLM-Ready Internal Documentation"
 sidebarTitle: Bridge Assemblies
-description: Bypass method visibility issues when generating documentation with this one neat trick.
-icon: bridge
+description: "How we solved the InternalsVisibleTo limitation to help internal teams create comprehensive documentation that supercharges LLM-assisted development."
+icon: "bridge"
 ---
+
+Picture this: You're part of an internal development team that's built an amazing library with thoughtful internal APIs, well-structured helper classes, 
+and carefully designed implementation patterns. Your team wants to leverage AI coding assistants like GitHub Copilot or Claude to help write better code 
+against your internal systems.
+
+But there's a problem. **LLMs can only help you with what they can see.** And traditional documentation tools? They can only document public APIs, leaving 
+a massive blind spot in your internal architecture.
+
+This is the story of how we solved that problem with a technique we call "bridge assemblies" - and why it matters more now than ever in the age of 
+LLM-assisted development.
+
+<Warning>
+This technique is designed specifically for documentation generation and analysis tools. It should not be used in production code to bypass normal 
+encapsulation principles.
+</Warning>
+
+## The Internal Documentation Problem
+
+It used to be that great documentation was only really needed for Component Libraries. For 25 years, internal teams got the short shrift  when it came to 
+docs. So when looking at everything we wanted in a modern documentation system, we wanted it to build beautiful content for internal teams as well.
+
+We'd seen too many organizations struggle with incomplete documentation that left developers guessing about implementation details. The promise was simple: 
+**create comprehensive documentation that would make LLMs incredibly effective at helping teams write code against their internal systems.**
+
+But we quickly hit a wall. Consider this typical internal library structure:
+
+```csharp
+namespace MyCompany.PaymentProcessing
+{
+    /// <summary>
+    /// Processes payment requests with comprehensive validation and error handling.
+    /// </summary>
+    /// <remarks>
+    /// This processor uses internal validation logic and error handling patterns
+    /// that are crucial for understanding the complete payment flow.
+    /// </remarks>
+    public class PaymentProcessor
+    {
+        /// <summary>
+        /// Processes a payment request asynchronously with full validation.
+        /// </summary>
+        /// <param name="request">The payment request containing all necessary payment information.</param>
+        /// <returns>A task representing the asynchronous operation, containing the payment result.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="request"/> is null.</exception>
+        public async Task<PaymentResult> ProcessPaymentAsync(PaymentRequest request)
+        {
+            var validator = new PaymentValidator(); // ❌ Internal class - invisible
+            var result = await validator.ValidateAsync(request);
+            
+            if (!result.IsValid)
+                return PaymentResult.Failed(result.Errors);
+                
+            return await ExecutePaymentAsync(request); // ❌ Internal method - invisible
+        }
+
+        /// <summary>
+        /// Executes the actual payment processing after validation.
+        /// </summary>
+        /// <param name="request">The validated payment request.</param>
+        /// <returns>The payment processing result.</returns>
+        /// <remarks>
+        /// This method handles the core payment logic including gateway communication,
+        /// retry logic, and transaction logging.
+        /// </remarks>
+        internal async Task<PaymentResult> ExecutePaymentAsync(PaymentRequest request)
+        {
+            // Core payment processing logic
+            return PaymentResult.Success();
+        }
+    }
+    
+    /// <summary>
+    /// Provides comprehensive validation for payment requests.
+    /// </summary>
+    /// <remarks>
+    /// ❌ Completely invisible to documentation tools
+    /// </remarks>
+    internal class PaymentValidator
+    {
+        /// <summary>
+        /// Validates a payment request against all business rules and compliance requirements.
+        /// </summary>
+        /// <param name="request">The payment request to validate.</param>
+        /// <returns>A task containing the validation result with detailed error information.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="request"/> is null.</exception>
+        internal async Task<ValidationResult> ValidateAsync(PaymentRequest request)
+        {
+            // Rich validation logic that developers need to understand
+            return await PerformComplexValidation(request);
+        }
+
+        /// <summary>
+        /// Performs complex validation including fraud detection and compliance checks.
+        /// </summary>
+        /// <param name="request">The payment request to validate.</param>
+        /// <returns>A detailed validation result.</returns>
+        private async Task<ValidationResult> PerformComplexValidation(PaymentRequest request)
+        {
+            // Implementation details that help understand the validation patterns
+            return ValidationResult.Valid();
+        }
+    }
+}
+```
+
+Traditional documentation tools would generate docs showing only the public `ProcessPaymentAsync` method. But developers working with this system need to 
+understand:
+
+- How validation works internally
+- What helper classes are available
+- The patterns used for error handling
+- The complete flow of payment processing
+
+Without this context, LLMs can only provide generic suggestions instead of system-specific guidance.
+
+## The Traditional Solution: InternalsVisibleTo
+
+.NET provides `InternalsVisibleTo` for scenarios where you need to expose internal members:
+
+```csharp
+// In AssemblyInfo.cs or as an assembly attribute
+[assembly: InternalsVisibleTo("MyCompany.PaymentProcessing.Tests")]
+[assembly: InternalsVisibleTo("MyCompany.PaymentProcessing.Documentation")]
+```
+
+This approach works great when you know the target assembly name at compile time. The problem? **DotNetDocs runs as a post-build tool, analyzing 
+already-compiled assemblies.** We can't predict what our tool will be called, and we certainly can't ask every team to modify their `AssemblyInfo.cs` 
+just to generate better documentation.
+
+Plus, `InternalsVisibleTo` requires the source assembly to be recompiled with knowledge of the consuming assembly. That's exactly the opposite of what we 
+needed - we wanted to analyze existing assemblies without any modifications.
+
+## Enter the Strathweb Solution
+
+Our breakthrough came from an ingenious blog post by Filip W on [bypassing C# visibility rules with Roslyn](https://www.strathweb.com/2018/10/no-internalvisibleto-no-problem-bypassing-c-visibility-rules-with-roslyn/). 
+Filip discovered that the .NET runtime includes a little-known attribute called `IgnoresAccessChecksToAttribute` that can bypass visibility checks entirely.
+
+Here's the key insight: while `InternalsVisibleTo` works at compile-time and requires the source assembly to "opt-in" to visibility, 
+`IgnoresAccessChecksToAttribute` works at the consumer side - the assembly that wants to see internals declares that it should ignore access checks for a 
+specific target assembly.
+
+Filip's original example showed how to access internal members of a third-party library:
+
+```csharp
+// This is what Filip demonstrated
+namespace System.Runtime.CompilerServices
+{
+    [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = true)]
+    internal sealed class IgnoresAccessChecksToAttribute : Attribute
+    {
+        public string AssemblyName { get; }
+        public IgnoresAccessChecksToAttribute(string assemblyName)
+        {
+            AssemblyName = assemblyName;
+        }
+    }
+}
+
+// Apply it to gain access
+[assembly: IgnoresAccessChecksTo("ThirdPartyLibrary")]
+```
+
+But Filip's approach still required knowing the target assembly at compile time. We needed something more dynamic.
+
+## Our Innovation: Dynamic Bridge Assemblies
+
+The breakthrough was realizing we could create these "bridge" assemblies dynamically using Roslyn. Instead of pre-compiling an assembly with 
+`IgnoresAccessChecksTo`, we generate the bridge assembly on-the-fly for each target assembly we want to document.
+
+Here's how our `CreateCompilationAsync` method works:
+
+```csharp
+internal async Task<Compilation> CreateCompilationAsync(IEnumerable<string> references)
+{
+    // Step 1: Generate the IgnoresAccessChecksTo attribute dynamically
+    // We can't rely on it being available in all target frameworks
+    var ignoresAccessChecksSource = @"
+        namespace System.Runtime.CompilerServices
+        {
+            [System.AttributeUsage(System.AttributeTargets.Assembly, AllowMultiple = true)]
+            internal sealed class IgnoresAccessChecksToAttribute : System.Attribute
+            {
+                public string AssemblyName { get; }
+                public IgnoresAccessChecksToAttribute(string assemblyName)
+                {
+                    AssemblyName = assemblyName;
+                }
+            }
+        }";
+
+    // Step 2: Create a bridge assembly that references the target
+    var assemblyName = Path.GetFileNameWithoutExtension(AssemblyPath);
+    var bridgeSource = $@"
+        using System.Runtime.CompilerServices;
+        [assembly: IgnoresAccessChecksTo(""{assemblyName}"")]";
+
+    // Step 3: Parse both pieces of source code
+    var syntaxTrees = new[]
+    {
+        CSharpSyntaxTree.ParseText(ignoresAccessChecksSource),
+        CSharpSyntaxTree.ParseText(bridgeSource)
+    };
+
+    // Step 4: Create compilation with enhanced metadata import
+    var compilationOptions = new CSharpCompilationOptions(
+        OutputKind.DynamicallyLinkedLibrary,
+        metadataImportOptions: MetadataImportOptions.All); // 🔑 Critical setting
+
+    var compilation = CSharpCompilation.Create($"{AssemblyName}.DocumentationBridge")
+        .WithOptions(compilationOptions)
+        .AddSyntaxTrees(syntaxTrees)
+        .AddReferences(targetReference);
+
+    return compilation;
+}
+```
+
+### Why Dynamic Generation?
+
+You might wonder: "Why not just add `IgnoresAccessChecksToAttribute` directly to DotNetDocs.Core?" The answer reveals a fundamental limitation of how .NET 
+assembly loading works:
+
+1. **Assembly Identity Matters**: The `IgnoresAccessChecksTo` attribute must be applied to the assembly that's requesting access. We can't pre-compile this 
+into DotNetDocs.Core because we don't know what assemblies we'll be analyzing.
+
+2. **Runtime vs. Compile-time**: The attribute needs to be present when the Roslyn compilation analyzes the target assembly. By generating it dynamically, 
+we create a fresh "bridge" compilation for each target.
+
+3. **Framework Compatibility**: The `IgnoresAccessChecksToAttribute` isn't available in all .NET versions. By generating it ourselves, we ensure compatibility
+across frameworks.
+
+4. **Symbol Resolution**: The combination of `MetadataImportOptions.All` and the bridge assembly tells Roslyn's symbol resolution engine to treat internal 
+members as accessible.
+
+## The Magic Behind the Scenes
+
+<Steps>
+  <Step title="Target Assembly Analysis">
+    DotNetDocs loads the target assembly and extracts its name for the bridge compilation.
+  </Step>
+  
+  <Step title="Attribute Generation">
+    We dynamically generate the `IgnoresAccessChecksToAttribute` since it's not universally available.
+  </Step>
+  
+  <Step title="Bridge Compilation">
+    A new Roslyn compilation is created that applies the attribute to ignore access checks for the specific target assembly.
+  </Step>
+  
+  <Step title="Enhanced Symbol Access">
+    With `MetadataImportOptions.All` and the bridge attribute, Roslyn's symbol API now treats internal members as accessible.
+  </Step>
+  
+  <Step title="Documentation Generation">
+    We can now traverse and document the complete API surface, including internal implementations.
+  </Step>
+</Steps>
+
+## Real-World Impact for LLM-Assisted Development
+
+This technique transforms what's possible with LLM-assisted development for internal teams. Consider how much more helpful an AI coding assistant becomes 
+when it has access to complete API documentation:
+
+<Tabs>
+  <Tab title="Before: Limited Context">
+    ```typescript
+    // LLM can only suggest generic patterns
+    User: "How do I validate a payment request?"
+    
+    LLM: "You can call ProcessPaymentAsync() but I don't have 
+    information about the validation logic or error handling patterns."
+    ```
+  </Tab>
+  <Tab title="After: Rich Context">
+    ```typescript
+    // LLM has full context of internal APIs
+    User: "How do I validate a payment request?"
+    
+    LLM: "Based on your PaymentProcessor implementation, you can:
+    1. Use PaymentValidator.ValidateAsync() for the same validation logic
+    2. Handle ValidationResult.Errors for consistent error messaging
+    3. Follow the ComplexValidation pattern for custom rules
+    
+    Here's an example using your internal APIs..."
+    ```
+  </Tab>
+</Tabs>
+
+The documentation generated with bridge assemblies includes:
+
+<CardGroup cols={2}>
+  <Card title="Internal APIs" icon="code">
+    Complete method signatures, parameter details, and usage patterns for internal helper classes
+  </Card>
+   
+  <Card title="Helper Classes" icon="cube">
+    Utility classes and their methods that teams can leverage in their own code
+  </Card>
+  
+</CardGroup>
+
+## Technical Deep Dive
+
+### Performance Considerations
+
+<Card title="Compilation Caching" icon="clock">
+Bridge compilations are cached based on the target assembly's last modified time and the set of included members. This means we only regenerate the bridge when the target assembly actually changes, making incremental builds very fast.
+</Card>
+
+<Card title="Memory Management" icon="memory">
+The `AssemblyManager` implements `IDisposable` to properly clean up the Roslyn compilation and associated memory. This is crucial when processing multiple assemblies in batch operations.
+</Card>
+
+### Security and Boundaries
+
+<Card title="Documentation-Only Access" icon="shield-check">
+The bridge assembly technique only works during documentation generation. It doesn't create runtime access to internal members - the generated documentation simply describes what's available.
+</Card>
+
+<Card title="Respecting Intent" icon="user-check">
+Our documentation clearly marks internal APIs as such, warning developers that these are implementation details that may change. We're not encouraging misuse of internal APIs, just providing complete context.
+</Card>
+
+## Best Practices for Internal Teams
+
+When using DotNetDocs with bridge assemblies for internal documentation:
+
+<Tabs>
+  <Tab title="✅ Recommended">
+    - Use comprehensive XML documentation on internal members
+    - Structure internal APIs with the same care as public ones
+    - Include examples in internal API documentation
+    - Consider internal APIs as part of your team's knowledge base
+    - Use the generated docs to onboard new team members
+  </Tab>
+  
+  <Tab title="❌ Avoid">
+    - Documenting truly sensitive internal details
+    - Treating internal APIs as stable public contracts
+    - Bypassing normal code review for internal changes
+    - Using this technique in production application code
+  </Tab>
+</Tabs>
+
+## Looking Forward: The LLM Documentation Revolution
+
+As LLMs become increasingly central to software development, the quality and completeness of our documentation becomes a competitive advantage. Teams with 
+comprehensive internal documentation can leverage AI assistants much more effectively than those with incomplete docs.
+
+Bridge assemblies represent just one piece of this puzzle, but it's a crucial one. By giving LLMs complete context about how our systems work internally, we 
+enable them to provide much more valuable assistance.
+
+<Info>
+This is why we built DotNetDocs specifically for internal teams. Public API documentation is a solved problem - but helping teams document and leverage their 
+internal systems? That's where the real productivity gains live.
+</Info>
+
+## Conclusion
+
+The bridge assembly technique started as a solution to a technical problem: how do you document internal APIs when traditional tools can't see them? But it's 
+evolved into something much more significant - a key enabler for LLM-assisted development in enterprise environments.
+
+By dynamically generating `IgnoresAccessChecksTo` attributes through Roslyn compilations, we've unlocked the ability to create comprehensive documentation 
+that tells the complete story of how internal systems work. This isn't just about better docs - it's about making AI coding assistants exponentially more 
+helpful for internal development teams.
+
+The next time you're working with an AI coding assistant and wish it understood your internal systems better, remember: the quality of the assistant's help 
+is directly related to the quality of the documentation it can access. Bridge assemblies help ensure that documentation tells the whole story.
+
+<Info>
+Want to see this technique in action? Check out our [AssemblyManager implementation](https://github.com/CloudNimble/DotNetDocs) for the complete source code, 
+or try DotNetDocs on your own internal libraries.
+</Info>
+
+---
+
+*This technique builds on Filip W's excellent research on [bypassing C# visibility rules with Roslyn](https://www.strathweb.com/2018/10/no-internalvisibleto-no-problem-bypassing-c-visibility-rules-with-roslyn/). 
+We've adapted and extended his approach specifically for dynamic documentation generation scenarios.*

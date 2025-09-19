@@ -2,7 +2,7 @@
   "colors": {
     "primary": "#0D9373"
   },
-  "name": "DotNetDocs.com",
+  "name": "DotNetDocs",
   "navigation": {
     "pages": [
       {
@@ -255,5 +255,5 @@
     ]
   },
   "$schema": "https://mintlify.com/docs.json",
-  "theme": "mint"
+  "theme": "maple"
 }
