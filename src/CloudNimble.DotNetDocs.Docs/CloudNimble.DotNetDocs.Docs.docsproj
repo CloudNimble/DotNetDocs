@@ -14,21 +14,40 @@
 			<Name>DotNetDocs</Name>
 			<Theme>maple</Theme>
 			<Colors>
-				<Primary>#0D9373</Primary>
+				<Primary>#419AC5</Primary>
+				<Light>#419AC5</Light>
+				<Dark>#3CD0E2</Dark>
 			</Colors>
+			<Logo>
+				<Light>dotnetdocs.light.svg</Light>
+				<Dark>dotnetdocs.dark.svg</Dark>
+			</Logo>
 			<Navigation>
 				<Pages>
 					<Groups>
-						<Group>
-							
+						<Group Name="Getting Started" Icon="stars">
+							<Pages>index;quickstart</Pages>
+						</Group>
+						<Group Name="Guides" Icon="dog-leashed">
+							<Pages>guides/index;guides/conceptual-docs;guides/pipeline</Pages>
+						</Group>
+						<Group Name="Providers" Icon="books">
+							<Pages>providers/index</Pages>
+							<Groups>
+								<Group Name="Mintlify" Icon="/mintlify.svg" Tag="PARTNER">
+									<Pages>providers/mintlify/index</Pages>
+								</Group>
+							</Groups>
+						</Group>
+						<Group Name="Plugins" Icon="outlet">
+							<Pages>plugins/index</Pages>
+						</Group>
+						<Group Name="Learnings" Icon="">
+							<Pages>learnings/bridge-assemblies;learnings/sdk-packaging</Pages>
 						</Group>
 					</Groups>
 				</Pages>			
 			</Navigation>
-				
-
-					
-				
 		</MintlifyTemplate>
     </PropertyGroup>
 

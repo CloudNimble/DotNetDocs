@@ -30,7 +30,7 @@ This configuration controls the background appearance including images, decorati
 
 ## Constructors
 
-### <Icon icon="hammer" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} />  .ctor
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  .ctor
 
 #### Syntax
 
@@ -40,26 +40,26 @@ public BackgroundConfig()
 
 ## Properties
 
-### <Icon icon="tag" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} />  Color
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Color
 
 Gets or sets the background color configuration.
 
 #### Syntax
 
 ```csharp
-public object Color { get; set; }
+public Mintlify.Core.Models.ColorConfig Color { get; set; }
 ```
 
 #### Property Value
 
-Type: `object?`
+Type: `Mintlify.Core.Models.ColorConfig?`
 
 #### Remarks
 
 Can be a hex color string or an object with color configuration properties.
             This controls the base background color of the documentation site.
 
-### <Icon icon="tag" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} />  Decoration
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Decoration
 
 Gets or sets the background decoration style.
 
@@ -78,23 +78,23 @@ Type: `string?`
 Valid values are "gradient", "grid", or "windows". This adds decorative
             background patterns to enhance the visual appearance of the site.
 
-### <Icon icon="tag" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} />  Image
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Image
 
 Gets or sets the background image configuration.
 
 #### Syntax
 
 ```csharp
-public object Image { get; set; }
+public Mintlify.Core.Models.BackgroundImageConfig Image { get; set; }
 ```
 
 #### Property Value
 
-Type: `object?`
+Type: `Mintlify.Core.Models.BackgroundImageConfig?`
 
 #### Remarks
 
-Can be a string URL for a single image, or an object with "light" and "dark" 
-            properties for different images in each mode. Should be an absolute URL or 
+Can be a string URL for a single image, or an object with "light" and "dark"
+            properties for different images in each mode. Should be an absolute URL or
             relative path to the image file.
 

@@ -41,7 +41,7 @@ var model = await manager.DocumentAsync(context);
 
 ## Constructors
 
-### <Icon icon="hammer" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} />  .ctor
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  .ctor
 
 Initializes a new instance of [AssemblyManager](/api-reference/CloudNimble/DotNetDocs/Core/AssemblyManager) for a specific assembly.
 
@@ -73,7 +73,7 @@ If the XML documentation file does not exist, processing will continue without X
 
 ## Properties
 
-### <Icon icon="tag" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} />  AssemblyName
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  AssemblyName
 
 Gets the name of the assembly (without extension).
 
@@ -87,7 +87,7 @@ public string AssemblyName { get; init; }
 
 Type: `string`
 
-### <Icon icon="tag" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} />  AssemblyPath
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  AssemblyPath
 
 Gets the path to the assembly DLL file.
 
@@ -101,7 +101,7 @@ public string AssemblyPath { get; init; }
 
 Type: `string`
 
-### <Icon icon="tag" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} />  Document
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Document
 
 Gets the current documentation model for the processed assembly.
 
@@ -115,7 +115,7 @@ public CloudNimble.DotNetDocs.Core.DocAssembly Document { get; private set; }
 
 Type: `CloudNimble.DotNetDocs.Core.DocAssembly?`
 
-### <Icon icon="tag" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} />  Errors
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Errors
 
 Gets the collection of errors that occurred during Since  processing.
 
@@ -133,7 +133,7 @@ Type: `System.Collections.Generic.List<System.CodeDom.Compiler.CompilerError>`
 
 Includes warnings about inaccessible internal members when requested but not available.
 
-### <Icon icon="tag" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} />  LastModified
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  LastModified
 
 Gets the last modified timestamp of the assembly file for incremental builds.
 
@@ -147,7 +147,7 @@ public System.DateTime LastModified { get; private set; }
 
 Type: `System.DateTime`
 
-### <Icon icon="tag" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} />  XmlPath
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  XmlPath
 
 Gets the path to the XML documentation file.
 
@@ -167,7 +167,7 @@ May be null if no XML documentation file is available.
 
 ## Methods
 
-### <Icon icon="function" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} />  Dispose
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Dispose
 
 Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
 
@@ -177,7 +177,7 @@ Performs application-defined tasks associated with freeing, releasing, or resett
 public void Dispose()
 ```
 
-### <Icon icon="function" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} />  DocumentAsync
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  DocumentAsync
 
 Documents the assembly asynchronously, building or rebuilding an in-memory model with metadata and documentation if necessary.
 

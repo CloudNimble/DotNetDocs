@@ -1,0 +1,116 @@
+---
+title: BackgroundImageConfig
+description: "Represents a background image configuration in Mintlify."
+icon: file-brackets-curly
+keywords: ['BackgroundImageConfig', 'Mintlify.Core.Models.BackgroundImageConfig', 'Mintlify.Core.Models', 'class', 'System.Object']
+---
+
+## Definition
+
+**Assembly:** Mintlify.Core.dll
+
+**Namespace:** Mintlify.Core.Models
+
+**Inheritance:** System.Object
+
+## Syntax
+
+```csharp
+Mintlify.Core.Models.BackgroundImageConfig
+```
+
+## Summary
+
+Represents a background image configuration in Mintlify.
+
+## Remarks
+
+Background images can be simple URL/path references or theme-specific configurations
+            with separate images for light and dark modes. This matches the official Mintlify schema.
+
+## Constructors
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  .ctor
+
+#### Syntax
+
+```csharp
+public BackgroundImageConfig()
+```
+
+## Properties
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Dark
+
+Gets or sets the background image for dark mode.
+
+#### Syntax
+
+```csharp
+public string Dark { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+
+#### Remarks
+
+Can be an absolute URL or relative path to an image file.
+            Used when the theme switches to dark mode.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Light
+
+Gets or sets the background image for light mode.
+
+#### Syntax
+
+```csharp
+public string Light { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+
+#### Remarks
+
+Can be an absolute URL or relative path to an image file.
+            Used when the theme is in light mode.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Url
+
+Gets or sets the single image URL when not using theme-specific images.
+
+#### Syntax
+
+```csharp
+public string Url { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+
+#### Remarks
+
+Used internally when the background image is a simple string.
+            Not serialized directly as it's handled by the converter.
+
+## Methods
+
+### <Icon icon="code-merge" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  ToString
+
+Returns the string representation of the background image configuration.
+
+#### Syntax
+
+```csharp
+public override string ToString()
+```
+
+#### Returns
+
+Type: `string`
+The URL, light image, dark image, or empty string.
+

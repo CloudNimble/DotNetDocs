@@ -29,7 +29,10 @@
       "mcp__github__list_workflow_jobs",
       "Read(//d/GitHub/DotNetDocs/**)",
       "Bash(Select-Object Name, LastWriteTime)",
-      "WebFetch(domain:www.mintlify.com)"
+      "WebFetch(domain:www.mintlify.com)",
+      "WebFetch(domain:docs.mintlify.com)",
+      "mcp__Mintlify__SearchMintlify",
+      "WebFetch(domain:leaves.mintlify.com)"
     ],
     "deny": [],
     "ask": [],

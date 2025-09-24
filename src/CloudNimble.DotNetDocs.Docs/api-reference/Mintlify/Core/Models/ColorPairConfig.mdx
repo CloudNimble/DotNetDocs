@@ -25,7 +25,7 @@ Represents a color pair configuration for light and dark modes.
 
 ## Constructors
 
-### <Icon icon="hammer" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} />  .ctor
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  .ctor
 
 #### Syntax
 
@@ -35,7 +35,7 @@ public ColorPairConfig()
 
 ## Properties
 
-### <Icon icon="tag" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} />  Dark
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Dark
 
 Gets or sets the color in hex format to use in dark mode.
 
@@ -49,7 +49,7 @@ public string Dark { get; set; }
 
 Type: `string?`
 
-### <Icon icon="tag" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} />  Light
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Light
 
 Gets or sets the color in hex format to use in light mode.
 
@@ -62,4 +62,21 @@ public string Light { get; set; }
 #### Property Value
 
 Type: `string?`
+
+## Methods
+
+### <Icon icon="code-merge" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  ToString
+
+Returns the string representation of the color pair configuration.
+
+#### Syntax
+
+```csharp
+public override string ToString()
+```
+
+#### Returns
+
+Type: `string`
+The light color, dark color, or empty string.
 

@@ -1368,7 +1368,7 @@ namespace Mintlify.Tests.Core
 
             var group = manager.Configuration!.Navigation!.Pages![1] as GroupConfig;
             group!.Group.Should().Be("API Reference");
-            group!.Icon.Should().Be("code");
+            ((string?)group!.Icon).Should().Be("code");
             group!.Pages.Should().HaveCount(2);
             group!.Pages![1].Should().BeOfType<GroupConfig>();
         }
@@ -1458,7 +1458,7 @@ namespace Mintlify.Tests.Core
                 var manager = new DocsJsonManager();
                 manager.Load("""{"name": "Test"}""");
 
-                manager.PopulateNavigationFromPath(tempPath);
+                manager.PopulateNavigationFromPath(tempPath, preserveExisting: false);
 
                 manager.Configuration!.Navigation.Should().NotBeNull();
                 manager.Configuration!.Navigation!.Pages!.Should().HaveCount(2); // Getting Started group + Api Reference group
@@ -1479,8 +1479,8 @@ namespace Mintlify.Tests.Core
                 var apiGroup = groups.FirstOrDefault(g => g.Group == "Api Reference");
                 apiGroup.Should().BeNull();
 
-                // The other group should be the getting-started directory
-                var gettingStartedDirGroup = groups.FirstOrDefault(g => g.Group == "Getting Started" && g != gettingStartedGroup);
+                // The other group should be the getting-started directory (renamed to avoid conflict)
+                var gettingStartedDirGroup = groups.FirstOrDefault(g => g.Group == "Getting Started (getting-started)");
                 if (gettingStartedDirGroup == null)
                 {
                     // If we only have one "Getting Started" group, it should contain both root files and directory files
@@ -1520,7 +1520,12 @@ namespace Mintlify.Tests.Core
                 manager.PopulateNavigationFromPath(tempPath, new[] { ".mdx" });
 
                 manager.Configuration!.Navigation!.Pages!.Should().HaveCount(1);
-                manager.Configuration!.Navigation!.Pages!.Should().Contain("doc2");
+                // Root files get grouped into "Getting Started" group
+                var groups = manager.Configuration!.Navigation!.Pages!.OfType<GroupConfig>().ToList();
+                groups.Should().HaveCount(1);
+                var gettingStartedGroup = groups.FirstOrDefault(g => g.Group == "Getting Started");
+                gettingStartedGroup.Should().NotBeNull();
+                gettingStartedGroup!.Pages.Should().Contain("doc2");
             }
             finally
             {
@@ -1694,7 +1699,7 @@ namespace Mintlify.Tests.Core
                 var manager = new DocsJsonManager();
                 manager.Configuration = DocsJsonManager.CreateDefault("Test");
 
-                manager.PopulateNavigationFromPath(tempPath);
+                manager.PopulateNavigationFromPath(tempPath, preserveExisting: false);
 
                 var pages = manager.Configuration!.Navigation!.Pages!;
                 pages.Should().HaveCount(1);
@@ -1736,7 +1741,7 @@ namespace Mintlify.Tests.Core
                 var manager = new DocsJsonManager();
                 manager.Configuration = DocsJsonManager.CreateDefault("Test");
 
-                manager.PopulateNavigationFromPath(tempPath);
+                manager.PopulateNavigationFromPath(tempPath, preserveExisting: false);
 
                 var pages = manager.Configuration!.Navigation!.Pages!;
                 pages.Should().HaveCount(1);
@@ -1771,13 +1776,16 @@ namespace Mintlify.Tests.Core
                 var manager = new DocsJsonManager();
                 manager.Configuration = DocsJsonManager.CreateDefault("Test");
 
-                manager.PopulateNavigationFromPath(tempPath);
+                manager.PopulateNavigationFromPath(tempPath, preserveExisting: false);
 
                 // Should include .mdx files
                 var pages = manager.Configuration!.Navigation!.Pages!;
-                pages.Should().HaveCount(2);
-                pages.Should().Contain("index");
-                pages.Should().Contain("guide");
+                pages.Should().HaveCount(1); // Root files get grouped into "Getting Started"
+
+                var gettingStartedGroup = pages.OfType<GroupConfig>().FirstOrDefault(g => g.Group == "Getting Started");
+                gettingStartedGroup.Should().NotBeNull();
+                gettingStartedGroup!.Pages.Should().Contain("index");
+                gettingStartedGroup!.Pages.Should().Contain("guide");
 
                 // Should have warnings for .md files
                 var mdWarnings = manager.ConfigurationErrors.Where(e => e.ErrorNumber == "MD_FILE_WARNING");
@@ -1816,13 +1824,17 @@ namespace Mintlify.Tests.Core
                 var manager = new DocsJsonManager();
                 manager.Configuration = DocsJsonManager.CreateDefault("Test");
 
-                manager.PopulateNavigationFromPath(tempPath);
+                manager.PopulateNavigationFromPath(tempPath, preserveExisting: false);
 
-                // Root level: index should be first
                 var pages = manager.Configuration!.Navigation!.Pages!;
-                pages[0].Should().Be("index");
-                pages[1].Should().Be("apple");
-                pages[2].Should().Be("zebra");
+                pages.Should().HaveCount(2); // "Getting Started" group + "Guides" group
+
+                // Root level files get grouped into "Getting Started" - index should be first
+                var gettingStartedGroup = pages.OfType<GroupConfig>().FirstOrDefault(g => g.Group == "Getting Started");
+                gettingStartedGroup.Should().NotBeNull();
+                gettingStartedGroup!.Pages![0].Should().Be("index");
+                gettingStartedGroup!.Pages![1].Should().Be("apple");
+                gettingStartedGroup!.Pages![2].Should().Be("zebra");
 
                 // Group level: index should be first
                 var guidesGroup = pages.OfType<GroupConfig>().FirstOrDefault(g => g.Group == "Guides");
@@ -1868,7 +1880,7 @@ namespace Mintlify.Tests.Core
                       "pages": ["cli/index", "cli/setup"]
                     },
                     {
-                      "group": "Code Generation", 
+                      "group": "Code Generation",
                       "pages": ["cli/code/generate"]
                     }
                   ]
@@ -1879,7 +1891,7 @@ namespace Mintlify.Tests.Core
                 var manager = new DocsJsonManager();
                 manager.Configuration = DocsJsonManager.CreateDefault("Test");
 
-                manager.PopulateNavigationFromPath(tempPath);
+                manager.PopulateNavigationFromPath(tempPath, preserveExisting: false);
 
                 var pages = manager.Configuration!.Navigation!.Pages!;
                 pages.Should().HaveCount(1);
@@ -1887,7 +1899,7 @@ namespace Mintlify.Tests.Core
                 var cliGroup = pages.OfType<GroupConfig>().FirstOrDefault();
                 cliGroup.Should().NotBeNull();
                 cliGroup!.Group.Should().Be("CLI Tools");
-                cliGroup!.Icon.Should().Be("terminal");
+                ((string?)cliGroup!.Icon).Should().Be("terminal");
                 cliGroup!.Pages.Should().HaveCount(2);
 
                 var coreGroup = cliGroup!.Pages!.OfType<GroupConfig>().FirstOrDefault(g => g.Group == "Core Commands");
@@ -1924,7 +1936,7 @@ namespace Mintlify.Tests.Core
                 var manager = new DocsJsonManager();
                 manager.Configuration = DocsJsonManager.CreateDefault("Test");
 
-                manager.PopulateNavigationFromPath(tempPath);
+                manager.PopulateNavigationFromPath(tempPath, preserveExisting: false);
 
                 // Should have warning about malformed JSON
                 var jsonWarnings = manager.ConfigurationErrors.Where(e => e.ErrorNumber == "NAVIGATION_JSON");
@@ -1998,7 +2010,7 @@ namespace Mintlify.Tests.Core
                 var manager = new DocsJsonManager();
                 manager.Configuration = DocsJsonManager.CreateDefault("Test");
 
-                manager.PopulateNavigationFromPath(tempPath);
+                manager.PopulateNavigationFromPath(tempPath, preserveExisting: false);
 
                 var pages = manager.Configuration!.Navigation!.Pages!;
                 pages.Should().HaveCount(1);
@@ -2007,7 +2019,7 @@ namespace Mintlify.Tests.Core
                 var cliGroup = pages.OfType<GroupConfig>().FirstOrDefault();
                 cliGroup.Should().NotBeNull();
                 cliGroup!.Group.Should().Be("CLI Tools");
-                cliGroup!.Icon.Should().Be("terminal");
+                ((string?)cliGroup!.Icon).Should().Be("terminal");
                 // Should only have override pages (3) - user takes complete control
                 cliGroup!.Pages.Should().HaveCount(3);
                 cliGroup!.Pages.Should().Contain("cli/index");
@@ -2057,16 +2069,18 @@ namespace Mintlify.Tests.Core
                 manager.Configuration = DocsJsonManager.CreateDefault("Test");
 
                 // Step 1: Populate navigation
-                manager.PopulateNavigationFromPath(tempPath);
+                manager.PopulateNavigationFromPath(tempPath, preserveExisting: false);
 
                 // Step 2: Apply URL prefix
                 manager.ApplyUrlPrefix("/v2");
 
                 var pages = manager.Configuration!.Navigation!.Pages!;
-                pages.Should().HaveCount(3);
+                pages.Should().HaveCount(3); // Getting Started group + Guides group + API Reference group
 
-                // Auto-generated content should be prefixed
-                pages.Should().Contain("/v2/index");
+                // Auto-generated root files get grouped into "Getting Started" and should be prefixed
+                var gettingStartedGroup = pages.OfType<GroupConfig>().FirstOrDefault(g => g.Group == "Getting Started");
+                gettingStartedGroup.Should().NotBeNull();
+                gettingStartedGroup!.Pages.Should().Contain("/v2/index");
 
                 var guidesGroup = pages.OfType<GroupConfig>().FirstOrDefault(g => g.Group == "Guides");
                 guidesGroup.Should().NotBeNull();
@@ -2076,7 +2090,7 @@ namespace Mintlify.Tests.Core
                 // Override content should be prefixed (navigation.json takes complete control of api directory)
                 var apiGroup = pages.OfType<GroupConfig>().FirstOrDefault(g => g.Group == "API Reference");
                 apiGroup.Should().NotBeNull();
-                apiGroup!.Icon.Should().Be("code");
+                ((string?)apiGroup!.Icon).Should().Be("code");
                 apiGroup!.Pages.Should().Contain("/v2/api/endpoints");
             }
             finally
@@ -2126,11 +2140,15 @@ namespace Mintlify.Tests.Core
                 var manager = new DocsJsonManager();
                 manager.Configuration = DocsJsonManager.CreateDefault("Test");
 
-                manager.PopulateNavigationFromPath(tempPath);
+                manager.PopulateNavigationFromPath(tempPath, preserveExisting: false);
 
                 var pages = manager.Configuration!.Navigation!.Pages!;
-                pages.Should().HaveCount(2); // index + docs group
-                pages.Should().Contain("index");
+                pages.Should().HaveCount(2); // Getting Started group + Docs group
+
+                // Root files get grouped into "Getting Started"
+                var gettingStartedGroup = pages.OfType<GroupConfig>().FirstOrDefault(g => g.Group == "Getting Started");
+                gettingStartedGroup.Should().NotBeNull();
+                gettingStartedGroup!.Pages.Should().Contain("index");
 
                 var docsGroup = pages.OfType<GroupConfig>().FirstOrDefault(g => g.Group == "Docs");
                 docsGroup.Should().NotBeNull();
@@ -2151,7 +2169,7 @@ namespace Mintlify.Tests.Core
                 // API should use override (navigation.json takes complete control)
                 var apiGroup = docsGroup!.Pages!.OfType<GroupConfig>().FirstOrDefault(g => g.Group == "API Documentation");
                 apiGroup.Should().NotBeNull();
-                apiGroup!.Icon.Should().Be("api");
+                ((string?)apiGroup!.Icon).Should().Be("api");
                 apiGroup!.Pages.Should().Contain("docs/api/overview");
             }
             finally
@@ -2185,7 +2203,7 @@ namespace Mintlify.Tests.Core
                 var manager = new DocsJsonManager();
                 manager.Configuration = DocsJsonManager.CreateDefault("Test");
 
-                manager.PopulateNavigationFromPath(tempPath);
+                manager.PopulateNavigationFromPath(tempPath, preserveExisting: false);
 
                 var pages = manager.Configuration!.Navigation!.Pages!;
                 pages.Should().HaveCount(2); // Getting Started group + Guides group
@@ -2232,7 +2250,7 @@ namespace Mintlify.Tests.Core
                 var manager = new DocsJsonManager();
                 manager.Configuration = DocsJsonManager.CreateDefault("Test");
 
-                manager.PopulateNavigationFromPath(tempPath);
+                manager.PopulateNavigationFromPath(tempPath, preserveExisting: false);
 
                 var pages = manager.Configuration!.Navigation!.Pages!;
                 pages.Should().HaveCount(1); // Only Guides group
@@ -2274,7 +2292,7 @@ namespace Mintlify.Tests.Core
                 var manager = new DocsJsonManager();
                 manager.Configuration = DocsJsonManager.CreateDefault("Test");
 
-                manager.PopulateNavigationFromPath(tempPath);
+                manager.PopulateNavigationFromPath(tempPath, preserveExisting: false);
 
                 var pages = manager.Configuration!.Navigation!.Pages!;
                 pages.Should().HaveCount(1); // Getting Started group only

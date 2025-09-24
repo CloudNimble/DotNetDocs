@@ -51,6 +51,7 @@
     <Project Path="CloudNimble.DotNetDocs.Tests.Core/CloudNimble.DotNetDocs.Tests.Core.csproj" />
     <Project Path="CloudNimble.DotNetDocs.Tests.Mintlify/CloudNimble.DotNetDocs.Tests.Mintlify.csproj" Id="13e9ada6-8b4e-4d30-a061-8c722967c1ad" />
     <Project Path="CloudNimble.DotNetDocs.Tests.Plugins.AI/CloudNimble.DotNetDocs.Tests.Plugins.AI.csproj" Id="de5194ea-d2ce-4df5-a2aa-aeddec8cc1be" />
+    <Project Path="CloudNimble.DotNetDocs.Tests.Sdk.Tasks/CloudNimble.DotNetDocs.Tests.Sdk.Tasks.csproj" />
     <Project Path="CloudNimble.DotNetDocs.Tests.Shared/CloudNimble.DotNetDocs.Tests.Shared.csproj" />
     <Project Path="Mintlify.Tests.Core/Mintlify.Tests.Core.csproj" />
   </Folder>

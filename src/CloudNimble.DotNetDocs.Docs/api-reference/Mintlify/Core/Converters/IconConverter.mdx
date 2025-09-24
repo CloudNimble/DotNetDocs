@@ -2,7 +2,7 @@
 title: IconConverter
 description: "Handles JSON conversion for icon properties that can be either strings or objects."
 icon: file-brackets-curly
-keywords: ['IconConverter', 'Mintlify.Core.Converters.IconConverter', 'Mintlify.Core.Converters', 'class', 'System.Text.Json.Serialization.JsonConverter<object>']
+keywords: ['IconConverter', 'Mintlify.Core.Converters.IconConverter', 'Mintlify.Core.Converters', 'class', 'System.Text.Json.Serialization.JsonConverter<Mintlify.Core.Models.IconConfig>']
 ---
 
 ## Definition
@@ -11,7 +11,7 @@ keywords: ['IconConverter', 'Mintlify.Core.Converters.IconConverter', 'Mintlify.
 
 **Namespace:** Mintlify.Core.Converters
 
-**Inheritance:** System.Text.Json.Serialization.JsonConverter&lt;object&gt;
+**Inheritance:** System.Text.Json.Serialization.JsonConverter&lt;Mintlify.Core.Models.IconConfig&gt;
 
 ## Syntax
 
@@ -27,11 +27,11 @@ Handles JSON conversion for icon properties that can be either strings or object
 
 Icons in Mintlify can be specified as:
             - String: Simple icon name (e.g., "folder", "home")
-            - Object: Icon configuration with additional properties
+            - Object: Icon configuration with name, style, and library properties
 
 ## Constructors
 
-### <Icon icon="hammer" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} />  .ctor
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  .ctor
 
 #### Syntax
 
@@ -41,7 +41,7 @@ public IconConverter()
 
 ## Methods
 
-### <Icon icon="code-merge" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} />  CanConvert
+### <Icon icon="code-merge" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  CanConvert
 
 Determines whether the specified type can be converted by this converter.
 
@@ -60,16 +60,16 @@ public override bool CanConvert(System.Type typeToConvert)
 #### Returns
 
 Type: `bool`
-True if the type is object; otherwise, false.
+True if the type is IconConfig; otherwise, false.
 
-### <Icon icon="code-merge" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} />  Read
+### <Icon icon="code-merge" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Read
 
-Reads and converts the JSON to an icon object.
+Reads and converts the JSON to an IconConfig object.
 
 #### Syntax
 
 ```csharp
-public override object Read(ref System.Text.Json.Utf8JsonReader reader, System.Type typeToConvert, System.Text.Json.JsonSerializerOptions options)
+public override Mintlify.Core.Models.IconConfig Read(ref System.Text.Json.Utf8JsonReader reader, System.Type typeToConvert, System.Text.Json.JsonSerializerOptions options)
 ```
 
 #### Parameters
@@ -82,8 +82,8 @@ public override object Read(ref System.Text.Json.Utf8JsonReader reader, System.T
 
 #### Returns
 
-Type: `object?`
-A string for simple icon names or a Dictionary for icon configuration objects.
+Type: `Mintlify.Core.Models.IconConfig?`
+An IconConfig for both simple icon names and complex icon configurations.
 
 #### Exceptions
 
@@ -91,14 +91,14 @@ A string for simple icon names or a Dictionary for icon configuration objects.
 |-----------|-------------|
 | `JsonException` | Thrown when the JSON token type is not supported. |
 
-### <Icon icon="code-merge" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} />  Write
+### <Icon icon="code-merge" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Write
 
-Writes the icon object to JSON.
+Writes the IconConfig object to JSON.
 
 #### Syntax
 
 ```csharp
-public override void Write(System.Text.Json.Utf8JsonWriter writer, object value, System.Text.Json.JsonSerializerOptions options)
+public override void Write(System.Text.Json.Utf8JsonWriter writer, Mintlify.Core.Models.IconConfig value, System.Text.Json.JsonSerializerOptions options)
 ```
 
 #### Parameters
@@ -106,12 +106,6 @@ public override void Write(System.Text.Json.Utf8JsonWriter writer, object value,
 | Name | Type | Description |
 |------|------|-------------|
 | `writer` | `System.Text.Json.Utf8JsonWriter` | The JSON writer. |
-| `value` | `object` | The value to write. |
+| `value` | `Mintlify.Core.Models.IconConfig?` | The IconConfig value to write. |
 | `options` | `System.Text.Json.JsonSerializerOptions` | The serializer options. |
-
-#### Exceptions
-
-| Exception | Description |
-|-----------|-------------|
-| `JsonException` | Thrown when the value type is not supported. |
 

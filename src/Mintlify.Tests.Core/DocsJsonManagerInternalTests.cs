@@ -527,9 +527,9 @@ namespace Mintlify.Tests.Core
             target.Tag.Should().Be("v1");
             target.Root.Should().Be("/api");
             target.Hidden.Should().BeTrue();
-            target.Icon.Should().Be("api-icon");
-            target.AsyncApi.Should().Be("async-config");
-            target.OpenApi.Should().Be("openapi-config");
+            ((string?)target.Icon).Should().Be("api-icon");
+            ((string?)target.AsyncApi).Should().Be("async-config");
+            ((string?)target.OpenApi).Should().Be("openapi-config");
             target.Pages.Should().HaveCount(2);
         }
 
@@ -587,9 +587,9 @@ namespace Mintlify.Tests.Core
 
             target.Href.Should().Be("/api");
             target.Hidden.Should().BeTrue();
-            target.Icon.Should().Be("api-icon");
-            target.AsyncApi.Should().Be("async-config");
-            target.OpenApi.Should().Be("openapi-config");
+            ((string?)target.Icon).Should().Be("api-icon");
+            ((string?)target.AsyncApi).Should().Be("async-config");
+            ((string?)target.OpenApi).Should().Be("openapi-config");
             target.Pages.Should().HaveCount(2);
             target.Groups.Should().HaveCount(1);
             target.Anchors.Should().HaveCount(1);
@@ -786,6 +786,269 @@ namespace Mintlify.Tests.Core
             anchor.Groups[0].Pages.Should().Contain("/v2/external/apis");
             anchor.Tabs[0].Href.Should().Be("/v2/tools");
             anchor.Tabs[0].Pages.Should().Contain("/v2/tools/cli");
+        }
+
+        #endregion
+
+        #region CleanNavigationGroups Tests
+
+        /// <summary>
+        /// Tests that CleanNavigationGroups handles null configuration gracefully.
+        /// </summary>
+        [TestMethod]
+        public void CleanNavigationGroups_NullConfiguration_DoesNotThrow()
+        {
+            var manager = new DocsJsonManager();
+            manager.Configuration = null;
+
+            var act = () => manager.CleanNavigationGroups();
+
+            act.Should().NotThrow();
+        }
+
+        /// <summary>
+        /// Tests that CleanNavigationGroups handles null navigation gracefully.
+        /// </summary>
+        [TestMethod]
+        public void CleanNavigationGroups_NullNavigation_DoesNotThrow()
+        {
+            var manager = new DocsJsonManager();
+            manager.Configuration = new DocsJsonConfig { Name = "Test" };
+
+            var act = () => manager.CleanNavigationGroups();
+
+            act.Should().NotThrow();
+        }
+
+        /// <summary>
+        /// Tests that CleanNavigationGroups handles null pages gracefully.
+        /// </summary>
+        [TestMethod]
+        public void CleanNavigationGroups_NullPages_DoesNotThrow()
+        {
+            var manager = new DocsJsonManager();
+            manager.Configuration = new DocsJsonConfig
+            {
+                Name = "Test",
+                Navigation = new NavigationConfig()
+            };
+
+            var act = () => manager.CleanNavigationGroups();
+
+            act.Should().NotThrow();
+        }
+
+        /// <summary>
+        /// Tests that CleanNavigationGroups removes groups with null names.
+        /// </summary>
+        [TestMethod]
+        public void CleanNavigationGroups_GroupsWithNullNames_RemovesGroups()
+        {
+            var manager = new DocsJsonManager();
+            manager.Configuration = new DocsJsonConfig
+            {
+                Name = "Test",
+                Navigation = new NavigationConfig
+                {
+                    Pages = new List<object>
+                    {
+                        "index",
+                        new GroupConfig { Group = null! },
+                        new GroupConfig { Group = "Valid Group" },
+                        "quickstart"
+                    }
+                }
+            };
+
+            manager.CleanNavigationGroups();
+
+            manager.Configuration.Navigation.Pages.Should().HaveCount(3);
+            manager.Configuration.Navigation.Pages.Should().Contain("index");
+            manager.Configuration.Navigation.Pages.Should().Contain("quickstart");
+            manager.Configuration.Navigation.Pages.OfType<GroupConfig>().Should().HaveCount(1);
+            manager.Configuration.Navigation.Pages.OfType<GroupConfig>().First().Group.Should().Be("Valid Group");
+            manager.ConfigurationErrors.Should().HaveCount(1);
+            manager.ConfigurationErrors[0].ErrorText.Should().Contain("Group with null name found and removed");
+        }
+
+        /// <summary>
+        /// Tests that CleanNavigationGroups adds warnings for empty group names.
+        /// </summary>
+        [TestMethod]
+        public void CleanNavigationGroups_EmptyGroupNames_AddsWarnings()
+        {
+            var manager = new DocsJsonManager();
+            manager.Configuration = new DocsJsonConfig
+            {
+                Name = "Test",
+                Navigation = new NavigationConfig
+                {
+                    Pages = new List<object>
+                    {
+                        new GroupConfig { Group = "" },
+                        new GroupConfig { Group = "   " },
+                        new GroupConfig { Group = "Valid Group" }
+                    }
+                }
+            };
+
+            manager.CleanNavigationGroups();
+
+            manager.Configuration.Navigation.Pages.Should().HaveCount(3);
+            manager.ConfigurationErrors.Should().HaveCount(2);
+            manager.ConfigurationErrors.All(e => e.IsWarning).Should().BeTrue();
+            manager.ConfigurationErrors.All(e => e.ErrorText.Contains("Empty group name found")).Should().BeTrue();
+        }
+
+        /// <summary>
+        /// Tests that CleanNavigationGroups recursively cleans nested groups.
+        /// </summary>
+        [TestMethod]
+        public void CleanNavigationGroups_NestedGroups_CleansRecursively()
+        {
+            var manager = new DocsJsonManager();
+            manager.Configuration = new DocsJsonConfig
+            {
+                Name = "Test",
+                Navigation = new NavigationConfig
+                {
+                    Pages = new List<object>
+                    {
+                        new GroupConfig
+                        {
+                            Group = "Parent Group",
+                            Pages = new List<object>
+                            {
+                                "page1",
+                                new GroupConfig { Group = null! },
+                                new GroupConfig { Group = "Valid Nested" },
+                                "page2"
+                            }
+                        }
+                    }
+                }
+            };
+
+            manager.CleanNavigationGroups();
+
+            var parentGroup = manager.Configuration.Navigation.Pages.OfType<GroupConfig>().First();
+            parentGroup.Pages.Should().HaveCount(3);
+            parentGroup.Pages.Should().Contain("page1");
+            parentGroup.Pages.Should().Contain("page2");
+            parentGroup.Pages!.OfType<GroupConfig>().Should().HaveCount(1);
+            parentGroup.Pages!.OfType<GroupConfig>().First().Group.Should().Be("Valid Nested");
+            manager.ConfigurationErrors.Should().HaveCount(1);
+            manager.ConfigurationErrors[0].ErrorText.Should().Contain("Nested group with null name found and removed");
+        }
+
+        /// <summary>
+        /// Tests that CleanNavigationGroups cleans the Groups property.
+        /// </summary>
+        [TestMethod]
+        public void CleanNavigationGroups_NavigationGroups_CleansGroupsList()
+        {
+            var manager = new DocsJsonManager();
+            manager.Configuration = new DocsJsonConfig
+            {
+                Name = "Test",
+                Navigation = new NavigationConfig
+                {
+                    Pages = new List<object> { "index" },
+                    Groups = new List<GroupConfig>
+                    {
+                        new GroupConfig { Group = "Valid Group" },
+                        new GroupConfig { Group = null! },
+                        new GroupConfig { Group = "" }
+                    }
+                }
+            };
+
+            manager.CleanNavigationGroups();
+
+            manager.Configuration.Navigation.Groups.Should().HaveCount(2);
+            manager.Configuration.Navigation.Groups.Should().Contain(g => g.Group == "Valid Group");
+            manager.Configuration.Navigation.Groups.Should().Contain(g => g.Group == "");
+            manager.ConfigurationErrors.Should().HaveCount(2); // 1 null group removed + 1 empty group warning
+            manager.ConfigurationErrors.Count(e => !e.IsWarning).Should().Be(1); // Only null group is error
+            manager.ConfigurationErrors.Count(e => e.IsWarning).Should().Be(1); // Empty group is warning
+        }
+
+        /// <summary>
+        /// Tests that CleanNavigationGroups preserves valid configuration unchanged.
+        /// </summary>
+        [TestMethod]
+        public void CleanNavigationGroups_ValidConfiguration_PreservesUnchanged()
+        {
+            var manager = new DocsJsonManager();
+            manager.Configuration = new DocsJsonConfig
+            {
+                Name = "Test",
+                Navigation = new NavigationConfig
+                {
+                    Pages = new List<object>
+                    {
+                        "index",
+                        new GroupConfig
+                        {
+                            Group = "API Reference",
+                            Pages = new List<object> { "api/overview" }
+                        },
+                        "quickstart"
+                    }
+                }
+            };
+
+            manager.CleanNavigationGroups();
+
+            manager.Configuration.Navigation.Pages.Should().HaveCount(3);
+            manager.Configuration.Navigation.Pages.Should().Contain("index");
+            manager.Configuration.Navigation.Pages.Should().Contain("quickstart");
+            manager.Configuration.Navigation.Pages.OfType<GroupConfig>().Should().HaveCount(1);
+            manager.Configuration.Navigation.Pages.OfType<GroupConfig>().First().Group.Should().Be("API Reference");
+            manager.ConfigurationErrors.Should().BeEmpty();
+        }
+
+        /// <summary>
+        /// Tests that CleanNavigationGroups handles mixed invalid scenarios.
+        /// </summary>
+        [TestMethod]
+        public void CleanNavigationGroups_MixedInvalidScenarios_HandlesCorrectly()
+        {
+            var manager = new DocsJsonManager();
+            manager.Configuration = new DocsJsonConfig
+            {
+                Name = "Test",
+                Navigation = new NavigationConfig
+                {
+                    Pages = new List<object>
+                    {
+                        "index",
+                        new GroupConfig { Group = null! },
+                        new GroupConfig
+                        {
+                            Group = "Parent",
+                            Pages = new List<object>
+                            {
+                                new GroupConfig { Group = "" },
+                                new GroupConfig { Group = null! }
+                            }
+                        },
+                        new GroupConfig { Group = "Valid" }
+                    }
+                }
+            };
+
+            manager.CleanNavigationGroups();
+
+            manager.Configuration.Navigation.Pages.Should().HaveCount(3); // index, Parent, Valid
+            manager.Configuration.Navigation.Pages.Should().Contain("index");
+
+            var parentGroup = manager.Configuration.Navigation.Pages.OfType<GroupConfig>().First(g => g.Group == "Parent");
+            parentGroup.Pages!.Should().HaveCount(1); // Only empty group remains
+
+            manager.ConfigurationErrors.Should().HaveCount(3); // 1 root null + 1 nested null + 1 nested empty warning
+            manager.ConfigurationErrors.Count(e => !e.IsWarning).Should().Be(2); // 2 null groups
+            manager.ConfigurationErrors.Count(e => e.IsWarning).Should().Be(1); // 1 empty group warning
         }
 
         #endregion

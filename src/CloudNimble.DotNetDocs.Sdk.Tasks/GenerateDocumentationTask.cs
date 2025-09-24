@@ -314,14 +314,14 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
         #endregion
 
 #if NET8_0_OR_GREATER
-        #region Private Methods
+        #region Internal Methods
 
         /// <summary>
         /// Parses the Mintlify template from XML string.
         /// </summary>
         /// <param name="xmlTemplate">The XML template string.</param>
         /// <returns>A DocsJsonConfig instance, or null if parsing fails.</returns>
-        private DocsJsonConfig? ParseMintlifyTemplate(string xmlTemplate)
+        internal DocsJsonConfig? ParseMintlifyTemplate(string xmlTemplate)
         {
             try
             {
@@ -399,6 +399,13 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
                     }
                 }
 
+                // Parse Navigation
+                var navigationElement = root.Element("Navigation");
+                if (navigationElement != null)
+                {
+                    config.Navigation = ParseNavigationConfig(navigationElement);
+                }
+
                 return config;
             }
             catch (Exception ex)
@@ -406,6 +413,103 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
                 Log.LogWarning($"Failed to parse MintlifyTemplate XML: {ex.Message}");
                 return null;
             }
+        }
+
+        /// <summary>
+        /// Parses the Navigation element from the MintlifyTemplate XML.
+        /// </summary>
+        /// <param name="navigationElement">The navigation XML element.</param>
+        /// <returns>A NavigationConfig instance.</returns>
+        internal NavigationConfig ParseNavigationConfig(XElement navigationElement)
+        {
+            var navConfig = new NavigationConfig
+            {
+                Pages = []
+            };
+
+            var pagesElement = navigationElement.Element("Pages");
+            if (pagesElement != null)
+            {
+                var groupsElement = pagesElement.Element("Groups");
+                if (groupsElement != null)
+                {
+                    foreach (var groupElement in groupsElement.Elements("Group"))
+                    {
+                        var group = ParseGroupConfig(groupElement);
+                        if (group != null)
+                        {
+                            navConfig.Pages.Add(group);
+                        }
+                    }
+                }
+
+                // Also parse any direct page references
+                var directPages = pagesElement.Elements("Page");
+                foreach (var pageElement in directPages)
+                {
+                    var pageName = pageElement.Value?.Trim();
+                    if (!string.IsNullOrWhiteSpace(pageName))
+                    {
+                        navConfig.Pages.Add(pageName);
+                    }
+                }
+            }
+
+            return navConfig;
+        }
+
+        /// <summary>
+        /// Parses a Group element from the navigation XML.
+        /// </summary>
+        /// <param name="groupElement">The group XML element.</param>
+        /// <returns>A GroupConfig instance, or null if parsing fails.</returns>
+        internal GroupConfig? ParseGroupConfig(XElement groupElement)
+        {
+            var groupName = groupElement.Attribute("Name")?.Value;
+            if (string.IsNullOrWhiteSpace(groupName))
+            {
+                Log.LogWarning("Group element missing Name attribute, skipping");
+                return null;
+            }
+
+            var group = new GroupConfig
+            {
+                Group = groupName,
+                Icon = groupElement.Attribute("Icon")?.Value,
+                Tag = groupElement.Attribute("Tag")?.Value,
+                Pages = []
+            };
+
+            // Parse direct pages (semicolon-separated list)
+            var pagesElement = groupElement.Element("Pages");
+            if (pagesElement != null && !string.IsNullOrWhiteSpace(pagesElement.Value))
+            {
+                var pageList = pagesElement.Value.Split(';', StringSplitOptions.RemoveEmptyEntries);
+                foreach (var page in pageList)
+                {
+                    var trimmedPage = page.Trim();
+                    if (!string.IsNullOrWhiteSpace(trimmedPage))
+                    {
+                        group.Pages.Add(trimmedPage);
+                    }
+                }
+            }
+
+            // Parse nested groups
+            var nestedGroupsElement = groupElement.Element("Groups");
+            if (nestedGroupsElement != null)
+            {
+                foreach (var nestedGroupElement in nestedGroupsElement.Elements("Group"))
+                {
+                    var nestedGroup = ParseGroupConfig(nestedGroupElement);
+                    if (nestedGroup != null)
+                    {
+                        group.Pages.Add(nestedGroup);
+                    }
+                }
+            }
+
+            return group;
         }
 
         #endregion

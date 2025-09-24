@@ -30,7 +30,7 @@ Contains metadata about a type member, extracted from Roslyn symbols and enhance
 
 ## Constructors
 
-### <Icon icon="hammer" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} />  .ctor
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  .ctor
 
 Initializes a new instance of the [DocMember](/api-reference/CloudNimble/DotNetDocs/Core/DocMember) class.
 
@@ -54,7 +54,7 @@ public DocMember(Microsoft.CodeAnalysis.ISymbol symbol)
 
 ## Properties
 
-### <Icon icon="tag" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} />  Accessibility
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Accessibility
 
 Gets or sets the accessibility level of the member.
 
@@ -69,7 +69,7 @@ public Microsoft.CodeAnalysis.Accessibility Accessibility { get; set; }
 Type: `Microsoft.CodeAnalysis.Accessibility`
 The accessibility level (public, private, protected, etc.).
 
-### <Icon icon="tag" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} />  MemberKind
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  MemberKind
 
 Gets or sets the member kind (method, property, field, event, etc.).
 
@@ -84,7 +84,7 @@ public Microsoft.CodeAnalysis.SymbolKind MemberKind { get; set; }
 Type: `Microsoft.CodeAnalysis.SymbolKind`
 The kind of member as defined by Roslyn.
 
-### <Icon icon="tag" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} />  MethodKind
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  MethodKind
 
 Gets or sets the method kind for method members.
 
@@ -99,7 +99,7 @@ public System.Nullable<Microsoft.CodeAnalysis.MethodKind> MethodKind { get; set;
 Type: `System.Nullable<Microsoft.CodeAnalysis.MethodKind>`
 The kind of method (Constructor, Ordinary, etc.), or null for non-method members.
 
-### <Icon icon="tag" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} />  Name
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Name
 
 Gets or sets the name of the member.
 
@@ -114,7 +114,7 @@ public string Name { get; set; }
 Type: `string`
 The member name.
 
-### <Icon icon="tag" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} />  Parameters
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Parameters
 
 Gets the collection of parameters for this member.
 
@@ -133,7 +133,7 @@ List of documented parameters. Empty for members without parameters.
 
 This collection is populated for methods, constructors, delegates, and indexers.
 
-### <Icon icon="tag" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} />  ReturnType
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  ReturnType
 
 Gets the return type documentation, if applicable.
 
@@ -148,7 +148,7 @@ public CloudNimble.DotNetDocs.Core.DocType ReturnType { get; set; }
 Type: `CloudNimble.DotNetDocs.Core.DocType?`
 Documentation for the return type, or null for void methods and non-method members.
 
-### <Icon icon="tag" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} />  ReturnTypeName
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  ReturnTypeName
 
 Gets or sets the name of the return type.
 
@@ -163,7 +163,7 @@ public string ReturnTypeName { get; set; }
 Type: `string?`
 The return type name for methods and properties, or null for other members.
 
-### <Icon icon="tag" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} />  Signature
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Signature
 
 Gets or sets the signature of the member.
 
@@ -178,7 +178,7 @@ public string Signature { get; set; }
 Type: `string?`
 The member signature including modifiers, return type, parameters, etc.
 
-### <Icon icon="tag" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} />  Symbol
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Symbol
 
 Gets the Roslyn symbol for the member.
 

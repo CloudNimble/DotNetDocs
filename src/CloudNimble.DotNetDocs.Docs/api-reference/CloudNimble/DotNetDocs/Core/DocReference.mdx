@@ -31,7 +31,7 @@ This class encapsulates all information needed to resolve and render a documenta
 
 ## Constructors
 
-### <Icon icon="hammer" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} />  .ctor
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  .ctor
 
 Initializes a new instance of the [DocReference](/api-reference/CloudNimble/DotNetDocs/Core/DocReference) class.
 
@@ -41,7 +41,7 @@ Initializes a new instance of the [DocReference](/api-reference/CloudNimble/DotN
 public DocReference()
 ```
 
-### <Icon icon="hammer" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} />  .ctor
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  .ctor
 
 Initializes a new instance of the [DocReference](/api-reference/CloudNimble/DotNetDocs/Core/DocReference) class with a raw reference.
 
@@ -59,7 +59,7 @@ public DocReference(string rawReference)
 
 ## Properties
 
-### <Icon icon="tag" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} />  Anchor
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Anchor
 
 Gets or sets the anchor for member-level references.
 
@@ -78,7 +78,7 @@ The anchor name for linking to specific members within a type, or null for type-
 
 For a reference to an enum value, this would be "file" for NamespaceMode.File.
 
-### <Icon icon="tag" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} />  DisplayName
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  DisplayName
 
 Gets or sets the display name for the reference.
 
@@ -97,7 +97,7 @@ The human-readable name to display for this reference.
 
 For a member reference, this might be "NamespaceMode.File" or just "File" depending on context.
 
-### <Icon icon="tag" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} />  IsResolved
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  IsResolved
 
 Gets or sets a value indicating whether this reference has been successfully resolved.
 
@@ -112,7 +112,7 @@ public bool IsResolved { get; set; }
 Type: `bool`
 True if the reference was found and resolved; otherwise, false.
 
-### <Icon icon="tag" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} />  RawReference
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  RawReference
 
 Gets or sets the original reference string from the XML documentation.
 
@@ -131,7 +131,7 @@ The raw cref value including any prefix (T:, F:, P:, M:, E:).
 
 F:CloudNimble.DotNetDocs.Core.Configuration.NamespaceMode.File
 
-### <Icon icon="tag" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} />  ReferenceType
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  ReferenceType
 
 Gets or sets the type of reference.
 
@@ -146,7 +146,7 @@ public CloudNimble.DotNetDocs.Core.ReferenceType ReferenceType { get; set; }
 Type: `CloudNimble.DotNetDocs.Core.ReferenceType?`
 The classification of this reference.
 
-### <Icon icon="tag" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} />  RelativePath
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  RelativePath
 
 Gets or sets the resolved root-relative path to the target documentation.
 
@@ -165,7 +165,7 @@ The root-relative path to the target document (starting with /), or null if unre
 
 /Configuration/NamespaceMode.md
 
-### <Icon icon="tag" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} />  TargetEntity
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  TargetEntity
 
 Gets or sets the target entity that this reference points to.
 
@@ -182,7 +182,7 @@ The resolved DocEntity, or null if the reference couldn't be resolved.
 
 ## Methods
 
-### <Icon icon="function" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} />  ToMarkdownLink
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  ToMarkdownLink
 
 Generates a Markdown link for this reference.
 

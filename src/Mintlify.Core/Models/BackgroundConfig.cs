@@ -25,7 +25,7 @@ namespace Mintlify.Core.Models
         /// </remarks>
         [JsonPropertyName("color")]
         [JsonConverter(typeof(ColorConverter))]
-        public object? Color { get; set; }
+        public ColorConfig? Color { get; set; }
 
         /// <summary>
         /// Gets or sets the background decoration style.
@@ -40,13 +40,13 @@ namespace Mintlify.Core.Models
         /// Gets or sets the background image configuration.
         /// </summary>
         /// <remarks>
-        /// Can be a string URL for a single image, or an object with "light" and "dark" 
-        /// properties for different images in each mode. Should be an absolute URL or 
+        /// Can be a string URL for a single image, or an object with "light" and "dark"
+        /// properties for different images in each mode. Should be an absolute URL or
         /// relative path to the image file.
         /// </remarks>
         [JsonPropertyName("image")]
         [JsonConverter(typeof(BackgroundImageConverter))]
-        public object? Image { get; set; }
+        public BackgroundImageConfig? Image { get; set; }
 
         #endregion
 

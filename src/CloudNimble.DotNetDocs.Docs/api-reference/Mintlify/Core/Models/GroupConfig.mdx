@@ -29,7 +29,7 @@ Groups organize pages into sections in your navigation. The group name is requir
 
 ## Constructors
 
-### <Icon icon="hammer" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} />  .ctor
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  .ctor
 
 #### Syntax
 
@@ -39,21 +39,21 @@ public GroupConfig()
 
 ## Properties
 
-### <Icon icon="tag" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} />  AsyncApi
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  AsyncApi
 
 Gets or sets the AsyncAPI configuration for the group.
 
 #### Syntax
 
 ```csharp
-public object AsyncApi { get; set; }
+public Mintlify.Core.Models.ApiSpecConfig AsyncApi { get; set; }
 ```
 
 #### Property Value
 
-Type: `object?`
+Type: `Mintlify.Core.Models.ApiSpecConfig?`
 
-### <Icon icon="tag" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} />  Group
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Group
 
 Gets or sets the name of the group.
 
@@ -74,7 +74,7 @@ This is a required field that appears as the group title in navigation.
             they are not recommended as Mintlify treats each empty group as a separate
             ungrouped navigation section rather than merging them together.
 
-### <Icon icon="tag" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} />  Hidden
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Hidden
 
 Gets or sets whether the current option is default hidden.
 
@@ -88,35 +88,35 @@ public System.Nullable<bool> Hidden { get; set; }
 
 Type: `System.Nullable<bool>?`
 
-### <Icon icon="tag" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} />  Icon
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Icon
 
 Gets or sets the icon to be displayed in the section.
 
 #### Syntax
 
 ```csharp
-public object Icon { get; set; }
+public Mintlify.Core.Models.IconConfig Icon { get; set; }
 ```
 
 #### Property Value
 
-Type: `object?`
+Type: `Mintlify.Core.Models.IconConfig?`
 
-### <Icon icon="tag" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} />  OpenApi
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  OpenApi
 
 Gets or sets the OpenAPI configuration for the group.
 
 #### Syntax
 
 ```csharp
-public object OpenApi { get; set; }
+public Mintlify.Core.Models.ApiSpecConfig OpenApi { get; set; }
 ```
 
 #### Property Value
 
-Type: `object?`
+Type: `Mintlify.Core.Models.ApiSpecConfig?`
 
-### <Icon icon="tag" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} />  Pages
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Pages
 
 Gets or sets the pages in the group.
 
@@ -134,7 +134,7 @@ Type: `System.Collections.Generic.List<object>?`
 
 Pages can be strings (page paths) or nested GroupConfig objects.
 
-### <Icon icon="tag" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} />  Root
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Root
 
 Gets or sets the root page for the group.
 
@@ -148,7 +148,7 @@ public string Root { get; set; }
 
 Type: `string?`
 
-### <Icon icon="tag" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} />  Tag
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Tag
 
 Gets or sets the tag for the group.
 

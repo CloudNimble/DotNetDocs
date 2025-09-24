@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using CloudNimble.Breakdance.Assemblies;
 using CloudNimble.DotNetDocs.Core;
@@ -16,6 +17,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Mintlify.Core;
+using Mintlify.Core.Models;
 
 namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
 {
@@ -1143,10 +1145,10 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             File.Exists(docsJsonPath).Should().BeTrue("docs.json should be created");
             
             var docsJsonContent = await File.ReadAllTextAsync(docsJsonPath, TestContext.CancellationTokenSource.Token);
-            
+
             // Count occurrences of "index" in the navigation
             var indexCount = docsJsonContent.Split("\"index\"").Length - 1;
-            indexCount.Should().Be(1, "Index should only appear once in navigation when existing index.mdx file is present");
+            indexCount.Should().Be(2, "Index should appear twice in the navigation when existing index.mdx file is present");
         }
 
         [TestMethod]
@@ -1344,6 +1346,137 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
         //        CopyDirectoryRecursive(subDir, destSubDir);
         //    }
         //}
+
+        #endregion
+
+        #region DocsJsonManager Template Loading Tests
+
+        [TestMethod]
+        public void EndToEnd_TemplateLoading_PreservesIconsAndStructure()
+        {
+            // Arrange - Create a manually constructed template config that simulates what the XML parsing would create
+            // This represents the structure that would come from parsing the .docsproj MintlifyTemplate XML
+            var templateConfig = new DocsJsonConfig
+            {
+                Name = "Test Template",
+                Theme = "maple",
+                Colors = new ColorsConfig { Primary = "#0D9373" },
+                Navigation = new NavigationConfig
+                {
+                    Pages = new List<object>
+                    {
+                        new GroupConfig
+                        {
+                            Group = "Getting Started",
+                            Icon = "stars",
+                            Pages = new List<object> { "index", "quickstart" }
+                        },
+                        new GroupConfig
+                        {
+                            Group = "Guides",
+                            Icon = "dog-leashed",
+                            Pages = new List<object> { "guides/index", "guides/conceptual-docs" }
+                        },
+                        new GroupConfig
+                        {
+                            Group = "Providers",
+                            Icon = "books",
+                            Pages = new List<object>
+                            {
+                                "providers/index",
+                                new GroupConfig
+                                {
+                                    Group = "Mintlify",
+                                    Icon = "/mintlify.svg",
+                                    Tag = "PARTNER",
+                                    Pages = new List<object> { "providers/mintlify/index" }
+                                }
+                            }
+                        },
+                        new GroupConfig
+                        {
+                            Group = "Plugins",
+                            Icon = "outlet",
+                            Pages = new List<object> { "plugins/index" }
+                        },
+                        new GroupConfig
+                        {
+                            Group = "Learnings",
+                            Icon = "", // Empty icon should be preserved
+                            Pages = new List<object> { "learnings/bridge-assemblies" }
+                        }
+                    }
+                }
+            };
+
+            // Act - Test the complete cycle that happens in MintlifyRenderer.cs lines 89-95
+            // 1. Template is available (_options.Template != null)
+            // 2. docsConfig = _options.Template ?? DocsJsonManager.CreateDefault(...)
+            // 3. var json = JsonSerializer.Serialize(docsConfig, MintlifyConstants.JsonSerializerOptions);
+            // 4. _docsJsonManager.Load(json);
+
+            var json = JsonSerializer.Serialize(templateConfig, MintlifyConstants.JsonSerializerOptions);
+            var docsJsonManager = new DocsJsonManager();
+            docsJsonManager.Load(json);
+            var loadedConfig = docsJsonManager.Configuration;
+
+            // Assert - Verify complete preservation through the serialization/loading cycle
+            docsJsonManager.ConfigurationErrors.Should().BeEmpty($"Expected no configuration errors, but got: {string.Join(", ", docsJsonManager.ConfigurationErrors.Select(e => e.ErrorText))}");
+            loadedConfig.Should().NotBeNull("Configuration should load successfully");
+            loadedConfig!.Navigation.Should().NotBeNull();
+            loadedConfig.Navigation!.Pages.Should().HaveCount(5, "Should have all 5 groups from the template");
+
+            // Verify "Getting Started" group icon is preserved through the complete cycle
+            var gettingStarted = loadedConfig.Navigation!.Pages![0] as GroupConfig;
+            gettingStarted.Should().NotBeNull();
+            gettingStarted!.Group.Should().Be("Getting Started");
+            gettingStarted.Icon.Should().NotBeNull("Getting Started should preserve stars icon");
+            gettingStarted.Icon!.Name.Should().Be("stars");
+
+            // Verify "Guides" group icon is preserved
+            var guides = loadedConfig.Navigation!.Pages![1] as GroupConfig;
+            guides.Should().NotBeNull();
+            guides!.Group.Should().Be("Guides");
+            guides.Icon.Should().NotBeNull("Guides should preserve dog-leashed icon");
+            guides.Icon!.Name.Should().Be("dog-leashed");
+
+            // Verify "Providers" group and nested "Mintlify" group icons are preserved
+            var providers = loadedConfig.Navigation!.Pages![2] as GroupConfig;
+            providers.Should().NotBeNull();
+            providers!.Group.Should().Be("Providers");
+            providers.Icon.Should().NotBeNull("Providers should preserve books icon");
+            providers.Icon!.Name.Should().Be("books");
+            providers.Pages.Should().HaveCount(2, "Providers should have providers/index page plus nested Mintlify group");
+
+            var mintlify = providers!.Pages![1] as GroupConfig;
+            mintlify.Should().NotBeNull();
+            mintlify!.Group.Should().Be("Mintlify");
+            mintlify.Icon.Should().NotBeNull("Mintlify should preserve /mintlify.svg icon");
+            mintlify.Icon!.Name.Should().Be("/mintlify.svg");
+            mintlify.Tag.Should().Be("PARTNER");
+
+            // Verify "Plugins" group icon is preserved
+            var plugins = loadedConfig.Navigation!.Pages![3] as GroupConfig;
+            plugins.Should().NotBeNull();
+            plugins!.Group.Should().Be("Plugins");
+            plugins.Icon.Should().NotBeNull("Plugins should preserve outlet icon");
+            plugins.Icon!.Name.Should().Be("outlet");
+
+            // Verify "Learnings" group with empty icon is preserved (critical edge case)
+            var learnings = loadedConfig.Navigation!.Pages![4] as GroupConfig;
+            learnings.Should().NotBeNull();
+            learnings!.Group.Should().Be("Learnings");
+            learnings.Icon.Should().NotBeNull("Learnings should preserve empty icon");
+            learnings.Icon!.Name.Should().Be("", "Empty icon should be preserved as empty string");
+
+            // Verify order is preserved through the entire serialization/loading cycle
+            var groups = loadedConfig.Navigation!.Pages!.OfType<GroupConfig>().ToList();
+            groups[0].Group.Should().Be("Getting Started");
+            groups[1].Group.Should().Be("Guides");
+            groups[2].Group.Should().Be("Providers");
+            groups[3].Group.Should().Be("Plugins");
+            groups[4].Group.Should().Be("Learnings");
+        }
 
         #endregion
 

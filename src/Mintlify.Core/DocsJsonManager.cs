@@ -370,6 +370,7 @@ namespace Mintlify.Core
         /// <param name="path">The directory path to scan for documentation files.</param>
         /// <param name="fileExtensions">The file extensions to include (defaults to .mdx only).</param>
         /// <param name="includeApiReference">Whether to include the 'api-reference' directory in discovery (defaults to false).</param>
+        /// <param name="preserveExisting">Whether to preserve existing navigation structure and merge discovered content (defaults to true).</param>
         /// <exception cref="ArgumentException">Thrown when path is null or whitespace.</exception>
         /// <exception cref="InvalidOperationException">Thrown when no configuration is loaded.</exception>
         /// <exception cref="DirectoryNotFoundException">Thrown when the specified path does not exist.</exception>
@@ -377,23 +378,25 @@ namespace Mintlify.Core
         /// <para>This method scans the specified directory recursively and builds a navigation structure
         /// based on the folder hierarchy and MDX files found. The method includes several advanced features:</para>
         /// <list type="bullet">
-        /// <item><description><strong>Root File Grouping:</strong> Files in the root directory are automatically 
+        /// <item><description><strong>Template Preservation:</strong> When preserveExisting is true (default),
+        /// preserves existing navigation structure (like templates) and intelligently merges discovered content.</description></item>
+        /// <item><description><strong>Root File Grouping:</strong> Files in the root directory are automatically
         /// grouped under "Getting Started" and placed at the top of the navigation.</description></item>
-        /// <item><description><strong>Directory Exclusions:</strong> Automatically excludes 'node_modules', 'conceptual', 
+        /// <item><description><strong>Directory Exclusions:</strong> Automatically excludes 'node_modules', 'conceptual',
         /// 'overrides', 'api-reference' (unless includeApiReference is true), and any directories starting with '.' (dot directories).</description></item>
-        /// <item><description><strong>File Processing:</strong> Only includes .mdx files by default. .md files 
+        /// <item><description><strong>File Processing:</strong> Only includes .mdx files by default. .md files
         /// generate warnings and are excluded from navigation.</description></item>
         /// <item><description><strong>Index File Priority:</strong> Files named 'index' appear first in each directory's navigation.</description></item>
-        /// <item><description><strong>Enhanced Sorting:</strong> Multi-level sorting with index files first, 
+        /// <item><description><strong>Enhanced Sorting:</strong> Multi-level sorting with index files first,
         /// then regular files, then directories, all sorted alphabetically within their category.</description></item>
-        /// <item><description><strong>Navigation Override:</strong> If a directory contains 'navigation.json', 
-        /// the user assumes complete control over that directory and all subdirectories. The JSON file should 
+        /// <item><description><strong>Navigation Override:</strong> If a directory contains 'navigation.json',
+        /// the user assumes complete control over that directory and all subdirectories. The JSON file should
         /// contain a complete GroupConfig object.</description></item>
         /// </list>
-        /// <para>The method preserves the directory structure in the navigation while applying these intelligent 
+        /// <para>The method preserves the directory structure in the navigation while applying these intelligent
         /// processing rules to create clean, organized documentation.</para>
         /// </remarks>
-        public void PopulateNavigationFromPath(string path, string[]? fileExtensions = null, bool includeApiReference = false)
+        public void PopulateNavigationFromPath(string path, string[]? fileExtensions = null, bool includeApiReference = false, bool preserveExisting = true)
         {
             Ensure.ArgumentNotNullOrWhiteSpace(path, nameof(path));
 
@@ -412,11 +415,25 @@ namespace Mintlify.Core
             Configuration.Navigation ??= new NavigationConfig();
             Configuration.Navigation.Pages ??= [];
 
-            // Clear existing pages to repopulate
-            Configuration.Navigation.Pages.Clear();
+            if (preserveExisting)
+            {
+                // Create a temporary configuration to hold discovered navigation
+                var discoveredNavigation = new NavigationConfig { Pages = [] };
 
-            // Populate from directory structure
-            PopulateNavigationFromDirectory(path, Configuration.Navigation.Pages, path, fileExtensions, includeApiReference, true);
+                // Populate the discovered navigation from directory structure
+                PopulateNavigationFromDirectory(path, discoveredNavigation.Pages, path, fileExtensions, includeApiReference, true);
+
+                // Merge discovered navigation into existing configuration
+                MergeNavigation(Configuration.Navigation, discoveredNavigation);
+            }
+            else
+            {
+                // Clear existing pages to repopulate (legacy behavior)
+                Configuration.Navigation.Pages.Clear();
+
+                // Populate from directory structure
+                PopulateNavigationFromDirectory(path, Configuration.Navigation.Pages, path, fileExtensions, includeApiReference, true);
+            }
         }
 
         /// <summary>
@@ -1224,9 +1241,17 @@ namespace Mintlify.Core
                         }
                         else
                         {
+                            var groupName = FormatGroupName(name);
+
+                            // Avoid conflicts with the root files "Getting Started" group by using a different name
+                            if (groupName == "Getting Started" && groupRootFiles)
+                            {
+                                groupName = $"Getting Started ({name})";
+                            }
+
                             var group = new GroupConfig
                             {
-                                Group = FormatGroupName(name),
+                                Group = groupName,
                                 Pages = subPages
                             };
                             pages.Add(group);

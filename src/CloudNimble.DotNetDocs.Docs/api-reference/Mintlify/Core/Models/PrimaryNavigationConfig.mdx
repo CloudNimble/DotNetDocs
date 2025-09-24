@@ -1,0 +1,175 @@
+---
+title: PrimaryNavigationConfig
+description: "Represents the primary navigation configuration for Mintlify navbar.             Can be a button configuration or a GitHub configuration."
+icon: file-brackets-curly
+keywords: ['PrimaryNavigationConfig', 'Mintlify.Core.Models.PrimaryNavigationConfig', 'Mintlify.Core.Models', 'class', 'System.Object']
+---
+
+## Definition
+
+**Assembly:** Mintlify.Core.dll
+
+**Namespace:** Mintlify.Core.Models
+
+**Inheritance:** System.Object
+
+## Syntax
+
+```csharp
+Mintlify.Core.Models.PrimaryNavigationConfig
+```
+
+## Summary
+
+Represents the primary navigation configuration for Mintlify navbar.
+            Can be a button configuration or a GitHub configuration.
+
+## Constructors
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  .ctor
+
+Initializes a new instance of the [PrimaryNavigationConfig](/api-reference/Mintlify/Core/Models/PrimaryNavigationConfig) class.
+
+#### Syntax
+
+```csharp
+public PrimaryNavigationConfig()
+```
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  .ctor
+
+Initializes a new instance of the [PrimaryNavigationConfig](/api-reference/Mintlify/Core/Models/PrimaryNavigationConfig) class for a button.
+
+#### Syntax
+
+```csharp
+public PrimaryNavigationConfig(string label, string href)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `label` | `string` | The button label. |
+| `href` | `string` | The button href URL. |
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  .ctor
+
+Initializes a new instance of the [PrimaryNavigationConfig](/api-reference/Mintlify/Core/Models/PrimaryNavigationConfig) class for GitHub.
+
+#### Syntax
+
+```csharp
+public PrimaryNavigationConfig(string href)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `href` | `string` | The GitHub URL. |
+
+## Properties
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Href
+
+Gets or sets the href URL for the navigation item.
+
+#### Syntax
+
+```csharp
+public string Href { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Label
+
+Gets or sets the label text for button-type navigation items.
+
+#### Syntax
+
+```csharp
+public string Label { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Type
+
+Gets or sets the type of navigation item (e.g., "button", "github").
+
+#### Syntax
+
+```csharp
+public string Type { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+
+## Methods
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Button
+
+Creates a button-type navigation configuration.
+
+#### Syntax
+
+```csharp
+public static Mintlify.Core.Models.PrimaryNavigationConfig Button(string label, string href)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `label` | `string` | The button label. |
+| `href` | `string` | The button href URL. |
+
+#### Returns
+
+Type: `Mintlify.Core.Models.PrimaryNavigationConfig`
+A PrimaryNavigationConfig configured as a button.
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  GitHub
+
+Creates a GitHub-type navigation configuration.
+
+#### Syntax
+
+```csharp
+public static Mintlify.Core.Models.PrimaryNavigationConfig GitHub(string href)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `href` | `string` | The GitHub URL. |
+
+#### Returns
+
+Type: `Mintlify.Core.Models.PrimaryNavigationConfig`
+A PrimaryNavigationConfig configured for GitHub.
+
+### <Icon icon="code-merge" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  ToString
+
+Returns the string representation of the navigation configuration.
+
+#### Syntax
+
+```csharp
+public override string ToString()
+```
+
+#### Returns
+
+Type: `string`
+The href URL or empty string.
+

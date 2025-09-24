@@ -1,7 +1,7 @@
 using System;
-using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Mintlify.Core.Models;
 
 namespace Mintlify.Core.Converters
 {
@@ -13,10 +13,36 @@ namespace Mintlify.Core.Converters
     /// Primary navigation in Mintlify NavbarConfig can be specified as:
     /// - Object: Button configuration with type, label, and href properties
     /// - Object: GitHub configuration with type and href properties
-    /// - Object: Other custom navigation configurations
     /// </remarks>
-    public class PrimaryNavigationConverter : JsonConverter<object>
+    public class PrimaryNavigationConverter : JsonConverter<PrimaryNavigationConfig>
     {
+
+        #region Private Fields
+
+        /// <summary>
+        /// Lazy-initialized JsonSerializerOptions that excludes this converter to prevent infinite recursion.
+        /// </summary>
+        private static readonly Lazy<JsonSerializerOptions> _optionsWithoutThis = new Lazy<JsonSerializerOptions>(() =>
+        {
+            var options = new JsonSerializerOptions(MintlifyConstants.JsonSerializerOptions);
+            // Remove this converter to prevent recursion
+            for (int i = options.Converters.Count - 1; i >= 0; i--)
+            {
+                if (options.Converters[i] is PrimaryNavigationConverter)
+                {
+                    options.Converters.RemoveAt(i);
+                }
+            }
+
+            return options;
+        });
+
+        /// <summary>
+        /// Gets the JsonSerializerOptions instance without this converter to prevent infinite recursion.
+        /// </summary>
+        internal static JsonSerializerOptions OptionsWithoutThis => _optionsWithoutThis.Value;
+
+        #endregion
 
         #region Public Methods
 
@@ -24,51 +50,44 @@ namespace Mintlify.Core.Converters
         /// Determines whether the specified type can be converted by this converter.
         /// </summary>
         /// <param name="typeToConvert">The type to convert.</param>
-        /// <returns>True if the type is object; otherwise, false.</returns>
+        /// <returns>True if the type is PrimaryNavigationConfig; otherwise, false.</returns>
         public override bool CanConvert(Type typeToConvert)
         {
-            return typeToConvert == typeof(object);
+            return typeToConvert == typeof(PrimaryNavigationConfig);
         }
 
         /// <summary>
-        /// Reads and converts the JSON to a primary navigation object.
+        /// Reads and converts the JSON to a PrimaryNavigationConfig object.
         /// </summary>
         /// <param name="reader">The JSON reader.</param>
         /// <param name="typeToConvert">The type to convert to.</param>
         /// <param name="options">The serializer options.</param>
-        /// <returns>A Dictionary for primary navigation configuration objects.</returns>
+        /// <returns>A PrimaryNavigationConfig object.</returns>
         /// <exception cref="JsonException">Thrown when the JSON token type is not supported.</exception>
-        public override object? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        public override PrimaryNavigationConfig? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             return reader.TokenType switch
             {
-                JsonTokenType.StartObject => JsonSerializer.Deserialize<Dictionary<string, object>>(ref reader, options),
+                JsonTokenType.StartObject => JsonSerializer.Deserialize<PrimaryNavigationConfig>(ref reader, OptionsWithoutThis),
                 _ => throw new JsonException($"Unexpected token type for primary navigation: {reader.TokenType}")
             };
         }
 
         /// <summary>
-        /// Writes the primary navigation object to JSON.
+        /// Writes the PrimaryNavigationConfig object to JSON.
         /// </summary>
         /// <param name="writer">The JSON writer.</param>
-        /// <param name="value">The value to write.</param>
+        /// <param name="value">The PrimaryNavigationConfig value to write.</param>
         /// <param name="options">The serializer options.</param>
-        /// <exception cref="JsonException">Thrown when the value type is not supported.</exception>
-        public override void Write(Utf8JsonWriter writer, object value, JsonSerializerOptions options)
+        public override void Write(Utf8JsonWriter writer, PrimaryNavigationConfig value, JsonSerializerOptions options)
         {
-            switch (value)
+            if (value is null)
             {
-                case Dictionary<string, object> dictValue:
-                    JsonSerializer.Serialize(writer, dictValue, options);
-                    break;
-
-                case null:
-                    writer.WriteNullValue();
-                    break;
-
-                default:
-                    throw new JsonException($"Unsupported primary navigation value type: {value?.GetType()}");
+                writer.WriteNullValue();
+                return;
             }
+
+            JsonSerializer.Serialize(writer, value, OptionsWithoutThis);
         }
 
         #endregion

@@ -38,14 +38,14 @@ namespace Mintlify.Core.Models
         /// <code>
         /// // Single server
         /// "server": "https://api.example.com"
-        /// 
+        ///
         /// // Multiple servers
         /// "server": ["https://api1.example.com", "https://api2.example.com"]
         /// </code>
         /// </example>
         [JsonPropertyName("server")]
-        [JsonConverter(typeof(ApiConfigConverter))]
-        public object? Server { get; set; }
+        [JsonConverter(typeof(ServerConfigConverter))]
+        public ServerConfig? Server { get; set; }
 
         #endregion
 

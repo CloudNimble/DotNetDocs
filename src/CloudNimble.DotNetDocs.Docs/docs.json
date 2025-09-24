@@ -1,12 +1,19 @@
 {
   "colors": {
-    "primary": "#0D9373"
+    "dark": "#3CD0E2",
+    "light": "#419AC5",
+    "primary": "#419AC5"
+  },
+  "logo": {
+    "dark": "dotnetdocs.dark.svg",
+    "light": "dotnetdocs.light.svg"
   },
   "name": "DotNetDocs",
   "navigation": {
     "pages": [
       {
         "group": "Getting Started",
+        "icon": "stars",
         "pages": [
           "index",
           "quickstart"
@@ -14,6 +21,7 @@
       },
       {
         "group": "Guides",
+        "icon": "dog-leashed",
         "pages": [
           "guides/index",
           "guides/conceptual-docs",
@@ -22,29 +30,35 @@
       },
       {
         "group": "Providers",
+        "icon": "books",
         "pages": [
           "providers/index",
           {
             "group": "Mintlify",
             "icon": "/mintlify.svg",
-            "tag": "PARTNER",
             "pages": [
               "providers/mintlify/index"
-            ]
+            ],
+            "tag": "PARTNER"
           }
         ]
       },
       {
         "group": "Plugins",
+        "icon": "outlet",
         "pages": [
           "plugins/index"
         ]
       },
       {
         "group": "Learnings",
+        "icon": {
+          "name": ""
+        },
         "pages": [
           "learnings/bridge-assemblies",
-          "learnings/sdk-packaging"
+          "learnings/sdk-packaging",
+          "learnings/converter-infinite-recursion"
         ]
       },
       {
@@ -191,7 +205,8 @@
                       "api-reference/Mintlify/Core/Converters/NavigationJsonConverter",
                       "api-reference/Mintlify/Core/Converters/NavigationPageConverter",
                       "api-reference/Mintlify/Core/Converters/NavigationPageListConverter",
-                      "api-reference/Mintlify/Core/Converters/PrimaryNavigationConverter"
+                      "api-reference/Mintlify/Core/Converters/PrimaryNavigationConverter",
+                      "api-reference/Mintlify/Core/Converters/ServerConfigConverter"
                     ]
                   },
                   {
@@ -204,9 +219,13 @@
                       "api-reference/Mintlify/Core/Models/ApiExamplesConfig",
                       "api-reference/Mintlify/Core/Models/ApiParamsConfig",
                       "api-reference/Mintlify/Core/Models/ApiPlaygroundConfig",
+                      "api-reference/Mintlify/Core/Models/ApiSpecConfig",
                       "api-reference/Mintlify/Core/Models/AppearanceConfig",
                       "api-reference/Mintlify/Core/Models/BackgroundConfig",
+                      "api-reference/Mintlify/Core/Models/BackgroundImageConfig",
                       "api-reference/Mintlify/Core/Models/BannerConfig",
+                      "api-reference/Mintlify/Core/Models/ColorConfig",
+                      "api-reference/Mintlify/Core/Models/ColorConfigJsonConverter",
                       "api-reference/Mintlify/Core/Models/ColorPairConfig",
                       "api-reference/Mintlify/Core/Models/ColorsConfig",
                       "api-reference/Mintlify/Core/Models/ContextualConfig",
@@ -228,6 +247,7 @@
                       "api-reference/Mintlify/Core/Models/GlobalTabConfig",
                       "api-reference/Mintlify/Core/Models/GlobalVersionConfig",
                       "api-reference/Mintlify/Core/Models/GroupConfig",
+                      "api-reference/Mintlify/Core/Models/IconConfig",
                       "api-reference/Mintlify/Core/Models/IconsConfig",
                       "api-reference/Mintlify/Core/Models/IntegrationsConfig",
                       "api-reference/Mintlify/Core/Models/LanguageConfig",
@@ -238,9 +258,12 @@
                       "api-reference/Mintlify/Core/Models/NavbarConfig",
                       "api-reference/Mintlify/Core/Models/NavbarLink",
                       "api-reference/Mintlify/Core/Models/NavigationConfig",
+                      "api-reference/Mintlify/Core/Models/PrimaryNavigationConfig",
+                      "api-reference/Mintlify/Core/Models/PrimaryNavigationConfigJsonConverter",
                       "api-reference/Mintlify/Core/Models/RedirectConfig",
                       "api-reference/Mintlify/Core/Models/SearchConfig",
                       "api-reference/Mintlify/Core/Models/SeoConfig",
+                      "api-reference/Mintlify/Core/Models/ServerConfig",
                       "api-reference/Mintlify/Core/Models/StylingConfig",
                       "api-reference/Mintlify/Core/Models/TabConfig",
                       "api-reference/Mintlify/Core/Models/VersionConfig"

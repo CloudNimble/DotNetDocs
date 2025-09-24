@@ -121,8 +121,8 @@ namespace CloudNimble.DotNetDocs.Mintlify
             // Generate docs.json if enabled
             if (_options.GenerateDocsJson && _docsJsonManager is not null && _docsJsonManager.Configuration is not null)
             {
-                // First: Discover existing MDX files in documentation root
-                _docsJsonManager.PopulateNavigationFromPath(Context.DocumentationRootPath, new[] { ".mdx" });
+                // First: Discover existing MDX files in documentation root, preserving template navigation
+                _docsJsonManager.PopulateNavigationFromPath(Context.DocumentationRootPath, new[] { ".mdx" }, includeApiReference: false, preserveExisting: true);
                 
                 // Second: Add API reference content to existing navigation
                 BuildNavigationStructure(_docsJsonManager.Configuration, model);
@@ -154,28 +154,24 @@ namespace CloudNimble.DotNetDocs.Mintlify
                     "index",
                 ];
             }
+            else
+            {
+                // If pages already exists (from PopulateNavigationFromPath),
+                // only add index if it's not already present
+                if (!config.Navigation.Pages.OfType<string>().Contains("index"))
+                {
+                    config.Navigation.Pages.Insert(0, "index");
+                }
+            }
 
             // Note: Index page handling is now done by PopulateNavigationFromPath
 
             if (_options.NavigationMode == NavigationMode.Unified)
             {
-                // Find or create the API Reference group
-                var apiReferenceGroup = config.Navigation.Pages
-                    .OfType<GroupConfig>()
-                    .FirstOrDefault(g => g.Group == _options.UnifiedGroupName);
+                // Find or create the API Reference group - smart merging with template
+                var apiReferenceGroup = FindOrCreateApiReferenceGroup(config);
 
-                if (apiReferenceGroup == null)
-                {
-                    apiReferenceGroup = new GroupConfig
-                    {
-                        Group = _options.UnifiedGroupName,
-                        Icon = _options.IncludeIcons ? "code" : null,
-                        Pages = []
-                    };
-                    config.Navigation.Pages.Add(apiReferenceGroup);
-                }
-
-                // Build navigation based on file/folder mode
+                // Build navigation based on file/folder mode, merging with existing pages
                 if (Context.FileNamingOptions.NamespaceMode == NamespaceMode.Folder)
                 {
                     BuildFolderModeNavigation(apiReferenceGroup.Pages!, model);
@@ -195,12 +191,8 @@ namespace CloudNimble.DotNetDocs.Mintlify
 
                 foreach (var assemblyGroup in namespacesByAssembly)
                 {
-                    var assemblyNav = new GroupConfig
-                    {
-                        Group = assemblyGroup.Key,
-                        Icon = _options.IncludeIcons ? "package" : null,
-                        Pages = []
-                    };
+                    // Find or create assembly group - smart merging with template
+                    var assemblyNav = FindOrCreateAssemblyGroup(config, assemblyGroup.Key);
 
                     // Get unique namespaces for this assembly
                     var assemblyNamespaces = assemblyGroup
@@ -209,19 +201,14 @@ namespace CloudNimble.DotNetDocs.Mintlify
                         .OrderBy(ns => ns.Name)
                         .ToList();
 
-                    // Build navigation for this assembly's namespaces
+                    // Build navigation for this assembly's namespaces, merging with existing pages
                     if (Context.FileNamingOptions.NamespaceMode == NamespaceMode.Folder)
                     {
-                        BuildFolderModeNavigation(assemblyNav.Pages, assemblyNamespaces);
+                        BuildFolderModeNavigation(assemblyNav.Pages!, assemblyNamespaces);
                     }
                     else
                     {
-                        BuildFileModeNavigation(assemblyNav.Pages, assemblyNamespaces);
-                    }
-
-                    if (assemblyNav.Pages.Count != 0)
-                    {
-                        config.Navigation.Pages.Add(assemblyNav);
+                        BuildFileModeNavigation(assemblyNav.Pages!, assemblyNamespaces);
                     }
                 }
             }
@@ -237,35 +224,58 @@ namespace CloudNimble.DotNetDocs.Mintlify
             // Process each namespace as a group
             foreach (var ns in model.Namespaces.OrderBy(n => n.Name))
             {
-                var namespaceName = base.GetSafeNamespaceName(ns);
-                var group = new GroupConfig
-                {
-                    Group = ns.Name ?? "global",
-                    Icon = _options.IncludeIcons ? MintlifyIcons.GetIconForNamespace(ns) : null,
-                    Pages = []
-                };
+                // Find or create namespace group - preserve existing template groups
+                var namespaceDisplayName = ns.Name ?? "global";
+                var existingGroup = pages.OfType<GroupConfig>()
+                    .FirstOrDefault(g => g.Group == namespaceDisplayName);
 
-                // Add namespace overview page
+                GroupConfig group;
+                if (existingGroup != null)
+                {
+                    group = existingGroup;
+                    group.Pages ??= [];
+
+                    // Set icon if not already set and we're including icons
+                    if (string.IsNullOrWhiteSpace(group.Icon) && _options.IncludeIcons)
+                    {
+                        group.Icon = MintlifyIcons.GetIconForNamespace(ns);
+                    }
+                }
+                else
+                {
+                    group = new GroupConfig
+                    {
+                        Group = namespaceDisplayName,
+                        Icon = _options.IncludeIcons ? MintlifyIcons.GetIconForNamespace(ns) : null,
+                        Pages = []
+                    };
+                    pages.Add(group);
+                }
+
+                // Add namespace overview page (if not already present)
                 var apiOutputPath = Path.Combine(Context.DocumentationRootPath, Context.ApiReferencePath);
                 var nsFilePath = GetNamespaceFilePath(ns, apiOutputPath, "mdx");
                 var nsRelativePath = Path.GetRelativePath(Context.DocumentationRootPath, nsFilePath)
                     .Replace(Path.DirectorySeparatorChar, '/')
                     .Replace(".mdx", "");
-                group.Pages.Add(nsRelativePath);
 
-                // Add type pages
+                if (!group.Pages.OfType<string>().Contains(nsRelativePath))
+                {
+                    group.Pages.Add(nsRelativePath);
+                }
+
+                // Add type pages (if not already present)
                 foreach (var type in ns.Types.OrderBy(t => t.Name))
                 {
                     var typeFilePath = GetTypeFilePath(type, ns, apiOutputPath, "mdx");
                     var typeRelativePath = Path.GetRelativePath(Context.DocumentationRootPath, typeFilePath)
                         .Replace(Path.DirectorySeparatorChar, '/')
                         .Replace(".mdx", "");
-                    group.Pages.Add(typeRelativePath);
-                }
 
-                if (group.Pages.Count != 0)
-                {
-                    pages.Add(group);
+                    if (!group.Pages.OfType<string>().Contains(typeRelativePath))
+                    {
+                        group.Pages.Add(typeRelativePath);
+                    }
                 }
             }
         }
@@ -1259,6 +1269,83 @@ namespace CloudNimble.DotNetDocs.Mintlify
         }
 
         // All signature and file name methods are now inherited from RendererBase
+
+        /// <summary>
+        /// Finds or creates the API Reference group, preserving template-defined groups and their order.
+        /// </summary>
+        /// <param name="config">The docs configuration.</param>
+        /// <returns>The API Reference group config.</returns>
+        private GroupConfig FindOrCreateApiReferenceGroup(DocsJsonConfig config)
+        {
+            // First, look for an existing API Reference group (respecting template)
+            var apiReferenceGroup = config.Navigation?.Pages?
+                .OfType<GroupConfig>()
+                .FirstOrDefault(g => g.Group == _options.UnifiedGroupName);
+
+            if (apiReferenceGroup != null)
+            {
+                // Found existing group - ensure it has a Pages list and preserve existing content
+                apiReferenceGroup.Pages ??= [];
+
+                // Set icon if not already set and we're including icons
+                if (string.IsNullOrWhiteSpace(apiReferenceGroup.Icon) && _options.IncludeIcons)
+                {
+                    apiReferenceGroup.Icon = "code";
+                }
+
+                return apiReferenceGroup;
+            }
+
+            // No existing group found - create new one and add to end
+            apiReferenceGroup = new GroupConfig
+            {
+                Group = _options.UnifiedGroupName,
+                Icon = _options.IncludeIcons ? "code" : null,
+                Pages = []
+            };
+
+            config.Navigation!.Pages!.Add(apiReferenceGroup);
+            return apiReferenceGroup;
+        }
+
+        /// <summary>
+        /// Finds or creates an assembly group, preserving template-defined groups and their order.
+        /// </summary>
+        /// <param name="config">The docs configuration.</param>
+        /// <param name="assemblyName">The assembly name.</param>
+        /// <returns>The assembly group config.</returns>
+        private GroupConfig FindOrCreateAssemblyGroup(DocsJsonConfig config, string assemblyName)
+        {
+            // Look for existing assembly group in template
+            var assemblyGroup = config.Navigation?.Pages?
+                .OfType<GroupConfig>()
+                .FirstOrDefault(g => g.Group == assemblyName);
+
+            if (assemblyGroup != null)
+            {
+                // Found existing group - ensure it has a Pages list and preserve existing content
+                assemblyGroup.Pages ??= [];
+
+                // Set icon if not already set and we're including icons
+                if (string.IsNullOrWhiteSpace(assemblyGroup.Icon) && _options.IncludeIcons)
+                {
+                    assemblyGroup.Icon = "package";
+                }
+
+                return assemblyGroup;
+            }
+
+            // No existing group found - create new one and add to end
+            assemblyGroup = new GroupConfig
+            {
+                Group = assemblyName,
+                Icon = _options.IncludeIcons ? "package" : null,
+                Pages = []
+            };
+
+            config.Navigation!.Pages!.Add(assemblyGroup);
+            return assemblyGroup;
+        }
 
         #endregion
 

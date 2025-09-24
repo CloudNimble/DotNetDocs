@@ -2,7 +2,7 @@
 title: ApiConfigConverter
 description: "Handles JSON conversion for API configuration properties that can be strings, arrays, or objects."
 icon: file-brackets-curly
-keywords: ['ApiConfigConverter', 'Mintlify.Core.Converters.ApiConfigConverter', 'Mintlify.Core.Converters', 'class', 'System.Text.Json.Serialization.JsonConverter<object>']
+keywords: ['ApiConfigConverter', 'Mintlify.Core.Converters.ApiConfigConverter', 'Mintlify.Core.Converters', 'class', 'System.Text.Json.Serialization.JsonConverter<Mintlify.Core.Models.ApiSpecConfig>']
 ---
 
 ## Definition
@@ -11,7 +11,7 @@ keywords: ['ApiConfigConverter', 'Mintlify.Core.Converters.ApiConfigConverter', 
 
 **Namespace:** Mintlify.Core.Converters
 
-**Inheritance:** System.Text.Json.Serialization.JsonConverter&lt;object&gt;
+**Inheritance:** System.Text.Json.Serialization.JsonConverter&lt;Mintlify.Core.Models.ApiSpecConfig&gt;
 
 ## Syntax
 
@@ -32,7 +32,7 @@ API configurations in Mintlify (OpenAPI and AsyncAPI) can be specified as:
 
 ## Constructors
 
-### <Icon icon="hammer" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} />  .ctor
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  .ctor
 
 #### Syntax
 
@@ -42,7 +42,7 @@ public ApiConfigConverter()
 
 ## Methods
 
-### <Icon icon="code-merge" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} />  CanConvert
+### <Icon icon="code-merge" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  CanConvert
 
 Determines whether the specified type can be converted by this converter.
 
@@ -61,16 +61,16 @@ public override bool CanConvert(System.Type typeToConvert)
 #### Returns
 
 Type: `bool`
-True if the type is object; otherwise, false.
+True if the type is ApiSpecConfig; otherwise, false.
 
-### <Icon icon="code-merge" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} />  Read
+### <Icon icon="code-merge" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Read
 
-Reads and converts the JSON to an API configuration object.
+Reads and converts the JSON to an ApiSpecConfig object.
 
 #### Syntax
 
 ```csharp
-public override object Read(ref System.Text.Json.Utf8JsonReader reader, System.Type typeToConvert, System.Text.Json.JsonSerializerOptions options)
+public override Mintlify.Core.Models.ApiSpecConfig Read(ref System.Text.Json.Utf8JsonReader reader, System.Type typeToConvert, System.Text.Json.JsonSerializerOptions options)
 ```
 
 #### Parameters
@@ -83,8 +83,8 @@ public override object Read(ref System.Text.Json.Utf8JsonReader reader, System.T
 
 #### Returns
 
-Type: `object?`
-A string, List&lt;string&gt;, or Dictionary for API configurations.
+Type: `Mintlify.Core.Models.ApiSpecConfig?`
+An ApiSpecConfig for all supported API configuration formats.
 
 #### Exceptions
 
@@ -92,14 +92,14 @@ A string, List&lt;string&gt;, or Dictionary for API configurations.
 |-----------|-------------|
 | `JsonException` | Thrown when the JSON token type is not supported. |
 
-### <Icon icon="code-merge" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} />  Write
+### <Icon icon="code-merge" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Write
 
-Writes the API configuration object to JSON.
+Writes the ApiSpecConfig object to JSON.
 
 #### Syntax
 
 ```csharp
-public override void Write(System.Text.Json.Utf8JsonWriter writer, object value, System.Text.Json.JsonSerializerOptions options)
+public override void Write(System.Text.Json.Utf8JsonWriter writer, Mintlify.Core.Models.ApiSpecConfig value, System.Text.Json.JsonSerializerOptions options)
 ```
 
 #### Parameters
@@ -107,12 +107,6 @@ public override void Write(System.Text.Json.Utf8JsonWriter writer, object value,
 | Name | Type | Description |
 |------|------|-------------|
 | `writer` | `System.Text.Json.Utf8JsonWriter` | The JSON writer. |
-| `value` | `object` | The value to write. |
+| `value` | `Mintlify.Core.Models.ApiSpecConfig?` | The ApiSpecConfig value to write. |
 | `options` | `System.Text.Json.JsonSerializerOptions` | The serializer options. |
-
-#### Exceptions
-
-| Exception | Description |
-|-----------|-------------|
-| `JsonException` | Thrown when the value type is not supported. |
 
