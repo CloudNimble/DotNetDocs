@@ -33,6 +33,11 @@ namespace Mintlify.Core
         /// </remarks>
         private static readonly string[] ExcludedDirectories = { "node_modules", "conceptual", "overrides" };
 
+        /// <summary>
+        /// Stores the set of page paths that are recognized as known within the application.
+        /// </summary>
+        internal readonly HashSet<string> _knownPagePaths = [];
+
         #endregion
 
         #region Properties
@@ -53,7 +58,7 @@ namespace Mintlify.Core
         /// A collection of <see cref="CompilerError"/> instances representing validation errors,
         /// parsing failures, or other issues encountered during configuration loading.
         /// </value>
-        public List<CompilerError> ConfigurationErrors { get; private set; }
+        public List<CompilerError> ConfigurationErrors { get; private set; } = [];
 
         /// <summary>
         /// Gets the file path of the loaded docs.json configuration file.
@@ -81,7 +86,7 @@ namespace Mintlify.Core
         /// </summary>
         public DocsJsonManager()
         {
-            ConfigurationErrors = [];
+            //ConfigurationErrors = [];
         }
 
         /// <summary>
@@ -135,6 +140,22 @@ namespace Mintlify.Core
         {
             Ensure.ArgumentNotNullOrWhiteSpace(content, nameof(content));
             LoadInternal(content);
+        }
+
+        /// <summary>
+        /// Loads the specified configuration and applies validation and cleaning steps.
+        /// </summary>
+        /// <remarks>This method replaces any existing configuration and clears previous configuration
+        /// errors. After loading, the configuration is validated and navigation groups are cleaned to ensure
+        /// consistency.</remarks>
+        /// <param name="config">The configuration object to load. Cannot be null.</param>
+        public void Load(DocsJsonConfig config)
+        {
+            Ensure.ArgumentNotNull(config, nameof(config));
+
+            ConfigurationErrors.Clear();
+            Configuration = config;
+            // TODO: Load the navigation into _knownPagePaths
         }
 
         /// <summary>
@@ -198,11 +219,10 @@ namespace Mintlify.Core
                 {
                     Pages =
                     [
-                        "index",
                         new GroupConfig
                         {
                             Group = "Getting Started",
-                            Pages = ["quickstart"]
+                            Pages = ["index", "quickstart"]
                         },
                         new GroupConfig
                         {
@@ -288,11 +308,15 @@ namespace Mintlify.Core
                 {
                     Pages = new List<object>
                     {
-                        "index",
+                        new GroupConfig
+                        {
+                            Group = "Getting Started",
+                            Pages = []
+                        },
                         new GroupConfig
                         {
                             Group = "API Reference",
-                            Pages = new List<object> { "api-reference/index" }
+                            Pages = ["api-reference/index"]
                         }
                     }
                 };
@@ -423,8 +447,9 @@ namespace Mintlify.Core
                 // Populate the discovered navigation from directory structure
                 PopulateNavigationFromDirectory(path, discoveredNavigation.Pages, path, fileExtensions, includeApiReference, true);
 
-                // Merge discovered navigation into existing configuration
-                MergeNavigation(Configuration.Navigation, discoveredNavigation);
+                // Merge discovered navigation into existing configuration, adding new root pages to Getting Started
+                var mergeOptions = new MergeOptions();
+                MergeNavigation(Configuration.Navigation, discoveredNavigation, mergeOptions);
             }
             else
             {
@@ -754,10 +779,11 @@ namespace Mintlify.Core
         /// <param name="targetPages">The target pages list to merge into.</param>
         /// <param name="sourcePages">The source pages list to merge from.</param>
         /// <param name="options">Optional merge options to control merge behavior. When null, default behavior is used.</param>
-        internal static void MergePagesList(List<object> targetPages, List<object> sourcePages, MergeOptions? options = null)
+        /// <param name="existingPagePaths">Optional existing hashset of page paths to use for deduplication across recursive calls.</param>
+        internal static void MergePagesList(List<object> targetPages, List<object> sourcePages, MergeOptions? options = null, HashSet<string>? existingPagePaths = null)
         {
             var processedPages = new List<object>();
-            var seenStringPages = new HashSet<string>();
+            var seenPagePaths = new HashSet<string>();
             var groupsByName = new Dictionary<string, GroupConfig>();
 
             // Determine if we should combine empty groups based on options
@@ -765,16 +791,15 @@ namespace Mintlify.Core
             // When options?.CombineEmptyGroups != true (default), empty groups remain separate (Mintlify behavior)
             var combineEmptyGroups = options?.CombineEmptyGroups ?? false;
 
-            // First pass: process target pages, keeping order and deduplicating
+            // First pass: process target pages, collecting all page paths and keeping order
+            CollectPagePaths(targetPages, seenPagePaths);
+
             foreach (var page in targetPages)
             {
                 switch (page)
                 {
                     case string stringPage:
-                        if (seenStringPages.Add(stringPage))
-                        {
-                            processedPages.Add(stringPage);
-                        }
+                        processedPages.Add(stringPage);
                         break;
                     case GroupConfig groupConfig when groupConfig.Group is null:
                         // Skip groups with null names - these are invalid and will be caught by validation
@@ -814,15 +839,25 @@ namespace Mintlify.Core
                 }
             }
 
-            // Second pass: process source pages, merging groups and adding new items
+            // Second pass: process source pages, merging groups and adding new items that don't already exist
             foreach (var page in sourcePages)
             {
                 switch (page)
                 {
                     case string stringPage:
-                        if (seenStringPages.Add(stringPage))
+                        if (seenPagePaths.Add(stringPage))
                         {
-                            processedPages.Add(stringPage);
+                            // Check if we should add this to "Getting Started" instead of root level
+                            if (options?.AddRootPagesToGettingStarted == true && groupsByName.TryGetValue("Getting Started", out var gettingStartedGroup))
+                            {
+                                // Add to Getting Started group instead of root level
+                                gettingStartedGroup.Pages ??= [];
+                                gettingStartedGroup.Pages.Add(stringPage);
+                            }
+                            else
+                            {
+                                processedPages.Add(stringPage);
+                            }
                         }
                         break;
                     case GroupConfig sourceGroup when sourceGroup.Group is null:
@@ -871,6 +906,28 @@ namespace Mintlify.Core
             // Replace target pages with processed result
             targetPages.Clear();
             targetPages.AddRange(processedPages);
+        }
+
+        /// <summary>
+        /// Collects all page paths from a navigation structure into a hashset.
+        /// This includes both root-level string pages and pages within groups.
+        /// </summary>
+        /// <param name="pages">The pages list to collect paths from.</param>
+        /// <param name="pagePaths">The hashset to add page paths to.</param>
+        internal static void CollectPagePaths(List<object> pages, HashSet<string> pagePaths)
+        {
+            foreach (var page in pages)
+            {
+                switch (page)
+                {
+                    case string stringPage:
+                        pagePaths.Add(stringPage);
+                        break;
+                    case GroupConfig groupConfig when groupConfig.Pages is not null:
+                        CollectPagePaths(groupConfig.Pages, pagePaths);
+                        break;
+                }
+            }
         }
 
         /// <summary>

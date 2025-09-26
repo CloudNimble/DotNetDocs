@@ -88,7 +88,15 @@ namespace Mintlify.Core.Converters
                 return;
             }
 
-            JsonSerializer.Serialize(writer, value, OptionsWithoutThis);
+            // If light and dark colors are the same, serialize as a simple string
+            if (value.Light == value.Dark && !string.IsNullOrWhiteSpace(value.Light))
+            {
+                writer.WriteStringValue(value.Light);
+            }
+            else
+            {
+                JsonSerializer.Serialize(writer, value, OptionsWithoutThis);
+            }
         }
 
         #endregion

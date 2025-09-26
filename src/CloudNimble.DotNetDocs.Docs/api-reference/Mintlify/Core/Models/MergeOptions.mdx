@@ -36,6 +36,23 @@ public MergeOptions()
 
 ## Properties
 
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  AddRootPagesToGettingStarted
+
+Gets or sets whether to add newly discovered root-level pages to the "Getting Started" group
+            instead of the root level. This is used when merging discovered navigation into template navigation.
+            When true, new root-level string pages from the source will be added to the "Getting Started" group.
+            When false (default), new root-level pages are added at the root level.
+
+#### Syntax
+
+```csharp
+public bool AddRootPagesToGettingStarted { get; set; }
+```
+
+#### Property Value
+
+Type: `bool`
+
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  CombineEmptyGroups
 
 Gets or sets whether to combine groups with empty string names at the same navigation level.

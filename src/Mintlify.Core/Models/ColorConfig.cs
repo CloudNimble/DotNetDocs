@@ -9,7 +9,6 @@ namespace Mintlify.Core.Models
     /// Represents a color configuration for Mintlify.
     /// Can be a simple hex color string or a complex color pair configuration with light and dark modes.
     /// </summary>
-    [JsonConverter(typeof(ColorConfigJsonConverter))]
     public class ColorConfig
     {
 
@@ -112,115 +111,6 @@ namespace Mintlify.Core.Models
         public override string ToString()
         {
             return Light ?? Dark ?? string.Empty;
-        }
-
-        #endregion
-
-    }
-
-    /// <summary>
-    /// Custom JSON converter for ColorConfig that supports both string and object formats.
-    /// </summary>
-    public class ColorConfigJsonConverter : JsonConverter<ColorConfig>
-    {
-
-        #region Public Methods
-
-        /// <summary>
-        /// Reads and converts the JSON to a ColorConfig object.
-        /// </summary>
-        /// <param name="reader">The JSON reader.</param>
-        /// <param name="typeToConvert">The type to convert to.</param>
-        /// <param name="options">The serializer options.</param>
-        /// <returns>A ColorConfig object.</returns>
-        public override ColorConfig? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-        {
-            if (reader.TokenType == JsonTokenType.String)
-            {
-                // Handle simple string format: "color": "#FF0000"
-                var colorValue = reader.GetString();
-                return new ColorConfig(colorValue);
-            }
-            else if (reader.TokenType == JsonTokenType.StartObject)
-            {
-                // Handle object format: "color": { "dark": "#000000", "light": "#FFFFFF" }
-                var colorConfig = new ColorConfig();
-
-                while (reader.Read())
-                {
-                    if (reader.TokenType == JsonTokenType.EndObject)
-                    {
-                        break;
-                    }
-
-                    if (reader.TokenType == JsonTokenType.PropertyName)
-                    {
-                        var propertyName = reader.GetString();
-                        reader.Read();
-
-                        switch (propertyName?.ToLowerInvariant())
-                        {
-                            case "dark":
-                                colorConfig.Dark = reader.GetString();
-                                break;
-                            case "light":
-                                colorConfig.Light = reader.GetString();
-                                break;
-                        }
-                    }
-                }
-
-                return colorConfig;
-            }
-
-            return null;
-        }
-
-        /// <summary>
-        /// Writes a ColorConfig object as JSON.
-        /// </summary>
-        /// <param name="writer">The JSON writer.</param>
-        /// <param name="value">The ColorConfig object to write.</param>
-        /// <param name="options">The serializer options.</param>
-        public override void Write(Utf8JsonWriter writer, ColorConfig value, JsonSerializerOptions options)
-        {
-            if (value is null)
-            {
-                writer.WriteNullValue();
-                return;
-            }
-
-            // If both dark and light are the same (or one is null), write as simple string
-            if (!string.IsNullOrEmpty(value.Dark) && !string.IsNullOrEmpty(value.Light) && value.Dark != value.Light)
-            {
-                // Write as object when dark and light are different
-                writer.WriteStartObject();
-
-                if (!string.IsNullOrEmpty(value.Dark))
-                {
-                    writer.WriteString("dark", value.Dark);
-                }
-
-                if (!string.IsNullOrEmpty(value.Light))
-                {
-                    writer.WriteString("light", value.Light);
-                }
-
-                writer.WriteEndObject();
-            }
-            else
-            {
-                // Write as simple string when both are the same or only one is set
-                var colorValue = !string.IsNullOrEmpty(value.Light) ? value.Light : value.Dark;
-                if (!string.IsNullOrEmpty(colorValue))
-                {
-                    writer.WriteStringValue(colorValue);
-                }
-                else
-                {
-                    writer.WriteNullValue();
-                }
-            }
         }
 
         #endregion

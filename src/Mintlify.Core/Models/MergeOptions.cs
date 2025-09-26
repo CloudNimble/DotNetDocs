@@ -17,6 +17,14 @@ namespace Mintlify.Core.Models
         /// </summary>
         public bool CombineEmptyGroups { get; set; } = false;
 
+        /// <summary>
+        /// Gets or sets whether to add newly discovered root-level pages to the "Getting Started" group
+        /// instead of the root level. This is used when merging discovered navigation into template navigation.
+        /// When true, new root-level string pages from the source will be added to the "Getting Started" group.
+        /// When false (default), new root-level pages are added at the root level.
+        /// </summary>
+        public bool AddRootPagesToGettingStarted { get; set; } = true;
+
         // Future options can be added here for other merge behaviors
 
         #endregion

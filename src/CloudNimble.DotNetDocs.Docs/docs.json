@@ -11,6 +11,7 @@
   "name": "DotNetDocs",
   "navigation": {
     "pages": [
+      "index",
       {
         "group": "Getting Started",
         "icon": "stars",
@@ -225,7 +226,6 @@
                       "api-reference/Mintlify/Core/Models/BackgroundImageConfig",
                       "api-reference/Mintlify/Core/Models/BannerConfig",
                       "api-reference/Mintlify/Core/Models/ColorConfig",
-                      "api-reference/Mintlify/Core/Models/ColorConfigJsonConverter",
                       "api-reference/Mintlify/Core/Models/ColorPairConfig",
                       "api-reference/Mintlify/Core/Models/ColorsConfig",
                       "api-reference/Mintlify/Core/Models/ContextualConfig",
@@ -259,7 +259,6 @@
                       "api-reference/Mintlify/Core/Models/NavbarLink",
                       "api-reference/Mintlify/Core/Models/NavigationConfig",
                       "api-reference/Mintlify/Core/Models/PrimaryNavigationConfig",
-                      "api-reference/Mintlify/Core/Models/PrimaryNavigationConfigJsonConverter",
                       "api-reference/Mintlify/Core/Models/RedirectConfig",
                       "api-reference/Mintlify/Core/Models/SearchConfig",
                       "api-reference/Mintlify/Core/Models/SeoConfig",
