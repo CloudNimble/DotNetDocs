@@ -1,0 +1,131 @@
+/* Global styles for DotNetDocs site */
+
+/* Make content area full width across entire site */
+#content-area {
+  width: 100% !important;
+  max-width: 100% !important;
+  padding: 0 !important;
+}
+
+/* Remove container constraints for landing pages */
+.container, .max-w-7xl, .mx-auto {
+  max-width: 100% !important;
+}
+
+/* Custom scrollbar styling */
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0A1628;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #3CD0E2, #419AC5);
+  border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #419AC5, #3CD0E2);
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* For custom mode pages - hide default Mintlify elements */
+.custom-mode nav,
+.custom-mode aside,
+.custom-mode .breadcrumb {
+  display: none !important;
+}
+
+.custom-mode main {
+  padding: 0 !important;
+  max-width: 100% !important;
+}
+
+.custom-mode article {
+  max-width: 100% !important;
+  padding: 0 !important;
+}
+
+/* Hide default prose styling on custom pages */
+.custom-mode .prose > h1:first-child,
+.custom-mode .prose > p:first-child {
+  display: none;
+}
+
+/* Animation keyframes */
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-20px) rotate(5deg); }
+}
+
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-50px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(50px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+/* Hero section heading styles */
+.hero-heading {
+  font-size: clamp(48px, 8vw, 72px);
+  font-weight: 900;
+  line-height: 1.1;
+  margin-bottom: 30px;
+  color: white;
+}
+
+.hero-heading-line1,
+.hero-heading-line2,
+.hero-heading-line3 {
+  display: block;
+}
+
+/* Default (Dark mode): "That Ships" gets the gradient */
+.hero-heading-line1 {
+  color: white;
+}
+
+.hero-heading-line2 {
+  background: linear-gradient(135deg, #3CD0E2 0%, #419AC5 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-heading-line3 {
+  color: white;
+}
+
+/* Light mode (Mintlify adds 'light' class to html element) */
+html.light .hero-heading-line1 {
+  background: linear-gradient(135deg, #3CD0E2 0%, #419AC5 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+html.light .hero-heading-line2 {
+  color: white;
+  background: none;
+  -webkit-text-fill-color: white;
+}
+
+html.light .hero-heading-line3 {
+  background: linear-gradient(135deg, #3CD0E2 0%, #419AC5 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
