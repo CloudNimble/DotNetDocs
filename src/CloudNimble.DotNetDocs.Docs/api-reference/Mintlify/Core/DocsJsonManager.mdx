@@ -38,8 +38,14 @@ Initializes a new instance of the [DocsJsonManager](/api-reference/Mintlify/Core
 #### Syntax
 
 ```csharp
-public DocsJsonManager()
+public DocsJsonManager(Mintlify.Core.DocsJsonValidator validator = null)
 ```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `validator` | `Mintlify.Core.DocsJsonValidator?` | The validator to use for validating configurations. If null, a new instance will be created. |
 
 ### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  .ctor
 
@@ -48,7 +54,7 @@ Initializes a new instance of the [DocsJsonManager](/api-reference/Mintlify/Core
 #### Syntax
 
 ```csharp
-public DocsJsonManager(string filePath)
+public DocsJsonManager(string filePath, Mintlify.Core.DocsJsonValidator validator = null)
 ```
 
 #### Parameters
@@ -56,6 +62,7 @@ public DocsJsonManager(string filePath)
 | Name | Type | Description |
 |------|------|-------------|
 | `filePath` | `string` | The path to the docs.json file to load. |
+| `validator` | `Mintlify.Core.DocsJsonValidator?` | The validator to use for validating configurations. If null, a new instance will be created. |
 
 #### Exceptions
 
@@ -130,6 +137,105 @@ True if the configuration was loaded without errors; otherwise, false.
 
 ## Methods
 
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  AddNavigationItem
+
+Adds a navigation item (page or group) to the specified collection, tracking paths appropriately.
+
+#### Syntax
+
+```csharp
+public bool AddNavigationItem(System.Collections.Generic.List<object> pages, object item)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `pages` | `System.Collections.Generic.List<object>` | The pages collection to add to. |
+| `item` | `object` | The item to add (string page path or GroupConfig). |
+
+#### Returns
+
+Type: `bool`
+True if the item was added; false if it was skipped (duplicate).
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  AddPage
+
+Adds a page to the navigation structure if it doesn't already exist.
+
+#### Syntax
+
+```csharp
+public bool AddPage(System.Collections.Generic.List<object> pages, string pagePath, bool allowDuplicatePaths = false, bool updateKnownPaths = true)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `pages` | `System.Collections.Generic.List<object>` | The pages collection to add to. |
+| `pagePath` | `string` | The page path to add. |
+| `allowDuplicatePaths` | `bool` | If true, allows adding duplicate paths; otherwise, skips if the path already exists. |
+| `updateKnownPaths` | `bool` | If true, updates the known page paths tracking; otherwise, only adds to the pages collection. |
+
+#### Returns
+
+Type: `bool`
+True if the page was added; false if it already existed and duplicates are not allowed.
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  AddPage
+
+Adds a page to a hierarchical group path (slash-separated) in the navigation structure.
+
+#### Syntax
+
+```csharp
+public bool AddPage(string groupPath, string pagePath, bool allowDuplicatePaths = false)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `groupPath` | `string` | The hierarchical group path (e.g., "Getting Started/API Reference"). |
+| `pagePath` | `string` | The page path to add. |
+| `allowDuplicatePaths` | `bool` | If true, allows adding duplicate paths; otherwise, skips if the path already exists. |
+
+#### Returns
+
+Type: `bool`
+True if the page was added; false if it already existed and duplicates are not allowed.
+
+#### Exceptions
+
+| Exception | Description |
+|-----------|-------------|
+| `InvalidOperationException` | Thrown when no configuration is loaded. |
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  AddPageToGroup
+
+Adds a page to a group if it doesn't already exist.
+
+#### Syntax
+
+```csharp
+public bool AddPageToGroup(Mintlify.Core.Models.GroupConfig group, string pagePath, bool allowDuplicatePaths = false, bool updateKnownPaths = true)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `group` | `Mintlify.Core.Models.GroupConfig` | The group to add the page to. |
+| `pagePath` | `string` | The page path to add. |
+| `allowDuplicatePaths` | `bool` | If true, allows adding duplicate paths; otherwise, skips if the path already exists. |
+| `updateKnownPaths` | `bool` | If true, updates the known page paths tracking; otherwise, only adds to the pages collection. |
+
+#### Returns
+
+Type: `bool`
+True if the page was added; false if it already existed and duplicates are not allowed.
+
 ### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  ApplyDefaults
 
 Applies default values to missing configuration properties.
@@ -137,8 +243,15 @@ Applies default values to missing configuration properties.
 #### Syntax
 
 ```csharp
-public void ApplyDefaults()
+public void ApplyDefaults(string name = null, string theme = "mint")
 ```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | `string?` | The name to use for the documentation site if not already set. |
+| `theme` | `string` | The theme to use if not already set (defaults to "mint"). |
 
 #### Exceptions
 
@@ -203,6 +316,49 @@ A new [DocsJsonConfig](/api-reference/Mintlify/Core/Models/DocsJsonConfig) insta
 |-----------|-------------|
 | `ArgumentException` | Thrown when name is null or whitespace. |
 
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  FindOrCreateGroup
+
+Finds or creates a group with the specified name in the pages collection.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.GroupConfig FindOrCreateGroup(System.Collections.Generic.List<object> pages, string groupName)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `pages` | `System.Collections.Generic.List<object>` | The pages collection to search/add to. |
+| `groupName` | `string` | The name of the group to find or create. |
+
+#### Returns
+
+Type: `Mintlify.Core.Models.GroupConfig`
+The existing or newly created group.
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  IsPathKnown
+
+Checks if a page path is already known (tracked for duplicate prevention).
+
+#### Syntax
+
+```csharp
+public bool IsPathKnown(string pagePath)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `pagePath` | `string` | The page path to check. |
+
+#### Returns
+
+Type: `bool`
+True if the path is already known; otherwise, false.
+
 ### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Load
 
 Loads and parses the docs.json file from the file path specified in the constructor.
@@ -240,6 +396,28 @@ public void Load(string content)
 | Exception | Description |
 |-----------|-------------|
 | `ArgumentException` | Thrown when content is null or whitespace. |
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Load
+
+Loads the specified configuration and applies validation and cleaning steps.
+
+#### Syntax
+
+```csharp
+public void Load(Mintlify.Core.Models.DocsJsonConfig config)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `config` | `Mintlify.Core.Models.DocsJsonConfig` | The configuration object to load. Cannot be null. |
+
+#### Remarks
+
+This method replaces any existing configuration and clears previous configuration
+            errors. After loading, the configuration is validated and navigation groups are cleaned to ensure
+            consistency.
 
 ### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Merge
 
@@ -339,7 +517,7 @@ Populates the navigation structure from a directory path by scanning for MDX fil
 #### Syntax
 
 ```csharp
-public void PopulateNavigationFromPath(string path, string[] fileExtensions = null, bool includeApiReference = false, bool preserveExisting = true)
+public void PopulateNavigationFromPath(string path, string[] fileExtensions = null, bool includeApiReference = false, bool preserveExisting = true, bool allowDuplicatePaths = false)
 ```
 
 #### Parameters
@@ -350,6 +528,7 @@ public void PopulateNavigationFromPath(string path, string[] fileExtensions = nu
 | `fileExtensions` | `string[]?` | The file extensions to include (defaults to .mdx only). |
 | `includeApiReference` | `bool` | Whether to include the 'api-reference' directory in discovery (defaults to false). |
 | `preserveExisting` | `bool` | Whether to preserve existing navigation structure and merge discovered content (defaults to true). |
+| `allowDuplicatePaths` | `bool` | If true, allows adding duplicate paths; otherwise, skips duplicates. |
 
 #### Exceptions
 

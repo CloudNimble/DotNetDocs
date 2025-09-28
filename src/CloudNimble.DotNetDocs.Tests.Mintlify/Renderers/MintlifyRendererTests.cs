@@ -1148,7 +1148,7 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
 
             // Count occurrences of "index" in the navigation
             var indexCount = docsJsonContent.Split("\"index\"").Length - 1;
-            indexCount.Should().Be(2, "Index should appear twice in the navigation when existing index.mdx file is present");
+            indexCount.Should().Be(1, "Index should appear once in the navigation when existing index.mdx file is present");
         }
 
         [TestMethod]

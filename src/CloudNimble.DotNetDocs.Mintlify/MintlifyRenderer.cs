@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -90,9 +90,8 @@ namespace CloudNimble.DotNetDocs.Mintlify
                         model.AssemblyName ?? "API Documentation",
                         "mint"
                     );
-                    // Load configuration using JSON serialization
-                    var json = JsonSerializer.Serialize(docsConfig, MintlifyConstants.JsonSerializerOptions);
-                    _docsJsonManager.Load(json);
+                    // Load configuration directly without JSON round-trip
+                    _docsJsonManager.Load(docsConfig);
                 }
                 else
                 {
@@ -157,8 +156,8 @@ namespace CloudNimble.DotNetDocs.Mintlify
             else
             {
                 // If pages already exists (from PopulateNavigationFromPath),
-                // only add index if it's not already present
-                if (!config.Navigation.Pages.OfType<string>().Contains("index"))
+                // only add index if it's not already known
+                if (_docsJsonManager is not null && !_docsJsonManager.IsPathKnown("index"))
                 {
                     config.Navigation.Pages.Insert(0, "index");
                 }

@@ -418,3 +418,5 @@ FodyWeavers.xsd
 *.msp
 /.playwright-mcp
 /src/CloudNimble.DotNetDocs.Docs/assembly-list.txt
+/merge-solution.txt
+/opencode-prompt.txt

@@ -56,8 +56,12 @@ services.AddMintlifyRenderer();
 
 #### Remarks
 
-Registers MintlifyRenderer as Scoped implementation of IDocRenderer.
-            Also registers MarkdownXmlTransformer to process XML documentation tags.
+
+
+This method registers:
+
+
+
 
 ### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  AddMintlifyRenderer
 
@@ -92,9 +96,20 @@ services.AddMintlifyRenderer&lt;CustomMintlifyRenderer&gt;();
 
 #### Remarks
 
+
+
 Registers the custom renderer as Scoped implementation of IDocRenderer.
-            The renderer must inherit from MintlifyRenderer.
-            Also registers MarkdownXmlTransformer to process XML documentation tags.
+
+
+
+The renderer must inherit from MintlifyRenderer.
+
+
+
+This method also registers:
+
+
+
 
 ### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  AddMintlifyServices
 

@@ -25,7 +25,8 @@ namespace CloudNimble.DotNetDocs.Core.Configuration
         /// <para>This method registers:</para>
         /// <list type="bullet">
         /// <item><description>MintlifyRenderer for generating MDX documentation</description></item>
-        /// <item><description>DocsJsonManager for navigation generation</description></item>
+        /// <item><description>DocsJsonManager for manipulating docs.json files</description></item>
+        /// <item><description>DocsJsonValidator to ensure correct structures</description></item>
         /// <item><description>MarkdownXmlTransformer for processing XML documentation tags</description></item>
         /// </list>
         /// </remarks>
@@ -41,16 +42,8 @@ namespace CloudNimble.DotNetDocs.Core.Configuration
         /// </example>
         public static DotNetDocsBuilder UseMintlifyRenderer(this DotNetDocsBuilder builder)
         {
-            ArgumentNullException.ThrowIfNull(builder);
-
-            // Register DocsJsonManager for navigation generation
-            builder._services.TryAddScoped<DocsJsonManager>();
-
-            // Add the MarkdownXmlTransformer for processing XML documentation tags
-            builder.AddTransformer<MarkdownXmlTransformer>();
-
-            // Add the renderer using the builder's AddRenderer method
-            return builder.AddRenderer<MintlifyRenderer>();
+            // Call the configuration overload with an empty configuration
+            return builder.UseMintlifyRenderer(_ => { });
         }
 
         /// <summary>
@@ -63,7 +56,8 @@ namespace CloudNimble.DotNetDocs.Core.Configuration
         /// <para>This method registers:</para>
         /// <list type="bullet">
         /// <item><description>MintlifyRenderer for generating MDX documentation</description></item>
-        /// <item><description>DocsJsonManager for navigation generation</description></item>
+        /// <item><description>DocsJsonManager for manipulating docs.json files</description></item>
+        /// <item><description>DocsJsonValidator to ensure correct structures</description></item>
         /// <item><description>MintlifyOptions configuration</description></item>
         /// <item><description>MarkdownXmlTransformer for processing XML documentation tags</description></item>
         /// </list>
@@ -85,20 +79,8 @@ namespace CloudNimble.DotNetDocs.Core.Configuration
         public static DotNetDocsBuilder UseMintlifyRenderer(this DotNetDocsBuilder builder,
             Action<MintlifyRendererOptions> configureMintlify)
         {
-            ArgumentNullException.ThrowIfNull(builder);
-            ArgumentNullException.ThrowIfNull(configureMintlify);
-
-            // Configure options
-            builder._services.Configure(configureMintlify);
-
-            // Register DocsJsonManager for navigation generation
-            builder._services.TryAddScoped<DocsJsonManager>();
-
-            // Add the MarkdownXmlTransformer for processing XML documentation tags
-            builder.AddTransformer<MarkdownXmlTransformer>();
-
-            // Add the renderer using the builder's AddRenderer method
-            return builder.AddRenderer<MintlifyRenderer>();
+            // Call the generic version with MintlifyRenderer as the type parameter
+            return builder.UseMintlifyRenderer<MintlifyRenderer>(configureMintlify);
         }
 
         /// <summary>
@@ -111,7 +93,8 @@ namespace CloudNimble.DotNetDocs.Core.Configuration
         /// <para>The renderer must inherit from MintlifyRenderer.</para>
         /// <para>This method also registers:</para>
         /// <list type="bullet">
-        /// <item><description>DocsJsonManager for navigation generation</description></item>
+        /// <item><description>DocsJsonManager for manipulating docs.json files</description></item>
+        /// <item><description>DocsJsonValidator to ensure correct structures</description></item>
         /// <item><description>MarkdownXmlTransformer for processing XML documentation tags</description></item>
         /// </list>
         /// </remarks>
@@ -128,12 +111,54 @@ namespace CloudNimble.DotNetDocs.Core.Configuration
         public static DotNetDocsBuilder UseMintlifyRenderer<TRenderer>(this DotNetDocsBuilder builder)
             where TRenderer : MintlifyRenderer
         {
+            return builder.UseMintlifyRenderer<TRenderer>(_ => { });
+        }
+
+        /// <summary>
+        /// Adds a custom Mintlify renderer implementation to the documentation pipeline with configuration options.
+        /// </summary>
+        /// <typeparam name="TRenderer">The type of Mintlify renderer to add.</typeparam>
+        /// <param name="builder">The DotNetDocs pipeline builder.</param>
+        /// <param name="configureMintlify">Action to configure Mintlify options.</param>
+        /// <returns>The builder for chaining.</returns>
+        /// <remarks>
+        /// <para>The renderer must inherit from MintlifyRenderer.</para>
+        /// <para>This method also registers:</para>
+        /// <list type="bullet">
+        /// <item><description>Custom renderer implementation for generating MDX documentation</description></item>
+        /// <item><description>DocsJsonManager for manipulating docs.json files</description></item>
+        /// <item><description>DocsJsonValidator to ensure correct structures</description></item>
+        /// <item><description>MintlifyOptions configuration</description></item>
+        /// <item><description>MarkdownXmlTransformer for processing XML documentation tags</description></item>
+        /// </list>
+        /// </remarks>
+        /// <example>
+        /// <code>
+        /// services.AddDotNetDocsPipeline(pipeline =>
+        /// {
+        ///     pipeline
+        ///         .UseMintlifyRenderer&lt;CustomMintlifyRenderer&gt;(options =>
+        ///         {
+        ///             options.GenerateDocsJson = true;
+        ///         })
+        ///         .ConfigureContext(ctx => ctx.OutputPath = "docs");
+        /// });
+        /// </code>
+        /// </example>
+        public static DotNetDocsBuilder UseMintlifyRenderer<TRenderer>(this DotNetDocsBuilder builder,
+            Action<MintlifyRendererOptions> configureMintlify)
+            where TRenderer : MintlifyRenderer
+        {
             ArgumentNullException.ThrowIfNull(builder);
+            ArgumentNullException.ThrowIfNull(configureMintlify);
 
-            // Register DocsJsonManager for navigation generation
+            // Configure options if provided
+            builder._services.Configure(configureMintlify);
+
+            // Register all Mintlify services (DocsJsonManager, DocsJsonValidator, MarkdownXmlTransformer)
+            // These are ALWAYS needed when using any Mintlify renderer
             builder._services.TryAddScoped<DocsJsonManager>();
-
-            // Add the MarkdownXmlTransformer for processing XML documentation tags
+            builder._services.TryAddScoped<DocsJsonValidator>();
             builder.AddTransformer<MarkdownXmlTransformer>();
 
             // Add the custom renderer using the builder's AddRenderer method

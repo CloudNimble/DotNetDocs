@@ -22,8 +22,13 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="services">The service collection.</param>
         /// <returns>The service collection for chaining.</returns>
         /// <remarks>
-        /// Registers MintlifyRenderer as Scoped implementation of IDocRenderer.
-        /// Also registers MarkdownXmlTransformer to process XML documentation tags.
+        /// <para>This method registers:</para>
+        /// <list type="bullet">
+        /// <item><description>MintlifyRenderer as Scoped implementation of IDocRenderer</description></item>
+        /// <item><description>DocsJsonManager as Scoped service for navigation generation</description></item>
+        /// <item><description>DocsJsonValidator to ensure correct structures</description></item>
+        /// <item><description>MarkdownXmlTransformer for processing XML documentation tags</description></item>
+        /// </list>
         /// </remarks>
         /// <example>
         /// <code>
@@ -32,9 +37,8 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </example>
         public static IServiceCollection AddMintlifyRenderer(this IServiceCollection services)
         {
-            services.TryAddEnumerable(ServiceDescriptor.Scoped<IDocRenderer, MintlifyRenderer>());
-            services.TryAddEnumerable(ServiceDescriptor.Scoped<IDocTransformer, MarkdownXmlTransformer>());
-            return services;
+            // Call the generic version with MintlifyRenderer as the type parameter
+            return services.AddMintlifyRenderer<MintlifyRenderer>();
         }
 
         /// <summary>
@@ -47,6 +51,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <list type="bullet">
         /// <item><description>MintlifyRenderer as Scoped implementation of IDocRenderer</description></item>
         /// <item><description>DocsJsonManager as Scoped service for navigation generation</description></item>
+        /// <item><description>DocsJsonValidator to ensure correct structures</description></item>
         /// <item><description>MarkdownXmlTransformer for processing XML documentation tags</description></item>
         /// </list>
         /// </remarks>
@@ -57,16 +62,8 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </example>
         public static IServiceCollection AddMintlifyServices(this IServiceCollection services)
         {
-            // Register the Mintlify renderer
-            services.TryAddEnumerable(ServiceDescriptor.Scoped<IDocRenderer, MintlifyRenderer>());
-
-            // Register the MarkdownXmlTransformer for processing XML documentation tags
-            services.TryAddEnumerable(ServiceDescriptor.Scoped<IDocTransformer, MarkdownXmlTransformer>());
-
-            // Register DocsJsonManager for navigation generation
-            services.TryAddScoped<DocsJsonManager>();
-
-            return services;
+            // Call the configuration overload with an empty configuration
+            return services.AddMintlifyServices(_ => { });
         }
 
         /// <summary>
@@ -80,7 +77,9 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <list type="bullet">
         /// <item><description>MintlifyRenderer as Scoped implementation of IDocRenderer</description></item>
         /// <item><description>DocsJsonManager as Scoped service for navigation generation</description></item>
+        /// <item><description>DocsJsonValidator to ensure correct structures</description></item>
         /// <item><description>MintlifyOptions configuration</description></item>
+        /// <item><description>MarkdownXmlTransformer for processing XML documentation tags</description></item>
         /// </list>
         /// </remarks>
         /// <example>
@@ -99,9 +98,9 @@ namespace Microsoft.Extensions.DependencyInjection
 
             // Configure options
             services.Configure(configureMintlify);
-            
-            // Register services
-            return services.AddMintlifyServices();
+
+            // Register services using the generic renderer method
+            return services.AddMintlifyRenderer<MintlifyRenderer>();
         }
 
         /// <summary>
@@ -111,9 +110,14 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="services">The service collection.</param>
         /// <returns>The service collection for chaining.</returns>
         /// <remarks>
-        /// Registers the custom renderer as Scoped implementation of IDocRenderer.
-        /// The renderer must inherit from MintlifyRenderer.
-        /// Also registers MarkdownXmlTransformer to process XML documentation tags.
+        /// <para>Registers the custom renderer as Scoped implementation of IDocRenderer.</para>
+        /// <para>The renderer must inherit from MintlifyRenderer.</para>
+        /// <para>This method also registers:</para>
+        /// <list type="bullet">
+        /// <item><description>DocsJsonManager for manipulating docs.json files</description></item>
+        /// <item><description>DocsJsonValidator to ensure correct structures</description></item>
+        /// <item><description>MarkdownXmlTransformer for processing XML documentation tags</description></item>
+        /// </list>
         /// </remarks>
         /// <example>
         /// <code>
@@ -123,9 +127,18 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IServiceCollection AddMintlifyRenderer<TRenderer>(this IServiceCollection services)
             where TRenderer : MintlifyRenderer
         {
+            // Register the renderer
             services.TryAddEnumerable(ServiceDescriptor.Scoped<IDocRenderer, TRenderer>());
+
+            // Register the MarkdownXmlTransformer for processing XML documentation tags
             services.TryAddEnumerable(ServiceDescriptor.Scoped<IDocTransformer, MarkdownXmlTransformer>());
+
+            // Register DocsJsonManager for manipulating docs.json files
             services.TryAddScoped<DocsJsonManager>();
+
+            // Register DocsJsonValidator to ensure correct structures
+            services.TryAddScoped<DocsJsonValidator>();
+
             return services;
         }
 

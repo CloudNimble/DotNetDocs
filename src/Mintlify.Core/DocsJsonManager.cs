@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.IO;
@@ -36,7 +36,12 @@ namespace Mintlify.Core
         /// <summary>
         /// Stores the set of page paths that are recognized as known within the application.
         /// </summary>
-        internal readonly HashSet<string> _knownPagePaths = [];
+        internal readonly HashSet<string> _knownPagePaths = new(StringComparer.OrdinalIgnoreCase);
+
+        /// <summary>
+        /// The validator used for validating DocsJsonConfig instances.
+        /// </summary>
+        private readonly DocsJsonValidator _validator;
 
         #endregion
 
@@ -84,17 +89,19 @@ namespace Mintlify.Core
         /// <summary>
         /// Initializes a new instance of the <see cref="DocsJsonManager"/> class.
         /// </summary>
-        public DocsJsonManager()
+        /// <param name="validator">The validator to use for validating configurations. If null, a new instance will be created.</param>
+        public DocsJsonManager(DocsJsonValidator? validator = null)
         {
-            //ConfigurationErrors = [];
+            _validator = validator ?? new DocsJsonValidator();
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DocsJsonManager"/> class with the specified file path.
         /// </summary>
         /// <param name="filePath">The path to the docs.json file to load.</param>
+        /// <param name="validator">The validator to use for validating configurations. If null, a new instance will be created.</param>
         /// <exception cref="ArgumentException">Thrown when the file path does not exist or is not a JSON file.</exception>
-        public DocsJsonManager(string filePath) : this()
+        public DocsJsonManager(string filePath, DocsJsonValidator? validator = null) : this(validator)
         {
             Ensure.ArgumentNotNullOrWhiteSpace(filePath, nameof(filePath));
 
@@ -155,7 +162,13 @@ namespace Mintlify.Core
 
             ConfigurationErrors.Clear();
             Configuration = config;
-            // TODO: Load the navigation into _knownPagePaths
+
+            // Populate known page paths from the loaded configuration
+            // Allow duplicates in loaded data (assume user intent), but track them for future additions
+            if (Configuration.Navigation?.Pages is not null)
+            {
+                PopulateKnownPaths(Configuration.Navigation.Pages);
+            }
         }
 
         /// <summary>
@@ -291,39 +304,45 @@ namespace Mintlify.Core
         /// <summary>
         /// Applies default values to missing configuration properties.
         /// </summary>
+        /// <param name="name">The name to use for the documentation site if not already set.</param>
+        /// <param name="theme">The theme to use if not already set (defaults to "mint").</param>
         /// <exception cref="InvalidOperationException">Thrown when no configuration is loaded.</exception>
-        public void ApplyDefaults()
+        public void ApplyDefaults(string? name = null, string theme = "mint")
         {
             if (Configuration is null)
             {
                 throw new InvalidOperationException("No configuration is loaded. Load a configuration before applying defaults.");
             }
 
-            Configuration.Theme ??= "mint";
-            Configuration.Schema ??= "https://mintlify.com/docs.json";
+            // Create defaults once and merge missing properties
+            var defaults = CreateDefault(
+                string.IsNullOrWhiteSpace(Configuration.Name) ? (name ?? "API Documentation") : Configuration.Name,
+                string.IsNullOrWhiteSpace(Configuration.Theme) || Configuration.Theme == "mint" ? theme : Configuration.Theme
+            );
 
-            if (Configuration.Navigation is null)
+            // Apply missing properties from defaults
+            if (string.IsNullOrWhiteSpace(Configuration.Name))
+                Configuration.Name = defaults.Name;
+            if (string.IsNullOrWhiteSpace(Configuration.Theme) || Configuration.Theme == "mint")
+                Configuration.Theme = defaults.Theme;
+            Configuration.Schema ??= defaults.Schema;
+
+            // Apply navigation defaults if missing or empty
+            if (Configuration.Navigation is null || (Configuration.Navigation.Pages is null || Configuration.Navigation.Pages.Count == 0))
             {
-                Configuration.Navigation = new NavigationConfig
+                Configuration.Navigation = defaults.Navigation;
+
+                // Add discovered navigation paths to _knownPagePaths
+                if (Configuration.Navigation?.Pages is not null)
                 {
-                    Pages = new List<object>
-                    {
-                        new GroupConfig
-                        {
-                            Group = "Getting Started",
-                            Pages = []
-                        },
-                        new GroupConfig
-                        {
-                            Group = "API Reference",
-                            Pages = ["api-reference/index"]
-                        }
-                    }
-                };
+                    PopulateKnownPaths(Configuration.Navigation.Pages);
+                }
             }
-            else if (Configuration.Navigation.Pages is null)
+
+            // Apply colors defaults if missing or using default values
+            if (Configuration.Colors is null || Configuration.Colors.Primary == "#000000")
             {
-                Configuration.Navigation.Pages = new List<object>();
+                Configuration.Colors = defaults.Colors;
             }
         }
 
@@ -341,7 +360,8 @@ namespace Mintlify.Core
         /// </remarks>
         public void MergeNavigation(NavigationConfig sourceNavigation, MergeOptions? options = null)
         {
-            Ensure.ArgumentNotNull(sourceNavigation, nameof(sourceNavigation));
+            if (sourceNavigation is null)
+                return;
 
             if (Configuration is null)
             {
@@ -395,6 +415,7 @@ namespace Mintlify.Core
         /// <param name="fileExtensions">The file extensions to include (defaults to .mdx only).</param>
         /// <param name="includeApiReference">Whether to include the 'api-reference' directory in discovery (defaults to false).</param>
         /// <param name="preserveExisting">Whether to preserve existing navigation structure and merge discovered content (defaults to true).</param>
+        /// <param name="allowDuplicatePaths">If true, allows adding duplicate paths; otherwise, skips duplicates.</param>
         /// <exception cref="ArgumentException">Thrown when path is null or whitespace.</exception>
         /// <exception cref="InvalidOperationException">Thrown when no configuration is loaded.</exception>
         /// <exception cref="DirectoryNotFoundException">Thrown when the specified path does not exist.</exception>
@@ -420,7 +441,7 @@ namespace Mintlify.Core
         /// <para>The method preserves the directory structure in the navigation while applying these intelligent
         /// processing rules to create clean, organized documentation.</para>
         /// </remarks>
-        public void PopulateNavigationFromPath(string path, string[]? fileExtensions = null, bool includeApiReference = false, bool preserveExisting = true)
+        public void PopulateNavigationFromPath(string path, string[]? fileExtensions = null, bool includeApiReference = false, bool preserveExisting = true, bool allowDuplicatePaths = false)
         {
             Ensure.ArgumentNotNullOrWhiteSpace(path, nameof(path));
 
@@ -445,7 +466,7 @@ namespace Mintlify.Core
                 var discoveredNavigation = new NavigationConfig { Pages = [] };
 
                 // Populate the discovered navigation from directory structure
-                PopulateNavigationFromDirectory(path, discoveredNavigation.Pages, path, fileExtensions, includeApiReference, true);
+                PopulateNavigationFromDirectory(path, discoveredNavigation.Pages, path, fileExtensions, includeApiReference, true, allowDuplicatePaths);
 
                 // Merge discovered navigation into existing configuration, adding new root pages to Getting Started
                 var mergeOptions = new MergeOptions();
@@ -457,7 +478,178 @@ namespace Mintlify.Core
                 Configuration.Navigation.Pages.Clear();
 
                 // Populate from directory structure
-                PopulateNavigationFromDirectory(path, Configuration.Navigation.Pages, path, fileExtensions, includeApiReference, true);
+                PopulateNavigationFromDirectory(path, Configuration.Navigation.Pages, path, fileExtensions, includeApiReference, true, allowDuplicatePaths);
+            }
+        }
+
+        /// <summary>
+        /// Adds a page to the navigation structure if it doesn't already exist.
+        /// </summary>
+        /// <param name="pages">The pages collection to add to.</param>
+        /// <param name="pagePath">The page path to add.</param>
+        /// <param name="allowDuplicatePaths">If true, allows adding duplicate paths; otherwise, skips if the path already exists.</param>
+        /// <param name="updateKnownPaths">If true, updates the known page paths tracking; otherwise, only adds to the pages collection.</param>
+        /// <returns>True if the page was added; false if it already existed and duplicates are not allowed.</returns>
+        public bool AddPage(List<object> pages, string pagePath, bool allowDuplicatePaths = false, bool updateKnownPaths = true)
+        {
+            Ensure.ArgumentNotNull(pages, nameof(pages));
+            Ensure.ArgumentNotNullOrWhiteSpace(pagePath, nameof(pagePath));
+
+            // Check if page already exists in known paths
+            if (!allowDuplicatePaths && _knownPagePaths.Contains(pagePath))
+            {
+                return false;
+            }
+
+            // Add to pages collection
+            pages.Add(pagePath);
+            // Track in known paths if requested
+            if (updateKnownPaths)
+            {
+                _knownPagePaths.Add(pagePath);
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// Adds a page to a group if it doesn't already exist.
+        /// </summary>
+        /// <param name="group">The group to add the page to.</param>
+        /// <param name="pagePath">The page path to add.</param>
+        /// <param name="allowDuplicatePaths">If true, allows adding duplicate paths; otherwise, skips if the path already exists.</param>
+        /// <param name="updateKnownPaths">If true, updates the known page paths tracking; otherwise, only adds to the pages collection.</param>
+        /// <returns>True if the page was added; false if it already existed and duplicates are not allowed.</returns>
+        public bool AddPageToGroup(GroupConfig group, string pagePath, bool allowDuplicatePaths = false, bool updateKnownPaths = true)
+        {
+            Ensure.ArgumentNotNull(group, nameof(group));
+            Ensure.ArgumentNotNullOrWhiteSpace(pagePath, nameof(pagePath));
+
+            // Check if page already exists in known paths
+            if (!allowDuplicatePaths && _knownPagePaths.Contains(pagePath))
+            {
+                return false;
+            }
+
+            // Initialize pages collection if needed
+            group.Pages ??= [];
+
+            // Add to group pages
+            group.Pages.Add(pagePath);
+            // Track in known paths if requested
+            if (updateKnownPaths)
+            {
+                _knownPagePaths.Add(pagePath);
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// Adds a page to a hierarchical group path (slash-separated) in the navigation structure.
+        /// </summary>
+        /// <param name="groupPath">The hierarchical group path (e.g., "Getting Started/API Reference").</param>
+        /// <param name="pagePath">The page path to add.</param>
+        /// <param name="allowDuplicatePaths">If true, allows adding duplicate paths; otherwise, skips if the path already exists.</param>
+        /// <returns>True if the page was added; false if it already existed and duplicates are not allowed.</returns>
+        /// <exception cref="InvalidOperationException">Thrown when no configuration is loaded.</exception>
+        public bool AddPage(string groupPath, string pagePath, bool allowDuplicatePaths = false)
+        {
+            if (Configuration is null)
+            {
+                throw new InvalidOperationException("No configuration is loaded. Load a configuration before adding pages.");
+            }
+
+            Configuration.Navigation ??= new NavigationConfig();
+            Configuration.Navigation.Pages ??= [];
+
+            var targetPages = Configuration.Navigation.Pages;
+            if (!string.IsNullOrWhiteSpace(groupPath))
+            {
+                var groups = groupPath.Split('/');
+                foreach (var groupName in groups)
+                {
+                    var group = FindOrCreateGroup(targetPages, groupName);
+                    targetPages = group.Pages ??= [];
+                }
+            }
+
+            return AddPage(targetPages, pagePath, allowDuplicatePaths);
+        }
+
+        /// <summary>
+        /// Checks if a page path is already known (tracked for duplicate prevention).
+        /// </summary>
+        /// <param name="pagePath">The page path to check.</param>
+        /// <returns>True if the path is already known; otherwise, false.</returns>
+        public bool IsPathKnown(string pagePath) => _knownPagePaths.Contains(pagePath);
+
+        /// <summary>
+        /// Finds or creates a group with the specified name in the pages collection.
+        /// </summary>
+        /// <param name="pages">The pages collection to search/add to.</param>
+        /// <param name="groupName">The name of the group to find or create.</param>
+        /// <returns>The existing or newly created group.</returns>
+        public GroupConfig FindOrCreateGroup(List<object> pages, string groupName)
+        {
+            Ensure.ArgumentNotNull(pages, nameof(pages));
+            Ensure.ArgumentNotNullOrWhiteSpace(groupName, nameof(groupName));
+
+            // Look for existing group
+            var existingGroup = pages.OfType<GroupConfig>().FirstOrDefault(g => g.Group == groupName);
+            if (existingGroup != null)
+            {
+                return existingGroup;
+            }
+
+            // Create new group
+            var newGroup = new GroupConfig
+            {
+                Group = groupName,
+                Pages = []
+            };
+            pages.Add(newGroup);
+            return newGroup;
+        }
+
+        /// <summary>
+        /// Adds a navigation item (page or group) to the specified collection, tracking paths appropriately.
+        /// </summary>
+        /// <param name="pages">The pages collection to add to.</param>
+        /// <param name="item">The item to add (string page path or GroupConfig).</param>
+        /// <returns>True if the item was added; false if it was skipped (duplicate).</returns>
+        public bool AddNavigationItem(List<object> pages, object item)
+        {
+            Ensure.ArgumentNotNull(pages, nameof(pages));
+            Ensure.ArgumentNotNull(item, nameof(item));
+
+            switch (item)
+            {
+                case string pagePath:
+                    return AddPage(pages, pagePath);
+
+                case GroupConfig group:
+                    // For groups, we need to check if a group with the same name exists
+                    var existingGroup = pages.OfType<GroupConfig>().FirstOrDefault(g => g.Group == group.Group);
+                    if (existingGroup != null)
+                    {
+                        // Merge into existing group
+                        MergeGroupConfig(existingGroup, group);
+                        return false; // Didn't add a new group, merged into existing
+                    }
+                    else
+                    {
+                        // Add new group and track all its pages
+                        pages.Add(group);
+                        if (group.Pages != null)
+                        {
+                            PopulateKnownPaths(group.Pages);
+                        }
+                        return true;
+                    }
+
+                default:
+                    // Unknown type, add as-is (shouldn't happen in practice)
+                    pages.Add(item);
+                    return true;
             }
         }
 
@@ -525,6 +717,33 @@ namespace Mintlify.Core
 
         #endregion
 
+        #region Private Methods
+
+        /// <summary>
+        /// Recursively populates the _knownPagePaths hashset from a navigation structure.
+        /// </summary>
+        /// <param name="pages">The pages list to extract page paths from.</param>
+        internal void PopulateKnownPaths(List<object> pages)
+        {
+            foreach (var page in pages)
+            {
+                switch (page)
+                {
+                    case string stringPage:
+                        _knownPagePaths.Add(stringPage);
+                        break;
+                    case GroupConfig groupConfig when groupConfig.Pages is not null:
+                        PopulateKnownPaths(groupConfig.Pages);
+                        break;
+                }
+            }
+        }
+
+        // Removed RefreshKnownPagePaths - we now maintain _knownPagePaths incrementally
+        // through AddPage, AddPageToGroup, and AddNavigationItem methods
+
+        #endregion
+
         #region Internal Methods
 
         /// <summary>
@@ -545,11 +764,18 @@ namespace Mintlify.Core
                     return;
                 }
 
-                // Apply defensive validation and cleaning
-                CleanNavigationGroups();
+                // Remove null groups that would cause Mintlify to reject the configuration
+                RemoveNullGroups();
 
-                // Apply basic validation
-                ValidateConfiguration();
+                // Apply validation using injected DocsJsonValidator
+                var validationErrors = _validator.Validate(Configuration);
+                foreach (var error in validationErrors)
+                {
+                    ConfigurationErrors.Add(new CompilerError(FilePath ?? "string", 0, 0, "VALIDATION", error)
+                    {
+                        IsWarning = true
+                    });
+                }
             }
             catch (JsonException ex)
             {
@@ -564,16 +790,15 @@ namespace Mintlify.Core
         }
 
         /// <summary>
-        /// Cleans navigation groups by removing invalid entries and logging warnings.
+        /// Removes groups with null names from the navigation structure.
+        /// Groups with null names will cause Mintlify to reject the configuration.
         /// </summary>
-        internal void CleanNavigationGroups()
+        internal void RemoveNullGroups()
         {
             if (Configuration?.Navigation?.Pages is null)
                 return;
 
             var cleanedPages = new List<object>();
-            var nullGroupsRemoved = 0;
-            var emptyGroupsFound = 0;
 
             foreach (var page in Configuration.Navigation.Pages)
             {
@@ -581,27 +806,14 @@ namespace Mintlify.Core
                 {
                     if (group.Group is null)
                     {
-                        // Skip groups with null names - these are invalid
-                        nullGroupsRemoved++;
-                        ConfigurationErrors.Add(new CompilerError(FilePath ?? "string", 0, 0, "VALIDATION",
-                            "Group with null name found and removed. Mintlify will reject configurations with null group names."));
+                        // Skip groups with null names - these would cause Mintlify to reject the config
                         continue;
-                    }
-                    else if (string.IsNullOrWhiteSpace(group.Group))
-                    {
-                        emptyGroupsFound++;
-                        // Keep empty groups but add warning
-                        ConfigurationErrors.Add(new CompilerError(FilePath ?? "string", 0, 0, "VALIDATION",
-                            "Empty group name found. Mintlify treats empty groups as separate ungrouped sections.")
-                        {
-                            IsWarning = true
-                        });
                     }
 
                     // Recursively clean nested groups if present
                     if (group.Pages is not null)
                     {
-                        CleanNestedGroups(group.Pages);
+                        RemoveNullGroupsFromPages(group.Pages);
                     }
                 }
 
@@ -615,6 +827,8 @@ namespace Mintlify.Core
             // Replace pages with cleaned list
             Configuration.Navigation.Pages = cleanedPages;
 
+            // DO NOT refresh known page paths - we maintain them incrementally
+
             // Also clean Groups property if present
             if (Configuration.Navigation.Groups is not null)
             {
@@ -623,19 +837,8 @@ namespace Mintlify.Core
                 {
                     if (group.Group is null)
                     {
-                        nullGroupsRemoved++;
-                        ConfigurationErrors.Add(new CompilerError(FilePath ?? "string", 0, 0, "VALIDATION",
-                            "Group with null name found in Groups list and removed."));
+                        // Skip groups with null names
                         continue;
-                    }
-                    else if (string.IsNullOrWhiteSpace(group.Group))
-                    {
-                        emptyGroupsFound++;
-                        ConfigurationErrors.Add(new CompilerError(FilePath ?? "string", 0, 0, "VALIDATION",
-                            "Empty group name found in Groups list.")
-                        {
-                            IsWarning = true
-                        });
                     }
                     cleanedGroups.Add(group);
                 }
@@ -644,10 +847,10 @@ namespace Mintlify.Core
         }
 
         /// <summary>
-        /// Recursively cleans nested groups in a pages list.
+        /// Recursively removes groups with null names from a pages list.
         /// </summary>
         /// <param name="pages">The pages list to clean.</param>
-        private void CleanNestedGroups(List<object> pages)
+        internal void RemoveNullGroupsFromPages(List<object> pages)
         {
             var cleanedPages = new List<object>();
             foreach (var page in pages)
@@ -656,23 +859,14 @@ namespace Mintlify.Core
                 {
                     if (group.Group is null)
                     {
-                        ConfigurationErrors.Add(new CompilerError(FilePath ?? "string", 0, 0, "VALIDATION",
-                            "Nested group with null name found and removed."));
+                        // Skip groups with null names
                         continue;
-                    }
-                    else if (string.IsNullOrWhiteSpace(group.Group))
-                    {
-                        ConfigurationErrors.Add(new CompilerError(FilePath ?? "string", 0, 0, "VALIDATION",
-                            "Empty nested group name found.")
-                        {
-                            IsWarning = true
-                        });
                     }
 
                     // Recursively clean further nested groups
                     if (group.Pages is not null)
                     {
-                        CleanNestedGroups(group.Pages);
+                        RemoveNullGroupsFromPages(group.Pages);
                     }
                 }
 
@@ -686,31 +880,6 @@ namespace Mintlify.Core
             pages.AddRange(cleanedPages);
         }
 
-        /// <summary>
-        /// Validates the loaded configuration for common issues.
-        /// </summary>
-        internal void ValidateConfiguration()
-        {
-            if (Configuration is null)
-                return;
-
-            if (string.IsNullOrWhiteSpace(Configuration.Name))
-            {
-                ConfigurationErrors.Add(new CompilerError(FilePath ?? "string", 0, 0, "VALIDATION", "Configuration name is required but was not provided.")
-                {
-                    IsWarning = true
-                });
-            }
-
-            if (Configuration.Navigation is null ||
-                (Configuration.Navigation.Pages is null && Configuration.Navigation.Groups is null && Configuration.Navigation.Tabs is null))
-            {
-                ConfigurationErrors.Add(new CompilerError(FilePath ?? "string", 0, 0, "VALIDATION", "Navigation configuration is missing or empty.")
-                {
-                    IsWarning = true
-                });
-            }
-        }
 
         /// <summary>
         /// Merges navigation configurations intelligently.
@@ -718,7 +887,7 @@ namespace Mintlify.Core
         /// <param name="target">The target navigation configuration to merge into.</param>
         /// <param name="source">The source navigation configuration to merge from.</param>
         /// <param name="options">Optional merge options to control merge behavior. When null, default behavior is used.</param>
-        internal static void MergeNavigation(NavigationConfig target, NavigationConfig source, MergeOptions? options = null)
+        internal void MergeNavigation(NavigationConfig target, NavigationConfig source, MergeOptions? options = null)
         {
             if (source is null)
                 return;
@@ -732,7 +901,7 @@ namespace Mintlify.Core
                 }
                 else
                 {
-                    MergePagesList(target.Pages, source.Pages, options);
+                    MergePagesList(source.Pages, target.Pages, options);
                 }
             }
 
@@ -745,7 +914,7 @@ namespace Mintlify.Core
                 }
                 else
                 {
-                    MergeGroupsList(target.Groups, source.Groups, options);
+                    MergeGroupsList(source.Groups, target.Groups, options);
                 }
             }
 
@@ -758,7 +927,7 @@ namespace Mintlify.Core
                 }
                 else
                 {
-                    MergeTabsList(target.Tabs, source.Tabs, options);
+                    MergeTabsList(source.Tabs, target.Tabs, options);
                 }
             }
 
@@ -775,15 +944,18 @@ namespace Mintlify.Core
 
         /// <summary>
         /// Intelligently merges two pages lists, handling both strings and GroupConfig objects.
+        /// If targetPages is null, uses the loaded configuration's navigation pages and updates _knownPagePaths.
         /// </summary>
-        /// <param name="targetPages">The target pages list to merge into.</param>
         /// <param name="sourcePages">The source pages list to merge from.</param>
+        /// <param name="targetPages">The target pages list to merge into. If null, uses Configuration.Navigation.Pages.</param>
         /// <param name="options">Optional merge options to control merge behavior. When null, default behavior is used.</param>
-        /// <param name="existingPagePaths">Optional existing hashset of page paths to use for deduplication across recursive calls.</param>
-        internal static void MergePagesList(List<object> targetPages, List<object> sourcePages, MergeOptions? options = null, HashSet<string>? existingPagePaths = null)
+        internal void MergePagesList(List<object> sourcePages, List<object>? targetPages = null, MergeOptions? options = null)
         {
+            // Use loaded configuration if targetPages is null
+            targetPages ??= Configuration?.Navigation?.Pages ?? throw new InvalidOperationException("No configuration is loaded and no target pages provided.");
+
             var processedPages = new List<object>();
-            var seenPagePaths = new HashSet<string>();
+            var seenPagePaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             var groupsByName = new Dictionary<string, GroupConfig>();
 
             // Determine if we should combine empty groups based on options
@@ -800,6 +972,8 @@ namespace Mintlify.Core
                 {
                     case string stringPage:
                         processedPages.Add(stringPage);
+                        // Make sure it's tracked in _knownPagePaths
+                        _knownPagePaths.Add(stringPage);
                         break;
                     case GroupConfig groupConfig when groupConfig.Group is null:
                         // Skip groups with null names - these are invalid and will be caught by validation
@@ -809,6 +983,11 @@ namespace Mintlify.Core
                         {
                             groupsByName[groupConfig.Group] = groupConfig;
                             processedPages.Add(groupConfig);
+                            // Track pages in this group
+                            if (groupConfig.Pages != null)
+                            {
+                                PopulateKnownPaths(groupConfig.Pages);
+                            }
                         }
                         break;
                     case GroupConfig groupConfig when string.IsNullOrWhiteSpace(groupConfig.Group):
@@ -831,6 +1010,11 @@ namespace Mintlify.Core
                         {
                             // Keep empty groups separate (default Mintlify behavior)
                             processedPages.Add(groupConfig);
+                            // Track pages in this group
+                            if (groupConfig.Pages != null)
+                            {
+                                PopulateKnownPaths(groupConfig.Pages);
+                            }
                         }
                         break;
                     default:
@@ -845,18 +1029,21 @@ namespace Mintlify.Core
                 switch (page)
                 {
                     case string stringPage:
-                        if (seenPagePaths.Add(stringPage))
+                        if (!seenPagePaths.Contains(stringPage))
                         {
                             // Check if we should add this to "Getting Started" instead of root level
                             if (options?.AddRootPagesToGettingStarted == true && groupsByName.TryGetValue("Getting Started", out var gettingStartedGroup))
                             {
                                 // Add to Getting Started group instead of root level
-                                gettingStartedGroup.Pages ??= [];
-                                gettingStartedGroup.Pages.Add(stringPage);
+                                AddPageToGroup(gettingStartedGroup, stringPage);
                             }
                             else
                             {
-                                processedPages.Add(stringPage);
+                                // Use AddPage to properly track the page
+                                if (AddPage(processedPages, stringPage))
+                                {
+                                    seenPagePaths.Add(stringPage);
+                                }
                             }
                         }
                         break;
@@ -914,7 +1101,7 @@ namespace Mintlify.Core
         /// </summary>
         /// <param name="pages">The pages list to collect paths from.</param>
         /// <param name="pagePaths">The hashset to add page paths to.</param>
-        internal static void CollectPagePaths(List<object> pages, HashSet<string> pagePaths)
+        internal void CollectPagePaths(List<object> pages, HashSet<string> pagePaths)
         {
             foreach (var page in pages)
             {
@@ -936,7 +1123,7 @@ namespace Mintlify.Core
         /// <param name="target">The target group to merge into.</param>
         /// <param name="source">The source group to merge from.</param>
         /// <param name="options">Optional merge options to control merge behavior. When null, default behavior is used.</param>
-        internal static void MergeGroupConfig(GroupConfig target, GroupConfig source, MergeOptions? options = null)
+        internal void MergeGroupConfig(GroupConfig target, GroupConfig source, MergeOptions? options = null)
         {
             // Merge basic properties
             if (!string.IsNullOrWhiteSpace(source.Tag))
@@ -961,19 +1148,23 @@ namespace Mintlify.Core
                 }
                 else
                 {
-                    MergePagesList(target.Pages, source.Pages, options);
+                    MergePagesList(source.Pages, target.Pages, options);
                 }
             }
         }
 
         /// <summary>
         /// Intelligently merges two groups lists, combining groups with the same name.
+        /// If targetGroups is null, uses the loaded configuration's navigation groups and updates _knownPagePaths.
         /// </summary>
-        /// <param name="targetGroups">The target groups list to merge into.</param>
         /// <param name="sourceGroups">The source groups list to merge from.</param>
+        /// <param name="targetGroups">The target groups list to merge into. If null, uses Configuration.Navigation.Groups.</param>
         /// <param name="options">Optional merge options to control merge behavior. When null, default behavior is used.</param>
-        internal static void MergeGroupsList(List<GroupConfig> targetGroups, List<GroupConfig> sourceGroups, MergeOptions? options = null)
+        internal void MergeGroupsList(List<GroupConfig> sourceGroups, List<GroupConfig>? targetGroups = null, MergeOptions? options = null)
         {
+            // Use loaded configuration if targetGroups is null
+            targetGroups ??= Configuration?.Navigation?.Groups ?? throw new InvalidOperationException("No configuration is loaded and no target groups provided.");
+
             var groupsByName = new Dictionary<string, GroupConfig>();
             var groupsWithoutNames = new List<GroupConfig>();
 
@@ -1020,10 +1211,10 @@ namespace Mintlify.Core
         /// <summary>
         /// Intelligently merges two tabs lists, combining tabs with the same name or overlapping paths.
         /// </summary>
-        /// <param name="targetTabs">The target tabs list to merge into.</param>
         /// <param name="sourceTabs">The source tabs list to merge from.</param>
+        /// <param name="targetTabs">The target tabs list to merge into.</param>
         /// <param name="options">Optional merge options to control merge behavior. When null, default behavior is used.</param>
-        internal static void MergeTabsList(List<TabConfig> targetTabs, List<TabConfig> sourceTabs, MergeOptions? options = null)
+        internal void MergeTabsList(List<TabConfig> sourceTabs, List<TabConfig> targetTabs, MergeOptions? options = null)
         {
             var tabsByName = new Dictionary<string, TabConfig>();
             var tabsByHref = new Dictionary<string, TabConfig>();
@@ -1093,7 +1284,7 @@ namespace Mintlify.Core
         /// <param name="target">The target tab to merge into.</param>
         /// <param name="source">The source tab to merge from.</param>
         /// <param name="options">Optional merge options to control merge behavior. When null, default behavior is used.</param>
-        internal static void MergeTabConfig(TabConfig target, TabConfig source, MergeOptions? options = null)
+        internal void MergeTabConfig(TabConfig target, TabConfig source, MergeOptions? options = null)
         {
             // Merge basic properties
             if (!string.IsNullOrWhiteSpace(source.Tab))
@@ -1120,7 +1311,7 @@ namespace Mintlify.Core
                 }
                 else
                 {
-                    MergePagesList(target.Pages, source.Pages, options);
+                    MergePagesList(source.Pages, target.Pages, options);
                 }
             }
 
@@ -1133,7 +1324,7 @@ namespace Mintlify.Core
                 }
                 else
                 {
-                    MergeGroupsList(target.Groups, source.Groups, options);
+                    MergeGroupsList(source.Groups, target.Groups, options);
                 }
             }
 
@@ -1172,6 +1363,7 @@ namespace Mintlify.Core
         /// <param name="fileExtensions">The file extensions to include in processing.</param>
         /// <param name="includeApiReference">Whether to include the 'api-reference' directory in discovery (defaults to false).</param>
         /// <param name="groupRootFiles">Whether to group root-level files under "Getting Started" (defaults to false).</param>
+        /// <param name="allowDuplicatePaths">If true, allows adding duplicate paths; otherwise, skips duplicates.</param>
         /// <remarks>
         /// <para>This internal method implements the core navigation generation logic with the following processing order:</para>
         /// <list type="number">
@@ -1188,7 +1380,7 @@ namespace Mintlify.Core
         /// </list>
         /// <para>Warning messages are added to ConfigurationErrors for .md files encountered during processing.</para>
         /// </remarks>
-        internal void PopulateNavigationFromDirectory(string currentPath, List<object> pages, string rootPath, string[] fileExtensions, bool includeApiReference = false, bool groupRootFiles = false)
+        internal void PopulateNavigationFromDirectory(string currentPath, List<object> pages, string rootPath, string[] fileExtensions, bool includeApiReference = false, bool groupRootFiles = false, bool allowDuplicatePaths = false)
         {
             // Check for navigation.json override first
             var navigationJsonPath = Path.Combine(currentPath, "navigation.json");
@@ -1201,6 +1393,11 @@ namespace Mintlify.Core
                     if (customGroup is not null)
                     {
                         pages.Add(customGroup);
+                        // Populate known page paths from the custom navigation group
+                        if (customGroup.Pages is not null)
+                        {
+                            PopulateKnownPaths(customGroup.Pages);
+                        }
                         return; // User controls this directory and all subdirectories completely
                     }
                     else
@@ -1287,7 +1484,7 @@ namespace Mintlify.Core
                 if (isDirectory)
                 {
                     var subPages = new List<object>();
-                    PopulateNavigationFromDirectory(path, subPages, rootPath, fileExtensions, includeApiReference);
+                    PopulateNavigationFromDirectory(path, subPages, rootPath, fileExtensions, includeApiReference, false, allowDuplicatePaths);
 
                     if (subPages.Any())
                     {
@@ -1333,22 +1530,22 @@ namespace Mintlify.Core
                     if (groupRootFiles && currentPath.Equals(rootPath, StringComparison.OrdinalIgnoreCase))
                     {
                         // Find or create "Getting Started" group
-                        var gettingStartedGroup = pages.OfType<GroupConfig>().FirstOrDefault(g => g.Group == "Getting Started");
-                        if (gettingStartedGroup == null)
+                        var gettingStartedGroup = FindOrCreateGroup(pages, "Getting Started");
+
+                        // Insert at beginning to keep it at top if it's newly created
+                        if (pages[pages.Count - 1] == gettingStartedGroup && pages.Count > 1)
                         {
-                            gettingStartedGroup = new GroupConfig
-                            {
-                                Group = "Getting Started",
-                                Pages = new List<object>()
-                            };
-                            pages.Insert(0, gettingStartedGroup); // Insert at beginning to keep it at top
+                            pages.RemoveAt(pages.Count - 1);
+                            pages.Insert(0, gettingStartedGroup);
                         }
-                        gettingStartedGroup.Pages!.Add(url);
+
+                        // Use AddPageToGroup which handles duplicate checking
+                        AddPageToGroup(gettingStartedGroup, url, allowDuplicatePaths, updateKnownPaths: false);
                     }
                     else
                     {
-                        // Include all files (index files now come first due to sorting)
-                        pages.Add(url);
+                        // Use AddPage which handles duplicate checking and path tracking
+                        AddPage(pages, url, allowDuplicatePaths, updateKnownPaths: false);
                     }
                 }
             }
@@ -1369,14 +1566,18 @@ namespace Mintlify.Core
         /// <summary>
         /// Applies URL prefix to a list of pages.
         /// </summary>
-        internal static void ApplyUrlPrefixToPages(List<object> pages, string prefix)
+        internal void ApplyUrlPrefixToPages(List<object> pages, string prefix)
         {
             for (int i = 0; i < pages.Count; i++)
             {
                 switch (pages[i])
                 {
                     case string pageUrl:
-                        pages[i] = $"{prefix}/{pageUrl}";
+                        var newUrl = $"{prefix}/{pageUrl}";
+                        // Update _knownPagePaths: remove old, add new
+                        _knownPagePaths.Remove(pageUrl);
+                        _knownPagePaths.Add(newUrl);
+                        pages[i] = newUrl;
                         break;
                     case GroupConfig group:
                         ApplyUrlPrefixToGroup(group, prefix);
@@ -1388,7 +1589,7 @@ namespace Mintlify.Core
         /// <summary>
         /// Applies URL prefix to a group configuration.
         /// </summary>
-        internal static void ApplyUrlPrefixToGroup(GroupConfig group, string prefix)
+        internal void ApplyUrlPrefixToGroup(GroupConfig group, string prefix)
         {
             if (group is null)
                 return;
@@ -1407,7 +1608,7 @@ namespace Mintlify.Core
         /// <summary>
         /// Applies URL prefix to a tab configuration.
         /// </summary>
-        internal static void ApplyUrlPrefixToTab(TabConfig tab, string prefix)
+        internal void ApplyUrlPrefixToTab(TabConfig tab, string prefix)
         {
             if (tab is null)
                 return;
@@ -1442,7 +1643,7 @@ namespace Mintlify.Core
         /// <summary>
         /// Applies URL prefix to an anchor configuration.
         /// </summary>
-        internal static void ApplyUrlPrefixToAnchor(AnchorConfig anchor, string prefix)
+        internal void ApplyUrlPrefixToAnchor(AnchorConfig anchor, string prefix)
         {
             if (anchor is null)
                 return;
