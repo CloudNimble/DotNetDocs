@@ -207,3 +207,39 @@ docsConfig = _options.Template ?? DocsJsonManager.CreateDefault(...);
 - ❌ **Order Preservation**: Template order not maintained - linked to icon preservation issue
 
 The foundation for proper template preservation is now in place. The remaining work involves debugging the template loading chain to ensure icons and order are preserved from XML parsing through to final navigation structure.
+
+## New Information Discovered
+
+Here's the updated information to add to `opencode-prompt.txt`:
+
+### Root Cause Analysis
+**TODO Filtering Bug**: The `LoadConceptualFileAsync` method was always skipping files containing `<!-- TODO: REMOVE THIS COMMENT AFTER YOU CUSTOMIZE THIS CONTENT -->` regardless of the `ShowPlaceholders` setting. The early return check happened before the `showPlaceholders` logic was evaluated.
+
+**Header Stripping Logic**: The method includes logic to strip markdown headers (lines starting with `#`) from conceptual files. This explains why generated documentation shows "Describe how to use..." instead of "# Usage\n\nDescribe how to use...".
+
+**SDK Version Caching**: Builds use cached SDK version (1.0.0-preview.22) from NuGet cache instead of updated local version, despite `nuget.config` having package source mapping for local feed.
+
+### Current Behavior
+- **Conceptual files exist** and contain TODO markers (e.g., `usage.md` has `<!-- TODO: ... -->\n# Usage\n\nDescribe how to use...`)
+- **When `ShowPlaceholders = true`**: Files load, headers get stripped, placeholder text appears in documentation
+- **When `ShowPlaceholders = false`**: Files should be skipped entirely, but build uses old SDK version
+
+### Fix Applied
+**Updated `LoadConceptualFileAsync` logic**:
+```csharp
+// Skip placeholder files entirely when ShowPlaceholders is false
+if (!showPlaceholders && content.StartsWith("<!-- TODO: REMOVE THIS COMMENT AFTER YOU CUSTOMIZE THIS CONTENT -->"))
+{
+    return;
+}
+```
+
+### Updated Status
+- ✅ **TODO filtering logic**: Fixed to respect `ShowPlaceholders` setting
+- ❌ **SDK deployment**: Local version not being used by builds
+- 🔄 **Header stripping**: Working correctly (removes `#` headers from conceptual files)
+
+### Next Steps
+1. Fix SDK version propagation (clear NuGet cache or force local feed usage)
+2. Test that `ShowPlaceholders = false` actually hides placeholder content in generated docs
+3. Verify conceptual content loading works correctly with updated SDK

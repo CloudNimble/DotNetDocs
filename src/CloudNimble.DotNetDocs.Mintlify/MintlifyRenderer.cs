@@ -622,48 +622,66 @@ namespace CloudNimble.DotNetDocs.Mintlify
 
             if (!string.IsNullOrWhiteSpace(assembly.Summary))
             {
-                sb.AppendLine("## Summary");
-                sb.AppendLine();
+                if (!IsFirstLineHeader(assembly.Summary))
+                {
+                    sb.AppendLine("## Summary");
+                    sb.AppendLine();
+                }
                 sb.AppendLine(assembly.Summary);
                 sb.AppendLine();
             }
 
             if (!string.IsNullOrWhiteSpace(assembly.Usage))
             {
-                sb.AppendLine("## Usage");
-                sb.AppendLine();
+                if (!IsFirstLineHeader(assembly.Usage))
+                {
+                    sb.AppendLine("## Usage");
+                    sb.AppendLine();
+                }
                 sb.AppendLine(assembly.Usage);
                 sb.AppendLine();
             }
 
             if (!string.IsNullOrWhiteSpace(assembly.Remarks))
             {
-                sb.AppendLine("## Remarks");
-                sb.AppendLine();
+                if (!IsFirstLineHeader(assembly.Remarks))
+                {
+                    sb.AppendLine("## Remarks");
+                    sb.AppendLine();
+                }
                 sb.AppendLine(assembly.Remarks);
                 sb.AppendLine();
             }
 
             if (!string.IsNullOrWhiteSpace(assembly.Examples))
             {
-                sb.AppendLine("## Examples");
-                sb.AppendLine();
+                if (!IsFirstLineHeader(assembly.Examples))
+                {
+                    sb.AppendLine("## Examples");
+                    sb.AppendLine();
+                }
                 sb.AppendLine(RemoveIndentation(assembly.Examples));
                 sb.AppendLine();
             }
 
             if (!string.IsNullOrWhiteSpace(assembly.BestPractices))
             {
-                sb.AppendLine("## Best Practices");
-                sb.AppendLine();
+                if (!IsFirstLineHeader(assembly.BestPractices))
+                {
+                    sb.AppendLine("## Best Practices");
+                    sb.AppendLine();
+                }
                 sb.AppendLine(assembly.BestPractices);
                 sb.AppendLine();
             }
 
             if (!string.IsNullOrWhiteSpace(assembly.Patterns))
             {
-                sb.AppendLine("## Patterns");
-                sb.AppendLine();
+                if (!IsFirstLineHeader(assembly.Patterns))
+                {
+                    sb.AppendLine("## Patterns");
+                    sb.AppendLine();
+                }
                 sb.AppendLine(assembly.Patterns);
                 sb.AppendLine();
             }
@@ -926,24 +944,33 @@ namespace CloudNimble.DotNetDocs.Mintlify
 
             if (!string.IsNullOrWhiteSpace(type.Summary))
             {
-                sb.AppendLine("## Summary");
-                sb.AppendLine();
+                if (!IsFirstLineHeader(type.Summary))
+                {
+                    sb.AppendLine("## Summary");
+                    sb.AppendLine();
+                }
                 sb.AppendLine(type.Summary);
                 sb.AppendLine();
             }
 
             if (!string.IsNullOrWhiteSpace(type.Usage))
             {
-                sb.AppendLine("## Usage");
-                sb.AppendLine();
+                if (!IsFirstLineHeader(type.Usage))
+                {
+                    sb.AppendLine("## Usage");
+                    sb.AppendLine();
+                }
                 sb.AppendLine(type.Usage);
                 sb.AppendLine();
             }
 
             if (!string.IsNullOrWhiteSpace(type.Remarks))
             {
-                sb.AppendLine("## Remarks");
-                sb.AppendLine();
+                if (!IsFirstLineHeader(type.Remarks))
+                {
+                    sb.AppendLine("## Remarks");
+                    sb.AppendLine();
+                }
                 sb.AppendLine(type.Remarks);
                 sb.AppendLine();
             }
@@ -962,32 +989,44 @@ namespace CloudNimble.DotNetDocs.Mintlify
 
             if (!string.IsNullOrWhiteSpace(type.Examples))
             {
-                sb.AppendLine("## Examples");
-                sb.AppendLine();
+                if (!IsFirstLineHeader(type.Examples))
+                {
+                    sb.AppendLine("## Examples");
+                    sb.AppendLine();
+                }
                 sb.AppendLine(RemoveIndentation(type.Examples));
                 sb.AppendLine();
             }
 
             if (!string.IsNullOrWhiteSpace(type.BestPractices))
             {
-                sb.AppendLine("## Best Practices");
-                sb.AppendLine();
+                if (!IsFirstLineHeader(type.BestPractices))
+                {
+                    sb.AppendLine("## Best Practices");
+                    sb.AppendLine();
+                }
                 sb.AppendLine(type.BestPractices);
                 sb.AppendLine();
             }
 
             if (!string.IsNullOrWhiteSpace(type.Patterns))
             {
-                sb.AppendLine("## Patterns");
-                sb.AppendLine();
+                if (!IsFirstLineHeader(type.Patterns))
+                {
+                    sb.AppendLine("## Patterns");
+                    sb.AppendLine();
+                }
                 sb.AppendLine(type.Patterns);
                 sb.AppendLine();
             }
 
             if (!string.IsNullOrWhiteSpace(type.Considerations))
             {
-                sb.AppendLine("## Considerations");
-                sb.AppendLine();
+                if (!IsFirstLineHeader(type.Considerations))
+                {
+                    sb.AppendLine("## Considerations");
+                    sb.AppendLine();
+                }
                 sb.AppendLine(type.Considerations);
                 sb.AppendLine();
             }
@@ -1344,6 +1383,126 @@ namespace CloudNimble.DotNetDocs.Mintlify
 
             config.Navigation!.Pages!.Add(assemblyGroup);
             return assemblyGroup;
+        }
+
+        #endregion
+
+        #region IDocRenderer Implementation
+
+        /// <summary>
+        /// Renders placeholder conceptual content files for the documentation assembly.
+        /// </summary>
+        /// <param name="model">The documentation assembly to generate placeholders for.</param>
+        /// <returns>A task representing the asynchronous placeholder rendering operation.</returns>
+        public async Task RenderPlaceholdersAsync(DocAssembly model)
+        {
+            ArgumentNullException.ThrowIfNull(model);
+
+            var conceptualPath = Context.ConceptualPath;
+            if (string.IsNullOrWhiteSpace(conceptualPath))
+            {
+                return;
+            }
+
+            // Ensure conceptual directory exists
+            Directory.CreateDirectory(conceptualPath);
+
+            // Generate placeholders for assembly-level conceptual content
+            await GenerateAssemblyPlaceholdersAsync(model, conceptualPath);
+
+            // Generate placeholders for namespace-level conceptual content
+            foreach (var ns in model.Namespaces)
+            {
+                await GenerateNamespacePlaceholdersAsync(ns, conceptualPath);
+            }
+
+            // Generate placeholders for type-level conceptual content
+            foreach (var ns in model.Namespaces)
+            {
+                foreach (var type in ns.Types)
+                {
+                    await GenerateTypePlaceholdersAsync(type, ns, conceptualPath);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Generates placeholder files for assembly-level conceptual content.
+        /// </summary>
+        /// <param name="assembly">The assembly to generate placeholders for.</param>
+        /// <param name="conceptualPath">The base conceptual content path.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        private Task GenerateAssemblyPlaceholdersAsync(DocAssembly assembly, string conceptualPath)
+        {
+            // Assembly-level placeholders would go in the root conceptual directory
+            // For now, we'll focus on type-level placeholders as requested
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Generates placeholder files for namespace-level conceptual content.
+        /// </summary>
+        /// <param name="ns">The namespace to generate placeholders for.</param>
+        /// <param name="conceptualPath">The base conceptual content path.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        private Task GenerateNamespacePlaceholdersAsync(DocNamespace ns, string conceptualPath)
+        {
+            // Namespace-level placeholders would go in namespace-specific directories
+            // For now, we'll focus on type-level placeholders as requested
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Generates placeholder files for type-level conceptual content.
+        /// </summary>
+        /// <param name="type">The type to generate placeholders for.</param>
+        /// <param name="ns">The namespace containing the type.</param>
+        /// <param name="conceptualPath">The base conceptual content path.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        private async Task GenerateTypePlaceholdersAsync(DocType type, DocNamespace ns, string conceptualPath)
+        {
+            // Build the type directory path
+            var namespacePath = Context.GetNamespaceFolderPath(ns.Name ?? "global");
+            var typeDir = Path.Combine(conceptualPath, namespacePath, type.Name);
+
+            Directory.CreateDirectory(typeDir);
+
+            // Generate individual placeholder files
+            var usagePath = Path.Combine(typeDir, DocConstants.UsageFileName);
+            if (!File.Exists(usagePath))
+            {
+                await File.WriteAllTextAsync(usagePath, GetUsageTemplate(type.Name));
+            }
+
+            var examplesPath = Path.Combine(typeDir, DocConstants.ExamplesFileName);
+            if (!File.Exists(examplesPath))
+            {
+                await File.WriteAllTextAsync(examplesPath, GetExamplesTemplate(type.Name));
+            }
+
+            var bestPracticesPath = Path.Combine(typeDir, DocConstants.BestPracticesFileName);
+            if (!File.Exists(bestPracticesPath))
+            {
+                await File.WriteAllTextAsync(bestPracticesPath, GetBestPracticesTemplate(type.Name));
+            }
+
+            var patternsPath = Path.Combine(typeDir, DocConstants.PatternsFileName);
+            if (!File.Exists(patternsPath))
+            {
+                await File.WriteAllTextAsync(patternsPath, GetPatternsTemplate(type.Name));
+            }
+
+            var considerationsPath = Path.Combine(typeDir, DocConstants.ConsiderationsFileName);
+            if (!File.Exists(considerationsPath))
+            {
+                await File.WriteAllTextAsync(considerationsPath, GetConsiderationsTemplate(type.Name));
+            }
+
+            var relatedApisPath = Path.Combine(typeDir, DocConstants.RelatedApisFileName);
+            if (!File.Exists(relatedApisPath))
+            {
+                await File.WriteAllTextAsync(relatedApisPath, GetRelatedApisTemplate(type.Name));
+            }
         }
 
         #endregion

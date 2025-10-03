@@ -126,7 +126,9 @@
             MintlifyUnifiedGroupName="$(MintlifyUnifiedGroupName)"
             DocsJsonTemplatePath="$(DocsJsonTemplatePath)"
             MintlifyTemplate="$(MintlifyTemplate)"
-            SolutionName="$(_SolutionName)">
+            SolutionName="$(_SolutionName)"
+            ConceptualDocsEnabled="$(ConceptualDocsEnabled)"
+            ShowPlaceholders="$(ShowPlaceholders)">
             <Output TaskParameter="GeneratedFiles" ItemName="GeneratedDocumentationFiles" />
         </CloudNimble.DotNetDocs.Sdk.Tasks.GenerateDocumentationTask>
 

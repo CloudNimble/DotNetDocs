@@ -93,14 +93,16 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             // Arrange
             var assemblyPath = typeof(SimpleClass).Assembly.Location;
             var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
-            var documentationManager = GetService<DocumentationManager>();
+            var context = GetService<ProjectContext>();
+            using var manager = new AssemblyManager(assemblyPath, xmlPath);
+            var assembly = await manager.DocumentAsync(context);
+            var renderer = GetYamlRenderer();
 
             // Act
-            await documentationManager.ProcessAsync(assemblyPath, xmlPath);
+            await renderer.RenderAsync(assembly);
 
             // Assert - Compare against baseline
             var baselinePath = Path.Combine(projectPath, "Baselines", "YamlRenderer", "FileMode", "documentation.yaml");
-            var context = GetService<ProjectContext>();
             var actualPath = Path.Combine(_testOutputPath, context.ApiReferencePath, "documentation.yaml");
 
             if (File.Exists(baselinePath))
@@ -727,12 +729,14 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
 
             try
             {
-                // Process the assembly through DocumentationManager to apply transformations
+                // Generate documentation using AssemblyManager and renderer directly
                 var assemblyPath = typeof(SampleClass).Assembly.Location;
                 var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
 
-                var documentationManager = GetService<DocumentationManager>();
-                await documentationManager.ProcessAsync(assemblyPath, xmlPath);
+                using var manager = new AssemblyManager(assemblyPath, xmlPath);
+                var assembly = await manager.DocumentAsync(context);
+                var renderer = GetYamlRenderer();
+                await renderer.RenderAsync(assembly);
 
                 // Assert - Verify folder structure
                 var cloudNimbleDir = Path.Combine(testOutputPath, "CloudNimble");

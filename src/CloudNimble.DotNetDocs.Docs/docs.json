@@ -53,7 +53,7 @@
       {
         "group": "Learnings",
         "icon": {
-          "name": ""
+          "name": "chalkboard-user"
         },
         "pages": [
           "learnings/bridge-assemblies",

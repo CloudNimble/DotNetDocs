@@ -85,6 +85,23 @@ public string ApiReferencePath { get; set; }
 
 Type: `string`
 
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  ConceptualDocsEnabled
+
+Gets or sets whether conceptual documentation features are enabled.
+
+#### Syntax
+
+```csharp
+public bool ConceptualDocsEnabled { get; set; }
+```
+
+#### Property Value
+
+Type: `bool`
+When true (default), conceptual documentation files are generated for new types
+            and existing conceptual content is loaded. When false, only API documentation
+            from XML comments is processed.
+
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  ConceptualPath
 
 Gets or sets the path to the conceptual documentation folder.

@@ -12,47 +12,37 @@ namespace CloudNimble.DotNetDocs.Core
         /// <summary>
         /// The file name for namespace summary documentation.
         /// </summary>
-        public const string SummaryFileName = "summary.md";
+        public const string SummaryFileName = "summary.mdz";
 
         /// <summary>
         /// The file name for usage documentation.
         /// </summary>
-        public const string UsageFileName = "usage.md";
+        public const string UsageFileName = "usage.mdz";
 
         /// <summary>
         /// The file name for examples documentation.
         /// </summary>
-        public const string ExamplesFileName = "examples.md";
+        public const string ExamplesFileName = "examples.mdz";
 
         /// <summary>
         /// The file name for best practices documentation.
         /// </summary>
-        public const string BestPracticesFileName = "best-practices.md";
+        public const string BestPracticesFileName = "best-practices.mdz";
 
         /// <summary>
         /// The file name for patterns documentation.
         /// </summary>
-        public const string PatternsFileName = "patterns.md";
+        public const string PatternsFileName = "patterns.mdz";
 
         /// <summary>
         /// The file name for considerations documentation.
         /// </summary>
-        public const string ConsiderationsFileName = "considerations.md";
+        public const string ConsiderationsFileName = "considerations.mdz";
 
         /// <summary>
         /// The file name for related APIs documentation.
         /// </summary>
-        public const string RelatedApisFileName = "related-apis.md";
-
-        /// <summary>
-        /// The file name prefix for parameter-specific documentation.
-        /// </summary>
-        public const string ParameterFilePrefix = "param-";
-
-        /// <summary>
-        /// The file extension for parameter documentation files.
-        /// </summary>
-        public const string ParameterFileExtension = ".md";
+        public const string RelatedApisFileName = "related-apis.mdz";
 
         #endregion
 

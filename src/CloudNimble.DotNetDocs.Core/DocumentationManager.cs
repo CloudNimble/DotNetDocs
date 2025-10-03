@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace CloudNimble.DotNetDocs.Core
@@ -79,8 +80,6 @@ namespace CloudNimble.DotNetDocs.Core
             {
                 var manager = GetOrCreateAssemblyManager(pair.assemblyPath, pair.xmlPath);
                 var model = await manager.DocumentAsync(projectContext);
-
-                await GenerateConceptualFilesForAssembly(model);
             });
 
             await Task.WhenAll(tasks);
@@ -106,45 +105,54 @@ namespace CloudNimble.DotNetDocs.Core
         {
             // Collect all DocAssembly models
             var docAssemblies = new List<DocAssembly>();
-            foreach (var pair in assemblies)
+            foreach (var (assemblyPath, xmlPath) in assemblies)
             {
-                var manager = GetOrCreateAssemblyManager(pair.assemblyPath, pair.xmlPath);
+                var manager = GetOrCreateAssemblyManager(assemblyPath, xmlPath);
                 var model = await manager.DocumentAsync(projectContext);
-
-                // Load conceptual content if path provided
-                if (!string.IsNullOrWhiteSpace(projectContext.ConceptualPath))
-                {
-                    await LoadConceptualAsync(model);
-                }
-
                 docAssemblies.Add(model);
             }
 
-            // Merge all DocAssembly models into unified model
+            if (projectContext.ConceptualDocsEnabled)
+            {
+                // Process assemblies in parallel for better performance
+                // Each assembly gets its own conceptual directory subtree, so no file conflicts
+                var assemblyTasks = docAssemblies.Select(async assembly =>
+                {
+                    // STEP 1: Generate placeholder files for this assembly with all renderers
+                    var placeholderTasks = renderers.Select(renderer => renderer.RenderPlaceholdersAsync(assembly));
+                    await Task.WhenAll(placeholderTasks);
+
+                    // STEP 2: Load conceptual content for this assembly (after placeholders exist)
+                    await LoadConceptualAsync(assembly);
+                });
+
+                await Task.WhenAll(assemblyTasks);
+            }
+
+            // STEP 3: Merge all DocAssembly models (now with conceptual content loaded)
             var mergedModel = await MergeDocAssembliesAsync(docAssemblies);
 
-            // Apply enrichers to merged model
+            // STEP 4: Apply enrichers, transformers, and renderers
             foreach (var enricher in enrichers)
             {
                 await enricher.EnrichAsync(mergedModel);
             }
 
-            // Apply transformers to merged model
             foreach (var transformer in transformers)
             {
                 await transformer.TransformAsync(mergedModel);
             }
 
-            // Apply renderers once with merged model
             foreach (var renderer in renderers)
             {
                 await renderer.RenderAsync(mergedModel);
             }
         }
 
+
         #endregion
 
-        #region Private Methods
+        #region Internal Methods
 
         /// <summary>
         /// Merges multiple DocAssembly models into a single unified model.
@@ -292,82 +300,6 @@ namespace CloudNimble.DotNetDocs.Core
         }
 
         /// <summary>
-        /// Recursively enriches a documentation model and all its children.
-        /// </summary>
-        internal async Task EnrichModelAsync(DocEntity entity, IDocEnricher enricher)
-        {
-            await enricher.EnrichAsync(entity);
-
-            // Recursively enrich children
-            if (entity is DocAssembly assembly)
-            {
-                foreach (var ns in assembly.Namespaces)
-                {
-                    await EnrichModelAsync(ns, enricher);
-                }
-            }
-            else if (entity is DocNamespace ns)
-            {
-                foreach (var type in ns.Types)
-                {
-                    await EnrichModelAsync(type, enricher);
-                }
-            }
-            else if (entity is DocType type)
-            {
-                foreach (var member in type.Members)
-                {
-                    await EnrichModelAsync(member, enricher);
-                }
-            }
-            else if (entity is DocMember member)
-            {
-                foreach (var param in member.Parameters)
-                {
-                    await EnrichModelAsync(param, enricher);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Recursively transforms a documentation model and all its children.
-        /// </summary>
-        internal async Task TransformModelAsync(DocEntity entity, IDocTransformer transformer)
-        {
-            await transformer.TransformAsync(entity);
-
-            // Recursively transform children
-            if (entity is DocAssembly assembly)
-            {
-                foreach (var ns in assembly.Namespaces)
-                {
-                    await TransformModelAsync(ns, transformer);
-                }
-            }
-            else if (entity is DocNamespace ns)
-            {
-                foreach (var type in ns.Types)
-                {
-                    await TransformModelAsync(type, transformer);
-                }
-            }
-            else if (entity is DocType type)
-            {
-                foreach (var member in type.Members)
-                {
-                    await TransformModelAsync(member, transformer);
-                }
-            }
-            else if (entity is DocMember member)
-            {
-                foreach (var param in member.Parameters)
-                {
-                    await TransformModelAsync(param, transformer);
-                }
-            }
-        }
-
-        /// <summary>
         /// Loads conceptual content from the file system into the documentation model.
         /// </summary>
         /// <param name="assembly">The assembly to load conceptual content for.</param>
@@ -386,7 +318,7 @@ namespace CloudNimble.DotNetDocs.Core
                 var namespacePath = ns.Symbol.IsGlobalNamespace
                     ? projectContext?.ConceptualPath
                     : Path.Combine(projectContext?.ConceptualPath ?? "", ns.Symbol.ToDisplayString().Replace('.', Path.DirectorySeparatorChar));
-                
+
                 if (Directory.Exists(namespacePath))
                 {
                     await LoadConceptualFileAsync(namespacePath, DocConstants.SummaryFileName, content => ns.Summary = content, showPlaceholders);
@@ -404,7 +336,7 @@ namespace CloudNimble.DotNetDocs.Core
 
                     if (Directory.Exists(typeDir))
                     {
-                        
+
                         // Load type-level conceptual content
                         await LoadConceptualFileAsync(typeDir, DocConstants.UsageFileName, content => type.Usage = content, showPlaceholders);
                         await LoadConceptualFileAsync(typeDir, DocConstants.ExamplesFileName, content => type.Examples = content, showPlaceholders);
@@ -417,7 +349,7 @@ namespace CloudNimble.DotNetDocs.Core
                         if (File.Exists(relatedApisPath))
                         {
                             var content = await File.ReadAllTextAsync(relatedApisPath);
-                            
+
                             // Check if this is a placeholder file and if we should skip it
                             if (!showPlaceholders && content.TrimStart().StartsWith("<!-- TODO: REMOVE THIS COMMENT AFTER YOU CUSTOMIZE THIS CONTENT -->"))
                             {
@@ -451,7 +383,7 @@ namespace CloudNimble.DotNetDocs.Core
                                 if (File.Exists(memberRelatedApisPath))
                                 {
                                     var content = await File.ReadAllTextAsync(memberRelatedApisPath);
-                                    
+
                                     // Check if this is a placeholder file and if we should skip it
                                     if (!showPlaceholders && content.TrimStart().StartsWith("<!-- TODO: REMOVE THIS COMMENT AFTER YOU CUSTOMIZE THIS CONTENT -->"))
                                     {
@@ -464,30 +396,6 @@ namespace CloudNimble.DotNetDocs.Core
                                             .Where(line => !string.IsNullOrWhiteSpace(line) && !line.TrimStart().StartsWith("<!--"))
                                             .Select(line => line.Trim())
                                             .ToList();
-                                    }
-                                }
-
-                                // Load parameter-specific documentation
-                                foreach (var parameter in member.Parameters)
-                                {
-                                    var paramFile = Path.Combine(memberDir, $"{DocConstants.ParameterFilePrefix}{parameter.Symbol.Name}{DocConstants.ParameterFileExtension}");
-                                    if (File.Exists(paramFile))
-                                    {
-                                        var content = await File.ReadAllTextAsync(paramFile);
-                                        content = content.Trim();
-                                        
-                                        // Check if this is a placeholder file and if we should skip it
-                                        if (!showPlaceholders && content.StartsWith("<!-- TODO: REMOVE THIS COMMENT AFTER YOU CUSTOMIZE THIS CONTENT -->"))
-                                        {
-                                            // Skip loading placeholder content
-                                            continue;
-                                        }
-                                        
-                                        if (!string.IsNullOrWhiteSpace(content))
-                                        {
-                                            // Override XML documentation with conceptual content
-                                            parameter.Usage = content;
-                                        }
                                     }
                                 }
                             }
@@ -504,58 +412,32 @@ namespace CloudNimble.DotNetDocs.Core
         /// <param name="fileName">The file name to load.</param>
         /// <param name="setter">Action to set the content on the target object.</param>
         /// <param name="showPlaceholders">Whether to load files containing the TODO marker.</param>
+        /// <remarks>
+        /// This method loads conceptual content as-is without modification. Renderers are responsible
+        /// for manipulating the final output based on the content structure (e.g., handling headers,
+        /// formatting, or integration with other content).
+        /// </remarks>
         internal async Task LoadConceptualFileAsync(string directory, string fileName, Action<string> setter, bool showPlaceholders = true)
         {
             var filePath = Path.Combine(directory, fileName);
             if (File.Exists(filePath))
             {
                 var content = await File.ReadAllTextAsync(filePath);
-                content = content.Trim();
-                
-                // Check if this is a placeholder file and if we should process it
-                if (!showPlaceholders && content.StartsWith("<!-- TODO: REMOVE THIS COMMENT AFTER YOU CUSTOMIZE THIS CONTENT -->"))
+
+                // Skip BOM if present
+                if (content.Length > 0 && content[0] == '\uFEFF')
                 {
-                    // Remove the placeholder marker and any immediately following placeholder content
-                    var lines = content.Split('\n', StringSplitOptions.None);
-                    var filteredLines = new List<string>();
-                    var skipNextEmptyLine = true;
-                    
-                    foreach (var line in lines.Skip(1)) // Skip the first line (the comment)
-                    {
-                        var trimmedLine = line.Trim();
-                        
-                        // Skip the immediate placeholder content line after the comment
-                        if (skipNextEmptyLine && 
-                            (trimmedLine.Contains("placeholder", StringComparison.OrdinalIgnoreCase) ||
-                             trimmedLine.StartsWith("This is placeholder", StringComparison.OrdinalIgnoreCase)))
-                        {
-                            skipNextEmptyLine = false; // We've found and skipped the placeholder line
-                            continue;
-                        }
-                        
-                        // Skip empty lines immediately after placeholder content
-                        if (!skipNextEmptyLine && string.IsNullOrWhiteSpace(line))
-                        {
-                            continue; // Skip empty lines between placeholder and real content
-                        }
-                        
-                        // If we get here with content, it's real content
-                        if (!string.IsNullOrWhiteSpace(trimmedLine))
-                        {
-                            skipNextEmptyLine = false; // We've found real content
-                            filteredLines.Add(line);
-                        }
-                    }
-                    
-                    content = string.Join('\n', filteredLines).Trim();
-                    
-                    // If no real content remains after filtering, skip entirely
-                    if (string.IsNullOrWhiteSpace(content))
-                    {
-                        return;
-                    }
+                    content = content.Substring(1);
                 }
-                
+
+                content = content.Trim();
+
+                // Skip placeholder files entirely when ShowPlaceholders is false
+                if (!showPlaceholders && IsTodoPlaceholderFile(content))
+                {
+                    return;
+                }
+
                 if (!string.IsNullOrWhiteSpace(content))
                 {
                     setter(content);
@@ -564,119 +446,32 @@ namespace CloudNimble.DotNetDocs.Core
         }
 
         /// <summary>
-        /// Generates placeholder conceptual documentation files for an assembly.
+        /// Determines if a file contains a TODO placeholder comment.
         /// </summary>
-        /// <param name="assembly">The assembly to generate conceptual files for.</param>
-        internal async Task GenerateConceptualFilesForAssembly(DocAssembly assembly)
+        /// <param name="content">The file content to check.</param>
+        /// <returns>true if the content starts with a TODO placeholder comment; otherwise, false.</returns>
+        internal static bool IsTodoPlaceholderFile(string content)
         {
-            foreach (var ns in assembly.Namespaces)
+            if (string.IsNullOrWhiteSpace(content))
             {
-                // Generate namespace-level conceptual files
-                var namespaceName = projectContext.GetSafeNamespaceName(ns.Symbol);
-                var namespacePath = namespaceName == "global" 
-                    ? "global"
-                    : namespaceName.Replace('.', Path.DirectorySeparatorChar);
-                var namespaceDir = Path.Combine(projectContext.ConceptualPath, namespacePath);
-                
-                // Create namespace directory if it doesn't exist
-                Directory.CreateDirectory(namespaceDir);
-                
-                // Generate namespace summary file (only for namespaces, not types)
-                await GeneratePlaceholderFileAsync(namespaceDir, DocConstants.SummaryFileName,
-                    $"<!-- TODO: REMOVE THIS COMMENT AFTER YOU CUSTOMIZE THIS CONTENT -->\n# Summary\n\nProvide a brief description of the `{namespaceName}` namespace's purpose and functionality.\n");
+                return false;
+            }
 
-                foreach (var type in ns.Types)
+            var lines = content.Split('\n');
+            foreach (var line in lines)
+            {
+                var trimmed = line.Trim();
+                if (string.IsNullOrWhiteSpace(trimmed))
                 {
-                    // Type directory is within the namespace directory
-                    var typeDir = Path.Combine(namespaceDir, type.Symbol.Name);
-
-                    // Create directory if it doesn't exist
-                    Directory.CreateDirectory(typeDir);
-
-                    // Generate type-level conceptual placeholder files
-                    await GeneratePlaceholderFileAsync(typeDir, DocConstants.UsageFileName,
-                        $"<!-- TODO: REMOVE THIS COMMENT AFTER YOU CUSTOMIZE THIS CONTENT -->\n# Usage\n\nDescribe how to use `{type.Symbol.Name}` here.\n");
-                    
-                    await GeneratePlaceholderFileAsync(typeDir, DocConstants.ExamplesFileName,
-                        $"<!-- TODO: REMOVE THIS COMMENT AFTER YOU CUSTOMIZE THIS CONTENT -->\n# Examples\n\nProvide examples of using `{type.Symbol.Name}` here.\n");
-                    
-                    await GeneratePlaceholderFileAsync(typeDir, DocConstants.BestPracticesFileName,
-                        $"<!-- TODO: REMOVE THIS COMMENT AFTER YOU CUSTOMIZE THIS CONTENT -->\n# Best Practices\n\nDocument best practices for `{type.Symbol.Name}` here.\n");
-                    
-                    await GeneratePlaceholderFileAsync(typeDir, DocConstants.PatternsFileName,
-                        $"<!-- TODO: REMOVE THIS COMMENT AFTER YOU CUSTOMIZE THIS CONTENT -->\n# Patterns\n\nDescribe common patterns when using `{type.Symbol.Name}` here.\n");
-                    
-                    await GeneratePlaceholderFileAsync(typeDir, DocConstants.ConsiderationsFileName,
-                        $"<!-- TODO: REMOVE THIS COMMENT AFTER YOU CUSTOMIZE THIS CONTENT -->\n# Considerations\n\nNote important considerations for `{type.Symbol.Name}` here.\n");
-                    
-                    await GeneratePlaceholderFileAsync(typeDir, DocConstants.RelatedApisFileName,
-                        $"<!-- TODO: REMOVE THIS COMMENT AFTER YOU CUSTOMIZE THIS CONTENT -->\n# Related APIs\n\n<!-- List related APIs one per line -->\n");
-
-                    // Generate member-specific conceptual placeholder files
-                    foreach (var member in type.Members)
-                    {
-                        var memberDir = Path.Combine(typeDir, member.Symbol.Name);
-                        Directory.CreateDirectory(memberDir);
-
-                        await GeneratePlaceholderFileAsync(memberDir, DocConstants.UsageFileName,
-                            $"<!-- TODO: REMOVE THIS COMMENT AFTER YOU CUSTOMIZE THIS CONTENT -->\n# Usage\n\nDescribe how to use `{member.Symbol.Name}` here.\n");
-                        
-                        await GeneratePlaceholderFileAsync(memberDir, DocConstants.ExamplesFileName,
-                            $"<!-- TODO: REMOVE THIS COMMENT AFTER YOU CUSTOMIZE THIS CONTENT -->\n# Examples\n\nProvide examples of using `{member.Symbol.Name}` here.\n");
-                        
-                        await GeneratePlaceholderFileAsync(memberDir, DocConstants.BestPracticesFileName,
-                            $"<!-- TODO: REMOVE THIS COMMENT AFTER YOU CUSTOMIZE THIS CONTENT -->\n# Best Practices\n\nDocument best practices for `{member.Symbol.Name}` here.\n");
-                        
-                        await GeneratePlaceholderFileAsync(memberDir, DocConstants.PatternsFileName,
-                            $"<!-- TODO: REMOVE THIS COMMENT AFTER YOU CUSTOMIZE THIS CONTENT -->\n# Patterns\n\nDescribe common patterns when using `{member.Symbol.Name}` here.\n");
-                        
-                        await GeneratePlaceholderFileAsync(memberDir, DocConstants.ConsiderationsFileName,
-                            $"<!-- TODO: REMOVE THIS COMMENT AFTER YOU CUSTOMIZE THIS CONTENT -->\n# Considerations\n\nNote important considerations for `{member.Symbol.Name}` here.\n");
-                        
-                        await GeneratePlaceholderFileAsync(memberDir, DocConstants.RelatedApisFileName,
-                            $"<!-- TODO: REMOVE THIS COMMENT AFTER YOU CUSTOMIZE THIS CONTENT -->\n# Related APIs\n\n<!-- List related APIs one per line -->\n");
-
-                        // Generate parameter-specific placeholder files
-                        foreach (var parameter in member.Parameters)
-                        {
-                            var paramFile = Path.Combine(memberDir, 
-                                $"{DocConstants.ParameterFilePrefix}{parameter.Symbol.Name}{DocConstants.ParameterFileExtension}");
-                            
-                            await GeneratePlaceholderFileAsync(paramFile,
-                                $"<!-- TODO: REMOVE THIS COMMENT AFTER YOU CUSTOMIZE THIS CONTENT -->\n" +
-                                $"<!-- Enhanced documentation for parameter '{parameter.Symbol.Name}' -->\n" +
-                                $"<!-- This overrides the XML documentation for this parameter -->\n\n" +
-                                $"Describe the `{parameter.Symbol.Name}` parameter in detail here.\n");
-                        }
-                    }
+                    continue;
                 }
-            }
-        }
 
-        /// <summary>
-        /// Generates a placeholder file if it doesn't already exist.
-        /// </summary>
-        /// <param name="directory">The directory to create the file in.</param>
-        /// <param name="fileName">The name of the file to create.</param>
-        /// <param name="content">The placeholder content to write.</param>
-        internal async Task GeneratePlaceholderFileAsync(string directory, string fileName, string content)
-        {
-            var filePath = Path.Combine(directory, fileName);
-            await GeneratePlaceholderFileAsync(filePath, content);
-        }
-
-        /// <summary>
-        /// Generates a placeholder file if it doesn't already exist.
-        /// </summary>
-        /// <param name="filePath">The full path of the file to create.</param>
-        /// <param name="content">The placeholder content to write.</param>
-        internal async Task GeneratePlaceholderFileAsync(string filePath, string content)
-        {
-            // Only create if file doesn't exist - don't overwrite existing content
-            if (!File.Exists(filePath))
-            {
-                await File.WriteAllTextAsync(filePath, content);
+                // Check if this line matches the TODO comment pattern
+                var regex = new Regex(@"^\s*<!--\s*TODO:\s*REMOVE\s+THIS\s+COMMENT\s+AFTER\s+YOU\s+CUSTOMIZE\s+THIS\s+CONTENT\s*-->\s*$", RegexOptions.IgnoreCase);
+                return regex.IsMatch(trimmed);
             }
+
+            return false;
         }
 
         #endregion

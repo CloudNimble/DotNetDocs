@@ -251,8 +251,8 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             // Usage had placeholder, should not contain placeholder text
             testClass!.Usage.Should().NotContain("TODO: REMOVE THIS COMMENT");
             
-            // BestPractices had real content after placeholder, should contain it
-            testClass.BestPractices.Should().Be("This is real best practices after placeholder");
+            // BestPractices had placeholder marker, should be skipped entirely
+            testClass.BestPractices.Should().BeNull();
             
             // Patterns had no placeholder, should have full content
             testClass.Patterns.Should().Be("This is real patterns content");
@@ -573,6 +573,11 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             public Task RenderAsync(DocAssembly model)
             {
                 Executed = true;
+                return Task.CompletedTask;
+            }
+
+            public Task RenderPlaceholdersAsync(DocAssembly model)
+            {
                 return Task.CompletedTask;
             }
         }

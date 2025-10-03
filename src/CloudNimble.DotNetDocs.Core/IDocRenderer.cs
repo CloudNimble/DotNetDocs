@@ -22,6 +22,13 @@ namespace CloudNimble.DotNetDocs.Core
         /// <returns>A task representing the asynchronous rendering operation.</returns>
         Task RenderAsync(DocAssembly model);
 
+        /// <summary>
+        /// Renders placeholder conceptual content files for the documentation assembly.
+        /// </summary>
+        /// <param name="model">The documentation assembly to generate placeholders for.</param>
+        /// <returns>A task representing the asynchronous placeholder rendering operation.</returns>
+        Task RenderPlaceholdersAsync(DocAssembly model);
+
         #endregion
 
     }

@@ -99,6 +99,16 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
         /// </summary>
         public string? SolutionName { get; set; }
 
+        /// <summary>
+        /// Gets or sets whether conceptual documentation features are enabled.
+        /// </summary>
+        public bool ConceptualDocsEnabled { get; set; } = true;
+
+        /// <summary>
+        /// Gets or sets whether to show placeholder content in the documentation.
+        /// </summary>
+        public bool ShowPlaceholders { get; set; } = true;
+
         #endregion
 
         #region Public Methods
@@ -124,6 +134,8 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
                     context.ApiReferencePath = ApiReferencePath;
                     context.ConceptualPath = ConceptualPath ?? Path.Combine(OutputPath, "conceptual");
                     context.FileNamingOptions.NamespaceMode = Enum.TryParse<NamespaceMode>(NamespaceMode, true, out var mode) ? mode : Core.Configuration.NamespaceMode.Folder;
+                    context.ConceptualDocsEnabled = ConceptualDocsEnabled;
+                    context.ShowPlaceholders = ShowPlaceholders;
 
                     // NamespaceFileMode will be set via the NamespaceMode property
                     // This is handled internally by the Core library

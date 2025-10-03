@@ -116,6 +116,16 @@ namespace CloudNimble.DotNetDocs.Core
         /// </value>
         public bool ShowPlaceholders { get; set; } = true;
 
+        /// <summary>
+        /// Gets or sets whether conceptual documentation features are enabled.
+        /// </summary>
+        /// <value>
+        /// When true (default), conceptual documentation files are generated for new types
+        /// and existing conceptual content is loaded. When false, only API documentation
+        /// from XML comments is processed.
+        /// </value>
+        public bool ConceptualDocsEnabled { get; set; } = true;
+
         #endregion
 
         #region Constructors

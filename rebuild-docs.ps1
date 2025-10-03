@@ -92,11 +92,20 @@ try {
 }
 Write-Host ""
 
-# Step 3: Clear NuGet cache
-Write-Host "Step 3: Clearing NuGet cache..." -ForegroundColor Yellow
+# Step 3: Clear NuGet cache and local feed
+Write-Host "Step 3: Clearing NuGet cache and local feed..." -ForegroundColor Yellow
 Write-Host "   This may take a moment..." -ForegroundColor Gray
 & dotnet nuget locals all --clear | Out-String | Write-Host
-Write-Host "   NuGet cache cleared" -ForegroundColor Green
+
+# Clear local-nuget-feed directory
+$localFeedPath = Join-Path $projectRoot "local-nuget-feed"
+if (Test-Path $localFeedPath) {
+    Write-Host "   Clearing local-nuget-feed directory..." -ForegroundColor Gray
+    Remove-Item -Path $localFeedPath\* -Recurse -Force -ErrorAction SilentlyContinue
+    Write-Host "   Local feed cleared" -ForegroundColor Green
+}
+
+Write-Host "   NuGet cache and local feed cleared" -ForegroundColor Green
 Write-Host ""
 
 # Step 4: Restore packages
