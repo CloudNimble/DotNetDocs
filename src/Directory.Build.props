@@ -33,7 +33,7 @@
         <PackageId>$(MSBuildProjectName.Replace('CloudNimble.', ''))</PackageId>
         <Product>DotNetDocs</Product>
         <AssemblyVersion>1.0.0.0</AssemblyVersion>
-        <PackageVersion Condition="'$(PackageVersion)' == ''">1.0.0-preview.22</PackageVersion>
+        <PackageVersion Condition="'$(PackageVersion)' == ''">1.0.0-preview.23</PackageVersion>
         <Authors>CloudNimble</Authors>
         <Company>CloudNimble, Inc.</Company>
         <RpmPackageVendor>CloudNimble</RpmPackageVendor>
@@ -52,7 +52,7 @@
         <!-- Contact email address for NuGet packages and Linux installers. -->
         <MaintainerEmail>opensource@nimbleapps.cloud</MaintainerEmail>
 
-        <PackageIcon Condition=" '$(IsTestProject)' != 'true' And $(MSBuildProjectName.StartsWith('CloudNimble.'))">easyaf-logo.png</PackageIcon>
+        <PackageIcon Condition=" '$(IsTestProject)' != 'true' And $(MSBuildProjectName.StartsWith('CloudNimble.'))">dotnetdocs-logo.png</PackageIcon>
         <PackageIcon Condition=" '$(IsTestProject)' != 'true' And $(MSBuildProjectName.StartsWith('Mintlify.'))">mintlify-logo.png</PackageIcon>
 
         <PackageProjectUrl>https://easyaf.dev/dotnetdocs</PackageProjectUrl>
@@ -146,7 +146,7 @@
 
     <!-- RWM: Leverage defaults to include standard things in the NuGet package if they are available.-->
     <ItemGroup>
-        <None Include="$(MSBuildThisFileDirectory)easyaf-logo.png" Pack="true" PackagePath="\" Condition=" '$(IsTestProject)' != 'true' And $(MSBuildProjectName.StartsWith('CloudNimble.'))" />
+        <None Include="$(MSBuildThisFileDirectory)dotnetdocs-logo.png" Pack="true" PackagePath="\" Condition=" '$(IsTestProject)' != 'true' And $(MSBuildProjectName.StartsWith('CloudNimble.'))" />
         <None Include="$(MSBuildThisFileDirectory)mintlify-logo.png" Pack="true" PackagePath="\" Condition=" '$(IsTestProject)' != 'true' And $(MSBuildProjectName.StartsWith('Mintlify.'))" />
         <None Include="readme.md" Pack="true" PackagePath="\" Condition="$(IncludeReadmeFile) == 'true'" />
     </ItemGroup>
