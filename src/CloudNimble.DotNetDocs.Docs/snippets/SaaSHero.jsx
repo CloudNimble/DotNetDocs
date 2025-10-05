@@ -74,10 +74,10 @@ export const SaaSHero = () => {
               gap: '20px'
             }}>
               <img
-                src="/dotnetdocs.dark.svg"
+                src="/images/logos/dotnetdocs.dark.svg"
                 alt="DotNetDocs"
                 style={{
-                  height: '60px',
+                  height: '56px',
                   width: 'auto'
                 }}
               />
@@ -125,8 +125,8 @@ export const SaaSHero = () => {
                 color: '#B0C4DE',
                 margin: 0
               }}>
-                Turn your .NET XML comments into stunning, searchable documentation sites.
-                Zero config. Full control. Built for developers who value their time.
+                Turn your amazing .NET projects into stunning <nobr>AI-ready</nobr> documentation sites.
+                Zero config. Full control. Built for developers.
               </p>
             </div>
 
@@ -136,7 +136,7 @@ export const SaaSHero = () => {
               flexWrap: 'wrap',
               marginBottom: '60px'
             }}>
-              <a href="https://dotnetdocs.com/docs/quickstart" style={{
+              <a href="/quickstart" style={{
                 padding: '18px 40px',
                 background: 'linear-gradient(135deg, #3CD0E2, #419AC5)',
                 color: 'white',
@@ -178,25 +178,93 @@ export const SaaSHero = () => {
               </a>
             </div>
 
-            {/* Trust indicators */}
+            {/* Created By & Sponsors */}
             <div style={{
-              display: 'none', // Hidden but preserved for future use
-              // display: 'flex',
-              gap: '40px',
               paddingTop: '40px',
-              borderTop: '1px solid rgba(60, 208, 226, 0.2)'
+              borderTop: '1px solid rgba(60, 208, 226, 0.2)',
+              display: 'flex',
+              gap: '60px',
+              alignItems: 'flex-start',
+              flexWrap: 'wrap'
             }}>
+              {/* Created By */}
               <div>
-                <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#3CD0E2' }}>10K+</div>
-                <div style={{ color: '#8B9DC3', fontSize: '14px' }}>Developers</div>
+                <div style={{
+                  color: '#8B9DC3',
+                  fontSize: '12px',
+                  fontWeight: '600',
+                  letterSpacing: '1px',
+                  textTransform: 'uppercase',
+                  marginBottom: '20px'
+                }}>
+                  Created By
+                </div>
+                <a href="https://github.com/cloudnimble" target="_blank" rel="noopener noreferrer">
+                  <img
+                    src="/images/logos/cloudnimble.dark.svg"
+                    alt="CloudNimble"
+                    style={{
+                      height: '28px',
+                      width: 'auto',
+                      opacity: 0.7,
+                      transition: 'opacity 0.3s',
+                      cursor: 'pointer'
+                    }}
+                    onMouseOver={(e) => e.currentTarget.style.opacity = '1'}
+                    onMouseOut={(e) => e.currentTarget.style.opacity = '0.7'}
+                  />
+                </a>
               </div>
+
+              {/* Sponsored By */}
               <div>
-                <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#3CD0E2' }}>500+</div>
-                <div style={{ color: '#8B9DC3', fontSize: '14px' }}>Projects</div>
-              </div>
-              <div>
-                <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#3CD0E2' }}>99%</div>
-                <div style={{ color: '#8B9DC3', fontSize: '14px' }}>Uptime</div>
+                <div style={{
+                  color: '#8B9DC3',
+                  fontSize: '12px',
+                  fontWeight: '600',
+                  letterSpacing: '1px',
+                  textTransform: 'uppercase',
+                  marginBottom: '20px'
+                }}>
+                  Sponsored By
+                </div>
+                <div style={{
+                  display: 'flex',
+                  gap: '40px',
+                  alignItems: 'center',
+                  flexWrap: 'wrap'
+                }}>
+                  <a href="/providers/mintlify" target="_blank" rel="noopener noreferrer">
+                    <img
+                      src="/images/logos/mintlify.dark.svg"
+                      alt="Mintlify"
+                      style={{
+                        height: '28px',
+                        width: 'auto',
+                        opacity: 0.7,
+                        transition: 'opacity 0.3s',
+                        cursor: 'pointer'
+                      }}
+                      onMouseOver={(e) => e.currentTarget.style.opacity = '1'}
+                      onMouseOut={(e) => e.currentTarget.style.opacity = '0.7'}
+                    />
+                  </a>
+                  <a href="https://sustainment.com" target="_blank" rel="noopener noreferrer">
+                    <img
+                      src="/images/logos/sustainment.dark.svg"
+                      alt="Sustainment"
+                      style={{
+                        height: '28px',
+                        width: 'auto',
+                        opacity: 0.7,
+                        transition: 'opacity 0.3s',
+                        cursor: 'pointer'
+                      }}
+                      onMouseOver={(e) => e.currentTarget.style.opacity = '1'}
+                      onMouseOut={(e) => e.currentTarget.style.opacity = '0.7'}
+                    />
+                  </a>
+                </div>
               </div>
             </div>
           </div>

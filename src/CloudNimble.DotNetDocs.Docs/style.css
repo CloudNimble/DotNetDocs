@@ -7,9 +7,23 @@
   padding: 0 !important;
 }
 
+li button div {
+    display: flex;
+    gap: 6px;
+}
+
+[data-title="Mintlify"][data-group-tag="PARTNER"] img {
+    background-color: transparent !important;
+    filter: invert(31%) sepia(67%) saturate(3604%) hue-rotate(146deg) brightness(90%) contrast(91%);
+}
+
+[data-title="Mintlify"][data-group-tag="PARTNER"] svg:not(.transition-transform) {
+    background-color: #0C8C5E !important;
+}
+
 /* Remove container constraints for landing pages */
 .container, .max-w-7xl, .mx-auto {
-  max-width: 100% !important;
+    max-width: 100% !important;
 }
 
 /* Custom scrollbar styling */
@@ -80,7 +94,7 @@ html {
 }
 /* Hero section heading styles */
 .hero-heading {
-  font-size: clamp(48px, 8vw, 72px);
+  font-size: clamp(48px, 8vw, 60px);
   font-weight: 900;
   line-height: 1.1;
   margin-bottom: 30px;

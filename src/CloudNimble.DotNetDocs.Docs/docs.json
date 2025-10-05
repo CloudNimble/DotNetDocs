@@ -4,9 +4,10 @@
     "light": "#419AC5",
     "primary": "#419AC5"
   },
+  "favicon": "/images/icons/favicon-96x96.png",
   "logo": {
-    "dark": "dotnetdocs.dark.svg",
-    "light": "dotnetdocs.light.svg"
+    "dark": "/images/logos/dotnetdocs.dark.svg",
+    "light": "/images/logos/dotnetdocs.light.svg"
   },
   "name": "DotNetDocs",
   "navigation": {
@@ -16,7 +17,8 @@
         "icon": "stars",
         "pages": [
           "index",
-          "quickstart"
+          "quickstart",
+          "installation"
         ]
       },
       {
@@ -35,7 +37,7 @@
           "providers/index",
           {
             "group": "Mintlify",
-            "icon": "/mintlify.svg",
+            "icon": "/images/icons/mintlify.svg",
             "pages": [
               "providers/mintlify/index"
             ],
@@ -52,9 +54,7 @@
       },
       {
         "group": "Learnings",
-        "icon": {
-          "name": "chalkboard-user"
-        },
+        "icon": "chalkboard-user",
         "pages": [
           "learnings/bridge-assemblies",
           "learnings/sdk-packaging",

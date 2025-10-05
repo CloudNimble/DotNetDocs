@@ -1,4 +1,4 @@
-﻿<Project Sdk="DotNetDocs.Sdk/1.0.0-preview.23">
+﻿<Project Sdk="DotNetDocs.Sdk/1.0.0-preview.24">
 
 	<PropertyGroup>
 		<KeepLocalOutput>true</KeepLocalOutput>
@@ -22,14 +22,18 @@
 				<Dark>#3CD0E2</Dark>
 			</Colors>
 			<Logo>
-				<Light>dotnetdocs.light.svg</Light>
-				<Dark>dotnetdocs.dark.svg</Dark>
+				<Light>/images/logos/dotnetdocs.light.svg</Light>
+				<Dark>/images/logos/dotnetdocs.dark.svg</Dark>
 			</Logo>
+			<Favicon>
+				<Light>/images/icons/favicon-96x96.png</Light>
+				<Dark>/images/icons/favicon-96x96.png</Dark>
+			</Favicon>
 			<Navigation>
 				<Pages>
 					<Groups>
 						<Group Name="Getting Started" Icon="stars">
-							<Pages>index;quickstart</Pages>
+							<Pages>index;quickstart;installation</Pages>
 						</Group>
 						<Group Name="Guides" Icon="dog-leashed">
 							<Pages>guides/index;guides/conceptual-docs;guides/pipeline</Pages>
@@ -37,7 +41,7 @@
 						<Group Name="Providers" Icon="books">
 							<Pages>providers/index</Pages>
 							<Groups>
-								<Group Name="Mintlify" Icon="/mintlify.svg" Tag="PARTNER">
+								<Group Name="Mintlify" Icon="/images/icons/mintlify.svg" Tag="PARTNER">
 									<Pages>providers/mintlify/index</Pages>
 								</Group>
 							</Groups>
@@ -45,7 +49,7 @@
 						<Group Name="Plugins" Icon="outlet">
 							<Pages>plugins/index</Pages>
 						</Group>
-						<Group Name="Learnings" Icon="">
+						<Group Name="Learnings" Icon="chalkboard-user">
 							<Pages>learnings/bridge-assemblies;learnings/sdk-packaging</Pages>
 						</Group>
 					</Groups>
@@ -53,5 +57,9 @@
 			</Navigation>
 		</MintlifyTemplate>
 	</PropertyGroup>
+
+	<ItemGroup>
+	  <None Update="D:\GitHub\DotNetDocs\src\dotnetdocs-logo.png" Link="images\logos\dotnetdocs-logo.png" />
+	</ItemGroup>
 
 </Project>

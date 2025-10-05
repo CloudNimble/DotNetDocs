@@ -109,10 +109,9 @@
         <None Include="$(DocumentationRoot)conceptual/**/*" />
         <None Include="$(DocumentationRoot)overrides/**/*" />
         <None Include="$(DocumentationRoot)guides/**/*" />
-        <None Include="$(DocumentationRoot)logo/**/*" />
-        <None Include="$(DocumentationRoot)favicon.*" />
-        <None Include="$(DocumentationRoot)**/*.yml" />
-        <None Include="$(DocumentationRoot)**/*.yaml" />
+        <None Include="$(DocumentationRoot)images/**/*" />
+		<None Include="$(DocumentationRoot)favicon.*" />
+		<None Include="$(DocumentationRoot)snippets/**/*" />
     </ItemGroup>
 
     <!-- DocFX-specific files -->
