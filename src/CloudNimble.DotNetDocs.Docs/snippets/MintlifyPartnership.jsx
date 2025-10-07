@@ -85,19 +85,19 @@ export const MintlifyPartnership = () => {
                 {/* Main Content Grid */}
                 <div style={{
                     display: 'grid',
-                    gridTemplateColumns: '1fr 1fr',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 400px), 1fr))',
                     gap: '60px',
                     alignItems: 'start',
                     marginBottom: '80px'
                 }}>
                     {/* Left: Why Mintlify */}
                     <div style={{
-                        background: 'rgba(255, 255, 255, 0.06)',
+                        background: 'rgba(10, 22, 40, 0.6)',
                         borderRadius: '24px',
                         padding: '48px',
                         boxShadow: '0 4px 24px rgba(0, 0, 0, 0.3)',
-                        border: '1px solid rgba(255, 255, 255, 0.15)',
-                        backdropFilter: 'blur(10px)',
+                        border: '1px solid rgba(255, 255, 255, 0.2)',
+                        backdropFilter: 'blur(20px)',
                         display: 'flex',
                         flexDirection: 'column',
                         gap: '32px'
@@ -147,7 +147,6 @@ export const MintlifyPartnership = () => {
                         }}>
                             {[
                                 { icon: 'robot', title: 'Built for People and AI', text: 'AI search, LLMS.txt, MCP support, and AI agents for writing' },
-                                { icon: 'diagram-project', title: 'Rich Components', text: 'Custom React components, Mermaid diagrams, interactive elements' },
                                 { icon: 'code', title: 'OpenAPI Integration', text: 'Interactive REST API docs with live SDK examples and testing' },
                                 { icon: 'chart-line', title: 'Analytics & Insights', text: 'Track usage, search behavior, and user feedback' },
                                 { icon: 'shield-check', title: 'Enterprise Compliance', text: 'SOC 2, GDPR, and ISO 27001 certified for security teams' },
@@ -159,17 +158,18 @@ export const MintlifyPartnership = () => {
                                     gap: '16px'
                                 }}>
                                     <div style={{
-                                        width: '36px',
-                                        height: '36px',
+                                        width: '40px',
+                                        height: '40px',
                                         borderRadius: '12px',
-                                        background: 'rgba(14, 164, 114, 0.08)',
+                                        background: 'rgba(14, 164, 114, 0.2)',
+                                        border: '1px solid rgba(14, 164, 114, 0.3)',
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'center',
                                         flexShrink: 0,
                                         marginTop: '2px'
                                     }}>
-                                        <Icon icon={item.icon} iconType="solid" size={18} color="#0ea472" />
+                                        <Icon icon={item.icon} iconType="solid" size={20} color="#0ea472" />
                                     </div>
                                     <div>
                                         <div style={{
@@ -197,41 +197,44 @@ export const MintlifyPartnership = () => {
 
                     {/* Right: DotNetDocs + Mintlify */}
                     <div style={{
-                        background: 'rgba(255, 255, 255, 0.06)',
+                        background: 'rgba(10, 22, 40, 0.6)',
                         borderRadius: '24px',
                         padding: '48px',
                         boxShadow: '0 4px 24px rgba(0, 0, 0, 0.3)',
-                        border: '1px solid rgba(255, 255, 255, 0.15)',
-                        backdropFilter: 'blur(10px)',
+                        border: '1px solid rgba(255, 255, 255, 0.2)',
+                        backdropFilter: 'blur(20px)',
                         display: 'flex',
                         flexDirection: 'column',
                         gap: '32px'
                     }}>
                         <div>
-                            <div style={{
+                            <h3 style={{
+                                fontSize: '28px',
+                                fontWeight: '600',
+                                color: 'white',
+                                margin: '0 0 16px 0',
+                                lineHeight: '1.4',
                                 display: 'flex',
-                                alignItems: 'center',
+                                alignItems: 'flex-start',
                                 gap: '16px',
-                                marginBottom: '16px'
+                                flexWrap: 'wrap',
+                                fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif'
                             }}>
                                 <img
                                     src="/images/icons/favicon.svg"
                                     alt="DotNetDocs"
                                     style={{
                                         width: '48px',
-                                        height: '48px'
+                                        height: '48px',
+                                        flexShrink: 0,
+                                        display: 'inline-block',
+                                        verticalAlign: 'middle'
                                     }}
                                 />
-                                <h3 style={{
-                                    fontSize: '28px',
-                                    fontWeight: '600',
-                                    color: 'white',
-                                    margin: 0,
-                                    fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif'
-                                }}>
+                                <span style={{ flex: '1 1 180px', minWidth: '180px' }}>
                                     DotNetDocs + Mintlify = Awesome
-                                </h3>
-                            </div>
+                                </span>
+                            </h3>
 
                             <p style={{
                                 fontSize: '16px',
@@ -250,26 +253,11 @@ export const MintlifyPartnership = () => {
                             gap: '24px'
                         }}>
                             {[
-                                {
-                                    icon: 'file-code',
-                                    title: 'Auto-Generated API Docs',
-                                    text: 'Your XML comments become interactive OpenAPI docs with SDK examples'
-                                },
-                                {
-                                    icon: 'palette',
-                                    title: 'Beyond Markdown',
-                                    text: 'Custom React components, Mermaid diagrams, tabs, accordions, and more'
-                                },
-                                {
-                                    icon: 'rocket',
-                                    title: 'Edge Deployment',
-                                    text: 'Global CDN, custom domains, instant updates - no GitHub Pages limits'
-                                },
-                                {
-                                    icon: 'wrench',
-                                    title: 'Always Fresh',
-                                    text: 'Every build syncs your code and docs - zero manual work'
-                                }
+                                { icon: 'file-code', title: 'MDX with Frontmatter', text: 'Auto-generated frontmatter w/ icons, tags, SEO metadata, & keywords' },
+                                { icon: 'diagram-project', title: 'Rich Components', text: 'Custom React components, Mermaid diagrams, interactive elements' },
+                                { icon: 'sitemap', title: 'Smart Navigation', text: 'Auto-generated docs.json w/ hierarchical namespace navigation' },
+                                { icon: 'icons', title: 'Context-Aware Icons', text: 'FontAwesome icons for all object types' },
+                                { icon: 'magnifying-glass', title: 'Enhanced Discoverability', text: 'SEO-optimized descriptions, keywords, and wide mode' },
                             ].map((item, index) => (
                                 <div key={index} style={{
                                     display: 'flex',
@@ -277,17 +265,18 @@ export const MintlifyPartnership = () => {
                                     gap: '16px'
                                 }}>
                                     <div style={{
-                                        width: '36px',
-                                        height: '36px',
+                                        width: '40px',
+                                        height: '40px',
                                         borderRadius: '12px',
-                                        background: 'rgba(60, 208, 226, 0.08)',
+                                        background: 'rgba(60, 208, 226, 0.2)',
+                                        border: '1px solid rgba(60, 208, 226, 0.3)',
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'center',
                                         flexShrink: 0,
                                         marginTop: '2px'
                                     }}>
-                                        <Icon icon={item.icon} iconType="solid" size={18} color="#3CD0E2" />
+                                        <Icon icon={item.icon} iconType="solid" size={20} color="#3CD0E2" />
                                     </div>
                                     <div>
                                         <div style={{
@@ -380,7 +369,7 @@ export const MintlifyPartnership = () => {
                         }}>
                             Learn About Mintlify
                             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                                <path d="M11 5L11 11M11 5L5 5M11 5L5 11" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                <path d="M11 5L11 11M11 5L5 5M11 5L5 11" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                             </svg>
                         </a>
                         <a href="https://dashboard.mintlify.com/signup?ajs_aid=281bf9d4-cd11-4748-9f5e-03a8cdff7f26&_gl=1*lqwmpa*_gcl_au*MTUxMDgzOTg3NS4xNzU5NTYzNDg1" target="_blank" rel="noopener noreferrer" className="mintlify-cta-primary" style={{
@@ -401,7 +390,7 @@ export const MintlifyPartnership = () => {
                         }}>
                             Sign Up for Free
                             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ marginLeft: '4px' }}>
-                                <path d="M6 3L11 8L6 13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                <path d="M6 3L11 8L6 13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                             </svg>
                         </a>
                     </div>
@@ -421,13 +410,6 @@ export const MintlifyPartnership = () => {
                     border-color: rgba(255, 255, 255, 0.3) !important;
                     transform: translateY(-2px);
                     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3) !important;
-                }
-
-                @media (max-width: 768px) {
-                    div[style*="gridTemplateColumns: '1fr 1fr'"] {
-                        grid-template-columns: 1fr !important;
-                        gap: 40px !important;
-                    }
                 }
             `}</style>
         </div>

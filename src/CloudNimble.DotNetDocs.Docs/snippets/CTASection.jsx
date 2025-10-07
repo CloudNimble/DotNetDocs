@@ -19,22 +19,21 @@ export const CTASection = () => {
         }}>
           Ready to Ship Better Docs?
         </h2>
-        <p style={{
+        <div style={{
           fontSize: '20px',
           color: '#B0C4DE',
           marginBottom: '40px',
           lineHeight: '1.6'
         }}>
-          Join thousands of developers who've transformed their documentation workflow.
           Start building beautiful docs in less than 5 minutes.
-        </p>
+        </div>
         <div style={{
           display: 'flex',
           gap: '20px',
           justifyContent: 'center',
           flexWrap: 'wrap'
         }}>
-          <a href="https://dotnetdocs.com/docs/quickstart" style={{
+          <a href="/quickstart" style={{
             padding: '18px 40px',
             background: 'linear-gradient(135deg, #3CD0E2, #419AC5)',
             color: 'white',
@@ -76,7 +75,7 @@ export const CTASection = () => {
             fontSize: '16px',
             fontFamily: 'monospace'
           }}>
-            dotnet tool install --global CloudNimble.DotNetDocs.Tools
+            dotnet tool install DotNetDocs.Tools --global
           </code>
         </div>
       </div>
