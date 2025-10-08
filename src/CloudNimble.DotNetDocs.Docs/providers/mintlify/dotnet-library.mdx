@@ -1,0 +1,941 @@
+---
+title: .NET Library for Mintlify
+sidebarTitle: .NET Library
+description: Use Mintlify.Core to programmatically create, validate, and manage Mintlify docs.json configurations in C# with full type safety and IntelliSense support
+icon: code
+---
+
+Mintlify.Core is a comprehensive .NET library that provides strongly-typed models, validation, and management tools for Mintlify documentation configurations. Built by the Sustainment team and used by DotNetDocs, it enables C# developers to programmatically generate, modify, and validate `docs.json` files with full IntelliSense support.
+
+## Why Use Mintlify.Core?
+
+<CardGroup cols={2}>
+  <Card title="Type Safety" icon="shield-check">
+    Strongly-typed C# models for every Mintlify configuration option with compile-time validation
+  </Card>
+  <Card title="IntelliSense Support" icon="lightbulb">
+    Full XML documentation on every property with examples and schema references
+  </Card>
+  <Card title="Validation Built-In" icon="circle-check">
+    Comprehensive validation against Mintlify schema ensures configurations will work before deployment
+  </Card>
+  <Card title="Multi-Platform" icon="layer-group">
+    Targets .NET Standard 2.0, .NET 8, .NET 9, and .NET 10 for maximum compatibility
+  </Card>
+  <Card title="Navigation Management" icon="sitemap">
+    Advanced DocsJsonManager for intelligent navigation merging and duplicate detection
+  </Card>
+  <Card title="Production Ready" icon="rocket">
+    Battle-tested in DotNetDocs and used by Sustainment for managing complex documentation sites
+  </Card>
+</CardGroup>
+
+## Installation
+
+Install via NuGet Package Manager or .NET CLI:
+
+<CodeGroup>
+```bash .NET CLI
+dotnet add package Mintlify.Core
+```
+
+```xml PackageReference
+<PackageReference Include="Mintlify.Core" Version="*" />
+```
+
+```powershell Package Manager
+Install-Package Mintlify.Core
+```
+</CodeGroup>
+
+<Info>
+Mintlify.Core is part of the Sustainment ecosystem. Visit [sustainment.com](https://sustainment.com) to learn more about the full platform.
+</Info>
+
+## Quick Start
+
+Create a basic Mintlify configuration programmatically:
+
+```csharp
+using Mintlify.Core;
+using Mintlify.Core.Models;
+
+// Create a default configuration
+var config = DocsJsonManager.CreateDefault("My Project", "maple");
+
+// Customize colors
+config.Colors.Primary = "#419AC5";
+config.Colors.Light = "#419AC5";
+config.Colors.Dark = "#3CD0E2";
+
+// Add logo
+config.Logo = new LogoConfig
+{
+    Light = "/images/logo-light.svg",
+    Dark = "/images/logo-dark.svg"
+};
+
+// Create navigation groups
+config.Navigation.Pages = new List<object>
+{
+    new GroupConfig
+    {
+        Group = "Getting Started",
+        Icon = new IconConfig { Name = "rocket" },
+        Pages = new List<object> { "index", "quickstart", "installation" }
+    },
+    new GroupConfig
+    {
+        Group = "API Reference",
+        Icon = new IconConfig { Name = "code" },
+        Pages = new List<object> { "api-reference/index" }
+    }
+};
+
+// Serialize to JSON
+var json = JsonSerializer.Serialize(config, MintlifyConstants.JsonSerializerOptions);
+File.WriteAllText("docs.json", json);
+```
+
+## Core Components
+
+### DocsJsonConfig
+
+The root configuration object representing the complete `docs.json` schema:
+
+```csharp
+public class DocsJsonConfig
+{
+    [NotNull] public string Name { get; set; }           // Required
+    [NotNull] public string Theme { get; set; }          // Required: mint, maple, palm, etc.
+    [NotNull] public ColorsConfig Colors { get; set; }   // Required: Primary color minimum
+    [NotNull] public NavigationConfig Navigation { get; set; } // Required
+
+    public string? Description { get; set; }              // SEO description
+    public LogoConfig? Logo { get; set; }                 // Light/dark logos
+    public FaviconConfig? Favicon { get; set; }           // Favicon paths
+    public FooterConfig? Footer { get; set; }             // Footer configuration
+    public NavbarConfig? Navbar { get; set; }             // Top navigation
+    public ApiConfig? Api { get; set; }                   // API playground settings
+    public SeoConfig? Seo { get; set; }                   // SEO settings
+    public AppearanceConfig? Appearance { get; set; }     // Light/dark mode
+    public StylingConfig? Styling { get; set; }           // Custom CSS/styling
+    public IntegrationsConfig? Integrations { get; set; } // Analytics, support, etc.
+    // ... and 10+ more optional configuration properties
+}
+```
+
+<Tip>
+All required properties are marked with `[NotNull]` and will generate compiler warnings if not set. Use the `DocsJsonValidator` to catch configuration issues at runtime.
+</Tip>
+
+### NavigationConfig
+
+Defines the documentation structure with support for pages, groups, tabs, anchors, and more:
+
+```csharp
+public class NavigationConfig
+{
+    public List<object>? Pages { get; set; }           // Mix of strings and GroupConfig
+    public List<GroupConfig>? Groups { get; set; }     // Named groups
+    public List<TabConfig>? Tabs { get; set; }         // Top-level tabs
+    public List<AnchorConfig>? Anchors { get; set; }   // Sidebar anchors
+    public List<DropdownConfig>? Dropdowns { get; set; } // Dropdown menus
+    public List<LanguageConfig>? Languages { get; set; } // Language switcher
+    public List<VersionConfig>? Versions { get; set; }  // Version switcher
+    public GlobalNavigationConfig? Global { get; set; } // Global nav items
+}
+```
+
+**Pages Property:** The `Pages` property is polymorphic - it can contain both `string` (page paths) and `GroupConfig` objects (nested groups):
+
+```csharp
+config.Navigation.Pages = new List<object>
+{
+    "index",  // Simple page reference
+    "quickstart",
+    new GroupConfig  // Nested group
+    {
+        Group = "Guides",
+        Pages = new List<object> { "guides/intro", "guides/advanced" }
+    }
+};
+```
+
+### GroupConfig
+
+Organizes pages into collapsible sections:
+
+```csharp
+public class GroupConfig
+{
+    [NotNull] public string Group { get; set; }    // Group title (required)
+    public List<object>? Pages { get; set; }       // Nested pages/groups
+    public IconConfig? Icon { get; set; }          // Group icon
+    public string? Tag { get; set; }               // Badge text (e.g., "NEW", "BETA")
+    public string? Root { get; set; }              // Root page URL
+    public bool? Hidden { get; set; }              // Hide from navigation
+    public ApiSpecConfig? OpenApi { get; set; }    // OpenAPI spec path
+    public ApiSpecConfig? AsyncApi { get; set; }   // AsyncAPI spec path
+}
+```
+
+**Nested Groups:** Groups can contain other groups for hierarchical navigation:
+
+```csharp
+new GroupConfig
+{
+    Group = "API Reference",
+    Pages = new List<object>
+    {
+        "api/overview",
+        new GroupConfig
+        {
+            Group = "Authentication",
+            Pages = new List<object> { "api/auth/oauth", "api/auth/api-keys" }
+        }
+    }
+}
+```
+
+### ColorsConfig
+
+Theme color configuration with hex color validation:
+
+```csharp
+public class ColorsConfig
+{
+    [NotNull] public string Primary { get; set; } = "#000000";  // Required
+    public string? Light { get; set; }   // Light mode accent (used in dark mode)
+    public string? Dark { get; set; }    // Dark mode accent (used in light mode)
+}
+```
+
+<Warning>
+All colors must be valid hex format: `#RRGGBB` or `#RGB`. The validator will catch invalid formats.
+</Warning>
+
+## DocsJsonManager
+
+The `DocsJsonManager` class provides advanced navigation management with intelligent merging and duplicate detection:
+
+### Key Features
+
+**Load & Save**
+
+```csharp
+var manager = new DocsJsonManager();
+
+// Load from file
+manager = new DocsJsonManager("path/to/docs.json");
+manager.Load();
+
+// Load from string
+manager.Load(jsonString);
+
+// Load from config object
+manager.Load(docsConfig);
+
+// Save back to file
+manager.Save();
+manager.Save("path/to/output.json");
+```
+
+**Create Default Configuration**
+
+```csharp
+var config = DocsJsonManager.CreateDefault("Project Name", "maple");
+// Returns a DocsJsonConfig with sensible defaults:
+// - Basic Getting Started and API Reference groups
+// - Default color scheme
+// - Standard navigation structure
+```
+
+**Navigation Discovery**
+
+```csharp
+manager.Load(config);
+
+// Scan directory for .mdx files and populate navigation
+manager.PopulateNavigationFromPath(
+    path: "./docs",
+    fileExtensions: new[] { ".mdx" },
+    includeApiReference: false,   // Exclude api-reference folder
+    preserveExisting: true,        // Merge with existing navigation
+    allowDuplicatePaths: false     // Skip duplicate pages
+);
+
+manager.Save("docs.json");
+```
+
+**Smart Navigation Merging**
+
+```csharp
+// Load base configuration
+manager.Load(baseConfig);
+
+// Merge another configuration
+manager.Merge(otherConfig, combineBaseProperties: true);
+
+// Merge just navigation from a file
+manager.MergeNavigation("external-docs.json");
+
+// Merge navigation from a config object
+manager.MergeNavigation(externalConfig.Navigation);
+```
+
+**Add Pages Safely**
+
+```csharp
+// Add page to navigation root
+manager.AddPage(manager.Configuration.Navigation.Pages, "new-page");
+
+// Add page to specific group path
+manager.AddPage("Getting Started/Tutorials", "tutorial-1");
+
+// Add page to group with duplicate detection
+var group = manager.FindOrCreateGroup(pages, "My Group");
+if (manager.AddPageToGroup(group, "my-page"))
+{
+    Console.WriteLine("Page added successfully");
+}
+else
+{
+    Console.WriteLine("Page already exists, skipped");
+}
+```
+
+**Check Known Paths**
+
+```csharp
+// The manager tracks all added paths internally
+if (manager.IsPathKnown("api-reference/index"))
+{
+    Console.WriteLine("This page is already in navigation");
+}
+```
+
+### Duplicate Detection
+
+The `DocsJsonManager` maintains an internal `_knownPagePaths` HashSet that tracks every page path added to navigation:
+
+```csharp
+var manager = new DocsJsonManager();
+manager.Load(config);  // Scans existing navigation, populates _knownPagePaths
+
+// Attempt to add duplicate
+var added = manager.AddPage(pages, "quickstart");  // Returns false if already exists
+
+// Check before adding
+if (!manager.IsPathKnown("new-guide"))
+{
+    manager.AddPage(pages, "new-guide");
+}
+```
+
+<Info>
+Duplicate detection is case-insensitive and works across all navigation levels (root pages, grouped pages, nested groups).
+</Info>
+
+## DocsJsonValidator
+
+Comprehensive validation against the Mintlify schema:
+
+```csharp
+using Mintlify.Core;
+using Mintlify.Core.Models;
+
+var validator = new DocsJsonValidator();
+var errors = validator.Validate(config);
+
+if (errors.Count > 0)
+{
+    Console.WriteLine("Configuration errors:");
+    foreach (var error in errors)
+    {
+        Console.WriteLine($"  - {error}");
+    }
+}
+```
+
+### Validation Rules
+
+The validator checks:
+
+**Required Fields**
+- `Name` must be set
+- `Theme` must be set and valid
+- `Colors.Primary` must be a valid hex color
+- `Navigation` must have at least one navigation element
+
+**Theme Validation**
+- Must be one of: `mint`, `maple`, `palm`, `willow`, `linden`, `almond`, `aspen`
+
+**Color Validation**
+- All colors must match regex: `^#([a-fA-F0-9]{6}|[a-fA-F0-9]{3})$`
+- Examples: `#FF0000`, `#F00`, `#419AC5`
+
+**Navigation Validation**
+- Must contain at least one of: `pages`, `groups`, `anchors`, `tabs`, `dropdowns`, `languages`, `versions`
+- Group names cannot be null (Mintlify will reject the config)
+- Empty group names generate warnings (treated as separate ungrouped sections)
+
+**API Configuration Validation**
+- Auth methods: `bearer`, `basic`, `key`, `cobo`
+- Playground display: `interactive`, `simple`, `none`
+- Examples defaults: `all`, `required`
+
+**Appearance Validation**
+- Default mode: `system`, `light`, `dark`
+
+**Icons Validation**
+- Library: `fontawesome`, `lucide`
+
+**SEO Validation**
+- Indexing: `navigable`, `all`
+
+### Example Validation Output
+
+```csharp
+var config = new DocsJsonConfig
+{
+    Name = "",  // Invalid: empty
+    Theme = "custom",  // Invalid: not a valid theme
+    Colors = new ColorsConfig { Primary = "blue" }  // Invalid: not hex format
+};
+
+var errors = validator.Validate(config);
+// Returns:
+// - "Name is required."
+// - "Invalid theme 'custom'. Valid themes are: mint, maple, palm, willow, linden, almond, aspen"
+// - "Primary color 'blue' must be a valid hex color (e.g., #FF0000 or #F00)."
+```
+
+## MintlifyConstants
+
+Provides shared configuration for consistent JSON serialization:
+
+```csharp
+public static class MintlifyConstants
+{
+    public static JsonSerializerOptions JsonSerializerOptions { get; }
+}
+```
+
+The `JsonSerializerOptions` instance includes:
+- **Indented formatting** for readable JSON output
+- **CamelCase property naming** to match Mintlify schema
+- **Null value ignoring** to omit optional properties
+- **Custom converters** for polymorphic types:
+  - `NavigationJsonConverter` - Handles complex navigation structures
+  - `NavigationPageListConverter` - Handles mixed string/GroupConfig lists
+  - `IconConverter` - Supports both string and object icon formats
+  - `ColorConverter` - Handles color pairs and single values
+  - `ApiConfigConverter` - Handles API spec configuration formats
+
+### Usage
+
+```csharp
+using System.Text.Json;
+using Mintlify.Core;
+
+// Serialize with proper formatting
+var json = JsonSerializer.Serialize(config, MintlifyConstants.JsonSerializerOptions);
+
+// Deserialize with proper type handling
+var config = JsonSerializer.Deserialize<DocsJsonConfig>(json, MintlifyConstants.JsonSerializerOptions);
+```
+
+## Configuration Models Reference
+
+Mintlify.Core includes 50+ strongly-typed models covering every Mintlify configuration option:
+
+### Theme & Appearance
+
+<AccordionGroup>
+  <Accordion title="ColorsConfig" icon="palette">
+    Theme color configuration
+
+    **Properties:**
+    - `Primary` (required): Main theme color
+    - `Light`: Light mode accent
+    - `Dark`: Dark mode accent
+
+    ```csharp
+    config.Colors = new ColorsConfig
+    {
+        Primary = "#419AC5",
+        Light = "#419AC5",
+        Dark = "#3CD0E2"
+    };
+    ```
+  </Accordion>
+
+  <Accordion title="LogoConfig" icon="image">
+    Logo configuration for light and dark modes
+
+    **Properties:**
+    - `Light`: Path to light mode logo
+    - `Dark`: Path to dark mode logo
+    - `Href`: URL logo links to
+
+    ```csharp
+    config.Logo = new LogoConfig
+    {
+        Light = "/images/logo-light.svg",
+        Dark = "/images/logo-dark.svg",
+        Href = "https://example.com"
+    };
+    ```
+  </Accordion>
+
+  <Accordion title="FaviconConfig" icon="circle-dot">
+    Favicon paths for different modes
+
+    **Properties:**
+    - `Light`: Light mode favicon
+    - `Dark`: Dark mode favicon
+
+    ```csharp
+    config.Favicon = new FaviconConfig
+    {
+        Light = "/favicon-light.png",
+        Dark = "/favicon-dark.png"
+    };
+    ```
+  </Accordion>
+
+  <Accordion title="AppearanceConfig" icon="moon">
+    Appearance and color mode settings
+
+    **Properties:**
+    - `Default`: Default mode (`system`, `light`, `dark`)
+    - `Toggle`: Show dark mode toggle
+
+    ```csharp
+    config.Appearance = new AppearanceConfig
+    {
+        Default = "dark",
+        Toggle = true
+    };
+    ```
+  </Accordion>
+
+  <Accordion title="StylingConfig" icon="paintbrush">
+    Custom styling and CSS
+
+    **Properties:**
+    - `StylesheetPaths`: Array of custom CSS file paths
+    - `CodeBlocks`: Code block styling options
+
+    ```csharp
+    config.Styling = new StylingConfig
+    {
+        StylesheetPaths = new List<string> { "/styles/custom.css" }
+    };
+    ```
+  </Accordion>
+</AccordionGroup>
+
+### Navigation Components
+
+<AccordionGroup>
+  <Accordion title="TabConfig" icon="folder-tree">
+    Top-level navigation tabs
+
+    **Properties:**
+    - `Tab`: Tab title
+    - `Href`: Tab URL
+    - `Pages`: Tab pages
+    - `Groups`: Tab groups
+    - `Icon`: Tab icon
+
+    ```csharp
+    new TabConfig
+    {
+        Tab = "API",
+        Href = "/api",
+        Icon = new IconConfig { Name = "code" },
+        Pages = new List<object> { "api/overview" }
+    }
+    ```
+  </Accordion>
+
+  <Accordion title="AnchorConfig" icon="anchor">
+    Sidebar anchor links
+
+    **Properties:**
+    - `Anchor`: Link text
+    - `Href`: Link URL
+    - `Icon`: Anchor icon
+
+    ```csharp
+    new AnchorConfig
+    {
+        Anchor = "Community",
+        Href = "https://community.example.com",
+        Icon = new IconConfig { Name = "users" }
+    }
+    ```
+  </Accordion>
+
+  <Accordion title="DropdownConfig" icon="caret-down">
+    Dropdown navigation menus
+
+    **Properties:**
+    - `Dropdown`: Dropdown title
+    - `Href`: Optional direct link
+    - `Items`: Dropdown items
+
+    ```csharp
+    new DropdownConfig
+    {
+        Dropdown = "Resources",
+        Items = new List<NavbarLink>
+        {
+            new NavbarLink { Name = "Blog", Href = "/blog" },
+            new NavbarLink { Name = "Docs", Href = "/docs" }
+        }
+    }
+    ```
+  </Accordion>
+</AccordionGroup>
+
+### API & Integration
+
+<AccordionGroup>
+  <Accordion title="ApiConfig" icon="cloud">
+    API playground and documentation settings
+
+    **Properties:**
+    - `Mdx`: MDX API configuration
+    - `Playground`: Playground display settings
+    - `Examples`: Example configuration
+    - `Params`: Parameter settings
+
+    ```csharp
+    config.Api = new ApiConfig
+    {
+        Playground = new ApiPlaygroundConfig
+        {
+            Display = "interactive"
+        }
+    };
+    ```
+  </Accordion>
+
+  <Accordion title="IntegrationsConfig" icon="plug">
+    Analytics and third-party integrations
+
+    **Properties:**
+    - `GoogleAnalytics`: GA tracking ID
+    - `GoogleTagManager`: GTM ID
+    - `Mixpanel`: Mixpanel project token
+    - `Segment`: Segment write key
+    - `Intercom`: Intercom app ID
+    - And 10+ more integrations
+
+    ```csharp
+    config.Integrations = new IntegrationsConfig
+    {
+        GoogleAnalytics = "G-XXXXXXXXXX",
+        Intercom = "app_id_here"
+    };
+    ```
+  </Accordion>
+
+  <Accordion title="SeoConfig" icon="magnifying-glass">
+    SEO and indexing settings
+
+    **Properties:**
+    - `Indexing`: Indexing mode (`navigable`, `all`)
+    - `Sitemap`: Custom sitemap URL
+
+    ```csharp
+    config.Seo = new SeoConfig
+    {
+        Indexing = "all",
+        Sitemap = "https://example.com/sitemap.xml"
+    };
+    ```
+  </Accordion>
+</AccordionGroup>
+
+### Advanced Features
+
+<AccordionGroup>
+  <Accordion title="FooterConfig" icon="shoe-prints">
+    Footer configuration with social links
+
+    **Properties:**
+    - `Socials`: Social media links
+    - `Links`: Custom footer links
+
+    ```csharp
+    config.Footer = new FooterConfig
+    {
+        Socials = new Dictionary<string, string>
+        {
+            { "twitter", "https://twitter.com/example" },
+            { "github", "https://github.com/example" }
+        }
+    };
+    ```
+  </Accordion>
+
+  <Accordion title="BannerConfig" icon="rectangle-ad">
+    Top banner configuration
+
+    **Properties:**
+    - `Text`: Banner text
+    - `Link`: Banner link URL
+    - `Color`: Banner color
+
+    ```csharp
+    config.Banner = new BannerConfig
+    {
+        Text = "New version available!",
+        Link = "/changelog",
+        Color = "#419AC5"
+    };
+    ```
+  </Accordion>
+
+  <Accordion title="RedirectConfig" icon="arrow-right-arrow-left">
+    URL redirects
+
+    **Properties:**
+    - `Source`: Source path
+    - `Destination`: Destination path
+
+    ```csharp
+    config.Redirects = new List<RedirectConfig>
+    {
+        new RedirectConfig
+        {
+            Source = "/old-path",
+            Destination = "/new-path"
+        }
+    };
+    ```
+  </Accordion>
+
+  <Accordion title="SearchConfig" icon="magnifying-glass">
+    Search configuration
+
+    **Properties:**
+    - `Provider`: Search provider
+    - `AlgoliaConfig`: Algolia settings
+
+    ```csharp
+    config.Search = new SearchConfig
+    {
+        Provider = "algolia"
+    };
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Advanced Scenarios
+
+### Building Multi-Project Documentation
+
+```csharp
+var manager = new DocsJsonManager();
+
+// Create base configuration
+var baseConfig = DocsJsonManager.CreateDefault("Multi-Project Docs", "maple");
+manager.Load(baseConfig);
+
+// Add Project A navigation
+var projectANav = new NavigationConfig
+{
+    Pages = new List<object>
+    {
+        new GroupConfig
+        {
+            Group = "Project A",
+            Pages = new List<object> { "project-a/overview", "project-a/api" }
+        }
+    }
+};
+manager.MergeNavigation(projectANav);
+
+// Add Project B navigation
+var projectBNav = new NavigationConfig
+{
+    Pages = new List<object>
+    {
+        new GroupConfig
+        {
+            Group = "Project B",
+            Pages = new List<object> { "project-b/overview", "project-b/api" }
+        }
+    }
+};
+manager.MergeNavigation(projectBNav);
+
+manager.Save("docs.json");
+```
+
+### Custom Navigation Override
+
+```csharp
+// Create custom navigation for a specific directory
+var customGroup = new GroupConfig
+{
+    Group = "Advanced Topics",
+    Icon = new IconConfig { Name = "graduation-cap" },
+    Pages = new List<object>
+    {
+        "advanced/architecture",
+        "advanced/performance",
+        new GroupConfig
+        {
+            Group = "Security",
+            Pages = new List<object>
+            {
+                "advanced/security/authentication",
+                "advanced/security/authorization"
+            }
+        }
+    }
+};
+
+// Serialize to navigation.json
+var json = JsonSerializer.Serialize(customGroup, MintlifyConstants.JsonSerializerOptions);
+File.WriteAllText("docs/advanced/navigation.json", json);
+```
+
+### Programmatic Theme Configuration
+
+```csharp
+var config = DocsJsonManager.CreateDefault("My Docs", "maple");
+
+// Configure complete theme
+config.Colors = new ColorsConfig
+{
+    Primary = "#419AC5",
+    Light = "#419AC5",
+    Dark = "#3CD0E2"
+};
+
+config.Logo = new LogoConfig
+{
+    Light = "/images/logo-light.svg",
+    Dark = "/images/logo-dark.svg"
+};
+
+config.Favicon = new FaviconConfig
+{
+    Light = "/favicon-light.png",
+    Dark = "/favicon-dark.png"
+};
+
+config.Appearance = new AppearanceConfig
+{
+    Default = "system",
+    Toggle = true
+};
+
+config.Footer = new FooterConfig
+{
+    Socials = new Dictionary<string, string>
+    {
+        { "twitter", "https://twitter.com/myproject" },
+        { "github", "https://github.com/myproject" },
+        { "discord", "https://discord.gg/myproject" }
+    }
+};
+```
+
+### Validation Pipeline
+
+```csharp
+public bool ValidateAndSaveConfig(DocsJsonConfig config, string outputPath)
+{
+    var validator = new DocsJsonValidator();
+    var errors = validator.Validate(config);
+
+    if (errors.Count > 0)
+    {
+        Console.WriteLine("L Configuration validation failed:");
+        foreach (var error in errors)
+        {
+            Console.WriteLine($"   {error}");
+        }
+        return false;
+    }
+
+    try
+    {
+        var json = JsonSerializer.Serialize(config, MintlifyConstants.JsonSerializerOptions);
+        File.WriteAllText(outputPath, json);
+        Console.WriteLine($" Configuration saved to {outputPath}");
+        return true;
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"L Failed to save configuration: {ex.Message}");
+        return false;
+    }
+}
+```
+
+## Best Practices
+
+<CardGroup cols={2}>
+  <Card title="Always Validate" icon="shield-check">
+    Use `DocsJsonValidator` before saving configurations to catch errors early. Invalid configs will be rejected by Mintlify.
+  </Card>
+
+  <Card title="Use DocsJsonManager" icon="gear">
+    Leverage `DocsJsonManager` for navigation operations instead of manually manipulating collections. It handles duplicate detection automatically.
+  </Card>
+
+  <Card title="Preserve Templates" icon="file-lines">
+    When using `PopulateNavigationFromPath`, set `preserveExisting: true` to merge discovered content with template navigation.
+  </Card>
+
+  <Card title="Check Known Paths" icon="magnifying-glass">
+    Use `IsPathKnown()` before adding pages to avoid duplicates. The manager tracks all paths internally.
+  </Card>
+
+  <Card title="Serialize with Constants" icon="code">
+    Always use `MintlifyConstants.JsonSerializerOptions` for consistent JSON formatting and proper converter handling.
+  </Card>
+
+  <Card title="Set Required Fields First" icon="list-check">
+    Initialize `Name`, `Theme`, `Colors.Primary`, and `Navigation` before other properties. These are required by Mintlify.
+  </Card>
+</CardGroup>
+
+## Multi-Platform Support
+
+Mintlify.Core targets multiple .NET platforms for maximum compatibility:
+
+| Framework | Version | Use Case |
+|-----------|---------|----------|
+| .NET 10.0 | Latest | Bleeding-edge projects |
+| .NET 9.0 | Current | Modern .NET applications |
+| .NET 8.0 | LTS | Enterprise production apps |
+| .NET Standard 2.0 | Legacy | Maximum compatibility |
+
+All core functionality works identically across platforms, with some optimizations for modern frameworks (e.g., source-generated regex in .NET 7+).
+
+## See Also
+
+<CardGroup cols={2}>
+  <Card title="Navigation Generation" icon="sitemap" href="/providers/mintlify/navigation">
+    Learn how MintlifyRenderer uses DocsJsonManager to build navigation
+  </Card>
+  <Card title="Mintlify Provider Overview" icon="sparkles" href="/providers/mintlify/index">
+    Complete guide to the Mintlify provider features
+  </Card>
+  <Card title="DocsJsonManager API" icon="book" href="/api-reference/Mintlify/Core/DocsJsonManager">
+    Full API reference for DocsJsonManager class
+  </Card>
+  <Card title="Mintlify Schema" icon="file-code" href="https://mintlify.com/docs.json">
+    Official Mintlify docs.json schema reference
+  </Card>
+</CardGroup>

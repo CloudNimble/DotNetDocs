@@ -1,0 +1,553 @@
+---
+title: Navigation Generation
+sidebarTitle: Navigation
+description: Learn how the MintlifyRenderer builds intelligent navigation structures from .docsproj templates, folder scanning, and generated API documentation
+icon: sitemap
+---
+
+The MintlifyRenderer uses a sophisticated three-phase approach to build navigation structures that combine template-defined navigation, discovered conceptual documentation, and generated API reference documentation. This system leverages the `DocsJsonManager` from Sustainment.Core to intelligently merge multiple navigation sources without duplication.
+
+## Overview
+
+Navigation generation happens in three distinct phases:
+
+<Steps>
+  <Step title="Load Template Navigation">
+    If a `MintlifyTemplate` is defined in the `.docsproj` file, it's loaded first as the foundation for navigation structure.
+  </Step>
+  <Step title="Discover Conceptual Docs">
+    The system scans the documentation root folder for existing `.mdx` files, automatically organizing them into navigation groups while preserving template structure.
+  </Step>
+  <Step title="Add API Reference">
+    Generated API documentation is added to the navigation, organized either as a unified structure or by assembly depending on `NavigationMode`.
+  </Step>
+</Steps>
+
+## Phase 1: Template Navigation
+
+The `.docsproj` file can define a `MintlifyTemplate` that provides the baseline documentation structure. This template becomes the foundation that all other navigation is merged into.
+
+### Template Structure
+
+```xml CloudNimble.DotNetDocs.Docs.docsproj
+<MintlifyTemplate>
+  <Name>DotNetDocs</Name>
+  <Theme>maple</Theme>
+  <Colors>
+    <Primary>#419AC5</Primary>
+  </Colors>
+  <Navigation>
+    <Pages>
+      <Groups>
+        <Group Name="Getting Started" Icon="stars">
+          <Pages>index;quickstart;installation</Pages>
+        </Group>
+        <Group Name="Guides" Icon="dog-leashed">
+          <Pages>guides/index;guides/conceptual-docs</Pages>
+        </Group>
+        <Group Name="Providers" Icon="books">
+          <Pages>providers/index</Pages>
+        </Group>
+      </Groups>
+    </Pages>
+  </Navigation>
+</MintlifyTemplate>
+```
+
+### Template Loading Process
+
+When the MintlifyRenderer starts, it checks if a template is provided:
+
+1. **Load or Create Default**: If `_options.Template` exists, load it; otherwise create a default configuration
+2. **Initialize DocsJsonManager**: Pass the template config to `DocsJsonManager.Load(DocsJsonConfig)`
+3. **Track Known Paths**: All paths in the template are added to `_knownPagePaths` for duplicate detection
+
+```csharp MintlifyRenderer.cs:82-94
+if (_options.GenerateDocsJson && _docsJsonManager is not null)
+{
+    if (_docsJsonManager.Configuration == null)
+    {
+        docsConfig = _options.Template ?? DocsJsonManager.CreateDefault(
+            model.AssemblyName ?? "API Documentation",
+            "mint"
+        );
+        _docsJsonManager.Load(docsConfig);
+    }
+}
+```
+
+<Info>
+The template provides the structure and styling (theme, colors, logos) that remains constant, while navigation gets intelligently merged from multiple sources.
+</Info>
+
+## Phase 2: Folder Scanning
+
+After loading the template, the system scans the documentation root directory for existing `.mdx` files using `PopulateNavigationFromPath`.
+
+### Scanning Behavior
+
+**Excluded Directories**
+
+The scanner automatically excludes certain directories:
+
+- Directories starting with `.` (hidden directories)
+- `node_modules` (package dependencies)
+- `conceptual` (reserved for overrides)
+- `overrides` (reserved for customization)
+- `api-reference` (handled separately in Phase 3)
+
+**File Processing**
+
+Only `.mdx` files are included in navigation:
+
+- `.mdx` files: Added to navigation automatically
+- `.md` files: Generate warnings and are excluded
+- Other files: Ignored completely
+
+Files named `index.mdx` are prioritized and appear first in their group.
+
+**Navigation Overrides**
+
+Any directory can include a `navigation.json` file for complete control:
+
+```json guides/navigation.json
+{
+  "group": "User Guides",
+  "icon": "book-open",
+  "pages": [
+    "guides/getting-started",
+    "guides/advanced-topics",
+    {
+      "group": "Examples",
+      "pages": ["guides/examples/basic", "guides/examples/advanced"]
+    }
+  ]
+}
+```
+
+When `navigation.json` is found, the system:
+1. Stops automatic navigation generation for that directory tree
+2. Uses the custom `GroupConfig` object as-is
+3. Tracks all paths in the custom navigation
+
+**Smart Merging**
+
+The `preserveExisting: true` parameter ensures template navigation is preserved:
+
+- Existing template groups remain in their original position
+- Discovered content is merged into matching groups by name
+- New groups are appended after template groups
+- Duplicate paths are detected and skipped using `_knownPagePaths`
+
+### Folder Scanning Code
+
+```csharp MintlifyRenderer.cs:124
+_docsJsonManager.PopulateNavigationFromPath(
+    Context.DocumentationRootPath,
+    new[] { ".mdx" },
+    includeApiReference: false,
+    preserveExisting: true
+);
+```
+
+<Tip>
+Set `preserveExisting: false` to replace template navigation entirely with discovered structure. This is useful for fully automated documentation sites.
+</Tip>
+
+## Phase 3: API Reference Generation
+
+The final phase adds generated API documentation to the navigation structure. The organization depends on the `NavigationMode` setting.
+
+### Navigation Modes
+
+<Tabs>
+  <Tab title="Unified Mode (Default)">
+    Creates a single "API Reference" group with hierarchical namespace organization:
+
+    ```json
+    {
+      "group": "API Reference",
+      "pages": [
+        {
+          "group": "CloudNimble.DotNetDocs",
+          "pages": [
+            {
+              "group": "Core",
+              "pages": [
+                "api-reference/CloudNimble/DotNetDocs/Core/DocumentationManager",
+                "api-reference/CloudNimble/DotNetDocs/Core/IDocRenderer"
+              ]
+            },
+            {
+              "group": "Mintlify",
+              "pages": ["api-reference/CloudNimble/DotNetDocs/Mintlify/MintlifyRenderer"]
+            }
+          ]
+        }
+      ]
+    }
+    ```
+
+    **Best for:** Single-project solutions where all APIs logically belong together
+  </Tab>
+
+  <Tab title="ByAssembly Mode">
+    Creates separate top-level groups for each assembly:
+
+    ```json
+    [
+      {
+        "group": "CloudNimble.DotNetDocs.Core",
+        "icon": "cube",
+        "pages": [
+          {
+            "group": "CloudNimble.DotNetDocs.Core",
+            "pages": ["api-reference/CloudNimble/DotNetDocs/Core/DocumentationManager"]
+          }
+        ]
+      },
+      {
+        "group": "CloudNimble.DotNetDocs.Mintlify",
+        "icon": "cube",
+        "pages": [
+          {
+            "group": "CloudNimble.DotNetDocs.Mintlify",
+            "pages": ["api-reference/CloudNimble/DotNetDocs/Mintlify/MintlifyRenderer"]
+          }
+        ]
+      }
+    ]
+    ```
+
+    **Best for:** Multi-project solutions where each assembly should have its own section
+  </Tab>
+</Tabs>
+
+### API Reference Code Flow
+
+```csharp MintlifyRenderer.cs:127
+// Add API reference content to existing navigation
+BuildNavigationStructure(_docsJsonManager.Configuration, model);
+```
+
+The `BuildNavigationStructure` method:
+1. Finds or creates the API Reference group using `FindOrCreateApiReferenceGroup`
+2. Iterates through all namespaces in the documentation model
+3. Creates nested groups for namespace hierarchy (e.g., `CloudNimble` ’ `DotNetDocs` ’ `Core`)
+4. Adds page paths for each type using `_docsJsonManager.AddPage()`
+5. Respects the `_knownPagePaths` hashset to avoid duplicates
+
+## DocsJsonManager Deep Dive
+
+The `DocsJsonManager` from Sustainment.Core is the engine that powers intelligent navigation merging.
+
+### Key Features
+
+<CardGroup cols={2}>
+  <Card title="Duplicate Detection" icon="shield-check">
+    The `_knownPagePaths` HashSet tracks every path added to navigation, preventing duplicates across template, discovered, and generated content.
+  </Card>
+
+  <Card title="Smart Group Merging" icon="layer-group">
+    Groups with matching names are automatically merged. Pages from multiple sources combine into a single cohesive group.
+  </Card>
+
+  <Card title="Hierarchical Path Tracking" icon="folder-tree">
+    The `AddPage(string groupPath, string pagePath)` method supports slash-separated paths like "Getting Started/API Reference" for nested groups.
+  </Card>
+
+  <Card title="Validation & Cleanup" icon="broom">
+    Automatically removes groups with null names that would cause Mintlify to reject the configuration.
+  </Card>
+</CardGroup>
+
+### Core Methods
+
+**Load(DocsJsonConfig)**
+
+Loads a configuration object and populates `_knownPagePaths` by recursively scanning all navigation:
+
+```csharp DocsJsonManager.cs:159-172
+public void Load(DocsJsonConfig config)
+{
+    Ensure.ArgumentNotNull(config, nameof(config));
+
+    ConfigurationErrors.Clear();
+    Configuration = config;
+
+    if (Configuration.Navigation?.Pages is not null)
+    {
+        PopulateKnownPaths(Configuration.Navigation.Pages);
+    }
+}
+```
+
+**PopulateNavigationFromPath**
+
+Scans a directory for `.mdx` files and builds navigation structure:
+
+```csharp DocsJsonManager.cs:444-483
+public void PopulateNavigationFromPath(
+    string path,
+    string[]? fileExtensions = null,
+    bool includeApiReference = false,
+    bool preserveExisting = true,
+    bool allowDuplicatePaths = false)
+{
+    // ... validation ...
+
+    if (preserveExisting)
+    {
+        var discoveredNavigation = new NavigationConfig { Pages = [] };
+        PopulateNavigationFromDirectory(path, discoveredNavigation.Pages, path,
+            fileExtensions, includeApiReference, true, allowDuplicatePaths);
+
+        var mergeOptions = new MergeOptions();
+        MergeNavigation(Configuration.Navigation, discoveredNavigation, mergeOptions);
+    }
+    else
+    {
+        Configuration.Navigation.Pages.Clear();
+        PopulateNavigationFromDirectory(path, Configuration.Navigation.Pages, path,
+            fileExtensions, includeApiReference, true, allowDuplicatePaths);
+    }
+}
+```
+
+**Parameters:**
+- `path`: Root directory to scan
+- `fileExtensions`: Array of extensions (default: `[".mdx"]`)
+- `includeApiReference`: Whether to scan `api-reference` folder (default: `false`)
+- `preserveExisting`: Merge with existing navigation vs replace (default: `true`)
+- `allowDuplicatePaths`: Whether to allow duplicate page paths (default: `false`)
+
+**AddPage / AddPageToGroup**
+
+Safely adds pages to navigation with automatic duplicate detection:
+
+```csharp DocsJsonManager.cs:493-512
+public bool AddPage(List<object> pages, string pagePath,
+    bool allowDuplicatePaths = false, bool updateKnownPaths = true)
+{
+    Ensure.ArgumentNotNull(pages, nameof(pages));
+    Ensure.ArgumentNotNullOrWhiteSpace(pagePath, nameof(pagePath));
+
+    if (!allowDuplicatePaths && _knownPagePaths.Contains(pagePath))
+    {
+        return false;
+    }
+
+    pages.Add(pagePath);
+    if (updateKnownPaths)
+    {
+        _knownPagePaths.Add(pagePath);
+    }
+    return true;
+}
+```
+
+Returns `true` if page was added, `false` if it was a duplicate and skipped.
+
+**MergeNavigation**
+
+Intelligently merges two navigation structures:
+
+```csharp DocsJsonManager.cs:890-943
+internal void MergeNavigation(NavigationConfig target, NavigationConfig source,
+    MergeOptions? options = null)
+{
+    if (source is null) return;
+
+    if (source.Pages is not null)
+    {
+        if (target.Pages is null)
+        {
+            target.Pages = [.. source.Pages];
+        }
+        else
+        {
+            MergePagesList(source.Pages, target.Pages, options);
+        }
+    }
+    // ... merge groups, tabs, anchors ...
+}
+```
+
+**Merge Behavior:**
+- Pages: Deduplicated using `_knownPagePaths`
+- Groups: Merged by name, combining pages recursively
+- Tabs: Merged by name or href
+- Anchors: Appended to target
+
+**FindOrCreateGroup**
+
+Finds an existing group by name or creates a new one:
+
+```csharp DocsJsonManager.cs:591-611
+public GroupConfig FindOrCreateGroup(List<object> pages, string groupName)
+{
+    Ensure.ArgumentNotNull(pages, nameof(pages));
+    Ensure.ArgumentNotNullOrWhiteSpace(groupName, nameof(groupName));
+
+    var existingGroup = pages.OfType<GroupConfig>()
+        .FirstOrDefault(g => g.Group == groupName);
+    if (existingGroup != null)
+    {
+        return existingGroup;
+    }
+
+    var newGroup = new GroupConfig
+    {
+        Group = groupName,
+        Pages = []
+    };
+    pages.Add(newGroup);
+    return newGroup;
+}
+```
+
+## Configuration Examples
+
+### Unified Navigation with Template
+
+```xml
+<PropertyGroup>
+  <MintlifyNavigationMode>Unified</MintlifyNavigationMode>
+  <MintlifyTemplate>
+    <Name>My Project</Name>
+    <Navigation>
+      <Pages>
+        <Groups>
+          <Group Name="Getting Started">
+            <Pages>index;quickstart</Pages>
+          </Group>
+        </Groups>
+      </Pages>
+    </Navigation>
+  </MintlifyTemplate>
+</PropertyGroup>
+```
+
+**Result:** Single "API Reference" group appears after "Getting Started"
+
+### ByAssembly Navigation
+
+```xml
+<PropertyGroup>
+  <MintlifyNavigationMode>ByAssembly</MintlifyNavigationMode>
+</PropertyGroup>
+```
+
+**Result:** Each assembly gets its own top-level group with hierarchical namespace subgroups
+
+### Custom Navigation Override
+
+Create `guides/navigation.json` in your documentation folder:
+
+```json
+{
+  "group": "Advanced Guides",
+  "icon": "rocket",
+  "pages": [
+    "guides/authentication",
+    "guides/deployment",
+    {
+      "group": "Integrations",
+      "pages": [
+        "guides/integrations/github",
+        "guides/integrations/slack"
+      ]
+    }
+  ]
+}
+```
+
+The system will use this exact structure instead of automatically discovering files in the `guides` directory.
+
+## Best Practices
+
+<CardGroup cols={2}>
+  <Card title="Use Templates for Structure" icon="file-lines">
+    Define your site structure (Getting Started, Guides, etc.) in the `.docsproj` template. Let folder scanning fill in the content.
+  </Card>
+
+  <Card title="Organize by Concern" icon="folder-tree">
+    Create directories that match your template groups. Files in `guides/` will merge into the "Guides" group automatically.
+  </Card>
+
+  <Card title="Override When Needed" icon="wand-magic-sparkles">
+    Use `navigation.json` for complex sections where automatic discovery doesn't match your desired structure.
+  </Card>
+
+  <Card title="Name Files Descriptively" icon="signature">
+    File names become URLs. Use `kebab-case.mdx` for clean, readable paths like `/guides/getting-started`.
+  </Card>
+
+  <Card title="Keep API Reference Separate" icon="code">
+    Never manually create files in `api-reference/`. This folder is fully managed by the generator and will be overwritten.
+  </Card>
+
+  <Card title="Test Incremental Builds" icon="flask">
+    The duplicate detection system preserves navigation across multiple builds. Test that your structure remains stable.
+  </Card>
+</CardGroup>
+
+## Troubleshooting
+
+**Duplicate Pages in Navigation**
+
+*Symptom:* Same page appears multiple times in navigation
+
+*Cause:* `allowDuplicatePaths` is enabled or paths are tracked incorrectly
+
+*Solution:*
+- Ensure `allowDuplicatePaths: false` in your .docsproj
+- Check that template paths match discovered paths exactly (case-insensitive)
+- Review `navigation.json` files for duplicate references
+
+**Missing Conceptual Docs**
+
+*Symptom:* `.mdx` files exist but don't appear in navigation
+
+*Cause:* Files are in excluded directories or have wrong extension
+
+*Solution:*
+- Check that files are `.mdx` not `.md`
+- Verify files aren't in `node_modules`, `conceptual`, `overrides`, or hidden directories
+- Set `includeApiReference: true` if you need to scan that folder
+
+**Template Navigation Overwritten**
+
+*Symptom:* Navigation from template disappears after generation
+
+*Cause:* `preserveExisting: false` in folder scanning
+
+*Solution:* Ensure `PopulateNavigationFromPath` uses `preserveExisting: true` (this is the default)
+
+**API Reference Not Generated**
+
+*Symptom:* No API Reference group appears in navigation
+
+*Cause:* `GenerateDocsJson` is disabled or no types were documented
+
+*Solution:*
+- Set `<GenerateDocumentation>true</GenerateDocumentation>` in .docsproj
+- Verify XML documentation is enabled: `<GenerateDocumentationFile>true</GenerateDocumentationFile>`
+- Check that assemblies contain public types with XML comments
+
+## See Also
+
+<CardGroup cols={2}>
+  <Card title="Mintlify Provider Overview" icon="sparkles" href="/providers/mintlify/index">
+    Learn about all Mintlify provider features
+  </Card>
+  <Card title="DocsJsonManager API" icon="book" href="/api-reference/Mintlify/Core/DocsJsonManager">
+    Complete DocsJsonManager API reference
+  </Card>
+  <Card title="Project Configuration" icon="gear" href="/guides/configuration">
+    Configure .docsproj files and build properties
+  </Card>
+  <Card title="Conceptual Docs Guide" icon="file-pen" href="/guides/conceptual-docs">
+    Learn how to structure conceptual documentation
+  </Card>
+</CardGroup>

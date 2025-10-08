@@ -44,12 +44,12 @@ export const MintlifyPartnership = () => {
                         borderRadius: '100px',
                         color: '#0ea472',
                         fontWeight: '600',
-                        fontSize: '13px',
+                        fontSize: '26px',
                         letterSpacing: '0.3px',
                         boxShadow: '0 0 20px rgba(14, 164, 114, 0.15)',
                         fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif'
                     }}>
-                        <Icon icon="handshake" iconType="solid" size={16} color="#0ea472" />
+                        <Icon icon="handshake" iconType="solid" size={32} color="#0ea472" />
                         <span>Official Partner</span>
                     </div>
                 </div>

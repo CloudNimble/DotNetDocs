@@ -42,7 +42,7 @@
 							<Pages>providers/index</Pages>
 							<Groups>
 								<Group Name="Mintlify" Icon="/images/icons/mintlify.svg" Tag="PARTNER">
-									<Pages>providers/mintlify/index</Pages>
+									<Pages>providers/mintlify/index;providers/mintlify/navigation;providers/mintlify/dotnet-library</Pages>
 								</Group>
 							</Groups>
 						</Group>
@@ -57,6 +57,11 @@
 			</Navigation>
 		</MintlifyTemplate>
 	</PropertyGroup>
+
+	<ItemGroup>
+	  <None Include="providers\mintlify\dotnet-library.mdx" />
+	  <None Include="providers\mintlify\navigation.mdx" />
+	</ItemGroup>
 
 	<ItemGroup>
 	  <None Update="D:\GitHub\DotNetDocs\src\dotnetdocs-logo.png" Link="images\logos\dotnetdocs-logo.png" />

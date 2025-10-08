@@ -39,7 +39,9 @@
             "group": "Mintlify",
             "icon": "/images/icons/mintlify.svg",
             "pages": [
-              "providers/mintlify/index"
+              "providers/mintlify/index",
+              "providers/mintlify/navigation",
+              "providers/mintlify/dotnet-library"
             ],
             "tag": "PARTNER"
           }

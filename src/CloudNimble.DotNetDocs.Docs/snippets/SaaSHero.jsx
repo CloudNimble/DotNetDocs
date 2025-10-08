@@ -255,21 +255,6 @@ export const SaaSHero = () => {
                       onMouseOut={(e) => e.currentTarget.style.opacity = '0.7'}
                     />
                   </a>
-                  <a href="https://sustainment.com" target="_blank" rel="noopener noreferrer">
-                    <img
-                      src="/images/logos/sustainment.dark.svg"
-                      alt="Sustainment"
-                      style={{
-                        height: '28px',
-                        width: 'auto',
-                        opacity: 0.7,
-                        transition: 'opacity 0.3s',
-                        cursor: 'pointer'
-                      }}
-                      onMouseOver={(e) => e.currentTarget.style.opacity = '1'}
-                      onMouseOut={(e) => e.currentTarget.style.opacity = '0.7'}
-                    />
-                  </a>
                 </div>
               </div>
             </div>
