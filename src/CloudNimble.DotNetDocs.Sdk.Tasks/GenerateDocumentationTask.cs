@@ -179,7 +179,7 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
                             if (!string.IsNullOrWhiteSpace(MintlifyTemplate))
                             {
                                 template = ParseMintlifyTemplate(MintlifyTemplate);
-                                if (template != null)
+                                if (template is not null)
                                 {
                                     Log.LogMessage(MessageImportance.Normal, "   Loaded Mintlify template from inline XML");
                                 }
@@ -200,7 +200,7 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
                             }
 
                             // If no template was provided, create a default with solution name
-                            if (template == null && !string.IsNullOrWhiteSpace(SolutionName))
+                            if (template is null && !string.IsNullOrWhiteSpace(SolutionName))
                             {
                                 template = new DocsJsonConfig
                                 {
@@ -211,7 +211,7 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
                                 Log.LogMessage(MessageImportance.Normal, $"   Using default template with solution name: {SolutionName}");
                             }
                             
-                            if (template != null)
+                            if (template is not null)
                             {
                                 options.Template = template;
                             }
@@ -340,7 +340,7 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
                 var doc = XDocument.Parse($"<root>{xmlTemplate}</root>");
                 var root = doc.Root;
                 
-                if (root == null)
+                if (root is null)
                 {
                     Log.LogWarning("Failed to parse MintlifyTemplate XML: root element is null");
                     return null;
@@ -362,7 +362,7 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
 
                 // Parse Colors
                 var colorsElement = root.Element("Colors");
-                if (colorsElement != null)
+                if (colorsElement is not null)
                 {
                     config.Colors = new ColorsConfig
                     {
@@ -374,7 +374,7 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
 
                 // Parse Logo
                 var logoElement = root.Element("Logo");
-                if (logoElement != null)
+                if (logoElement is not null)
                 {
                     config.Logo = new LogoConfig
                     {
@@ -386,13 +386,13 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
 
                 // Parse Favicon  
                 var faviconElement = root.Element("Favicon");
-                if (faviconElement != null)
+                if (faviconElement is not null)
                 {
                     // Check if it has Light/Dark sub-elements
                     var lightFavicon = faviconElement.Element("Light")?.Value;
                     var darkFavicon = faviconElement.Element("Dark")?.Value;
                     
-                    if (lightFavicon != null || darkFavicon != null)
+                    if (lightFavicon is not null || darkFavicon is not null)
                     {
                         config.Favicon = new FaviconConfig
                         {
@@ -413,7 +413,7 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
 
                 // Parse Navigation
                 var navigationElement = root.Element("Navigation");
-                if (navigationElement != null)
+                if (navigationElement is not null)
                 {
                     config.Navigation = ParseNavigationConfig(navigationElement);
                 }
@@ -440,15 +440,15 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
             };
 
             var pagesElement = navigationElement.Element("Pages");
-            if (pagesElement != null)
+            if (pagesElement is not null)
             {
                 var groupsElement = pagesElement.Element("Groups");
-                if (groupsElement != null)
+                if (groupsElement is not null)
                 {
                     foreach (var groupElement in groupsElement.Elements("Group"))
                     {
                         var group = ParseGroupConfig(groupElement);
-                        if (group != null)
+                        if (group is not null)
                         {
                             navConfig.Pages.Add(group);
                         }
@@ -494,7 +494,7 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
 
             // Parse direct pages (semicolon-separated list)
             var pagesElement = groupElement.Element("Pages");
-            if (pagesElement != null && !string.IsNullOrWhiteSpace(pagesElement.Value))
+            if (pagesElement is not null && !string.IsNullOrWhiteSpace(pagesElement.Value))
             {
                 var pageList = pagesElement.Value.Split(';', StringSplitOptions.RemoveEmptyEntries);
                 foreach (var page in pageList)
@@ -509,12 +509,12 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
 
             // Parse nested groups
             var nestedGroupsElement = groupElement.Element("Groups");
-            if (nestedGroupsElement != null)
+            if (nestedGroupsElement is not null)
             {
                 foreach (var nestedGroupElement in nestedGroupsElement.Elements("Group"))
                 {
                     var nestedGroup = ParseGroupConfig(nestedGroupElement);
-                    if (nestedGroup != null)
+                    if (nestedGroup is not null)
                     {
                         group.Pages.Add(nestedGroup);
                     }

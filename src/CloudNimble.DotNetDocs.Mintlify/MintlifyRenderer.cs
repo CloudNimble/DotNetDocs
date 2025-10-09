@@ -84,7 +84,7 @@ namespace CloudNimble.DotNetDocs.Mintlify
             if (_options.GenerateDocsJson && _docsJsonManager is not null)
             {
                 // Only initialize if not already configured
-                if (_docsJsonManager.Configuration == null)
+                if (_docsJsonManager.Configuration is null)
                 {
                     docsConfig = _options.Template ?? DocsJsonManager.CreateDefault(
                         model.AssemblyName ?? "API Documentation",
@@ -145,7 +145,7 @@ namespace CloudNimble.DotNetDocs.Mintlify
             config.Navigation ??= new NavigationConfig();
 
             // Initialize Pages if null, but don't reset if already populated
-            if (config.Navigation.Pages == null)
+            if (config.Navigation.Pages is null)
             {
                 config.Navigation.Pages =
                 [
@@ -229,7 +229,7 @@ namespace CloudNimble.DotNetDocs.Mintlify
                     .FirstOrDefault(g => g.Group == namespaceDisplayName);
 
                 GroupConfig group;
-                if (existingGroup != null)
+                if (existingGroup is not null)
                 {
                     group = existingGroup;
                     group.Pages ??= [];
@@ -417,7 +417,7 @@ namespace CloudNimble.DotNetDocs.Mintlify
                     var existingGroup = currentLevel?.OfType<GroupConfig>()
                         .FirstOrDefault(g => g.Group == parts[i]);
 
-                    if (existingGroup == null)
+                    if (existingGroup is null)
                     {
                         // Create new group for this level
                         existingGroup = new GroupConfig
@@ -434,7 +434,7 @@ namespace CloudNimble.DotNetDocs.Mintlify
                 }
 
                 // Add namespace overview page if it's a complete namespace
-                if (parentGroup != null && ns.Name == currentPath)
+                if (parentGroup is not null && ns.Name == currentPath)
                 {
                     var apiOutputPath = Path.Combine(Context.DocumentationRootPath, Context.ApiReferencePath);
                     var nsFilePath = GetNamespaceFilePath(ns, apiOutputPath, "mdx");
@@ -567,7 +567,7 @@ namespace CloudNimble.DotNetDocs.Mintlify
                     keywords.Add(typeForKeywords.FullName);
                 }
 
-                if (parentNamespace != null)
+                if (parentNamespace is not null)
                 {
                     keywords.Add(parentNamespace.Name ?? "");
                 }
@@ -1320,7 +1320,7 @@ namespace CloudNimble.DotNetDocs.Mintlify
                 .OfType<GroupConfig>()
                 .FirstOrDefault(g => g.Group == _options.UnifiedGroupName);
 
-            if (apiReferenceGroup != null)
+            if (apiReferenceGroup is not null)
             {
                 // Found existing group - ensure it has a Pages list and preserve existing content
                 apiReferenceGroup.Pages ??= [];
@@ -1359,7 +1359,7 @@ namespace CloudNimble.DotNetDocs.Mintlify
                 .OfType<GroupConfig>()
                 .FirstOrDefault(g => g.Group == assemblyName);
 
-            if (assemblyGroup != null)
+            if (assemblyGroup is not null)
             {
                 // Found existing group - ensure it has a Pages list and preserve existing content
                 assemblyGroup.Pages ??= [];

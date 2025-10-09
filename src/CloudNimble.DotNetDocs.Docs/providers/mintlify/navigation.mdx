@@ -65,7 +65,7 @@ When the MintlifyRenderer starts, it checks if a template is provided:
 ```csharp MintlifyRenderer.cs:82-94
 if (_options.GenerateDocsJson && _docsJsonManager is not null)
 {
-    if (_docsJsonManager.Configuration == null)
+    if (_docsJsonManager.Configuration is null)
     {
         docsConfig = _options.Template ?? DocsJsonManager.CreateDefault(
             model.AssemblyName ?? "API Documentation",
@@ -391,7 +391,7 @@ public GroupConfig FindOrCreateGroup(List<object> pages, string groupName)
 
     var existingGroup = pages.OfType<GroupConfig>()
         .FirstOrDefault(g => g.Group == groupName);
-    if (existingGroup != null)
+    if (existingGroup is not null)
     {
         return existingGroup;
     }

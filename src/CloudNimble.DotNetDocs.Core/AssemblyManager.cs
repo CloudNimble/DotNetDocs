@@ -208,7 +208,7 @@ namespace CloudNimble.DotNetDocs.Core
         /// <returns>The inner XML as a string, or null if element is null.</returns>
         internal string? ExtractInnerXml(XElement? element)
         {
-            if (element == null)
+            if (element is null)
                 return null;
 
             // Get all nodes and concatenate them, preserving XML tags
@@ -225,7 +225,7 @@ namespace CloudNimble.DotNetDocs.Core
         /// <returns>The inner XML as a string with excluded tags and their content removed, or null if element is null.</returns>
         internal string? ExtractInnerXmlExcluding(XElement? element, params string[] excludeTags)
         {
-            if (element == null)
+            if (element is null)
                 return null;
 
             // Clone the element to avoid modifying the original
@@ -436,13 +436,13 @@ namespace CloudNimble.DotNetDocs.Core
                     ITypeSymbol? underlyingType = namedType.EnumUnderlyingType;
 
                     // Fallback: For metadata-loaded enums, infer from constant value type
-                    if (underlyingType == null)
+                    if (underlyingType is null)
                     {
                         var firstConstField = type.GetMembers()
                             .OfType<IFieldSymbol>()
                             .FirstOrDefault(f => f.IsConst && f.HasConstantValue);
 
-                        if (firstConstField?.ConstantValue != null)
+                        if (firstConstField?.ConstantValue is not null)
                         {
                             // Determine underlying type from the constant value's actual type
                             underlyingType = firstConstField.ConstantValue switch
@@ -460,7 +460,7 @@ namespace CloudNimble.DotNetDocs.Core
                         }
                     }
 
-                    if (underlyingType != null)
+                    if (underlyingType is not null)
                     {
                         docEnum.UnderlyingType = new DocReference
                         {
@@ -766,7 +766,7 @@ namespace CloudNimble.DotNetDocs.Core
                 .AddSyntaxTrees(syntaxTrees);
 
             // Add the target assembly with its XML documentation (if available)
-            var documentationProvider = XmlPath != null && File.Exists(XmlPath) 
+            var documentationProvider = XmlPath is not null && File.Exists(XmlPath) 
                 ? XmlDocumentationProvider.CreateFromFile(XmlPath)
                 : null;
             var targetReference = MetadataReference.CreateFromFile(

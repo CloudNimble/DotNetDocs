@@ -44,12 +44,12 @@ export const MintlifyPartnership = () => {
                         borderRadius: '100px',
                         color: '#0ea472',
                         fontWeight: '600',
-                        fontSize: '26px',
+                        fontSize: '22px',
                         letterSpacing: '0.3px',
                         boxShadow: '0 0 20px rgba(14, 164, 114, 0.15)',
                         fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif'
                     }}>
-                        <Icon icon="handshake" iconType="solid" size={32} color="#0ea472" />
+                        <Icon icon="handshake" iconType="solid" size={28} color="#0ea472" />
                         <span>Official Partner</span>
                     </div>
                 </div>
@@ -372,7 +372,7 @@ export const MintlifyPartnership = () => {
                                 <path d="M11 5L11 11M11 5L5 5M11 5L5 11" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                             </svg>
                         </a>
-                        <a href="https://dashboard.mintlify.com/signup?ajs_aid=281bf9d4-cd11-4748-9f5e-03a8cdff7f26&_gl=1*lqwmpa*_gcl_au*MTUxMDgzOTg3NS4xNzU5NTYzNDg1" target="_blank" rel="noopener noreferrer" className="mintlify-cta-primary" style={{
+                        <a href="https://dashboard.mintlify.com/signup?ajs_aid=281bf9d4-cd11-4748-9f5e-03a8cdff7f26&_gl=1*lqwmpa*_gcl_au*MTUxMDgzOTg3NS4xNzU5NTYzNDg1&utm_source=dotnetdocs" target="_blank" rel="noopener noreferrer" className="mintlify-cta-primary" style={{
                             display: 'inline-flex',
                             alignItems: 'center',
                             gap: '8px',

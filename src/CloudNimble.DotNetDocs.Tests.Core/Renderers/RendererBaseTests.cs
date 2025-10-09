@@ -328,7 +328,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             // Arrange
             var input = """
                 var fullDocs = new ClassWithFullDocs();
-                            if (fullDocs != null)
+                            if (fullDocs is not null)
                             {
                                 fullDocs.ComplexMethod("test", 42);
                                 Console.WriteLine("Done");
@@ -337,7 +337,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
 
             var expected = """
                 var fullDocs = new ClassWithFullDocs();
-                if (fullDocs != null)
+                if (fullDocs is not null)
                 {
                     fullDocs.ComplexMethod("test", 42);
                     Console.WriteLine("Done");

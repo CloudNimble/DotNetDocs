@@ -1410,7 +1410,7 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             };
 
             // Act - Test the complete cycle that happens in MintlifyRenderer.cs lines 89-95
-            // 1. Template is available (_options.Template != null)
+            // 1. Template is available (_options.Template is not null)
             // 2. docsConfig = _options.Template ?? DocsJsonManager.CreateDefault(...)
             // 3. var json = JsonSerializer.Serialize(docsConfig, MintlifyConstants.JsonSerializerOptions);
             // 4. _docsJsonManager.Load(json);

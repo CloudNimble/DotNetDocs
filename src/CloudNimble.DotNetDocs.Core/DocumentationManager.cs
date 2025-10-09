@@ -199,7 +199,7 @@ namespace CloudNimble.DotNetDocs.Core
             var existingNamespace = mergedAssembly.Namespaces.FirstOrDefault(ns =>
                 ns.Symbol.ToDisplayString() == sourceNamespace.Symbol.ToDisplayString());
 
-            if (existingNamespace == null)
+            if (existingNamespace is null)
             {
                 // Add new namespace
                 mergedAssembly.Namespaces.Add(sourceNamespace);
@@ -234,7 +234,7 @@ namespace CloudNimble.DotNetDocs.Core
             var existingType = mergedNamespace.Types.FirstOrDefault(t =>
                 t.Symbol.ToDisplayString() == sourceType.Symbol.ToDisplayString());
 
-            if (existingType == null)
+            if (existingType is null)
             {
                 // Add new type
                 mergedNamespace.Types.Add(sourceType);
@@ -269,7 +269,7 @@ namespace CloudNimble.DotNetDocs.Core
             var existingMember = mergedType.Members.FirstOrDefault(m =>
                 m.Symbol.ToDisplayString() == sourceMember.Symbol.ToDisplayString());
 
-            if (existingMember == null)
+            if (existingMember is null)
             {
                 // Add new member
                 mergedType.Members.Add(sourceMember);

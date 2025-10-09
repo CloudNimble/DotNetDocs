@@ -75,7 +75,7 @@ export const CTASection = () => {
             fontSize: '16px',
             fontFamily: 'monospace'
           }}>
-            dotnet tool install DotNetDocs.Tools --global
+            dotnet tool install DotNetDocs --global
           </code>
         </div>
       </div>

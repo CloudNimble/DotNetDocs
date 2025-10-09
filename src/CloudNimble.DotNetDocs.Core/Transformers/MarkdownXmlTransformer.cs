@@ -191,7 +191,7 @@ namespace CloudNimble.DotNetDocs.Core.Transformers
             entity.Considerations = ConvertXmlToMarkdown(entity.Considerations, references);
 
             // Transform collections
-            if (entity.Exceptions != null)
+            if (entity.Exceptions is not null)
             {
                 foreach (var exception in entity.Exceptions)
                 {
@@ -199,7 +199,7 @@ namespace CloudNimble.DotNetDocs.Core.Transformers
                 }
             }
 
-            if (entity.TypeParameters != null)
+            if (entity.TypeParameters is not null)
             {
                 foreach (var typeParam in entity.TypeParameters)
                 {
@@ -208,7 +208,7 @@ namespace CloudNimble.DotNetDocs.Core.Transformers
             }
 
             // Resolve SeeAlso references
-            if (entity.SeeAlso != null)
+            if (entity.SeeAlso is not null)
             {
                 foreach (var seeAlsoRef in entity.SeeAlso)
                 {
@@ -268,13 +268,13 @@ namespace CloudNimble.DotNetDocs.Core.Transformers
         /// </summary>
         protected virtual void AddToReferences(DocEntity entity, Dictionary<string, DocEntity> references)
         {
-            if (entity.DisplayName != null && !references.ContainsKey(entity.DisplayName))
+            if (entity.DisplayName is not null && !references.ContainsKey(entity.DisplayName))
             {
                 references[entity.DisplayName] = entity;
             }
 
             // Also add by simple name for easier lookup
-            if (entity is DocType type && type.Symbol?.Name != null)
+            if (entity is DocType type && type.Symbol?.Name is not null)
             {
                 if (!references.ContainsKey(type.Symbol.Name))
                 {
@@ -288,7 +288,7 @@ namespace CloudNimble.DotNetDocs.Core.Transformers
                     references[simpleName] = entity;
                 }
             }
-            else if (entity is DocMember member && member.Symbol?.Name != null)
+            else if (entity is DocMember member && member.Symbol?.Name is not null)
             {
                 if (!references.ContainsKey(member.Symbol.Name))
                 {
@@ -358,7 +358,7 @@ namespace CloudNimble.DotNetDocs.Core.Transformers
             {
                 var keyword = match.Groups[1].Value.ToLowerInvariant();
                 var url = GetLanguageKeywordUrl(keyword);
-                return url != null ? $"[`{keyword}`]({url})" : $"`{keyword}`";
+                return url is not null ? $"[`{keyword}`]({url})" : $"`{keyword}`";
             });
 
             return text;
@@ -612,7 +612,7 @@ namespace CloudNimble.DotNetDocs.Core.Transformers
                     _currentPath = fileName;
                 }
             }
-            else if (entity is DocType type && entity.OriginalSymbol?.ContainingNamespace != null)
+            else if (entity is DocType type && entity.OriginalSymbol?.ContainingNamespace is not null)
             {
                 var namespaceName = entity.OriginalSymbol.ContainingNamespace.ToDisplayString();
                 var typeName = type.Name;

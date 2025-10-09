@@ -424,7 +424,7 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
             if (type is DocEnum enumType)
             {
                 // Show underlying type if not int
-                if (enumType.UnderlyingType != null && enumType.UnderlyingType.DisplayName != "int")
+                if (enumType.UnderlyingType is not null && enumType.UnderlyingType.DisplayName != "int")
                 {
                     sb.AppendLine($"**Underlying Type:** {enumType.UnderlyingType.DisplayName}");
                     sb.AppendLine();

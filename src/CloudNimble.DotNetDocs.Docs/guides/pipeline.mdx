@@ -18,7 +18,6 @@ flowchart LR
     B[XML Documentation] --> C
     %% Output below the horizontal flow
     G --> H[Output Files]
-
 ```
 
 The pipeline is orchestrated by the `DocumentationManager`, which coordinates all stages and manages caching, parallel processing, and multi-assembly merging.
@@ -211,7 +210,7 @@ When documenting multiple assemblies together, the pipeline merges them into a s
     var existingNamespace = mergedAssembly.Namespaces
         .FirstOrDefault(ns => ns.Symbol.ToDisplayString() == sourceNamespace.Symbol.ToDisplayString());
 
-    if (existingNamespace == null)
+    if (existingNamespace is null)
     {
         mergedAssembly.Namespaces.Add(sourceNamespace);
     }
@@ -229,7 +228,7 @@ When documenting multiple assemblies together, the pipeline merges them into a s
     var existingType = mergedNamespace.Types
         .FirstOrDefault(t => t.Symbol.ToDisplayString() == sourceType.Symbol.ToDisplayString());
 
-    if (existingType == null)
+    if (existingType is null)
     {
         mergedNamespace.Types.Add(sourceType);
     }
@@ -247,7 +246,7 @@ When documenting multiple assemblies together, the pipeline merges them into a s
     var existingMember = mergedType.Members
         .FirstOrDefault(m => m.Symbol.ToDisplayString() == sourceMember.Symbol.ToDisplayString());
 
-    if (existingMember == null)
+    if (existingMember is null)
     {
         mergedType.Members.Add(sourceMember);
     }

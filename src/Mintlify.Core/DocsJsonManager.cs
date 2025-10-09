@@ -595,7 +595,7 @@ namespace Mintlify.Core
 
             // Look for existing group
             var existingGroup = pages.OfType<GroupConfig>().FirstOrDefault(g => g.Group == groupName);
-            if (existingGroup != null)
+            if (existingGroup is not null)
             {
                 return existingGroup;
             }
@@ -629,7 +629,7 @@ namespace Mintlify.Core
                 case GroupConfig group:
                     // For groups, we need to check if a group with the same name exists
                     var existingGroup = pages.OfType<GroupConfig>().FirstOrDefault(g => g.Group == group.Group);
-                    if (existingGroup != null)
+                    if (existingGroup is not null)
                     {
                         // Merge into existing group
                         MergeGroupConfig(existingGroup, group);
@@ -639,7 +639,7 @@ namespace Mintlify.Core
                     {
                         // Add new group and track all its pages
                         pages.Add(group);
-                        if (group.Pages != null)
+                        if (group.Pages is not null)
                         {
                             PopulateKnownPaths(group.Pages);
                         }
@@ -984,7 +984,7 @@ namespace Mintlify.Core
                             groupsByName[groupConfig.Group] = groupConfig;
                             processedPages.Add(groupConfig);
                             // Track pages in this group
-                            if (groupConfig.Pages != null)
+                            if (groupConfig.Pages is not null)
                             {
                                 PopulateKnownPaths(groupConfig.Pages);
                             }
@@ -1011,7 +1011,7 @@ namespace Mintlify.Core
                             // Keep empty groups separate (default Mintlify behavior)
                             processedPages.Add(groupConfig);
                             // Track pages in this group
-                            if (groupConfig.Pages != null)
+                            if (groupConfig.Pages is not null)
                             {
                                 PopulateKnownPaths(groupConfig.Pages);
                             }

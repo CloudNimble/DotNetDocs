@@ -1482,7 +1482,7 @@ namespace Mintlify.Tests.Core
 
                 // The other group should be the getting-started directory (renamed to avoid conflict)
                 var gettingStartedDirGroup = groups?.FirstOrDefault(g => g.Group == "Getting Started (getting-started)");
-                if (gettingStartedDirGroup == null)
+                if (gettingStartedDirGroup is null)
                 {
                     // If we only have one "Getting Started" group, it should contain both root files and directory files
                     gettingStartedGroup!.Pages.Should().HaveCount(4); // index + changelog + installation + quickstart

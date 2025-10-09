@@ -106,7 +106,7 @@ namespace CloudNimble.DotNetDocs.Tests.Sdk.Tasks
             foreach (var groupElement in groupsElement.Elements("Group"))
             {
                 var group = _task.ParseGroupConfig(groupElement);
-                if (group != null)
+                if (group is not null)
                 {
                     results.Add(group);
                 }
@@ -454,12 +454,12 @@ namespace CloudNimble.DotNetDocs.Tests.Sdk.Tasks
 
             // Act
             var results = new List<GroupConfig>();
-            if (groupsElement != null)
+            if (groupsElement is not null)
             {
                 foreach (var groupElement in groupsElement.Elements("Group"))
                 {
                     var group = _task.ParseGroupConfig(groupElement);
-                    if (group != null)
+                    if (group is not null)
                     {
                         results.Add(group);
                     }

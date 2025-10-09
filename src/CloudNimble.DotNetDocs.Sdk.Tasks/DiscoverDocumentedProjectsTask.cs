@@ -76,7 +76,7 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
                 var projectExtensions = new[] { "*.csproj", "*.vbproj", "*.fsproj" };
                 var projectFiles = projectExtensions
                     .SelectMany(ext => Directory.GetFiles(SolutionDir, ext, SearchOption.AllDirectories))
-                    .Where(file => ExcludePatterns == null || !ExcludePatterns.Any(pattern =>
+                    .Where(file => ExcludePatterns is null || !ExcludePatterns.Any(pattern =>
                         Path.GetFileNameWithoutExtension(file).Contains(pattern.Replace("*", ""), StringComparison.OrdinalIgnoreCase)))
                     .ToArray();
 
@@ -207,7 +207,7 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
         {
             Ensure.ArgumentNotNullOrWhiteSpace(projectFilePath, nameof(projectFilePath));
 
-            if (excludePatterns == null || excludePatterns.Length == 0)
+            if (excludePatterns is null || excludePatterns.Length == 0)
             {
                 return true;
             }

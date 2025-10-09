@@ -29,6 +29,11 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
         /// <value>The file naming configuration.</value>
         protected FileNamingOptions FileNamingOptions => Context.FileNamingOptions;
 
+        /// <summary>
+        /// When more than one Renderer is registered, allows a renderer to be turned off.
+        /// </summary>
+        public bool Enabled { get; set; }
+
         #endregion
 
         #region Constructors
@@ -37,9 +42,11 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
         /// Initializes a new instance of the <see cref="RendererBase"/> class.
         /// </summary>
         /// <param name="context">The project context. If null, a default context is created.</param>
-        protected RendererBase(ProjectContext? context = null)
+        /// <param name="enabled"></param>
+        protected RendererBase(ProjectContext? context = null, bool enabled = true)
         {
             Context = context ?? new ProjectContext();
+            Enabled = enabled;
         }
 
         #endregion

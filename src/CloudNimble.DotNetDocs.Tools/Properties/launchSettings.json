@@ -1,0 +1,16 @@
+{
+  "profiles": {
+    "Help": {
+      "commandName": "Project",
+      "commandLineArgs": "--help"
+    }
+    //"Database.Generate": {
+    //  "commandName": "Project",
+    //  "commandLineArgs": "database generate --solution-folder \"D:\\Scratch\\Sustainment.ToDo\""
+    //},
+    //"Code.Generate.All": {
+    //  "commandName": "Project",
+    //  "commandLineArgs": "code generate all --path \"D:\\Scratch\\Sustainment.ToDo\""
+    //}
+  }
+}

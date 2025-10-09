@@ -1,4 +1,4 @@
-﻿<Project Sdk="DotNetDocs.Sdk/1.0.0-preview.24">
+<Project Sdk="DotNetDocs.Sdk/1.0.0-preview.25">
 
 	<PropertyGroup>
 		<KeepLocalOutput>true</KeepLocalOutput>
@@ -57,11 +57,6 @@
 			</Navigation>
 		</MintlifyTemplate>
 	</PropertyGroup>
-
-	<ItemGroup>
-	  <None Include="providers\mintlify\dotnet-library.mdx" />
-	  <None Include="providers\mintlify\navigation.mdx" />
-	</ItemGroup>
 
 	<ItemGroup>
 	  <None Update="D:\GitHub\DotNetDocs\src\dotnetdocs-logo.png" Link="images\logos\dotnetdocs-logo.png" />
