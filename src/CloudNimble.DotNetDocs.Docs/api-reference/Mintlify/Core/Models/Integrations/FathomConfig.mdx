@@ -1,0 +1,63 @@
+---
+title: FathomConfig
+description: "Represents the configuration for Fathom analytics integration."
+icon: file-brackets-curly
+keywords: ['FathomConfig', 'Mintlify.Core.Models.Integrations.FathomConfig', 'Mintlify.Core.Models.Integrations', 'class', 'System.Object']
+---
+
+## Definition
+
+**Assembly:** Mintlify.Core.dll
+
+**Namespace:** Mintlify.Core.Models.Integrations
+
+**Inheritance:** System.Object
+
+## Syntax
+
+```csharp
+Mintlify.Core.Models.Integrations.FathomConfig
+```
+
+## Summary
+
+Represents the configuration for Fathom analytics integration.
+
+## Remarks
+
+Fathom is a simple, privacy-focused website analytics platform that doesn't
+            use cookies and is GDPR compliant. This configuration enables tracking of
+            documentation engagement to your Fathom analytics dashboard.
+
+## Constructors
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  .ctor
+
+#### Syntax
+
+```csharp
+public FathomConfig()
+```
+
+## Properties
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  SiteId
+
+Gets or sets the Fathom site ID.
+
+#### Syntax
+
+```csharp
+public string SiteId { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+
+#### Remarks
+
+This is the unique identifier for your site in Fathom analytics. You can
+            find this ID in your Fathom dashboard under site settings. All documentation
+            events will be tracked under this site.
+

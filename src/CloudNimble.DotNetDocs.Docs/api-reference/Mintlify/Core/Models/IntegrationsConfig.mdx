@@ -26,8 +26,9 @@ Represents the integrations configuration for third-party services in the Mintli
 ## Remarks
 
 This configuration enables integration with various analytics, feedback, and other third-party
-            services. Each integration has specific configuration requirements that can be added as properties.
-            Common integrations include Google Analytics, Amplitude, Intercom, Hotjar, and others.
+            services. Each integration has specific configuration requirements defined in their respective
+            configuration classes. These integrations allow automatic tracking of documentation engagement
+            and user behavior to your preferred analytics platforms.
 
 ## Constructors
 
@@ -38,4 +39,275 @@ This configuration enables integration with various analytics, feedback, and oth
 ```csharp
 public IntegrationsConfig()
 ```
+
+## Properties
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Amplitude
+
+Gets or sets the Amplitude analytics integration configuration.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.Integrations.AmplitudeConfig Amplitude { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.Integrations.AmplitudeConfig?`
+
+#### Remarks
+
+Amplitude provides product analytics to understand user behavior and engagement.
+            When configured, all documentation events are automatically sent to your Amplitude project.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Clearbit
+
+Gets or sets the Clearbit data enrichment integration configuration.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.Integrations.ClearbitConfig Clearbit { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.Integrations.ClearbitConfig?`
+
+#### Remarks
+
+Clearbit enriches your analytics data with company and demographic information.
+            When configured, visitor data is enhanced with business intelligence.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Fathom
+
+Gets or sets the Fathom analytics integration configuration.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.Integrations.FathomConfig Fathom { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.Integrations.FathomConfig?`
+
+#### Remarks
+
+Fathom provides simple, privacy-focused analytics that is GDPR compliant
+            and doesn't use cookies. When configured, page views and events are tracked
+            in your Fathom dashboard.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  GoogleAnalytics4
+
+Gets or sets the Google Analytics 4 integration configuration.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.Integrations.GoogleAnalytics4Config GoogleAnalytics4 { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.Integrations.GoogleAnalytics4Config?`
+
+#### Remarks
+
+Google Analytics 4 (GA4) is Google's next-generation analytics platform.
+            When configured, all documentation events are sent to your GA4 property.
+            Note that GA4 data may take 2-3 days to appear after initial setup.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Gtm
+
+Gets or sets the Google Tag Manager integration configuration.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.Integrations.GtmConfig Gtm { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.Integrations.GtmConfig?`
+
+#### Remarks
+
+Google Tag Manager (GTM) allows flexible tag management for analytics and marketing.
+            When configured, you can manage all tracking tags through the GTM interface.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Heap
+
+Gets or sets the Heap analytics integration configuration.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.Integrations.HeapConfig Heap { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.Integrations.HeapConfig?`
+
+#### Remarks
+
+Heap automatically captures all user interactions without manual event tracking.
+            When configured, every user interaction on your documentation is automatically tracked.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Hightouch
+
+Gets or sets the Hightouch data activation integration configuration.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.Integrations.HightouchConfig Hightouch { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.Integrations.HightouchConfig?`
+
+#### Remarks
+
+Hightouch syncs data from your warehouse to business tools. When configured,
+            documentation events can be synchronized to your data warehouse and downstream tools.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Hotjar
+
+Gets or sets the Hotjar behavior analytics integration configuration.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.Integrations.HotjarConfig Hotjar { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.Integrations.HotjarConfig?`
+
+#### Remarks
+
+Hotjar provides heatmaps, session recordings, and user feedback tools.
+            When configured, you can visualize how users interact with your documentation.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  LogRocket
+
+Gets or sets the LogRocket session replay integration configuration.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.Integrations.LogRocketConfig LogRocket { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.Integrations.LogRocketConfig?`
+
+#### Remarks
+
+LogRocket records user sessions including console logs and network activity.
+            When configured, you can replay user sessions to understand issues and behavior.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Mixpanel
+
+Gets or sets the Mixpanel product analytics integration configuration.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.Integrations.MixpanelConfig Mixpanel { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.Integrations.MixpanelConfig?`
+
+#### Remarks
+
+Mixpanel provides detailed product analytics and user behavior tracking.
+            When configured, all documentation events are sent to your Mixpanel project.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Pirsch
+
+Gets or sets the Pirsch analytics integration configuration.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.Integrations.PirschConfig Pirsch { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.Integrations.PirschConfig?`
+
+#### Remarks
+
+Pirsch is a privacy-friendly, GDPR-compliant analytics platform.
+            When configured, page views and events are tracked without cookies.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Plausible
+
+Gets or sets the Plausible analytics integration configuration.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.Integrations.PlausibleConfig Plausible { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.Integrations.PlausibleConfig?`
+
+#### Remarks
+
+Plausible is a lightweight, open-source, privacy-focused analytics platform.
+            When configured, documentation engagement is tracked without cookies.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  PostHog
+
+Gets or sets the PostHog product analytics integration configuration.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.Integrations.PostHogConfig PostHog { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.Integrations.PostHogConfig?`
+
+#### Remarks
+
+PostHog provides session recording, feature flags, and product analytics.
+            When configured, all documentation events are sent to your PostHog instance.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Segment
+
+Gets or sets the Segment customer data platform integration configuration.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.Integrations.SegmentConfig Segment { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.Integrations.SegmentConfig?`
+
+#### Remarks
+
+Segment collects, transforms, and routes analytics data to various destinations.
+            When configured, documentation events are sent to Segment and forwarded to your
+            configured downstream tools.
 

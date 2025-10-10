@@ -18,6 +18,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Mintlify.Core;
 using Mintlify.Core.Models;
+using Mintlify.Core.Models.Integrations;
 #endif
 
 namespace CloudNimble.DotNetDocs.Sdk.Tasks
@@ -339,7 +340,7 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
             {
                 var doc = XDocument.Parse($"<root>{xmlTemplate}</root>");
                 var root = doc.Root;
-                
+
                 if (root is null)
                 {
                     Log.LogWarning("Failed to parse MintlifyTemplate XML: root element is null");
@@ -384,14 +385,14 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
                     };
                 }
 
-                // Parse Favicon  
+                // Parse Favicon
                 var faviconElement = root.Element("Favicon");
                 if (faviconElement is not null)
                 {
                     // Check if it has Light/Dark sub-elements
                     var lightFavicon = faviconElement.Element("Light")?.Value;
                     var darkFavicon = faviconElement.Element("Dark")?.Value;
-                    
+
                     if (lightFavicon is not null || darkFavicon is not null)
                     {
                         config.Favicon = new FaviconConfig
@@ -416,6 +417,13 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
                 if (navigationElement is not null)
                 {
                     config.Navigation = ParseNavigationConfig(navigationElement);
+                }
+
+                // Parse Integrations
+                var integrationsElement = root.Element("Integrations");
+                if (integrationsElement is not null)
+                {
+                    config.Integrations = ParseIntegrationsConfig(integrationsElement);
                 }
 
                 return config;
@@ -522,6 +530,161 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
             }
 
             return group;
+        }
+
+        /// <summary>
+        /// Parses the Integrations element from the MintlifyTemplate XML using attributes.
+        /// </summary>
+        /// <param name="integrationsElement">The integrations XML element.</param>
+        /// <returns>An IntegrationsConfig instance.</returns>
+        internal IntegrationsConfig ParseIntegrationsConfig(XElement integrationsElement)
+        {
+            var config = new IntegrationsConfig();
+
+            // Parse Amplitude
+            var amplitudeElement = integrationsElement.Element("Amplitude");
+            if (amplitudeElement is not null)
+            {
+                config.Amplitude = new AmplitudeConfig
+                {
+                    ApiKey = amplitudeElement.Attribute("ApiKey")?.Value
+                };
+            }
+
+            // Parse Clearbit
+            var clearbitElement = integrationsElement.Element("Clearbit");
+            if (clearbitElement is not null)
+            {
+                config.Clearbit = new ClearbitConfig
+                {
+                    PublicApiKey = clearbitElement.Attribute("PublicApiKey")?.Value
+                };
+            }
+
+            // Parse Fathom
+            var fathomElement = integrationsElement.Element("Fathom");
+            if (fathomElement is not null)
+            {
+                config.Fathom = new FathomConfig
+                {
+                    SiteId = fathomElement.Attribute("SiteId")?.Value
+                };
+            }
+
+            // Parse Google Analytics 4
+            var ga4Element = integrationsElement.Element("GoogleAnalytics4");
+            if (ga4Element is not null)
+            {
+                config.GoogleAnalytics4 = new GoogleAnalytics4Config
+                {
+                    MeasurementId = ga4Element.Attribute("MeasurementId")?.Value
+                };
+            }
+
+            // Parse Google Tag Manager
+            var gtmElement = integrationsElement.Element("Gtm");
+            if (gtmElement is not null)
+            {
+                config.Gtm = new GtmConfig
+                {
+                    TagId = gtmElement.Attribute("TagId")?.Value
+                };
+            }
+
+            // Parse Heap
+            var heapElement = integrationsElement.Element("Heap");
+            if (heapElement is not null)
+            {
+                config.Heap = new HeapConfig
+                {
+                    AppId = heapElement.Attribute("AppId")?.Value
+                };
+            }
+
+            // Parse Hightouch
+            var hightouchElement = integrationsElement.Element("Hightouch");
+            if (hightouchElement is not null)
+            {
+                config.Hightouch = new HightouchConfig
+                {
+                    ApiKey = hightouchElement.Attribute("ApiKey")?.Value
+                };
+            }
+
+            // Parse Hotjar
+            var hotjarElement = integrationsElement.Element("Hotjar");
+            if (hotjarElement is not null)
+            {
+                config.Hotjar = new HotjarConfig
+                {
+                    Hjid = hotjarElement.Attribute("Hjid")?.Value,
+                    Hjsv = hotjarElement.Attribute("Hjsv")?.Value
+                };
+            }
+
+            // Parse LogRocket
+            var logrocketElement = integrationsElement.Element("LogRocket");
+            if (logrocketElement is not null)
+            {
+                config.LogRocket = new LogRocketConfig
+                {
+                    AppId = logrocketElement.Attribute("AppId")?.Value
+                };
+            }
+
+            // Parse Mixpanel
+            var mixpanelElement = integrationsElement.Element("Mixpanel");
+            if (mixpanelElement is not null)
+            {
+                config.Mixpanel = new MixpanelConfig
+                {
+                    ProjectToken = mixpanelElement.Attribute("ProjectToken")?.Value
+                };
+            }
+
+            // Parse Pirsch
+            var pirschElement = integrationsElement.Element("Pirsch");
+            if (pirschElement is not null)
+            {
+                config.Pirsch = new PirschConfig
+                {
+                    Id = pirschElement.Attribute("Id")?.Value
+                };
+            }
+
+            // Parse Plausible
+            var plausibleElement = integrationsElement.Element("Plausible");
+            if (plausibleElement is not null)
+            {
+                config.Plausible = new PlausibleConfig
+                {
+                    Domain = plausibleElement.Attribute("Domain")?.Value,
+                    Server = plausibleElement.Attribute("Server")?.Value
+                };
+            }
+
+            // Parse PostHog
+            var posthogElement = integrationsElement.Element("PostHog");
+            if (posthogElement is not null)
+            {
+                config.PostHog = new PostHogConfig
+                {
+                    ApiKey = posthogElement.Attribute("ApiKey")?.Value,
+                    ApiHost = posthogElement.Attribute("ApiHost")?.Value
+                };
+            }
+
+            // Parse Segment
+            var segmentElement = integrationsElement.Element("Segment");
+            if (segmentElement is not null)
+            {
+                config.Segment = new SegmentConfig
+                {
+                    Key = segmentElement.Attribute("Key")?.Value
+                };
+            }
+
+            return config;
         }
 
         #endregion

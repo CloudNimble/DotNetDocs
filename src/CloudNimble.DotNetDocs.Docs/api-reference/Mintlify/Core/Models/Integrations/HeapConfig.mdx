@@ -1,0 +1,63 @@
+---
+title: HeapConfig
+description: "Represents the configuration for Heap analytics integration."
+icon: file-brackets-curly
+keywords: ['HeapConfig', 'Mintlify.Core.Models.Integrations.HeapConfig', 'Mintlify.Core.Models.Integrations', 'class', 'System.Object']
+---
+
+## Definition
+
+**Assembly:** Mintlify.Core.dll
+
+**Namespace:** Mintlify.Core.Models.Integrations
+
+**Inheritance:** System.Object
+
+## Syntax
+
+```csharp
+Mintlify.Core.Models.Integrations.HeapConfig
+```
+
+## Summary
+
+Represents the configuration for Heap analytics integration.
+
+## Remarks
+
+Heap is an analytics platform that automatically captures every user interaction
+            on your site without requiring manual event tracking. This configuration enables
+            Heap to track all documentation engagement automatically.
+
+## Constructors
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  .ctor
+
+#### Syntax
+
+```csharp
+public HeapConfig()
+```
+
+## Properties
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  AppId
+
+Gets or sets the Heap application ID.
+
+#### Syntax
+
+```csharp
+public string AppId { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+
+#### Remarks
+
+This is the unique identifier for your Heap project. You can find this ID
+            in your Heap project settings under Installation. All user interactions on
+            your documentation will be automatically captured and sent to this Heap project.
+

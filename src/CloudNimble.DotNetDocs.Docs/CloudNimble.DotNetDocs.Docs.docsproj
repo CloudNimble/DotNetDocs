@@ -1,4 +1,4 @@
-<Project Sdk="DotNetDocs.Sdk/1.0.0-preview.25">
+<Project Sdk="DotNetDocs.Sdk/1.0.0-preview.26">
 
 	<PropertyGroup>
 		<KeepLocalOutput>true</KeepLocalOutput>
@@ -55,6 +55,9 @@
 					</Groups>
 				</Pages>
 			</Navigation>
+            <Integrations>
+                <GoogleAnalytics4 MeasurementId="G-QZLKD91M9D" />
+			</Integrations>
 		</MintlifyTemplate>
 	</PropertyGroup>
 

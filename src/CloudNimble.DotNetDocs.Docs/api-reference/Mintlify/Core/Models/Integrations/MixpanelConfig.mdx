@@ -1,0 +1,63 @@
+---
+title: MixpanelConfig
+description: "Represents the configuration for Mixpanel analytics integration."
+icon: file-brackets-curly
+keywords: ['MixpanelConfig', 'Mintlify.Core.Models.Integrations.MixpanelConfig', 'Mintlify.Core.Models.Integrations', 'class', 'System.Object']
+---
+
+## Definition
+
+**Assembly:** Mintlify.Core.dll
+
+**Namespace:** Mintlify.Core.Models.Integrations
+
+**Inheritance:** System.Object
+
+## Syntax
+
+```csharp
+Mintlify.Core.Models.Integrations.MixpanelConfig
+```
+
+## Summary
+
+Represents the configuration for Mixpanel analytics integration.
+
+## Remarks
+
+Mixpanel is a product analytics platform that helps you understand user behavior
+            through event tracking and user analysis. This configuration enables automatic
+            tracking of documentation engagement events to your Mixpanel project.
+
+## Constructors
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  .ctor
+
+#### Syntax
+
+```csharp
+public MixpanelConfig()
+```
+
+## Properties
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  ProjectToken
+
+Gets or sets the Mixpanel project token.
+
+#### Syntax
+
+```csharp
+public string ProjectToken { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+
+#### Remarks
+
+This is the unique identifier for your Mixpanel project. You can find this
+            token in your Mixpanel project settings. All documentation events will be
+            sent to the project associated with this token.
+

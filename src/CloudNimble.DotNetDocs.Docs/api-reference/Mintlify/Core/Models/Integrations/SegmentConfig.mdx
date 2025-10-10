@@ -1,0 +1,65 @@
+---
+title: SegmentConfig
+description: "Represents the configuration for Segment integration."
+icon: file-brackets-curly
+keywords: ['SegmentConfig', 'Mintlify.Core.Models.Integrations.SegmentConfig', 'Mintlify.Core.Models.Integrations', 'class', 'System.Object']
+---
+
+## Definition
+
+**Assembly:** Mintlify.Core.dll
+
+**Namespace:** Mintlify.Core.Models.Integrations
+
+**Inheritance:** System.Object
+
+## Syntax
+
+```csharp
+Mintlify.Core.Models.Integrations.SegmentConfig
+```
+
+## Summary
+
+Represents the configuration for Segment integration.
+
+## Remarks
+
+Segment is a customer data platform that collects, transforms, and routes
+            analytics data to various downstream tools. This configuration enables
+            documentation event tracking to be sent to Segment, which can then forward
+            the data to your configured destinations.
+
+## Constructors
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  .ctor
+
+#### Syntax
+
+```csharp
+public SegmentConfig()
+```
+
+## Properties
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Key
+
+Gets or sets the Segment write key.
+
+#### Syntax
+
+```csharp
+public string Key { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+
+#### Remarks
+
+This is your Segment source's write key, which identifies which Segment
+            source should receive the events. You can find this key in your Segment
+            source settings. All documentation events will be sent to this Segment
+            source and then forwarded to your configured destinations.
+

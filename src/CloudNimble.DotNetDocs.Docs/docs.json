@@ -5,6 +5,11 @@
     "primary": "#419AC5"
   },
   "favicon": "/images/icons/favicon-96x96.png",
+  "integrations": {
+    "ga4": {
+      "measurementId": "G-QZLKD91M9D"
+    }
+  },
   "logo": {
     "dark": "/images/logos/dotnetdocs.dark.svg",
     "light": "/images/logos/dotnetdocs.light.svg"
@@ -157,24 +162,6 @@
                       "api-reference/CloudNimble/DotNetDocs/Mintlify/MintlifyRendererOptions",
                       "api-reference/CloudNimble/DotNetDocs/Mintlify/NavigationMode"
                     ]
-                  },
-                  {
-                    "group": "Tools",
-                    "icon": "folder-tree",
-                    "pages": [
-                      "api-reference/CloudNimble/DotNetDocs/Tools/index",
-                      "api-reference/CloudNimble/DotNetDocs/Tools/Program",
-                      {
-                        "group": "Commands",
-                        "icon": "folder-tree",
-                        "pages": [
-                          "api-reference/CloudNimble/DotNetDocs/Tools/Commands/index",
-                          "api-reference/CloudNimble/DotNetDocs/Tools/Commands/AddCommand",
-                          "api-reference/CloudNimble/DotNetDocs/Tools/Commands/BuildCommand",
-                          "api-reference/CloudNimble/DotNetDocs/Tools/Commands/DocsRootCommand"
-                        ]
-                      }
-                    ]
                   }
                 ]
               }
@@ -285,7 +272,28 @@
                       "api-reference/Mintlify/Core/Models/ServerConfig",
                       "api-reference/Mintlify/Core/Models/StylingConfig",
                       "api-reference/Mintlify/Core/Models/TabConfig",
-                      "api-reference/Mintlify/Core/Models/VersionConfig"
+                      "api-reference/Mintlify/Core/Models/VersionConfig",
+                      {
+                        "group": "Integrations",
+                        "icon": "folder-tree",
+                        "pages": [
+                          "api-reference/Mintlify/Core/Models/Integrations/index",
+                          "api-reference/Mintlify/Core/Models/Integrations/AmplitudeConfig",
+                          "api-reference/Mintlify/Core/Models/Integrations/ClearbitConfig",
+                          "api-reference/Mintlify/Core/Models/Integrations/FathomConfig",
+                          "api-reference/Mintlify/Core/Models/Integrations/GoogleAnalytics4Config",
+                          "api-reference/Mintlify/Core/Models/Integrations/GtmConfig",
+                          "api-reference/Mintlify/Core/Models/Integrations/HeapConfig",
+                          "api-reference/Mintlify/Core/Models/Integrations/HightouchConfig",
+                          "api-reference/Mintlify/Core/Models/Integrations/HotjarConfig",
+                          "api-reference/Mintlify/Core/Models/Integrations/LogRocketConfig",
+                          "api-reference/Mintlify/Core/Models/Integrations/MixpanelConfig",
+                          "api-reference/Mintlify/Core/Models/Integrations/PirschConfig",
+                          "api-reference/Mintlify/Core/Models/Integrations/PlausibleConfig",
+                          "api-reference/Mintlify/Core/Models/Integrations/PostHogConfig",
+                          "api-reference/Mintlify/Core/Models/Integrations/SegmentConfig"
+                        ]
+                      }
                     ]
                   }
                 ]
