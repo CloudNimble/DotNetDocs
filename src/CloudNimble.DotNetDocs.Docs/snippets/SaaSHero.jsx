@@ -1,4 +1,10 @@
 export const SaaSHero = () => {
+  const [animationsStarted, setAnimationsStarted] = React.useState(false);
+
+  React.useEffect(() => {
+    setAnimationsStarted(true);
+  }, []);
+
   return (
     <div style={{
       width: '100%',
@@ -67,7 +73,12 @@ export const SaaSHero = () => {
           alignItems: 'center'
         }}>
           {/* Left content */}
-          <div style={{ animation: 'slideInLeft 1s ease-out' }}>
+          <div style={{
+            animation: animationsStarted ? 'slideInLeft 1s ease-out forwards' : 'none',
+            backfaceVisibility: 'hidden',
+            opacity: animationsStarted ? undefined : 0,
+            transform: animationsStarted ? undefined : 'translateX(-50px)'
+          }}>
             {/* Logo */}
             <div className="hero-logo" style={{
               marginBottom: '40px',
@@ -111,9 +122,17 @@ export const SaaSHero = () => {
               }}>Transform XML → Beautiful Docs in Seconds</span>
             </div>
 
+            {/*https://codepen.io/alvarotrigo/pen/KKLqPqL*/}
             <h1 className="hero-heading">
               <span className="hero-heading-line1">Documentation</span>
-              <span className="hero-heading-line2">That Ships</span>
+              <span className="hero-heading-line2">
+                That&nbsp;
+                <span className="dropping-texts">
+                  <span>Lives</span>
+                  <span>Builds</span>
+                  <span>Ships</span>
+                </span>
+              </span>
               <span className="hero-heading-line3">With Your Code</span>
             </h1>
 
@@ -127,8 +146,8 @@ export const SaaSHero = () => {
                 color: '#B0C4DE',
                 margin: 0
               }}>
-                Turn your amazing .NET projects into stunning <nobr>AI-ready</nobr> documentation sites.
-                Zero config. Full control. Built for developers.
+                Turn your amazing .NET projects into stunning <nobr>AI-ready</nobr> documentation sites.&nbsp;
+                <nobr>Zero config.</nobr> <nobr>Full control.</nobr> Built for developers.
               </p>
             </div>
 
@@ -263,7 +282,10 @@ export const SaaSHero = () => {
           {/* Right content - Interactive demo */}
           <div style={{
             position: 'relative',
-            animation: 'slideInRight 1s ease-out'
+            animation: animationsStarted ? 'slideInRight 1s ease-out forwards' : 'none',
+            backfaceVisibility: 'hidden',
+            opacity: animationsStarted ? undefined : 0,
+            transform: animationsStarted ? undefined : 'translateX(50px)'
           }}>
             {/* Code window */}
             <div style={{
@@ -365,7 +387,7 @@ export const SaaSHero = () => {
               color: 'white',
               fontWeight: 'bold',
               fontSize: '14px',
-              animation: 'float 3s infinite ease-in-out reverse'
+              animation: 'float 3s infinite ease-in-out reverse 1s'
             }}>
               Zero Config
             </div>

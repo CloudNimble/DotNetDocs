@@ -1,11 +1,19 @@
 export const MintlifyPartnership = () => {
+    const [animationsStarted, setAnimationsStarted] = React.useState(false);
+
+    React.useEffect(() => {
+        setAnimationsStarted(true);
+    }, []);
+
     return (
         <div style={{
             width: '100%',
             padding: '120px 0',
             background: '#0a1628',
             position: 'relative',
-            overflow: 'hidden'
+            overflow: 'hidden',
+            opacity: animationsStarted ? 1 : 0,
+            transition: 'opacity 0.5s ease-out'
         }}>
             {/* Mintlify aurora background */}
             <div style={{

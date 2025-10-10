@@ -2,9 +2,9 @@
 
 /* Make content area full width across entire site */
 #content-area {
-  width: 100% !important;
-  max-width: 100% !important;
-  padding: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 !important;
 }
 
 li button div {
@@ -28,175 +28,330 @@ li button div {
 
 /* Custom scrollbar styling */
 ::-webkit-scrollbar {
-  width: 12px;
+    width: 12px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #0A1628;
+    background: #0A1628;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #3CD0E2, #419AC5);
-  border-radius: 6px;
+    background: linear-gradient(180deg, #3CD0E2, #419AC5);
+    border-radius: 6px;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, #419AC5, #3CD0E2);
-}
+    ::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(180deg, #419AC5, #3CD0E2);
+    }
 
 /* Smooth scrolling */
 html {
-  scroll-behavior: smooth;
+    scroll-behavior: smooth;
 }
 
 /* For custom mode pages - hide default Mintlify elements */
 .custom-mode nav,
 .custom-mode aside,
 .custom-mode .breadcrumb {
-  display: none !important;
+    display: none !important;
 }
 
 .custom-mode main {
-  padding: 0 !important;
-  max-width: 100% !important;
+    padding: 0 !important;
+    max-width: 100% !important;
 }
 
 .custom-mode article {
-  max-width: 100% !important;
-  padding: 0 !important;
+    max-width: 100% !important;
+    padding: 0 !important;
 }
 
 /* Hide default prose styling on custom pages */
 .custom-mode .prose > h1:first-child,
 .custom-mode .prose > p:first-child {
-  display: none;
+    display: none;
 }
 
 /* Animation keyframes */
 @keyframes float {
-  0%, 100% { transform: translateY(0) rotate(0deg); }
-  50% { transform: translateY(-20px) rotate(5deg); }
+    0%, 100% {
+        transform: translateY(0) rotate(0deg);
+    }
+
+    50% {
+        transform: translateY(-20px) rotate(5deg);
+    }
 }
 
 @keyframes slideInLeft {
-  from { opacity: 0; transform: translateX(-50px); }
-  to { opacity: 1; transform: translateX(0); }
+    from {
+        opacity: 0;
+        transform: translateX(-50px) translateZ(0);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0) translateZ(0);
+    }
 }
 
 @keyframes slideInRight {
-  from { opacity: 0; transform: translateX(50px); }
-  to { opacity: 1; transform: translateX(0); }
+    from {
+        opacity: 0;
+        transform: translateX(50px) translateZ(0);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0) translateZ(0);
+    }
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* AlvaroTrigo's dropping/rolling text animation */
+@keyframes roll {
+    0% {
+        font-size: 0px;
+        opacity: 0;
+        margin-left: -30px;
+        margin-top: 0px;
+        transform: rotate(-25deg);
+    }
+
+    5% {
+        opacity: 1;
+        transform: rotate(0deg);
+    }
+
+    8% {
+        font-size: inherit;
+        opacity: 1;
+        margin-left: 0px;
+        margin-top: 0px;
+    }
+
+    28% {
+        font-size: inherit;
+        opacity: 1;
+        margin-left: 0px;
+        margin-top: 0px;
+        transform: rotate(0deg);
+    }
+
+    33% {
+        font-size: 0px;
+        opacity: 0.5;
+        margin-left: 20px;
+        margin-top: 100px;
+    }
+
+    100% {
+        font-size: 0px;
+        opacity: 0;
+        margin-left: -30px;
+        margin-top: 0px;
+        transform: rotate(15deg);
+    }
+}
+
+@keyframes roll2 {
+    0% {
+        font-size: 0px;
+        opacity: 0;
+        margin-left: -30px;
+        margin-top: 0px;
+        transform: rotate(-25deg);
+    }
+
+    5% {
+        opacity: 1;
+        transform: rotate(0deg);
+    }
+
+    8% {
+        font-size: inherit;
+        opacity: 1;
+        margin-left: 0px;
+        margin-top: 0px;
+    }
+
+    50% {
+        font-size: inherit;
+        opacity: 1;
+        margin-left: 0px;
+        margin-top: 0px;
+        transform: rotate(0deg);
+    }
+
+    55% {
+        font-size: 0px;
+        opacity: 0.5;
+        margin-left: 20px;
+        margin-top: 100px;
+    }
+
+    100% {
+        font-size: 0px;
+        opacity: 0;
+        margin-left: -30px;
+        margin-top: 0px;
+        transform: rotate(15deg);
+    }
 }
 /* Hero section heading styles */
 .hero-heading {
-  font-size: clamp(36px, 8vw, 60px);
-  font-weight: 900;
-  line-height: 1.1;
-  margin-bottom: 30px;
-  color: white;
+    font-size: clamp(36px, 8vw, 60px);
+    font-weight: 900;
+    line-height: 1.1;
+    margin-bottom: 30px;
+    color: white;
 }
 
 /* Hide mobile text by default, show desktop text */
 .hero-cta-text-mobile {
-  display: none;
+    display: none;
 }
 
 .hero-cta-text-desktop {
-  display: inline;
+    display: inline;
 }
 
 @media (max-width: 430px) {
-  /* iPhone 14 Pro Max and smaller */
-  .hero-section {
-    padding: 40px 0 80px 0 !important;
-  }
+    /* iPhone 14 Pro Max and smaller */
+    .hero-section {
+        padding: 40px 0 80px 0 !important;
+    }
 
-  .hero-logo img {
-    height: 44px !important;
-  }
+    .hero-logo img {
+        height: 44px !important;
+    }
 
-  .hero-heading {
-    font-size: clamp(32px, 10vw, 48px);
-  }
+    .hero-heading {
+        font-size: clamp(32px, 10vw, 48px);
+    }
 
-  /* Full-width button container with equal-width buttons */
-  .hero-cta-buttons {
-    width: 100%;
-    gap: 12px !important;
-  }
+    /* Full-width button container with equal-width buttons */
+    .hero-cta-buttons {
+        width: 100%;
+        gap: 12px !important;
+    }
 
-  .hero-cta-primary,
-  .hero-cta-secondary {
-    flex: 1;
-    padding: 14px 16px !important;
-    font-size: 14px !important;
-    gap: 6px !important;
-  }
+    .hero-cta-primary,
+    .hero-cta-secondary {
+        flex: 1;
+        padding: 14px 16px !important;
+        font-size: 14px !important;
+        gap: 6px !important;
+    }
 
-  /* Swap text content on mobile */
-  .hero-cta-text-desktop {
-    display: none;
-  }
+    /* Swap text content on mobile */
+    .hero-cta-text-desktop {
+        display: none;
+    }
 
-  .hero-cta-text-mobile {
-    display: inline;
-  }
+    .hero-cta-text-mobile {
+        display: inline;
+    }
 
-  /* Stack footer links on smaller screens */
-  .hero-footer-links {
-    flex-direction: column !important;
-    gap: 30px !important;
-  }
+    /* Stack footer links on smaller screens */
+    .hero-footer-links {
+        flex-direction: column !important;
+        gap: 30px !important;
+    }
 
-  .hero-footer-links > div {
-    width: 100%;
-  }
+        .hero-footer-links > div {
+            width: 100%;
+        }
 }
 
 .hero-heading-line1,
 .hero-heading-line2,
 .hero-heading-line3 {
-  display: block;
+    display: block;
 }
 
 /* Default (Dark mode): "That Ships" gets the gradient */
 .hero-heading-line1 {
-  color: white;
+    color: white;
 }
 
-.hero-heading-line2 {
-  background: linear-gradient(135deg, #3CD0E2 0%, #419AC5 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+.hero-heading-line2, .hero-heading-line2 > span {
+    background: linear-gradient(135deg, #3CD0E2 0%, #419AC5 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 .hero-heading-line3 {
-  color: white;
+    color: white;
 }
 
 /* Light mode (Mintlify adds 'light' class to html element) */
 html.light .hero-heading-line1 {
-  background: linear-gradient(135deg, #3CD0E2 0%, #419AC5 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+    background: linear-gradient(135deg, #3CD0E2 0%, #419AC5 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
-html.light .hero-heading-line2 {
-  color: white;
-  background: none;
-  -webkit-text-fill-color: white;
+html.light .hero-heading-line22, html.light .hero-heading-line2 > span {
+    color: white;
+    background: none;
+    -webkit-text-fill-color: white;
 }
 
 html.light .hero-heading-line3 {
-  background: linear-gradient(135deg, #3CD0E2 0%, #419AC5 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+    background: linear-gradient(135deg, #3CD0E2 0%, #419AC5 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
+
+/* AlvaroTrigo's dropping texts container */
+.dropping-texts {
+    /*    display: inline-block;
+    width: 180px;
+    text-align: left;
+    height: 36px;
+    vertical-align: -2px;
+    position: relative;*/
+}
+
+    .dropping-texts > span {
+        font-size: 0px;
+        opacity: 0;
+        position: absolute;
+        font-weight: 900;
+        /* Override the gradient transparency to make text visible */
+        background: linear-gradient(135deg, #3CD0E2 0%, #419AC5 100%) !important;
+        -webkit-background-clip: text !important;
+        -webkit-text-fill-color: transparent !important;
+        background-clip: text !important;
+        /* GPU acceleration and stutter prevention */
+        will-change: transform, opacity, font-size;
+        transform: translateZ(0);
+        backface-visibility: hidden;
+    }
+
+        .dropping-texts > span:nth-child(1) {
+            animation: roll 6s linear infinite 0s;
+        }
+
+        .dropping-texts > span:nth-child(2) {
+            animation: roll 6s linear infinite 1.6s;
+        }
+
+        .dropping-texts > span:nth-child(3) {
+            animation: roll2 6s linear infinite 3.2s;
+        }

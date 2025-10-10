@@ -1,10 +1,18 @@
 export const CTASection = () => {
+  const [animationsStarted, setAnimationsStarted] = React.useState(false);
+
+  React.useEffect(() => {
+    setAnimationsStarted(true);
+  }, []);
+
   return (
     <div style={{
       width: '100%',
       padding: '120px 0',
       background: 'linear-gradient(135deg, #1A2B3D 0%, #0A1628 100%)',
-      textAlign: 'center'
+      textAlign: 'center',
+      opacity: animationsStarted ? 1 : 0,
+      transition: 'opacity 0.5s ease-out'
     }}>
       <div style={{
         maxWidth: '800px',

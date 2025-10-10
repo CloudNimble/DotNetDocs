@@ -1,21 +1,11 @@
 export const FeatureShowcase = () => {
+    const [animationsStarted, setAnimationsStarted] = React.useState(false);
+
+    React.useEffect(() => {
+        setAnimationsStarted(true);
+    }, []);
+
     const features = [
-        {
-            icon: 'sidebar-flip',
-            iconType: 'duotone',
-            title: 'First-Class Editing',
-            description: 'New Docs Project brings documentation editing to VS & VSCode',
-            color: '#3CD0E2',
-            details: 'The new .docsproj files + the DotNetDocs.Sdk bring your docs for Mintlify, DocFX, MkDocs, Jekyll, Hugo, and more right into your VS and VSCode solutions.'
-        },
-        {
-            icon: 'file-code',
-            iconType: 'duotone',
-            title: 'Automatic API Docs',
-            description: 'Renders your .NET XML Documentation Comments in multiple formats',
-            color: '#3CD0E2',
-            details: 'Built-in support for both Mintlify and Standard Markdown, YAML, and JSON. Build your own renderers to support custom formats.'
-        },
         {
             icon: 'layer-group',
             iconType: 'duotone',
@@ -25,28 +15,20 @@ export const FeatureShowcase = () => {
             details: 'Content on how to use an API, best practices, and more do not belong in your code files. Expertly weave your API & Conceptual docs and regenerate without losing your hard work.'
         },
         {
-            icon: 'palette',
-            iconType: 'duotone',
-            title: 'Beautiful by Default',
-            description: 'Exceptional Mintlify.com support for best-in-class experiences',
-            color: '#419AC5',
-            details: 'Give your users the experience trusted by Vercel, Anthropic, X, and more, with built in LLMS.txt and MCP support to help them build solutions faster.'
-        },
-        {
             icon: 'gears',
             iconType: 'duotone',
-            title: 'MSBuild Integration',
+            title: 'Native MSBuild Integration',
             description: 'Automatically updates your Docs every time you compile',
             color: '#3CD0E2',
-            details: 'Your docs are always up-to-date, whether you compile in VS, with `dotnet build` or in your CI/CD pipeline.'
+            details: 'Your docs are always up-to-date, whether you compile in VS, with `dotnet build` or in your CI/CD pipeline. No external tools required.'
         },
         {
             icon: 'pipeline-valve',
             iconType: 'duotone',
             title: 'Pluggable Pipeline',
-            description: 'Easily Generate, merge, enrich, transform, and render your docs',
+            description: 'Easily generate, merge, enrich, transform, and render your docs',
             color: '#3CD0E2',
-            details: 'DotNetDocs is the last documentation system you\'ll ever need. Our modern pipeline is designed for the future.'
+            details: 'DotNetDocs is the last documentation system you\'ll ever need. Our modern pipeline is designed for the future with full extensibility.'
         }
     ];
 
@@ -56,7 +38,9 @@ export const FeatureShowcase = () => {
             padding: '120px 0',
             background: 'linear-gradient(180deg, #0F1922 0%, #1A2B3D 100%)',
             position: 'relative',
-            overflow: 'hidden'
+            overflow: 'hidden',
+            opacity: animationsStarted ? 1 : 0,
+            transition: 'opacity 0.5s ease-out'
         }}>
             {/* Background decoration */}
             <div style={{
@@ -74,27 +58,47 @@ export const FeatureShowcase = () => {
                 position: 'relative',
                 zIndex: 10
             }}>
-                {/* Header */}
+                {/* Header with competitive edge */}
                 <div style={{ textAlign: 'center', marginBottom: '80px' }}>
+                    <div style={{
+                        display: 'inline-block',
+                        padding: '8px 20px',
+                        background: 'rgba(255, 107, 107, 0.1)',
+                        border: '1px solid rgba(255, 107, 107, 0.3)',
+                        borderRadius: '50px',
+                        marginBottom: '20px',
+                        fontSize: '13px',
+                        fontWeight: 'bold',
+                        color: '#FF6B6B',
+                        letterSpacing: '1px',
+                        textTransform: 'uppercase'
+                    }}>
+                        Beyond DocFX
+                    </div>
+
                     <h2 style={{
                         fontSize: 'clamp(36px, 5vw, 56px)',
                         fontWeight: '900',
                         marginBottom: '20px',
-                        background: 'linear-gradient(135deg, #3CD0E2, #419AC5)',
-                        WebkitBackgroundClip: 'text',
-                        WebkitTextFillColor: 'transparent',
-                        backgroundClip: 'text'
+                        lineHeight: '1.2'
                     }}>
-                        Everything You Need
+                        <span style={{
+                            background: 'linear-gradient(135deg, #3CD0E2, #419AC5)',
+                            WebkitBackgroundClip: 'text',
+                            WebkitTextFillColor: 'transparent',
+                            backgroundClip: 'text'
+                        }}>
+                            Features DocFX Can't Handle
+                        </span>
                     </h2>
                     <p style={{
                         fontSize: '20px',
                         color: '#B0D4E8',
-                        maxWidth: '600px',
+                        maxWidth: '700px',
                         margin: '0 auto',
                         lineHeight: '1.6'
                     }}>
-                        Powerful features that make documentation a joy, not a chore
+                        While DocFX generates static API docs, DotNetDocs brings modern workflows, multiple output formats, and true integration with your development process
                     </p>
                 </div>
 
