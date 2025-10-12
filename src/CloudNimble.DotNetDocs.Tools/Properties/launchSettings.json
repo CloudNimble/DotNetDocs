@@ -2,7 +2,7 @@
   "profiles": {
     "Help": {
       "commandName": "Project",
-      "commandLineArgs": "--help"
+      "commandLineArgs": ""
     }
     //"Database.Generate": {
     //  "commandName": "Project",

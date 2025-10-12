@@ -32,7 +32,9 @@
       "WebFetch(domain:www.mintlify.com)",
       "WebFetch(domain:docs.mintlify.com)",
       "mcp__Mintlify__SearchMintlify",
-      "WebFetch(domain:leaves.mintlify.com)"
+      "WebFetch(domain:leaves.mintlify.com)",
+      "mcp__github__pull_request_read",
+      "mcp__github__get_issue"
     ],
     "deny": [],
     "ask": [],

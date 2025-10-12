@@ -1,4 +1,5 @@
-﻿using McMaster.Extensions.CommandLineUtils;
+﻿using CloudNimble.DotNetDocs.Tools.Commands.Base;
+using McMaster.Extensions.CommandLineUtils;
 
 namespace CloudNimble.DotNetDocs.Tools.Commands
 {
@@ -9,9 +10,9 @@ namespace CloudNimble.DotNetDocs.Tools.Commands
     /// <remarks>This command serves as the entry point for the DotNetDocs CLI and provides access to
     /// subcommands such as build and add. When invoked without a subcommand or with insufficient arguments, it displays
     /// help information describing available commands and usage.</remarks>
-    [Command(Name="dotnet docs", Description = "DotNetDocs 1.0 CLI\nhttps://dotnetdocs.com\n\nMade with ❤️ by CloudNimble.\nhttps://github.com/CloudNimble")]
+    [Command(Name="dotnet docs")]
     [Subcommand(typeof(BuildCommand), typeof(AddCommand))]
-    public class DocsRootCommand
+    public class DocsRootCommand : DocsCommandBase
     {
 
         /// <summary>
@@ -21,6 +22,7 @@ namespace CloudNimble.DotNetDocs.Tools.Commands
         /// <returns>Always returns 0 after displaying the help information.</returns>
         public int OnExecute(CommandLineApplication app)
         {
+            WriteHeader();
             app.ShowHelp();
             return 1;
         }

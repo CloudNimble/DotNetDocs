@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using CloudNimble.DotNetDocs.Tools.Commands.Base;
 using McMaster.Extensions.CommandLineUtils;
 
 namespace CloudNimble.DotNetDocs.Tools.Commands
@@ -17,8 +18,8 @@ namespace CloudNimble.DotNetDocs.Tools.Commands
     /// specified solution file (.sln or .slnx). The project is automatically added to a "Docs" solution folder.
     /// For .slnx files, the command post-processes the XML to add Type="C#" attributes to .docsproj nodes.
     /// </remarks>
-    [Command("add", Description = "Add documentation project to solution")]
-    public class AddCommand
+    [Command("add", Description = "Add documentation project (.docsproj) to the solution.")]
+    public class AddCommand : DocsCommandBase
     {
 
         #region Properties
@@ -26,20 +27,20 @@ namespace CloudNimble.DotNetDocs.Tools.Commands
         /// <summary>
         /// Gets or sets the output directory for the generated documentation project.
         /// </summary>
-        [Option("--output|-o", Description = "Output directory for the docs project")]
+        [Option("--output|-o", Description = "Optional. Output directory for the docs project. Defaults to the project folder.")]
         public string? OutputDirectory { get; set; }
 
         /// <summary>
         /// Gets or sets the name of the documentation project.
         /// </summary>
         /// <remarks>If not specified, the project name defaults to the solution name.</remarks>
-        [Option("--name", Description = "Name for the docs project (defaults to solution name)")]
+        [Option("--name", Description = "Optional. Name for the docs project. Defaults to solution name + '.Docs'.")]
         public string? ProjectName { get; set; }
 
         /// <summary>
         /// Gets or sets the path to the solution file (.sln or .slnx) to use.
         /// </summary>
-        [Option("--solution|-s", Description = "Path to solution file (.sln or .slnx)")]
+        [Option("--solution|-s", Description = "Optional. Path to solution file (.sln or .slnx)")]
         public string? SolutionPath { get; set; }
 
         #endregion
@@ -60,6 +61,7 @@ namespace CloudNimble.DotNetDocs.Tools.Commands
         /// </remarks>
         public async Task<int> OnExecute(CommandLineApplication app)
         {
+            WriteHeader();
             try
             {
                 // Find solution file if not specified
@@ -142,7 +144,9 @@ namespace CloudNimble.DotNetDocs.Tools.Commands
 
             if (process.ExitCode != 0)
             {
-                throw new Exception("Failed to add project to solution");
+                var error = await process.StandardError.ReadToEndAsync();
+                var output = await process.StandardOutput.ReadToEndAsync();
+                throw new Exception($"Failed to add project to solution. Exit code: {process.ExitCode}\nError: {error}\nOutput: {output}");
             }
 
             // Post-process .slnx files to add Type="C#" attribute
@@ -197,7 +201,7 @@ namespace CloudNimble.DotNetDocs.Tools.Commands
         /// </remarks>
         internal async Task CreateDocsProjectFile(string filePath, string solutionName)
         {
-            string content = $@"<Project Sdk=""DotNetDocs.Sdk/1.0.0-preview.24"">
+            string content = $@"<Project Sdk=""DotNetDocs.Sdk/1.0.0-preview.27"">
 
 	<PropertyGroup>
 		<KeepLocalOutput>true</KeepLocalOutput>
