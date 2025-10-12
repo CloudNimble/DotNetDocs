@@ -9,6 +9,7 @@ using CloudNimble.DotNetDocs.Core;
 using CloudNimble.DotNetDocs.Core.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using CloudNimble.DotNetDocs.Tools.Commands.Base;
 
 namespace CloudNimble.DotNetDocs.Tools.Commands
 {
@@ -17,7 +18,7 @@ namespace CloudNimble.DotNetDocs.Tools.Commands
     /// 
     /// </summary>
     [Command("build", Description = "Build documentation from assemblies")]
-    public class BuildCommand
+    public class BuildCommand : DocsCommandBase
     {
 
         /// <summary>
@@ -59,6 +60,7 @@ namespace CloudNimble.DotNetDocs.Tools.Commands
         /// <returns></returns>
         public async Task<int> OnExecute(CommandLineApplication app)
         {
+            WriteHeader();
             try
             {
                 Console.WriteLine($"🔧 Starting documentation generation...");

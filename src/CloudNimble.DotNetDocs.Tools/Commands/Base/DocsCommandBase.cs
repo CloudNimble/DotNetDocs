@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Text;
-using Console = Colorful.Console;
+using Pastel;
 
 namespace CloudNimble.DotNetDocs.Tools.Commands.Base
 {
@@ -27,13 +27,11 @@ namespace CloudNimble.DotNetDocs.Tools.Commands.Base
             // Set console encoding to UTF-8 to support Unicode characters like ❤️ and ≠
             Console.OutputEncoding = Encoding.UTF8;
 
-            // Set background to black for contrast
-            //Console.BackgroundColor = Color.Black;
-
             // Define colors from the SVG
             Color lightBlue = Color.FromArgb(60, 208, 226); // Lighter cyan for top and "docs"
             Color darkBlue = Color.FromArgb(65, 154, 197);  // Darker blue for bottom
-            Color white = Color.FromArgb(240, 240, 240);     // For "dotnet" - explicit white
+            Color white = Color.FromArgb(240, 240, 240);    // For "dotnet" - light gray
+            Color gray = Color.FromArgb(128, 128, 128);     // For attribution
 
             // Text ASCII art lines for "dotnetdocs"
             string[] textLines = new string[]
@@ -44,10 +42,10 @@ namespace CloudNimble.DotNetDocs.Tools.Commands.Base
                 "    ≠≠≠≠≠     ≠≠≠≠≠=  ≠≠≠≠≠                  ≈≈≈               ≈≈≈                           ≈≈≈≈           ≠≠≠                                ",
                 "≠≠≠≠≠≠≠≠≠     ≠≠≠≠≠    ≠≠≠≠≠≠≠≠        ≈≈≈≈≈≈≈≈≈    ≈≈≈≈≈≈≈≈  ≈≈≈≈≈≈≈ ≈≈≈≈≈≈≈≈≈    ≈≈≈≈≈≈≈  ≈≈≈≈≈≈≈  =≠≠≠≠≠≠≠≠≠   ≠≠≠≠≠≠≠≠    ≠≠≠≠≠≠≠≠ ≠≠≠≠≠≠≠ ",
                 "≠≠≠≠≠≠≠      ≠≠≠≠≠      ≠≠≠≠≠≠≠≠      ≈≈≈   ∞≈≈≈  ≈≈≈    ≈≈≈≈  ≈≈≈≈   ≈≈≈≈   ≈≈≈  ≈≈≈   ≈≈≈  ≈≈≈≈   ≠≠≠≠   ≠≠≠≠  ≠≠≠    ≠≠≠  ≠≠≠≠     ≠≠≠      ",
-                "=======      =====      ========     ≈≈≈     ≈≈≈  ≈≈≈     ≈≈≈  ≈≈≈    ≈≈≈    ≈≈≈ ≈≈≈≈≈≈≈≈≈≈  ≈≈≈≈   ≠≠≠     ≠≠≠ ≠≠≠      ≠≠≠≠≠≠≠       ≠≠≠≠≠   ",
-                "=========   =====      ========      ≈≈≈     ≈≈≈ ≈≈≈≈     ≈≈≈  ≈≈≈    ≈≈≈    ≈≈≈ ≈≈≈≈≈≈≈≈≈≈  ≈≈≈≈   ≠≠≠     ≠≠≠ ≠≠≠      ≠≠≠≠≠≠≠         ≠≠≠≠≠ ",
-                "    =====  ======     =====           ≈≈≈   ∞≈≈≈  ≈≈≈    ≈≈≈≈  ≈≈≈≈   ≈≈≈    ≈≈≈  ≈≈≈        ≈≈≈≈   ≠≠≠    ≠≠≠≠ =≠≠≠    ≠≠≠  ≠≠≠           ≠≠≠≠",
-                "    ============    =======            ≈≈≈≈≈≈≈≈≈   ≈≈≈≈≈≈≈≈≈   ≈≈≈≈≈≈ ≈≈≈    ≈≈≈   ≈≈≈≈≈≈≈≈   ≈≈≈≈≈  ≠≠≠≠≠≠≠≠≠≠   ≠≠≠≠≠≠≠≠    ≠≠≠≠≠≠≠≠≠≠≠≠≠≠≠≠ ",
+                "=======      =====      ========     ≈≈≈     ≈≈≈  ≈≈≈     ≈≈≈  ≈≈≈    ≈≈≈    ≈≈≈ ≈≈≈    ≈≈≈  ≈≈≈≈   ≠≠≠     ≠≠≠ ≠≠≠      ≠≠≠ ≠≠≠       ≠≠≠≠≠   ",
+                "=========   =====      ========      ≈≈≈     ≈≈≈ ≈≈≈≈     ≈≈≈  ≈≈≈    ≈≈≈    ≈≈≈ ≈≈≈≈≈≈≈≈≈≈  ≈≈≈≈   ≠≠≠     ≠≠≠ ≠≠≠      ≠≠≠ ≠≠≠         ≠≠≠≠≠ ",
+                "    =====  ======     =====           ≈≈≈   ∞≈≈≈  ≈≈≈    ≈≈≈≈  ≈≈≈≈   ≈≈≈    ≈≈≈  ≈≈≈        ≈≈≈≈   ≠≠≠    ≠≠≠≠  ≠≠≠    ≠≠≠  ≠≠≠≠          ≠≠≠≠",
+                "    ============    =======            ≈≈≈≈≈≈≈≈≈   ≈≈≈≈≈≈≈≈≈   ≈≈≈≈≈≈ ≈≈≈    ≈≈≈   ≈≈≈≈≈≈≈≈   ≈≈≈≈≈  ≠≠≠≠≠≠≠≠≠≠   ≠≠≠≠≠≠≠≠    ≠≠≠≠≠≠≠≠ ≠≠≠≠≠≠≠ ",
                 "     ==========   =========                                                                                                                    ",
                 "      =========   =======                                                                                                                      "
             };
@@ -72,28 +70,21 @@ namespace CloudNimble.DotNetDocs.Tools.Commands.Base
                 // Right part (100+): lightBlue for "docs"
                 string rightPart = line.Length > docsStartColumn ? line[docsStartColumn..] : "";
 
-                Console.Write(leftPart, leftColor);
-                Console.Write(midPart, white);
-                Console.Write(rightPart, lightBlue);
+                Console.Write(leftPart.Pastel(leftColor));
+                Console.Write(midPart.Pastel(white));
+                Console.Write(rightPart.Pastel(lightBlue));
 
                 Console.WriteLine();
             }
 
-            // Add the footer lines to match the image
-            Console.Write("DotNetDocs 1.0 CLI", lightBlue);
+            // Add the footer lines
             Console.WriteLine();
-
-            Console.Write("Home: https://dotnetdocs.com", darkBlue);
+            Console.WriteLine("DotNetDocs 1.0 CLI".Pastel(lightBlue));
+            Console.WriteLine("https://dotnetdocs.com".Pastel(darkBlue));
             Console.WriteLine();
-
-            Console.Write("Made with ❤️ by CloudNimble.", ConsoleColor.Gray);
+            Console.WriteLine($"Made with {"❤️".Pastel(Color.Red)} by {"☁️".Pastel(darkBlue)} CloudNimble.".Pastel(gray));
+            Console.WriteLine("https://github.com/CloudNimble".Pastel(gray));
             Console.WriteLine();
-
-            Console.Write("https://github.com/CloudNimble", ConsoleColor.Gray);
-            Console.WriteLine();
-
-            // Reset console colors to default
-            Console.ResetColor();
         }
 
         #endregion
