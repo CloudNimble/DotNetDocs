@@ -34,8 +34,8 @@ namespace CloudNimble.DotNetDocs.Tools.Commands.Base
             Color gray = Color.FromArgb(128, 128, 128);     // For attribution
 
             // Text ASCII art lines for "dotnetdocs"
-            string[] textLines = new string[]
-            {
+            string[] textLines =
+            [
                 "      ≠≠≠≠≠≠≠   ≠≠≠≠≠≠≠≠≠                                                                                                                      ",
                 "     ≠≠≠≠≠≠≠≠   ≠≠≠≠≠≠≠≠≠≠≠                  ≈≈≈                                                            ≠≠≠                                ",
                 "    ≠≠≠≠≠≠≠≠   ≠≠≠≠≠≠≠≠≠≠≠≠                  ≈≈≈                ≈≈                            ≈≈≈           ≠≠≠                                ",
@@ -48,7 +48,7 @@ namespace CloudNimble.DotNetDocs.Tools.Commands.Base
                 "    ============    =======            ≈≈≈≈≈≈≈≈≈   ≈≈≈≈≈≈≈≈≈   ≈≈≈≈≈≈ ≈≈≈    ≈≈≈   ≈≈≈≈≈≈≈≈   ≈≈≈≈≈  ≠≠≠≠≠≠≠≠≠≠   ≠≠≠≠≠≠≠≠    ≠≠≠≠≠≠≠≠ ≠≠≠≠≠≠≠ ",
                 "     ==========   =========                                                                                                                    ",
                 "      =========   =======                                                                                                                      "
-            };
+            ];
 
             // Approximate columns
             int braceWidth = 32; // For left "brace" area
