@@ -7,9 +7,20 @@ icon: book
 
 ## What is Conceptual Documentation?
 
-Conceptual Documentation is DotNetDocs' system for enriching API reference documentation with rich, context-aware content that goes beyond what XML documentation comments can provide. While XML comments describe **what** an API element is, conceptual documentation explains **how** to use it effectively.
+Conceptual Documentation is DotNetDocs' system for enriching API reference documentation with rich, context-aware content that goes beyond what XML 
+documentation comments can provide. While XML comments describe **what** an API element is, conceptual documentation explains **how** to use it effectively.
 
-Conceptual content is stored in separate `.mdz` (Markdown-Zen) files organized alongside your code, allowing technical writers and developers to collaborate on comprehensive documentation without cluttering source files.
+Conceptual documentation is inspired by best practices from major documentation platforms like [Microsoft Learn](https://learn.microsoft.com), 
+[Read the Docs](https://readthedocs.org), and [Mintlify](https://mintlify.com). It brings the power of rich, structured content to your .NET projects.
+
+Conceptual content is stored in separate `.mdz` files organized alongside your code, allowing technical writers and developers to collaborate 
+on comprehensive documentation without cluttering source files.
+
+<Note>
+    The `.mdz` file extension was chosen to avoid being picked up by documentation platforms that autiomatically look for `.md` or `.mdx` files. It 
+    does not stand for anything in particular, except that if you have the file `index.md` and `index.mdx` and `index.mdz` in the same folder, 
+    the `index.mdz` file will appear last in the list.
+</Note>
 
 ## How Conceptual Documentation Works
 
@@ -17,15 +28,18 @@ DotNetDocs follows a two-phase documentation pipeline:
 
 <Steps>
   <Step title="XML Extraction">
-    The `AssemblyManager` extracts documentation from XML comments in your compiled assemblies, populating basic API metadata like summaries, remarks, parameters, and return values.
+    The `AssemblyManager` extracts documentation from XML comments in your compiled assemblies, populating basic API metadata like summaries, 
+    remarks, parameters, and return values.
   </Step>
 
   <Step title="Conceptual Loading">
-    The `DocumentationManager` loads conceptual content from `.mdz` files in the configured `ConceptualPath` directory, enriching the documentation model with usage guides, examples, best practices, patterns, and considerations.
+    The `DocumentationManager` loads conceptual content from `.mdz` files in the configured `ConceptualPath` directory, enriching the documentation 
+    model with usage guides, examples, best practices, patterns, and considerations.
   </Step>
 </Steps>
 
-These two content sources are merged into a unified documentation model that renderers (like MintlifyRenderer) transform into beautiful, comprehensive documentation sites.
+These two content sources are merged into a unified documentation model that renderers (like MintlifyRenderer) transform into beautiful, comprehensive 
+documentation sites.
 
 ## Configuration
 
@@ -53,12 +67,14 @@ var context = new ProjectContext
 </ParamField>
 
 <ParamField path="ShowPlaceholders" type="bool" default="true">
-  Controls whether placeholder content is included in the final documentation. See [Placeholders](#placeholders-and-the-showplaceholders-property) section below.
+  Controls whether placeholder content is included in the final documentation. See [Placeholders](#placeholders-and-the-showplaceholders-property) 
+  section below.
 </ParamField>
 
 ## Conceptual Documentation Sections
 
-DotNetDocs supports seven distinct conceptual sections, each with a specific purpose. These sections are available at three levels: **namespace**, **type**, and **member**.
+DotNetDocs supports seven distinct conceptual sections, each with a specific purpose. These sections are available at three levels: **namespace**, 
+**type**, and **member**.
 
 ### Available Sections
 
@@ -259,7 +275,8 @@ The `DocumentationManager` constructs file paths based on the fully qualified na
 
 ## Placeholders and the ShowPlaceholders Property
 
-When `ConceptualDocsEnabled = true`, DotNetDocs automatically generates placeholder files for any conceptual sections that don't exist yet. These placeholders help you identify documentation gaps and provide a starting point for writing.
+When `ConceptualDocsEnabled = true`, DotNetDocs automatically generates placeholder files for any conceptual sections that don't exist yet. These 
+placeholders help you identify documentation gaps and provide a starting point for writing.
 
 ### Placeholder Format
 
