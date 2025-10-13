@@ -23,7 +23,7 @@ export const FeatureShowcase = () => {
             details: 'Your docs are always up-to-date, whether you compile in VS, with `dotnet build` or in your CI/CD pipeline. No external tools required.'
         },
         {
-            icon: 'pipeline-valve',
+            icon: 'pipe-valve',
             iconType: 'duotone',
             title: 'Pluggable Pipeline',
             description: 'Easily generate, merge, enrich, transform, and render your docs',
