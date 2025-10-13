@@ -55,7 +55,7 @@
         <PackageIcon Condition=" '$(IsTestProject)' != 'true' And $(MSBuildProjectName.StartsWith('CloudNimble.'))">dotnetdocs-logo.png</PackageIcon>
         <PackageIcon Condition=" '$(IsTestProject)' != 'true' And $(MSBuildProjectName.StartsWith('Mintlify.'))">mintlify-logo.png</PackageIcon>
 
-        <PackageProjectUrl>https://easyaf.dev/dotnetdocs</PackageProjectUrl>
+        <PackageProjectUrl>https://dotnetdocs.com</PackageProjectUrl>
         <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
         <PackageTags>easyaf;docs;docfx;documentation;mintlify</PackageTags>
         <Serviceable>true</Serviceable>

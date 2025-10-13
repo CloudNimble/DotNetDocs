@@ -1,4 +1,4 @@
-export const ValueProposition = () => {
+export const ValueProposition = ({ minimal = false, minCardWidth = 360, gap = 40 }) => {
     const [animationsStarted, setAnimationsStarted] = React.useState(false);
 
     React.useEffect(() => {
@@ -32,6 +32,162 @@ export const ValueProposition = () => {
         }
     ];
 
+    // Value prop cards (reused in both modes)
+    const valueCards = (
+        <div style={{
+            display: 'grid',
+            gridTemplateColumns: `repeat(auto-fit, minmax(${minCardWidth}px, 1fr))`,
+            gap: `${gap}px`,
+            marginBottom: minimal ? 0 : '80px'
+        }}>
+            {values.map((value, index) => (
+                <div
+                    key={index}
+                    className="value-card"
+                    style={{
+                        position: 'relative',
+                        background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01))',
+                        border: '2px solid rgba(60, 208, 226, 0.25)',
+                        borderRadius: '28px',
+                        padding: '50px 40px',
+                        transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
+                        overflow: 'hidden',
+                        boxShadow: '0 10px 40px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05)'
+                    }}
+                >
+                    {/* Animated border gradient */}
+                    <div className="card-border-gradient" style={{
+                        position: 'absolute',
+                        inset: 0,
+                        borderRadius: '28px',
+                        padding: '2px',
+                        background: `linear-gradient(135deg, ${value.gradient.replace('linear-gradient(135deg, ', '').replace(')', '')}, transparent, transparent)`,
+                        WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+                        WebkitMaskComposite: 'xor',
+                        maskComposite: 'exclude',
+                        opacity: 0,
+                        transition: 'opacity 0.5s ease'
+                    }} />
+
+                    {/* Card background glow */}
+                    <div className="card-glow" style={{
+                        position: 'absolute',
+                        top: '-50%',
+                        left: '-50%',
+                        width: '200%',
+                        height: '200%',
+                        background: value.gradient,
+                        opacity: 0,
+                        transition: 'opacity 0.5s ease',
+                        borderRadius: '50%',
+                        filter: 'blur(60px)'
+                    }} />
+
+                    {/* Number badge */}
+                    <div style={{
+                        position: 'absolute',
+                        top: '30px',
+                        right: '30px',
+                        fontSize: '72px',
+                        fontWeight: '900',
+                        background: value.gradient,
+                        WebkitBackgroundClip: 'text',
+                        WebkitTextFillColor: 'transparent',
+                        backgroundClip: 'text',
+                        opacity: 0.1,
+                        lineHeight: '1',
+                        pointerEvents: 'none'
+                    }}>
+                        {value.number}
+                    </div>
+
+                    <div style={{ position: 'relative', zIndex: 2 }}>
+                        {/* Icon */}
+                        <div className="icon-container" style={{
+                            marginBottom: minimal ? '20px' : '30px',
+                            display: 'inline-flex',
+                            padding: '24px',
+                            background: `linear-gradient(135deg, rgba(60, 208, 226, 0.15), rgba(65, 154, 197, 0.1))`,
+                            borderRadius: '20px',
+                            border: '2px solid rgba(60, 208, 226, 0.3)',
+                            position: 'relative',
+                            boxShadow: '0 8px 32px rgba(60, 208, 226, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
+                            transition: 'all 0.4s ease'
+                        }}>
+                            <Icon icon={value.icon} iconType={value.iconType} size={44} color="#3CD0E2" />
+                        </div>
+
+                        {/* Title */}
+                        <h3 style={{
+                            fontSize: '28px',
+                            fontWeight: 'bold',
+                            color: 'white',
+                            margin: '0 0 16px 0',
+                            lineHeight: '1.3'
+                        }}>
+                            {value.title}
+                        </h3>
+
+                        {/* Description */}
+                        <p style={{
+                            color: '#A0C8DD',
+                            fontSize: '17px',
+                            lineHeight: '1.7',
+                            marginBottom: '0'
+                        }}>
+                            {value.description}
+                        </p>
+                    </div>
+                </div>
+            ))}
+        </div>
+    );
+
+    // Minimal mode: just the cards
+    if (minimal) {
+        return (
+            <>
+                {valueCards}
+                <style>{`
+                    .value-card:hover {
+                        transform: translateY(-12px) scale(1.02);
+                        border-color: transparent !important;
+                        box-shadow: 0 40px 80px rgba(60, 208, 226, 0.35), 0 0 60px rgba(60, 208, 226, 0.15);
+                        background: linear-gradient(135deg, rgba(60, 208, 226, 0.08), rgba(65, 154, 197, 0.05)) !important;
+                    }
+
+                    .value-card:hover .card-glow {
+                        opacity: 0.12 !important;
+                    }
+
+                    .value-card:hover .card-border-gradient {
+                        opacity: 1 !important;
+                    }
+
+                    .value-card:hover .icon-container {
+                        transform: scale(1.1) rotate(-5deg);
+                        box-shadow: 0 12px 48px rgba(60, 208, 226, 0.4), inset 0 2px 0 rgba(255, 255, 255, 0.2) !important;
+                        background: linear-gradient(135deg, rgba(60, 208, 226, 0.25), rgba(65, 154, 197, 0.2)) !important;
+                        border-color: rgba(60, 208, 226, 0.6) !important;
+                    }
+
+                    .value-card:hover h3 {
+                        background: linear-gradient(135deg, #3CD0E2, #419AC5);
+                        -webkit-background-clip: text;
+                        -webkit-text-fill-color: transparent;
+                        background-clip: text;
+                        transform: translateX(5px);
+                    }
+
+                    .value-card h3 {
+                        transition: all 0.4s ease;
+                    }
+                `}</style>
+            </>
+        );
+    }
+
+    // Full marketing mode: background, header, cards, footer
     return (
         <div style={{
             width: '100%',
@@ -155,113 +311,7 @@ export const ValueProposition = () => {
                 </div>
 
                 {/* Value propositions with stunning cards */}
-                <div style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))',
-                    gap: '40px',
-                    marginBottom: '80px'
-                }}>
-                    {values.map((value, index) => (
-                        <div
-                            key={index}
-                            className="value-card"
-                            style={{
-                                position: 'relative',
-                                background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01))',
-                                border: '2px solid rgba(60, 208, 226, 0.25)',
-                                borderRadius: '28px',
-                                padding: '50px 40px',
-                                transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
-                                overflow: 'hidden',
-                                boxShadow: '0 10px 40px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05)'
-                            }}
-                        >
-                            {/* Animated border gradient */}
-                            <div className="card-border-gradient" style={{
-                                position: 'absolute',
-                                inset: 0,
-                                borderRadius: '28px',
-                                padding: '2px',
-                                background: `linear-gradient(135deg, ${value.gradient.replace('linear-gradient(135deg, ', '').replace(')', '')}, transparent, transparent)`,
-                                WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
-                                WebkitMaskComposite: 'xor',
-                                maskComposite: 'exclude',
-                                opacity: 0,
-                                transition: 'opacity 0.5s ease'
-                            }} />
-
-                            {/* Card background glow */}
-                            <div className="card-glow" style={{
-                                position: 'absolute',
-                                top: '-50%',
-                                left: '-50%',
-                                width: '200%',
-                                height: '200%',
-                                background: value.gradient,
-                                opacity: 0,
-                                transition: 'opacity 0.5s ease',
-                                borderRadius: '50%',
-                                filter: 'blur(60px)'
-                            }} />
-
-                            {/* Number badge */}
-                            <div style={{
-                                position: 'absolute',
-                                top: '30px',
-                                right: '30px',
-                                fontSize: '72px',
-                                fontWeight: '900',
-                                background: value.gradient,
-                                WebkitBackgroundClip: 'text',
-                                WebkitTextFillColor: 'transparent',
-                                backgroundClip: 'text',
-                                opacity: 0.1,
-                                lineHeight: '1',
-                                pointerEvents: 'none'
-                            }}>
-                                {value.number}
-                            </div>
-
-                            <div style={{ position: 'relative', zIndex: 2 }}>
-                                {/* Icon */}
-                                <div className="icon-container" style={{
-                                    marginBottom: '30px',
-                                    display: 'inline-flex',
-                                    padding: '24px',
-                                    background: `linear-gradient(135deg, rgba(60, 208, 226, 0.15), rgba(65, 154, 197, 0.1))`,
-                                    borderRadius: '20px',
-                                    border: '2px solid rgba(60, 208, 226, 0.3)',
-                                    position: 'relative',
-                                    boxShadow: '0 8px 32px rgba(60, 208, 226, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
-                                    transition: 'all 0.4s ease'
-                                }}>
-                                    <Icon icon={value.icon} iconType={value.iconType} size={44} color="#3CD0E2" />
-                                </div>
-
-                                {/* Title */}
-                                <h3 style={{
-                                    fontSize: '28px',
-                                    fontWeight: 'bold',
-                                    color: 'white',
-                                    marginBottom: '16px',
-                                    lineHeight: '1.3'
-                                }}>
-                                    {value.title}
-                                </h3>
-
-                                {/* Description */}
-                                <p style={{
-                                    color: '#A0C8DD',
-                                    fontSize: '17px',
-                                    lineHeight: '1.7',
-                                    marginBottom: '0'
-                                }}>
-                                    {value.description}
-                                </p>
-                            </div>
-                        </div>
-                    ))}
-                </div>
+                {valueCards}
 
                 {/* Bottom tagline */}
                 <div style={{

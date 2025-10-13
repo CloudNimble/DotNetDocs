@@ -54,6 +54,9 @@ namespace CloudNimble.DotNetDocs.Tools.Commands.Base
             int braceWidth = 32; // For left "brace" area
             int docsStartColumn = 100; // For "docs" start
 
+            // RWM: Start with a blank line to separate the logo from the command.
+            Console.WriteLine();
+
             // Print each line with segmented colors
             for (int i = 0; i < 12; i++)
             {

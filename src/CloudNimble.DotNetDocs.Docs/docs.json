@@ -22,8 +22,8 @@
         "icon": "stars",
         "pages": [
           "index",
-          "quickstart",
-          "installation"
+          "why-dotnetdocs",
+          "quickstart"
         ]
       },
       {
@@ -31,8 +31,10 @@
         "icon": "dog-leashed",
         "pages": [
           "guides/index",
-          "guides/conceptual-docs",
           "guides/pipeline",
+          "guides/conceptual-docs",
+          "guides/deployment",
+          "guides/cli-reference",
           "guides/docsproj"
         ]
       },

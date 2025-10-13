@@ -12,6 +12,7 @@
   </Folder>
   <Folder Name="/Plugins/">
     <Project Path="CloudNimble.DotNetDocs.Plugins.AI/CloudNimble.DotNetDocs.Plugins.AI.csproj" Id="d02be6be-f430-42de-af74-09e49a3ce04b" />
+    <Project Path="CloudNimble.DotNetDocs.Plugins.GitHub/CloudNimble.DotNetDocs.Plugins.GitHub.csproj" Id="ffc362a4-3466-4d4a-a7ef-0de97dd7fe94" />
   </Folder>
   <Folder Name="/Providers/" />
   <Folder Name="/Providers/Mintlify/">

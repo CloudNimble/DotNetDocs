@@ -33,10 +33,10 @@
 				<Pages>
 					<Groups>
 						<Group Name="Getting Started" Icon="stars">
-							<Pages>index;quickstart;installation</Pages>
+							<Pages>index;why-dotnetdocs;quickstart</Pages>
 						</Group>
 						<Group Name="Guides" Icon="dog-leashed">
-							<Pages>guides/index;guides/conceptual-docs;guides/pipeline</Pages>
+							<Pages>guides/index;guides/pipeline;guides/conceptual-docs;guides/deployment</Pages>
 						</Group>
 						<Group Name="Providers" Icon="books">
 							<Pages>providers/index</Pages>
@@ -60,6 +60,13 @@
 			</Integrations>
 		</MintlifyTemplate>
 	</PropertyGroup>
+
+	<ItemGroup>
+	  <None Include="guides\cli-reference.mdx" />
+	  <None Include="guides\deployment.mdx" />
+	  <None Include="guides\index.mdx" />
+	  <None Include="why-dotnetdocs.mdx" />
+	</ItemGroup>
 
 	<ItemGroup>
 	  <None Update="D:\GitHub\DotNetDocs\src\dotnetdocs-logo.png" Link="images\logos\dotnetdocs-logo.png" />

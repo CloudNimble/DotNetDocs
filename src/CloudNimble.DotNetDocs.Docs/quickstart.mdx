@@ -1,183 +1,209 @@
 ---
-title: DotNetDocs - The Modern Documentation Platform for .NET
+title: Better Docs in 5 Minutes with DotNetDocs
 sidebarTitle: Quickstart
-description: Transform your .NET libraries and applications with beautiful documentation
+description: Get up and running quickly is as easy as 1-2-3.
 icon: play
 ---
 
-DotNetDocs bridges the gap between your carefully crafted XML documentation comments and stunning, user-friendly documentation websites. Built with developer experience in mind, it seamlessly integrates with your existing .NET workflow while delivering documentation that your users will actually love to read.
+import { ValueProposition } from '/snippets/ValueProposition.jsx';
 
-## ✨ What Makes DotNetDocs Special
+<ValueProposition minimal={true} minCardWidth={320} />
 
-<CardGroup cols={2}>
-  <Card title="🎨 Multiple Output Formats" icon="palette">
-    Generate beautiful Mintlify sites, clean Markdown, structured JSON, or YAML - all from your existing XML documentation
-  </Card>
-  <Card title="🔧 MSBuild Integration" icon="gear">
-    Seamlessly integrate into your build process with MSBuild tasks and .NET CLI tools
-  </Card>
-  <Card title="🏗️ Flexible Architecture" icon="cubes">
-    Modular design supports custom renderers, transformers, and extensibility patterns
-  </Card>
-  <Card title="⚡ Developer-First" icon="code">
-    Zero configuration required - works out of the box with sensible defaults and powerful customization
-  </Card>
-</CardGroup>
+<Steps>
+  <Step title="Install" titleSize="h2" iconType="duotone">
 
-## 🚀 Quick Start
+    ### Install the DotNetDocs CLI
 
-Get up and running with DotNetDocs in just a few commands:
+    <CodeGroup>
 
-<CodeGroup>
-```bash Install via .NET CLI
-dotnet tool install DotNetDocs --global
-```
-
-```bash Generate Documentation
-dotnet docs generate --assembly-list assemblies.txt --output docs/
-```
-
-```xml MSBuild Integration
-<PackageReference Include="CloudNimble.DotNetDocs.Sdk.Tasks" Version="*" />
-```
-</CodeGroup>
-
-## 📚 Supported Output Formats
-
-### 🎯 Mintlify Integration
-Create stunning documentation sites with Mintlify's modern design system:
-- **Interactive Navigation** - Automatically generated from your namespace structure
-- **Code Syntax Highlighting** - Beautiful rendering of your C# signatures and examples
-- **Search Integration** - Built-in search across all your API documentation
-- **Responsive Design** - Perfect on desktop, tablet, and mobile devices
-
-### 📄 Traditional Formats
-- **Markdown** - Clean, readable documentation for GitHub, GitLab, or any markdown processor
-- **JSON** - Structured data for custom integrations and tooling
-- **YAML** - Configuration-friendly format for documentation pipelines
-
-## 🎨 Customization Options
-
-### File Organization Modes
-<Tabs>
-  <Tab title="Folder Mode">
+    ```bash Major Releases
+    dotnet tool install DotNetDocs --global
     ```
-    📁 docs/
-    ├── 📁 MyNamespace/
-    │   ├── 📄 index.mdx
-    │   ├── 📄 MyClass.mdx
-    │   └── 📁 SubNamespace/
-    │       └── 📄 AnotherClass.mdx
-    └── 📄 index.mdx
+
+    ```bash Previews
+    dotnet tool install DotNetDocs --global --prerelease
     ```
-    Mirrors your namespace structure as folders
-  </Tab>
-  
-  <Tab title="File Mode">
+
+    </CodeGroup>
+
+    ### Add DotNetDocs to your Solution
+
+    Navigate to your solution folder and create a new documentation project:
+
+    ```bash
+    dotnet docs add
     ```
-    📁 docs/
-    ├── 📄 index.mdx
-    ├── 📄 MyNamespace.MyClass.mdx
-    ├── 📄 MyNamespace.SubNamespace.AnotherClass.mdx
-    └── 📄 MyNamespace.SubNamespace.mdx
+    <Note>You can see more of the optional arguments in the [CLI Reference](/guides/cli-reference) docs.</Note>
+
+    This automatically:
+    
+    - locates the solution
+    - creates a new `{SolutionName}.Docs\{SolutionName}.Docs.docsproj` file that centralizes your documentation
+    - adds the new project to your solution
+
+    The new project is pre-configured to use Mintlify for beautiful docs out of the box, and looks like this:
+
+    ```xml
+    <Project Sdk="DotNetDocs.Sdk/1.0.0">
+
+	    <PropertyGroup>
+		    <KeepLocalOutput>true</KeepLocalOutput>
+		    <DocumentationType>Mintlify</DocumentationType>
+		    <GenerateDocumentation>true</GenerateDocumentation>
+		    <NamespaceMode>Folder</NamespaceMode>
+		    <ShowDocumentationStats>true</ShowDocumentationStats>
+
+		    <ConceptualDocsEnabled>false</ConceptualDocsEnabled>
+		    <ShowPlaceholders>false</ShowPlaceholders>
+
+		    <MintlifyNavigationMode>Unified</MintlifyNavigationMode>
+		    <MintlifyTemplate>
+			    <Name>{solutionName}</Name>
+			    <Theme>maple</Theme>
+			    <Colors>
+				    <Primary>#419AC5</Primary>
+				    <Light>#419AC5</Light>
+				    <Dark>#3CD0E2</Dark>
+			    </Colors>
+		    </MintlifyTemplate>
+	    </PropertyGroup>
+
+    </Project>
     ```
-    Flat structure with namespace prefixes
-  </Tab>
-</Tabs>
 
-### Mintlify Themes & Branding
-- **Custom Colors** - Match your brand identity
-- **Logo Integration** - Light and dark mode logo support
-- **Icon Customization** - Rich icon library for types and members
-- **Navigation Control** - Unified or assembly-grouped organization
+    <Note>You can see more of how to configure your .docsproj file in the [.docsproj Reference](/guides/docsproj) docs.</Note>
 
-## 🔧 Advanced Features
+    Now your documentation lives right next to your code - no more context switching! Edit your doc files in Visual Studio with full IntelliSense support.
 
-### Smart Content Discovery
-DotNetDocs automatically discovers and integrates:
-- Existing MDX files in your documentation folder
-- Custom navigation structures via `navigation.json`
-- Conceptual documentation alongside API references
-- Asset files and resources
+    <Check>
+      Your documentation project is now part of your solution and will stay in sync with your codebase.
+    </Check>
+  </Step>
 
-### Extensible Architecture
-```csharp
-// Custom renderer example
-services.AddDotNetDocsPipeline(pipeline =>
-{
-    pipeline.UseCustomRenderer<MyRenderer>()
-           .AddTransformer<MyTransformer>()
-           .ConfigureContext(ctx => { /* ... */ });
-});
-```
+  <Step title="Integrate" titleSize="h2">
+    Automatically transform your .NET XML Documentation Comments into beautiful, searchable API reference docs that stay in sync with every build.
 
-### MSBuild Task Integration
-```xml
-<Target Name="GenerateDocs" AfterTargets="Build">
-  <DiscoverDocumentedProjectsTask 
-    SolutionDir="$(SolutionDir)" 
-    Configuration="$(Configuration)" />
-  <GenerateDocumentationTask 
-    Assemblies="@(DocumentedProjects)"
-    OutputPath="$(OutputPath)\docs"
-    DocumentationType="Mintlify" />
-</Target>
-```
+    ### Enable XML Documentation
 
-## 🏆 Why Choose DotNetDocs?
+    Add this to your project files to generate XML documentation:
 
-<AccordionGroup>
-  <Accordion title="🎯 Designed for .NET Developers">
-    Built by .NET developers, for .NET developers. Understands generics, nullable reference types, async patterns, and modern C# features out of the box.
-  </Accordion>
-  
-  <Accordion title="🚀 Zero Configuration">
-    Works immediately with your existing XML documentation. No complex setup, no migration required - just point it at your assemblies and go.
-  </Accordion>
-  
-  <Accordion title="📈 Scales with Your Project">
-    From single assemblies to large enterprise solutions with hundreds of projects. Handles complex inheritance hierarchies and cross-assembly references.
-  </Accordion>
-  
-  <Accordion title="🔧 Extensible & Customizable">
-    Plugin architecture allows custom renderers, transformers, and content processors. Integrate with your existing documentation workflow.
-  </Accordion>
-</AccordionGroup>
+    ```xml
+    <PropertyGroup>
+      <GenerateDocumentationFile>true</GenerateDocumentationFile>
+      <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
+    </PropertyGroup>
+    ```
 
-## 🛠️ Getting Started
+    ### Configure DotNetDocs to Process Assemblies
 
-Ready to transform your documentation? Check out our comprehensive guides:
+    Update your `.docsproj` to reference the assemblies you want to document:
 
-<CardGroup cols={3}>
-  <Card title="📖 Quick Start Guide" href="/getting-started">
-    Get DotNetDocs running in minutes with our step-by-step guide
-  </Card>
-  <Card title="🎨 Mintlify Setup" href="/mintlify-guide">
-    Create beautiful documentation sites with Mintlify integration
-  </Card>
-  <Card title="⚙️ Configuration" href="/configuration">
-    Customize DotNetDocs to match your project's needs
-  </Card>
-</CardGroup>
+    ```xml
+    <ItemGroup>
+      <DocumentedAssembly Include="..\MyProject\bin\$(Configuration)\net9.0\MyProject.dll" />
+      <DocumentedAssembly Include="..\MyProject.Core\bin\$(Configuration)\net9.0\MyProject.Core.dll" />
+    </ItemGroup>
+    ```
 
-<CardGroup cols={3}>
-  <Card title="🔧 MSBuild Tasks" href="/msbuild-integration">
-    Integrate documentation generation into your build process
-  </Card>
-  <Card title="🚀 CI/CD Integration" href="/cicd-setup">
-    Automate documentation deployment with GitHub Actions
-  </Card>
-  <Card title="📚 API Reference" href="/api-reference">
-    Complete API documentation for extending DotNetDocs
-  </Card>
-</CardGroup>
+    ### Generate API Documentation
+
+    Run the documentation generator:
+
+    ```bash
+    dotnet docs generate
+    ```
+
+    DotNetDocs will:
+    - Parse your assembly XML documentation
+    - Extract all public types, methods, properties, and events
+    - Generate beautiful Mintlify-enhanced MDX files
+    - Create navigation structure based on namespaces
+    - Add proper icons for classes, interfaces, enums, etc.
+
+    ### Automatic Updates on Build
+
+    Add this to your `.docsproj` to regenerate docs automatically:
+
+    ```xml
+    <PropertyGroup>
+      <RegenerateOnBuild>true</RegenerateOnBuild>
+    </PropertyGroup>
+    ```
+
+    <Check>
+      Your API documentation now stays in sync with every build - no more stale docs!
+    </Check>
+  </Step>
+
+  <Step title="Deploy" titleSize="h2">
+
+    ### Local Development
+
+    Preview your docs locally with Mintlify's dev server:
+
+    ```bash
+    cd MyProject.Docs
+    mintlify dev
+    ```
+
+    Open [http://localhost:3000](http://localhost:3000) to see your docs with hot-reload.
+
+    ### Deploy to Mintlify
+
+    Connect your GitHub repository to Mintlify for automatic deployments:
+
+    1. Push your docs to GitHub
+    2. Go to [mintlify.com](https://mintlify.com) and connect your repo
+    3. Mintlify automatically deploys on every push to main
+
+    ### Deploy to GitHub Pages
+
+    Add a GitHub Actions workflow (`.github/workflows/docs.yml`):
+
+    ```yaml
+    name: Deploy Docs
+    on:
+      push:
+        branches: [main]
+
+    jobs:
+      deploy:
+        runs-on: ubuntu-latest
+        steps:
+          - uses: actions/checkout@v3
+          - uses: actions/setup-dotnet@v3
+            with:
+              dotnet-version: '9.0'
+          - name: Generate Docs
+            run: |
+              dotnet tool restore
+              dotnet docs generate
+          - name: Deploy to GitHub Pages
+            uses: peaceiris/actions-gh-pages@v3
+            with:
+              github_token: ${{ secrets.GITHUB_TOKEN }}
+              publish_dir: ./MyProject.Docs/docs
+    ```
+
+    ### CI/CD Integration
+
+    DotNetDocs integrates with your existing build pipeline:
+
+    ```bash
+    # In your CI/CD pipeline
+    dotnet restore
+    dotnet build --configuration Release
+    dotnet docs generate --configuration Release
+    ```
+
+    <Check>
+      Your documentation is now deployed and accessible to your users!
+    </Check>
+  </Step>
+</Steps>
 
 ---
 
 <Note>
-**Ready to get started?** Install DotNetDocs today and join the growing community of .NET developers creating beautiful documentation with ease.
-
-```bash
-dotnet tool install DotNetDocs --global
-```
+**Want to learn more?** Check out our [comprehensive guides](/guides) for detailed information about customization options, advanced features, and best practices.
 </Note>
