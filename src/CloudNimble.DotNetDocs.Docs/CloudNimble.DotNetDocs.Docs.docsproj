@@ -62,13 +62,6 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <None Include="guides\cli-reference.mdx" />
-	  <None Include="guides\deployment.mdx" />
-	  <None Include="guides\index.mdx" />
-	  <None Include="why-dotnetdocs.mdx" />
-	</ItemGroup>
-
-	<ItemGroup>
 	  <None Update="D:\GitHub\DotNetDocs\src\dotnetdocs-logo.png" Link="images\logos\dotnetdocs-logo.png" />
 	</ItemGroup>
 

@@ -81,28 +81,30 @@ import { ValueProposition } from '/snippets/ValueProposition.jsx';
   </Step>
 
   <Step title="Integrate" titleSize="h2">
-    Automatically transform your .NET XML Documentation Comments into beautiful, searchable API reference docs that stay in sync with every build.
 
-    ### Enable XML Documentation
+    ### Adjust your .docsproj settings
 
-    Add this to your project files to generate XML documentation:
+    Change the documentation type, shut off API Reference generation, turn off conceptual docs, and adjust any other settings as necessary.
+    
+    ### Enable XML Documentation Comment compilation
+
+    Add this to the projects where you want to extract the XML Documentation comments from your code:
 
     ```xml
     <PropertyGroup>
-      <GenerateDocumentationFile>true</GenerateDocumentationFile>
-      <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
     </PropertyGroup>
     ```
 
-    ### Configure DotNetDocs to Process Assemblies
+    ### Exclude unnecessary projects
 
-    Update your `.docsproj` to reference the assemblies you want to document:
+    Test projects are excluded by default. If there are other projects you'd like to exclude, update your `.docsproj` with the following property:
 
     ```xml
-    <ItemGroup>
-      <DocumentedAssembly Include="..\MyProject\bin\$(Configuration)\net9.0\MyProject.dll" />
-      <DocumentedAssembly Include="..\MyProject.Core\bin\$(Configuration)\net9.0\MyProject.Core.dll" />
-    </ItemGroup>
+    <PropertyGroup>
+        <ExcludePatterns>pattern1;pattern2</ExcludePatterns>
+    </PropertyGroup>
     ```
 
     ### Generate API Documentation
@@ -110,25 +112,14 @@ import { ValueProposition } from '/snippets/ValueProposition.jsx';
     Run the documentation generator:
 
     ```bash
-    dotnet docs generate
+    dotnet build
     ```
 
     DotNetDocs will:
     - Parse your assembly XML documentation
     - Extract all public types, methods, properties, and events
-    - Generate beautiful Mintlify-enhanced MDX files
-    - Create navigation structure based on namespaces
-    - Add proper icons for classes, interfaces, enums, etc.
-
-    ### Automatic Updates on Build
-
-    Add this to your `.docsproj` to regenerate docs automatically:
-
-    ```xml
-    <PropertyGroup>
-      <RegenerateOnBuild>true</RegenerateOnBuild>
-    </PropertyGroup>
-    ```
+    - Combine it with any conceptual docs you've written
+    - Render files in the format of your choice in the folder you specified
 
     <Check>
       Your API documentation now stays in sync with every build - no more stale docs!
@@ -137,7 +128,7 @@ import { ValueProposition } from '/snippets/ValueProposition.jsx';
 
   <Step title="Deploy" titleSize="h2">
 
-    ### Local Development
+    ### Local Development with Mintlify
 
     Preview your docs locally with Mintlify's dev server:
 
@@ -182,7 +173,7 @@ import { ValueProposition } from '/snippets/ValueProposition.jsx';
             uses: peaceiris/actions-gh-pages@v3
             with:
               github_token: ${{ secrets.GITHUB_TOKEN }}
-              publish_dir: ./MyProject.Docs/docs
+              publish_dir: ./MyProject.Docs
     ```
 
     ### CI/CD Integration
@@ -193,7 +184,6 @@ import { ValueProposition } from '/snippets/ValueProposition.jsx';
     # In your CI/CD pipeline
     dotnet restore
     dotnet build --configuration Release
-    dotnet docs generate --configuration Release
     ```
 
     <Check>
@@ -201,9 +191,3 @@ import { ValueProposition } from '/snippets/ValueProposition.jsx';
     </Check>
   </Step>
 </Steps>
-
----
-
-<Note>
-**Want to learn more?** Check out our [comprehensive guides](/guides) for detailed information about customization options, advanced features, and best practices.
-</Note>
