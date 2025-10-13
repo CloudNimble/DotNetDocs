@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Xml.Linq;
 using CloudNimble.DotNetDocs.Sdk.Tasks;
 using CloudNimble.DotNetDocs.Tests.Shared;

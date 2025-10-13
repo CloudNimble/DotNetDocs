@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.Reflection;
 using System.Text;
 using Pastel;
 
@@ -82,15 +83,28 @@ namespace CloudNimble.DotNetDocs.Tools.Commands.Base
 
             // Add the footer lines
             Console.WriteLine();
-            Console.WriteLine("DotNetDocs 1.0 CLI".Pastel(lightBlue));
+            Console.WriteLine($"DotNetDocs CLI v{GetVersion()}".Pastel(lightBlue));
             Console.WriteLine("https://dotnetdocs.com".Pastel(darkBlue));
             Console.WriteLine();
-            Console.WriteLine($"Made with {"❤️".Pastel(Color.Red)} by {"☁️".Pastel(darkBlue)} CloudNimble.".Pastel(gray));
+            Console.WriteLine($"Made with {"❤️".Pastel(Color.Red)} by {"☁️".Pastel(darkBlue)} CloudNimble".Pastel(gray));
             Console.WriteLine("https://github.com/CloudNimble".Pastel(gray));
             Console.WriteLine();
         }
 
         #endregion
+
+        /// <summary>
+        /// Gets the version string for the tool.
+        /// </summary>
+        /// <returns>The version string.</returns>
+        internal static string GetVersion()
+        {
+            var assembly = Assembly.GetExecutingAssembly();
+            var version = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion
+                ?? assembly.GetCustomAttribute<AssemblyVersionAttribute>()?.Version
+                ?? "Unknown";
+            return version;
+        }
 
     }
 
