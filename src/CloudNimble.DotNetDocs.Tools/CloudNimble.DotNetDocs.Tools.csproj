@@ -10,6 +10,7 @@
         <PackAsTool>True</PackAsTool>
         <ToolCommandName>dotnet-docs</ToolCommandName>
         <OutputType>Exe</OutputType>
+        <Description>The command-line tool that helps you manage your .NET Documentation Projects (.docsproj) and generate beautiful documentation from your XML Doc Comments.</Description>
     </PropertyGroup>
 
     <ItemGroup>

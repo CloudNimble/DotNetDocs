@@ -1,6 +1,10 @@
-﻿# CloudNimble.DotNetDocs.Sdk
+﻿# DotNetDocs.Sdk
 
-MSBuild SDK for documentation projects (`.docsproj`) - provides a clean way to include documentation in .NET solutions.
+<a href="https://dotnetdocs.com">
+  <img src="https://raw.githubusercontent.com/CloudNimble/DotNetDocs/refs/heads/dev/src/CloudNimble.DotNetDocs.Docs/images/logos/dotnetdocs.light.svg" alt="DotNetDocs Logo" width="450" />
+</a>
+
+The MSBuild SDK for documentation projects (`.docsproj`) that provides a clean way to include documentation in .NET solutions.
 
 ## Features
 
@@ -35,7 +39,7 @@ MSBuild SDK for documentation projects (`.docsproj`) - provides a clean way to i
 
 **For .slnx files:**
 ```xml
-<Project Path="docs/MyProject.Docs.docsproj" Type="{9A19103F-16F7-4668-BE54-9A1E7A4F7556}" projectTypeName="SharedProject" />
+<Project Path="docs/MyProject.Docs.docsproj" Type="C#" />
 ```
 
 **For .sln files:**
@@ -129,9 +133,9 @@ This is particularly useful when you want to:
 | `GeneratePdf` | Generate PDF output |
 | `DeployDocumentation` | Deploy to hosting platform |
 
-### EasyAF.Tools Integration
+### DotNetDocs Integration
 
-The SDK automatically checks for and attempts to install [CloudNimble.EasyAF.Tools](https://github.com/CloudNimble/EasyAF) when using Mintlify features. If automatic installation fails, you'll see instructions to visit [this GitHub issue](https://github.com/CloudNimble/EasyAF.Docs/issues/1) and leave a reaction emoji to get access to the tools.
+The SDK automatically generates documentation when `GenerateMintlifyDocs` is enabled. Documentation is built from your project's assemblies and XML documentation files.
 
 ### Usage Examples
 
@@ -207,14 +211,17 @@ dotnet build -t:PreviewDocumentation
 
 ## Requirements
 
-- .NET SDK 6.0 or later
+- .NET SDK 8.0 or later
 - MSBuild 16.0 or later
 - Visual Studio 2019 or later (for full IDE support)
 
-## Contributing
+## See Also
 
-This SDK is part of the [CloudNimble EasyAF](https://github.com/CloudNimble/EasyAF) framework. Contributions welcome!
+- **[Full Documentation](https://dotnetdocs.com)** - Complete guides and examples
+- **[DotNetDocs CLI](https://www.nuget.org/packages/DotNetDocs/)** - Get up and running fast with our easy CLI
+- **[DotNetDocs.Core](https://www.nuget.org/packages/DotNetDocs.Core/)** - Core documentation engine
+- **[DotNetDocs.Mintlify](https://www.nuget.org/packages/DotNetDocs.Mintlify/)** - Enhanced [Mintlify.com](https://mintlify.com) support
 
 ## License
 
-MIT License - see [LICENSE](LICENSE) for details.
+MIT License - see [LICENSE](https://github.com/CloudNimble/DotNetDocs/blob/main/LICENSE) for details.

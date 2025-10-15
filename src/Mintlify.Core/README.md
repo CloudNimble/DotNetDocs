@@ -7,6 +7,12 @@
 Mintlify.Core is a comprehensive .NET library for working with Mintlify documentation configuration files (`docs.json`). This package provides robust loading, 
 validation, manipulation, and generation capabilities for Mintlify documentation projects.
 
+## Brought to you by:
+
+<a href="https://dotnetdocs.com">
+  <img src="https://raw.githubusercontent.com/CloudNimble/DotNetDocs/refs/heads/dev/src/CloudNimble.DotNetDocs.Docs/images/logos/dotnetdocs.light.svg" alt="DotNetDocs Logo" width="450" />
+</a>
+
 ## Features
 
 - **Complete Configuration Management**: Load, validate, save, and manipulate `docs.json` files
@@ -105,133 +111,23 @@ manager.ApplyUrlPrefix("/v2");
 manager.Save("docs.json");
 ```
 
-## Advanced Usage
+## Key Features
 
-### Custom Validation
+### Configuration Management
 
-```csharp
-var manager = new DocsJsonManager("docs.json");
-manager.Load();
+Load, validate, save, and manipulate `docs.json` files with intelligent error reporting.
 
-// Apply additional defaults
-manager.ApplyDefaults();
+### Navigation Merging
 
-// Validate and get detailed feedback
-if (!manager.IsLoaded)
-{
-    var errors = manager.ConfigurationErrors.Where(e => !e.IsWarning);
-    var warnings = manager.ConfigurationErrors.Where(e => e.IsWarning);
-    
-    Console.WriteLine($"Found {errors.Count()} errors and {warnings.Count()} warnings");
-}
-```
+Merge multiple documentation configurations with smart deduplication - perfect for multi-project solutions.
 
-### Working with Navigation Structures
+### Directory-Based Generation
 
-```csharp
-// Access navigation elements
-var navigation = manager.Configuration.Navigation;
+Automatically build navigation from your folder structure.
 
-if (navigation.Groups?.Any() == true)
-{
-    foreach (var group in navigation.Groups)
-    {
-        Console.WriteLine($"Group: {group.Group}");
-        if (group.Pages?.Any() == true)
-        {
-            foreach (var page in group.Pages.OfType<string>())
-            {
-                Console.WriteLine($"  Page: {page}");
-            }
-        }
-    }
-}
-```
+### URL Transformation
 
-### Error Handling
-
-```csharp
-try
-{
-    var manager = new DocsJsonManager("docs.json");
-    manager.Load();
-    
-    if (!manager.IsLoaded)
-    {
-        throw new InvalidOperationException("Failed to load configuration");
-    }
-}
-catch (FileNotFoundException)
-{
-    // Handle missing file
-    var defaultConfig = DocsJsonManager.CreateDefault("New Documentation");
-    // ... initialize with defaults
-}
-catch (ArgumentException ex)
-{
-    // Handle invalid arguments (e.g., invalid file paths)
-    Console.WriteLine($"Invalid argument: {ex.Message}");
-}
-```
-
-## Configuration Model
-
-The library provides strongly-typed models for all Mintlify configuration options:
-
-- **DocsJsonConfig**: Root configuration object
-- **NavigationConfig**: Navigation structure with pages, groups, tabs, anchors
-- **GroupConfig**: Documentation groups with nested pages
-- **TabConfig**: Tab-based navigation sections  
-- **ColorsConfig**: Theme color customization
-- **LogoConfig**: Logo configuration for light/dark themes
-- **FooterConfig**: Footer links and social media
-- And many more...
-
-## URL Management
-
-Transform and prefix navigation URLs:
-
-```csharp
-// Apply prefix to all URLs in navigation
-manager.ApplyUrlPrefix("/api/v1");
-
-// This transforms:
-// "getting-started" → "/api/v1/getting-started"
-// "guides/authentication" → "/api/v1/guides/authentication"
-// Group roots, tab hrefs, anchor hrefs are all updated recursively
-```
-
-## Navigation Generation
-
-Build navigation from directory structure:
-
-```csharp
-// Given directory structure:
-// docs/
-//   getting-started.md
-//   guides/
-//     authentication.md
-//     deployment.md
-//   api/
-//     endpoints.md
-
-manager.PopulateNavigationFromPath("./docs");
-
-// Generates navigation:
-// {
-//   "pages": [
-//     "getting-started",
-//     {
-//       "group": "Guides", 
-//       "pages": ["guides/authentication", "guides/deployment"]
-//     },
-//     {
-//       "group": "Api",
-//       "pages": ["api/endpoints"] 
-//     }
-//   ]
-// }
-```
+Apply prefixes and transformations to navigation URLs for versioning or multi-tenancy.
 
 ## Requirements
 
@@ -244,18 +140,15 @@ manager.PopulateNavigationFromPath("./docs");
 
 - System.Text.Json (for JSON serialization)
 - System.CodeDom (for error reporting)
-- CloudNimble.EasyAF.Core (internal utilities)
 
-## Contributing
+## See Also
 
-Contributions are welcome! This library is part of the [EasyAF Framework](https://github.com/CloudNimble/EasyAF).
+- **[Full Documentation](https://dotnetdocs.com)** - Complete guides and examples
+- **[DotNetDocs CLI](https://www.nuget.org/packages/DotNetDocs/)** - Get up and running fast with our easy CLI
+- **[DotNetDocs.Sdk](https://www.nuget.org/packages/DotNetDocs.Sdk/)** - MSBuild SDK for .docsproj projects
+- **[DotNetDocs.Core](https://www.nuget.org/packages/DotNetDocs.Core/)** - Core documentation engine
+- **[DotNetDocs.Mintlify](https://www.nuget.org/packages/DotNetDocs.Mintlify/)** - Enhanced [Mintlify.com](https://mintlify.com) support
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](https://github.com/CloudNimble/EasyAF/blob/master/LICENSE) file for details.
-
-## Support
-
-- [GitHub Issues](https://github.com/CloudNimble/EasyAF/issues)
-- [Documentation](https://docs.nimbleapps.cloud)
-- [NuGet Package](https://www.nuget.org/packages/Mintlify.Core/)
+MIT License - see [LICENSE](https://github.com/CloudNimble/DotNetDocs/blob/main/LICENSE) for details.

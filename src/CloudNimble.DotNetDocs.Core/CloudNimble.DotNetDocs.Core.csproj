@@ -3,6 +3,7 @@
     <PropertyGroup>
         <TargetFrameworks>net10.0;net9.0;net8.0</TargetFrameworks>
         <DocumentationFile>$(DocumentationFile)\$(AssemblyName).xml</DocumentationFile>
+        <Description>The core documentation generation engine for DotNetDocs that transforms .NET assemblies and XML Doc Comments into rich, multi-format documentation.</Description>
     </PropertyGroup>
 
     <ItemGroup>

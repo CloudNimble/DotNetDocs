@@ -3,8 +3,16 @@ name: Build and Deploy to NuGet
 on:
   push:
     branches: [ main, dev ]
+    paths-ignore:
+      - 'src/CloudNimble.DotNetDocs.Docs/**'
+      - 'src/CloudNimble.DotNetDocs.Reference.Mintlify/**'
+      - 'specs/**'
   pull_request:
     branches: [ main, dev ]
+    paths-ignore:
+      - 'src/CloudNimble.DotNetDocs.Docs/**'
+      - 'src/CloudNimble.DotNetDocs.Reference.Mintlify/**'
+      - 'specs/**'
   workflow_dispatch:
     inputs:
       deploy_to_nuget:

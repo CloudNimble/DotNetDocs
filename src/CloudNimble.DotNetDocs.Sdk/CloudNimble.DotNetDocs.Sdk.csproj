@@ -4,10 +4,7 @@
         <!-- SDK packages don't compile code -->
         <TargetFramework>netstandard2.0</TargetFramework>
         <GenerateDocumentationFile>false</GenerateDocumentationFile>
-        <Description>
-            MSBuild SDK for DotNetDocs projects (.docsproj) - provides a clean way to include documentation in .NET
-            solutions
-        </Description>
+        <Description>The MSBuild SDK for documentation projects (.docsproj) that provides a clean way to include documentation in .NET solutions.</Description>
 
         <!-- This is an MSBuild SDK package -->
         <DevelopmentDependency>true</DevelopmentDependency>

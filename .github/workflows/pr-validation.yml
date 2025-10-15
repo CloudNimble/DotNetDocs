@@ -4,6 +4,10 @@ on:
   pull_request:
     branches: [ main, dev ]
     types: [opened, synchronize, reopened]
+    paths-ignore:
+      - 'src/CloudNimble.DotNetDocs.Docs/**'
+      - 'src/CloudNimble.DotNetDocs.Reference.Mintlify/**'
+      - 'specs/**'
   workflow_dispatch:
 
 env:
