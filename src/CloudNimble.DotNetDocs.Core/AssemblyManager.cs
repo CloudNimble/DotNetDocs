@@ -11,6 +11,7 @@ using Microsoft.CodeAnalysis.CSharp;
 namespace CloudNimble.DotNetDocs.Core
 {
 
+
     /// <summary>
     /// Manages assembly metadata extraction using Roslyn for API documentation generation.
     /// </summary>
