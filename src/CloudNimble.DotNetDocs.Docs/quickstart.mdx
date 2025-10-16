@@ -33,21 +33,27 @@ import { ValueProposition } from '/snippets/ValueProposition.jsx';
     ```bash
     dotnet docs add
     ```
-    <Note>You can see more of the optional arguments in the [CLI Reference](/guides/cli-reference) docs.</Note>
+
+    By default, this creates a Mintlify documentation project. To use a different documentation type:
+
+    ```bash
+    dotnet docs add --type DocFX
+    ```
+
+    <Note>You can see more of the optional arguments and supported types in the [CLI Reference](/guides/cli-reference) docs.</Note>
 
     This automatically:
-    
+
     - locates the solution
     - creates a new `{SolutionName}.Docs\{SolutionName}.Docs.docsproj` file that centralizes your documentation
     - adds the new project to your solution
 
-    The new project is pre-configured to use Mintlify for beautiful docs out of the box, and looks like this:
+    The new project is pre-configured with sensible defaults. For Mintlify projects, it looks like this:
 
     ```xml
     <Project Sdk="DotNetDocs.Sdk/1.0.0">
 
 	    <PropertyGroup>
-		    <KeepLocalOutput>true</KeepLocalOutput>
 		    <DocumentationType>Mintlify</DocumentationType>
 		    <GenerateDocumentation>true</GenerateDocumentation>
 		    <NamespaceMode>Folder</NamespaceMode>

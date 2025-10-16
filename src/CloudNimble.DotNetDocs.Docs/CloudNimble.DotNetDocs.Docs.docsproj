@@ -1,7 +1,6 @@
-<Project Sdk="DotNetDocs.Sdk/1.0.0-preview.30">
+<Project Sdk="DotNetDocs.Sdk/1.0.0-preview.31">
 
 	<PropertyGroup>
-		<KeepLocalOutput>true</KeepLocalOutput>
 		<DocumentationType>Mintlify</DocumentationType>
 		<GenerateDocumentation>true</GenerateDocumentation>
 		<NamespaceMode>Folder</NamespaceMode>

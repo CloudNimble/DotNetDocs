@@ -17,8 +17,8 @@
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     
     <!-- Redirect output to temp to keep docs folders clean -->
-    <BaseIntermediateOutputPath Condition="'$(KeepLocalOutput)' != 'true'">$(TEMP)\$(SolutionName)\$(MSBuildProjectName)\obj\</BaseIntermediateOutputPath>
-    <BaseOutputPath Condition="'$(KeepLocalOutput)' != 'true'">$(TEMP)\$(SolutionName)\$(MSBuildProjectName)\bin\</BaseOutputPath>
+    <BaseIntermediateOutputPath>$(TEMP)\$(SolutionName)\$(MSBuildProjectName)\obj\</BaseIntermediateOutputPath>
+    <BaseOutputPath>$(TEMP)\$(SolutionName)\$(MSBuildProjectName)\bin\</BaseOutputPath>
   </PropertyGroup>
 
 </Project>

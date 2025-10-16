@@ -57,8 +57,6 @@
         <Message Text="✅ Documentation project: $(MSBuildProjectName)" Importance="high" />
         <Message Text="📄 Documentation type: $(DocumentationType)" Importance="high" />
         <Message Text="📂 Documentation root: $(DocumentationRoot)" Importance="high" Condition="'$(DocumentationRoot)' != '$(MSBuildProjectDirectory)\'" />
-        <Message Text="📁 Output redirected to: $(ApiReferencePath)" Importance="normal" Condition="'$(KeepLocalOutput)' != 'true'" />
-        <Message Text="📁 Output kept local" Importance="normal" Condition="'$(KeepLocalOutput)' == 'true'" />
         <Message Text="🔧 Generate documentation: $(GenerateDocumentation)" Importance="normal" />
     </Target>
 
@@ -204,7 +202,6 @@
         <Message Text="═══════════════════════════════" Importance="high" />
         <Message Text="" Importance="high" />
         <Message Text="Available Properties:" Importance="high" />
-        <Message Text="  KeepLocalOutput=true          - Keep bin/obj in project folder" Importance="high" />
         <Message Text="  GenerateDocumentation=true    - Generate docs from all packable projects in solution" Importance="high" />
         <Message Text="  GenerateMintlifyDocs=true     - Auto-generate Mintlify docs on build" Importance="high" />
         <Message Text="  LintMarkdown=true             - Lint markdown files on build" Importance="high" />
@@ -226,7 +223,6 @@
         <Message Text="  Documentation Type: $(DocumentationType)" Importance="high" />
         <Message Text="  Documentation Root: $(DocumentationRoot)" Importance="high" />
         <Message Text="  Output Location: $(ApiReferencePath)" Importance="high" />
-        <Message Text="  Keep Local Output: $(KeepLocalOutput)" Importance="high" />
         <Message Text="  Generate Documentation: $(GenerateDocumentation)" Importance="high" />
         <Message Text="" Importance="high" />
     </Target>

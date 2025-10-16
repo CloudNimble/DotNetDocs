@@ -71,16 +71,6 @@ Every `.docsproj` file must reference the DotNetDocs.Sdk:
   ```
 </ParamField>
 
-<ParamField path="KeepLocalOutput" type="bool" default="false">
-  Controls where MSBuild output (`bin` and `obj` folders) are created:
-  - `false` - Output redirected to temp folder (keeps documentation folder clean)
-  - `true` - Output kept in standard `bin/obj` folders within project
-
-  ```xml
-  <KeepLocalOutput>true</KeepLocalOutput>
-  ```
-</ParamField>
-
 ## Documentation Generation
 
 ### Namespace Organization
@@ -223,12 +213,9 @@ Every `.docsproj` file must reference the DotNetDocs.Sdk:
 Here's a complete `.docsproj` file demonstrating common configuration:
 
 ```xml
-<Project Sdk="DotNetDocs.Sdk/1.0.0-preview.24">
+<Project Sdk="DotNetDocs.Sdk/1.0.0">
 
   <PropertyGroup>
-    <!-- Output Configuration -->
-    <KeepLocalOutput>true</KeepLocalOutput>
-
     <!-- Documentation Type -->
     <DocumentationType>Mintlify</DocumentationType>
 

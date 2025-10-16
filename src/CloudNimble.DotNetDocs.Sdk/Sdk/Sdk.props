@@ -60,20 +60,17 @@
         <!-- Optional path to external docs.json template (auto-detect if exists) -->
         <DocsJsonTemplatePath Condition="'$(DocsJsonTemplatePath)' == '' AND '$(DocumentationType)' == 'Mintlify' AND Exists('$(DocumentationRoot)docs-template.json')">$(DocumentationRoot)docs-template.json</DocsJsonTemplatePath>
 
-        <!-- Output redirection - keep documentation folders clean -->
-        <KeepLocalOutput Condition="'$(KeepLocalOutput)' == ''">false</KeepLocalOutput>
-
         <!-- Solution name for temp paths -->
         <_SolutionName Condition="'$(SolutionName)' != ''">$(SolutionName)</_SolutionName>
         <_SolutionName Condition="'$(SolutionName)' == '' AND '$(SolutionFileName)' != ''">$([System.IO.Path]::GetFileNameWithoutExtension('$(SolutionFileName)'))</_SolutionName>
         <_SolutionName Condition="'$(_SolutionName)' == ''">Documentation</_SolutionName>
 
-        <!-- Redirect output to temp unless explicitly keeping local -->
-        <BaseIntermediateOutputPath Condition="'$(KeepLocalOutput)' != 'true' AND '$(BaseIntermediateOutputPath)' == ''">$([System.IO.Path]::GetTempPath())$(_SolutionName)\$(MSBuildProjectName)\obj\</BaseIntermediateOutputPath>
-        <BaseOutputPath Condition="'$(KeepLocalOutput)' != 'true' AND '$(BaseOutputPath)' == ''">$([System.IO.Path]::GetTempPath())$(_SolutionName)\$(MSBuildProjectName)\bin\</BaseOutputPath>
-        <IntermediateOutputPath Condition="'$(KeepLocalOutput)' != 'true'">$(BaseIntermediateOutputPath)</IntermediateOutputPath>
-        <OutputPath Condition="'$(KeepLocalOutput)' != 'true'">$(BaseOutputPath)</OutputPath>
-        <MSBuildProjectExtensionsPath Condition="'$(KeepLocalOutput)' != 'true'">$(BaseIntermediateOutputPath)</MSBuildProjectExtensionsPath>
+        <!-- Redirect output to temp to keep documentation folders clean -->
+        <BaseIntermediateOutputPath Condition="'$(BaseIntermediateOutputPath)' == ''">$([System.IO.Path]::GetTempPath())$(_SolutionName)\$(MSBuildProjectName)\obj\</BaseIntermediateOutputPath>
+        <BaseOutputPath Condition="'$(BaseOutputPath)' == ''">$([System.IO.Path]::GetTempPath())$(_SolutionName)\$(MSBuildProjectName)\bin\</BaseOutputPath>
+        <IntermediateOutputPath>$(BaseIntermediateOutputPath)</IntermediateOutputPath>
+        <OutputPath>$(BaseOutputPath)</OutputPath>
+        <MSBuildProjectExtensionsPath>$(BaseIntermediateOutputPath)</MSBuildProjectExtensionsPath>
     </PropertyGroup>
 
     <!-- Import the NoTargets SDK props for no-compile behavior -->

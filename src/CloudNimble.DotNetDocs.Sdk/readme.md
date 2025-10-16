@@ -1,5 +1,9 @@
 ﻿# DotNetDocs.Sdk
 
+[![NuGet](https://img.shields.io/nuget/v/DotNetDocs.Sdk.svg)](https://www.nuget.org/packages/DotNetDocs.Sdk/)
+[![Downloads](https://img.shields.io/nuget/dt/DotNetDocs.Sdk.svg)](https://www.nuget.org/packages/DotNetDocs.Sdk/)
+[![License](https://img.shields.io/github/license/cloudnimble/dotnetdocs.svg)](https://github.com/CloudNimble/DotNetDocs/blob/main/LICENSE)
+
 <a href="https://dotnetdocs.com">
   <img src="https://raw.githubusercontent.com/CloudNimble/DotNetDocs/refs/heads/dev/src/CloudNimble.DotNetDocs.Docs/images/logos/dotnetdocs.light.svg" alt="DotNetDocs Logo" width="450" />
 </a>
@@ -68,12 +72,9 @@ The SDK automatically detects your documentation type based on configuration fil
 ```xml
 <Project Sdk="DotNetDocs.Sdk/1.0.0">
   <PropertyGroup>
-    <!-- Keep bin/obj locally instead of redirecting to temp -->
-    <KeepLocalOutput>true</KeepLocalOutput>
-    
     <!-- Override auto-detected documentation type -->
     <DocumentationType>Mintlify</DocumentationType>
-    
+
     <!-- Enable build-time features -->
     <GenerateMintlifyDocs>true</GenerateMintlifyDocs>
     <LintMarkdown>true</LintMarkdown>
@@ -177,11 +178,8 @@ dotnet build -t:PreviewDocumentation
   <PropertyGroup>
     <!-- Override detection -->
     <DocumentationType>Generic</DocumentationType>
-    
-    <!-- Keep output local for complex builds -->
-    <KeepLocalOutput>true</KeepLocalOutput>
   </PropertyGroup>
-  
+
   <!-- Custom file includes -->
   <ItemGroup>
     <None Include="custom-docs/**/*.rst" />

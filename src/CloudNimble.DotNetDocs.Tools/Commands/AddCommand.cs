@@ -14,8 +14,8 @@ namespace CloudNimble.DotNetDocs.Tools.Commands
     /// Command-line tool for creating and adding a documentation project to a solution file.
     /// </summary>
     /// <remarks>
-    /// This command creates a .docsproj file configured for Mintlify documentation and adds it to the
-    /// specified solution file (.sln or .slnx). The project is automatically added to a "Docs" solution folder.
+    /// This command creates a .docsproj file configured for the specified documentation type (defaults to Mintlify)
+    /// and adds it to the specified solution file (.sln or .slnx). The project is automatically added to a "Docs" solution folder.
     /// For .slnx files, the command post-processes the XML to add Type="C#" attributes to .docsproj nodes.
     /// </remarks>
     [Command("add", Description = "Add documentation project (.docsproj) to the solution.")]
@@ -42,6 +42,12 @@ namespace CloudNimble.DotNetDocs.Tools.Commands
         /// </summary>
         [Option("--solution|-s", Description = "Optional. Path to solution file (.sln or .slnx)")]
         public string? SolutionPath { get; set; }
+
+        /// <summary>
+        /// Gets or sets the documentation type for the project.
+        /// </summary>
+        [Option("--type|-t", Description = "Optional. Documentation type (Mintlify, DocFX, MkDocs, Jekyll, Hugo, Generic). Defaults to Mintlify.")]
+        public string? DocumentationType { get; set; }
 
         #endregion
 
@@ -81,15 +87,19 @@ namespace CloudNimble.DotNetDocs.Tools.Commands
                 // Determine output directory
                 string outputDir = OutputDirectory ?? Path.Combine(Path.GetDirectoryName(solutionFile)!, docsProjectName);
 
+                // Determine documentation type (default to Mintlify)
+                string docType = DocumentationType ?? "Mintlify";
+
                 Console.WriteLine($"📝 Creating docs project: {docsProjectName}");
                 Console.WriteLine($"📂 Output directory: {outputDir}");
+                Console.WriteLine($"📖 Documentation type: {docType}");
 
                 // Create the docs project directory
                 Directory.CreateDirectory(outputDir);
 
                 // Create the .docsproj file
                 string docsProjPath = Path.Combine(outputDir, $"{docsProjectName}.docsproj");
-                await CreateDocsProjectFile(docsProjPath, solutionName);
+                await CreateDocsProjectFile(docsProjPath, solutionName, docType);
 
                 Console.WriteLine($"✅ Created {docsProjPath}");
 
@@ -187,32 +197,26 @@ namespace CloudNimble.DotNetDocs.Tools.Commands
         }
 
         /// <summary>
-        /// Creates a documentation project file (.docsproj) with default configuration for Mintlify documentation.
+        /// Creates a documentation project file (.docsproj) with default configuration for the specified documentation type.
         /// </summary>
         /// <param name="filePath">The path where the .docsproj file should be created.</param>
-        /// <param name="solutionName">The name of the solution, used in the Mintlify template configuration.</param>
+        /// <param name="solutionName">The name of the solution, used in configuration.</param>
+        /// <param name="documentationType">The type of documentation project (Mintlify, DocFX, MkDocs, Jekyll, Hugo, Generic).</param>
         /// <returns>A task that represents the asynchronous write operation.</returns>
         /// <remarks>
         /// The created project file includes:
         /// - DotNetDocs.Sdk reference
-        /// - Mintlify documentation type configuration
+        /// - Documentation type configuration
         /// - Namespace mode set to Folder
-        /// - Default Mintlify theme and color scheme
+        /// - Default theme and color scheme (for Mintlify projects)
         /// </remarks>
-        internal async Task CreateDocsProjectFile(string filePath, string solutionName)
+        internal async Task CreateDocsProjectFile(string filePath, string solutionName, string documentationType)
         {
-            string content = $@"<Project Sdk=""DotNetDocs.Sdk/1.0.0-preview.27"">
-
-	<PropertyGroup>
-		<KeepLocalOutput>true</KeepLocalOutput>
-		<DocumentationType>Mintlify</DocumentationType>
-		<GenerateDocumentation>true</GenerateDocumentation>
-		<NamespaceMode>Folder</NamespaceMode>
-		<ShowDocumentationStats>true</ShowDocumentationStats>
-
-		<ConceptualDocsEnabled>false</ConceptualDocsEnabled>
-		<ShowPlaceholders>false</ShowPlaceholders>
-
+            // Build Mintlify-specific configuration if needed
+            string mintlifyConfig = string.Empty;
+            if (documentationType.Equals("Mintlify", StringComparison.OrdinalIgnoreCase))
+            {
+                mintlifyConfig = $@"
 		<MintlifyNavigationMode>Unified</MintlifyNavigationMode>
 		<MintlifyTemplate>
 			<Name>{solutionName}</Name>
@@ -222,7 +226,19 @@ namespace CloudNimble.DotNetDocs.Tools.Commands
 				<Light>#419AC5</Light>
 				<Dark>#3CD0E2</Dark>
 			</Colors>
-		</MintlifyTemplate>
+		</MintlifyTemplate>";
+            }
+
+            string content = $@"<Project Sdk=""DotNetDocs.Sdk/1.0.0"">
+
+	<PropertyGroup>
+		<DocumentationType>{documentationType}</DocumentationType>
+		<GenerateDocumentation>true</GenerateDocumentation>
+		<NamespaceMode>Folder</NamespaceMode>
+		<ShowDocumentationStats>true</ShowDocumentationStats>
+
+		<ConceptualDocsEnabled>false</ConceptualDocsEnabled>
+		<ShowPlaceholders>false</ShowPlaceholders>{mintlifyConfig}
 	</PropertyGroup>
 
 </Project>";
