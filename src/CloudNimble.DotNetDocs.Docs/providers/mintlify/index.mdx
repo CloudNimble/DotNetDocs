@@ -5,7 +5,7 @@ description: Transform your .NET XML documentation into beautiful, AI-ready Mint
 icon: sparkles
 ---
 
-<CardGroup cols={2}>
+<CardGroup cols={4}>
   <Card title="MDX with Frontmatter" icon="file-code" href="#mdx-generation">
     Auto-generated frontmatter with icons, tags, SEO metadata, and keywords for every API page
   </Card>
@@ -145,19 +145,33 @@ api-reference/
 ```
 </CodeGroup>
 
-### Template Customization
+### DocsJson Template Customization
 
-Customize MDX generation using Handlebars templates:
+Customize the generated `docs.json` configuration by providing a template with pre-configured settings:
 
-- Override default templates for types, members, or entire pages
-- Access full object model in templates
-- Inject custom HTML, CSS, or React components
-- Reuse templates across multiple documentation projects
+- Set global appearance, colors, and theme
+- Configure integrations (Google Analytics, etc.)
+- Define custom logos and favicons
+- Pre-populate navigation structure
 
 ```csharp
 services.AddDotNetDocsMintlify(options =>
 {
-    options.Template = "MyCustomTemplate.hbs";
+    options.Template = new DocsJsonConfig
+    {
+        Name = "My API",
+        Theme = "quill",
+        Colors = new ColorsConfig
+        {
+            Primary = "#007ACC",
+            Light = "#50A3D0",
+            Dark = "#004B87"
+        },
+        Integrations = new IntegrationsConfig
+        {
+            Ga4 = new GoogleAnalytics4Config { MeasurementId = "G-XXXXXXXXXX" }
+        }
+    };
     options.IncludeIcons = true;
     options.GenerateDocsJson = true;
 });
@@ -319,8 +333,8 @@ React components must be placed in the `snippets` folder and exported as named e
         // Order of namespaces in navigation (default: alphabetical)
         public List<string> NamespaceOrder { get; set; }
 
-        // Path to custom Handlebars template
-        public string Template { get; set; }
+        // Template for docs.json configuration (merged with generated navigation)
+        public DocsJsonConfig Template { get; set; }
 
         // Group name for Unified navigation mode
         public string UnifiedGroupName { get; set; } = "API Reference";
@@ -504,8 +518,8 @@ docs/
     Structure your namespaces hierarchically. Use segments like Core, Extensions, Models, Services for better automatic icon selection.
   </Card>
 
-  <Card title="Leverage Custom Templates" icon="file-code">
-    For unique documentation needs, create custom Handlebars templates rather than post-processing generated MDX files.
+  <Card title="Customize DocsJson Configuration" icon="file-code">
+    Use the Template property to provide custom docs.json configuration settings like themes, colors, and integrations.
   </Card>
 </CardGroup>
 
@@ -518,10 +532,10 @@ docs/
   <Card title="Mintlify Documentation" icon="sparkles" href="https://mintlify.com/docs">
     Official Mintlify documentation and component reference
   </Card>
-  <Card title="Template Customization" icon="wand-magic-sparkles" href="/docs/customization/templates">
-    Learn how to create custom Handlebars templates
+  <Card title="Mintlify Schema" icon="code" href="https://mintlify.com/docs/settings/global">
+    DocsJsonConfig schema and available settings
   </Card>
-  <Card title="Pipeline Configuration" icon="pipeline" href="/docs/concepts/pipeline">
+  <Card title="Pipeline Guide" icon="diagram-project" href="/guides/pipeline">
     Understand the DotNetDocs documentation pipeline
   </Card>
 </CardGroup>

@@ -233,18 +233,20 @@ dotnet docs build [options]
 |--------|-------|-------------|---------|----------|
 | `--assembly-list <PATH>` | `-a` | Path to file containing assembly list | | ✅ |
 | `--output <PATH>` | `-o` | Output path for documentation | | ✅ |
-| `--type <TYPE>` | `-t` | Documentation type | `Default` | |
+| `--type <TYPE>` | `-t` | Documentation type | `Mintlify` | |
 | `--namespace-mode <MODE>` | `-n` | Namespace organization | `File` | |
 | `--api-reference-path <PATH>` | | API reference subfolder | `api-reference` | |
 
 **Documentation Types:**
 
-| Type | Output Format | Description |
-|------|---------------|-------------|
-| `Default` / `Markdown` | Markdown | Clean Markdown files with frontmatter |
-| `Mintlify` | MDX | Enhanced MDX with icons, navigation, and frontmatter |
-| `Json` | JSON | JSON representation of documentation model |
-| `Yaml` | YAML | YAML representation of documentation model |
+| Type | Description |
+|------|-------------|
+| `Mintlify` | Mintlify-enhanced MDX with icons, navigation, and frontmatter (default) |
+| `DocFX` | DocFX-compatible documentation format |
+| `MkDocs` | MkDocs-compatible documentation format |
+| `Jekyll` | Jekyll-compatible documentation format |
+| `Hugo` | Hugo-compatible documentation format |
+| `Generic` | Generic Markdown documentation |
 
 **Namespace Modes:**
 
@@ -321,12 +323,12 @@ dotnet docs build \
   --namespace-mode Folder
 ```
 
-```bash JSON Export
-# Export documentation model as JSON
+```bash DocFX Documentation
+# Generate DocFX-compatible documentation
 dotnet docs build \
   -a assemblies.txt \
   -o ./docs \
-  --type Json
+  --type DocFX
 ```
 
 ```bash Custom Paths

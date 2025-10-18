@@ -54,7 +54,9 @@ import { ValueProposition } from '/snippets/ValueProposition.jsx';
 
     The new project is pre-configured with sensible defaults. For Mintlify projects, it looks like this:
 
-    ```xml
+    <CodeGroup>
+
+    ```xml Mintlify (Default)
     <Project Sdk="DotNetDocs.Sdk/1.0.0">
 
 	    <PropertyGroup>
@@ -80,6 +82,88 @@ import { ValueProposition } from '/snippets/ValueProposition.jsx';
 
     </Project>
     ```
+
+    ```xml DocFX
+    <Project Sdk="DotNetDocs.Sdk/1.0.0">
+
+	    <PropertyGroup>
+		    <DocumentationType>DocFX</DocumentationType>
+		    <GenerateDocumentation>true</GenerateDocumentation>
+		    <NamespaceMode>Folder</NamespaceMode>
+		    <ShowDocumentationStats>true</ShowDocumentationStats>
+
+		    <ConceptualDocsEnabled>false</ConceptualDocsEnabled>
+		    <ShowPlaceholders>false</ShowPlaceholders>
+	    </PropertyGroup>
+
+    </Project>
+    ```
+
+    ```xml MkDocs
+    <Project Sdk="DotNetDocs.Sdk/1.0.0">
+
+	    <PropertyGroup>
+		    <DocumentationType>MkDocs</DocumentationType>
+		    <GenerateDocumentation>true</GenerateDocumentation>
+		    <NamespaceMode>Folder</NamespaceMode>
+		    <ShowDocumentationStats>true</ShowDocumentationStats>
+
+		    <ConceptualDocsEnabled>false</ConceptualDocsEnabled>
+		    <ShowPlaceholders>false</ShowPlaceholders>
+	    </PropertyGroup>
+
+    </Project>
+    ```
+
+    ```xml Jekyll
+    <Project Sdk="DotNetDocs.Sdk/1.0.0">
+
+	    <PropertyGroup>
+		    <DocumentationType>Jekyll</DocumentationType>
+		    <GenerateDocumentation>true</GenerateDocumentation>
+		    <NamespaceMode>Folder</NamespaceMode>
+		    <ShowDocumentationStats>true</ShowDocumentationStats>
+
+		    <ConceptualDocsEnabled>false</ConceptualDocsEnabled>
+		    <ShowPlaceholders>false</ShowPlaceholders>
+	    </PropertyGroup>
+
+    </Project>
+    ```
+
+    ```xml Hugo
+    <Project Sdk="DotNetDocs.Sdk/1.0.0">
+
+	    <PropertyGroup>
+		    <DocumentationType>Hugo</DocumentationType>
+		    <GenerateDocumentation>true</GenerateDocumentation>
+		    <NamespaceMode>Folder</NamespaceMode>
+		    <ShowDocumentationStats>true</ShowDocumentationStats>
+
+		    <ConceptualDocsEnabled>false</ConceptualDocsEnabled>
+		    <ShowPlaceholders>false</ShowPlaceholders>
+	    </PropertyGroup>
+
+    </Project>
+    ```
+
+    ```xml Generic
+    <Project Sdk="DotNetDocs.Sdk/1.0.0">
+
+	    <PropertyGroup>
+		    <DocumentationType>Generic</DocumentationType>
+		    <GenerateDocumentation>true</GenerateDocumentation>
+		    <NamespaceMode>Folder</NamespaceMode>
+		    <ShowDocumentationStats>true</ShowDocumentationStats>
+
+		    <ConceptualDocsEnabled>false</ConceptualDocsEnabled>
+		    <ShowPlaceholders>false</ShowPlaceholders>
+	    </PropertyGroup>
+
+    </Project>
+    ```
+
+    </CodeGroup>
 
     <Note>You can see more of how to configure your .docsproj file in the [.docsproj Reference](/guides/docsproj) docs.</Note>
 
