@@ -7,15 +7,15 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\CloudNimble.DotNetDocs.Sdk.Tasks\CloudNimble.DotNetDocs.Sdk.Tasks.csproj" />
-        <ProjectReference Include="..\CloudNimble.DotNetDocs.Tests.Shared\CloudNimble.DotNetDocs.Tests.Shared.csproj" />
+        <PackageReference Include="EasyAF.MSBuild" Version="3.*-*" />
+        <PackageReference Include="Microsoft.Build" Version="17.11.48" NoWarn="NU1605" />
+        <PackageReference Include="Microsoft.Build.Framework" Version="17.11.48" NoWarn="NU1605" />
+        <PackageReference Include="Microsoft.Build.Utilities.Core" Version="17.11.48" NoWarn="NU1605" />
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="EasyAF.MSBuild" Version="3.*-*" />
-        <PackageReference Include="Microsoft.Build" Version="17.14.28" />
-        <PackageReference Include="Microsoft.Build.Framework" Version="17.14.28" />
-        <PackageReference Include="Microsoft.Build.Utilities.Core" Version="17.14.28" />
+        <ProjectReference Include="..\CloudNimble.DotNetDocs.Sdk.Tasks\CloudNimble.DotNetDocs.Sdk.Tasks.csproj" />
+        <ProjectReference Include="..\CloudNimble.DotNetDocs.Tests.Shared\CloudNimble.DotNetDocs.Tests.Shared.csproj" />
     </ItemGroup>
 
     <ItemGroup>

@@ -497,6 +497,232 @@ namespace CloudNimble.DotNetDocs.Tests.Sdk.Tasks
 
         #endregion
 
+        #region Styling Configuration Tests
+
+        /// <summary>
+        /// Tests that ParseStylingConfig correctly parses CodeBlocks property.
+        /// </summary>
+        [TestMethod]
+        public void ParseStylingConfig_WithCodeBlocks_ParsesCorrectly()
+        {
+            // Arrange
+            var xml = """
+                <Styling>
+                    <CodeBlocks>dark</CodeBlocks>
+                </Styling>
+                """;
+            var stylingElement = XElement.Parse(xml);
+
+            // Act
+            var result = _task.ParseStylingConfig(stylingElement);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Codeblocks.Should().Be("dark");
+        }
+
+        /// <summary>
+        /// Tests that ParseStylingConfig correctly parses Eyebrows property.
+        /// </summary>
+        [TestMethod]
+        public void ParseStylingConfig_WithEyebrows_ParsesCorrectly()
+        {
+            // Arrange
+            var xml = """
+                <Styling>
+                    <Eyebrows>subtle</Eyebrows>
+                </Styling>
+                """;
+            var stylingElement = XElement.Parse(xml);
+
+            // Act
+            var result = _task.ParseStylingConfig(stylingElement);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Eyebrows.Should().Be("subtle");
+        }
+
+        /// <summary>
+        /// Tests that ParseStylingConfig correctly parses both properties.
+        /// </summary>
+        [TestMethod]
+        public void ParseStylingConfig_WithAllProperties_ParsesCorrectly()
+        {
+            // Arrange
+            var xml = """
+                <Styling>
+                    <CodeBlocks>dark</CodeBlocks>
+                    <Eyebrows>subtle</Eyebrows>
+                </Styling>
+                """;
+            var stylingElement = XElement.Parse(xml);
+
+            // Act
+            var result = _task.ParseStylingConfig(stylingElement);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Codeblocks.Should().Be("dark");
+            result.Eyebrows.Should().Be("subtle");
+        }
+
+        /// <summary>
+        /// Tests that ParseStylingConfig handles empty styling correctly.
+        /// </summary>
+        [TestMethod]
+        public void ParseStylingConfig_WithEmptyElement_ReturnsEmptyConfig()
+        {
+            // Arrange
+            var xml = "<Styling></Styling>";
+            var stylingElement = XElement.Parse(xml);
+
+            // Act
+            var result = _task.ParseStylingConfig(stylingElement);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Codeblocks.Should().BeNull();
+            result.Eyebrows.Should().BeNull();
+        }
+
+        #endregion
+
+        #region Appearance Configuration Tests
+
+        /// <summary>
+        /// Tests that ParseAppearanceConfig correctly parses Default property.
+        /// </summary>
+        [TestMethod]
+        public void ParseAppearanceConfig_WithDefault_ParsesCorrectly()
+        {
+            // Arrange
+            var xml = """
+                <Appearance>
+                    <Default>dark</Default>
+                </Appearance>
+                """;
+            var appearanceElement = XElement.Parse(xml);
+
+            // Act
+            var result = _task.ParseAppearanceConfig(appearanceElement);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Default.Should().Be("dark");
+        }
+
+        /// <summary>
+        /// Tests that ParseAppearanceConfig correctly parses Strict property.
+        /// </summary>
+        [TestMethod]
+        public void ParseAppearanceConfig_WithStrict_ParsesCorrectly()
+        {
+            // Arrange
+            var xml = """
+                <Appearance>
+                    <Strict>true</Strict>
+                </Appearance>
+                """;
+            var appearanceElement = XElement.Parse(xml);
+
+            // Act
+            var result = _task.ParseAppearanceConfig(appearanceElement);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Strict.Should().BeTrue();
+        }
+
+        /// <summary>
+        /// Tests that ParseAppearanceConfig correctly parses both properties.
+        /// </summary>
+        [TestMethod]
+        public void ParseAppearanceConfig_WithAllProperties_ParsesCorrectly()
+        {
+            // Arrange
+            var xml = """
+                <Appearance>
+                    <Default>light</Default>
+                    <Strict>false</Strict>
+                </Appearance>
+                """;
+            var appearanceElement = XElement.Parse(xml);
+
+            // Act
+            var result = _task.ParseAppearanceConfig(appearanceElement);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Default.Should().Be("light");
+            result.Strict.Should().BeFalse();
+        }
+
+        /// <summary>
+        /// Tests that ParseAppearanceConfig handles system default correctly.
+        /// </summary>
+        [TestMethod]
+        public void ParseAppearanceConfig_WithSystemDefault_ParsesCorrectly()
+        {
+            // Arrange
+            var xml = """
+                <Appearance>
+                    <Default>system</Default>
+                </Appearance>
+                """;
+            var appearanceElement = XElement.Parse(xml);
+
+            // Act
+            var result = _task.ParseAppearanceConfig(appearanceElement);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Default.Should().Be("system");
+        }
+
+        /// <summary>
+        /// Tests that ParseAppearanceConfig handles empty appearance correctly.
+        /// </summary>
+        [TestMethod]
+        public void ParseAppearanceConfig_WithEmptyElement_ReturnsEmptyConfig()
+        {
+            // Arrange
+            var xml = "<Appearance></Appearance>";
+            var appearanceElement = XElement.Parse(xml);
+
+            // Act
+            var result = _task.ParseAppearanceConfig(appearanceElement);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Default.Should().BeNull();
+            result.Strict.Should().BeNull();
+        }
+
+        /// <summary>
+        /// Tests that ParseAppearanceConfig ignores invalid boolean values for Strict.
+        /// </summary>
+        [TestMethod]
+        public void ParseAppearanceConfig_WithInvalidStrictValue_IgnoresValue()
+        {
+            // Arrange
+            var xml = """
+                <Appearance>
+                    <Strict>invalid</Strict>
+                </Appearance>
+                """;
+            var appearanceElement = XElement.Parse(xml);
+
+            // Act
+            var result = _task.ParseAppearanceConfig(appearanceElement);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Strict.Should().BeNull(); // Invalid value should be ignored
+        }
+
+        #endregion
+
     }
 
 }
