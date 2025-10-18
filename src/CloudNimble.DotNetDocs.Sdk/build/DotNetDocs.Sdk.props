@@ -1,0 +1,24 @@
+<Project>
+  <!-- ============================================================================
+       CloudNimble.DotNetDocs.Sdk - Build Integration
+       
+       This file is automatically imported when the NuGet package is referenced.
+       It provides global configuration for .docsproj files in consuming projects.
+       ============================================================================ -->
+
+  <!-- Automatically configure .docsproj files when this package is referenced -->
+  <PropertyGroup Condition="'$(MSBuildProjectExtension)' == '.docsproj'">
+    <!-- Mark as documentation project -->
+    <IsDocumentationProject>true</IsDocumentationProject>
+    
+    <!-- Disable packaging and compilation by default -->
+    <IsPackable>false</IsPackable>
+    <IsPublishable>false</IsPublishable>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    
+    <!-- Redirect output to temp to keep docs folders clean -->
+    <BaseIntermediateOutputPath>$(TEMP)\$(SolutionName)\$(MSBuildProjectName)\obj\</BaseIntermediateOutputPath>
+    <BaseOutputPath>$(TEMP)\$(SolutionName)\$(MSBuildProjectName)\bin\</BaseOutputPath>
+  </PropertyGroup>
+
+</Project>

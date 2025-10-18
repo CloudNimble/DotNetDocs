@@ -1,0 +1,195 @@
+---
+title: DocMember
+description: "Represents documentation for a .NET member (method, property, field, event, etc.)."
+icon: file-brackets-curly
+keywords: ['DocMember', 'CloudNimble.DotNetDocs.Core.DocMember', 'CloudNimble.DotNetDocs.Core', 'class', 'CloudNimble.DotNetDocs.Core.DocEntity']
+---
+
+## Definition
+
+**Assembly:** CloudNimble.DotNetDocs.Core.dll
+
+**Namespace:** CloudNimble.DotNetDocs.Core
+
+**Inheritance:** CloudNimble.DotNetDocs.Core.DocEntity
+
+## Syntax
+
+```csharp
+CloudNimble.DotNetDocs.Core.DocMember
+```
+
+## Summary
+
+Represents documentation for a .NET member (method, property, field, event, etc.).
+
+## Remarks
+
+Contains metadata about a type member, extracted from Roslyn symbols and enhanced
+            with conceptual documentation.
+
+## Constructors
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  .ctor
+
+Initializes a new instance of the [DocMember](/api-reference/CloudNimble/DotNetDocs/Core/DocMember) class.
+
+#### Syntax
+
+```csharp
+public DocMember(Microsoft.CodeAnalysis.ISymbol symbol)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `symbol` | `Microsoft.CodeAnalysis.ISymbol` | The Roslyn member symbol. |
+
+#### Exceptions
+
+| Exception | Description |
+|-----------|-------------|
+| `ArgumentNullException` | Thrown when *symbol* is null. |
+
+## Properties
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Accessibility
+
+Gets or sets the accessibility level of the member.
+
+#### Syntax
+
+```csharp
+public Microsoft.CodeAnalysis.Accessibility Accessibility { get; set; }
+```
+
+#### Property Value
+
+Type: `Microsoft.CodeAnalysis.Accessibility`
+The accessibility level (public, private, protected, etc.).
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  MemberKind
+
+Gets or sets the member kind (method, property, field, event, etc.).
+
+#### Syntax
+
+```csharp
+public Microsoft.CodeAnalysis.SymbolKind MemberKind { get; set; }
+```
+
+#### Property Value
+
+Type: `Microsoft.CodeAnalysis.SymbolKind`
+The kind of member as defined by Roslyn.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  MethodKind
+
+Gets or sets the method kind for method members.
+
+#### Syntax
+
+```csharp
+public System.Nullable<Microsoft.CodeAnalysis.MethodKind> MethodKind { get; set; }
+```
+
+#### Property Value
+
+Type: `System.Nullable<Microsoft.CodeAnalysis.MethodKind>`
+The kind of method (Constructor, Ordinary, etc.), or null for non-method members.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Name
+
+Gets or sets the name of the member.
+
+#### Syntax
+
+```csharp
+public string Name { get; set; }
+```
+
+#### Property Value
+
+Type: `string`
+The member name.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Parameters
+
+Gets the collection of parameters for this member.
+
+#### Syntax
+
+```csharp
+public System.Collections.Generic.List<CloudNimble.DotNetDocs.Core.DocParameter> Parameters { get; init; }
+```
+
+#### Property Value
+
+Type: `System.Collections.Generic.List<CloudNimble.DotNetDocs.Core.DocParameter>`
+List of documented parameters. Empty for members without parameters.
+
+#### Remarks
+
+This collection is populated for methods, constructors, delegates, and indexers.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  ReturnType
+
+Gets the return type documentation, if applicable.
+
+#### Syntax
+
+```csharp
+public CloudNimble.DotNetDocs.Core.DocType ReturnType { get; set; }
+```
+
+#### Property Value
+
+Type: `CloudNimble.DotNetDocs.Core.DocType?`
+Documentation for the return type, or null for void methods and non-method members.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  ReturnTypeName
+
+Gets or sets the name of the return type.
+
+#### Syntax
+
+```csharp
+public string ReturnTypeName { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+The return type name for methods and properties, or null for other members.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Signature
+
+Gets or sets the signature of the member.
+
+#### Syntax
+
+```csharp
+public string Signature { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+The member signature including modifiers, return type, parameters, etc.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Symbol
+
+Gets the Roslyn symbol for the member.
+
+#### Syntax
+
+```csharp
+public Microsoft.CodeAnalysis.ISymbol Symbol { get; }
+```
+
+#### Property Value
+
+Type: `Microsoft.CodeAnalysis.ISymbol`
+The underlying Roslyn symbol containing metadata.
+

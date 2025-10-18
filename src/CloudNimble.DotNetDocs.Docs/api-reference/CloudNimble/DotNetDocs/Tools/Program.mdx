@@ -1,0 +1,58 @@
+---
+title: Program
+icon: file-brackets-curly
+keywords: ['Program', 'CloudNimble.DotNetDocs.Tools.Program', 'CloudNimble.DotNetDocs.Tools', 'class', 'System.Object']
+---
+
+## Definition
+
+**Assembly:** CloudNimble.DotNetDocs.Tools.dll
+
+**Namespace:** CloudNimble.DotNetDocs.Tools
+
+**Inheritance:** System.Object
+
+## Syntax
+
+```csharp
+CloudNimble.DotNetDocs.Tools.Program
+```
+
+## Constructors
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  .ctor
+
+#### Syntax
+
+```csharp
+public Program()
+```
+
+## Methods
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Main
+
+Initializes and runs the application using the specified command-line arguments.
+
+#### Syntax
+
+```csharp
+public static System.Threading.Tasks.Task<int> Main(string[] args)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `args` | `string[]` | An array of command-line arguments to configure the application's behavior. |
+
+#### Returns
+
+Type: `System.Threading.Tasks.Task<int>`
+A task that represents the asynchronous operation. The task result contains the application's exit code.
+
+#### Remarks
+
+This method configures the application's host, sets the content root, and runs the
+            command-line application asynchronously. It is typically used as the application's entry point.
+

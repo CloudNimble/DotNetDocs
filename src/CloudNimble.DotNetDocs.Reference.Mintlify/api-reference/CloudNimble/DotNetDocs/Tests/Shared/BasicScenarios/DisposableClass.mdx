@@ -1,0 +1,111 @@
+---
+title: DisposableClass
+description: Proper IDisposable pattern implementation
+icon: trash
+---
+
+# DisposableClass Class
+
+<Note>
+  **Namespace**: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios  
+  **Assembly**: CloudNimble.DotNetDocs.Tests.Shared.dll
+</Note>
+
+## 📋 Definition
+
+```csharp
+public class DisposableClass : IDisposable
+```
+
+## 📝 Summary
+
+Demonstrates the proper implementation of the IDisposable pattern for resource cleanup.
+
+## 🎯 Members
+
+<Tabs>
+  <Tab title="Methods">
+    ### Dispose
+    
+    ```csharp
+    public void Dispose()
+    ```
+    
+    Releases all resources used by the DisposableClass.
+    
+    ### Dispose(bool)
+    
+    ```csharp
+    protected virtual void Dispose(bool disposing)
+    ```
+    
+    Protected implementation of Dispose pattern.
+    
+    **Parameters**:
+    - `disposing` - true to release both managed and unmanaged resources
+    
+    ### DoWork
+    
+    ```csharp
+    public void DoWork()
+    ```
+    
+    Performs work with the resource. Throws if disposed.
+  </Tab>
+  
+  <Tab title="Finalizer">
+    ### ~DisposableClass
+    
+    ```csharp
+    ~DisposableClass()
+    ```
+    
+    Finalizer (destructor) for cleanup of unmanaged resources.
+  </Tab>
+</Tabs>
+
+## 💡 Usage Examples
+
+<CodeGroup>
+  ```csharp Using Statement
+  // Recommended pattern
+  using (var resource = new DisposableClass())
+  {
+      resource.DoWork();
+  } // Automatically disposed here
+  ```
+  
+  ```csharp Using Declaration
+  // C# 8.0+ syntax
+  using var resource = new DisposableClass();
+  resource.DoWork();
+  // Disposed at end of scope
+  ```
+  
+  ```csharp Manual Disposal
+  DisposableClass? resource = null;
+  try
+  {
+      resource = new DisposableClass();
+      resource.DoWork();
+  }
+  finally
+  {
+      resource?.Dispose();
+  }
+  ```
+</CodeGroup>
+
+## ⚠️ Important Notes
+
+<Warning>
+  Always dispose of DisposableClass instances to prevent resource leaks. Use `using` statements for automatic disposal.
+</Warning>
+
+<Info>
+  The Dispose pattern ensures that both managed and unmanaged resources are properly released, even if Dispose is not called explicitly.
+</Info>
+
+<Tip>
+  Implement IDisposable when your class uses unmanaged resources directly or contains members that implement IDisposable.
+</Tip>

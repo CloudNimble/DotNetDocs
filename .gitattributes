@@ -1,0 +1,40 @@
+# Auto detect text files and perform CRLF normalization for Windows development
+* text=auto eol=crlf
+
+# Text files - use CRLF for Windows development
+*.md text eol=crlf
+*.json text eol=crlf
+*.yaml text eol=crlf
+*.yml text eol=crlf
+*.xml text eol=crlf
+*.txt text eol=crlf
+*.config text eol=crlf
+
+# C# and project files - use CRLF for Visual Studio
+*.cs text eol=crlf
+*.csproj text eol=crlf
+*.sln text eol=crlf
+*.slnx text eol=crlf
+*.props text eol=crlf
+*.targets text eol=crlf
+
+# Baseline files - use CRLF for consistency with Windows development
+**/Baselines/**/*.md text eol=crlf
+**/Baselines/**/*.json text eol=crlf
+**/Baselines/**/*.yaml text eol=crlf
+**/Baselines/**/*.yml text eol=crlf
+
+# Shell scripts (if any) should keep LF
+*.sh text eol=lf
+
+# Binary files
+*.dll binary
+*.exe binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.zip binary
+*.snk binary

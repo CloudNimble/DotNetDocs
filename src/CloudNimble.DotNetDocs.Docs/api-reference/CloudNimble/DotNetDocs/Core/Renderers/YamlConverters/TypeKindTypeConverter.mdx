@@ -1,0 +1,110 @@
+---
+title: TypeKindTypeConverter
+description: "Custom type converter for TypeKind enum."
+icon: file-brackets-curly
+keywords: ['TypeKindTypeConverter', 'CloudNimble.DotNetDocs.Core.Renderers.YamlConverters.TypeKindTypeConverter', 'CloudNimble.DotNetDocs.Core.Renderers.YamlConverters', 'class', 'System.Object', 'YamlDotNet.Serialization.IYamlTypeConverter']
+---
+
+## Definition
+
+**Assembly:** CloudNimble.DotNetDocs.Core.dll
+
+**Namespace:** CloudNimble.DotNetDocs.Core.Renderers.YamlConverters
+
+**Inheritance:** System.Object
+
+## Syntax
+
+```csharp
+CloudNimble.DotNetDocs.Core.Renderers.YamlConverters.TypeKindTypeConverter
+```
+
+## Summary
+
+Custom type converter for TypeKind enum.
+
+## Constructors
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  .ctor
+
+#### Syntax
+
+```csharp
+public TypeKindTypeConverter()
+```
+
+## Methods
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Accepts
+
+Determines whether this converter can handle the specified type.
+
+#### Syntax
+
+```csharp
+public bool Accepts(System.Type type)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `type` | `System.Type` | The type to check. |
+
+#### Returns
+
+Type: `bool`
+true if this converter can handle the type; otherwise, false.
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  ReadYaml
+
+Reads the YAML representation of the object.
+
+#### Syntax
+
+```csharp
+public object ReadYaml(YamlDotNet.Core.IParser parser, System.Type type, YamlDotNet.Serialization.ObjectDeserializer rootDeserializer)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `parser` | `YamlDotNet.Core.IParser` | The parser to read from. |
+| `type` | `System.Type` | The type of the object. |
+| `rootDeserializer` | `YamlDotNet.Serialization.ObjectDeserializer` | The root deserializer. |
+
+#### Returns
+
+Type: `object?`
+The deserialized object.
+
+#### Exceptions
+
+| Exception | Description |
+|-----------|-------------|
+| `NotImplementedException` | Reading is not supported. |
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  WriteYaml
+
+Writes the YAML representation of the object.
+
+#### Syntax
+
+```csharp
+public void WriteYaml(YamlDotNet.Core.IEmitter emitter, object value, System.Type type, YamlDotNet.Serialization.ObjectSerializer serializer)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `emitter` | `YamlDotNet.Core.IEmitter` | The emitter to write to. |
+| `value` | `object?` | The value to serialize. |
+| `type` | `System.Type` | The type of the value. |
+| `serializer` | `YamlDotNet.Serialization.ObjectSerializer` | The serializer. |
+
+## Related APIs
+
+- YamlDotNet.Serialization.IYamlTypeConverter
+

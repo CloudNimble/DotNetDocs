@@ -1,15 +1,16 @@
-using System;
-using CloudNimble.Breakdance.Assemblies;
 using CloudNimble.DotNetDocs.Core;
+using CloudNimble.DotNetDocs.Tests.Shared;
 using FluentAssertions;
 using Microsoft.CodeAnalysis;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace CloudNimble.DotNetDocs.Tests.Core
 {
 
     [TestClass]
-    public class DocEntityTests : BreakdanceTestBase
+    public class DocEntityTests : DotNetDocsTestBase
     {
 
         #region Private Classes
@@ -28,13 +29,12 @@ namespace CloudNimble.DotNetDocs.Tests.Core
         {
             var entity = new TestDocEntity();
 
-            entity.Usage.Should().BeEmpty();
-            entity.Examples.Should().BeEmpty();
-            entity.BestPractices.Should().BeEmpty();
-            entity.Patterns.Should().BeEmpty();
-            entity.Considerations.Should().BeEmpty();
-            entity.RelatedApis.Should().NotBeNull();
-            entity.RelatedApis.Should().BeEmpty();
+            entity.Usage.Should().BeNull();
+            entity.Examples.Should().BeNull();
+            entity.BestPractices.Should().BeNull();
+            entity.Patterns.Should().BeNull();
+            entity.Considerations.Should().BeNull();
+            entity.RelatedApis.Should().BeNull();
         }
 
         [TestMethod]
@@ -49,6 +49,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core
                 Considerations = "Important notes"
             };
 
+            entity.RelatedApis ??= new List<string>();
             entity.RelatedApis.Add("System.String");
             entity.RelatedApis.Add("System.Object");
 
@@ -66,14 +67,107 @@ namespace CloudNimble.DotNetDocs.Tests.Core
         {
             var entity = new TestDocEntity();
 
+            entity.RelatedApis ??= new List<string>();
             entity.RelatedApis.Add("https://docs.microsoft.com/api1");
             entity.RelatedApis.Add("System.Collections.Generic.List");
             entity.RelatedApis.Add("MyNamespace.MyClass.MyMethod");
 
             entity.RelatedApis.Should().HaveCount(3);
-            entity.RelatedApis[0].Should().Be("https://docs.microsoft.com/api1");
-            entity.RelatedApis[1].Should().Be("System.Collections.Generic.List");
-            entity.RelatedApis[2].Should().Be("MyNamespace.MyClass.MyMethod");
+            var apiList = entity.RelatedApis.ToList();
+            apiList[0].Should().Be("https://docs.microsoft.com/api1");
+            apiList[1].Should().Be("System.Collections.Generic.List");
+            apiList[2].Should().Be("MyNamespace.MyClass.MyMethod");
+        }
+
+        [TestMethod]
+        public void DocEntity_IncludedMembers_DefaultsToPublic()
+        {
+            var entity = new TestDocEntity();
+
+            entity.IncludedMembers.Should().NotBeNull();
+            entity.IncludedMembers.Should().HaveCount(1);
+            entity.IncludedMembers.Should().Contain(Accessibility.Public);
+        }
+
+        [TestMethod]
+        public void DocEntity_IncludedMembers_CanBeModified()
+        {
+            var entity = new TestDocEntity();
+
+            entity.IncludedMembers = [Accessibility.Public, Accessibility.Internal, Accessibility.Protected];
+
+            entity.IncludedMembers.Should().HaveCount(3);
+            entity.IncludedMembers.Should().Contain(Accessibility.Public);
+            entity.IncludedMembers.Should().Contain(Accessibility.Internal);
+            entity.IncludedMembers.Should().Contain(Accessibility.Protected);
+        }
+
+        [TestMethod]
+        public void DocEntity_AllXmlDocProperties_CanBeSet()
+        {
+            var entity = new TestDocEntity
+            {
+                Summary = "Brief description",
+                Remarks = "Additional remarks",
+                Returns = "Return value description",
+                Value = "Property value description",
+                DisplayName = "Full.Display.Name"
+            };
+
+            entity.Exceptions = new List<DocException>
+            {
+                new() { Type = "ArgumentException", Description = "Invalid argument" }
+            };
+
+            entity.TypeParameters = new List<DocTypeParameter>
+            {
+                new() { Name = "T", Description = "Type parameter" }
+            };
+
+            entity.SeeAlso = new List<DocReference>
+            {
+                new DocReference("T:RelatedType"),
+                new DocReference("T:AnotherType")
+            };
+
+            entity.Summary.Should().Be("Brief description");
+            entity.Remarks.Should().Be("Additional remarks");
+            entity.Returns.Should().Be("Return value description");
+            entity.Value.Should().Be("Property value description");
+            entity.DisplayName.Should().Be("Full.Display.Name");
+            entity.Exceptions.Should().HaveCount(1);
+            entity.TypeParameters.Should().HaveCount(1);
+            entity.SeeAlso.Should().HaveCount(2);
+        }
+
+
+        [TestMethod]
+        public void DocEntity_OriginalSymbol_CanBeSetInConstructor()
+        {
+            // Get a real symbol from test assembly
+            var assembly = GetTestsDotSharedAssembly();
+            var type = assembly.Namespaces
+                .SelectMany(n => n.Types)
+                .FirstOrDefault(t => t.Symbol.Name == "SampleClass");
+
+            type.Should().NotBeNull();
+
+            // Create new entity with symbol
+            var entity = new TestDocEntityWithSymbolConstructor(type!.Symbol);
+
+            entity.OriginalSymbol.Should().NotBeNull();
+            entity.OriginalSymbol.Should().Be(type.Symbol);
+        }
+
+        #endregion
+
+        #region Private Classes
+
+        private class TestDocEntityWithSymbolConstructor : DocEntity
+        {
+            public TestDocEntityWithSymbolConstructor(ISymbol symbol) : base(symbol)
+            {
+            }
         }
 
         #endregion

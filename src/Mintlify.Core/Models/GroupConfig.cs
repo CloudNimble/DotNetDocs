@@ -22,7 +22,7 @@ namespace Mintlify.Core.Models
         /// </summary>
         [JsonPropertyName("asyncapi")]
         [JsonConverter(typeof(ApiConfigConverter))]
-        public object? AsyncApi { get; set; }
+        public ApiSpecConfig? AsyncApi { get; set; }
 
         /// <summary>
         /// Gets or sets the name of the group.
@@ -45,14 +45,14 @@ namespace Mintlify.Core.Models
         /// Gets or sets the icon to be displayed in the section.
         /// </summary>
         [JsonConverter(typeof(IconConverter))]
-        public object? Icon { get; set; }
+        public IconConfig? Icon { get; set; }
 
         /// <summary>
         /// Gets or sets the OpenAPI configuration for the group.
         /// </summary>
         [JsonPropertyName("openapi")]
         [JsonConverter(typeof(ApiConfigConverter))]
-        public object? OpenApi { get; set; }
+        public ApiSpecConfig? OpenApi { get; set; }
 
         /// <summary>
         /// Gets or sets the pages in the group.

@@ -1,183 +1,145 @@
 <Project>
     <!-- ============================================================================
-       CloudNimble.Build.Documentation SDK - Targets
-       
-       Provides build targets for documentation projects (.docsproj)
-       Includes validation, generation, and integration targets.
-       ============================================================================ -->
+        DotNetDocs.Sdk - Targets
+
+        Provides build targets for documentation projects (.docsproj)
+        Includes validation, generation, and integration targets.
+        ============================================================================ -->
 
     <!-- Import the NoTargets SDK targets for no-compile behavior -->
     <!-- NoTargets SDK files are bundled in the Sdk/NoTargets folder -->
-    <Import Project="$(MSBuildThisFileDirectory)NoTargets\Sdk.targets" />
+    <!-- First try the local NoTargets folder (for packaged SDK) -->
+    <Import Project="$(MSBuildThisFileDirectory)NoTargets\Sdk.targets" 
+            Condition="Exists('$(MSBuildThisFileDirectory)NoTargets\Sdk.targets')" />
+    
+    <!-- Fallback: Try common NuGet package locations if local doesn't exist -->
+    <PropertyGroup Condition="!Exists('$(MSBuildThisFileDirectory)NoTargets\Sdk.targets')">
+        <!-- Try standard NuGet cache location -->
+        <_NoTargetsTargetsFallbackPath>$(UserProfile)\.nuget\packages\microsoft.build.notargets\3.7.0\Sdk\Sdk.targets</_NoTargetsTargetsFallbackPath>
+        <!-- For CI environments that might use different cache -->
+        <_NoTargetsTargetsFallbackPath Condition="!Exists('$(_NoTargetsTargetsFallbackPath)')">$(NuGetPackageRoot)microsoft.build.notargets\3.7.0\Sdk\Sdk.targets</_NoTargetsTargetsFallbackPath>
+    </PropertyGroup>
+    
+    <!-- Import from NuGet cache if found -->
+    <Import Project="$(_NoTargetsTargetsFallbackPath)" 
+            Condition="!Exists('$(MSBuildThisFileDirectory)NoTargets\Sdk.targets') and Exists('$(_NoTargetsTargetsFallbackPath)')" />
+    
+    <!-- Determine which task assembly to load based on MSBuild runtime -->
+    <PropertyGroup>
+        <!-- Determine the target framework for tasks based on MSBuild runtime -->
+        <_DotNetDocsTaskFramework Condition="'$(MSBuildRuntimeType)' == 'Core'">net8.0</_DotNetDocsTaskFramework>
+        <_DotNetDocsTaskFramework Condition="'$(MSBuildRuntimeType)' == 'Full'">net472</_DotNetDocsTaskFramework>
+        <_DotNetDocsTaskFramework Condition="'$(_DotNetDocsTaskFramework)' == ''">net8.0</_DotNetDocsTaskFramework>
+        
+        <!-- Tasks are always loaded from the packaged location -->
+        <_DotNetDocsTasksFolder>$(MSBuildThisFileDirectory)..\tasks\$(_DotNetDocsTaskFramework)</_DotNetDocsTasksFolder>
+        <_DotNetDocsTasksAssembly>$(_DotNetDocsTasksFolder)\CloudNimble.DotNetDocs.Sdk.Tasks.dll</_DotNetDocsTasksAssembly>
+    </PropertyGroup>
+    
+    <!-- Load compiled MSBuild tasks when they exist -->
+    <UsingTask TaskName="CloudNimble.DotNetDocs.Sdk.Tasks.DiscoverDocumentedProjectsTask" 
+               AssemblyFile="$(_DotNetDocsTasksAssembly)"
+               Condition="Exists('$(_DotNetDocsTasksAssembly)') AND '$(GenerateDocumentation)' == 'true'" />
+    <UsingTask TaskName="CloudNimble.DotNetDocs.Sdk.Tasks.GenerateDocumentationTask" 
+               AssemblyFile="$(_DotNetDocsTasksAssembly)"
+               Condition="Exists('$(_DotNetDocsTasksAssembly)') AND '$(GenerateDocumentation)' == 'true'" />
+    
+    <!-- Clean up any implicit package references that might cause warnings -->
+    <Target Name="RemoveImplicitPackageReferences" BeforeTargets="CollectPackageReferences">
+        <ItemGroup>
+            <PackageReference Remove="NETStandard.Library" />
+            <PackageReference Remove="Microsoft.NETCore.App" />
+        </ItemGroup>
+    </Target>
 
     <!-- Documentation project validation and information -->
-    <Target Name="ValidateDocumentationProject" AfterTargets="Build">
+    <Target Name="ValidateDocumentationProject" BeforeTargets="Build">
         <Message Text="✅ Documentation project: $(MSBuildProjectName)" Importance="high" />
         <Message Text="📄 Documentation type: $(DocumentationType)" Importance="high" />
         <Message Text="📂 Documentation root: $(DocumentationRoot)" Importance="high" Condition="'$(DocumentationRoot)' != '$(MSBuildProjectDirectory)\'" />
-        <Message Text="📁 Output redirected to: $(OutputPath)" Importance="normal" Condition="'$(KeepLocalOutput)' != 'true'" />
-        <Message Text="📁 Output kept local" Importance="normal" Condition="'$(KeepLocalOutput)' == 'true'" />
+        <Message Text="🔧 Generate documentation: $(GenerateDocumentation)" Importance="normal" />
     </Target>
 
-    <!-- Check for EasyAF.Tools installation -->
-    <Target Name="CheckEasyAFTools">
-        <!-- Use different commands for Windows vs Unix-like systems -->
-        <Exec Command="dotnet tool list -g"
-              ContinueOnError="true"
-              IgnoreExitCode="true"
-              ConsoleToMSBuild="true">
-            <Output TaskParameter="ConsoleOutput" PropertyName="EasyAFToolsOutput" />
-            <Output TaskParameter="ExitCode" PropertyName="ToolListExitCode" />
-        </Exec>
+    <!-- Discover documented projects in solution for documentation generation -->
+    <Target Name="DiscoverDocumentedProjects" Condition="'$(GenerateDocumentation)' == 'true'" AfterTargets="ValidateDocumentationProject">
+        <Message Text="🔍 Discovering documented projects in solution..." Importance="high" />
+
+        <!-- Use compiled task to discover projects -->
+        <CloudNimble.DotNetDocs.Sdk.Tasks.DiscoverDocumentedProjectsTask
+            SolutionDir="$(MSBuildProjectDirectory)\.."
+            ExcludePatterns="$(ExcludePatterns)">
+            <Output TaskParameter="DocumentedProjects" ItemName="DocumentedProjects" />
+        </CloudNimble.DotNetDocs.Sdk.Tasks.DiscoverDocumentedProjectsTask>
+
+        <Message Text="📚 Found @(DocumentedProjects->Count()) documented projects for documentation" Importance="high" />
         
+        <!-- Show the list of projects that will be documented -->
+        <ItemGroup>
+            <_ProjectNames Include="@(DocumentedProjects->'%(Filename)')" />
+        </ItemGroup>
+        <Message Text="   Projects: @(_ProjectNames, ', ')" Importance="normal" />
+    </Target>
+
+    <!-- Generate documentation from existing assemblies -->
+    <Target Name="GenerateDocumentation"
+            Condition="'$(GenerateDocumentation)' == 'true'"
+            DependsOnTargets="DiscoverDocumentedProjects">
+        <Message Text="🚀 Generating documentation from existing assemblies..." Importance="high" />
+
+        <!-- Extract assembly paths from built projects (only main project assemblies) -->
+        <ItemGroup>
+            <!-- Get assembly paths using the actual target framework from each project -->
+            <AssemblyPaths Include="%(DocumentedProjects.RootDir)%(DocumentedProjects.Directory)bin\$(Configuration)\%(DocumentedProjects.TargetFramework)\%(DocumentedProjects.Filename).dll" />
+            <XmlDocPaths Include="%(DocumentedProjects.RootDir)%(DocumentedProjects.Directory)bin\$(Configuration)\%(DocumentedProjects.TargetFramework)\%(DocumentedProjects.Filename).xml" />
+        </ItemGroup>
+
+        <Message Text="📁 Found @(AssemblyPaths->Count()) assemblies for documentation generation" Importance="normal" />
+        
+        <!-- Debug: Show assembly paths -->
+        <Message Text="   Assembly: %(AssemblyPaths.Identity)" Importance="normal" />
+
+        <!-- Call DocumentationManager to process assemblies -->
         <PropertyGroup>
-            <!-- Check if EasyAF.Tools is in the output -->
-            <EasyAFToolsInstalled Condition="$(EasyAFToolsOutput.Contains('easyaf.tools'))">true</EasyAFToolsInstalled>
-            <EasyAFToolsInstalled Condition="!$(EasyAFToolsOutput.Contains('easyaf.tools'))">false</EasyAFToolsInstalled>
+            <DocumentationRootPath>$(MSBuildProjectDirectory)</DocumentationRootPath>
+            <NamespaceModeProperty>$(NamespaceMode)</NamespaceModeProperty>
         </PropertyGroup>
-    </Target>
 
-    <!-- Attempt to install EasyAF.Tools if not found -->
-    <Target Name="InstallEasyAFTools" 
-            Condition="'$(EasyAFToolsInstalled)' == 'false'"
-            DependsOnTargets="CheckEasyAFTools">
-        <Message Text="🔧 EasyAF.Tools not found. Attempting to install..." Importance="high" />
-        <Exec Command="dotnet tool install -g EasyAF.Tools"
-              ContinueOnError="true"
-              IgnoreExitCode="true">
-            <Output TaskParameter="ExitCode" PropertyName="InstallExitCode" />
-        </Exec>
-        
-        <PropertyGroup>
-            <EasyAFToolsInstalled Condition="'$(InstallExitCode)' == '0'">true</EasyAFToolsInstalled>
-        </PropertyGroup>
-        
-        <!-- Show access message if installation failed -->
-        <Message Text="❌ Could not install EasyAF.Tools automatically." 
-                 Importance="high" 
-                 Condition="'$(InstallExitCode)' != '0'" />
-        <Message Text="🎯 To get access to EasyAF.Tools, visit: https://github.com/CloudNimble/EasyAF.Docs/issues/1" 
-                 Importance="high" 
-                 Condition="'$(InstallExitCode)' != '0'" />
-        <Message Text="👍 Leave a reaction emoji on the issue to get access to the tools!" 
-                 Importance="high" 
-                 Condition="'$(InstallExitCode)' != '0'" />
-    </Target>
+        <!-- Create assembly list file for DocumentationManager (for debugging) -->
+        <WriteLinesToFile File="$(MSBuildProjectDirectory)\assembly-list.txt"
+                         Lines="@(AssemblyPaths)"
+                         Overwrite="true"
+                         Condition="'$(Configuration)' == 'Debug'" />
 
-    <!-- Optional: Mintlify integration -->
-    <Target Name="GenerateMintlifyDocs"
-            Condition="'$(GenerateMintlifyDocs)' == 'true' AND '$(DocumentationType)' == 'Mintlify'"
-            AfterTargets="Build"
-            DependsOnTargets="InstallEasyAFTools">
-        <Message Text="🚀 Generating Mintlify documentation..." Importance="high" />
-        
-        <!-- Only run if EasyAF.Tools is available -->
-        <Exec Command="dotnet easyaf mintlify generate"
-              WorkingDirectory="$(DocumentationRoot)"
-              ContinueOnError="true"
-              IgnoreExitCode="false"
-              Condition="'$(EasyAFToolsInstalled)' == 'true'" />
-              
-        <!-- Show message if tools not available -->
-        <Message Text="⚠️ Skipping Mintlify generation - EasyAF.Tools not available" 
-                 Importance="normal" 
-                 Condition="'$(EasyAFToolsInstalled)' != 'true'" />
-    </Target>
+        <Message Text="📝 Created assembly list: $(MSBuildProjectDirectory)\assembly-list.txt" Importance="normal" Condition="'$(Configuration)' == 'Debug'" />
+        <Message Text="🔧 Calling GenerateDocumentationTask with @(AssemblyPaths->Count()) assemblies" Importance="high" />
 
-    <!-- Optional: Markdown linting -->
-    <Target Name="LintMarkdown"
-            Condition="'$(LintMarkdown)' == 'true'"
-            AfterTargets="Build">
-        <Message Text="🔍 Linting Markdown files..." Importance="high" />
-        <Exec Command="markdownlint **/*.md"
-              WorkingDirectory="$(DocumentationRoot)"
-              ContinueOnError="true"
-              IgnoreExitCode="true" />
-    </Target>
+        <!-- Use compiled task to generate documentation -->
+        <CloudNimble.DotNetDocs.Sdk.Tasks.GenerateDocumentationTask
+            Assemblies="@(AssemblyPaths)"
+            OutputPath="$(DocumentationRootPath)"
+            DocumentationType="$(DocumentationType)"
+            NamespaceMode="$(NamespaceMode)"
+            ApiReferencePath="$(ApiReferencePath)"
+            MintlifyNavigationMode="$(MintlifyNavigationMode)"
+            MintlifyUnifiedGroupName="$(MintlifyUnifiedGroupName)"
+            DocsJsonTemplatePath="$(DocsJsonTemplatePath)"
+            MintlifyTemplate="$(MintlifyTemplate)"
+            SolutionName="$(_SolutionName)"
+            ConceptualDocsEnabled="$(ConceptualDocsEnabled)"
+            ShowPlaceholders="$(ShowPlaceholders)">
+            <Output TaskParameter="GeneratedFiles" ItemName="GeneratedDocumentationFiles" />
+        </CloudNimble.DotNetDocs.Sdk.Tasks.GenerateDocumentationTask>
 
-    <!-- Optional: Link validation -->
-    <Target Name="ValidateLinks"
-            Condition="'$(ValidateLinks)' == 'true'"
-            AfterTargets="Build">
-        <Message Text="🔗 Validating documentation links..." Importance="high" />
-        <!-- This would require a custom tool or script -->
-        <Message Text="Link validation not implemented yet - install markdown-link-check or similar tool" Importance="low" />
-    </Target>
+        <!-- Check result -->
+        <Message Text="✅ Documentation generation completed successfully" Importance="high" />
+        <Message Text="📄 Generated @(GeneratedDocumentationFiles->Count()) documentation files" Importance="normal" Condition="@(GeneratedDocumentationFiles->Count()) > 0" />
 
-    <!-- Optional: Documentation preview -->
-    <Target Name="PreviewDocumentation"
-            Condition="'$(PreviewDocumentation)' == 'true'"
-            AfterTargets="Build">
-        <Message Text="👀 Starting documentation preview..." Importance="high" />
-
-        <!-- Mintlify preview -->
-        <Exec Command="mint dev"
-              WorkingDirectory="$(DocumentationRoot)"
-              ContinueOnError="true"
-              IgnoreExitCode="true"
-              Condition="'$(DocumentationType)' == 'Mintlify'" />
-
-        <!-- DocFX preview -->
-        <Exec Command="docfx --serve"
-              WorkingDirectory="$(DocumentationRoot)"
-              ContinueOnError="true"
-              IgnoreExitCode="true"
-              Condition="'$(DocumentationType)' == 'DocFX'" />
-
-        <!-- MkDocs preview -->
-        <Exec Command="mkdocs serve"
-              WorkingDirectory="$(DocumentationRoot)"
-              ContinueOnError="true"
-              IgnoreExitCode="true"
-              Condition="'$(DocumentationType)' == 'MkDocs'" />
-
-        <!-- Jekyll preview -->
-        <Exec Command="bundle exec jekyll serve"
-              WorkingDirectory="$(DocumentationRoot)"
-              ContinueOnError="true"
-              IgnoreExitCode="true"
-              Condition="'$(DocumentationType)' == 'Jekyll'" />
-
-        <!-- Hugo preview -->
-        <Exec Command="hugo server"
-              WorkingDirectory="$(DocumentationRoot)"
-              ContinueOnError="true"
-              IgnoreExitCode="true"
-              Condition="'$(DocumentationType)' == 'Hugo'" />
-    </Target>
-
-    <!-- Optional: Generate PDF documentation -->
-    <Target Name="GeneratePdf"
-            Condition="'$(GeneratePdf)' == 'true'"
-            AfterTargets="Build">
-        <Message Text="📄 Generating PDF documentation..." Importance="high" />
-        <!-- This would require pandoc or similar tool -->
-        <Message Text="PDF generation not implemented yet - install pandoc or similar tool" Importance="low" />
-    </Target>
-
-    <!-- Optional: Documentation deployment -->
-    <Target Name="DeployDocumentation"
-            Condition="'$(DeployDocumentation)' == 'true'"
-            AfterTargets="Build">
-        <Message Text="🚀 Deploying documentation..." Importance="high" />
-
-        <!-- Mintlify deployment -->
-        <Exec Command="mint deploy"
-              WorkingDirectory="$(DocumentationRoot)"
-              ContinueOnError="true"
-              IgnoreExitCode="false"
-              Condition="'$(DocumentationType)' == 'Mintlify'" />
-
-        <!-- GitHub Pages deployment (generic) -->
-        <Message Text="Configure GitHub Actions or other CI/CD for deployment"
-                 Importance="normal"
-                 Condition="'$(DocumentationType)' != 'Mintlify'" />
+        <!-- DocumentationManager integration complete - merged model processing enabled -->
     </Target>
 
     <!-- Documentation project statistics -->
     <Target Name="DocumentationStats"
-            Condition="'$(ShowDocumentationStats)' == 'true'"
-            AfterTargets="Build">
+            Condition="'$(ShowDocumentationStats)' == 'true'">
         <Message Text="📊 Documentation Statistics:" Importance="high" />
 
         <ItemGroup>
@@ -192,14 +154,55 @@
         <Message Text="   🖼️ Image files: @(ImageFiles->Count())" Importance="high" />
     </Target>
 
+    <!-- Override GetTargetPath to provide a marker file for terminal logger -->
+    <!-- This overrides the empty GetTargetPath from NoTargets SDK -->
+    <Target Name="GetTargetPath" Returns="@(TargetPathItem)">
+        <PropertyGroup>
+            <!-- Create a marker file path that represents our documentation output -->
+            <!-- This needs to be a file path, not a directory, to avoid MSB3024 error -->
+            <TargetPath>$(MSBuildProjectDirectory)\bin\$(Configuration)\$(MSBuildProjectName).docmarker</TargetPath>
+        </PropertyGroup>
+        <ItemGroup>
+            <TargetPathItem Include="$(TargetPath)">
+                <TargetFramework>$(TargetFramework)</TargetFramework>
+            </TargetPathItem>
+        </ItemGroup>
+    </Target>
+
+    <!-- Override GetTargetPathWithTargetPlatformMoniker as well -->
+    <Target Name="GetTargetPathWithTargetPlatformMoniker" Returns="@(TargetPathWithTargetPlatformMoniker)">
+        <PropertyGroup>
+            <!-- Use the same marker file path as GetTargetPath -->
+            <TargetPath>$(MSBuildProjectDirectory)\bin\$(Configuration)\$(MSBuildProjectName).docmarker</TargetPath>
+        </PropertyGroup>
+        <ItemGroup>
+            <TargetPathWithTargetPlatformMoniker Include="$(TargetPath)">
+                <TargetPlatformMoniker>$(TargetPlatformMoniker)</TargetPlatformMoniker>
+                <TargetFramework>$(TargetFramework)</TargetFramework>
+            </TargetPathWithTargetPlatformMoniker>
+        </ItemGroup>
+    </Target>
+    
+    <!-- Override CopyFilesToOutputDirectory to prevent the copy operation entirely -->
+    <!-- Since we're a documentation project, we don't need to copy files to output -->
+    <Target Name="CopyFilesToOutputDirectory" />
+
+    <!-- Define a Build target that runs documentation generation -->
+    <!-- This allows 'dotnet build' and Visual Studio builds to work -->
+    <Target Name="Build" DependsOnTargets="ValidateDocumentationProject;GenerateDocumentation;DocumentationStats">
+        <Message Text="✅ Documentation build completed" Importance="high" />
+    </Target>
+
+
+
     <!-- Help target to show available options -->
-    <Target Name="DocumentationHelp" DependsOnTargets="CheckEasyAFTools">
+    <Target Name="DocumentationHelp">
         <Message Text="" Importance="high" />
-        <Message Text="📚 CloudNimble.Build.Documentation SDK Help" Importance="high" />
-        <Message Text="════════════════════════════════════════" Importance="high" />
+        <Message Text="📚 DotNetDocs.Sdk Help" Importance="high" />
+        <Message Text="═══════════════════════════════" Importance="high" />
         <Message Text="" Importance="high" />
         <Message Text="Available Properties:" Importance="high" />
-        <Message Text="  KeepLocalOutput=true          - Keep bin/obj in project folder" Importance="high" />
+        <Message Text="  GenerateDocumentation=true    - Generate docs from all packable projects in solution" Importance="high" />
         <Message Text="  GenerateMintlifyDocs=true     - Auto-generate Mintlify docs on build" Importance="high" />
         <Message Text="  LintMarkdown=true             - Lint markdown files on build" Importance="high" />
         <Message Text="  ValidateLinks=true            - Validate links on build" Importance="high" />
@@ -211,6 +214,7 @@
         <Message Text="Available Targets:" Importance="high" />
         <Message Text="  dotnet build -t:DocumentationHelp       - Show this help" Importance="high" />
         <Message Text="  dotnet build -t:DocumentationStats      - Show documentation statistics" Importance="high" />
+        <Message Text="  dotnet build -t:GenerateDocumentation    - Generate unified documentation" Importance="high" />
         <Message Text="  dotnet build -t:GenerateMintlifyDocs     - Generate Mintlify documentation" Importance="high" />
         <Message Text="  dotnet build -t:LintMarkdown             - Lint markdown files" Importance="high" />
         <Message Text="  dotnet build -t:PreviewDocumentation     - Start preview server" Importance="high" />
@@ -218,16 +222,9 @@
         <Message Text="Current Configuration:" Importance="high" />
         <Message Text="  Documentation Type: $(DocumentationType)" Importance="high" />
         <Message Text="  Documentation Root: $(DocumentationRoot)" Importance="high" />
-        <Message Text="  Output Location: $(OutputPath)" Importance="high" />
-        <Message Text="  Keep Local Output: $(KeepLocalOutput)" Importance="high" />
-        <Message Text="  EasyAF.Tools Available: $(EasyAFToolsInstalled)" Importance="high" />
+        <Message Text="  Output Location: $(ApiReferencePath)" Importance="high" />
+        <Message Text="  Generate Documentation: $(GenerateDocumentation)" Importance="high" />
         <Message Text="" Importance="high" />
-        
-        <!-- Show EasyAF.Tools access info if not available -->
-        <Message Text="🎯 To get access to EasyAF.Tools for enhanced Mintlify features:" Importance="high" Condition="'$(EasyAFToolsInstalled)' != 'true'" />
-        <Message Text="   Visit: https://github.com/CloudNimble/EasyAF.Docs/issues/1" Importance="high" Condition="'$(EasyAFToolsInstalled)' != 'true'" />
-        <Message Text="   👍 Leave a reaction emoji on the issue to get access!" Importance="high" Condition="'$(EasyAFToolsInstalled)' != 'true'" />
-        <Message Text="" Importance="high" Condition="'$(EasyAFToolsInstalled)' != 'true'" />
     </Target>
 
 </Project>

@@ -105,11 +105,52 @@ This document outlines the project structure for `CloudNimble.DotNetDocs`, a fle
 - **Tests**: Model accuracy, CLI args, MSBuild outputs, `DocEntity` property handling, `DocumentationManager` transformations.
 - **Naming**: `CloudNimble.DotNetDocs.Tests.SubjectMatter`.
 
+## Internal Member Documentation
+
+### Bridge Compilation Technique
+DotNetDocs uses an innovative "bridge compilation" technique to document internal members without requiring any modifications to the target assembly. This approach leverages the `IgnoresAccessChecksTo` attribute dynamically generated at documentation time.
+
+### How It Works
+1. **Dynamic Attribute Generation**: The system generates the `System.Runtime.CompilerServices.IgnoresAccessChecksTo` attribute in-memory
+2. **Bridge Compilation**: Creates a compilation that includes both the target assembly and the bridge with access privileges
+3. **Full Visibility**: The Roslyn compilation can now see ALL members (public, protected, internal, private) of the target assembly
+4. **Selective Documentation**: The `IncludedMembers` filter at each level (Assembly, Namespace, Type) controls what actually gets documented
+
+### Implementation Details
+```csharp
+// Automatically generated in AssemblyManager.CreateCompilationAsync
+[assembly: IgnoresAccessChecksTo("TargetAssembly")]
+```
+
+This technique is based on the approach described in [StrathWeb's article](https://www.strathweb.com/2018/10/no-internalvisibleto-no-problem-bypassing-c-visibility-rules-with-roslyn/) and allows us to:
+- Document internal APIs without modifying source assemblies
+- Access internal members even when not part of the build process
+- Maintain full fidelity of member metadata and documentation
+
+### No Assembly Modifications Required
+Unlike traditional approaches, target assemblies **do not** need:
+- `[assembly: InternalsVisibleTo("CloudNimble.DotNetDocs.Core")]` attributes
+- Source code access
+- Recompilation
+- Any special configuration
+
+### Future Enhancements
+For even more advanced scenarios, we may explore:
+1. **Mono.Cecil Integration**: For runtime manipulation of assemblies when Roslyn compilation isn't sufficient
+2. **Source-based compilation**: When source code is available, compile directly for maximum fidelity
+
+### Error Reporting
+`AssemblyManager` includes an `Errors` property (`List<CompilerError>`) to report issues such as:
+- Missing XML documentation for public APIs
+- Compilation or metadata extraction failures
+- Invalid assembly references
+
 ## Why It Works
 - **Flexibility**: `CloudNimble.DotNetDocs.Core` ensures CLI/MSBuild consistency. CLI uses `/conceptual` files and `custom.json`; MSBuild adds source intent, validation, incremental builds.
 - **Rich Documentation**: `DocEntity` supports contextual sections (Usage, Examples, etc.), populated via `/conceptual` (e.g., `conceptual/MyNamespace/usage.md`, `conceptual/MyClass/usage.md`) or plugins, including namespace support.
 - **Extensibility**: `DocumentationManager` orchestrates enrich/transform/render with DI-injected lists (e.g., `IEnumerable<IDocEnricher>`). AI plugins enhance with Semantic Kernel; Mintlify/Docusaurus projects manage tool-specific dependencies.
 - **Maintainability**: `Directory.Build.props` automates `<PackageId>`; modular, testable, aligns with C# 12/13, nullable types.
+- **Internal Documentation**: Support for internal members via `InternalsVisibleTo` attribute, with error reporting when access is restricted.
 
 ## Next Steps
 - Define `/conceptual` file format (e.g., Markdown, JSON mapping to `DocEntity`).

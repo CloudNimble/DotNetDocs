@@ -1,0 +1,171 @@
+name: PR Validation
+
+on:
+  pull_request:
+    branches: [ main, dev ]
+    types: [opened, synchronize, reopened]
+    paths-ignore:
+      - 'src/CloudNimble.DotNetDocs.Docs/**'
+      - 'src/CloudNimble.DotNetDocs.Reference.Mintlify/**'
+      - 'specs/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: write
+
+env:
+   DOTNET_VERSION: '10.0.x'
+   SOLUTION_FILE: 'src/CloudNimble.DotNetDocs.slnx'
+
+jobs:
+  validate:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # Full history for versioning
+
+    - name: Install .NET versions
+      shell: pwsh
+      run: |
+         Write-Host "📥 Installing .NET versions..."
+         # Install .NET 8, 9, 10
+         $versions = @("8.0", "9.0", "10.0")
+         foreach ($version in $versions) {
+           Write-Host "Installing .NET $version..."
+           Invoke-WebRequest -Uri "https://dot.net/v1/dotnet-install.ps1" -OutFile "dotnet-install.ps1"
+           if ($version -eq "10.0") {
+             ./dotnet-install.ps1 -Channel $version -Quality preview -InstallDir "$env:ProgramFiles\dotnet"
+           } else {
+             ./dotnet-install.ps1 -Channel $version -InstallDir "$env:ProgramFiles\dotnet"
+           }
+         }
+
+         # Add to PATH for this job
+         echo "$env:ProgramFiles\dotnet" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+
+         # Verify installation
+         dotnet --list-sdks
+
+    - name: Get version variables
+      id: version
+      shell: pwsh
+      run: |
+        # Get version components from repository variables
+        $majorVersion = "${{ vars.VERSION_MAJOR }}"
+        if ([string]::IsNullOrEmpty($majorVersion)) { $majorVersion = "1" }
+
+        $minorVersion = "${{ vars.VERSION_MINOR }}"
+        if ([string]::IsNullOrEmpty($minorVersion)) { $minorVersion = "0" }
+
+        Write-Host "🔢 Version variables: MAJOR=$majorVersion, MINOR=$minorVersion"
+
+        # PR validation: always use CI versioning with timestamp (no version increment)
+        $timestamp = Get-Date -Format "yyyyMMdd-HHmmss" -AsUTC
+        $version = "$majorVersion.$minorVersion.0-CI-$timestamp"
+
+        Write-Host "✅ PR validation version: $version"
+
+        # Output variables
+        echo "VERSION=$version" >> $env:GITHUB_OUTPUT
+        echo "MAJOR_VERSION=$majorVersion" >> $env:GITHUB_OUTPUT
+        echo "MINOR_VERSION=$minorVersion" >> $env:GITHUB_OUTPUT
+
+        Write-Host "📦 Final version: $version"
+
+    - name: Update .docsproj SDK references
+      shell: pwsh
+      run: |
+        $version = "${{ steps.version.outputs.VERSION }}"
+        Write-Host "🔄 Updating .docsproj files to use DotNetDocs.Sdk/$version"
+
+        # Find all .docsproj files
+        $docsprojFiles = Get-ChildItem -Path "${{ github.workspace }}\src" -Filter "*.docsproj" -Recurse
+
+        foreach ($file in $docsprojFiles) {
+          Write-Host "  📝 Updating $($file.Name)..."
+          $content = Get-Content $file.FullName -Raw
+          $updatedContent = $content -replace 'Sdk="DotNetDocs\.Sdk/[^"]*"', "Sdk=`"DotNetDocs.Sdk/$version`""
+          Set-Content -Path $file.FullName -Value $updatedContent -NoNewline
+        }
+
+        Write-Host "✅ Updated all .docsproj files to reference DotNetDocs.Sdk/$version"
+
+    - name: Setup local NuGet feed
+      shell: pwsh
+      run: |
+        $localFeedPath = "${{ vars.LOCAL_NUGET_FEED }}"
+        if ([string]::IsNullOrEmpty($localFeedPath)) {
+          $localFeedPath = "${{ github.workspace }}\local-nuget-feed"
+        }
+        New-Item -Path $localFeedPath -ItemType Directory -Force
+        Write-Host "📁 Created local NuGet feed at: $localFeedPath"
+        echo "LOCAL_NUGET_FEED=$localFeedPath" >> $env:GITHUB_ENV
+
+    - name: Update NuGet.config for CI
+      shell: pwsh
+      run: |
+        $localFeed = "${{ env.LOCAL_NUGET_FEED }}"
+        $configPath = "${{ github.workspace }}\NuGet.config"
+        "<?xml version=`"1.0`" encoding=`"utf-8`"?>" | Out-File -FilePath $configPath -Encoding utf8
+        "<configuration>" | Add-Content -Path $configPath -Encoding utf8
+        "  <packageSources>" | Add-Content -Path $configPath -Encoding utf8
+        "    <clear />" | Add-Content -Path $configPath -Encoding utf8
+        "    <add key=`"nuget.org`" value=`"https://api.nuget.org/v3/index.json`" protocolVersion=`"3`" />" | Add-Content -Path $configPath -Encoding utf8
+        "    <add key=`"local-feed`" value=`"$localFeed`" />" | Add-Content -Path $configPath -Encoding utf8
+        "  </packageSources>" | Add-Content -Path $configPath -Encoding utf8
+        "  <packageSourceMapping>" | Add-Content -Path $configPath -Encoding utf8
+        "    <!-- Map DotNetDocs SDK packages to local feed during development -->" | Add-Content -Path $configPath -Encoding utf8
+        "    <packageSource key=`"local-feed`">" | Add-Content -Path $configPath -Encoding utf8
+        "      <package pattern=`"DotNetDocs.*`" />" | Add-Content -Path $configPath -Encoding utf8
+        "    </packageSource>" | Add-Content -Path $configPath -Encoding utf8
+        "    <!-- All other packages from nuget.org -->" | Add-Content -Path $configPath -Encoding utf8
+        "    <packageSource key=`"nuget.org`">" | Add-Content -Path $configPath -Encoding utf8
+        "      <package pattern=`"*`" />" | Add-Content -Path $configPath -Encoding utf8
+        "    </packageSource>" | Add-Content -Path $configPath -Encoding utf8
+        "  </packageSourceMapping>" | Add-Content -Path $configPath -Encoding utf8
+        "</configuration>" | Add-Content -Path $configPath -Encoding utf8
+        Write-Host "✅ Updated NuGet.config for CI build"
+
+    - name: Build SDK project first
+      shell: pwsh
+      run: |
+        Write-Host "🔨 Building DotNetDocs.Sdk with version ${{ steps.version.outputs.VERSION }}"
+        Write-Host "📦 First, build the SDK Tasks project..."
+        dotnet build src/CloudNimble.DotNetDocs.Sdk.Tasks/CloudNimble.DotNetDocs.Sdk.Tasks.csproj --configuration Release /p:Version=${{ steps.version.outputs.VERSION }}
+        Write-Host "✅ SDK Tasks built successfully"
+        Write-Host "🔧 Now packing the SDK project..."
+        dotnet pack src/CloudNimble.DotNetDocs.Sdk/CloudNimble.DotNetDocs.Sdk.csproj --configuration Release --output "${{ env.LOCAL_NUGET_FEED }}" /p:Version=${{ steps.version.outputs.VERSION }} /p:PackageVersion=${{ steps.version.outputs.VERSION }}
+        Write-Host "📦 SDK package created and pushed to local feed"
+
+    - name: Restore dependencies
+      run: dotnet restore ${{ env.SOLUTION_FILE }}
+
+    - name: Build solution
+      run: dotnet build ${{ env.SOLUTION_FILE }} --configuration Release --no-restore /p:Version=${{ steps.version.outputs.VERSION }} /p:PackageVersion=${{ steps.version.outputs.VERSION }}
+
+    - name: Test
+      working-directory: src
+      run: dotnet test --configuration Release --no-build
+
+    - name: Pack
+      run: dotnet pack ${{ env.SOLUTION_FILE }} --configuration Release --no-build --output ./artifacts /p:PackageVersion=${{ steps.version.outputs.VERSION }}
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: nuget-packages-pr
+        path: ./artifacts/*.nupkg
+        retention-days: 7
+
+    - name: Validate packages
+      shell: pwsh
+      run: |
+        Write-Host "📦 Validating NuGet packages..."
+        Get-ChildItem ./artifacts/*.nupkg | ForEach-Object {
+          Write-Host "✅ Found package: $($_.Name)"
+        }
+        Write-Host "✅ PR validation completed successfully"

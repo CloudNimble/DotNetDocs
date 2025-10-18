@@ -1,0 +1,80 @@
+---
+title: AppearanceConfig
+description: "Represents the appearance configuration for light and dark mode settings in Mintlify."
+icon: file-brackets-curly
+keywords: ['AppearanceConfig', 'Mintlify.Core.Models.AppearanceConfig', 'Mintlify.Core.Models', 'class', 'System.Object']
+---
+
+## Definition
+
+**Assembly:** Mintlify.Core.dll
+
+**Namespace:** Mintlify.Core.Models
+
+**Inheritance:** System.Object
+
+## Syntax
+
+```csharp
+Mintlify.Core.Models.AppearanceConfig
+```
+
+## Summary
+
+Represents the appearance configuration for light and dark mode settings in Mintlify.
+
+## Remarks
+
+This configuration controls the default appearance mode and whether users can toggle
+            between light and dark modes in the documentation site.
+
+## Constructors
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  .ctor
+
+#### Syntax
+
+```csharp
+public AppearanceConfig()
+```
+
+## Properties
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Default
+
+Gets or sets the default light/dark mode for the documentation site.
+
+#### Syntax
+
+```csharp
+public string Default { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+
+#### Remarks
+
+Valid values are "system" (follows user's system preference), "light", or "dark".
+            Defaults to "system" if not specified.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Strict
+
+Gets or sets whether to hide the light/dark mode toggle from users.
+
+#### Syntax
+
+```csharp
+public System.Nullable<bool> Strict { get; set; }
+```
+
+#### Property Value
+
+Type: `System.Nullable<bool>?`
+
+#### Remarks
+
+When set to true, users will not be able to switch between light and dark modes,
+            and the site will use only the default mode specified. Defaults to false.
+

@@ -1,0 +1,148 @@
+---
+title: AddCommand
+description: "Command-line tool for creating and adding a documentation project to a solution file."
+icon: file-brackets-curly
+keywords: ['AddCommand', 'CloudNimble.DotNetDocs.Tools.Commands.AddCommand', 'CloudNimble.DotNetDocs.Tools.Commands', 'class', 'CloudNimble.DotNetDocs.Tools.Commands.Base.DocsCommandBase']
+---
+
+## Definition
+
+**Assembly:** CloudNimble.DotNetDocs.Tools.dll
+
+**Namespace:** CloudNimble.DotNetDocs.Tools.Commands
+
+**Inheritance:** CloudNimble.DotNetDocs.Tools.Commands.Base.DocsCommandBase
+
+## Syntax
+
+```csharp
+CloudNimble.DotNetDocs.Tools.Commands.AddCommand
+```
+
+## Summary
+
+Command-line tool for creating and adding a documentation project to a solution file.
+
+## Remarks
+
+This command creates a .docsproj file configured for the specified documentation type (defaults to Mintlify)
+            and adds it to the specified solution file (.sln or .slnx). The project is automatically added to a "Docs" solution folder.
+            For .slnx files, the command post-processes the XML to add Type="C#" attributes to .docsproj nodes.
+
+## Constructors
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  .ctor
+
+#### Syntax
+
+```csharp
+public AddCommand()
+```
+
+## Properties
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  DocumentationType
+
+Gets or sets the documentation type for the project.
+
+#### Syntax
+
+```csharp
+public string DocumentationType { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  OutputDirectory
+
+Gets or sets the output directory for the generated documentation project.
+
+#### Syntax
+
+```csharp
+public string OutputDirectory { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  ProjectName
+
+Gets or sets the name of the documentation project.
+
+#### Syntax
+
+```csharp
+public string ProjectName { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+
+#### Remarks
+
+If not specified, the project name defaults to the solution name.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  SolutionPath
+
+Gets or sets the path to the solution file (.sln or .slnx) to use.
+
+#### Syntax
+
+```csharp
+public string SolutionPath { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  UsePrerelease
+
+Gets or sets whether to use the latest prerelease version of the DotNetDocs.Sdk.
+
+#### Syntax
+
+```csharp
+public bool UsePrerelease { get; set; }
+```
+
+#### Property Value
+
+Type: `bool`
+
+## Methods
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  OnExecute
+
+Executes the command to create and add a documentation project to the specified solution.
+
+#### Syntax
+
+```csharp
+public System.Threading.Tasks.Task<int> OnExecute(McMaster.Extensions.CommandLineUtils.CommandLineApplication app)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `app` | `McMaster.Extensions.CommandLineUtils.CommandLineApplication` | The command-line application context used to access command-line arguments and configuration. |
+
+#### Returns
+
+Type: `System.Threading.Tasks.Task<int>`
+A task that represents the asynchronous operation. The task result is 0 if the documentation project is
+            created and added successfully; otherwise, 1.
+
+#### Remarks
+
+If the solution file is not specified, the method attempts to locate one in the
+            current directory. The documentation project is created in the specified output directory or, if not
+            provided, in a default location based on the solution file. Any errors encountered during execution are
+            reported to the console, and a nonzero exit code is returned.
+

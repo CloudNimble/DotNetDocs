@@ -1,0 +1,56 @@
+---
+title: JsonRendererOptions
+description: "Configuration options for the JsonRenderer."
+icon: file-brackets-curly
+keywords: ['JsonRendererOptions', 'CloudNimble.DotNetDocs.Core.Renderers.JsonRendererOptions', 'CloudNimble.DotNetDocs.Core.Renderers', 'class', 'System.Object']
+---
+
+## Definition
+
+**Assembly:** CloudNimble.DotNetDocs.Core.dll
+
+**Namespace:** CloudNimble.DotNetDocs.Core.Renderers
+
+**Inheritance:** System.Object
+
+## Syntax
+
+```csharp
+CloudNimble.DotNetDocs.Core.Renderers.JsonRendererOptions
+```
+
+## Summary
+
+Configuration options for the JsonRenderer.
+
+## Constructors
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  .ctor
+
+#### Syntax
+
+```csharp
+public JsonRendererOptions()
+```
+
+## Properties
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  SerializerOptions
+
+Gets or sets the JsonSerializerOptions to use for serialization.
+
+#### Syntax
+
+```csharp
+public System.Text.Json.JsonSerializerOptions SerializerOptions { get; set; }
+```
+
+#### Property Value
+
+Type: `System.Text.Json.JsonSerializerOptions`
+
+#### Remarks
+
+If not specified, uses default options with camelCase naming, indented output,
+            null value ignoring, and enum string conversion.
+

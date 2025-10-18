@@ -1,0 +1,158 @@
+---
+title: NavigationConfig
+description: "Represents the navigation configuration for Mintlify."
+icon: file-brackets-curly
+keywords: ['NavigationConfig', 'Mintlify.Core.Models.NavigationConfig', 'Mintlify.Core.Models', 'class', 'System.Object']
+---
+
+## Definition
+
+**Assembly:** Mintlify.Core.dll
+
+**Namespace:** Mintlify.Core.Models
+
+**Inheritance:** System.Object
+
+## Syntax
+
+```csharp
+Mintlify.Core.Models.NavigationConfig
+```
+
+## Summary
+
+Represents the navigation configuration for Mintlify.
+
+## Remarks
+
+This is a required field that defines the structure of your documentation.
+            At minimum, you need to define some navigation items (pages, groups, tabs, etc.).
+
+## Constructors
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  .ctor
+
+#### Syntax
+
+```csharp
+public NavigationConfig()
+```
+
+## Properties
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Anchors
+
+Gets or sets the anchors in the navigation.
+
+#### Syntax
+
+```csharp
+public System.Collections.Generic.List<Mintlify.Core.Models.AnchorConfig> Anchors { get; set; }
+```
+
+#### Property Value
+
+Type: `System.Collections.Generic.List<Mintlify.Core.Models.AnchorConfig>?`
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Dropdowns
+
+Gets or sets the dropdowns in the navigation.
+
+#### Syntax
+
+```csharp
+public System.Collections.Generic.List<Mintlify.Core.Models.DropdownConfig> Dropdowns { get; set; }
+```
+
+#### Property Value
+
+Type: `System.Collections.Generic.List<Mintlify.Core.Models.DropdownConfig>?`
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Global
+
+Gets or sets global navigation items that appear on all sections and pages.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.GlobalNavigationConfig Global { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.GlobalNavigationConfig?`
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Groups
+
+Gets or sets the groups in the navigation.
+
+#### Syntax
+
+```csharp
+public System.Collections.Generic.List<Mintlify.Core.Models.GroupConfig> Groups { get; set; }
+```
+
+#### Property Value
+
+Type: `System.Collections.Generic.List<Mintlify.Core.Models.GroupConfig>?`
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Languages
+
+Gets or sets the languages in the navigation.
+
+#### Syntax
+
+```csharp
+public System.Collections.Generic.List<Mintlify.Core.Models.LanguageConfig> Languages { get; set; }
+```
+
+#### Property Value
+
+Type: `System.Collections.Generic.List<Mintlify.Core.Models.LanguageConfig>?`
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Pages
+
+Gets or sets the pages in the navigation.
+
+#### Syntax
+
+```csharp
+public System.Collections.Generic.List<object> Pages { get; set; }
+```
+
+#### Property Value
+
+Type: `System.Collections.Generic.List<object>?`
+
+#### Remarks
+
+Pages can be either strings (page paths) or nested GroupConfig objects.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Tabs
+
+Gets or sets the tabs in the navigation.
+
+#### Syntax
+
+```csharp
+public System.Collections.Generic.List<Mintlify.Core.Models.TabConfig> Tabs { get; set; }
+```
+
+#### Property Value
+
+Type: `System.Collections.Generic.List<Mintlify.Core.Models.TabConfig>?`
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Versions
+
+Gets or sets the versions in the navigation.
+
+#### Syntax
+
+```csharp
+public System.Collections.Generic.List<Mintlify.Core.Models.VersionConfig> Versions { get; set; }
+```
+
+#### Property Value
+
+Type: `System.Collections.Generic.List<Mintlify.Core.Models.VersionConfig>?`
+

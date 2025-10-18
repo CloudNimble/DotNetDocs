@@ -1,0 +1,104 @@
+---
+title: DocEnum
+description: "Represents documentation for a .NET enum type."
+icon: file-brackets-curly
+keywords: ['DocEnum', 'CloudNimble.DotNetDocs.Core.DocEnum', 'CloudNimble.DotNetDocs.Core', 'class', 'CloudNimble.DotNetDocs.Core.DocType']
+---
+
+## Definition
+
+**Assembly:** CloudNimble.DotNetDocs.Core.dll
+
+**Namespace:** CloudNimble.DotNetDocs.Core
+
+**Inheritance:** CloudNimble.DotNetDocs.Core.DocType
+
+## Syntax
+
+```csharp
+CloudNimble.DotNetDocs.Core.DocEnum
+```
+
+## Summary
+
+Represents documentation for a .NET enum type.
+
+## Remarks
+
+Contains metadata about an enum type and its values, extracted from Roslyn symbols
+            and enhanced with conceptual documentation. Inherits from [DocType](/api-reference/CloudNimble/DotNetDocs/Core/DocType) but
+            uses a specialized structure for enum values instead of the Members collection.
+
+## Constructors
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  .ctor
+
+Initializes a new instance of the [DocEnum](/api-reference/CloudNimble/DotNetDocs/Core/DocEnum) class.
+
+#### Syntax
+
+```csharp
+public DocEnum(Microsoft.CodeAnalysis.ITypeSymbol symbol)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `symbol` | `Microsoft.CodeAnalysis.ITypeSymbol` | The Roslyn type symbol representing the enum. |
+
+#### Exceptions
+
+| Exception | Description |
+|-----------|-------------|
+| `ArgumentNullException` | Thrown when *symbol* is null. |
+
+## Properties
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  IsFlags
+
+Gets whether this enum has the Flags attribute.
+
+#### Syntax
+
+```csharp
+public bool IsFlags { get; set; }
+```
+
+#### Property Value
+
+Type: `bool`
+True if the enum is decorated with [Flags]; otherwise, false.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  UnderlyingType
+
+Gets or sets the underlying type of the enum as a [DocReference](/api-reference/CloudNimble/DotNetDocs/Core/DocReference).
+
+#### Syntax
+
+```csharp
+public CloudNimble.DotNetDocs.Core.DocReference UnderlyingType { get; set; }
+```
+
+#### Property Value
+
+Type: `CloudNimble.DotNetDocs.Core.DocReference`
+A reference to the underlying type (e.g., System.Int32, System.Byte) that can be
+            resolved and linked in documentation.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Values
+
+Gets the collection of enum values with their documentation.
+
+#### Syntax
+
+```csharp
+public System.Collections.Generic.List<CloudNimble.DotNetDocs.Core.DocEnumValue> Values { get; }
+```
+
+#### Property Value
+
+Type: `System.Collections.Generic.List<CloudNimble.DotNetDocs.Core.DocEnumValue>`
+A list of documented enum values, each containing the name, numeric value,
+            and associated documentation.
+

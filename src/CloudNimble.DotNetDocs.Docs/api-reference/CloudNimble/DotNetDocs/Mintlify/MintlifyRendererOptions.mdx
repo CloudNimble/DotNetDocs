@@ -1,0 +1,147 @@
+---
+title: MintlifyRendererOptions
+description: "Configuration options for the Mintlify documentation renderer."
+icon: file-brackets-curly
+keywords: ['MintlifyRendererOptions', 'CloudNimble.DotNetDocs.Mintlify.MintlifyRendererOptions', 'CloudNimble.DotNetDocs.Mintlify', 'class', 'System.Object']
+---
+
+## Definition
+
+**Assembly:** CloudNimble.DotNetDocs.Mintlify.dll
+
+**Namespace:** CloudNimble.DotNetDocs.Mintlify
+
+**Inheritance:** System.Object
+
+## Syntax
+
+```csharp
+CloudNimble.DotNetDocs.Mintlify.MintlifyRendererOptions
+```
+
+## Summary
+
+Configuration options for the Mintlify documentation renderer.
+
+## Constructors
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  .ctor
+
+#### Syntax
+
+```csharp
+public MintlifyRendererOptions()
+```
+
+## Properties
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  GenerateDocsJson
+
+Gets or sets whether to generate the docs.json navigation file.
+
+#### Syntax
+
+```csharp
+public bool GenerateDocsJson { get; set; }
+```
+
+#### Property Value
+
+Type: `bool`
+True to generate docs.json alongside MDX files; otherwise, false.
+            Default is true.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  GenerateNamespaceIndex
+
+Gets or sets whether to generate index files for namespaces.
+
+#### Syntax
+
+```csharp
+public bool GenerateNamespaceIndex { get; set; }
+```
+
+#### Property Value
+
+Type: `bool`
+True to generate index.mdx files for namespace documentation; otherwise, false.
+            Default is true.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  IncludeIcons
+
+Gets or sets whether to include icons in navigation and frontmatter.
+
+#### Syntax
+
+```csharp
+public bool IncludeIcons { get; set; }
+```
+
+#### Property Value
+
+Type: `bool`
+True to include FontAwesome icons; otherwise, false.
+            Default is true.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  NamespaceOrder
+
+Gets or sets the custom order for namespaces in navigation.
+
+#### Syntax
+
+```csharp
+public System.Collections.Generic.List<string> NamespaceOrder { get; set; }
+```
+
+#### Property Value
+
+Type: `System.Collections.Generic.List<string>?`
+A list of namespace patterns in the desired order, or null for alphabetical ordering.
+            Supports wildcards (e.g., "System.*" matches all System namespaces).
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  NavigationMode
+
+Gets or sets the navigation mode for multi-assembly documentation.
+
+#### Syntax
+
+```csharp
+public CloudNimble.DotNetDocs.Mintlify.NavigationMode NavigationMode { get; set; }
+```
+
+#### Property Value
+
+Type: `CloudNimble.DotNetDocs.Mintlify.NavigationMode`
+The navigation organization mode. Default is NavigationMode.Unified.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Template
+
+Gets or sets a custom template for the docs.json configuration.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.DocsJsonConfig Template { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.DocsJsonConfig?`
+A DocsJsonConfig instance to use as a template, or null to use defaults.
+            The navigation section will be generated automatically.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  UnifiedGroupName
+
+Gets or sets the group name used when NavigationMode is Unified.
+
+#### Syntax
+
+```csharp
+public string UnifiedGroupName { get; set; }
+```
+
+#### Property Value
+
+Type: `string`
+The name of the unified API reference group. Default is "API Reference".
+

@@ -1,0 +1,51 @@
+---
+title: IDocEnricher
+description: "Defines an enricher for conceptual documentation augmentation."
+icon: plug
+keywords: ['IDocEnricher', 'CloudNimble.DotNetDocs.Core.IDocEnricher', 'CloudNimble.DotNetDocs.Core', 'interface']
+---
+
+## Definition
+
+**Assembly:** CloudNimble.DotNetDocs.Core.dll
+
+**Namespace:** CloudNimble.DotNetDocs.Core
+
+## Syntax
+
+```csharp
+CloudNimble.DotNetDocs.Core.IDocEnricher
+```
+
+## Summary
+
+Defines an enricher for conceptual documentation augmentation.
+
+## Remarks
+
+Implementations of this interface can enhance documentation entities with additional content
+            from various sources such as conceptual files, AI services, or other data sources.
+
+## Methods
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  EnrichAsync
+
+Enriches a documentation entity with additional conceptual content.
+
+#### Syntax
+
+```csharp
+System.Threading.Tasks.Task EnrichAsync(CloudNimble.DotNetDocs.Core.DocEntity entity)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `entity` | `CloudNimble.DotNetDocs.Core.DocEntity` | The documentation entity to enrich. |
+
+#### Returns
+
+Type: `System.Threading.Tasks.Task`
+A task representing the asynchronous enrichment operation.
+

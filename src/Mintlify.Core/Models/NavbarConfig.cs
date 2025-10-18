@@ -36,7 +36,7 @@ namespace Mintlify.Core.Models
         /// </remarks>
         [JsonPropertyName("primary")]
         [JsonConverter(typeof(PrimaryNavigationConverter))]
-        public object? Primary { get; set; }
+        public PrimaryNavigationConfig? Primary { get; set; }
 
         #endregion
 

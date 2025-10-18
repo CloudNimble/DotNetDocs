@@ -1,0 +1,106 @@
+# DerivedClass
+
+## Definition
+
+**Assembly:** CloudNimble.DotNetDocs.Tests.Shared.dll
+
+**Namespace:** CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios
+
+**Inheritance:** CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.BaseClass
+
+## Syntax
+
+```csharp
+CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass
+```
+
+## Summary
+
+A derived class for testing inheritance documentation.
+
+## Remarks
+
+This class inherits from BaseClass and overrides some members.
+
+## Examples
+
+<code>
+var derived = new DerivedClass();
+var result = derived.VirtualMethod();
+</code>
+
+## Constructors
+
+### .ctor
+
+#### Syntax
+
+```csharp
+public DerivedClass()
+```
+
+## Properties
+
+### BaseProperty
+
+Gets or sets the base property with overridden behavior.
+
+#### Syntax
+
+```csharp
+public override string BaseProperty { get; set; }
+```
+
+#### Property Value
+
+Type: `string`
+
+#### Remarks
+
+This property overrides the base implementation.
+
+### DerivedProperty
+
+Gets or sets the derived property.
+
+#### Syntax
+
+```csharp
+public string DerivedProperty { get; set; }
+```
+
+#### Property Value
+
+Type: `string`
+
+## Methods
+
+### DerivedMethod
+
+An additional method in the derived class.
+
+#### Syntax
+
+```csharp
+public void DerivedMethod()
+```
+
+### VirtualMethod
+
+Overrides the virtual method from the base class.
+
+#### Syntax
+
+```csharp
+public override string VirtualMethod()
+```
+
+#### Returns
+
+Type: `string`
+A string indicating the derived implementation.
+
+#### Remarks
+
+This method provides custom behavior for the derived class.
+

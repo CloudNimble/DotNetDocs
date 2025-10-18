@@ -1,0 +1,228 @@
+---
+title: VersionConfig
+description: "Represents a version configuration in Mintlify navigation."
+icon: file-brackets-curly
+keywords: ['VersionConfig', 'Mintlify.Core.Models.VersionConfig', 'Mintlify.Core.Models', 'class', 'System.Object']
+---
+
+## Definition
+
+**Assembly:** Mintlify.Core.dll
+
+**Namespace:** Mintlify.Core.Models
+
+**Inheritance:** System.Object
+
+## Syntax
+
+```csharp
+Mintlify.Core.Models.VersionConfig
+```
+
+## Summary
+
+Represents a version configuration in Mintlify navigation.
+
+## Remarks
+
+Versions allow you to maintain multiple documentation versions.
+            The version name is required.
+
+## Constructors
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  .ctor
+
+#### Syntax
+
+```csharp
+public VersionConfig()
+```
+
+## Properties
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Anchors
+
+Gets or sets the anchors for the version.
+
+#### Syntax
+
+```csharp
+public System.Collections.Generic.List<Mintlify.Core.Models.AnchorConfig> Anchors { get; set; }
+```
+
+#### Property Value
+
+Type: `System.Collections.Generic.List<Mintlify.Core.Models.AnchorConfig>?`
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  AsyncApi
+
+Gets or sets the AsyncAPI configuration.
+
+#### Syntax
+
+```csharp
+public object AsyncApi { get; set; }
+```
+
+#### Property Value
+
+Type: `object?`
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Default
+
+Gets or sets whether this version is the default version.
+
+#### Syntax
+
+```csharp
+public System.Nullable<bool> Default { get; set; }
+```
+
+#### Property Value
+
+Type: `System.Nullable<bool>?`
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Dropdowns
+
+Gets or sets the dropdowns for the version.
+
+#### Syntax
+
+```csharp
+public System.Collections.Generic.List<Mintlify.Core.Models.DropdownConfig> Dropdowns { get; set; }
+```
+
+#### Property Value
+
+Type: `System.Collections.Generic.List<Mintlify.Core.Models.DropdownConfig>?`
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Global
+
+Gets or sets the global navigation configuration.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.GlobalNavigationConfig Global { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.GlobalNavigationConfig?`
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Groups
+
+Gets or sets the groups for the version.
+
+#### Syntax
+
+```csharp
+public System.Collections.Generic.List<Mintlify.Core.Models.GroupConfig> Groups { get; set; }
+```
+
+#### Property Value
+
+Type: `System.Collections.Generic.List<Mintlify.Core.Models.GroupConfig>?`
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Hidden
+
+Gets or sets whether the current option is default hidden.
+
+#### Syntax
+
+```csharp
+public System.Nullable<bool> Hidden { get; set; }
+```
+
+#### Property Value
+
+Type: `System.Nullable<bool>?`
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Href
+
+Gets or sets the URL or path for the version.
+
+#### Syntax
+
+```csharp
+public string Href { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Languages
+
+Gets or sets the languages for the version.
+
+#### Syntax
+
+```csharp
+public System.Collections.Generic.List<Mintlify.Core.Models.LanguageConfig> Languages { get; set; }
+```
+
+#### Property Value
+
+Type: `System.Collections.Generic.List<Mintlify.Core.Models.LanguageConfig>?`
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  OpenApi
+
+Gets or sets the OpenAPI configuration.
+
+#### Syntax
+
+```csharp
+public object OpenApi { get; set; }
+```
+
+#### Property Value
+
+Type: `object?`
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Pages
+
+Gets or sets the pages for the version.
+
+#### Syntax
+
+```csharp
+public System.Collections.Generic.List<object> Pages { get; set; }
+```
+
+#### Property Value
+
+Type: `System.Collections.Generic.List<object>?`
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Tabs
+
+Gets or sets the tabs for the version.
+
+#### Syntax
+
+```csharp
+public System.Collections.Generic.List<Mintlify.Core.Models.TabConfig> Tabs { get; set; }
+```
+
+#### Property Value
+
+Type: `System.Collections.Generic.List<Mintlify.Core.Models.TabConfig>?`
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Version
+
+Gets or sets the name of the version.
+
+#### Syntax
+
+```csharp
+public string Version { get; set; }
+```
+
+#### Property Value
+
+Type: `string`
+
+#### Remarks
+
+This is a required field that identifies the version.
+

@@ -16,13 +16,18 @@ namespace CloudNimble.DotNetDocs.Core
         #region Public Methods
 
         /// <summary>
-        /// Renders the documentation assembly to the specified output path.
+        /// Renders the documentation assembly to the output path specified in the project context.
         /// </summary>
         /// <param name="model">The documentation assembly to render.</param>
-        /// <param name="outputPath">The path where output should be generated.</param>
-        /// <param name="context">The project context providing rendering settings.</param>
         /// <returns>A task representing the asynchronous rendering operation.</returns>
-        Task RenderAsync(DocAssembly model, string outputPath, ProjectContext context);
+        Task RenderAsync(DocAssembly model);
+
+        /// <summary>
+        /// Renders placeholder conceptual content files for the documentation assembly.
+        /// </summary>
+        /// <param name="model">The documentation assembly to generate placeholders for.</param>
+        /// <returns>A task representing the asynchronous placeholder rendering operation.</returns>
+        Task RenderPlaceholdersAsync(DocAssembly model);
 
         #endregion
 

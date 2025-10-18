@@ -1,0 +1,155 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "name": "CloudNimble.DotNetDocs",
+  "theme": "mint",
+  "colors": {
+    "primary": "#7c3aed",
+    "light": "#a78bfa",
+    "dark": "#5b21b6"
+  },
+  "favicon": "/favicon.svg",
+  "navigation": {
+    "groups": [
+      {
+        "group": "Getting Started",
+        "pages": [
+          "introduction",
+          "quickstart"
+        ]
+      },
+      {
+        "group": "Guides",
+        "pages": [
+          "guides/best-practices",
+          "guides/patterns",
+          "guides/async-programming"
+        ]
+      },
+      {
+        "group": "Component Showcase",
+        "pages": [
+          "components/overview",
+          "components/cards-demo",
+          "components/code-groups-demo",
+          "components/tabs-demo",
+          "components/accordions-demo",
+          "components/callouts-demo",
+          "components/diagrams-demo"
+        ]
+      },
+      {
+        "group": "API Reference",
+        "icon": "book",
+        "pages": [
+          "api-reference/index",
+          {
+            "group": "CloudNimble",
+            "icon": "folder",
+            "pages": [
+              {
+                "group": "DotNetDocs",
+                "icon": "folder",
+                "pages": [
+                  {
+                    "group": "Tests",
+                    "icon": "folder",
+                    "pages": [
+                      {
+                        "group": "Shared",
+                        "icon": "folder",
+                        "pages": [
+                          "api-reference/CloudNimble/DotNetDocs/Tests/Shared/index",
+                          "api-reference/CloudNimble/DotNetDocs/Tests/Shared/DotNetDocsTestBase",
+                          "api-reference/CloudNimble/DotNetDocs/Tests/Shared/SampleClass",
+                          {
+                            "group": "AccessModifiers",
+                            "icon": "folder",
+                            "pages": [
+                              "api-reference/CloudNimble/DotNetDocs/Tests/Shared/AccessModifiers/index",
+                              "api-reference/CloudNimble/DotNetDocs/Tests/Shared/AccessModifiers/MixedAccessClass"
+                            ]
+                          },
+                          {
+                            "group": "BasicScenarios",
+                            "icon": "folder",
+                            "pages": [
+                              "api-reference/CloudNimble/DotNetDocs/Tests/Shared/BasicScenarios/index",
+                              "api-reference/CloudNimble/DotNetDocs/Tests/Shared/BasicScenarios/BaseClass",
+                              "api-reference/CloudNimble/DotNetDocs/Tests/Shared/BasicScenarios/DerivedClass",
+                              "api-reference/CloudNimble/DotNetDocs/Tests/Shared/BasicScenarios/SimpleClass",
+                              "api-reference/CloudNimble/DotNetDocs/Tests/Shared/BasicScenarios/ClassWithProperties",
+                              "api-reference/CloudNimble/DotNetDocs/Tests/Shared/BasicScenarios/ClassWithMethods",
+                              "api-reference/CloudNimble/DotNetDocs/Tests/Shared/BasicScenarios/DisposableClass"
+                            ]
+                          },
+                          {
+                            "group": "EdgeCases",
+                            "icon": "folder",
+                            "pages": [
+                              "api-reference/CloudNimble/DotNetDocs/Tests/Shared/EdgeCases/index",
+                              "api-reference/CloudNimble/DotNetDocs/Tests/Shared/EdgeCases/ClassWithNoDocs",
+                              "api-reference/CloudNimble/DotNetDocs/Tests/Shared/EdgeCases/ClassWithMinimalDocs",
+                              "api-reference/CloudNimble/DotNetDocs/Tests/Shared/EdgeCases/ClassWithFullDocs",
+                              "api-reference/CloudNimble/DotNetDocs/Tests/Shared/EdgeCases/ClassWithSpecialCharacters"
+                            ]
+                          },
+                          {
+                            "group": "Parameters",
+                            "icon": "folder",
+                            "pages": [
+                              "api-reference/CloudNimble/DotNetDocs/Tests/Shared/Parameters/index",
+                              "api-reference/CloudNimble/DotNetDocs/Tests/Shared/Parameters/ParameterVariations"
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "global": {
+      "anchors": [
+        {
+          "anchor": "GitHub",
+          "href": "https://github.com/CloudNimble/DotNetDocs",
+          "icon": "github"
+        },
+        {
+          "anchor": "Community",
+          "href": "https://discord.gg/cloudnimble",
+          "icon": "discord"
+        }
+      ]
+    }
+  },
+  "logo": {
+    "light": "/logo/light.svg",
+    "dark": "/logo/dark.svg"
+  },
+  "navbar": {
+    "primary": {
+      "type": "button",
+      "label": "Get it on NuGet",
+      "href": "https://github.com/CloudNimble/DotNetDocs"
+    }
+  },
+  "search": {
+    "prompt": "Search the API documentation..."
+  },
+  "footer": {
+    "socials": {
+      "github": "https://github.com/CloudNimble/DotNetDocs",
+      "x": "https://x.com/cloudnimble"
+    }
+  },
+  "analytics": {
+    "gtm": {
+      "tagId": "GTM-XXXXXX"
+    }
+  }
+}

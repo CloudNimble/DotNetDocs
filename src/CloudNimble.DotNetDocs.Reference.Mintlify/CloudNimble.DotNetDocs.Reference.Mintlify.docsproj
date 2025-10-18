@@ -1,0 +1,12 @@
+<Project Sdk="DotNetDocs.Sdk/1.0.0-preview.32">
+	<PropertyGroup>
+        <DocumentationType>Mintlify</DocumentationType>
+        <GenerateMintlifyDocs>true</GenerateMintlifyDocs>
+        <ShowDocumentationStats>true</ShowDocumentationStats>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <None Remove="D:\GitHub\DotNetDocs\src\CloudNimble.DotNetDocs.Reference.Mintlify\mint.json" />
+    </ItemGroup>
+
+</Project>

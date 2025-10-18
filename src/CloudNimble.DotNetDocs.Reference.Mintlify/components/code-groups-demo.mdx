@@ -1,0 +1,469 @@
+---
+title: Code Groups Demo
+description: Showcasing code variations and examples with CodeGroups
+icon: code
+---
+
+# Code Groups for C# Documentation
+
+<Note>
+  CodeGroups are perfect for showing different implementations, overloads, or usage patterns of the same API.
+</Note>
+
+## 📋 Method Overloads
+
+<CodeGroup>
+  ```csharp No Parameters
+  public void Process()
+  {
+      // Process with default settings
+      ProcessInternal(DefaultOptions);
+  }
+  ```
+  
+  ```csharp With Options
+  public void Process(ProcessOptions options)
+  {
+      // Process with custom options
+      ArgumentNullException.ThrowIfNull(options);
+      ProcessInternal(options);
+  }
+  ```
+  
+  ```csharp With Cancellation
+  public async Task ProcessAsync(
+      ProcessOptions options, 
+      CancellationToken cancellationToken = default)
+  {
+      ArgumentNullException.ThrowIfNull(options);
+      await ProcessInternalAsync(options, cancellationToken);
+  }
+  ```
+</CodeGroup>
+
+## 🔄 Synchronous vs Asynchronous
+
+<CodeGroup>
+  ```csharp Synchronous
+  public class DataService
+  {
+      public string GetData(int id)
+      {
+          var result = _database.Query(id);
+          return result.ToString();
+      }
+      
+      public void SaveData(string data)
+      {
+          _database.Insert(data);
+          _cache.Invalidate();
+      }
+  }
+  ```
+  
+  ```csharp Asynchronous
+  public class DataService
+  {
+      public async Task<string> GetDataAsync(int id)
+      {
+          var result = await _database.QueryAsync(id);
+          return result.ToString();
+      }
+      
+      public async Task SaveDataAsync(string data)
+      {
+          await _database.InsertAsync(data);
+          await _cache.InvalidateAsync();
+      }
+  }
+  ```
+  
+  ```csharp Async with ConfigureAwait
+  public class DataService
+  {
+      public async Task<string> GetDataAsync(int id)
+      {
+          var result = await _database
+              .QueryAsync(id)
+              .ConfigureAwait(false);
+          return result.ToString();
+      }
+      
+      public async Task SaveDataAsync(string data)
+      {
+          await _database
+              .InsertAsync(data)
+              .ConfigureAwait(false);
+          await _cache
+              .InvalidateAsync()
+              .ConfigureAwait(false);
+      }
+  }
+  ```
+</CodeGroup>
+
+## 🎯 Different Approaches
+
+### String Building Examples
+
+<CodeGroup>
+  ```csharp String Concatenation
+  public string BuildMessage(string name, int count)
+  {
+      string message = "Hello, " + name + "! ";
+      message = message + "You have " + count + " messages.";
+      return message;
+  }
+  ```
+  
+  ```csharp String Interpolation
+  public string BuildMessage(string name, int count)
+  {
+      return $"Hello, {name}! You have {count} messages.";
+  }
+  ```
+  
+  ```csharp StringBuilder
+  public string BuildMessage(string name, int count)
+  {
+      var sb = new StringBuilder();
+      sb.Append("Hello, ");
+      sb.Append(name);
+      sb.Append("! You have ");
+      sb.Append(count);
+      sb.Append(" messages.");
+      return sb.ToString();
+  }
+  ```
+  
+  ```csharp String.Format
+  public string BuildMessage(string name, int count)
+  {
+      return string.Format(
+          "Hello, {0}! You have {1} messages.", 
+          name, 
+          count);
+  }
+  ```
+</CodeGroup>
+
+## 🔐 Access Modifiers
+
+<CodeGroup>
+  ```csharp Public Class
+  public class PublicClass
+  {
+      public string PublicProperty { get; set; }
+      
+      public void PublicMethod()
+      {
+          // Accessible from anywhere
+      }
+  }
+  ```
+  
+  ```csharp Internal Class
+  internal class InternalClass
+  {
+      internal string InternalProperty { get; set; }
+      
+      internal void InternalMethod()
+      {
+          // Accessible within the assembly
+      }
+  }
+  ```
+  
+  ```csharp Protected Members
+  public class BaseClass
+  {
+      protected string ProtectedProperty { get; set; }
+      
+      protected virtual void ProtectedMethod()
+      {
+          // Accessible in derived classes
+      }
+  }
+  ```
+  
+  ```csharp Private Implementation
+  public class ImplementationClass
+  {
+      private string _privateField;
+      
+      private void PrivateMethod()
+      {
+          // Only accessible within this class
+      }
+  }
+  ```
+</CodeGroup>
+
+## 🚀 LINQ Variations
+
+<CodeGroup>
+  ```csharp Query Syntax
+  var results = from item in collection
+                where item.IsActive
+                orderby item.Name
+                select new
+                {
+                    item.Id,
+                    item.Name
+                };
+  ```
+  
+  ```csharp Method Syntax
+  var results = collection
+      .Where(item => item.IsActive)
+      .OrderBy(item => item.Name)
+      .Select(item => new
+      {
+          item.Id,
+          item.Name
+      });
+  ```
+  
+  ```csharp Mixed Syntax
+  var results = (from item in collection
+                 where item.IsActive
+                 select item)
+                .OrderBy(item => item.Name)
+                .Select(item => new
+                {
+                    item.Id,
+                    item.Name
+                });
+  ```
+</CodeGroup>
+
+## 🔧 Constructor Patterns
+
+<CodeGroup>
+  ```csharp Default Constructor
+  public class Person
+  {
+      public string Name { get; set; }
+      public int Age { get; set; }
+      
+      public Person()
+      {
+          Name = "Unknown";
+          Age = 0;
+      }
+  }
+  ```
+  
+  ```csharp Parameterized Constructor
+  public class Person
+  {
+      public string Name { get; set; }
+      public int Age { get; set; }
+      
+      public Person(string name, int age)
+      {
+          Name = name;
+          Age = age;
+      }
+  }
+  ```
+  
+  ```csharp Constructor Chaining
+  public class Person
+  {
+      public string Name { get; set; }
+      public int Age { get; set; }
+      
+      public Person() : this("Unknown", 0)
+      {
+      }
+      
+      public Person(string name) : this(name, 0)
+      {
+      }
+      
+      public Person(string name, int age)
+      {
+          Name = name;
+          Age = age;
+      }
+  }
+  ```
+  
+  ```csharp Primary Constructor (C# 12)
+  public class Person(string name, int age)
+  {
+      public string Name { get; } = name;
+      public int Age { get; } = age;
+  }
+  ```
+</CodeGroup>
+
+## 📝 Exception Handling
+
+<CodeGroup>
+  ```csharp Try-Catch
+  public string ReadFile(string path)
+  {
+      try
+      {
+          return File.ReadAllText(path);
+      }
+      catch (FileNotFoundException)
+      {
+          return "File not found";
+      }
+      catch (UnauthorizedAccessException)
+      {
+          return "Access denied";
+      }
+  }
+  ```
+  
+  ```csharp Try-Catch-Finally
+  public string ReadFile(string path)
+  {
+      FileStream? stream = null;
+      try
+      {
+          stream = File.OpenRead(path);
+          using var reader = new StreamReader(stream);
+          stream = null;
+          return reader.ReadToEnd();
+      }
+      finally
+      {
+          stream?.Dispose();
+      }
+  }
+  ```
+  
+  ```csharp Exception Filters
+  public string ReadFile(string path)
+  {
+      try
+      {
+          return File.ReadAllText(path);
+      }
+      catch (IOException ex) 
+          when (ex.HResult == -2147024864)
+      {
+          return "File is in use";
+      }
+      catch (IOException)
+      {
+          return "IO error occurred";
+      }
+  }
+  ```
+  
+  ```csharp Global Exception Handler
+  public string ReadFile(string path)
+  {
+      try
+      {
+          return File.ReadAllText(path);
+      }
+      catch (Exception ex)
+      {
+          _logger.LogError(ex, 
+              "Failed to read file: {Path}", path);
+          throw new ApplicationException(
+              $"Could not read file: {path}", ex);
+      }
+  }
+  ```
+</CodeGroup>
+
+## 💡 Collection Initializers
+
+<CodeGroup>
+  ```csharp List Initialization
+  // Traditional
+  var list = new List<string>();
+  list.Add("Apple");
+  list.Add("Banana");
+  list.Add("Cherry");
+  
+  // Collection initializer
+  var list = new List<string>
+  {
+      "Apple",
+      "Banana",
+      "Cherry"
+  };
+  ```
+  
+  ```csharp Dictionary Initialization
+  // Traditional
+  var dict = new Dictionary<int, string>();
+  dict.Add(1, "One");
+  dict.Add(2, "Two");
+  dict.Add(3, "Three");
+  
+  // Collection initializer
+  var dict = new Dictionary<int, string>
+  {
+      { 1, "One" },
+      { 2, "Two" },
+      { 3, "Three" }
+  };
+  
+  // C# 6.0+ syntax
+  var dict = new Dictionary<int, string>
+  {
+      [1] = "One",
+      [2] = "Two",
+      [3] = "Three"
+  };
+  ```
+  
+  ```csharp Complex Object Initialization
+  var person = new Person
+  {
+      Name = "John Doe",
+      Age = 30,
+      Address = new Address
+      {
+          Street = "123 Main St",
+          City = "Anytown",
+          Country = "USA"
+      },
+      PhoneNumbers = new List<string>
+      {
+          "555-0100",
+          "555-0101"
+      }
+  };
+  ```
+</CodeGroup>
+
+<Info>
+  **Pro Tip**: Use CodeGroups when you want to show multiple valid approaches to solve the same problem, letting developers choose the one that best fits their needs.
+</Info>
+
+## 🎯 When to Use CodeGroups
+
+<Steps>
+  <Step title="Method Overloads">
+    Show different parameter combinations for the same method
+  </Step>
+  
+  <Step title="Platform Variations">
+    Display code for different .NET versions or platforms
+  </Step>
+  
+  <Step title="Alternative Implementations">
+    Present multiple ways to achieve the same result
+  </Step>
+  
+  <Step title="Progressive Examples">
+    Show basic to advanced usage patterns
+  </Step>
+</Steps>
+
+---
+
+<Check>
+  CodeGroups are automatically generated by the MintlifyRenderer when it detects method overloads or multiple examples in your documentation.
+</Check>

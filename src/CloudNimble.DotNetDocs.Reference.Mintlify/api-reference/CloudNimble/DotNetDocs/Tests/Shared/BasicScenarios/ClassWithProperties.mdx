@@ -1,0 +1,89 @@
+---
+title: ClassWithProperties
+description: Demonstrates various property patterns
+icon: sliders
+---
+
+# ClassWithProperties Class
+
+<Note>
+  **Namespace**: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios  
+  **Assembly**: CloudNimble.DotNetDocs.Tests.Shared.dll
+</Note>
+
+## 📋 Definition
+
+```csharp
+public class ClassWithProperties
+```
+
+## 📝 Summary
+
+Demonstrates different property patterns including auto-properties, read-only properties, and computed properties.
+
+## 🎯 Members
+
+<Tabs>
+  <Tab title="Properties">
+    ### AutoProperty
+    
+    ```csharp
+    public string AutoProperty { get; set; }
+    ```
+    
+    Standard auto-implemented property with public getter and setter.
+    
+    ### ReadOnlyProperty
+    
+    ```csharp
+    public string ReadOnlyProperty { get; }
+    ```
+    
+    Read-only property that can only be set in the constructor.
+    
+    ### ComputedProperty
+    
+    ```csharp
+    public string ComputedProperty => $"Computed: {AutoProperty}";
+    ```
+    
+    Expression-bodied property that computes its value.
+    
+    ### PrivateSetProperty
+    
+    ```csharp
+    public int PrivateSetProperty { get; private set; }
+    ```
+    
+    Property with public getter but private setter.
+  </Tab>
+</Tabs>
+
+## 💡 Usage Examples
+
+<CodeGroup>
+  ```csharp Basic Usage
+  var obj = new ClassWithProperties
+  {
+      AutoProperty = "Value"
+  };
+  
+  Console.WriteLine(obj.AutoProperty);      // "Value"
+  Console.WriteLine(obj.ComputedProperty);  // "Computed: Value"
+  ```
+  
+  ```csharp Property Patterns
+  var obj = new ClassWithProperties();
+  
+  // Auto-property can be read and written
+  obj.AutoProperty = "New Value";
+  var value = obj.AutoProperty;
+  
+  // Read-only property can only be read
+  var readOnly = obj.ReadOnlyProperty;
+  // obj.ReadOnlyProperty = "Error"; // Compile error
+  
+  // Computed property is calculated
+  var computed = obj.ComputedProperty;
+  ```
+</CodeGroup>

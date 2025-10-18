@@ -1,0 +1,238 @@
+---
+title: MintlifyIcons
+description: "Provides FontAwesome 7 icon mappings for different .NET documentation entities in Mintlify."
+icon: bolt
+tag: "STATIC"
+keywords: ['MintlifyIcons', 'CloudNimble.DotNetDocs.Mintlify.MintlifyIcons', 'CloudNimble.DotNetDocs.Mintlify', 'class', 'System.Object']
+---
+
+## Definition
+
+**Assembly:** CloudNimble.DotNetDocs.Mintlify.dll
+
+**Namespace:** CloudNimble.DotNetDocs.Mintlify
+
+**Inheritance:** System.Object
+
+## Syntax
+
+```csharp
+CloudNimble.DotNetDocs.Mintlify.MintlifyIcons
+```
+
+## Summary
+
+Provides FontAwesome 7 icon mappings for different .NET documentation entities in Mintlify.
+
+## Methods
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  GetIconForAccessibility
+
+Gets the icon for an Accessibility enum value.
+
+#### Syntax
+
+```csharp
+public static string GetIconForAccessibility(Microsoft.CodeAnalysis.Accessibility accessibility)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `accessibility` | `Microsoft.CodeAnalysis.Accessibility` | The accessibility level. |
+
+#### Returns
+
+Type: `string`
+The FontAwesome icon name.
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  GetIconForAccessModifier
+
+Gets the icon for an access modifier.
+
+#### Syntax
+
+```csharp
+public static string GetIconForAccessModifier(string accessModifier)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `accessModifier` | `string` | The access modifier string. |
+
+#### Returns
+
+Type: `string`
+The FontAwesome icon name.
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  GetIconForAssembly
+
+Gets the appropriate icon for a DocAssembly.
+
+#### Syntax
+
+```csharp
+public static string GetIconForAssembly(CloudNimble.DotNetDocs.Core.DocAssembly assembly)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `assembly` | `CloudNimble.DotNetDocs.Core.DocAssembly` | The documentation assembly. |
+
+#### Returns
+
+Type: `string`
+The FontAwesome icon name.
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  GetIconForEntity
+
+Gets the appropriate icon for a DocEntity based on its type.
+
+#### Syntax
+
+```csharp
+public static string GetIconForEntity(CloudNimble.DotNetDocs.Core.DocEntity entity)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `entity` | `CloudNimble.DotNetDocs.Core.DocEntity` | The documentation entity. |
+
+#### Returns
+
+Type: `string`
+The FontAwesome icon name.
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  GetIconForMember
+
+Gets the icon for a DocMember based on its kind and characteristics.
+
+#### Syntax
+
+```csharp
+public static string GetIconForMember(CloudNimble.DotNetDocs.Core.DocMember member)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `member` | `CloudNimble.DotNetDocs.Core.DocMember` | The documentation member. |
+
+#### Returns
+
+Type: `string`
+The FontAwesome icon name.
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  GetIconForMethod
+
+Gets the icon for a DocMember method, considering special characteristics.
+
+#### Syntax
+
+```csharp
+public static string GetIconForMethod(CloudNimble.DotNetDocs.Core.DocMember docMember)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `docMember` | `CloudNimble.DotNetDocs.Core.DocMember` | The documentation member (should be a method). |
+
+#### Returns
+
+Type: `string`
+The FontAwesome icon name.
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  GetIconForNamespace
+
+Gets the icon for a DocNamespace based on whether it has types.
+
+#### Syntax
+
+```csharp
+public static string GetIconForNamespace(CloudNimble.DotNetDocs.Core.DocNamespace ns)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `ns` | `CloudNimble.DotNetDocs.Core.DocNamespace` | The documentation namespace. |
+
+#### Returns
+
+Type: `string`
+The FontAwesome icon name.
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  GetIconForNamespaceSegment
+
+Gets an icon based on the namespace segment for organization-specific icons.
+
+#### Syntax
+
+```csharp
+public static string GetIconForNamespaceSegment(string namespaceName)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `namespaceName` | `string` | The full namespace name. |
+
+#### Returns
+
+Type: `string`
+The FontAwesome icon name based on common patterns.
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  GetIconForType
+
+Gets the icon for a DocType based on its kind and characteristics.
+
+#### Syntax
+
+```csharp
+public static string GetIconForType(CloudNimble.DotNetDocs.Core.DocType docType)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `docType` | `CloudNimble.DotNetDocs.Core.DocType` | The documentation type. |
+
+#### Returns
+
+Type: `string`
+The FontAwesome icon name.
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  GetIconForTypeByName
+
+Gets an appropriate icon based on common type naming patterns.
+
+#### Syntax
+
+```csharp
+public static string GetIconForTypeByName(string typeName)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `typeName` | `string` | The type name. |
+
+#### Returns
+
+Type: `string`
+A FontAwesome icon based on the type name pattern.
+

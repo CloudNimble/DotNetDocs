@@ -1,0 +1,337 @@
+---
+title: DotNetDocsCore_IServiceCollectionExtensions
+description: "Extension methods for registering DotNetDocs services with dependency injection."
+icon: bolt
+sidebarTitle: DotNetDocsCore_IServiceCollectionExtensions
+tag: "STATIC"
+keywords: ['DotNetDocsCore_IServiceCollectionExtensions', 'Microsoft.Extensions.DependencyInjection.DotNetDocsCore_IServiceCollectionExtensions', 'Microsoft.Extensions.DependencyInjection', 'class', 'System.Object']
+---
+
+## Definition
+
+**Assembly:** CloudNimble.DotNetDocs.Core.dll
+
+**Namespace:** Microsoft.Extensions.DependencyInjection
+
+**Inheritance:** System.Object
+
+## Syntax
+
+```csharp
+Microsoft.Extensions.DependencyInjection.DotNetDocsCore_IServiceCollectionExtensions
+```
+
+## Summary
+
+Extension methods for registering DotNetDocs services with dependency injection.
+
+## Methods
+
+### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  AddDocEnricher
+
+Adds a custom document enricher to the service collection.
+
+#### Syntax
+
+```csharp
+public static Microsoft.Extensions.DependencyInjection.IServiceCollection AddDocEnricher<TEnricher>(Microsoft.Extensions.DependencyInjection.IServiceCollection services) where TEnricher : class, CloudNimble.DotNetDocs.Core.IDocEnricher
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `services` | `Microsoft.Extensions.DependencyInjection.IServiceCollection` | The service collection. |
+
+#### Returns
+
+Type: `Microsoft.Extensions.DependencyInjection.IServiceCollection`
+The service collection for chaining.
+
+#### Type Parameters
+
+- `TEnricher` - The type of enricher to add.
+
+#### Examples
+
+```csharp
+services.AddDocEnricher&lt;ConceptualContentEnricher&gt;();
+```
+
+#### Remarks
+
+Registers the enricher as Scoped implementation of IDocEnricher.
+            Enrichers add conceptual content to documentation entities.
+
+### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  AddDocRenderer
+
+Adds a custom document renderer to the service collection.
+
+#### Syntax
+
+```csharp
+public static Microsoft.Extensions.DependencyInjection.IServiceCollection AddDocRenderer<TRenderer>(Microsoft.Extensions.DependencyInjection.IServiceCollection services) where TRenderer : class, CloudNimble.DotNetDocs.Core.IDocRenderer
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `services` | `Microsoft.Extensions.DependencyInjection.IServiceCollection` | The service collection. |
+
+#### Returns
+
+Type: `Microsoft.Extensions.DependencyInjection.IServiceCollection`
+The service collection for chaining.
+
+#### Type Parameters
+
+- `TRenderer` - The type of renderer to add.
+
+#### Examples
+
+```csharp
+services.AddDocRenderer&lt;MyCustomRenderer&gt;();
+```
+
+#### Remarks
+
+Registers the renderer as Scoped implementation of IDocRenderer.
+
+### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  AddDocTransformer
+
+Adds a custom document transformer to the service collection.
+
+#### Syntax
+
+```csharp
+public static Microsoft.Extensions.DependencyInjection.IServiceCollection AddDocTransformer<TTransformer>(Microsoft.Extensions.DependencyInjection.IServiceCollection services) where TTransformer : class, CloudNimble.DotNetDocs.Core.IDocTransformer
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `services` | `Microsoft.Extensions.DependencyInjection.IServiceCollection` | The service collection. |
+
+#### Returns
+
+Type: `Microsoft.Extensions.DependencyInjection.IServiceCollection`
+The service collection for chaining.
+
+#### Type Parameters
+
+- `TTransformer` - The type of transformer to add.
+
+#### Examples
+
+```csharp
+services.AddDocTransformer&lt;InheritDocTransformer&gt;();
+```
+
+#### Remarks
+
+Registers the transformer as Scoped implementation of IDocTransformer.
+            Transformers modify the documentation model before rendering.
+
+### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  AddDotNetDocs
+
+Adds DotNetDocs services with all built-in renderers to the service collection.
+
+#### Syntax
+
+```csharp
+public static Microsoft.Extensions.DependencyInjection.IServiceCollection AddDotNetDocs(Microsoft.Extensions.DependencyInjection.IServiceCollection services, System.Action<CloudNimble.DotNetDocs.Core.ProjectContext> configureContext = null)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `services` | `Microsoft.Extensions.DependencyInjection.IServiceCollection` | The service collection. |
+| `configureContext` | `System.Action<CloudNimble.DotNetDocs.Core.ProjectContext>?` | Optional action to configure the ProjectContext. |
+
+#### Returns
+
+Type: `Microsoft.Extensions.DependencyInjection.IServiceCollection`
+The service collection for chaining.
+
+#### Examples
+
+```csharp
+services.AddDotNetDocs(context =&gt;
+{
+    context.OutputPath = "docs/api";
+    context.ShowPlaceholders = false;
+});
+```
+
+#### Remarks
+
+This method registers:
+            - ProjectContext as Singleton
+            - DocumentationManager as Scoped
+            - All built-in renderers (Markdown, JSON, YAML) as Scoped
+            - MarkdownXmlTransformer for processing XML documentation tags
+
+### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  AddDotNetDocsCore
+
+Adds only the core DotNetDocs services without any renderers.
+
+#### Syntax
+
+```csharp
+public static Microsoft.Extensions.DependencyInjection.IServiceCollection AddDotNetDocsCore(Microsoft.Extensions.DependencyInjection.IServiceCollection services, System.Action<CloudNimble.DotNetDocs.Core.ProjectContext> configureContext = null)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `services` | `Microsoft.Extensions.DependencyInjection.IServiceCollection` | The service collection. |
+| `configureContext` | `System.Action<CloudNimble.DotNetDocs.Core.ProjectContext>?` | Optional action to configure the ProjectContext. |
+
+#### Returns
+
+Type: `Microsoft.Extensions.DependencyInjection.IServiceCollection`
+The service collection for chaining.
+
+#### Examples
+
+```csharp
+services.AddDotNetDocsCore(context =&gt;
+{
+    context.OutputPath = "docs";
+});
+services.AddMarkdownRenderer();
+```
+
+#### Remarks
+
+Use this method when you want to manually register specific renderers.
+            This registers:
+            - ProjectContext as Singleton
+            - DocumentationManager as Scoped
+
+### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  AddDotNetDocsPipeline
+
+Adds DotNetDocs services using a fluent pipeline builder.
+
+#### Syntax
+
+```csharp
+public static Microsoft.Extensions.DependencyInjection.IServiceCollection AddDotNetDocsPipeline(Microsoft.Extensions.DependencyInjection.IServiceCollection services, System.Action<CloudNimble.DotNetDocs.Core.Configuration.DotNetDocsBuilder> configurePipeline)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `services` | `Microsoft.Extensions.DependencyInjection.IServiceCollection` | The service collection. |
+| `configurePipeline` | `System.Action<CloudNimble.DotNetDocs.Core.Configuration.DotNetDocsBuilder>` | Action to configure the documentation pipeline. |
+
+#### Returns
+
+Type: `Microsoft.Extensions.DependencyInjection.IServiceCollection`
+The service collection for chaining.
+
+#### Examples
+
+```csharp
+services.AddDotNetDocsPipeline(pipeline =&gt;
+{
+    pipeline
+        .UseMarkdownRenderer()
+        .UseJsonRenderer(options =&gt; options.WriteIndented = true)
+        .AddEnricher&lt;MyCustomEnricher&gt;()
+        .ConfigureContext(ctx =&gt; ctx.OutputPath = "docs");
+});
+```
+
+### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  AddJsonRenderer
+
+Adds the JSON renderer to the service collection.
+
+#### Syntax
+
+```csharp
+public static Microsoft.Extensions.DependencyInjection.IServiceCollection AddJsonRenderer(Microsoft.Extensions.DependencyInjection.IServiceCollection services, System.Action<CloudNimble.DotNetDocs.Core.Renderers.JsonRendererOptions> configureOptions = null)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `services` | `Microsoft.Extensions.DependencyInjection.IServiceCollection` | The service collection. |
+| `configureOptions` | `System.Action<CloudNimble.DotNetDocs.Core.Renderers.JsonRendererOptions>?` | Optional action to configure JsonRendererOptions. |
+
+#### Returns
+
+Type: `Microsoft.Extensions.DependencyInjection.IServiceCollection`
+The service collection for chaining.
+
+#### Examples
+
+```csharp
+services.AddJsonRenderer(options =&gt;
+{
+    options.WriteIndented = true;
+    options.IncludeNullValues = false;
+});
+```
+
+#### Remarks
+
+Registers JsonRenderer as Scoped implementation of IDocRenderer.
+
+### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  AddMarkdownRenderer
+
+Adds the Markdown renderer to the service collection.
+
+#### Syntax
+
+```csharp
+public static Microsoft.Extensions.DependencyInjection.IServiceCollection AddMarkdownRenderer(Microsoft.Extensions.DependencyInjection.IServiceCollection services)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `services` | `Microsoft.Extensions.DependencyInjection.IServiceCollection` | The service collection. |
+
+#### Returns
+
+Type: `Microsoft.Extensions.DependencyInjection.IServiceCollection`
+The service collection for chaining.
+
+#### Remarks
+
+Registers MarkdownRenderer as Scoped implementation of IDocRenderer.
+            Also registers MarkdownXmlTransformer to process XML documentation tags.
+
+### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  AddYamlRenderer
+
+Adds the YAML renderer to the service collection.
+
+#### Syntax
+
+```csharp
+public static Microsoft.Extensions.DependencyInjection.IServiceCollection AddYamlRenderer(Microsoft.Extensions.DependencyInjection.IServiceCollection services)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `services` | `Microsoft.Extensions.DependencyInjection.IServiceCollection` | The service collection. |
+
+#### Returns
+
+Type: `Microsoft.Extensions.DependencyInjection.IServiceCollection`
+The service collection for chaining.
+
+#### Remarks
+
+Registers YamlRenderer as Scoped implementation of IDocRenderer.
+

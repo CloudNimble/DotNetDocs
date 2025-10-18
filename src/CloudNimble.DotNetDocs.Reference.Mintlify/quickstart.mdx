@@ -1,0 +1,183 @@
+---
+title: Quick Start
+description: Get started with DotNetDocs in minutes
+icon: play
+---
+
+# Quick Start Guide
+
+Get up and running with DotNetDocs documentation in just a few steps.
+
+<Steps>
+  <Step title="Install the Package">
+    Install the DotNetDocs package from NuGet:
+    
+    <CodeGroup>
+      ```bash .NET CLI
+      dotnet add packag eDotNetDocs.Tools
+      ```
+      
+      ```xml PackageReference
+      <PackageReference Include="DotNetDocs.Core" Version="1.*-*" />
+      ```
+      
+      ```powershell Package Manager
+      Install-Package DotNetDocs.Core
+      ```
+    </CodeGroup>
+  </Step>
+  
+  <Step title="Add Using Statements">
+    Import the namespaces you need:
+    
+    ```csharp
+    using CloudNimble.DotNetDocs.Tests.Shared;
+    using CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios;
+    using CloudNimble.DotNetDocs.Tests.Shared.Parameters;
+    ```
+  </Step>
+  
+  <Step title="Create Your First Instance">
+    Start using the library:
+    
+    ```csharp
+    // Create a test base instance
+    var testBase = new DotNetDocsTestBase();
+    
+    // Get assembly documentation
+    var assembly = testBase.GetTestsDotSharedAssembly();
+    
+    // Work with sample classes
+    var sample = new SampleClass { Name = "My Sample" };
+    ```
+  </Step>
+</Steps>
+
+## 📦 What's Included
+
+<Accordion title="Core Classes">
+  - **DotNetDocsTestBase** - Base class for documentation tests
+  - **SampleClass** - Example class demonstrating basic patterns
+  - **Assembly utilities** - Tools for working with assembly metadata
+</Accordion>
+
+<Accordion title="Basic Scenarios">
+  - **BaseClass & DerivedClass** - Inheritance patterns
+  - **ClassWithProperties** - Property documentation examples
+  - **ClassWithMethods** - Method documentation patterns
+  - **DisposableClass** - IDisposable implementation
+</Accordion>
+
+<Accordion title="Advanced Features">
+  - **ParameterVariations** - Different parameter patterns
+  - **MixedAccessClass** - Access modifier examples
+  - **Edge cases** - Special documentation scenarios
+</Accordion>
+
+## 🎯 Common Use Cases
+
+<Tabs>
+  <Tab title="Basic Usage">
+    ```csharp
+    public class MyApp
+    {
+        public void BasicExample()
+        {
+            var sample = new SampleClass 
+            { 
+                Name = "Example" 
+            };
+            
+            Console.WriteLine($"Sample: {sample.Name}");
+        }
+    }
+    ```
+  </Tab>
+  
+  <Tab title="Inheritance">
+    ```csharp
+    public class MyDerivedClass : BaseClass
+    {
+        public override void VirtualMethod()
+        {
+            base.VirtualMethod();
+            Console.WriteLine("Extended behavior");
+        }
+    }
+    ```
+  </Tab>
+  
+  <Tab title="Disposable Pattern">
+    ```csharp
+    public void WorkWithResources()
+    {
+        using (var resource = new DisposableClass())
+        {
+            resource.DoWork();
+            // Automatically disposed
+        }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## 🔍 Explore the API
+
+<CardGroup cols={2}>
+  <Card 
+    title="Browse Namespaces" 
+    icon="folder-tree"
+    href="/api-reference/CloudNimble/DotNetDocs/Tests/Shared"
+  >
+    Explore the namespace hierarchy
+  </Card>
+  <Card 
+    title="View Classes" 
+    icon="cube"
+    href="/api-reference/CloudNimble/DotNetDocs/Tests/Shared/BasicScenarios/index"
+  >
+    See all available classes
+  </Card>
+  <Card 
+    title="Check Examples" 
+    icon="code"
+    href="/components/code-groups-demo"
+  >
+    Interactive code examples
+  </Card>
+  <Card 
+    title="Read Guides" 
+    icon="book-open"
+    href="/guides/getting-started"
+  >
+    In-depth tutorials
+  </Card>
+</CardGroup>
+
+## 💡 Best Practices
+
+<Warning>
+  Always dispose of resources properly when working with `IDisposable` implementations.
+</Warning>
+
+<Info>
+  Use the strongly-typed methods when available for better IntelliSense support and compile-time checking.
+</Info>
+
+<Tip>
+  Check the [EdgeCases namespace](/api/CloudNimble/DotNetDocs/Tests/Shared/EdgeCases) for examples of handling special scenarios.
+</Tip>
+
+## 🚀 Next Steps
+
+Now that you have the basics, explore:
+
+1. [**API Reference**](/api-reference/index) - Complete API documentation
+2. [**Component Showcase**](/components/overview) - See advanced Mintlify features
+3. [**Best Practices Guide**](/guides/best-practices) - Learn optimal patterns
+
+---
+
+<Check>
+  **Success!** You're ready to start using CloudNimble.DotNetDocs. Head to the [API documentation](/api-reference/index) to explore all available features.
+</Check>

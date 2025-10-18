@@ -48,6 +48,39 @@ namespace Mintlify.Core.Models
 
         #endregion
 
+        #region Implicit Operators
+
+        /// <summary>
+        /// Implicitly converts a string path to a FaviconConfig.
+        /// </summary>
+        /// <param name="path">The favicon file path.</param>
+        /// <returns>A FaviconConfig with the specified path for both light and dark modes.</returns>
+        public static implicit operator FaviconConfig?(string? path)
+        {
+            return path is null ? null : new FaviconConfig(path);
+        }
+
+        /// <summary>
+        /// Implicitly converts a FaviconConfig to a string.
+        /// </summary>
+        /// <param name="faviconConfig">The favicon configuration.</param>
+        /// <returns>The path string, preferring dark then light, or null.</returns>
+        public static implicit operator string?(FaviconConfig? faviconConfig)
+        {
+            return faviconConfig?.Dark ?? faviconConfig?.Light;
+        }
+
+        /// <summary>
+        /// Returns the string representation of the favicon configuration.
+        /// </summary>
+        /// <returns>The favicon path or empty string.</returns>
+        public override string ToString()
+        {
+            return Dark ?? Light ?? string.Empty;
+        }
+
+        #endregion
+
     }
 
     /// <summary>

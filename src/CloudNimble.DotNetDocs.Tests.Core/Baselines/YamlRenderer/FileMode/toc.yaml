@@ -1,0 +1,56 @@
+title: CloudNimble.DotNetDocs.Tests.Shared
+items:
+- name: CloudNimble.DotNetDocs.Tests.Shared
+  href: CloudNimble-DotNetDocs-Tests-Shared.yaml
+  types:
+  - name: DotNetDocsTestBase
+    kind: Class
+  - name: SampleClass
+    kind: Class
+- name: CloudNimble.DotNetDocs.Tests.Shared.AccessModifiers
+  href: CloudNimble-DotNetDocs-Tests-Shared-AccessModifiers.yaml
+  types:
+  - name: MixedAccessClass
+    kind: Class
+- name: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios
+  href: CloudNimble-DotNetDocs-Tests-Shared-BasicScenarios.yaml
+  types:
+  - name: BaseClass
+    kind: Class
+  - name: ClassWithMethods
+    kind: Class
+  - name: ClassWithProperties
+    kind: Class
+  - name: DerivedClass
+    kind: Class
+  - name: DisposableClass
+    kind: Class
+  - name: SimpleClass
+    kind: Class
+- name: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases
+  href: CloudNimble-DotNetDocs-Tests-Shared-EdgeCases.yaml
+  types:
+  - name: ClassWithMinimalDocs
+    kind: Class
+  - name: ClassWithNoDocs
+    kind: Class
+  - name: ClassWithSpecialCharacters
+    kind: Class
+  - name: ClassWithFullDocs
+    kind: Class
+- name: CloudNimble.DotNetDocs.Tests.Shared.Enums
+  href: CloudNimble-DotNetDocs-Tests-Shared-Enums.yaml
+  types:
+  - name: ByteEnum
+    kind: Class
+  - name: FlagsEnum
+    kind: Class
+  - name: LongEnum
+    kind: Class
+  - name: SimpleEnum
+    kind: Class
+- name: CloudNimble.DotNetDocs.Tests.Shared.Parameters
+  href: CloudNimble-DotNetDocs-Tests-Shared-Parameters.yaml
+  types:
+  - name: ParameterVariations
+    kind: Class

@@ -1,0 +1,64 @@
+---
+title: Ga4Config
+description: "Represents the configuration for Google Analytics 4 integration."
+icon: file-brackets-curly
+keywords: ['Ga4Config', 'Mintlify.Core.Models.Integrations.Ga4Config', 'Mintlify.Core.Models.Integrations', 'class', 'System.Object']
+---
+
+## Definition
+
+**Assembly:** Mintlify.Core.dll
+
+**Namespace:** Mintlify.Core.Models.Integrations
+
+**Inheritance:** System.Object
+
+## Syntax
+
+```csharp
+Mintlify.Core.Models.Integrations.Ga4Config
+```
+
+## Summary
+
+Represents the configuration for Google Analytics 4 integration.
+
+## Remarks
+
+Google Analytics 4 (GA4) is Google's next-generation analytics platform that
+            provides insights about website traffic and user behavior. This configuration
+            enables automatic tracking of documentation events to your GA4 property.
+
+## Constructors
+
+### <Icon icon="hammer" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} />  .ctor
+
+#### Syntax
+
+```csharp
+public Ga4Config()
+```
+
+## Properties
+
+### <Icon icon="tag" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} />  MeasurementId
+
+Gets or sets the Google Analytics 4 measurement ID.
+
+#### Syntax
+
+```csharp
+public string MeasurementId { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+
+#### Remarks
+
+This is the unique identifier for your GA4 web data stream, typically in
+            the format "G-XXXXXXXXXX". You can find this measurement ID in your Google
+            Analytics property settings under Data Streams. Note that Google Analytics
+            may take 2-3 days to start showing data after initial setup.
+

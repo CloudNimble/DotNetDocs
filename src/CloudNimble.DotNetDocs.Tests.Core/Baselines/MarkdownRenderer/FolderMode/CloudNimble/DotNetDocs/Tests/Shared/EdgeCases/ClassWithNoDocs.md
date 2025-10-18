@@ -1,0 +1,50 @@
+# ClassWithNoDocs
+
+## Definition
+
+**Assembly:** CloudNimble.DotNetDocs.Tests.Shared.dll
+
+**Namespace:** CloudNimble.DotNetDocs.Tests.Shared.EdgeCases
+
+**Inheritance:** System.Object
+
+## Syntax
+
+```csharp
+CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithNoDocs
+```
+
+## Constructors
+
+### .ctor
+
+#### Syntax
+
+```csharp
+public ClassWithNoDocs()
+```
+
+## Properties
+
+### UndocumentedProperty
+
+#### Syntax
+
+```csharp
+public string UndocumentedProperty { get; set; }
+```
+
+#### Property Value
+
+Type: `string`
+
+## Methods
+
+### UndocumentedMethod
+
+#### Syntax
+
+```csharp
+public void UndocumentedMethod()
+```
+

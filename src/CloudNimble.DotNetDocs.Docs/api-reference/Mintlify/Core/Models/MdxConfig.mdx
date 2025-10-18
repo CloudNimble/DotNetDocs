@@ -1,0 +1,91 @@
+---
+title: MdxConfig
+description: "Represents the MDX configuration for API pages generated from MDX files."
+icon: file-brackets-curly
+keywords: ['MdxConfig', 'Mintlify.Core.Models.MdxConfig', 'Mintlify.Core.Models', 'class', 'System.Object']
+---
+
+## Definition
+
+**Assembly:** Mintlify.Core.dll
+
+**Namespace:** Mintlify.Core.Models
+
+**Inheritance:** System.Object
+
+## Syntax
+
+```csharp
+Mintlify.Core.Models.MdxConfig
+```
+
+## Summary
+
+Represents the MDX configuration for API pages generated from MDX files.
+
+## Remarks
+
+This configuration allows manual definition of API endpoints in individual MDX files
+            rather than using an OpenAPI specification. It provides flexibility for custom content
+            and is useful for documenting small APIs or prototyping.
+
+## Constructors
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  .ctor
+
+#### Syntax
+
+```csharp
+public MdxConfig()
+```
+
+## Properties
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Auth
+
+Gets or sets the authentication configuration for MDX-based API requests.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.MdxAuthConfig Auth { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.MdxAuthConfig?`
+
+#### Remarks
+
+Defines the authentication method and parameters required for API calls
+            made from the documentation playground.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Server
+
+Gets or sets the base server URL(s) for API requests.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.ServerConfig Server { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.ServerConfig?`
+
+#### Examples
+
+```csharp
+// Single server
+"server": "https://api.example.com"
+
+// Multiple servers
+"server": ["https://api1.example.com", "https://api2.example.com"]
+```
+
+#### Remarks
+
+Can be a single string URL or an array of URLs for multiple base endpoints.
+             Used as the base URL for all API requests made from the playground.
+

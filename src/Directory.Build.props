@@ -30,10 +30,10 @@
     </PropertyGroup>
 
     <PropertyGroup>
-        <PackageId Condition="'$(IsPackable)'=='true'">$(MSBuildProjectName.Replace('CloudNimble.', ''))</PackageId>
+        <PackageId>$(MSBuildProjectName.Replace('CloudNimble.', ''))</PackageId>
         <Product>DotNetDocs</Product>
         <AssemblyVersion>1.0.0.0</AssemblyVersion>
-        <PackageVersion>1.0-alpha.1</PackageVersion>
+        <PackageVersion Condition="'$(PackageVersion)' == ''">1.0.0-preview.32</PackageVersion>
         <Authors>CloudNimble</Authors>
         <Company>CloudNimble, Inc.</Company>
         <RpmPackageVendor>CloudNimble</RpmPackageVendor>
@@ -52,8 +52,10 @@
         <!-- Contact email address for NuGet packages and Linux installers. -->
         <MaintainerEmail>opensource@nimbleapps.cloud</MaintainerEmail>
 
-        <PackageIcon>easyaf-logo.png</PackageIcon>
-        <PackageProjectUrl>https://easyaf.dev/dotnetdocs</PackageProjectUrl>
+        <PackageIcon Condition=" '$(IsTestProject)' != 'true' And $(MSBuildProjectName.StartsWith('CloudNimble.'))">dotnetdocs-logo.png</PackageIcon>
+        <PackageIcon Condition=" '$(IsTestProject)' != 'true' And $(MSBuildProjectName.StartsWith('Mintlify.'))">mintlify-logo.png</PackageIcon>
+
+        <PackageProjectUrl>https://dotnetdocs.com</PackageProjectUrl>
         <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
         <PackageTags>easyaf;docs;docfx;documentation;mintlify</PackageTags>
         <Serviceable>true</Serviceable>
@@ -95,8 +97,8 @@
         <EnableMSTestRunner>true</EnableMSTestRunner>
         <TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport>
         <TestingPlatformShowTestsFailure>true</TestingPlatformShowTestsFailure>
+        <TestingPlatformCommandLineArguments>$(TestingPlatformCommandLineArguments) --ignore-exit-code 8</TestingPlatformCommandLineArguments>
 
-        <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
         <IsPackable>false</IsPackable>
     </PropertyGroup>
 
@@ -139,12 +141,13 @@
         <PackageReference Include="FluentAssertions" Version="6.*" PrivateAssets="All" />
         <PackageReference Include="FluentAssertions.Analyzers" Version="0.*" PrivateAssets="All" />
         <PackageReference Include="MSTest" Version="3.*" />
-        <PackageReference Include="Breakdance.Assemblies" Version="*-*" />
+        <PackageReference Include="Breakdance.Extensions.MSTest2" Version="*-*" />
     </ItemGroup>
 
     <!-- RWM: Leverage defaults to include standard things in the NuGet package if they are available.-->
     <ItemGroup>
-        <None Include="$(MSBuildThisFileDirectory)easyaf-logo.png" Pack="true" PackagePath="\" Condition="'$(IsTestProject)' != 'true'" />
+        <None Include="$(MSBuildThisFileDirectory)dotnetdocs-logo.png" Pack="true" PackagePath="\" Condition=" '$(IsTestProject)' != 'true' And $(MSBuildProjectName.StartsWith('CloudNimble.'))" />
+        <None Include="$(MSBuildThisFileDirectory)mintlify-logo.png" Pack="true" PackagePath="\" Condition=" '$(IsTestProject)' != 'true' And $(MSBuildProjectName.StartsWith('Mintlify.'))" />
         <None Include="readme.md" Pack="true" PackagePath="\" Condition="$(IncludeReadmeFile) == 'true'" />
     </ItemGroup>
 

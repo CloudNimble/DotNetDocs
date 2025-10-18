@@ -1,0 +1,176 @@
+---
+title: DocParameter
+description: "Represents documentation for a method or constructor parameter."
+icon: file-brackets-curly
+keywords: ['DocParameter', 'CloudNimble.DotNetDocs.Core.DocParameter', 'CloudNimble.DotNetDocs.Core', 'class', 'CloudNimble.DotNetDocs.Core.DocEntity']
+---
+
+## Definition
+
+**Assembly:** CloudNimble.DotNetDocs.Core.dll
+
+**Namespace:** CloudNimble.DotNetDocs.Core
+
+**Inheritance:** CloudNimble.DotNetDocs.Core.DocEntity
+
+## Syntax
+
+```csharp
+CloudNimble.DotNetDocs.Core.DocParameter
+```
+
+## Summary
+
+Represents documentation for a method or constructor parameter.
+
+## Remarks
+
+Contains metadata about a parameter, extracted from Roslyn symbols and enhanced
+            with conceptual documentation.
+
+## Constructors
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  .ctor
+
+Initializes a new instance of the [DocParameter](/api-reference/CloudNimble/DotNetDocs/Core/DocParameter) class.
+
+#### Syntax
+
+```csharp
+public DocParameter(Microsoft.CodeAnalysis.IParameterSymbol symbol)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `symbol` | `Microsoft.CodeAnalysis.IParameterSymbol` | The Roslyn parameter symbol. |
+
+#### Exceptions
+
+| Exception | Description |
+|-----------|-------------|
+| `ArgumentNullException` | Thrown when *symbol* is null. |
+
+## Properties
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  DefaultValue
+
+Gets the default value of the parameter, if any.
+
+#### Syntax
+
+```csharp
+public string DefaultValue { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+The default value as a string, or null if no default value exists.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  HasDefaultValue
+
+Gets or sets a value indicating whether this parameter has a default value.
+
+#### Syntax
+
+```csharp
+public bool HasDefaultValue { get; set; }
+```
+
+#### Property Value
+
+Type: `bool`
+True if the parameter has a default value; otherwise, false.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  IsOptional
+
+Gets or sets a value indicating whether this parameter is optional.
+
+#### Syntax
+
+```csharp
+public bool IsOptional { get; set; }
+```
+
+#### Property Value
+
+Type: `bool`
+True if the parameter is optional; otherwise, false.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  IsParams
+
+Gets or sets a value indicating whether this parameter uses the params keyword.
+
+#### Syntax
+
+```csharp
+public bool IsParams { get; set; }
+```
+
+#### Property Value
+
+Type: `bool`
+True if the parameter is a params array; otherwise, false.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Name
+
+Gets or sets the name of the parameter.
+
+#### Syntax
+
+```csharp
+public string Name { get; set; }
+```
+
+#### Property Value
+
+Type: `string`
+The parameter name.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  ParameterType
+
+Gets the parameter type documentation.
+
+#### Syntax
+
+```csharp
+public CloudNimble.DotNetDocs.Core.DocType ParameterType { get; set; }
+```
+
+#### Property Value
+
+Type: `CloudNimble.DotNetDocs.Core.DocType?`
+Documentation for the parameter's type.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Symbol
+
+Gets the Roslyn symbol for the parameter.
+
+#### Syntax
+
+```csharp
+public Microsoft.CodeAnalysis.IParameterSymbol Symbol { get; }
+```
+
+#### Property Value
+
+Type: `Microsoft.CodeAnalysis.IParameterSymbol`
+The underlying Roslyn parameter symbol containing metadata.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  TypeName
+
+Gets or sets the type name of the parameter.
+
+#### Syntax
+
+```csharp
+public string TypeName { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+The fully qualified type name of the parameter.
+

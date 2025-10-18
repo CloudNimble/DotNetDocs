@@ -69,7 +69,7 @@ namespace Mintlify.Core.Converters
                 default:
                     var valueType = value?.GetType();
                     var message = $"Unsupported navigation page value type: {valueType}";
-                    if (value != null)
+                    if (value is not null)
                     {
                         message += $"\nValue: {JsonSerializer.Serialize(value)}";
                         message += $"\nIs Anonymous: {valueType?.Name?.StartsWith("<>") ?? false}";

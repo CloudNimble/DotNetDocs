@@ -1,0 +1,131 @@
+---
+title: ClassWithMethods
+description: Shows different method signatures including async patterns
+icon: function
+---
+
+# ClassWithMethods Class
+
+<Note>
+  **Namespace**: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios  
+  **Assembly**: CloudNimble.DotNetDocs.Tests.Shared.dll
+</Note>
+
+## 📋 Definition
+
+```csharp
+public class ClassWithMethods
+```
+
+## 📝 Summary
+
+Demonstrates various method patterns including synchronous, asynchronous, generic, and overloaded methods.
+
+## 🎯 Members
+
+<Tabs>
+  <Tab title="Synchronous Methods">
+    ### SimpleMethod
+    
+    ```csharp
+    public void SimpleMethod()
+    ```
+    
+    Basic void method without parameters.
+    
+    ### MethodWithParameters
+    
+    ```csharp
+    public string MethodWithParameters(string input, int count)
+    ```
+    
+    Method with parameters and return value.
+    
+    ### MethodWithOptionalParameters
+    
+    ```csharp
+    public void MethodWithOptionalParameters(string required, int optional = 10)
+    ```
+    
+    Method demonstrating optional parameters.
+  </Tab>
+  
+  <Tab title="Async Methods">
+    ### AsyncMethod
+    
+    ```csharp
+    public async Task AsyncMethodAsync()
+    ```
+    
+    Asynchronous method returning Task.
+    
+    ### AsyncMethodWithResult
+    
+    ```csharp
+    public async Task`<string>` GetDataAsync()
+    ```
+    
+    Asynchronous method returning `Task<T>`.
+    
+    ### AsyncMethodWithCancellation
+    
+    ```csharp
+    public async Task ProcessAsync(CancellationToken cancellationToken)
+    ```
+    
+    Async method with cancellation support.
+  </Tab>
+  
+  <Tab title="Generic Methods">
+    ### GenericMethod
+    
+    ```csharp
+    public T GenericMethod<T>(T input)
+    ```
+    
+    Generic method with type parameter.
+    
+    ### ConstrainedGenericMethod
+    
+    ```csharp
+    public T Process<T>(T item) where T : class, new()
+    ```
+    
+    Generic method with type constraints.
+  </Tab>
+</Tabs>
+
+## 💡 Usage Examples
+
+<CodeGroup>
+  ```csharp Synchronous Usage
+  var instance = new ClassWithMethods();
+  
+  instance.SimpleMethod();
+  var result = instance.MethodWithParameters("test", 5);
+  instance.MethodWithOptionalParameters("required");
+  ```
+  
+  ```csharp Async Usage
+  var instance = new ClassWithMethods();
+  
+  // Fire and forget
+  await instance.AsyncMethodAsync();
+  
+  // Get result
+  var data = await instance.GetDataAsync();
+  
+  // With cancellation
+  using var cts = new CancellationTokenSource();
+  await instance.ProcessAsync(cts.Token);
+  ```
+  
+  ```csharp Generic Usage
+  var instance = new ClassWithMethods();
+  
+  var stringResult = instance.GenericMethod("test");
+  var intResult = instance.GenericMethod(42);
+  
+  var processed = instance.Process(new MyClass());
+  ```
+</CodeGroup>

@@ -1,0 +1,97 @@
+---
+title: JsonRenderer
+description: "Renders documentation as JSON files."
+icon: file-brackets-curly
+keywords: ['JsonRenderer', 'CloudNimble.DotNetDocs.Core.Renderers.JsonRenderer', 'CloudNimble.DotNetDocs.Core.Renderers', 'class', 'CloudNimble.DotNetDocs.Core.Renderers.RendererBase', 'CloudNimble.DotNetDocs.Core.IDocRenderer']
+---
+
+## Definition
+
+**Assembly:** CloudNimble.DotNetDocs.Core.dll
+
+**Namespace:** CloudNimble.DotNetDocs.Core.Renderers
+
+**Inheritance:** CloudNimble.DotNetDocs.Core.Renderers.RendererBase
+
+## Syntax
+
+```csharp
+CloudNimble.DotNetDocs.Core.Renderers.JsonRenderer
+```
+
+## Summary
+
+Renders documentation as JSON files.
+
+## Remarks
+
+Generates structured JSON documentation suitable for API consumption and integration
+            with documentation tools.
+
+## Constructors
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  .ctor
+
+Initializes a new instance of the [JsonRenderer](/api-reference/CloudNimble/DotNetDocs/Core/Renderers/JsonRenderer) class.
+
+#### Syntax
+
+```csharp
+public JsonRenderer(CloudNimble.DotNetDocs.Core.ProjectContext context = null, CloudNimble.DotNetDocs.Core.Renderers.JsonRendererOptions options = null)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `context` | `CloudNimble.DotNetDocs.Core.ProjectContext?` | The project context. If null, a default context is created. |
+| `options` | `CloudNimble.DotNetDocs.Core.Renderers.JsonRendererOptions?` | The rendering options. If null, default options are used. |
+
+## Methods
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  RenderAsync
+
+Renders the documentation assembly to JSON files.
+
+#### Syntax
+
+```csharp
+public System.Threading.Tasks.Task RenderAsync(CloudNimble.DotNetDocs.Core.DocAssembly model)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `model` | `CloudNimble.DotNetDocs.Core.DocAssembly` | The documentation assembly to render. |
+
+#### Returns
+
+Type: `System.Threading.Tasks.Task`
+A task representing the asynchronous rendering operation.
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  RenderPlaceholdersAsync
+
+Renders placeholder conceptual content files for the documentation assembly.
+
+#### Syntax
+
+```csharp
+public System.Threading.Tasks.Task RenderPlaceholdersAsync(CloudNimble.DotNetDocs.Core.DocAssembly model)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `model` | `CloudNimble.DotNetDocs.Core.DocAssembly` | The documentation assembly to generate placeholders for. |
+
+#### Returns
+
+Type: `System.Threading.Tasks.Task`
+A task representing the asynchronous placeholder rendering operation.
+
+## Related APIs
+
+- CloudNimble.DotNetDocs.Core.IDocRenderer
+

@@ -1,67 +1,120 @@
 ﻿<Project Sdk="Microsoft.Build.NoTargets/3.7.0">
 
     <PropertyGroup>
-        <TargetFramework>net10.0</TargetFramework>
+        <!-- SDK packages don't compile code -->
+        <TargetFramework>netstandard2.0</TargetFramework>
         <GenerateDocumentationFile>false</GenerateDocumentationFile>
-        <Description>
-            MSBuild SDK for DotNetDocs projects (.docsproj) - provides a clean way to include documentation in .NET
-            solutions
-        </Description>
+        <Description>The MSBuild SDK for documentation projects (.docsproj) that provides a clean way to include documentation in .NET solutions.</Description>
 
         <!-- This is an MSBuild SDK package -->
         <DevelopmentDependency>true</DevelopmentDependency>
         <PackageType>MSBuildSdk</PackageType>
-        <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 
         <!-- Suppress warnings about SDK packages -->
-        <NoWarn>$(NoWarn);NU5128;CS2008</NoWarn>
-
-        <!-- Don't include assemblies in package -->
-        <IncludeBuildOutput>false</IncludeBuildOutput>
-        <ContentTargetFolders>.</ContentTargetFolders>
-        <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+        <NoWarn>$(NoWarn);NU5128;CS2008;NU1701;NU5100</NoWarn>
+        
+        <!-- Don't create symbols package for SDK projects -->
+        <IncludeSymbols>false</IncludeSymbols>
+        
+        <!-- Suppress dependencies when packing -->
+        <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
     </PropertyGroup>
+
+    <ItemGroup>
+        <!-- Include Microsoft.Build.NoTargets for bundling its SDK files -->
+        <PackageReference Include="Microsoft.Build.NoTargets"
+                          Version="3.7.*"
+                          PrivateAssets="all"
+                          GeneratePathProperty="true" />
+    </ItemGroup>
 
     <ItemGroup>
         <!-- Pack the SDK files -->
         <None Include="Sdk\**" Pack="true" PackagePath="Sdk" />
         <None Include="build\**" Pack="true" PackagePath="build" />
+        
+        <!-- Include pre-built task assemblies directly (only during packaging) -->
+        <!-- .NET 8.0 tasks -->
+        <None Include="..\CloudNimble.DotNetDocs.Sdk.Tasks\bin\$(Configuration)\net8.0\*.dll"
+              Pack="true"
+              PackagePath="tasks\net8.0"
+              Visible="false" />
+              
+        <!-- .NET 9.0 tasks -->
+        <None Include="..\CloudNimble.DotNetDocs.Sdk.Tasks\bin\$(Configuration)\net9.0\*.dll"
+              Pack="true"
+              PackagePath="tasks\net9.0"
+              Visible="false" />
+              
+        <!-- .NET 10.0 tasks -->
+        <None Include="..\CloudNimble.DotNetDocs.Sdk.Tasks\bin\$(Configuration)\net10.0\*.dll"
+              Pack="true"
+              PackagePath="tasks\net10.0"
+              Visible="false" />
+              
+        <!-- .NET Framework 4.7.2 tasks -->
+        <None Include="..\CloudNimble.DotNetDocs.Sdk.Tasks\bin\$(Configuration)\net472\*.dll"
+              Pack="true"
+              PackagePath="tasks\net472"
+              Visible="false" />
     </ItemGroup>
+    
+    <!-- Build the tasks project before packing this SDK (but not when NoBuild is set) -->
+    <Target Name="BuildTasksProject" BeforeTargets="Pack" Condition="'$(NoBuild)' != 'true'">
+        <MSBuild Projects="..\CloudNimble.DotNetDocs.Sdk.Tasks\CloudNimble.DotNetDocs.Sdk.Tasks.csproj"
+                 Targets="Build"
+                 Properties="Configuration=$(Configuration)" />
+        <Message Text="Built CloudNimble.DotNetDocs.Sdk.Tasks" Importance="high" />
+    </Target>
 
-    <!-- Copy Microsoft.Build.NoTargets SDK files during build -->
-    <Target Name="CopyNoTargetsSDK" AfterTargets="Build">
+    <!-- When NoBuild is set, verify task assemblies exist from previous build -->
+    <Target Name="VerifyTaskAssemblies" BeforeTargets="Pack" Condition="'$(NoBuild)' == 'true'">
+        <ItemGroup>
+            <RequiredTaskFiles Include="..\CloudNimble.DotNetDocs.Sdk.Tasks\bin\$(Configuration)\**\*.dll" />
+        </ItemGroup>
+
+        <Error Text="Task assemblies not found in bin folder. The Tasks project must be built before packing the SDK with --no-build."
+               Condition="!Exists('@(RequiredTaskFiles)')" />
+
+        <Message Text="Using pre-built task assemblies from bin folder (NoBuild=true)" Importance="high" />
+    </Target>
+
+    <!-- Automatically push SDK package to local feed after pack -->
+    <Target Name="PushToLocalFeed" AfterTargets="Pack" Condition="'$(Configuration)' == 'Release' or '$(Configuration)' == 'Debug'">
+        <PropertyGroup>
+            <!-- Use LOCAL_NUGET_FEED env var if set, otherwise use default local path -->
+            <LocalFeedPath Condition="'$(LOCAL_NUGET_FEED)' != ''">$([System.IO.Path]::GetFullPath('$(LOCAL_NUGET_FEED)'))</LocalFeedPath>
+            <LocalFeedPath Condition="'$(LOCAL_NUGET_FEED)' == ''">$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\..\local-nuget-feed'))</LocalFeedPath>
+            <PackageOutputPath>$(MSBuildProjectDirectory)\bin\$(Configuration)\$(PackageId).$(PackageVersion).nupkg</PackageOutputPath>
+        </PropertyGroup>
+        
+        <!-- Create local feed directory if it doesn't exist -->
+        <MakeDir Directories="$(LocalFeedPath)" />
+        
+        <!-- Push the package to local feed -->
+        <Exec Command="dotnet nuget push &quot;$(PackageOutputPath)&quot; --source &quot;$(LocalFeedPath)&quot; --skip-duplicate"
+              ContinueOnError="true"
+              ConsoleToMSBuild="true">
+            <Output TaskParameter="ExitCode" PropertyName="ErrorCode" />
+        </Exec>
+        
+        <Message Text="📦 Pushed $(PackageId).$(PackageVersion) to local feed at $(LocalFeedPath)" Importance="high" Condition="'$(ErrorCode)' == '0'" />
+        <Message Text="⚠️ Package already exists in local feed or push failed (this is OK for local development)" Importance="normal" Condition="'$(ErrorCode)' != '0'" />
+    </Target>
+
+    <!-- Include NoTargets SDK files directly from package in NuGet -->
+    <Target Name="IncludeNoTargetsInPackage" BeforeTargets="GenerateNuspec">
         <PropertyGroup>
             <NoTargetsSourcePath>$(PkgMicrosoft_Build_NoTargets)\Sdk</NoTargetsSourcePath>
-            <NoTargetsDestPath>$(MSBuildProjectDirectory)\Sdk\NoTargets</NoTargetsDestPath>
         </PropertyGroup>
-
-        <Message Text="Copying NoTargets SDK from $(NoTargetsSourcePath) to $(NoTargetsDestPath)" Importance="high" />
-
-        <!-- Create the directory -->
-        <MakeDir Directories="$(NoTargetsDestPath)" />
-
-        <!-- Copy the files -->
+        
         <ItemGroup>
             <NoTargetsFiles Include="$(NoTargetsSourcePath)\**\*" />
+            <None Include="@(NoTargetsFiles)" Pack="true" PackagePath="Sdk\NoTargets\%(RecursiveDir)%(Filename)%(Extension)" />
         </ItemGroup>
-
-        <Copy SourceFiles="@(NoTargetsFiles)"
-		      DestinationFiles="@(NoTargetsFiles->'$(NoTargetsDestPath)\%(RecursiveDir)%(Filename)%(Extension)')"
-		      SkipUnchangedFiles="true" />
+        
+        <Message Text="Including NoTargets SDK files in package from $(NoTargetsSourcePath)" Importance="normal" />
     </Target>
-
-    <!-- Include the NoTargets files in the package after they're copied -->
-    <Target Name="IncludeNoTargetsInPackage" DependsOnTargets="CopyNoTargetsSDK" BeforeTargets="GenerateNuspec">
-        <ItemGroup>
-            <None Include="Sdk\NoTargets\**" Pack="true" PackagePath="Sdk\NoTargets" />
-        </ItemGroup>
-    </Target>
-
-    <ItemGroup>
-        <!-- Include Microsoft.Build.NoTargets for bundling its SDK files -->
-        <PackageReference Include="Microsoft.Build.NoTargets" Version="3.7.0"
-		                  PrivateAssets="all"
-		                  GeneratePathProperty="true" />
-    </ItemGroup>
 
 </Project>

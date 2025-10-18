@@ -1,0 +1,265 @@
+---
+title: Diagrams Demo
+description: Visualize relationships with Mermaid diagrams
+icon: diagram-project
+---
+
+# Mermaid Diagrams Demo
+
+<Note>
+  Mermaid diagrams provide visual representations of inheritance hierarchies, relationships, workflows, and architecture.
+</Note>
+
+## 🏗️ Class Inheritance Diagram
+
+```mermaid
+classDiagram
+    class IDisposable {
+        <<interface>>
+        +Dispose() void
+    }
+    
+    class IAsyncDisposable {
+        <<interface>>
+        +DisposeAsync() ValueTask
+    }
+    
+    class BaseService {
+        <<abstract>>
+        #logger ILogger
+        #configuration IConfiguration
+        +Initialize() void
+        +ProcessAsync()* Task
+    }
+    
+    class DataService {
+        -repository IRepository
+        +GetDataAsync(id) Task~T~
+        +SaveDataAsync(data) Task
+        +ProcessAsync() Task
+    }
+    
+    class CachedDataService {
+        -cache IMemoryCache
+        +GetDataAsync(id) Task~T~
+        +InvalidateCache() void
+    }
+    
+    IDisposable <|.. BaseService : implements
+    IAsyncDisposable <|.. BaseService : implements
+    BaseService <|-- DataService : inherits
+    DataService <|-- CachedDataService : inherits
+    
+    style IDisposable fill:#ddd6fe,stroke:#7c3aed
+    style IAsyncDisposable fill:#ddd6fe,stroke:#7c3aed
+    style BaseService fill:#bfdbfe,stroke:#3b82f6
+    style DataService fill:#bbf7d0,stroke:#10b981
+    style CachedDataService fill:#fed7aa,stroke:#f97316
+```
+
+## 🔄 State Machine Diagram
+
+```mermaid
+stateDiagram-v2
+    [*] --> Idle
+    Idle --> Initializing : Start()
+    Initializing --> Ready : InitComplete
+    Initializing --> Failed : InitError
+    
+    Ready --> Processing : Process()
+    Processing --> Ready : Success
+    Processing --> Failed : Error
+    Processing --> Processing : Retry
+    
+    Ready --> Stopping : Stop()
+    Failed --> Stopping : Stop()
+    Processing --> Stopping : Cancel()
+    
+    Stopping --> Stopped : CleanupComplete
+    Stopped --> [*]
+    
+    Failed --> Initializing : Reset()
+```
+
+## 📊 Sequence Diagram
+
+```mermaid
+sequenceDiagram
+    participant Client
+    participant API
+    participant Service
+    participant Database
+    participant Cache
+    
+    Client->>API: POST /data
+    API->>API: Validate Request
+    
+    API->>Cache: Check Cache
+    Cache-->>API: Cache Miss
+    
+    API->>Service: ProcessData(data)
+    Service->>Database: Query Existing
+    Database-->>Service: Results
+    
+    Service->>Service: Transform Data
+    Service->>Database: Save Data
+    Database-->>Service: Success
+    
+    Service->>Cache: Update Cache
+    Cache-->>Service: Cached
+    
+    Service-->>API: Result
+    API-->>Client: 200 OK
+```
+
+## 🌊 Flowchart
+
+```mermaid
+flowchart TD
+    Start([Start]) --> Input[/Receive Request/]
+    Input --> Validate{Valid?}
+    
+    Validate -->|No| Error[Return Error]
+    Error --> End([End])
+    
+    Validate -->|Yes| CheckCache{In Cache?}
+    CheckCache -->|Yes| ReturnCache[Return Cached]
+    ReturnCache --> End
+    
+    CheckCache -->|No| Process[Process Request]
+    Process --> CheckDB{Exists in DB?}
+    
+    CheckDB -->|Yes| Update[Update Record]
+    CheckDB -->|No| Create[Create Record]
+    
+    Update --> SaveCache[Save to Cache]
+    Create --> SaveCache
+    
+    SaveCache --> Success[Return Success]
+    Success --> End
+```
+
+## 🗂️ Entity Relationship Diagram
+
+```mermaid
+erDiagram
+    User ||--o{ Order : places
+    User {
+        int Id PK
+        string Email UK
+        string Name
+        DateTime CreatedAt
+    }
+    
+    Order ||--|{ OrderItem : contains
+    Order {
+        int Id PK
+        int UserId FK
+        decimal Total
+        string Status
+        DateTime OrderDate
+    }
+    
+    Product ||--o{ OrderItem : "ordered in"
+    Product {
+        int Id PK
+        string Name
+        decimal Price
+        int Stock
+        bool IsActive
+    }
+    
+    OrderItem {
+        int Id PK
+        int OrderId FK
+        int ProductId FK
+        int Quantity
+        decimal UnitPrice
+    }
+    
+    Category ||--o{ Product : categorizes
+    Category {
+        int Id PK
+        string Name
+        string Description
+    }
+```
+
+## 🎯 Gantt Chart
+
+```mermaid
+gantt
+    title Project Timeline
+    dateFormat YYYY-MM-DD
+    
+    section Planning
+    Requirements Analysis    :done,    des1, 2024-01-01, 7d
+    Architecture Design      :done,    des2, after des1, 5d
+    
+    section Development
+    Core Implementation      :active,  dev1, 2024-01-15, 14d
+    API Development         :         dev2, after dev1, 10d
+    UI Implementation       :         dev3, after dev1, 12d
+    
+    section Testing
+    Unit Tests              :         test1, after dev1, 5d
+    Integration Tests       :         test2, after dev2, 5d
+    User Acceptance Testing :         test3, after dev3, 7d
+    
+    section Deployment
+    Staging Deployment      :         dep1, after test3, 2d
+    Production Release      :         dep2, after dep1, 1d
+```
+
+## 🥧 Pie Chart
+
+```mermaid
+pie title Code Distribution
+    "C# Code" : 45
+    "Tests" : 25
+    "Documentation" : 15
+    "Configuration" : 10
+    "Scripts" : 5
+```
+
+## 🔀 Git Graph
+
+```mermaid
+gitGraph
+    commit id: "Initial commit"
+    
+    branch develop
+    checkout develop
+    commit id: "Add core features"
+    commit id: "Implement API"
+    
+    branch feature/auth
+    checkout feature/auth
+    commit id: "Add authentication"
+    commit id: "Add authorization"
+    
+    checkout develop
+    merge feature/auth
+    
+    branch feature/ui
+    checkout feature/ui
+    commit id: "Create UI components"
+    commit id: "Add styling"
+    
+    checkout develop
+    merge feature/ui
+    
+    checkout main
+    merge develop tag: "v1.0.0"
+    
+    checkout develop
+    commit id: "Start v2.0 development"
+```
+
+<Info>
+  **Pro Tip**: Mermaid diagrams are rendered dynamically and support dark mode automatically. They're perfect for visualizing complex relationships in your API documentation.
+</Info>
+
+<Tip>
+  Keep diagrams focused and simple. Complex diagrams can be broken down into multiple smaller, more digestible visualizations.
+</Tip>

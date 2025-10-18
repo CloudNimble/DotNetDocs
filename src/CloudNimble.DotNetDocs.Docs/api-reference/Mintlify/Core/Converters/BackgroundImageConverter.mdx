@@ -1,0 +1,111 @@
+---
+title: BackgroundImageConverter
+description: "Handles JSON conversion for background image properties that can be either strings or objects."
+icon: file-brackets-curly
+keywords: ['BackgroundImageConverter', 'Mintlify.Core.Converters.BackgroundImageConverter', 'Mintlify.Core.Converters', 'class', 'System.Text.Json.Serialization.JsonConverter<Mintlify.Core.Models.BackgroundImageConfig>']
+---
+
+## Definition
+
+**Assembly:** Mintlify.Core.dll
+
+**Namespace:** Mintlify.Core.Converters
+
+**Inheritance:** System.Text.Json.Serialization.JsonConverter&lt;Mintlify.Core.Models.BackgroundImageConfig&gt;
+
+## Syntax
+
+```csharp
+Mintlify.Core.Converters.BackgroundImageConverter
+```
+
+## Summary
+
+Handles JSON conversion for background image properties that can be either strings or objects.
+
+## Remarks
+
+Background image configurations in Mintlify can be specified as:
+            - String: Single image URL (e.g., "https://example.com/image.png")
+            - Object: Light/dark mode specific images with "light" and "dark" properties
+
+## Constructors
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  .ctor
+
+#### Syntax
+
+```csharp
+public BackgroundImageConverter()
+```
+
+## Methods
+
+### <Icon icon="code-merge" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  CanConvert
+
+Determines whether the specified type can be converted by this converter.
+
+#### Syntax
+
+```csharp
+public override bool CanConvert(System.Type typeToConvert)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `typeToConvert` | `System.Type` | The type to convert. |
+
+#### Returns
+
+Type: `bool`
+True if the type is BackgroundImageConfig; otherwise, false.
+
+### <Icon icon="code-merge" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Read
+
+Reads and converts the JSON to a BackgroundImageConfig object.
+
+#### Syntax
+
+```csharp
+public override Mintlify.Core.Models.BackgroundImageConfig Read(ref System.Text.Json.Utf8JsonReader reader, System.Type typeToConvert, System.Text.Json.JsonSerializerOptions options)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `reader` | `System.Text.Json.Utf8JsonReader` | The JSON reader. |
+| `typeToConvert` | `System.Type` | The type to convert to. |
+| `options` | `System.Text.Json.JsonSerializerOptions` | The serializer options. |
+
+#### Returns
+
+Type: `Mintlify.Core.Models.BackgroundImageConfig?`
+A BackgroundImageConfig for both simple URLs and theme-specific configurations.
+
+#### Exceptions
+
+| Exception | Description |
+|-----------|-------------|
+| `JsonException` | Thrown when the JSON token type is not supported. |
+
+### <Icon icon="code-merge" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Write
+
+Writes the BackgroundImageConfig object to JSON.
+
+#### Syntax
+
+```csharp
+public override void Write(System.Text.Json.Utf8JsonWriter writer, Mintlify.Core.Models.BackgroundImageConfig value, System.Text.Json.JsonSerializerOptions options)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `writer` | `System.Text.Json.Utf8JsonWriter` | The JSON writer. |
+| `value` | `Mintlify.Core.Models.BackgroundImageConfig?` | The BackgroundImageConfig value to write. |
+| `options` | `System.Text.Json.JsonSerializerOptions` | The serializer options. |
+

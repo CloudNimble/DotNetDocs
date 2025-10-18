@@ -1,0 +1,161 @@
+---
+title: Callouts Demo
+description: Highlight important information with callout components
+icon: circle-info
+---
+
+# Callouts & Alerts Demo
+
+<Note>
+  Callouts draw attention to important information, warnings, tips, and other key details in your documentation.
+</Note>
+
+## 📢 All Callout Types
+
+### Note - General Information
+
+<Note>
+  This is a **Note** callout. Use it for general information that supplements the main content. Notes provide additional context without being critical to understanding.
+</Note>
+
+### Info - Additional Context
+
+<Info>
+  This is an **Info** callout. It provides supplementary information that enhances understanding. Perfect for "did you know" content or additional details.
+</Info>
+
+### Tip - Best Practices
+
+<Tip>
+  This is a **Tip** callout. Share best practices, recommendations, and helpful suggestions. Tips help users work more efficiently.
+</Tip>
+
+### Warning - Important Cautions
+
+<Warning>
+  This is a **Warning** callout. Alert users to potential issues, deprecated features, or important considerations. Warnings prevent problems before they occur.
+</Warning>
+
+### Check - Success Confirmation
+
+<Check>
+  This is a **Check** callout. Confirm successful operations, completed steps, or validate that requirements are met. Great for verification checkpoints.
+</Check>
+
+## 🔐 Security Callouts
+
+<Warning>
+  **Security Warning**: Never commit sensitive information like API keys, passwords, or connection strings to source control.
+</Warning>
+
+<Tip>
+  **Security Best Practice**: Always use environment variables or secure configuration providers for sensitive data:
+  ```csharp
+  var apiKey = Environment.GetEnvironmentVariable("API_KEY");
+  ```
+</Tip>
+
+<Check>
+  **Security Validation**: All input is properly sanitized and validated before processing.
+</Check>
+
+## ⚡ Performance Callouts
+
+<Info>
+  **Performance Info**: This operation uses lazy loading, meaning data is only fetched when accessed for the first time.
+</Info>
+
+<Tip>
+  **Performance Tip**: For better performance with large collections, use `IAsyncEnumerable` instead of loading all items into memory:
+  ```csharp
+  await foreach (var item in GetItemsAsync())
+  {
+      await ProcessItemAsync(item);
+  }
+  ```
+</Tip>
+
+<Warning>
+  **Performance Warning**: This method performs database queries in a loop. Consider using batch operations or includes to reduce database round trips.
+</Warning>
+
+## 🔄 Version Compatibility
+
+<Note>
+  **Compatibility Note**: This API is available in .NET 6.0 and later versions.
+</Note>
+
+<Warning>
+  **Breaking Change**: This method signature has changed in version 2.0. The old overload is marked as obsolete and will be removed in version 3.0.
+</Warning>
+
+<Info>
+  **Migration Path**: To migrate from v1.x to v2.x:
+  1. Update package references
+  2. Replace deprecated methods
+  3. Run migration tool
+  4. Test thoroughly
+</Info>
+
+## 🐛 Common Issues
+
+<Warning>
+  **Common Pitfall**: Forgetting to dispose of `IDisposable` objects can lead to memory leaks. Always use `using` statements:
+  ```csharp
+  using var stream = new FileStream(path, FileMode.Open);
+  // Stream is automatically disposed
+  ```
+</Warning>
+
+<Tip>
+  **Debugging Tip**: Enable detailed logging to troubleshoot issues:
+  ```csharp
+  builder.Logging.SetMinimumLevel(LogLevel.Debug);
+  ```
+</Tip>
+
+<Note>
+  **Known Issue**: On Linux systems, file paths are case-sensitive. Ensure your code handles path comparisons appropriately.
+</Note>
+
+## ✅ Setup Verification
+
+<Check>
+  ✓ Package installed successfully  
+  ✓ Configuration file created  
+  ✓ Database connection established  
+  ✓ All tests passing  
+  ✓ Ready for development!
+</Check>
+
+## 🎨 Combining Callouts
+
+You can combine different callout types to create comprehensive documentation:
+
+<Note>
+  The following example demonstrates async file processing.
+</Note>
+
+```csharp
+public async Task ProcessFileAsync(string path)
+{
+    using var stream = File.OpenRead(path);
+    await ProcessStreamAsync(stream);
+}
+```
+
+<Warning>
+  This method does not check if the file exists before attempting to open it.
+</Warning>
+
+<Tip>
+  Add file existence validation for production use:
+  ```csharp
+  if (!File.Exists(path))
+      throw new FileNotFoundException($"File not found: {path}");
+  ```
+</Tip>
+
+<Info>
+  **Best Practice**: Callouts should be used sparingly to maintain their effectiveness. Too many callouts can overwhelm readers.
+</Info>

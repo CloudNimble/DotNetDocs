@@ -1,6 +1,6 @@
 <Project>
     <!-- ============================================================================
-       CloudNimble.Build.Documentation SDK - Props
+       CloudNimble.DotNer SDK - Props
        
        Provides MSBuild SDK support for documentation projects (.docsproj)
        Enables documentation files to be included in Visual Studio solutions
@@ -12,12 +12,21 @@
         <IsDocumentationProject>true</IsDocumentationProject>
         <UsingDotNetDocsSdk>true</UsingDotNetDocsSdk>
 
+        <!-- Project Type GUID for solution files - identifies as C# project type -->
+        <!-- This allows dotnet sln add to correctly add .docsproj files to solutions -->
+        <DefaultProjectTypeGuid>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</DefaultProjectTypeGuid>
+
         <!-- Inherit from NoTargets SDK for no-compile behavior -->
         <UsingMicrosoftNoTargetsSdk>true</UsingMicrosoftNoTargetsSdk>
 
         <!-- Default target framework -->
         <TargetFramework Condition="'$(TargetFramework)' == ''">net8.0</TargetFramework>
-
+        
+        <!-- Suppress all NuGet warnings about vulnerable packages and framework references -->
+        <NoWarn>$(NoWarn);NU1903;NU1902;NU1901;NU1604;NU1603;NU1605</NoWarn>
+        <WarningsNotAsErrors>$(WarningsNotAsErrors);NU1903;NU1902;NU1901;NU1604;NU1603;NU1605</WarningsNotAsErrors>
+        <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+        
         <!-- Disable packaging and publishing by default -->
         <IsPackable Condition="'$(IsPackable)' == ''">false</IsPackable>
         <IsPublishable Condition="'$(IsPublishable)' == ''">false</IsPublishable>
@@ -37,28 +46,52 @@
         <DocumentationType Condition="'$(DocumentationType)' == '' AND Exists('$(DocumentationRoot)hugo.toml')">Hugo</DocumentationType>
         <DocumentationType Condition="'$(DocumentationType)' == ''">Generic</DocumentationType>
 
-        <!-- Output redirection - keep documentation folders clean -->
-        <KeepLocalOutput Condition="'$(KeepLocalOutput)' == ''">false</KeepLocalOutput>
+        <!-- Default output paths for generated documentation -->
+        <ApiReferencePath Condition="'$(ApiReferencePath)' == '' AND '$(DocumentationType)' == 'Mintlify'">api-reference</ApiReferencePath>
+        <ApiReferencePath Condition="'$(ApiReferencePath)' == ''">api-reference</ApiReferencePath>
+        <ConceptualPath Condition="'$(ConceptualPath)' == ''">conceptual</ConceptualPath>
+
+        <!-- Default namespace mode for documentation generation -->
+        <NamespaceMode Condition="'$(NamespaceMode)' == ''">Folder</NamespaceMode>
+
+        <!-- Mintlify-specific configuration -->
+        <MintlifyNavigationMode Condition="'$(MintlifyNavigationMode)' == '' AND '$(DocumentationType)' == 'Mintlify'">Unified</MintlifyNavigationMode>
+        <MintlifyUnifiedGroupName Condition="'$(MintlifyUnifiedGroupName)' == '' AND '$(DocumentationType)' == 'Mintlify'">API Reference</MintlifyUnifiedGroupName>
+        <!-- Optional path to external docs.json template (auto-detect if exists) -->
+        <DocsJsonTemplatePath Condition="'$(DocsJsonTemplatePath)' == '' AND '$(DocumentationType)' == 'Mintlify' AND Exists('$(DocumentationRoot)docs-template.json')">$(DocumentationRoot)docs-template.json</DocsJsonTemplatePath>
 
         <!-- Solution name for temp paths -->
         <_SolutionName Condition="'$(SolutionName)' != ''">$(SolutionName)</_SolutionName>
         <_SolutionName Condition="'$(SolutionName)' == '' AND '$(SolutionFileName)' != ''">$([System.IO.Path]::GetFileNameWithoutExtension('$(SolutionFileName)'))</_SolutionName>
         <_SolutionName Condition="'$(_SolutionName)' == ''">Documentation</_SolutionName>
 
-        <!-- Redirect output to temp unless explicitly keeping local -->
-        <BaseIntermediateOutputPath Condition="'$(KeepLocalOutput)' != 'true' AND '$(BaseIntermediateOutputPath)' == ''">$([System.IO.Path]::GetTempPath())$(_SolutionName)\$(MSBuildProjectName)\obj\</BaseIntermediateOutputPath>
-        <BaseOutputPath Condition="'$(KeepLocalOutput)' != 'true' AND '$(BaseOutputPath)' == ''">$([System.IO.Path]::GetTempPath())$(_SolutionName)\$(MSBuildProjectName)\bin\</BaseOutputPath>
-        <IntermediateOutputPath Condition="'$(KeepLocalOutput)' != 'true'">$(BaseIntermediateOutputPath)</IntermediateOutputPath>
-        <OutputPath Condition="'$(KeepLocalOutput)' != 'true'">$(BaseOutputPath)</OutputPath>
-        <MSBuildProjectExtensionsPath Condition="'$(KeepLocalOutput)' != 'true'">$(BaseIntermediateOutputPath)</MSBuildProjectExtensionsPath>
+        <!-- Redirect output to temp to keep documentation folders clean -->
+        <BaseIntermediateOutputPath Condition="'$(BaseIntermediateOutputPath)' == ''">$([System.IO.Path]::GetTempPath())$(_SolutionName)\$(MSBuildProjectName)\obj\</BaseIntermediateOutputPath>
+        <BaseOutputPath Condition="'$(BaseOutputPath)' == ''">$([System.IO.Path]::GetTempPath())$(_SolutionName)\$(MSBuildProjectName)\bin\</BaseOutputPath>
+        <IntermediateOutputPath>$(BaseIntermediateOutputPath)</IntermediateOutputPath>
+        <OutputPath>$(BaseOutputPath)</OutputPath>
+        <MSBuildProjectExtensionsPath>$(BaseIntermediateOutputPath)</MSBuildProjectExtensionsPath>
     </PropertyGroup>
 
     <!-- Import the NoTargets SDK props for no-compile behavior -->
     <!-- NoTargets SDK files are bundled in the Sdk/NoTargets folder -->
-    <Import Project="$(MSBuildThisFileDirectory)NoTargets\Sdk.props" />
-
+    <!-- First try the local NoTargets folder (for packaged SDK) -->
+    <Import Project="$(MSBuildThisFileDirectory)NoTargets\Sdk.props" 
+            Condition="Exists('$(MSBuildThisFileDirectory)NoTargets\Sdk.props')" />
+    
+    <!-- Fallback: Try common NuGet package locations if local doesn't exist -->
+    <PropertyGroup Condition="!Exists('$(MSBuildThisFileDirectory)NoTargets\Sdk.props')">
+        <!-- Try standard NuGet cache location -->
+        <_NoTargetsFallbackPath>$(UserProfile)\.nuget\packages\microsoft.build.notargets\3.7.0\Sdk\Sdk.props</_NoTargetsFallbackPath>
+        <!-- For CI environments that might use different cache -->
+        <_NoTargetsFallbackPath Condition="!Exists('$(_NoTargetsFallbackPath)')">$(NuGetPackageRoot)microsoft.build.notargets\3.7.0\Sdk\Sdk.props</_NoTargetsFallbackPath>
+    </PropertyGroup>
+    
+    <!-- Import from NuGet cache if found -->
+    <Import Project="$(_NoTargetsFallbackPath)" 
+            Condition="!Exists('$(MSBuildThisFileDirectory)NoTargets\Sdk.props') and Exists('$(_NoTargetsFallbackPath)')" />
+    
     <!-- Advanced Feature 2: Auto-Include Patterns by Documentation Type -->
-
     <!-- Common files for all documentation types -->
     <ItemGroup>
         <None Include="$(DocumentationRoot)README.md" Condition="Exists('$(DocumentationRoot)README.md')" />
@@ -73,15 +106,13 @@
         <None Include="$(DocumentationRoot)**/*.mdz" />
         <None Include="$(DocumentationRoot)**/*.mdx" />
         <None Include="$(DocumentationRoot)**/*.md" />
-        <None Include="$(DocumentationRoot)mint.json" />
         <None Include="$(DocumentationRoot)api-reference/**/*" />
         <None Include="$(DocumentationRoot)conceptual/**/*" />
         <None Include="$(DocumentationRoot)overrides/**/*" />
         <None Include="$(DocumentationRoot)guides/**/*" />
-        <None Include="$(DocumentationRoot)logo/**/*" />
-        <None Include="$(DocumentationRoot)favicon.*" />
-        <None Include="$(DocumentationRoot)**/*.yml" />
-        <None Include="$(DocumentationRoot)**/*.yaml" />
+        <None Include="$(DocumentationRoot)images/**/*" />
+		<None Include="$(DocumentationRoot)favicon.*" />
+		<None Include="$(DocumentationRoot)snippets/**/*" />
     </ItemGroup>
 
     <!-- DocFX-specific files -->

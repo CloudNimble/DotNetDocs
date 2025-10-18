@@ -19,9 +19,8 @@ namespace CloudNimble.DotNetDocs.Core
         /// Enriches a documentation entity with additional conceptual content.
         /// </summary>
         /// <param name="entity">The documentation entity to enrich.</param>
-        /// <param name="context">The project context providing configuration and paths for enrichment.</param>
         /// <returns>A task representing the asynchronous enrichment operation.</returns>
-        Task EnrichAsync(DocEntity entity, ProjectContext context);
+        Task EnrichAsync(DocEntity entity);
 
         #endregion
 

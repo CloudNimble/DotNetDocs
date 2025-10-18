@@ -1,0 +1,109 @@
+---
+title: Cards Demo
+description: Visual organization with cards and card groups
+icon: grid-2
+---
+
+# Cards & CardGroups Demo
+
+<Note>
+  Cards are perfect for organizing types, namespaces, and creating visual hierarchy in your documentation.
+</Note>
+
+## 📦 Basic Cards
+
+<CardGroup cols={3}>
+  <Card title="Simple Card" icon="cube">
+    Basic card with title and icon
+  </Card>
+  
+  <Card title="Colored Card" icon="palette" color="#7c3aed">
+    Card with custom color
+  </Card>
+  
+  <Card title="Linked Card" icon="link" href="/introduction">
+    Card that links to another page
+  </Card>
+</CardGroup>
+
+## 🎨 Cards for C# Types
+
+<CardGroup cols={2}>
+  <Card 
+    title="StringBuilder" 
+    icon="text"
+    color="#10b981"
+  >
+    **Class** • `System.Text`
+    
+    Represents a mutable string of characters. This class cannot be inherited.
+    
+    - **Thread-Safe**: No
+    - **Sealed**: Yes
+    - **Performance**: High
+  </Card>
+  
+  <Card 
+    title="IEnumerable<T>" 
+    icon="rotate"
+    color="#f59e0b"
+  >
+    **Interface** • `System.Collections.Generic`
+    
+    Exposes the enumerator, which supports iteration over a collection.
+    
+    - **Generic**: Yes
+    - **Covariant**: Yes
+    - **LINQ**: Supported
+  </Card>
+</CardGroup>
+
+## 🗂️ Namespace Organization
+
+<CardGroup cols={3}>
+  <Card title="System" icon="folder-tree">
+    Core .NET types
+    
+    **150+ Types**
+  </Card>
+  
+  <Card title="System.Collections" icon="layer-group">
+    Collection classes
+    
+    **45+ Types**
+  </Card>
+  
+  <Card title="System.Threading" icon="rotate">
+    Threading utilities
+    
+    **80+ Types**
+  </Card>
+  
+  <Card title="System.IO" icon="file">
+    File operations
+    
+    **60+ Types**
+  </Card>
+  
+  <Card title="System.Linq" icon="filter">
+    LINQ operations
+    
+    **25+ Types**
+  </Card>
+  
+  <Card title="System.Text" icon="text">
+    Text processing
+    
+    **30+ Types**
+  </Card>
+</CardGroup>
+
+## 💡 Best Practices
+
+<Info>
+  Use cards to create visual separation between different categories of content, making it easier for users to scan and find what they need.
+</Info>
+
+<Check>
+  Cards automatically adjust their layout based on screen size, ensuring a responsive design across all devices.
+</Check>

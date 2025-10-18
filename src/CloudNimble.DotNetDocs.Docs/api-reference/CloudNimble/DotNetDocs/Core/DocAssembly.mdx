@@ -1,0 +1,116 @@
+---
+title: DocAssembly
+description: "Represents documentation for a .NET assembly."
+icon: file-brackets-curly
+keywords: ['DocAssembly', 'CloudNimble.DotNetDocs.Core.DocAssembly', 'CloudNimble.DotNetDocs.Core', 'class', 'CloudNimble.DotNetDocs.Core.DocEntity']
+---
+
+## Definition
+
+**Assembly:** CloudNimble.DotNetDocs.Core.dll
+
+**Namespace:** CloudNimble.DotNetDocs.Core
+
+**Inheritance:** CloudNimble.DotNetDocs.Core.DocEntity
+
+## Syntax
+
+```csharp
+CloudNimble.DotNetDocs.Core.DocAssembly
+```
+
+## Summary
+
+Represents documentation for a .NET assembly.
+
+## Remarks
+
+Contains metadata about an assembly and its namespaces, extracted from Roslyn symbols and enhanced
+            with conceptual documentation.
+
+## Constructors
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  .ctor
+
+Initializes a new instance of the [DocAssembly](/api-reference/CloudNimble/DotNetDocs/Core/DocAssembly) class.
+
+#### Syntax
+
+```csharp
+public DocAssembly(Microsoft.CodeAnalysis.IAssemblySymbol symbol)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `symbol` | `Microsoft.CodeAnalysis.IAssemblySymbol` | The Roslyn assembly symbol. |
+
+#### Exceptions
+
+| Exception | Description |
+|-----------|-------------|
+| `ArgumentNullException` | Thrown when *symbol* is null. |
+
+## Properties
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  AssemblyName
+
+Gets or sets the name of the assembly.
+
+#### Syntax
+
+```csharp
+public string AssemblyName { get; set; }
+```
+
+#### Property Value
+
+Type: `string`
+The assembly name.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Namespaces
+
+Gets the collection of namespaces in the assembly.
+
+#### Syntax
+
+```csharp
+public System.Collections.Generic.List<CloudNimble.DotNetDocs.Core.DocNamespace> Namespaces { get; }
+```
+
+#### Property Value
+
+Type: `System.Collections.Generic.List<CloudNimble.DotNetDocs.Core.DocNamespace>`
+List of documented namespaces within this assembly.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Symbol
+
+Gets the Roslyn symbol for the assembly.
+
+#### Syntax
+
+```csharp
+public Microsoft.CodeAnalysis.IAssemblySymbol Symbol { get; }
+```
+
+#### Property Value
+
+Type: `Microsoft.CodeAnalysis.IAssemblySymbol`
+The underlying Roslyn assembly symbol containing metadata.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Version
+
+Gets or sets the version of the assembly.
+
+#### Syntax
+
+```csharp
+public string Version { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+The assembly version string.
+

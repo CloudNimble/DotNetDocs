@@ -1,0 +1,221 @@
+---
+title: Accordions Demo
+description: Collapsible sections for progressive disclosure
+icon: bars
+---
+
+# Accordions & Expandables Demo
+
+<Note>
+  Accordions are perfect for organizing detailed information that users can explore on demand, reducing visual clutter while keeping content accessible.
+</Note>
+
+## 📚 Basic Accordions
+
+<Accordion title="What is an Accordion?">
+  An accordion is a UI component that allows users to expand and collapse content sections. It's ideal for:
+  - FAQ sections
+  - Detailed documentation
+  - Method overloads
+  - Complex property descriptions
+</Accordion>
+
+<Accordion title="When to Use Accordions">
+  Use accordions when you have:
+  - Large amounts of related content
+  - Optional detailed information
+  - Step-by-step instructions
+  - Multiple examples or variations
+</Accordion>
+
+## 🔍 Method Overloads
+
+<Accordion title="Process()">
+  ```csharp
+  public void Process()
+  ```
+  Processes data using default settings.
+  
+  **Parameters**: None  
+  **Returns**: void  
+  **Exceptions**: None
+</Accordion>
+
+<Accordion title="Process(string data)">
+  ```csharp
+  public void Process(string data)
+  ```
+  Processes the specified data string.
+  
+  **Parameters**:
+  - `data` (string) - The data to process
+  
+  **Returns**: void  
+  **Exceptions**: 
+  - `ArgumentNullException` - When data is null
+</Accordion>
+
+<Accordion title="Process(string data, ProcessOptions options)">
+  ```csharp
+  public void Process(string data, ProcessOptions options)
+  ```
+  Processes data with custom options.
+  
+  **Parameters**:
+  - `data` (string) - The data to process
+  - `options` (ProcessOptions) - Processing configuration
+  
+  **Returns**: void  
+  **Exceptions**: 
+  - `ArgumentNullException` - When data or options is null
+  - `InvalidOperationException` - When options are invalid
+</Accordion>
+
+<Accordion title="ProcessAsync(string data, CancellationToken cancellationToken)">
+  ```csharp
+  public async Task ProcessAsync(string data, CancellationToken cancellationToken = default)
+  ```
+  Asynchronously processes data with cancellation support.
+  
+  **Parameters**:
+  - `data` (string) - The data to process
+  - `cancellationToken` (CancellationToken) - Cancellation token
+  
+  **Returns**: Task  
+  **Exceptions**: 
+  - `ArgumentNullException` - When data is null
+  - `OperationCanceledException` - When operation is cancelled
+</Accordion>
+
+## 📋 Exception Documentation
+
+<Accordion title="ArgumentNullException">
+  **When Thrown**: When a required parameter is null
+  
+  **Common Causes**:
+  - Forgetting to initialize an object
+  - Passing null from another method
+  - Database returning null values
+  
+  **How to Handle**:
+  ```csharp
+  try
+  {
+      service.Process(data);
+  }
+  catch (ArgumentNullException ex)
+  {
+      logger.LogError(ex, "Required parameter was null");
+      // Handle appropriately
+  }
+  ```
+</Accordion>
+
+<Accordion title="InvalidOperationException">
+  **When Thrown**: When the operation is not valid for the current state
+  
+  **Common Causes**:
+  - Calling methods in wrong order
+  - Object not properly initialized
+  - State machine in invalid state
+  
+  **Prevention**:
+  ```csharp
+  if (service.CanProcess)
+  {
+      service.Process(data);
+  }
+  ```
+</Accordion>
+
+<Accordion title="NotSupportedException">
+  **When Thrown**: When an operation is not supported
+  
+  **Common Scenarios**:
+  - Read-only collections
+  - Abstract methods
+  - Platform-specific features
+  
+  **Example**:
+  ```csharp
+  public virtual void AdvancedFeature()
+  {
+      throw new NotSupportedException(
+          "This feature is not supported in the base implementation");
+  }
+  ```
+</Accordion>
+
+## 🛠️ Configuration Examples
+
+<Accordion title="Basic Configuration">
+  ```json
+  {
+    "logging": {
+      "level": "Information"
+    },
+    "database": {
+      "connectionString": "Server=localhost;Database=MyApp"
+    }
+  }
+  ```
+</Accordion>
+
+<Accordion title="Advanced Configuration">
+  ```json
+  {
+    "logging": {
+      "level": "Debug",
+      "providers": ["Console", "File"],
+      "file": {
+        "path": "logs/app.log",
+        "rollingInterval": "Day"
+      }
+    },
+    "database": {
+      "connectionString": "Server=localhost;Database=MyApp",
+      "commandTimeout": 30,
+      "retryCount": 3,
+      "enableSensitiveDataLogging": false
+    },
+    "caching": {
+      "enabled": true,
+      "duration": "00:05:00"
+    }
+  }
+  ```
+</Accordion>
+
+<Accordion title="Production Configuration">
+  ```json
+  {
+    "logging": {
+      "level": "Warning",
+      "providers": ["ApplicationInsights"],
+      "applicationInsights": {
+        "instrumentationKey": "your-key-here",
+        "enableAdaptiveSampling": true
+      }
+    },
+    "database": {
+      "connectionString": "Server=prod-server;Database=MyApp;Encrypt=true",
+      "commandTimeout": 60,
+      "retryCount": 5,
+      "maxPoolSize": 100
+    },
+    "security": {
+      "requireHttps": true,
+      "enableHsts": true,
+      "corsOrigins": ["https://app.example.com"]
+    }
+  }
+  ```
+</Accordion>
+
+<Info>
+  Accordions can be nested and combined with other components for rich, interactive documentation.
+</Info>
+
+<Tip>
+  Use accordions to keep your documentation scannable while still providing comprehensive information for those who need it.
+</Tip>

@@ -10,15 +10,21 @@
     </ItemGroup>
 
     <ItemGroup>
-        <None Update="Baselines\**\*.json">
+        <None Update="Baselines\**\*.*">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="app.config">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
     </ItemGroup>
 
     <ItemGroup>
-      <None Update="app.config">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
+        <AssemblyAttribute Include="CloudNimble.Breakdance.Assemblies.BreakdanceTestAssembly" />
     </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="IntegrationTests\" />
+    </ItemGroup>
+
 
 </Project>

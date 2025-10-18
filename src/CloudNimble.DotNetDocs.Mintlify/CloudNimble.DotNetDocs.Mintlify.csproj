@@ -3,6 +3,16 @@
     <PropertyGroup>
         <TargetFrameworks>net10.0;net9.0;net8.0</TargetFrameworks>
         <DocumentationFile>$(DocumentationFile)\$(AssemblyName).xml</DocumentationFile>
+        <Description>Extensions for DotNetDocs that transform your .NET XML Doc Comments into beautiful Mintlify websites with smart navigation, context-aware icons, and rich MDX features.</Description>
     </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\CloudNimble.DotNetDocs.Core\CloudNimble.DotNetDocs.Core.csproj" />
+      <ProjectReference Include="..\Mintlify.Core\Mintlify.Core.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Extensions\" />
+    </ItemGroup>
 
 </Project>

@@ -1,4 +1,5 @@
 using System;
+using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -10,16 +11,10 @@ using Microsoft.CodeAnalysis.CSharp;
 namespace CloudNimble.DotNetDocs.Core
 {
 
+
     /// <summary>
     /// Manages assembly metadata extraction using Roslyn for API documentation generation.
     /// </summary>
-    /// <remarks>
-    /// Extracts metadata from a single .NET assembly and its XML documentation file, building an in-memory model
-    /// (<see cref="DocAssembly"/>) with interconnected types, members, and parameters. Supports conceptual content
-    /// loading from a specified folder. Designed for multi-targeting .NET 10.0, 9.0, and 8.0. One instance per assembly
-    /// is required, with paths specified at construction for incremental build support. Implements <see cref="IDisposable"/>
-    /// to release memory used by the compilation and model.
-    /// </remarks>
     /// <example>
     /// <code>
     /// <![CDATA[
@@ -29,6 +24,13 @@ namespace CloudNimble.DotNetDocs.Core
     /// ]]>
     /// </code>
     /// </example>
+    /// <remarks>
+    /// Extracts metadata from a single .NET assembly and its XML documentation file, building an in-memory model
+    /// (<see cref="DocAssembly"/>) with interconnected types, members, and parameters. Supports conceptual content
+    /// loading from a specified folder. Designed for multi-targeting .NET 10.0, 9.0, and 8.0. One instance per assembly
+    /// is required, with paths specified at construction for incremental build support. Implements <see cref="IDisposable"/>
+    /// to release memory used by the compilation and model.
+    /// </remarks>
     public class AssemblyManager : IDisposable
     {
 
@@ -36,6 +38,36 @@ namespace CloudNimble.DotNetDocs.Core
 
         private Compilation? _compilation;
         private bool _disposed;
+
+        /// <summary>
+        /// SymbolDisplayFormat for generating member signatures with access modifiers.
+        /// </summary>
+        private static readonly SymbolDisplayFormat DocumentationSignatureFormat = new SymbolDisplayFormat(
+            memberOptions: SymbolDisplayMemberOptions.IncludeAccessibility |
+                           SymbolDisplayMemberOptions.IncludeModifiers |
+                           SymbolDisplayMemberOptions.IncludeType |
+                           SymbolDisplayMemberOptions.IncludeParameters |
+                           SymbolDisplayMemberOptions.IncludeRef,
+            parameterOptions: SymbolDisplayParameterOptions.IncludeType |
+                              SymbolDisplayParameterOptions.IncludeName |
+                              SymbolDisplayParameterOptions.IncludeDefaultValue |
+                              SymbolDisplayParameterOptions.IncludeParamsRefOut,
+            typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces,
+            genericsOptions: SymbolDisplayGenericsOptions.IncludeTypeParameters |
+                             SymbolDisplayGenericsOptions.IncludeTypeConstraints,
+            miscellaneousOptions: SymbolDisplayMiscellaneousOptions.UseSpecialTypes);
+
+        /// <summary>
+        /// SymbolDisplayFormat for generating property signatures with accessors.
+        /// </summary>
+        private static readonly SymbolDisplayFormat PropertySignatureFormat = new SymbolDisplayFormat(
+            memberOptions: SymbolDisplayMemberOptions.IncludeAccessibility |
+                           SymbolDisplayMemberOptions.IncludeModifiers |
+                           SymbolDisplayMemberOptions.IncludeType,
+            propertyStyle: SymbolDisplayPropertyStyle.ShowReadWriteDescriptor,
+            typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces,
+            genericsOptions: SymbolDisplayGenericsOptions.IncludeTypeParameters,
+            miscellaneousOptions: SymbolDisplayMiscellaneousOptions.UseSpecialTypes);
 
         #endregion
 
@@ -57,6 +89,14 @@ namespace CloudNimble.DotNetDocs.Core
         public DocAssembly? Document { get; private set; }
 
         /// <summary>
+        /// Gets the collection of errors that occurred during Since  processing.
+        /// </summary>
+        /// <remarks>
+        /// Includes warnings about inaccessible internal members when requested but not available.
+        /// </remarks>
+        public List<CompilerError> Errors { get; } = [];
+
+        /// <summary>
         /// Gets the last modified timestamp of the assembly file for incremental builds.
         /// </summary>
         public DateTime LastModified { get; private set; }
@@ -64,7 +104,15 @@ namespace CloudNimble.DotNetDocs.Core
         /// <summary>
         /// Gets the path to the XML documentation file.
         /// </summary>
-        public string XmlPath { get; init; }
+        /// <remarks>
+        /// May be null if no XML documentation file is available.
+        /// </remarks>
+        public string? XmlPath { get; init; }
+
+        /// <summary>
+        /// Gets the previously used included members for caching.
+        /// </summary>
+        private List<Accessibility> PreviousIncludedMembers { get; set; } = [];
 
         #endregion
 
@@ -77,7 +125,11 @@ namespace CloudNimble.DotNetDocs.Core
         /// <param name="xmlPath">Path to the XML documentation file.</param>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="assemblyPath"/> or <paramref name="xmlPath"/> is null.</exception>
         /// <exception cref="ArgumentException">Thrown when <paramref name="assemblyPath"/> or <paramref name="xmlPath"/> is empty or whitespace.</exception>
-        /// <exception cref="FileNotFoundException">Thrown when <paramref name="assemblyPath"/> or <paramref name="xmlPath"/> does not exist.</exception>
+        /// <exception cref="FileNotFoundException">Thrown when <paramref name="assemblyPath"/> does not exist.</exception>
+        /// <remarks>
+        /// If the XML documentation file does not exist, processing will continue without XML documentation.
+        /// A warning will be added to the Errors collection.
+        /// </remarks>
         public AssemblyManager(string assemblyPath, string xmlPath)
         {
             ArgumentException.ThrowIfNullOrWhiteSpace(assemblyPath);
@@ -87,13 +139,21 @@ namespace CloudNimble.DotNetDocs.Core
             {
                 throw new FileNotFoundException("Assembly file not found.", nameof(assemblyPath));
             }
+            
+            // Handle missing XML documentation gracefully
             if (!File.Exists(xmlPath))
             {
-                throw new FileNotFoundException("XML documentation file not found.", nameof(xmlPath));
+                // Add a warning but continue processing
+                Errors.Add(new CompilerError(xmlPath, 0, 0, "DOC001", 
+                    $"XML documentation file not found: {Path.GetFileName(xmlPath)}. Processing will continue without XML documentation."));
+                XmlPath = null; // Mark as null to indicate no XML is available
+            }
+            else
+            {
+                XmlPath = xmlPath;
             }
 
             AssemblyPath = assemblyPath;
-            XmlPath = xmlPath;
             AssemblyName = Path.GetFileNameWithoutExtension(assemblyPath);
             LastModified = DateTime.MinValue;
         }
@@ -110,27 +170,191 @@ namespace CloudNimble.DotNetDocs.Core
         public async Task<DocAssembly> DocumentAsync(ProjectContext? projectContext = null)
         {
             var currentModified = File.GetLastWriteTimeUtc(AssemblyPath);
-            if (Document is null || currentModified > LastModified)
+            var includedMembers = projectContext?.IncludedMembers ?? [Accessibility.Public];
+
+            // Check if we need to rebuild: file modified, no document yet, or included members changed
+            var needsRebuild = Document is null ||
+                              currentModified > LastModified ||
+                              !includedMembers.SequenceEqual(PreviousIncludedMembers);
+
+            if (needsRebuild)
             {
                 _compilation = await CreateCompilationAsync(projectContext?.References ?? []);
-                Document = BuildModel(_compilation, projectContext?.ConceptualPath, projectContext?.IncludedMembers ?? [Accessibility.Public]);
+                Document = BuildModel(_compilation, projectContext);
                 LastModified = currentModified;
+                PreviousIncludedMembers = includedMembers.ToList();
             }
-            return Document;
+            return Document!;
         }
 
         #endregion
 
-        #region Private Methods
+        #region Internal Methods
+
+        /// <summary>
+        /// Extracts and parses XML documentation from a symbol.
+        /// </summary>
+        /// <param name="symbol">The symbol to extract documentation from.</param>
+        /// <returns>The parsed XML document, or null if no documentation exists.</returns>
+        internal XDocument? ExtractDocumentationXml(ISymbol symbol)
+        {
+            var xml = symbol.GetDocumentationCommentXml() ?? string.Empty;
+            return string.IsNullOrWhiteSpace(xml) ? null : XDocument.Parse(xml);
+        }
+
+        /// <summary>
+        /// Extracts inner XML content from an XElement, preserving nested XML tags.
+        /// </summary>
+        /// <param name="element">The XML element to extract content from.</param>
+        /// <returns>The inner XML as a string, or null if element is null.</returns>
+        internal string? ExtractInnerXml(XElement? element)
+        {
+            if (element is null)
+                return null;
+
+            // Get all nodes and concatenate them, preserving XML tags
+            var innerXml = string.Concat(element.Nodes().Select(n => n.ToString()));
+            var trimmed = innerXml?.Trim();
+            return string.IsNullOrWhiteSpace(trimmed) ? null : trimmed;
+        }
+
+        /// <summary>
+        /// Extracts inner XML content from an XElement, preserving nested XML tags but excluding specified tags and their content.
+        /// </summary>
+        /// <param name="element">The XML element to extract content from.</param>
+        /// <param name="excludeTags">Tag names to exclude from the output (including all their content).</param>
+        /// <returns>The inner XML as a string with excluded tags and their content removed, or null if element is null.</returns>
+        internal string? ExtractInnerXmlExcluding(XElement? element, params string[] excludeTags)
+        {
+            if (element is null)
+                return null;
+
+            // Clone the element to avoid modifying the original
+            var cloned = new XElement(element);
+
+            // Remove all excluded tags and their content
+            foreach (var tag in excludeTags)
+            {
+                cloned.Descendants(tag).Remove();
+            }
+
+            // Get all nodes and concatenate them, preserving XML tags
+            var innerXml = string.Concat(cloned.Nodes().Select(n => n.ToString()));
+            var trimmed = innerXml?.Trim();
+            return string.IsNullOrWhiteSpace(trimmed) ? null : trimmed;
+        }
+
+        /// <summary>
+        /// Extracts the summary text from XML documentation, preserving inner XML tags.
+        /// </summary>
+        /// <param name="doc">The parsed XML documentation.</param>
+        /// <returns>The summary text with preserved XML tags, or empty string if not found.</returns>
+        internal string? ExtractSummary(XDocument? doc) =>
+            ExtractInnerXml(doc?.Descendants("summary").FirstOrDefault());
+
+        /// <summary>
+        /// Extracts the examples text from XML documentation, preserving inner XML tags.
+        /// </summary>
+        /// <param name="doc">The parsed XML documentation.</param>
+        /// <returns>The examples text with preserved XML tags, or empty string if not found.</returns>
+        internal string? ExtractExamples(XDocument? doc) =>
+            ExtractInnerXml(doc?.Descendants("example").FirstOrDefault());
+
+        /// <summary>
+        /// Extracts the remarks/best practices text from XML documentation, preserving inner XML tags but excluding example tags.
+        /// </summary>
+        /// <param name="doc">The parsed XML documentation.</param>
+        /// <returns>The remarks text with preserved XML tags (excluding example tags and their content), or empty string if not found.</returns>
+        internal string? ExtractRemarks(XDocument? doc) =>
+            ExtractInnerXmlExcluding(doc?.Descendants("remarks").FirstOrDefault(), "example");
+
+        /// <summary>
+        /// Extracts parameter documentation from XML documentation, preserving inner XML tags.
+        /// </summary>
+        /// <param name="doc">The parsed XML documentation.</param>
+        /// <param name="parameterName">The name of the parameter.</param>
+        /// <returns>The parameter documentation with preserved XML tags, or empty string if not found.</returns>
+        internal string ExtractParameterDocumentation(XDocument? doc, string parameterName) =>
+            ExtractInnerXml(doc?.Descendants("param")
+                .FirstOrDefault(e => e.Attribute("name")?.Value == parameterName)) ?? string.Empty;
+
+        /// <summary>
+        /// Extracts the returns documentation from XML documentation, preserving inner XML tags.
+        /// </summary>
+        /// <param name="doc">The parsed XML documentation.</param>
+        /// <returns>The returns text with preserved XML tags, or null if not found.</returns>
+        internal string? ExtractReturns(XDocument? doc) =>
+            ExtractInnerXml(doc?.Descendants("returns").FirstOrDefault());
+
+        /// <summary>
+        /// Extracts exception documentation from XML documentation, preserving inner XML tags.
+        /// </summary>
+        /// <param name="doc">The parsed XML documentation.</param>
+        /// <returns>Collection of exception documentation, or null if none found.</returns>
+        internal ICollection<DocException>? ExtractExceptions(XDocument? doc)
+        {
+            var exceptions = doc?.Descendants("exception")
+                .Select(e => new DocException
+                {
+                    Type = e.Attribute("cref")?.Value?.Replace("T:", "")?.Split('.').LastOrDefault(),
+                    Description = ExtractInnerXml(e) ?? string.Empty
+                })
+                .Where(e => !string.IsNullOrWhiteSpace(e.Type))
+                .ToList();
+
+            return exceptions?.Any() == true ? exceptions : null;
+        }
+
+        /// <summary>
+        /// Extracts type parameter documentation from XML documentation, preserving inner XML tags.
+        /// </summary>
+        /// <param name="doc">The parsed XML documentation.</param>
+        /// <returns>Collection of type parameter documentation, or null if none found.</returns>
+        internal ICollection<DocTypeParameter>? ExtractTypeParameters(XDocument? doc)
+        {
+            var typeParams = doc?.Descendants("typeparam")
+                .Select(e => new DocTypeParameter
+                {
+                    Name = e.Attribute("name")?.Value,
+                    Description = ExtractInnerXml(e) ?? string.Empty
+                })
+                .Where(p => !string.IsNullOrWhiteSpace(p.Name))
+                .ToList();
+
+            return typeParams?.Any() == true ? typeParams : null;
+        }
+
+        /// <summary>
+        /// Extracts the value documentation from XML documentation (for properties), preserving inner XML tags.
+        /// </summary>
+        /// <param name="doc">The parsed XML documentation.</param>
+        /// <returns>The value text with preserved XML tags, or null if not found.</returns>
+        internal string? ExtractValue(XDocument? doc) =>
+            ExtractInnerXml(doc?.Descendants("value").FirstOrDefault());
+
+        /// <summary>
+        /// Extracts see-also references from XML documentation.
+        /// </summary>
+        /// <param name="doc">The parsed XML documentation.</param>
+        /// <returns>Collection of see-also references, or null if none found.</returns>
+        internal ICollection<DocReference>? ExtractSeeAlso(XDocument? doc)
+        {
+            var seeAlso = doc?.Descendants("seealso")
+                .Select(e => e.Attribute("cref")?.Value)
+                .Where(s => !string.IsNullOrWhiteSpace(s))
+                .Select(s => new DocReference(s!))
+                .ToList();
+
+            return seeAlso?.Any() == true ? seeAlso : null;
+        }
 
         /// <summary>
         /// Builds the in-memory documentation model from the Roslyn compilation.
         /// </summary>
         /// <param name="compilation">The Roslyn compilation containing assembly metadata.</param>
-        /// <param name="conceptualPath">Optional path to conceptual documentation files.</param>
-        /// <param name="includedMembers">List of member accessibilities to include.</param>
+        /// <param name="projectContext">Optional project context containing configuration and filters.</param>
         /// <returns>The <see cref="DocAssembly"/> model.</returns>
-        private DocAssembly BuildModel(Compilation compilation, string? conceptualPath, List<Accessibility> includedMembers)
+        internal DocAssembly BuildModel(Compilation compilation, ProjectContext? projectContext)
         {
             var targetRef = compilation.References.OfType<PortableExecutableReference>().FirstOrDefault(r => string.Equals(r.FilePath, AssemblyPath, StringComparison.OrdinalIgnoreCase))
                 ?? throw new InvalidOperationException("Target assembly reference not found in compilation.");
@@ -138,19 +362,27 @@ namespace CloudNimble.DotNetDocs.Core
             var assemblySymbol = compilation.GetAssemblyOrModuleSymbol(targetRef) as IAssemblySymbol
                 ?? throw new InvalidOperationException("Could not get assembly symbol from compilation.");
 
-            var assemblyXml = assemblySymbol.GetDocumentationCommentXml() ?? string.Empty;
-            var assemblyDoc = string.IsNullOrWhiteSpace(assemblyXml) ? null : XDocument.Parse(assemblyXml);
+            var assemblyDoc = ExtractDocumentationXml(assemblySymbol);
+            var includedMembers = projectContext?.IncludedMembers ?? [Accessibility.Public];
 
             var docAssembly = new DocAssembly(assemblySymbol)
             {
-                Usage = assemblyDoc?.Descendants("summary").FirstOrDefault()?.Value.Trim() ?? string.Empty,
+                AssemblyName = assemblySymbol.Name,
+                Version = assemblySymbol.Identity.Version.ToString(),
+                DisplayName = assemblySymbol.ToDisplayString(),
+                Summary = ExtractSummary(assemblyDoc),
+                Returns = ExtractReturns(assemblyDoc),
+                Exceptions = ExtractExceptions(assemblyDoc),
+                TypeParameters = ExtractTypeParameters(assemblyDoc),
+                Value = ExtractValue(assemblyDoc),
+                SeeAlso = ExtractSeeAlso(assemblyDoc),
                 IncludedMembers = includedMembers
             };
 
             var typeMap = new Dictionary<string, DocType>(); // Cache for type resolutions
 
             // Process all namespaces recursively
-            ProcessNamespace(assemblySymbol.GlobalNamespace, docAssembly, compilation, typeMap, includedMembers);
+            ProcessNamespace(assemblySymbol.GlobalNamespace, docAssembly, compilation, typeMap, includedMembers, projectContext);
 
             return docAssembly;
         }
@@ -163,17 +395,124 @@ namespace CloudNimble.DotNetDocs.Core
         /// <param name="typeMap">Cache of resolved types for linking.</param>
         /// <param name="includedMembers">List of member accessibilities to include.</param>
         /// <returns>The <see cref="DocType"/> instance.</returns>
-        private DocType BuildDocType(ITypeSymbol type, Compilation compilation, Dictionary<string, DocType> typeMap, List<Accessibility> includedMembers)
+        internal DocType BuildDocType(ITypeSymbol type, Compilation compilation, Dictionary<string, DocType> typeMap, List<Accessibility> includedMembers)
         {
-            var xml = type.GetDocumentationCommentXml() ?? string.Empty;
-            var doc = string.IsNullOrWhiteSpace(xml) ? null : XDocument.Parse(xml);
+            var doc = ExtractDocumentationXml(type);
 
-            var docType = new DocType(type)
+            DocType docType;
+
+            // Create DocEnum for enum types
+            // Note: When loading from metadata (compiled DLL), enums appear as sealed classes with const fields
+            // We need to detect this pattern since TypeKind.Enum is not preserved in metadata
+            var isEnum = type.TypeKind == TypeKind.Enum ||
+                         (type.TypeKind == TypeKind.Class && type.IsSealed && type.BaseType?.Name == "Enum");
+
+            if (isEnum)
             {
-                Usage = doc?.Descendants("summary").FirstOrDefault()?.Value.Trim() ?? string.Empty,
-                Examples = doc?.Descendants("example").FirstOrDefault()?.Value.Trim() ?? string.Empty,
-                BestPractices = doc?.Descendants("remarks").FirstOrDefault()?.Value.Trim() ?? string.Empty
-            };
+                var docEnum = new DocEnum(type)
+                {
+                    Name = type.Name,
+                    FullName = type.ToDisplayString(),
+                    DisplayName = type.ToDisplayString(),
+                    Signature = type.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat),
+                    TypeKind = type.TypeKind,
+                    AssemblyName = type.ContainingAssembly?.Name,
+                    Summary = ExtractSummary(doc),
+                    Returns = ExtractReturns(doc),
+                    Exceptions = ExtractExceptions(doc),
+                    TypeParameters = ExtractTypeParameters(doc),
+                    Value = ExtractValue(doc),
+                    SeeAlso = ExtractSeeAlso(doc),
+                    Examples = ExtractExamples(doc),
+                    Remarks = ExtractRemarks(doc)
+                };
+
+                // Check for Flags attribute
+                docEnum.IsFlags = type.GetAttributes()
+                    .Any(a => a.AttributeClass?.ToDisplayString() == "System.FlagsAttribute");
+
+                // Get underlying type
+                if (type is INamedTypeSymbol namedType)
+                {
+                    ITypeSymbol? underlyingType = namedType.EnumUnderlyingType;
+
+                    // Fallback: For metadata-loaded enums, infer from constant value type
+                    if (underlyingType is null)
+                    {
+                        var firstConstField = type.GetMembers()
+                            .OfType<IFieldSymbol>()
+                            .FirstOrDefault(f => f.IsConst && f.HasConstantValue);
+
+                        if (firstConstField?.ConstantValue is not null)
+                        {
+                            // Determine underlying type from the constant value's actual type
+                            underlyingType = firstConstField.ConstantValue switch
+                            {
+                                byte => compilation.GetSpecialType(SpecialType.System_Byte),
+                                sbyte => compilation.GetSpecialType(SpecialType.System_SByte),
+                                short => compilation.GetSpecialType(SpecialType.System_Int16),
+                                ushort => compilation.GetSpecialType(SpecialType.System_UInt16),
+                                int => compilation.GetSpecialType(SpecialType.System_Int32),
+                                uint => compilation.GetSpecialType(SpecialType.System_UInt32),
+                                long => compilation.GetSpecialType(SpecialType.System_Int64),
+                                ulong => compilation.GetSpecialType(SpecialType.System_UInt64),
+                                _ => compilation.GetSpecialType(SpecialType.System_Int32) // Default to int
+                            };
+                        }
+                    }
+
+                    if (underlyingType is not null)
+                    {
+                        docEnum.UnderlyingType = new DocReference
+                        {
+                            RawReference = $"T:{underlyingType.ToDisplayString()}",
+                            DisplayName = GetFriendlyTypeName(underlyingType),
+                            IsResolved = true,
+                            ReferenceType = ReferenceType.Framework
+                        };
+                    }
+                }
+
+                // Extract enum values
+                foreach (var member in type.GetMembers().OfType<IFieldSymbol>().Where(f => f.IsConst))
+                {
+                    var memberDoc = ExtractDocumentationXml(member);
+                    var enumValue = new DocEnumValue(member)
+                    {
+                        Name = member.Name,
+                        DisplayName = member.ToDisplayString(),
+                        NumericValue = member.ConstantValue?.ToString(),
+                        Summary = ExtractSummary(memberDoc),
+                        Remarks = ExtractRemarks(memberDoc),
+                        Examples = ExtractExamples(memberDoc),
+                        SeeAlso = ExtractSeeAlso(memberDoc)
+                    };
+                    docEnum.Values.Add(enumValue);
+                }
+
+                docType = docEnum;
+            }
+            else
+            {
+                docType = new DocType(type)
+                {
+                    Name = type.Name,
+                    FullName = type.ToDisplayString(),
+                    DisplayName = type.ToDisplayString(),
+                    Signature = type.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat),
+                    TypeKind = type.TypeKind,
+                    AssemblyName = type.ContainingAssembly?.Name,
+                    Summary = ExtractSummary(doc),
+                    Returns = ExtractReturns(doc),
+                    Exceptions = ExtractExceptions(doc),
+                    TypeParameters = ExtractTypeParameters(doc),
+                    Value = ExtractValue(doc),
+                    SeeAlso = ExtractSeeAlso(doc),
+                    Examples = ExtractExamples(doc),
+                    Remarks = ExtractRemarks(doc)
+                };
+            }
+
             docType.IncludedMembers = includedMembers;
 
             typeMap[type.ToDisplayString()] = docType;
@@ -181,94 +520,165 @@ namespace CloudNimble.DotNetDocs.Core
             // Resolve base type
             if (type.BaseType is not null && type.BaseType.SpecialType != SpecialType.System_Object)
             {
-                var baseTypeKey = type.BaseType.ToDisplayString();
-                if (!typeMap.TryGetValue(baseTypeKey, out var baseDocType))
-                {
-                    baseDocType = new DocType(type.BaseType);
-                    typeMap[baseTypeKey] = baseDocType;
-                }
-                docType.BaseType = baseDocType;
-            }
-
-            // Resolve implemented interfaces
-            foreach (var iface in type.Interfaces)
-            {
-                var ifaceKey = iface.ToDisplayString();
-                if (!typeMap.TryGetValue(ifaceKey, out var ifaceDoc))
-                {
-                    ifaceDoc = new DocType(iface);
-                    typeMap[ifaceKey] = ifaceDoc;
-                }
-                docType.ImplementedInterfaces.Add(ifaceDoc);
+                docType.BaseType = type.BaseType.ToDisplayString();
             }
 
             // Set related APIs (e.g., all interfaces as strings)
             docType.RelatedApis = type.AllInterfaces.Select(i => i.ToDisplayString()).ToList();
 
-            // Resolve members
-            foreach (var member in type.GetMembers().Where(m => docType.IncludedMembers.Contains(m.DeclaredAccessibility) && !m.IsImplicitlyDeclared))
+            // Resolve members (skip for enums as they use Values collection instead)
+            // The bridge compilation with IgnoresAccessChecksTo allows us to see all members including internals
+            if (type.TypeKind != TypeKind.Enum)
+            {
+                foreach (var member in type.GetMembers().Where(m => docType.IncludedMembers.Contains(m.DeclaredAccessibility) && !m.IsImplicitlyDeclared))
             {
                 DocMember? docMember = null;
 
-                if (member is IMethodSymbol method)
-                {
-                    var mXml = method.GetDocumentationCommentXml() ?? string.Empty;
-                    var mDoc = string.IsNullOrWhiteSpace(mXml) ? null : XDocument.Parse(mXml);
+                 if (member is IMethodSymbol method)
+                 {
+                     var mDoc = ExtractDocumentationXml(method);
 
-                    docMember = new DocMember(method)
-                    {
-                        Usage = mDoc?.Descendants("summary").FirstOrDefault()?.Value.Trim() ?? string.Empty,
-                        Examples = mDoc?.Descendants("example").FirstOrDefault()?.Value.Trim() ?? string.Empty,
-                        BestPractices = mDoc?.Descendants("remarks").FirstOrDefault()?.Value.Trim() ?? string.Empty,
-                        // Parameters
-                        Parameters = method.Parameters.Select(p =>
+                     docMember = new DocMember(method)
+                     {
+                         Name = method.Name,
+                         DisplayName = method.ToDisplayString(),
+                         Signature = method.ToDisplayString(DocumentationSignatureFormat),
+                         MemberKind = method.Kind,
+                         MethodKind = method.MethodKind,
+                         Accessibility = method.DeclaredAccessibility,
+                         ReturnTypeName = method.ReturnsVoid ? "void" : method.ReturnType.ToDisplayString(),
+                         Summary = ExtractSummary(mDoc),
+                         Returns = ExtractReturns(mDoc),
+                         Exceptions = ExtractExceptions(mDoc),
+                         TypeParameters = ExtractTypeParameters(mDoc),
+                         Value = ExtractValue(mDoc),
+                         SeeAlso = ExtractSeeAlso(mDoc),
+                         Examples = ExtractExamples(mDoc),
+                         Remarks = ExtractRemarks(mDoc),
+                         IncludedMembers = docType.IncludedMembers,
+                         // Parameters
+                         Parameters = method.Parameters.Select(p =>
+                             {
+                                 var paramDoc = new DocParameter(p)
+                                 {
+                                     Name = p.Name,
+                                     TypeName = p.Type.ToDisplayString(),
+                                     DisplayName = p.ToDisplayString(),
+                                     IsOptional = p.IsOptional,
+                                     HasDefaultValue = p.HasExplicitDefaultValue,
+                                     DefaultValue = p.HasExplicitDefaultValue ? p.ExplicitDefaultValue?.ToString() : null,
+                                     IsParams = p.IsParams,
+                                     Usage = ExtractParameterDocumentation(mDoc, p.Name)
+                                 };
+
+                                 // Parameter type
+                                 var pTypeKey = p.Type.ToDisplayString();
+                                 if (!typeMap.TryGetValue(pTypeKey, out var pTypeDoc))
+                                 {
+                                     pTypeDoc = new DocType(p.Type)
+                                     {
+                                         Name = p.Type.Name,
+                                         FullName = p.Type.ToDisplayString(),
+                                         DisplayName = p.Type.ToDisplayString(),
+                                         Signature = p.Type.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat),
+                                         TypeKind = p.Type.TypeKind,
+                                         AssemblyName = p.Type.ContainingAssembly?.Name,
+                                         IncludedMembers = docType.IncludedMembers
+                                     };
+                                     typeMap[pTypeKey] = pTypeDoc;
+                                 }
+                                 paramDoc.ParameterType = pTypeDoc;
+
+                                 return paramDoc;
+                             }).ToList()
+                     };
+
+                     // Return type
+                     if (method.ReturnType.SpecialType != SpecialType.System_Void)
+                     {
+                         var rKey = method.ReturnType.ToDisplayString();
+                         if (!typeMap.TryGetValue(rKey, out var rDoc))
+                         {
+                            rDoc = new DocType(method.ReturnType)
                             {
-                                var paramDoc = new DocParameter(p);
-                                var paramElem = mDoc?.Descendants("param").FirstOrDefault(e => e.Attribute("name")?.Value == p.Name);
-                                paramDoc.Usage = paramElem?.Value.Trim() ?? string.Empty;
-
-                                // Parameter type
-                                var pTypeKey = p.Type.ToDisplayString();
-                                if (!typeMap.TryGetValue(pTypeKey, out var pTypeDoc))
-                                {
-                                    pTypeDoc = new DocType(p.Type);
-                                    typeMap[pTypeKey] = pTypeDoc;
-                                }
-                                paramDoc.ParameterType = pTypeDoc;
-
-                                return paramDoc;
-                            }).ToList()
-                    };
-
-                    // Return type
-                    if (method.ReturnType.SpecialType != SpecialType.System_Void)
-                    {
-                        var rKey = method.ReturnType.ToDisplayString();
-                        if (!typeMap.TryGetValue(rKey, out var rDoc))
-                        {
-                            rDoc = new DocType(method.ReturnType);
+                                Name = method.ReturnType.Name,
+                                FullName = method.ReturnType.ToDisplayString(),
+                                DisplayName = method.ReturnType.ToDisplayString(),
+                                Signature = method.ReturnType.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat),
+                                TypeKind = method.ReturnType.TypeKind,
+                                AssemblyName = method.ReturnType.ContainingAssembly?.Name,
+                                IncludedMembers = docType.IncludedMembers
+                            };
                             typeMap[rKey] = rDoc;
-                        }
-                        docMember.ReturnType = rDoc;
-                    }
-                }
-                else if (member is IPropertySymbol property)
-                {
-                    var pXml = property.GetDocumentationCommentXml() ?? string.Empty;
-                    var pDoc = string.IsNullOrWhiteSpace(pXml) ? null : XDocument.Parse(pXml);
+                         }
+                         docMember.ReturnType = rDoc;
+                     }
+                 }
+                 else if (member is IPropertySymbol property)
+                 {
+                     var pDoc = ExtractDocumentationXml(property);
 
-                    docMember = new DocMember(property)
+                     docMember = new DocMember(property)
+                     {
+                         Name = property.Name,
+                         DisplayName = property.ToDisplayString(),
+                         Signature = property.ToDisplayString(PropertySignatureFormat),
+                         MemberKind = property.Kind,
+                         Accessibility = property.DeclaredAccessibility,
+                         ReturnTypeName = property.Type.ToDisplayString(),
+                         Summary = ExtractSummary(pDoc),
+                         Value = ExtractValue(pDoc),
+                         Exceptions = ExtractExceptions(pDoc),
+                         SeeAlso = ExtractSeeAlso(pDoc),
+                         Examples = ExtractExamples(pDoc),
+                         Remarks = ExtractRemarks(pDoc),
+                         IncludedMembers = docType.IncludedMembers
+                     };
+                 }
+                 else if (member is IFieldSymbol field)
+                 {
+                     var fDoc = ExtractDocumentationXml(field);
+
+                     docMember = new DocMember(field)
+                     {
+                         Name = field.Name,
+                         DisplayName = field.ToDisplayString(),
+                         Signature = field.ToDisplayString(DocumentationSignatureFormat),
+                         MemberKind = field.Kind,
+                         Accessibility = field.DeclaredAccessibility,
+                         ReturnTypeName = field.Type.ToDisplayString(),
+                         Summary = ExtractSummary(fDoc),
+                         Value = ExtractValue(fDoc),
+                         SeeAlso = ExtractSeeAlso(fDoc),
+                         Examples = ExtractExamples(fDoc),
+                         Remarks = ExtractRemarks(fDoc),
+                         IncludedMembers = docType.IncludedMembers
+                     };
+                 }
+                 else if (member is IEventSymbol eventSymbol)
+                 {
+                     var eDoc = ExtractDocumentationXml(eventSymbol);
+
+                     docMember = new DocMember(eventSymbol)
+                     {
+                         Name = eventSymbol.Name,
+                         DisplayName = eventSymbol.ToDisplayString(),
+                         Signature = eventSymbol.ToDisplayString(DocumentationSignatureFormat),
+                         MemberKind = eventSymbol.Kind,
+                         Accessibility = eventSymbol.DeclaredAccessibility,
+                         ReturnTypeName = eventSymbol.Type.ToDisplayString(),
+                         Summary = ExtractSummary(eDoc),
+                         SeeAlso = ExtractSeeAlso(eDoc),
+                         Examples = ExtractExamples(eDoc),
+                         Remarks = ExtractRemarks(eDoc),
+                         IncludedMembers = docType.IncludedMembers
+                     };
+                 }
+
+                    if (docMember is not null)
                     {
-                        Usage = pDoc?.Descendants("summary").FirstOrDefault()?.Value.Trim() ?? string.Empty,
-                        Examples = pDoc?.Descendants("example").FirstOrDefault()?.Value.Trim() ?? string.Empty,
-                        BestPractices = pDoc?.Descendants("remarks").FirstOrDefault()?.Value.Trim() ?? string.Empty
-                    };
-                }
-                // Add handling for other member kinds (fields, events) if needed
-
-                if (docMember is not null)
-                {
-                    docType.Members.Add(docMember);
+                        docType.Members.Add(docMember);
+                    }
                 }
             }
 
@@ -276,19 +686,96 @@ namespace CloudNimble.DotNetDocs.Core
         }
 
         /// <summary>
+        /// Gets a friendly display name for a type (e.g., "int" instead of "System.Int32").
+        /// </summary>
+        /// <param name="type">The type symbol to get a friendly name for.</param>
+        /// <returns>A friendly type name suitable for display.</returns>
+        internal static string GetFriendlyTypeName(ITypeSymbol type)
+        {
+            return type.SpecialType switch
+            {
+                SpecialType.System_Boolean => "bool",
+                SpecialType.System_Byte => "byte",
+                SpecialType.System_SByte => "sbyte",
+                SpecialType.System_Char => "char",
+                SpecialType.System_Decimal => "decimal",
+                SpecialType.System_Double => "double",
+                SpecialType.System_Single => "float",
+                SpecialType.System_Int32 => "int",
+                SpecialType.System_UInt32 => "uint",
+                SpecialType.System_Int64 => "long",
+                SpecialType.System_UInt64 => "ulong",
+                SpecialType.System_Int16 => "short",
+                SpecialType.System_UInt16 => "ushort",
+                SpecialType.System_Object => "object",
+                SpecialType.System_String => "string",
+                SpecialType.System_Void => "void",
+                _ => type.ToDisplayString()
+            };
+        }
+
+        /// <summary>
         /// Creates a Roslyn compilation from the assembly and XML documentation.
         /// </summary>
         /// <param name="references">Paths to referenced assemblies.</param>
         /// <returns>A task representing the asynchronous operation, containing the <see cref="Compilation"/>.</returns>
-        private async Task<Compilation> CreateCompilationAsync(IEnumerable<string> references)
+        /// <remarks>
+        /// Uses a bridge compilation technique with IgnoresAccessChecksTo attribute to enable
+        /// visibility of internal members for documentation purposes.
+        /// </remarks>
+        internal async Task<Compilation> CreateCompilationAsync(IEnumerable<string> references)
         {
-            var metadataReference = MetadataReference.CreateFromFile(AssemblyPath, documentation: XmlDocumentationProvider.CreateFromFile(XmlPath));
+            // Generate the IgnoresAccessChecksTo attribute dynamically
+            // This is a compiler trick to allow seeing internal members during compilation
+            // RWM: This technique is a modification of:
+            // https://www.strathweb.com/2018/10/no-internalvisibleto-no-problem-bypassing-c-visibility-rules-with-roslyn/
+            var ignoresAccessChecksSource = @"
+                namespace System.Runtime.CompilerServices
+                {
+                    [System.AttributeUsage(System.AttributeTargets.Assembly, AllowMultiple = true)]
+                    internal sealed class IgnoresAccessChecksToAttribute : System.Attribute
+                    {
+                        public string AssemblyName { get; }
+                        public IgnoresAccessChecksToAttribute(string assemblyName)
+                        {
+                            AssemblyName = assemblyName;
+                        }
+                    }
+                }";
 
-            var compilationOptions = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary);
-            var compilation = CSharpCompilation.Create(AssemblyName)
+            // Apply the attribute to our bridge compilation to see internals of the target assembly
+            var assemblyName = Path.GetFileNameWithoutExtension(AssemblyPath);
+            var bridgeSource = $@"
+                using System.Runtime.CompilerServices;
+                [assembly: IgnoresAccessChecksTo(""{assemblyName}"")]";
+
+            // Parse the source trees
+            var syntaxTrees = new[]
+            {
+                CSharpSyntaxTree.ParseText(ignoresAccessChecksSource),
+                CSharpSyntaxTree.ParseText(bridgeSource)
+            };
+
+            // Create compilation with metadata import options to see all members
+            var compilationOptions = new CSharpCompilationOptions(
+                OutputKind.DynamicallyLinkedLibrary,
+                metadataImportOptions: MetadataImportOptions.All);
+
+            // Create the compilation with our bridge that can see internals
+            var compilation = CSharpCompilation.Create($"{AssemblyName}.DocumentationBridge")
                 .WithOptions(compilationOptions)
-                .AddReferences(metadataReference);
+                .AddSyntaxTrees(syntaxTrees);
 
+            // Add the target assembly with its XML documentation (if available)
+            var documentationProvider = XmlPath is not null && File.Exists(XmlPath) 
+                ? XmlDocumentationProvider.CreateFromFile(XmlPath)
+                : null;
+            var targetReference = MetadataReference.CreateFromFile(
+                AssemblyPath, 
+                documentation: documentationProvider);
+            compilation = compilation.AddReferences(targetReference);
+
+            // Add all provided references
             foreach (var refPath in references)
             {
                 if (File.Exists(refPath))
@@ -297,7 +784,7 @@ namespace CloudNimble.DotNetDocs.Core
                 }
             }
 
-            // Add common .NET references (e.g., System.Runtime) for resolution
+            // Add common .NET references for resolution
             var netRefs = new[]
             {
                 MetadataReference.CreateFromFile(typeof(object).Assembly.Location),
@@ -318,60 +805,65 @@ namespace CloudNimble.DotNetDocs.Core
         /// <param name="compilation">The Roslyn compilation.</param>
         /// <param name="typeMap">Cache for type resolutions.</param>
         /// <param name="includedMembers">List of member accessibilities to include.</param>
-        private void ProcessNamespace(INamespaceSymbol namespaceSymbol, DocAssembly docAssembly, Compilation compilation, Dictionary<string, DocType> typeMap, List<Accessibility> includedMembers)
+        /// <param name="projectContext">Optional project context containing configuration and filters.</param>
+        internal void ProcessNamespace(INamespaceSymbol namespaceSymbol, DocAssembly docAssembly, Compilation compilation, Dictionary<string, DocType> typeMap, List<Accessibility> includedMembers, ProjectContext? projectContext)
         {
-            // Process types in the global namespace
-            if (namespaceSymbol.IsGlobalNamespace)
-            {
-                var hasTypesToDocument = namespaceSymbol.GetTypeMembers().Any(t => includedMembers.Contains(t.DeclaredAccessibility) || t.Name == "<Module>");
-                if (hasTypesToDocument)
-                {
-                    var nsXml = namespaceSymbol.GetDocumentationCommentXml() ?? string.Empty;
-                    var nsDoc = string.IsNullOrWhiteSpace(nsXml) ? null : XDocument.Parse(nsXml);
+            // Process nested namespaces recursively, collecting all namespaces with types
+            // We always skip the global namespace to avoid documenting compiler-generated <Module> types
+            ProcessNamespaceRecursive(namespaceSymbol, docAssembly, compilation, typeMap, includedMembers, projectContext);
+        }
 
-                    var globalNs = new DocNamespace(namespaceSymbol)
-                    {
-                        Usage = nsDoc?.Descendants("summary").FirstOrDefault()?.Value.Trim() ?? string.Empty,
-                        IncludedMembers = includedMembers
-                    };
-                    docAssembly.Namespaces.Add(globalNs);
-
-                    foreach (var type in namespaceSymbol.GetTypeMembers().Where(t => includedMembers.Contains(t.DeclaredAccessibility) || t.Name == "<Module>"))
-                    {
-                        var docType = BuildDocType(type, compilation, typeMap, includedMembers);
-                        globalNs.Types.Add(docType);
-                    }
-                }
-            }
-
-            // Process nested namespaces
+        /// <summary>
+        /// Recursively processes namespaces, only adding those that contain types.
+        /// </summary>
+        /// <param name="namespaceSymbol">The namespace symbol to process.</param>
+        /// <param name="docAssembly">The documentation assembly being built.</param>
+        /// <param name="compilation">The Roslyn compilation.</param>
+        /// <param name="typeMap">Cache for type resolutions.</param>
+        /// <param name="includedMembers">List of member accessibilities to include.</param>
+        /// <param name="projectContext">Optional project context containing configuration and filters.</param>
+        internal void ProcessNamespaceRecursive(INamespaceSymbol namespaceSymbol, DocAssembly docAssembly, Compilation compilation, Dictionary<string, DocType> typeMap, List<Accessibility> includedMembers, ProjectContext? projectContext)
+        {
             foreach (var ns in namespaceSymbol.GetNamespaceMembers())
             {
-                // Skip empty namespaces (check for types or nested namespaces)
-                if (!ns.GetTypeMembers().Any() && !ns.GetNamespaceMembers().Any())
+                // Check if this namespace has any types with the required accessibility
+                var typesInNamespace = ns.GetTypeMembers()
+                    .Where(t => includedMembers.Contains(t.DeclaredAccessibility))
+                    .ToList();
+                
+                // Filter out excluded types if we have a project context
+                if (projectContext is not null)
                 {
-                    continue;
+                    typesInNamespace = typesInNamespace
+                        .Where(t => !projectContext.IsTypeExcluded(t.ToDisplayString()))
+                        .ToList();
+                }
+                
+                if (typesInNamespace.Any())
+                {
+                    // This namespace has types, so add it to the assembly
+                    var nsDoc = ExtractDocumentationXml(ns);
+
+                    var docNs = new DocNamespace(ns)
+                    {
+                        Name = ns.IsGlobalNamespace ? string.Empty : ns.ToDisplayString(),
+                        DisplayName = ns.ToDisplayString(),
+                        Summary = ExtractSummary(nsDoc),
+                        SeeAlso = ExtractSeeAlso(nsDoc),
+                        IncludedMembers = includedMembers
+                    };
+                    docAssembly.Namespaces.Add(docNs);
+
+                    // Process types in this namespace
+                    foreach (var type in typesInNamespace)
+                    {
+                        var docType = BuildDocType(type, compilation, typeMap, includedMembers);
+                        docNs.Types.Add(docType);
+                    }
                 }
 
-                var nsXml = ns.GetDocumentationCommentXml() ?? string.Empty;
-                var nsDoc = string.IsNullOrWhiteSpace(nsXml) ? null : XDocument.Parse(nsXml);
-
-                var docNs = new DocNamespace(ns)
-                {
-                    Usage = nsDoc?.Descendants("summary").FirstOrDefault()?.Value.Trim() ?? string.Empty,
-                    IncludedMembers = includedMembers
-                };
-                docAssembly.Namespaces.Add(docNs);
-
-                // Process types in this namespace
-                foreach (var type in ns.GetTypeMembers().Where(t => includedMembers.Contains(t.DeclaredAccessibility)))
-                {
-                    var docType = BuildDocType(type, compilation, typeMap, includedMembers);
-                    docNs.Types.Add(docType);
-                }
-
-                // Recurse into nested namespaces
-                ProcessNamespace(ns, docAssembly, compilation, typeMap, includedMembers);
+                // Recurse into nested namespaces regardless of whether this one had types
+                ProcessNamespaceRecursive(ns, docAssembly, compilation, typeMap, includedMembers, projectContext);
             }
         }
 

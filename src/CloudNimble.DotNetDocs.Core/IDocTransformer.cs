@@ -19,9 +19,8 @@ namespace CloudNimble.DotNetDocs.Core
         /// Transforms a documentation entity.
         /// </summary>
         /// <param name="entity">The documentation entity to transform.</param>
-        /// <param name="context">The project context providing transformation settings.</param>
         /// <returns>A task representing the asynchronous transformation operation.</returns>
-        Task TransformAsync(DocEntity entity, ProjectContext context);
+        Task TransformAsync(DocEntity entity);
 
         #endregion
 

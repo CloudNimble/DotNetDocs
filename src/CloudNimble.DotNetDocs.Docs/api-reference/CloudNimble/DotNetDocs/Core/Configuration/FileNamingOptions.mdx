@@ -1,0 +1,121 @@
+---
+title: FileNamingOptions
+description: "Provides configuration options for how documentation files are named and organized."
+icon: file-brackets-curly
+keywords: ['FileNamingOptions', 'CloudNimble.DotNetDocs.Core.Configuration.FileNamingOptions', 'CloudNimble.DotNetDocs.Core.Configuration', 'class', 'System.Object']
+---
+
+## Definition
+
+**Assembly:** CloudNimble.DotNetDocs.Core.dll
+
+**Namespace:** CloudNimble.DotNetDocs.Core.Configuration
+
+**Inheritance:** System.Object
+
+## Syntax
+
+```csharp
+CloudNimble.DotNetDocs.Core.Configuration.FileNamingOptions
+```
+
+## Summary
+
+Provides configuration options for how documentation files are named and organized.
+
+## Remarks
+
+This class controls the file naming strategy for rendered documentation, including
+            how namespaces are represented in the file system and what characters are used
+            as separators in file names.
+
+## Constructors
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  .ctor
+
+Initializes a new instance of the [FileNamingOptions](/api-reference/CloudNimble/DotNetDocs/Core/Configuration/FileNamingOptions) class with default settings.
+
+#### Syntax
+
+```csharp
+public FileNamingOptions()
+```
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  .ctor
+
+Initializes a new instance of the [FileNamingOptions](/api-reference/CloudNimble/DotNetDocs/Core/Configuration/FileNamingOptions) class with the specified settings.
+
+#### Syntax
+
+```csharp
+public FileNamingOptions(CloudNimble.DotNetDocs.Core.Configuration.NamespaceMode namespaceMode, char namespaceSeparator = '-')
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `namespaceMode` | `CloudNimble.DotNetDocs.Core.Configuration.NamespaceMode` | The namespace organization mode. |
+| `namespaceSeparator` | `char` | The character to use as a namespace separator in file names. |
+
+## Properties
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  NamespaceMode
+
+Gets or sets the mode for organizing namespace documentation.
+
+#### Syntax
+
+```csharp
+public CloudNimble.DotNetDocs.Core.Configuration.NamespaceMode NamespaceMode { get; set; }
+```
+
+#### Property Value
+
+Type: `CloudNimble.DotNetDocs.Core.Configuration.NamespaceMode`
+The namespace organization mode. Default is [NamespaceMode.File](/api-reference/CloudNimble/DotNetDocs/Core/Configuration/NamespaceMode#file).
+
+#### Remarks
+
+This property determines whether namespaces are rendered as individual files
+            or organized into a folder hierarchy.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  NamespaceSeparator
+
+Gets or sets the character used to separate namespace parts in file names.
+
+#### Syntax
+
+```csharp
+public char NamespaceSeparator { get; set; }
+```
+
+#### Property Value
+
+Type: `char`
+The separator character. Default is '-'.
+
+#### Remarks
+
+This setting is only used when [FileNamingOptions.NamespaceMode](/api-reference/CloudNimble/DotNetDocs/Core/Configuration/FileNamingOptions#namespacemode) is set to [NamespaceMode.File](/api-reference/CloudNimble/DotNetDocs/Core/Configuration/NamespaceMode#file).
+            When using [NamespaceMode.Folder](/api-reference/CloudNimble/DotNetDocs/Core/Configuration/NamespaceMode#folder), this setting is ignored as namespaces
+            are organized into actual folder hierarchies.
+            Common values include '-' (hyphen), '_' (underscore), or '.' (period).
+
+## Methods
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Clone
+
+Creates a copy of the current [FileNamingOptions](/api-reference/CloudNimble/DotNetDocs/Core/Configuration/FileNamingOptions) instance.
+
+#### Syntax
+
+```csharp
+public CloudNimble.DotNetDocs.Core.Configuration.FileNamingOptions Clone()
+```
+
+#### Returns
+
+Type: `CloudNimble.DotNetDocs.Core.Configuration.FileNamingOptions`
+A new instance with the same settings.
+

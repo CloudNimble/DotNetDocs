@@ -1,0 +1,309 @@
+name: CloudNimble.DotNetDocs.Tests.Shared.Parameters
+types:
+- baseType: System.Object
+  members:
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: MethodWithOptionalParam
+    parameters:
+    - name: required
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: string
+        name: String
+        signature: string
+        typeKind: Class
+        displayName: string
+      typeName: string
+      displayName: string required
+      usage: The required string parameter.
+    - defaultValue: 42
+      hasDefaultValue: true
+      isOptional: true
+      name: optional
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: int
+        name: Int32
+        signature: int
+        typeKind: Struct
+        displayName: int
+      typeName: int
+      displayName: int optional
+      usage: The optional integer parameter with a default value.
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: string
+      name: String
+      signature: string
+      typeKind: Class
+      displayName: string
+    returnTypeName: string
+    signature: public string MethodWithOptionalParam(string required, int optional = 42)
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.Parameters.ParameterVariations.MethodWithOptionalParam(string, int)
+    examples: >-
+      <code>
+                  var result1 = MethodWithOptionalParam("test");      // Uses default value 42
+                  var result2 = MethodWithOptionalParam("test", 100); // Uses provided value
+                  </code>
+    returns: A formatted string combining both parameters.
+    summary: A method with an optional parameter.
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: MethodWithParams
+    parameters:
+    - isParams: true
+      name: values
+      parameterType:
+        fullName: int[]
+        signature: int[]
+        typeKind: Array
+        displayName: int[]
+      typeName: int[]
+      displayName: params int[] values
+      usage: Variable number of integer values.
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: int
+      name: Int32
+      signature: int
+      typeKind: Struct
+      displayName: int
+    returnTypeName: int
+    signature: public int MethodWithParams(params int[] values)
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.Parameters.ParameterVariations.MethodWithParams(params int[])
+    examples: >-
+      <code>
+                  var sum1 = MethodWithParams(1, 2, 3);        // Returns 6
+                  var sum2 = MethodWithParams(new[] { 1, 2 }); // Returns 3
+                  </code>
+    returns: The sum of all provided values.
+    summary: A method with a params array.
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: MethodWithRef
+    parameters:
+    - name: value
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: int
+        name: Int32
+        signature: int
+        typeKind: Struct
+        displayName: int
+      typeName: int
+      displayName: ref int value
+      usage: The value to be modified by reference.
+    returnTypeName: void
+    signature: public void MethodWithRef(ref int value)
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.Parameters.ParameterVariations.MethodWithRef(ref int)
+    remarks: This method doubles the input value.
+    summary: A method with a ref parameter.
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: MethodWithOut
+    parameters:
+    - name: input
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: string
+        name: String
+        signature: string
+        typeKind: Class
+        displayName: string
+      typeName: string
+      displayName: string input
+      usage: The input string to parse.
+    - name: value
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: int
+        name: Int32
+        signature: int
+        typeKind: Struct
+        displayName: int
+      typeName: int
+      displayName: out int value
+      usage: The output integer value if parsing succeeds.
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: bool
+      name: Boolean
+      signature: bool
+      typeKind: Struct
+      displayName: bool
+    returnTypeName: bool
+    signature: public bool MethodWithOut(string input, out int value)
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.Parameters.ParameterVariations.MethodWithOut(string, out int)
+    returns: true if the parsing was successful; otherwise, false.
+    summary: A method with an out parameter.
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: GenericMethod
+    parameters:
+    - name: value
+      parameterType:
+        assemblyName: CloudNimble.DotNetDocs.Tests.Shared
+        fullName: T
+        name: T
+        signature: T
+        typeKind: TypeParameter
+        displayName: T
+      typeName: T
+      displayName: T value
+      usage: The value to process.
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: string
+      name: String
+      signature: string
+      typeKind: Class
+      displayName: string
+    returnTypeName: string
+    signature: public string GenericMethod<T>(T value)
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.Parameters.ParameterVariations.GenericMethod<T>(T)
+    examples: >-
+      <code>
+                  var result1 = GenericMethod&lt;int&gt;(42);
+                  var result2 = GenericMethod("hello");
+                  </code>
+    returns: The string representation of the value.
+    summary: A generic method with a type parameter.
+    typeParameters:
+    - description: The type of the value.
+      name: T
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: GenericMethodWithMultipleTypes
+    parameters:
+    - name: key
+      parameterType:
+        assemblyName: CloudNimble.DotNetDocs.Tests.Shared
+        fullName: TKey
+        name: TKey
+        signature: TKey
+        typeKind: TypeParameter
+        displayName: TKey
+      typeName: TKey
+      displayName: TKey key
+      usage: The key.
+    - name: value
+      parameterType:
+        assemblyName: CloudNimble.DotNetDocs.Tests.Shared
+        fullName: TValue
+        name: TValue
+        signature: TValue
+        typeKind: TypeParameter
+        displayName: TValue
+      typeName: TValue
+      displayName: TValue value
+      usage: The value.
+    returnType:
+      assemblyName: System.Runtime
+      fullName: System.Collections.Generic.KeyValuePair<TKey, TValue>
+      name: KeyValuePair
+      signature: System.Collections.Generic.KeyValuePair<TKey, TValue>
+      typeKind: Error
+      displayName: System.Collections.Generic.KeyValuePair<TKey, TValue>
+    returnTypeName: System.Collections.Generic.KeyValuePair<TKey, TValue>
+    signature: public System.Collections.Generic.KeyValuePair<TKey, TValue> GenericMethodWithMultipleTypes<TKey, TValue>(TKey key, TValue value)
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.Parameters.ParameterVariations.GenericMethodWithMultipleTypes<TKey, TValue>(TKey, TValue)
+    returns: A key-value pair.
+    summary: A method with multiple generic type parameters.
+    typeParameters:
+    - description: The type of the key.
+      name: TKey
+    - description: The type of the value.
+      name: TValue
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: MethodWithNullables
+    parameters:
+    - name: nullableInt
+      parameterType:
+        assemblyName: System.Runtime
+        fullName: System.Nullable<int>
+        name: Nullable
+        signature: System.Nullable<int>
+        typeKind: Error
+        displayName: System.Nullable<int>
+      typeName: System.Nullable<int>
+      displayName: System.Nullable<int> nullableInt
+      usage: An optional nullable integer.
+    - name: nullableString
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: string?
+        name: String
+        signature: string?
+        typeKind: Class
+        displayName: string?
+      typeName: string?
+      displayName: string? nullableString
+      usage: An optional nullable string.
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: string
+      name: String
+      signature: string
+      typeKind: Class
+      displayName: string
+    returnTypeName: string
+    signature: public string MethodWithNullables(System.Nullable<int> nullableInt, string nullableString)
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.Parameters.ParameterVariations.MethodWithNullables(System.Nullable<int>, string?)
+    returns: A description of the provided values.
+    summary: A method with nullable parameters.
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: MethodWithConstraints
+    parameters:
+    - name: item
+      parameterType:
+        assemblyName: CloudNimble.DotNetDocs.Tests.Shared
+        fullName: T
+        name: T
+        signature: T
+        typeKind: TypeParameter
+        displayName: T
+      typeName: T
+      displayName: T item
+      usage: The item to process.
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: string
+      name: String
+      signature: string
+      typeKind: Class
+      displayName: string
+    returnTypeName: string
+    signature: 'public string MethodWithConstraints<T>(T item) where T : class'
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.Parameters.ParameterVariations.MethodWithConstraints<T>(T)
+    returns: The type name of the item.
+    summary: A method demonstrating parameter constraints.
+    typeParameters:
+    - description: The type parameter constrained to class types.
+      name: T
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Constructor
+    name: .ctor
+    returnTypeName: void
+    signature: public ParameterVariations()
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.Parameters.ParameterVariations.ParameterVariations()
+  assemblyName: CloudNimble.DotNetDocs.Tests.Shared
+  fullName: CloudNimble.DotNetDocs.Tests.Shared.Parameters.ParameterVariations
+  name: ParameterVariations
+  signature: CloudNimble.DotNetDocs.Tests.Shared.Parameters.ParameterVariations
+  typeKind: Class
+  displayName: CloudNimble.DotNetDocs.Tests.Shared.Parameters.ParameterVariations
+  remarks: This class contains methods with different parameter modifiers and types.
+  summary: A class demonstrating various parameter types and patterns.
+displayName: CloudNimble.DotNetDocs.Tests.Shared.Parameters

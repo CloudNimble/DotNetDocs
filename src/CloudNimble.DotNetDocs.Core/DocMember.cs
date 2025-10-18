@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Text.Json.Serialization;
 using Microsoft.CodeAnalysis;
+using YamlDotNet.Serialization;
 
 namespace CloudNimble.DotNetDocs.Core
 {
@@ -19,10 +21,28 @@ namespace CloudNimble.DotNetDocs.Core
         #region Properties
 
         /// <summary>
-        /// Gets the member kind (method, property, field, event, etc.).
+        /// Gets or sets the accessibility level of the member.
+        /// </summary>
+        /// <value>The accessibility level (public, private, protected, etc.).</value>
+        public Accessibility Accessibility { get; set; }
+
+        /// <summary>
+        /// Gets or sets the member kind (method, property, field, event, etc.).
         /// </summary>
         /// <value>The kind of member as defined by Roslyn.</value>
-        public SymbolKind MemberKind => Symbol.Kind;
+        public SymbolKind MemberKind { get; set; }
+
+        /// <summary>
+        /// Gets or sets the method kind for method members.
+        /// </summary>
+        /// <value>The kind of method (Constructor, Ordinary, etc.), or null for non-method members.</value>
+        public MethodKind? MethodKind { get; set; }
+
+        /// <summary>
+        /// Gets or sets the name of the member.
+        /// </summary>
+        /// <value>The member name.</value>
+        public string Name { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets the collection of parameters for this member.
@@ -41,10 +61,24 @@ namespace CloudNimble.DotNetDocs.Core
         public DocType? ReturnType { get; set; }
 
         /// <summary>
+        /// Gets or sets the name of the return type.
+        /// </summary>
+        /// <value>The return type name for methods and properties, or null for other members.</value>
+        public string? ReturnTypeName { get; set; }
+
+        /// <summary>
+        /// Gets or sets the signature of the member.
+        /// </summary>
+        /// <value>The member signature including modifiers, return type, parameters, etc.</value>
+        public string? Signature { get; set; }
+
+        /// <summary>
         /// Gets the Roslyn symbol for the member.
         /// </summary>
         /// <value>The underlying Roslyn symbol containing metadata.</value>
         [NotNull]
+        [JsonIgnore]
+        [YamlIgnore]
         public ISymbol Symbol { get; }
 
         #endregion
@@ -56,7 +90,7 @@ namespace CloudNimble.DotNetDocs.Core
         /// </summary>
         /// <param name="symbol">The Roslyn member symbol.</param>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="symbol"/> is null.</exception>
-        public DocMember(ISymbol symbol)
+        public DocMember(ISymbol symbol) : base(symbol)
         {
             ArgumentNullException.ThrowIfNull(symbol);
             Symbol = symbol;

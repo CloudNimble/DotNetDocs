@@ -1,0 +1,231 @@
+---
+title: ParameterVariations
+description: Demonstrates various parameter types and patterns
+icon: sliders
+---
+
+# ParameterVariations Class
+
+<Note>
+  **Namespace**: CloudNimble.DotNetDocs.Tests.Shared.Parameters  
+  **Assembly**: CloudNimble.DotNetDocs.Tests.Shared.dll
+</Note>
+
+## 📋 Definition
+
+```csharp
+public class ParameterVariations
+```
+
+## 📝 Summary
+
+Demonstrates various parameter patterns including optional, params, ref, out, in, and named parameters.
+
+## 🎯 Members
+
+<Tabs>
+  <Tab title="Standard Parameters">
+    ### SimpleMethod
+    
+    ```csharp
+    public void SimpleMethod(string text, int number)
+    ```
+    
+    Method with standard value parameters.
+    
+    **Parameters**:
+    - `text` (string) - The text parameter
+    - `number` (int) - The number parameter
+  </Tab>
+  
+  <Tab title="Optional Parameters">
+    ### OptionalParameters
+    
+    ```csharp
+    public void OptionalParameters(
+        string required,
+        int optional1 = 10,
+        bool optional2 = true,
+        string optional3 = "default")
+    ```
+    
+    Method demonstrating optional parameters with default values.
+    
+    **Parameters**:
+    - `required` (string) - Required parameter
+    - `optional1` (int) - Optional integer, default: 10
+    - `optional2` (bool) - Optional boolean, default: true
+    - `optional3` (string) - Optional string, default: "default"
+    
+    <Accordion title="Usage Examples">
+      ```csharp
+      // All parameters
+      OptionalParameters("test", 20, false, "custom");
+      
+      // Only required
+      OptionalParameters("test");
+      
+      // Some optional
+      OptionalParameters("test", 20);
+      ```
+    </Accordion>
+  </Tab>
+  
+  <Tab title="Ref/Out Parameters">
+    ### RefParameter
+    
+    ```csharp
+    public void RefParameter(ref int value)
+    ```
+    
+    Modifies the passed parameter by reference.
+    
+    **Parameters**:
+    - `value` (ref int) - Value to modify
+    
+    ### OutParameter
+    
+    ```csharp
+    public bool TryParse(string input, out int result)
+    ```
+    
+    Tries to parse input and outputs result.
+    
+    **Parameters**:
+    - `input` (string) - Input to parse
+    - `result` (out int) - Parsed result
+    
+    **Returns**: true if successful, false otherwise
+    
+    ### InParameter
+    
+    ```csharp
+    public void ProcessLargeStruct(in LargeStruct data)
+    ```
+    
+    Processes large struct without copying.
+    
+    **Parameters**:
+    - `data` (in LargeStruct) - Read-only reference to data
+  </Tab>
+  
+  <Tab title="Params Array">
+    ### ParamsMethod
+    
+    ```csharp
+    public int Sum(params int[] numbers)
+    ```
+    
+    Accepts variable number of integer arguments.
+    
+    **Parameters**:
+    - `numbers` (params int[]) - Variable number of integers
+    
+    **Returns**: Sum of all numbers
+    
+    <Accordion title="Usage Examples">
+      ```csharp
+      // No arguments
+      var sum1 = Sum();
+      
+      // Single argument
+      var sum2 = Sum(5);
+      
+      // Multiple arguments
+      var sum3 = Sum(1, 2, 3, 4, 5);
+      
+      // Array
+      var sum4 = Sum(new[] { 1, 2, 3 });
+      ```
+    </Accordion>
+  </Tab>
+  
+  <Tab title="Generic Parameters">
+    ### GenericMethod`<T>`
+    
+    ```csharp
+    public T GenericMethod`<T>`(T input) where T : class
+    ```
+    
+    Generic method with type constraint.
+    
+    **Type Parameters**:
+    - `T` - Must be a reference type
+    
+    **Parameters**:
+    - `input` (T) - Input of type T
+    
+    **Returns**: The input value
+    
+    ### MultipleGenerics`<TKey, TValue>`
+    
+    ```csharp
+    public Dictionary`<TKey, TValue>` CreateDictionary`<TKey, TValue>`()
+        where TKey : notnull
+        where TValue : new()
+    ```
+    
+    Method with multiple generic parameters.
+    
+    **Type Parameters**:
+    - `TKey` - Dictionary key type (non-nullable)
+    - `TValue` - Dictionary value type (must have default constructor)
+  </Tab>
+</Tabs>
+
+## 💡 Complete Examples
+
+<CodeGroup>
+  ```csharp Ref/Out Usage
+  var variations = new ParameterVariations();
+  
+  // Ref parameter - must be initialized
+  int refValue = 10;
+  variations.RefParameter(ref refValue);
+  Console.WriteLine(refValue); // Modified value
+  
+  // Out parameter - initialized in method
+  if (variations.TryParse("123", out int result))
+  {
+      Console.WriteLine($"Parsed: {result}");
+  }
+  ```
+  
+  ```csharp Params Usage
+  var variations = new ParameterVariations();
+  
+  // Various ways to call params method
+  var sum1 = variations.Sum();           // 0
+  var sum2 = variations.Sum(5);          // 5
+  var sum3 = variations.Sum(1, 2, 3);    // 6
+  var sum4 = variations.Sum(new[] { 1, 2, 3, 4, 5 }); // 15
+  ```
+  
+  ```csharp Named Arguments
+  var variations = new ParameterVariations();
+  
+  // Using named arguments for clarity
+  variations.OptionalParameters(
+      required: "test",
+      optional2: false,
+      optional1: 50
+  );
+  
+  // Mix positional and named
+  variations.OptionalParameters("test", optional3: "custom");
+  ```
+</CodeGroup>
+
+## ⚠️ Important Notes
+
+<Warning>
+  When using `ref` parameters, the variable must be initialized before passing. With `out` parameters, the method must assign a value before returning.
+</Warning>
+
+<Tip>
+  Use named arguments to improve code readability, especially when calling methods with multiple parameters or when skipping optional parameters.
+</Tip>
+
+<Info>
+  The `params` keyword must be used on the last parameter only, and there can be only one params parameter per method.
+</Info>

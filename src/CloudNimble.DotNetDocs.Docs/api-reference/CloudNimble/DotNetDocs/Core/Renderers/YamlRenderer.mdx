@@ -1,0 +1,96 @@
+---
+title: YamlRenderer
+description: "Renders documentation as YAML files."
+icon: file-brackets-curly
+keywords: ['YamlRenderer', 'CloudNimble.DotNetDocs.Core.Renderers.YamlRenderer', 'CloudNimble.DotNetDocs.Core.Renderers', 'class', 'CloudNimble.DotNetDocs.Core.Renderers.RendererBase', 'CloudNimble.DotNetDocs.Core.IDocRenderer']
+---
+
+## Definition
+
+**Assembly:** CloudNimble.DotNetDocs.Core.dll
+
+**Namespace:** CloudNimble.DotNetDocs.Core.Renderers
+
+**Inheritance:** CloudNimble.DotNetDocs.Core.Renderers.RendererBase
+
+## Syntax
+
+```csharp
+CloudNimble.DotNetDocs.Core.Renderers.YamlRenderer
+```
+
+## Summary
+
+Renders documentation as YAML files.
+
+## Remarks
+
+Generates structured YAML documentation suitable for configuration files and
+            integration with various documentation platforms.
+
+## Constructors
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  .ctor
+
+Initializes a new instance of the [YamlRenderer](/api-reference/CloudNimble/DotNetDocs/Core/Renderers/YamlRenderer) class.
+
+#### Syntax
+
+```csharp
+public YamlRenderer(CloudNimble.DotNetDocs.Core.ProjectContext context = null)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `context` | `CloudNimble.DotNetDocs.Core.ProjectContext?` | The project context. If null, a default context is created. |
+
+## Methods
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  RenderAsync
+
+Renders the documentation assembly to YAML files.
+
+#### Syntax
+
+```csharp
+public System.Threading.Tasks.Task RenderAsync(CloudNimble.DotNetDocs.Core.DocAssembly model)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `model` | `CloudNimble.DotNetDocs.Core.DocAssembly` | The documentation assembly to render. |
+
+#### Returns
+
+Type: `System.Threading.Tasks.Task`
+A task representing the asynchronous rendering operation.
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  RenderPlaceholdersAsync
+
+Renders placeholder conceptual content files for the documentation assembly.
+
+#### Syntax
+
+```csharp
+public System.Threading.Tasks.Task RenderPlaceholdersAsync(CloudNimble.DotNetDocs.Core.DocAssembly model)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `model` | `CloudNimble.DotNetDocs.Core.DocAssembly` | The documentation assembly to generate placeholders for. |
+
+#### Returns
+
+Type: `System.Threading.Tasks.Task`
+A task representing the asynchronous placeholder rendering operation.
+
+## Related APIs
+
+- CloudNimble.DotNetDocs.Core.IDocRenderer
+
