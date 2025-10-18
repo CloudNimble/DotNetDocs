@@ -1,4 +1,7 @@
 {
+  "appearance": {
+    "default": "dark"
+  },
   "colors": {
     "dark": "#3CD0E2",
     "light": "#419AC5",
@@ -164,32 +167,6 @@
                       "api-reference/CloudNimble/DotNetDocs/Mintlify/MintlifyRendererOptions",
                       "api-reference/CloudNimble/DotNetDocs/Mintlify/NavigationMode"
                     ]
-                  },
-                  {
-                    "group": "Tools",
-                    "icon": "folder-tree",
-                    "pages": [
-                      "api-reference/CloudNimble/DotNetDocs/Tools/index",
-                      "api-reference/CloudNimble/DotNetDocs/Tools/Program",
-                      {
-                        "group": "Commands",
-                        "icon": "folder-tree",
-                        "pages": [
-                          "api-reference/CloudNimble/DotNetDocs/Tools/Commands/index",
-                          "api-reference/CloudNimble/DotNetDocs/Tools/Commands/AddCommand",
-                          "api-reference/CloudNimble/DotNetDocs/Tools/Commands/BuildCommand",
-                          "api-reference/CloudNimble/DotNetDocs/Tools/Commands/DocsRootCommand",
-                          {
-                            "group": "Base",
-                            "icon": "folder-tree",
-                            "pages": [
-                              "api-reference/CloudNimble/DotNetDocs/Tools/Commands/Base/index",
-                              "api-reference/CloudNimble/DotNetDocs/Tools/Commands/Base/DocsCommandBase"
-                            ]
-                          }
-                        ]
-                      }
-                    ]
                   }
                 ]
               }
@@ -333,5 +310,8 @@
     ]
   },
   "$schema": "https://mintlify.com/docs.json",
+  "styling": {
+    "codeblocks": "dark"
+  },
   "theme": "maple"
 }

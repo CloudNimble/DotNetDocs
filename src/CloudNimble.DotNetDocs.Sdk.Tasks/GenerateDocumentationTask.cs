@@ -419,6 +419,20 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
                     config.Navigation = ParseNavigationConfig(navigationElement);
                 }
 
+                // Parse Styling
+                var stylingElement = root.Element("Styling");
+                if (stylingElement is not null)
+                {
+                    config.Styling = ParseStylingConfig(stylingElement);
+                }
+
+                // Parse Appearance
+                var appearanceElement = root.Element("Appearance");
+                if (appearanceElement is not null)
+                {
+                    config.Appearance = ParseAppearanceConfig(appearanceElement);
+                }
+
                 // Parse Integrations
                 var integrationsElement = root.Element("Integrations");
                 if (integrationsElement is not null)
@@ -682,6 +696,61 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
                 {
                     Key = segmentElement.Attribute("Key")?.Value
                 };
+            }
+
+            return config;
+        }
+
+        /// <summary>
+        /// Parses the Styling element from the MintlifyTemplate XML.
+        /// </summary>
+        /// <param name="stylingElement">The styling XML element.</param>
+        /// <returns>A StylingConfig instance.</returns>
+        internal StylingConfig ParseStylingConfig(XElement stylingElement)
+        {
+            var config = new StylingConfig();
+
+            // Parse CodeBlocks
+            var codeBlocksElement = stylingElement.Element("CodeBlocks");
+            if (codeBlocksElement is not null && !string.IsNullOrWhiteSpace(codeBlocksElement.Value))
+            {
+                config.Codeblocks = codeBlocksElement.Value.Trim();
+            }
+
+            // Parse Eyebrows
+            var eyebrowsElement = stylingElement.Element("Eyebrows");
+            if (eyebrowsElement is not null && !string.IsNullOrWhiteSpace(eyebrowsElement.Value))
+            {
+                config.Eyebrows = eyebrowsElement.Value.Trim();
+            }
+
+            return config;
+        }
+
+        /// <summary>
+        /// Parses the Appearance element from the MintlifyTemplate XML.
+        /// </summary>
+        /// <param name="appearanceElement">The appearance XML element.</param>
+        /// <returns>An AppearanceConfig instance.</returns>
+        internal AppearanceConfig ParseAppearanceConfig(XElement appearanceElement)
+        {
+            var config = new AppearanceConfig();
+
+            // Parse Default
+            var defaultElement = appearanceElement.Element("Default");
+            if (defaultElement is not null && !string.IsNullOrWhiteSpace(defaultElement.Value))
+            {
+                config.Default = defaultElement.Value.Trim();
+            }
+
+            // Parse Strict
+            var strictElement = appearanceElement.Element("Strict");
+            if (strictElement is not null && !string.IsNullOrWhiteSpace(strictElement.Value))
+            {
+                if (bool.TryParse(strictElement.Value.Trim(), out var strict))
+                {
+                    config.Strict = strict;
+                }
             }
 
             return config;

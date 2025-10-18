@@ -79,6 +79,21 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
         }
 
         /// <summary>
+        /// Gets a template for summary documentation.
+        /// </summary>
+        /// <param name="entityName">The name of the entity (namespace, assembly, etc.).</param>
+        /// <returns>A markdown template string for summary documentation.</returns>
+        protected static string GetSummaryTemplate(string entityName)
+        {
+            return $@"<!-- TODO: REMOVE THIS COMMENT AFTER YOU CUSTOMIZE THIS CONTENT -->
+# Summary
+
+Describe the purpose and overview of `{entityName}` here.
+
+";
+        }
+
+        /// <summary>
         /// Gets a template for usage documentation.
         /// </summary>
         /// <param name="entityName">The name of the entity (type, assembly, etc.).</param>

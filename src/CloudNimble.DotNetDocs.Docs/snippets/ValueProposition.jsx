@@ -55,6 +55,52 @@ export const ValueProposition = ({ minimal = false, minCardWidth = 360, gap = 40
                         boxShadow: '0 10px 40px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05)'
                     }}
                 >
+                    {/* Card background (gradient + mesh + grid) - only in minimal mode */}
+                    {minimal && (
+                        <div className="card-background" style={{
+                            position: 'absolute',
+                            inset: 0,
+                            borderRadius: '28px',
+                            overflow: 'hidden',
+                            zIndex: 0
+                        }}>
+                            {/* Linear gradient */}
+                            <div style={{
+                                position: 'absolute',
+                                inset: 0,
+                                background: 'linear-gradient(180deg, #050B12 0%, #0D1821 50%, #0A1520 100%)'
+                            }} />
+
+                            {/* Mesh gradient */}
+                            <div style={{
+                                position: 'absolute',
+                                inset: 0,
+                                opacity: 0.4,
+                                background: `
+                                    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(60, 208, 226, 0.25), transparent),
+                                    radial-gradient(ellipse 60% 50% at 10% 40%, rgba(65, 154, 197, 0.2), transparent),
+                                    radial-gradient(ellipse 60% 50% at 90% 60%, rgba(60, 208, 226, 0.2), transparent),
+                                    radial-gradient(ellipse 100% 100% at 50% 100%, rgba(65, 154, 197, 0.15), transparent)
+                                `,
+                                filter: 'blur(60px)',
+                                animation: 'morphGradient 12s ease-in-out infinite'
+                            }} />
+
+                            {/* Animated grid */}
+                            <div style={{
+                                position: 'absolute',
+                                inset: 0,
+                                opacity: 0.03,
+                                backgroundImage: `
+                                    linear-gradient(#3CD0E2 1px, transparent 1px),
+                                    linear-gradient(90deg, #3CD0E2 1px, transparent 1px)
+                                `,
+                                backgroundSize: '100px 100px',
+                                animation: 'gridSlide 20s linear infinite'
+                            }} />
+                        </div>
+                    )}
+
                     {/* Animated border gradient */}
                     <div className="card-border-gradient" style={{
                         position: 'absolute',
@@ -149,6 +195,22 @@ export const ValueProposition = ({ minimal = false, minCardWidth = 360, gap = 40
             <>
                 {valueCards}
                 <style>{`
+                    @keyframes morphGradient {
+                        0%, 100% {
+                            opacity: 0.4;
+                            transform: scale(1) rotate(0deg);
+                        }
+                        50% {
+                            opacity: 0.6;
+                            transform: scale(1.1) rotate(5deg);
+                        }
+                    }
+
+                    @keyframes gridSlide {
+                        0% { background-position: 0 0; }
+                        100% { background-position: 100px 100px; }
+                    }
+
                     .value-card:hover {
                         transform: translateY(-12px) scale(1.02);
                         border-color: transparent !important;

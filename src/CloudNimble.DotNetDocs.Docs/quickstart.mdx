@@ -34,13 +34,17 @@ import { ValueProposition } from '/snippets/ValueProposition.jsx';
     dotnet docs add
     ```
 
-    By default, this creates a Mintlify documentation project. To use a different documentation type:
+    By default, this creates a Mintlify documentation project using the latest stable SDK version from NuGet. To use a different documentation type or prerelease SDK:
 
     ```bash
+    # Use a different documentation type
     dotnet docs add --type DocFX
+
+    # Use the latest prerelease SDK version
+    dotnet docs add --prerelease
     ```
 
-    <Note>You can see more of the optional arguments and supported types in the [CLI Reference](/guides/cli-reference) docs.</Note>
+    <Note>The CLI automatically queries NuGet.org for the latest SDK version. See more options in the [CLI Reference](/guides/cli-reference) docs.</Note>
 
     This automatically:
 

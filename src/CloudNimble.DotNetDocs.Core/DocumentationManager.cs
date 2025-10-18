@@ -327,6 +327,28 @@ namespace CloudNimble.DotNetDocs.Core
                     await LoadConceptualFileAsync(namespacePath, DocConstants.BestPracticesFileName, content => ns.BestPractices = content, showPlaceholders);
                     await LoadConceptualFileAsync(namespacePath, DocConstants.PatternsFileName, content => ns.Patterns = content, showPlaceholders);
                     await LoadConceptualFileAsync(namespacePath, DocConstants.ConsiderationsFileName, content => ns.Considerations = content, showPlaceholders);
+
+                    // Load namespace related APIs if markdown file exists
+                    var relatedApisPath = Path.Combine(namespacePath, DocConstants.RelatedApisFileName);
+                    if (File.Exists(relatedApisPath))
+                    {
+                        var content = await File.ReadAllTextAsync(relatedApisPath);
+
+                        // Check if this is a placeholder file and if we should skip it
+                        if (!showPlaceholders && content.TrimStart().StartsWith("<!-- TODO: REMOVE THIS COMMENT AFTER YOU CUSTOMIZE THIS CONTENT -->"))
+                        {
+                            // Skip placeholder files when ShowPlaceholders is false
+                        }
+                        else
+                        {
+                            // Simple markdown file with one API per line for now
+                            var lines = content.Split('\n');
+                            ns.RelatedApis = lines
+                                .Where(line => !string.IsNullOrWhiteSpace(line) && !line.TrimStart().StartsWith("<!--"))
+                                .Select(line => line.Trim())
+                                .ToList();
+                        }
+                    }
                 }
 
                 foreach (var type in ns.Types)

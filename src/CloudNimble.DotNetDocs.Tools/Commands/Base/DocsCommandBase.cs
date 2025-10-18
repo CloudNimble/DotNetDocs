@@ -1,7 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
+using System.Net.Http;
 using System.Reflection;
 using System.Text;
+using System.Text.Json;
+using System.Threading.Tasks;
+using CloudNimble.DotNetDocs.Tools.Models;
 using Pastel;
 
 namespace CloudNimble.DotNetDocs.Tools.Commands.Base
@@ -10,7 +16,7 @@ namespace CloudNimble.DotNetDocs.Tools.Commands.Base
     /// <summary>
     /// Base class for all DotNetDocs CLI commands, providing shared functionality like header display.
     /// </summary>
-    public class DocsCommandBase
+    public partial class DocsCommandBase
     {
 
         #region Public Methods
@@ -91,7 +97,61 @@ namespace CloudNimble.DotNetDocs.Tools.Commands.Base
             Console.WriteLine();
         }
 
+        /// <summary>
+        /// Queries NuGet.org for the latest version of the DotNetDocs.Sdk package.
+        /// </summary>
+        /// <param name="includePrerelease">Whether to include prerelease versions in the search.</param>
+        /// <returns>The latest version string, or null if the query fails.</returns>
+        protected static async Task<string?> GetLatestSdkVersionAsync(bool includePrerelease)
+        {
+            try
+            {
+                using var httpClient = new HttpClient();
+                httpClient.Timeout = TimeSpan.FromSeconds(10);
+
+                // Query NuGet v3 API for package versions
+                var url = "https://api.nuget.org/v3-flatcontainer/dotnetdocs.sdk/index.json";
+                var response = await httpClient.GetStringAsync(url);
+
+                // Parse JSON response
+                using var document = JsonDocument.Parse(response);
+                var versionsElement = document.RootElement.GetProperty("versions");
+
+                // Extract and parse versions
+                var versions = new List<NuGetVersion>();
+                foreach (var versionElement in versionsElement.EnumerateArray())
+                {
+                    var versionString = versionElement.GetString();
+                    if (!string.IsNullOrEmpty(versionString))
+                    {
+                        versions.Add(new NuGetVersion(versionString));
+                    }
+                }
+
+                // Filter based on prerelease preference
+                var filteredVersions = includePrerelease
+                    ? versions
+                    : versions.Where(v => !v.IsPrerelease).ToList();
+
+                if (filteredVersions.Count == 0)
+                {
+                    return null;
+                }
+
+                // Sort and get the latest
+                var latestVersion = filteredVersions.OrderByDescending(v => v).First();
+                return latestVersion.ToString();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"⚠️ Failed to query NuGet: {ex.Message}");
+                return null;
+            }
+        }
+
         #endregion
+
+        #region Private Methods
 
         /// <summary>
         /// Gets the version string for the tool.
@@ -105,6 +165,11 @@ namespace CloudNimble.DotNetDocs.Tools.Commands.Base
                 ?? "Unknown";
             return version;
         }
+
+        #endregion
+        #region Helper Classes
+
+        #endregion
 
     }
 

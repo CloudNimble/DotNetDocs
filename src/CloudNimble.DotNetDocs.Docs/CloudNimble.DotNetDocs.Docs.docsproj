@@ -1,4 +1,4 @@
-<Project Sdk="DotNetDocs.Sdk/1.0.0-preview.31">
+<Project Sdk="DotNetDocs.Sdk/1.0.0-preview.32">
 
 	<PropertyGroup>
 		<DocumentationType>Mintlify</DocumentationType>
@@ -28,6 +28,12 @@
 				<Light>/images/icons/favicon-96x96.png</Light>
 				<Dark>/images/icons/favicon-96x96.png</Dark>
 			</Favicon>
+            <Appearance>
+                <Default>dark</Default>
+			</Appearance>
+            <Styling>
+                <CodeBlocks>dark</CodeBlocks>
+			</Styling>
 			<Navigation>
 				<Pages>
 					<Groups>

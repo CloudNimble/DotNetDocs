@@ -49,6 +49,12 @@ namespace CloudNimble.DotNetDocs.Tools.Commands
         [Option("--type|-t", Description = "Optional. Documentation type (Mintlify, DocFX, MkDocs, Jekyll, Hugo, Generic). Defaults to Mintlify.")]
         public string? DocumentationType { get; set; }
 
+        /// <summary>
+        /// Gets or sets whether to use the latest prerelease version of the DotNetDocs.Sdk.
+        /// </summary>
+        [Option("--prerelease", Description = "Optional. Use the latest prerelease version of DotNetDocs.Sdk instead of the latest stable version.")]
+        public bool UsePrerelease { get; set; }
+
         #endregion
 
         #region Public Methods
@@ -90,16 +96,30 @@ namespace CloudNimble.DotNetDocs.Tools.Commands
                 // Determine documentation type (default to Mintlify)
                 string docType = DocumentationType ?? "Mintlify";
 
+                // Get latest SDK version from NuGet
+                Console.WriteLine($"🔍 Querying NuGet for latest DotNetDocs.Sdk version...");
+                string? sdkVersion = await GetLatestSdkVersionAsync(UsePrerelease);
+                if (string.IsNullOrEmpty(sdkVersion))
+                {
+                    Console.WriteLine("⚠️ Could not retrieve latest version from NuGet, using fallback version 1.0.0");
+                    sdkVersion = "1.0.0";
+                }
+                else
+                {
+                    Console.WriteLine($"✅ Found version: {sdkVersion}");
+                }
+
                 Console.WriteLine($"📝 Creating docs project: {docsProjectName}");
                 Console.WriteLine($"📂 Output directory: {outputDir}");
                 Console.WriteLine($"📖 Documentation type: {docType}");
+                Console.WriteLine($"📦 SDK version: {sdkVersion}");
 
                 // Create the docs project directory
                 Directory.CreateDirectory(outputDir);
 
                 // Create the .docsproj file
                 string docsProjPath = Path.Combine(outputDir, $"{docsProjectName}.docsproj");
-                await CreateDocsProjectFile(docsProjPath, solutionName, docType);
+                await CreateDocsProjectFile(docsProjPath, solutionName, docType, sdkVersion);
 
                 Console.WriteLine($"✅ Created {docsProjPath}");
 
@@ -202,6 +222,7 @@ namespace CloudNimble.DotNetDocs.Tools.Commands
         /// <param name="filePath">The path where the .docsproj file should be created.</param>
         /// <param name="solutionName">The name of the solution, used in configuration.</param>
         /// <param name="documentationType">The type of documentation project (Mintlify, DocFX, MkDocs, Jekyll, Hugo, Generic).</param>
+        /// <param name="sdkVersion">The version of the DotNetDocs.Sdk to reference.</param>
         /// <returns>A task that represents the asynchronous write operation.</returns>
         /// <remarks>
         /// The created project file includes:
@@ -210,7 +231,7 @@ namespace CloudNimble.DotNetDocs.Tools.Commands
         /// - Namespace mode set to Folder
         /// - Default theme and color scheme (for Mintlify projects)
         /// </remarks>
-        internal async Task CreateDocsProjectFile(string filePath, string solutionName, string documentationType)
+        internal async Task CreateDocsProjectFile(string filePath, string solutionName, string documentationType, string sdkVersion)
         {
             // Build Mintlify-specific configuration if needed
             string mintlifyConfig = string.Empty;
@@ -229,7 +250,7 @@ namespace CloudNimble.DotNetDocs.Tools.Commands
 		</MintlifyTemplate>";
             }
 
-            string content = $@"<Project Sdk=""DotNetDocs.Sdk/1.0.0"">
+            string content = $@"<Project Sdk=""DotNetDocs.Sdk/{sdkVersion}"">
 
 	<PropertyGroup>
 		<DocumentationType>{documentationType}</DocumentationType>

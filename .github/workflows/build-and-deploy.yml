@@ -7,12 +7,6 @@ on:
       - 'src/CloudNimble.DotNetDocs.Docs/**'
       - 'src/CloudNimble.DotNetDocs.Reference.Mintlify/**'
       - 'specs/**'
-  pull_request:
-    branches: [ main, dev ]
-    paths-ignore:
-      - 'src/CloudNimble.DotNetDocs.Docs/**'
-      - 'src/CloudNimble.DotNetDocs.Reference.Mintlify/**'
-      - 'specs/**'
   workflow_dispatch:
     inputs:
       deploy_to_nuget:
@@ -133,6 +127,24 @@ jobs:
         echo "BRANCH_TYPE=$(if ($ref -eq 'refs/heads/main') { 'main' } elseif ($ref -eq 'refs/heads/dev') { 'dev' } else { 'feature' })" >> $env:GITHUB_OUTPUT
         
         Write-Host "📦 Final version: $version"
+
+    - name: Update .docsproj SDK references
+      shell: pwsh
+      run: |
+        $version = "${{ steps.version.outputs.VERSION }}"
+        Write-Host "🔄 Updating .docsproj files to use DotNetDocs.Sdk/$version"
+
+        # Find all .docsproj files
+        $docsprojFiles = Get-ChildItem -Path "${{ github.workspace }}\src" -Filter "*.docsproj" -Recurse
+
+        foreach ($file in $docsprojFiles) {
+          Write-Host "  📝 Updating $($file.Name)..."
+          $content = Get-Content $file.FullName -Raw
+          $updatedContent = $content -replace 'Sdk="DotNetDocs\.Sdk/[^"]*"', "Sdk=`"DotNetDocs.Sdk/$version`""
+          Set-Content -Path $file.FullName -Value $updatedContent -NoNewline
+        }
+
+        Write-Host "✅ Updated all .docsproj files to reference DotNetDocs.Sdk/$version"
 
     - name: Setup local NuGet feed
       shell: pwsh

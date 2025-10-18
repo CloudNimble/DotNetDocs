@@ -355,3 +355,11 @@ html.light .hero-heading-line3 {
         .dropping-texts > span:nth-child(3) {
             animation: roll2 6s linear infinite 3.2s;
         }
+
+code, kbd, pre, samp {
+    font-family: "Cascadia Code",var(--font-jetbrains-mono),ui-monospace,SFMono-Regular,Menlo,Monaco,"Liberation Mono","Courier New",monospace;
+    font-feature-settings: normal;
+    font-variation-settings: normal;
+    font-size: 1em;
+    line-height: 1.5em;
+}

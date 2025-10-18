@@ -27,6 +27,7 @@ dotnet docs add [options]
 | `--name <NAME>` | | Name for the docs project | `{SolutionName}.Docs` |
 | `--output <PATH>` | `-o` | Output directory for docs project | Project folder |
 | `--type <TYPE>` | `-t` | Documentation type | `Mintlify` |
+| `--prerelease` | | Use latest prerelease SDK version | Latest stable version |
 
 **Documentation Types:**
 - `Mintlify` - Mintlify documentation with MDX support (default)
@@ -35,6 +36,18 @@ dotnet docs add [options]
 - `Jekyll` - Jekyll documentation
 - `Hugo` - Hugo documentation
 - `Generic` - Generic markdown documentation
+
+**SDK Versioning:**
+
+By default, `dotnet docs add` queries NuGet.org to find the latest stable version of `DotNetDocs.Sdk` and uses it in the generated `.docsproj` file. Use `--prerelease` to get the latest preview version instead.
+
+```bash
+# Use latest stable version (e.g., 1.0.0)
+dotnet docs add
+
+# Use latest prerelease version (e.g., 1.0.0-preview.31)
+dotnet docs add --prerelease
+```
 
 **Behavior:**
 
@@ -57,8 +70,13 @@ dotnet docs add [options]
 
 <CodeGroup>
 ```bash Basic Usage
-# Create Mintlify docs project in current solution
+# Create Mintlify docs project with latest stable SDK
 dotnet docs add
+```
+
+```bash Prerelease Version
+# Use latest prerelease SDK version
+dotnet docs add --prerelease
 ```
 
 ```bash Specify Solution
@@ -130,6 +148,75 @@ dotnet docs add --output ./documentation --type Hugo
     <Note>Replace `DocFX` with your chosen documentation type (`MkDocs`, `Jekyll`, `Hugo`, or `Generic`).</Note>
   </Tab>
 </Tabs>
+
+### dotnet docs update
+
+Update existing `.docsproj` files to use the latest DotNetDocs.Sdk version from NuGet.
+
+**Usage:**
+```bash
+dotnet docs update [options]
+```
+
+**Options:**
+
+| Option | Alias | Description | Default |
+|--------|-------|-------------|---------|
+| `--project <NAME\|PATH>` | `-p` | Project name or path to .docsproj file to update | All .docsproj files in current directory |
+| `--recursive` | `-r` | Search recursively in subdirectories | Current directory only |
+| `--prerelease` | | Update to latest prerelease SDK version | Latest stable version |
+
+<Note>
+The `--project` option accepts either a project name (e.g., `MyProject.Docs`) or a file path (e.g., `MyProject.Docs.docsproj` or `path/to/MyProject.Docs.docsproj`). If you provide just the project name, the tool will automatically append `.docsproj` to find the file.
+</Note>
+
+**Behavior:**
+
+<Steps>
+  <Step title="Query NuGet">
+    Queries NuGet.org for the latest version of DotNetDocs.Sdk (stable or prerelease)
+  </Step>
+  <Step title="Find .docsproj Files">
+    Locates all .docsproj files (or a specific file if --file is specified)
+  </Step>
+  <Step title="Update SDK References">
+    Updates `Sdk="DotNetDocs.Sdk/X.X.X"` to the latest version in each file
+  </Step>
+  <Step title="Report Results">
+    Shows which files were updated and which were skipped
+  </Step>
+</Steps>
+
+**Examples:**
+
+<CodeGroup>
+```bash Update Current Directory
+# Update all .docsproj files in current directory
+dotnet docs update
+```
+
+```bash Update Recursively
+# Update all .docsproj files in current directory and subdirectories
+dotnet docs update --recursive
+```
+
+```bash Update Specific Project
+# Update a specific project by name
+dotnet docs update --project MyProject.Docs
+
+# Or by file path
+dotnet docs update --project MyProject.Docs.docsproj
+```
+
+```bash Update to Prerelease
+# Update to latest prerelease version
+dotnet docs update --prerelease --recursive
+```
+</CodeGroup>
+
+<Note>
+This command is useful when a new version of DotNetDocs.Sdk is released and you want to upgrade your documentation projects without manually editing each file.
+</Note>
 
 ### dotnet docs build
 
