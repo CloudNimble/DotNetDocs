@@ -68,45 +68,36 @@ jobs:
         
         $minorVersion = "${{ vars.VERSION_MINOR }}"
         if ([string]::IsNullOrEmpty($minorVersion)) { $minorVersion = "0" }
+
+        $patchVersion = "${{ vars.VERSION_PATCH }}"
+        if ([string]::IsNullOrEmpty($patchVersion)) { $patchVersion = "0" }
         
         $previewSuffix = "${{ vars.VERSION_PREVIEW_SUFFIX }}"
         if ([string]::IsNullOrEmpty($previewSuffix)) { $previewSuffix = "0" }
         
-        Write-Host "🔢 Version variables: MAJOR=$majorVersion, MINOR=$minorVersion, PREVIEW_SUFFIX=$previewSuffix"
+        Write-Host "🔢 Version variables: MAJOR=$majorVersion, MINOR=$minorVersion, PATCH=$patchVersion, PREVIEW_SUFFIX=$previewSuffix"
         
         # Determine version based on branch
         $ref = "${{ github.ref }}"
         if ($ref -eq "refs/heads/main") {
-          # Main branch: look at git tags to find the highest patch version
-          Write-Host "🏷️ Main branch: fetching tags for patch version calculation..."
-          git fetch --tags --force
-          
-          $currentMajorMinor = "$majorVersion.$minorVersion"
-          $tags = git tag -l "v$currentMajorMinor.*" --sort=-version:refname
-          $tagList = $tags -join ', '
-          Write-Host "📋 Found tags for $currentMajorMinor`: $tagList"
-          
-          $patchVersion = 0
-          if ($tags -and $tags.Count -gt 0) {
-            foreach ($tag in $tags) {
-              if ($tag -match "^v$majorVersion\.$minorVersion\.(\d+)$") {
-                $patch = [int]$matches[1]
-                if ($patch -gt $patchVersion) { $patchVersion = $patch }
-              }
-            }
-            $patchVersion = $patchVersion + 1
-          }
-          
+          # Main branch: use patch version from repo variables
+          Write-Host "🏷️ Main branch: using PATCH_VERSION from repo variables"
+
           $version = "$majorVersion.$minorVersion.$patchVersion"
           $buildNumber = $patchVersion
-          Write-Host "✅ Main branch version: $version"
+
+          # Calculate next patch version for update after successful deployment
+          $nextPatchVersion = [int]$patchVersion + 1
+          echo "NEXT_PATCH_VERSION=$nextPatchVersion" >> $env:GITHUB_OUTPUT
+
+          Write-Host "✅ Main branch version: $version (next patch will be $nextPatchVersion)"
         }
         elseif ($ref -eq "refs/heads/dev") {
           # Dev branch: use preview versioning with incremented suffix
           $nextPreviewSuffix = [int]$previewSuffix + 1
-          $version = "$majorVersion.$minorVersion.0-preview.$nextPreviewSuffix"
+          $version = "$majorVersion.$minorVersion.$patchVersion-preview.$nextPreviewSuffix"
           $buildNumber = 0
-          
+
           # Store the next preview suffix for later update
           echo "NEXT_PREVIEW_SUFFIX=$nextPreviewSuffix" >> $env:GITHUB_OUTPUT
           Write-Host "✅ Dev branch version: $version (next suffix will be $nextPreviewSuffix)"
@@ -114,7 +105,7 @@ jobs:
         else {
           # Other branches (features/PRs): use CI versioning with timestamp
           $timestamp = Get-Date -Format "yyyyMMdd-HHmmss" -AsUTC
-          $version = "$majorVersion.$minorVersion.0-CI-$timestamp"
+          $version = "$majorVersion.$minorVersion.$patchVersion-CI-$timestamp"
           $buildNumber = 0
           Write-Host "✅ Feature branch version: $version"
         }
@@ -123,6 +114,7 @@ jobs:
         echo "VERSION=$version" >> $env:GITHUB_OUTPUT
         echo "MAJOR_VERSION=$majorVersion" >> $env:GITHUB_OUTPUT
         echo "MINOR_VERSION=$minorVersion" >> $env:GITHUB_OUTPUT
+        echo "PATCH_VERSION=$patchVersion" >> $env:GITHUB_OUTPUT
         echo "BUILD_NUMBER=$buildNumber" >> $env:GITHUB_OUTPUT
         echo "BRANCH_TYPE=$(if ($ref -eq 'refs/heads/main') { 'main' } elseif ($ref -eq 'refs/heads/dev') { 'dev' } else { 'feature' })" >> $env:GITHUB_OUTPUT
         
@@ -237,20 +229,29 @@ jobs:
         # Re-calculate version data for this job (since we can't pass complex data between jobs)
         $majorVersion = "${{ vars.VERSION_MAJOR }}"
         if ([string]::IsNullOrEmpty($majorVersion)) { $majorVersion = "1" }
-        
+
         $minorVersion = "${{ vars.VERSION_MINOR }}"
         if ([string]::IsNullOrEmpty($minorVersion)) { $minorVersion = "0" }
-        
+
+        $patchVersion = "${{ vars.VERSION_PATCH }}"
+        if ([string]::IsNullOrEmpty($patchVersion)) { $patchVersion = "0" }
+
         $previewSuffix = "${{ vars.VERSION_PREVIEW_SUFFIX }}"
         if ([string]::IsNullOrEmpty($previewSuffix)) { $previewSuffix = "0" }
-        
+
         $ref = "${{ github.ref }}"
-        if ($ref -eq "refs/heads/dev") {
+        if ($ref -eq "refs/heads/main") {
+          $nextPatchVersion = [int]$patchVersion + 1
+          echo "NEXT_PATCH_VERSION=$nextPatchVersion" >> $env:GITHUB_OUTPUT
+          echo "BRANCH_TYPE=main" >> $env:GITHUB_OUTPUT
+        }
+        elseif ($ref -eq "refs/heads/dev") {
           $nextPreviewSuffix = [int]$previewSuffix + 1
           echo "NEXT_PREVIEW_SUFFIX=$nextPreviewSuffix" >> $env:GITHUB_OUTPUT
           echo "BRANCH_TYPE=dev" >> $env:GITHUB_OUTPUT
-        } else {
-          echo "BRANCH_TYPE=main" >> $env:GITHUB_OUTPUT
+        }
+        else {
+          echo "BRANCH_TYPE=other" >> $env:GITHUB_OUTPUT
         }
 
     - name: Install .NET versions
@@ -327,13 +328,34 @@ jobs:
       run: |
         $nextSuffix = "${{ steps.version.outputs.NEXT_PREVIEW_SUFFIX }}"
         Write-Host "🔄 Updating VERSION_PREVIEW_SUFFIX to $nextSuffix"
-        
+
         try {
           gh variable set VERSION_PREVIEW_SUFFIX --body "$nextSuffix"
           Write-Host "✅ Successfully updated VERSION_PREVIEW_SUFFIX to $nextSuffix"
         }
         catch {
           Write-Host "⚠️ Failed to update VERSION_PREVIEW_SUFFIX: $($_.Exception.Message)"
+          # Don't fail the build for this
+        }
+
+    - name: Update patch version (main branch only)
+      if: steps.version.outputs.BRANCH_TYPE == 'main' && steps.nuget_push.outputs.DEPLOYMENT_SUCCESS == 'true'
+      shell: pwsh
+      env:
+        GH_TOKEN: ${{ secrets.REPO_ACCESS_TOKEN }}
+      run: |
+        $nextPatch = "${{ steps.version.outputs.NEXT_PATCH_VERSION }}"
+        Write-Host "🔄 Updating VERSION_PATCH to $nextPatch and resetting VERSION_PREVIEW_SUFFIX to 0"
+
+        try {
+          gh variable set VERSION_PATCH --body "$nextPatch"
+          Write-Host "✅ Successfully updated VERSION_PATCH to $nextPatch"
+
+          gh variable set VERSION_PREVIEW_SUFFIX --body "0"
+          Write-Host "✅ Successfully reset VERSION_PREVIEW_SUFFIX to 0"
+        }
+        catch {
+          Write-Host "⚠️ Failed to update version variables: $($_.Exception.Message)"
           # Don't fail the build for this
         }
 
@@ -364,7 +386,7 @@ jobs:
          echo "VERSION=$version" >> $env:GITHUB_OUTPUT
          Write-Host "📦 Creating release for version: $version"
 
-    - name: Create Release
+    - name: Prepare Release Content
       id: create_release
       shell: pwsh
       run: |
@@ -375,31 +397,31 @@ jobs:
            $packageName = $package -replace "\.$version$", ""
            $packageList += "- [$packageName](https://www.nuget.org/packages/$packageName/$version)`n"
          }
-         
+
          $body = @"
          ## CloudNimble.DotNetDocs v$version
-         
+
          ### 📦 NuGet Packages
          $packageList
-         
+
          ### 🚀 What's Changed
          See [full changelog](https://github.com/${{ github.repository }}/compare/v${{ steps.version.outputs.PREVIOUS_VERSION }}...v$version)
-         
+
          ### 📥 Installation
-         ```xml
+         ``````xml
          <Project Sdk="DotNetDocs.Sdk/$version">
            <!-- That's it! -->
          </Project>
-         ```
-         
+         ``````
+
          ### 📦 Package Details
          This release includes the following NuGet packages:
          $packageList
          "@
-         
+
          echo "RELEASE_BODY=$body" >> $env:GITHUB_OUTPUT
 
-    - name: Create Release
+    - name: Create GitHub Release
       uses: softprops/action-gh-release@v2
       with:
          tag_name: v${{ steps.version.outputs.VERSION }}

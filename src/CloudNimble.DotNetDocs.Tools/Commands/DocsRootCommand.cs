@@ -11,7 +11,7 @@ namespace CloudNimble.DotNetDocs.Tools.Commands
     /// subcommands such as build and add. When invoked without a subcommand or with insufficient arguments, it displays
     /// help information describing available commands and usage.</remarks>
     [Command(Name="dotnet docs")]
-    [Subcommand(typeof(BuildCommand), typeof(AddCommand))]
+    [Subcommand(typeof(BuildCommand), typeof(AddCommand), typeof(UpdateCommand))]
     public class DocsRootCommand : DocsCommandBase
     {
 

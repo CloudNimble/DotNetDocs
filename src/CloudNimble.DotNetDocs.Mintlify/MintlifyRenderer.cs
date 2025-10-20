@@ -331,7 +331,7 @@ namespace CloudNimble.DotNetDocs.Mintlify
 
             foreach (var ns in model.Namespaces.OrderBy(n => n.Name))
             {
-                var namespaceName = base.GetSafeNamespaceName(ns);
+                var namespaceName = GetSafeNamespaceName(ns);
                 var parts = namespaceName.Split('.');
 
                 // Build nested structure for namespace hierarchy
@@ -400,7 +400,7 @@ namespace CloudNimble.DotNetDocs.Mintlify
 
             foreach (var ns in namespaces.OrderBy(n => n.Name))
             {
-                var namespaceName = base.GetSafeNamespaceName(ns);
+                var namespaceName = GetSafeNamespaceName(ns);
                 var parts = namespaceName.Split('.');
 
                 // Build nested structure for namespace hierarchy
@@ -472,7 +472,7 @@ namespace CloudNimble.DotNetDocs.Mintlify
             string title = entity switch
             {
                 DocAssembly assembly => "Overview" ?? "Assembly",
-                DocNamespace ns => "Overview" ?? "Namespace",
+                DocNamespace => "Overview" ?? "Namespace",
                 DocType dt => dt.Name,
                 DocMember member => member.Name,
                 _ => entity.GetType().Name
@@ -480,7 +480,13 @@ namespace CloudNimble.DotNetDocs.Mintlify
             sb.AppendLine($"title: {title}");
 
             // Generate description from summary
-            if (!string.IsNullOrWhiteSpace(entity.Summary))
+            if (entity is DocNamespace docNamespace)
+            {
+                // Hard-code description for namespaces
+                var namespaceName = docNamespace.Name ?? "global";
+                sb.AppendLine($"description: \"Summary of the {namespaceName} Namespace\"");
+            }
+            else if (!string.IsNullOrWhiteSpace(entity.Summary))
             {
                 // Clean up the summary for single-line description
                 var description = entity.Summary
@@ -502,7 +508,7 @@ namespace CloudNimble.DotNetDocs.Mintlify
             string icon = entity switch
             {
                 DocAssembly => MintlifyIcons.Assembly,
-                DocNamespace ns => MintlifyIcons.GetIconForNamespace(ns),
+                DocNamespace nsIcon => MintlifyIcons.GetIconForNamespace(nsIcon),
                 DocType dt => MintlifyIcons.GetIconForType(dt),
                 DocMember member => MintlifyIcons.GetIconForMember(member),
                 _ => MintlifyIcons.GetIconForEntity(entity)
@@ -525,11 +531,11 @@ namespace CloudNimble.DotNetDocs.Mintlify
             if (entity is DocType type)
             {
                 // Check for enum first (including DocEnum instances)
-                if (type is DocEnum || type.TypeKind == Microsoft.CodeAnalysis.TypeKind.Enum)
+                if (type is DocEnum || type.TypeKind == TypeKind.Enum)
                 {
                     sb.AppendLine("tag: \"ENUM\"");
                 }
-                else if (type.Symbol.IsAbstract && type.TypeKind != Microsoft.CodeAnalysis.TypeKind.Interface)
+                else if (type.Symbol.IsAbstract && type.TypeKind != TypeKind.Interface)
                 {
                     sb.AppendLine("tag: \"ABSTRACT\"");
                 }
@@ -585,15 +591,15 @@ namespace CloudNimble.DotNetDocs.Mintlify
                     keywords.AddRange(typeForKeywords.RelatedApis.Take(5)); // Limit to avoid too many keywords
                 }
             }
-            else if (entity is DocNamespace ns)
+            else if (entity is DocNamespace nsKeywords)
             {
-                keywords.Add(ns.Name ?? "");
+                keywords.Add(nsKeywords.Name ?? "");
                 keywords.Add("namespace");
 
                 // Add major type names as keywords
-                if (ns.Types?.Any() == true)
+                if (nsKeywords.Types?.Any() == true)
                 {
-                    keywords.AddRange(ns.Types.Take(10).Select(t => t.Name));
+                    keywords.AddRange(nsKeywords.Types.Take(10).Select(t => t.Name));
                 }
             }
 
@@ -616,14 +622,12 @@ namespace CloudNimble.DotNetDocs.Mintlify
             // Add frontmatter
             sb.Append(GenerateFrontmatter(assembly));
 
-            //sb.AppendLine($"# {assembly.AssemblyName}");
-            //sb.AppendLine();
-
             if (!string.IsNullOrWhiteSpace(assembly.Summary))
             {
-                if (!IsFirstLineHeader(assembly.Summary))
+                var header = GetHeaderText(assembly.Summary, SummaryHeader);
+                if (!string.IsNullOrWhiteSpace(header))
                 {
-                    sb.AppendLine("## Summary");
+                    sb.AppendLine(header);
                     sb.AppendLine();
                 }
                 sb.AppendLine(assembly.Summary);
@@ -632,9 +636,10 @@ namespace CloudNimble.DotNetDocs.Mintlify
 
             if (!string.IsNullOrWhiteSpace(assembly.Usage))
             {
-                if (!IsFirstLineHeader(assembly.Usage))
+                var header = GetHeaderText(assembly.Usage, UsageHeader);
+                if (!string.IsNullOrWhiteSpace(header))
                 {
-                    sb.AppendLine("## Usage");
+                    sb.AppendLine(header);
                     sb.AppendLine();
                 }
                 sb.AppendLine(assembly.Usage);
@@ -643,9 +648,10 @@ namespace CloudNimble.DotNetDocs.Mintlify
 
             if (!string.IsNullOrWhiteSpace(assembly.Remarks))
             {
-                if (!IsFirstLineHeader(assembly.Remarks))
+                var header = GetHeaderText(assembly.Remarks, RemarksHeader);
+                if (!string.IsNullOrWhiteSpace(header))
                 {
-                    sb.AppendLine("## Remarks");
+                    sb.AppendLine(header);
                     sb.AppendLine();
                 }
                 sb.AppendLine(assembly.Remarks);
@@ -654,9 +660,10 @@ namespace CloudNimble.DotNetDocs.Mintlify
 
             if (!string.IsNullOrWhiteSpace(assembly.Examples))
             {
-                if (!IsFirstLineHeader(assembly.Examples))
+                var header = GetHeaderText(assembly.Examples, ExamplesHeader);
+                if (!string.IsNullOrWhiteSpace(header))
                 {
-                    sb.AppendLine("## Examples");
+                    sb.AppendLine(header);
                     sb.AppendLine();
                 }
                 sb.AppendLine(RemoveIndentation(assembly.Examples));
@@ -665,9 +672,10 @@ namespace CloudNimble.DotNetDocs.Mintlify
 
             if (!string.IsNullOrWhiteSpace(assembly.BestPractices))
             {
-                if (!IsFirstLineHeader(assembly.BestPractices))
+                var header = GetHeaderText(assembly.BestPractices, BestPracticesHeader);
+                if (!string.IsNullOrWhiteSpace(header))
                 {
-                    sb.AppendLine("## Best Practices");
+                    sb.AppendLine(header);
                     sb.AppendLine();
                 }
                 sb.AppendLine(assembly.BestPractices);
@@ -676,9 +684,10 @@ namespace CloudNimble.DotNetDocs.Mintlify
 
             if (!string.IsNullOrWhiteSpace(assembly.Patterns))
             {
-                if (!IsFirstLineHeader(assembly.Patterns))
+                var header = GetHeaderText(assembly.Patterns, PatternsHeader);
+                if (!string.IsNullOrWhiteSpace(header))
                 {
-                    sb.AppendLine("## Patterns");
+                    sb.AppendLine(header);
                     sb.AppendLine();
                 }
                 sb.AppendLine(assembly.Patterns);
@@ -687,8 +696,12 @@ namespace CloudNimble.DotNetDocs.Mintlify
 
             if (!string.IsNullOrWhiteSpace(assembly.Considerations))
             {
-                sb.AppendLine("## Considerations");
-                sb.AppendLine();
+                var header = GetHeaderText(assembly.Considerations, ConsiderationsHeader);
+                if (!string.IsNullOrWhiteSpace(header))
+                {
+                    sb.AppendLine(header);
+                    sb.AppendLine();
+                }
                 sb.AppendLine(assembly.Considerations);
                 sb.AppendLine();
             }
@@ -748,6 +761,9 @@ namespace CloudNimble.DotNetDocs.Mintlify
         {
             var sb = new StringBuilder();
 
+            // Get the primary color from the template configuration or use default
+            var primaryColor = _options?.Template?.Colors?.Primary ?? "#0D9373";
+
             // Add frontmatter
             sb.Append(GenerateFrontmatter(ns));
 
@@ -756,56 +772,84 @@ namespace CloudNimble.DotNetDocs.Mintlify
 
             if (!string.IsNullOrWhiteSpace(ns.Summary))
             {
-                sb.AppendLine("## Summary");
-                sb.AppendLine();
+                var header = GetHeaderText(ns.Summary, SummaryHeader);
+                if (!string.IsNullOrWhiteSpace(header))
+                {
+                    sb.AppendLine(header);
+                    sb.AppendLine();
+                }
                 sb.AppendLine(ns.Summary);
                 sb.AppendLine();
             }
 
             if (!string.IsNullOrWhiteSpace(ns.Usage))
             {
-                sb.AppendLine("## Usage");
-                sb.AppendLine();
+                var header = GetHeaderText(ns.Usage, UsageHeader);
+                if (!string.IsNullOrWhiteSpace(header))
+                {
+                    sb.AppendLine(header);
+                    sb.AppendLine();
+                }
                 sb.AppendLine(ns.Usage);
                 sb.AppendLine();
             }
 
             if (!string.IsNullOrWhiteSpace(ns.Examples))
             {
-                sb.AppendLine("## Examples");
-                sb.AppendLine();
+                var header = GetHeaderText(ns.Examples, ExamplesHeader);
+                if (!string.IsNullOrWhiteSpace(header))
+                {
+                    sb.AppendLine(header);
+                    sb.AppendLine();
+                }
                 sb.AppendLine(RemoveIndentation(ns.Examples));
                 sb.AppendLine();
             }
 
             if (!string.IsNullOrWhiteSpace(ns.BestPractices))
             {
-                sb.AppendLine("## Best Practices");
-                sb.AppendLine();
+                var header = GetHeaderText(ns.BestPractices, BestPracticesHeader);
+                if (!string.IsNullOrWhiteSpace(header))
+                {
+                    sb.AppendLine(header);
+                    sb.AppendLine();
+                }
                 sb.AppendLine(ns.BestPractices);
                 sb.AppendLine();
             }
 
             if (!string.IsNullOrWhiteSpace(ns.Patterns))
             {
-                sb.AppendLine("## Patterns");
-                sb.AppendLine();
+                var header = GetHeaderText(ns.Patterns, PatternsHeader);
+                if (!string.IsNullOrWhiteSpace(header))
+                {
+                    sb.AppendLine(header);
+                    sb.AppendLine();
+                }
                 sb.AppendLine(ns.Patterns);
                 sb.AppendLine();
             }
 
             if (!string.IsNullOrWhiteSpace(ns.Considerations))
             {
-                sb.AppendLine("## Considerations");
-                sb.AppendLine();
+                var header = GetHeaderText(ns.Considerations, ConsiderationsHeader);
+                if (!string.IsNullOrWhiteSpace(header))
+                {
+                    sb.AppendLine(header);
+                    sb.AppendLine();
+                }
                 sb.AppendLine(ns.Considerations);
                 sb.AppendLine();
             }
 
             if (!string.IsNullOrWhiteSpace(ns.Remarks))
             {
-                sb.AppendLine("## Remarks");
-                sb.AppendLine();
+                var header = GetHeaderText(ns.Remarks, RemarksHeader);
+                if (!string.IsNullOrWhiteSpace(header))
+                {
+                    sb.AppendLine(header);
+                    sb.AppendLine();
+                }
                 sb.AppendLine(ns.Remarks);
                 sb.AppendLine();
             }
@@ -836,10 +880,10 @@ namespace CloudNimble.DotNetDocs.Mintlify
                 sb.AppendLine("## Types");
                 sb.AppendLine();
 
-                var classes = ns.Types.Where(t => t.TypeKind == Microsoft.CodeAnalysis.TypeKind.Class).ToList();
+                var classes = ns.Types.Where(t => t.TypeKind == TypeKind.Class).ToList();
                 if (classes.Any())
                 {
-                    sb.AppendLine("### Classes");
+                    sb.AppendLine($"### <Icon icon=\"{MintlifyIcons.Class}\" iconType=\"{MemberIconType}\" color=\"{primaryColor}\" size={{{MemberIconSize}}} style={{{{ paddingRight: '8px' }}}} /> Classes");
                     sb.AppendLine();
                     foreach (var type in classes)
                     {
@@ -849,10 +893,10 @@ namespace CloudNimble.DotNetDocs.Mintlify
                     sb.AppendLine();
                 }
 
-                var interfaces = ns.Types.Where(t => t.TypeKind == Microsoft.CodeAnalysis.TypeKind.Interface).ToList();
+                var interfaces = ns.Types.Where(t => t.TypeKind == TypeKind.Interface).ToList();
                 if (interfaces.Any())
                 {
-                    sb.AppendLine("### Interfaces");
+                    sb.AppendLine($"### <Icon icon=\"{MintlifyIcons.Interface}\" iconType=\"{MemberIconType}\" color=\"{primaryColor}\" size={{{MemberIconSize}}} style={{{{ paddingRight: '8px' }}}} /> Interfaces");
                     sb.AppendLine();
                     foreach (var type in interfaces)
                     {
@@ -862,10 +906,10 @@ namespace CloudNimble.DotNetDocs.Mintlify
                     sb.AppendLine();
                 }
 
-                var structs = ns.Types.Where(t => t.TypeKind == Microsoft.CodeAnalysis.TypeKind.Struct).ToList();
+                var structs = ns.Types.Where(t => t.TypeKind == TypeKind.Struct).ToList();
                 if (structs.Any())
                 {
-                    sb.AppendLine("### Structs");
+                    sb.AppendLine($"### <Icon icon=\"{MintlifyIcons.Struct}\" iconType=\"{MemberIconType}\" color=\"{primaryColor}\" size={{{MemberIconSize}}} style={{{{ paddingRight: '8px' }}}} /> Structs");
                     sb.AppendLine();
                     foreach (var type in structs)
                     {
@@ -875,10 +919,10 @@ namespace CloudNimble.DotNetDocs.Mintlify
                     sb.AppendLine();
                 }
 
-                var enums = ns.Types.Where(t => t is DocEnum || t.TypeKind == Microsoft.CodeAnalysis.TypeKind.Enum).ToList();
+                var enums = ns.Types.Where(t => t is DocEnum || t.TypeKind == TypeKind.Enum).ToList();
                 if (enums.Any())
                 {
-                    sb.AppendLine("### Enums");
+                    sb.AppendLine($"### <Icon icon=\"{MintlifyIcons.Enum}\" iconType=\"{MemberIconType}\" color=\"{primaryColor}\" size={{{MemberIconSize}}} style={{{{ paddingRight: '8px' }}}} /> Enums");
                     sb.AppendLine();
                     foreach (var type in enums)
                     {
@@ -888,10 +932,10 @@ namespace CloudNimble.DotNetDocs.Mintlify
                     sb.AppendLine();
                 }
 
-                var delegates = ns.Types.Where(t => t.TypeKind == Microsoft.CodeAnalysis.TypeKind.Delegate).ToList();
+                var delegates = ns.Types.Where(t => t.TypeKind == TypeKind.Delegate).ToList();
                 if (delegates.Any())
                 {
-                    sb.AppendLine("### Delegates");
+                    sb.AppendLine($"### <Icon icon=\"{MintlifyIcons.Delegate}\" iconType=\"{MemberIconType}\" color=\"{primaryColor}\" size={{{MemberIconSize}}} style={{{{ paddingRight: '8px' }}}} /> Delegates");
                     sb.AppendLine();
                     foreach (var type in delegates)
                     {
@@ -943,9 +987,10 @@ namespace CloudNimble.DotNetDocs.Mintlify
 
             if (!string.IsNullOrWhiteSpace(type.Summary))
             {
-                if (!IsFirstLineHeader(type.Summary))
+                var header = GetHeaderText(type.Summary, SummaryHeader);
+                if (!string.IsNullOrWhiteSpace(header))
                 {
-                    sb.AppendLine("## Summary");
+                    sb.AppendLine(header);
                     sb.AppendLine();
                 }
                 sb.AppendLine(type.Summary);
@@ -954,9 +999,10 @@ namespace CloudNimble.DotNetDocs.Mintlify
 
             if (!string.IsNullOrWhiteSpace(type.Usage))
             {
-                if (!IsFirstLineHeader(type.Usage))
+                var header = GetHeaderText(type.Usage, UsageHeader);
+                if (!string.IsNullOrWhiteSpace(header))
                 {
-                    sb.AppendLine("## Usage");
+                    sb.AppendLine(header);
                     sb.AppendLine();
                 }
                 sb.AppendLine(type.Usage);
@@ -965,9 +1011,10 @@ namespace CloudNimble.DotNetDocs.Mintlify
 
             if (!string.IsNullOrWhiteSpace(type.Remarks))
             {
-                if (!IsFirstLineHeader(type.Remarks))
+                var header = GetHeaderText(type.Remarks, RemarksHeader);
+                if (!string.IsNullOrWhiteSpace(header))
                 {
-                    sb.AppendLine("## Remarks");
+                    sb.AppendLine(header);
                     sb.AppendLine();
                 }
                 sb.AppendLine(type.Remarks);
@@ -988,9 +1035,10 @@ namespace CloudNimble.DotNetDocs.Mintlify
 
             if (!string.IsNullOrWhiteSpace(type.Examples))
             {
-                if (!IsFirstLineHeader(type.Examples))
+                var header = GetHeaderText(type.Examples, ExamplesHeader);
+                if (!string.IsNullOrWhiteSpace(header))
                 {
-                    sb.AppendLine("## Examples");
+                    sb.AppendLine(header);
                     sb.AppendLine();
                 }
                 sb.AppendLine(RemoveIndentation(type.Examples));
@@ -999,9 +1047,10 @@ namespace CloudNimble.DotNetDocs.Mintlify
 
             if (!string.IsNullOrWhiteSpace(type.BestPractices))
             {
-                if (!IsFirstLineHeader(type.BestPractices))
+                var header = GetHeaderText(type.BestPractices, BestPracticesHeader);
+                if (!string.IsNullOrWhiteSpace(header))
                 {
-                    sb.AppendLine("## Best Practices");
+                    sb.AppendLine(header);
                     sb.AppendLine();
                 }
                 sb.AppendLine(type.BestPractices);
@@ -1010,9 +1059,10 @@ namespace CloudNimble.DotNetDocs.Mintlify
 
             if (!string.IsNullOrWhiteSpace(type.Patterns))
             {
-                if (!IsFirstLineHeader(type.Patterns))
+                var header = GetHeaderText(type.Patterns, PatternsHeader);
+                if (!string.IsNullOrWhiteSpace(header))
                 {
-                    sb.AppendLine("## Patterns");
+                    sb.AppendLine(header);
                     sb.AppendLine();
                 }
                 sb.AppendLine(type.Patterns);
@@ -1021,9 +1071,10 @@ namespace CloudNimble.DotNetDocs.Mintlify
 
             if (!string.IsNullOrWhiteSpace(type.Considerations))
             {
-                if (!IsFirstLineHeader(type.Considerations))
+                var header = GetHeaderText(type.Considerations, ConsiderationsHeader);
+                if (!string.IsNullOrWhiteSpace(header))
                 {
-                    sb.AppendLine("## Considerations");
+                    sb.AppendLine(header);
                     sb.AppendLine();
                 }
                 sb.AppendLine(type.Considerations);
@@ -1049,7 +1100,7 @@ namespace CloudNimble.DotNetDocs.Mintlify
             // Render members for non-enum types
             else
             {
-                var constructors = type.Members.Where(m => m.MemberKind == Microsoft.CodeAnalysis.SymbolKind.Method && m.MethodKind == Microsoft.CodeAnalysis.MethodKind.Constructor).ToList();
+                var constructors = type.Members.Where(m => m.MemberKind == SymbolKind.Method && m.MethodKind == MethodKind.Constructor).ToList();
                 if (constructors.Any())
                 {
                     sb.AppendLine("## Constructors");
@@ -1060,7 +1111,7 @@ namespace CloudNimble.DotNetDocs.Mintlify
                     }
                 }
 
-                var properties = type.Members.Where(m => m.MemberKind == Microsoft.CodeAnalysis.SymbolKind.Property).ToList();
+                var properties = type.Members.Where(m => m.MemberKind == SymbolKind.Property).ToList();
                 if (properties.Any())
                 {
                     sb.AppendLine("## Properties");
@@ -1071,7 +1122,7 @@ namespace CloudNimble.DotNetDocs.Mintlify
                     }
                 }
 
-                var methods = type.Members.Where(m => m.MemberKind == Microsoft.CodeAnalysis.SymbolKind.Method && m.MethodKind == Microsoft.CodeAnalysis.MethodKind.Ordinary).ToList();
+                var methods = type.Members.Where(m => m.MemberKind == SymbolKind.Method && m.MethodKind == MethodKind.Ordinary).ToList();
                 if (methods.Any())
                 {
                     sb.AppendLine("## Methods");
@@ -1082,7 +1133,7 @@ namespace CloudNimble.DotNetDocs.Mintlify
                     }
                 }
 
-                var events = type.Members.Where(m => m.MemberKind == Microsoft.CodeAnalysis.SymbolKind.Event).ToList();
+                var events = type.Members.Where(m => m.MemberKind == SymbolKind.Event).ToList();
                 if (events.Any())
                 {
                     sb.AppendLine("## Events");
@@ -1096,7 +1147,7 @@ namespace CloudNimble.DotNetDocs.Mintlify
                 // Only render fields if explicitly requested
                 if (Context.IncludeFields)
                 {
-                    var fields = type.Members.Where(m => m.MemberKind == Microsoft.CodeAnalysis.SymbolKind.Field).ToList();
+                    var fields = type.Members.Where(m => m.MemberKind == SymbolKind.Field).ToList();
                     if (fields.Any())
                     {
                         sb.AppendLine("## Fields");

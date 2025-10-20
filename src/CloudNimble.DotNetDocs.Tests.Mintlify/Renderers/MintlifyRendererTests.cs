@@ -785,11 +785,11 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             content.Should().Contain("## Types");
             if (ns.Types.Any(t => t.Symbol.TypeKind == TypeKind.Class))
             {
-                content.Should().Contain("### Classes");
+                content.Should().Contain("### <Icon icon=\"file-brackets-curly\" iconType=\"duotone\" color=\"#0D9373\" size={24} style={{ paddingRight: '8px' }} /> Classes");
             }
             if (ns.Types.Any(t => t.Symbol.TypeKind == TypeKind.Interface))
             {
-                content.Should().Contain("### Interfaces");
+                content.Should().Contain("### <Icon icon=\"plug\" iconType=\"duotone\" color=\"#0D9373\" size={24} style={{ paddingRight: '8px' }} /> Interfaces\r\n");
             }
         }
 
