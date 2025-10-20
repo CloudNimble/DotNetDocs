@@ -179,16 +179,18 @@ namespace CloudNimble.DotNetDocs.Core.Transformers
             // Update current path context
             UpdateCurrentPath(entity);
 
-            // Transform string properties
+            // Transform string properties from XML documentation (may contain XML tags)
             entity.Summary = ConvertXmlToMarkdown(entity.Summary, references);
             entity.Remarks = ConvertXmlToMarkdown(entity.Remarks, references);
             entity.Returns = ConvertXmlToMarkdown(entity.Returns, references);
-            entity.Usage = ConvertXmlToMarkdown(entity.Usage, references);
             entity.Examples = ConvertXmlToMarkdown(entity.Examples, references);
             entity.Value = ConvertXmlToMarkdown(entity.Value, references);
-            entity.BestPractices = ConvertXmlToMarkdown(entity.BestPractices, references);
-            entity.Patterns = ConvertXmlToMarkdown(entity.Patterns, references);
-            entity.Considerations = ConvertXmlToMarkdown(entity.Considerations, references);
+
+            // Transform conceptual properties (already valid Markdown, skip escaping)
+            entity.Usage = ConvertXmlToMarkdown(entity.Usage, references, skipEscaping: true);
+            entity.BestPractices = ConvertXmlToMarkdown(entity.BestPractices, references, skipEscaping: true);
+            entity.Patterns = ConvertXmlToMarkdown(entity.Patterns, references, skipEscaping: true);
+            entity.Considerations = ConvertXmlToMarkdown(entity.Considerations, references, skipEscaping: true);
 
             // Transform collections
             if (entity.Exceptions is not null)
@@ -300,7 +302,10 @@ namespace CloudNimble.DotNetDocs.Core.Transformers
         /// <summary>
         /// Main conversion method that orchestrates all XML to Markdown transformations.
         /// </summary>
-        protected virtual string? ConvertXmlToMarkdown(string? text, Dictionary<string, DocEntity> references)
+        /// <param name="text">The text to convert from XML to Markdown.</param>
+        /// <param name="references">Dictionary of referenced entities for cross-referencing.</param>
+        /// <param name="skipEscaping">When true, skips the final XML tag escaping step. Use for conceptual content that is already valid Markdown.</param>
+        protected virtual string? ConvertXmlToMarkdown(string? text, Dictionary<string, DocEntity> references, bool skipEscaping = false)
         {
             _stringsProcessed++;
 
@@ -310,8 +315,9 @@ namespace CloudNimble.DotNetDocs.Core.Transformers
                 return text;
             }
 
-            // Quick check - skip processing if no XML tags present
-            if (!HasXmlTags().IsMatch(text))
+            // Quick check - skip processing if no XML tags or HTML tags present
+            // We need to process content with HTML tags to apply noescape handling and escaping
+            if (!HasXmlTags().IsMatch(text) && !text.Contains('<'))
             {
                 _stringsSkipped++;
                 return text;
@@ -326,8 +332,11 @@ namespace CloudNimble.DotNetDocs.Core.Transformers
             text = ConvertFormattingTags(text);
             text = ConvertLists(text);
 
-            // Final cleanup - escape any remaining unprocessed XML tags
-            text = EscapeRemainingXmlTags(text);
+            // Final cleanup - escape any remaining unprocessed XML tags (unless skipping for conceptual content)
+            if (!skipEscaping)
+            {
+                text = EscapeRemainingXmlTags(text);
+            }
 
             return text;
         }
@@ -385,8 +394,8 @@ namespace CloudNimble.DotNetDocs.Core.Transformers
                 // Remove CDATA wrapper if present
                 if (code.Contains("<![CDATA["))
                 {
-                    code = System.Text.RegularExpressions.Regex.Replace(code, @"^\s*<!\[CDATA\[", "", RegexOptions.Singleline);
-                    code = System.Text.RegularExpressions.Regex.Replace(code, @"\]\]>\s*$", "", RegexOptions.Singleline);
+                    code = Regex.Replace(code, @"^\s*<!\[CDATA\[", "", RegexOptions.Singleline);
+                    code = Regex.Replace(code, @"\]\]>\s*$", "", RegexOptions.Singleline);
                 }
 
                 // Remove excessive indentation from code blocks
@@ -412,7 +421,7 @@ namespace CloudNimble.DotNetDocs.Core.Transformers
             if (string.IsNullOrWhiteSpace(code))
                 return code;
 
-            var lines = code.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+            var lines = code.Split(["\r\n", "\r", "\n"], StringSplitOptions.None);
 
             // Find the minimum indentation (excluding empty lines)
             var minIndent = int.MaxValue;
@@ -439,7 +448,7 @@ namespace CloudNimble.DotNetDocs.Core.Transformers
                 return code.Trim();
 
             // Remove common indentation from each line
-            var result = new System.Text.StringBuilder();
+            var result = new StringBuilder();
             for (var i = 0; i < lines.Length; i++)
             {
                 var line = lines[i];
@@ -702,46 +711,94 @@ namespace CloudNimble.DotNetDocs.Core.Transformers
         /// Escapes any remaining XML tags that weren't processed.
         /// </summary>
         /// <remarks>
-        /// This method preserves content inside backticks (inline code) to avoid double-escaping.
+        /// This method preserves content inside various delimiter pairs to avoid double-escaping:
+        /// - Single backticks (inline code): `code`
+        /// - Triple backticks (code fences): ```language\ncode\n```
+        /// - No-escape blocks: ```noescape\ncontent\n``` - content is extracted without backticks or escaping
         /// </remarks>
         protected virtual string EscapeRemainingXmlTags(string text)
         {
-            // Regex to match content inside backticks (inline code)
             var result = new StringBuilder();
-            var lastIndex = 0;
+            var position = 0;
 
-            // Find all backtick-enclosed sections
-            var matches = BacktickPattern().Matches(text);
-
-            foreach (Match match in matches)
+            while (position < text.Length)
             {
-                // Escape content before this backtick section
-                if (match.Index > lastIndex)
+                var nextBacktick = text.IndexOf('`', position);
+
+                if (nextBacktick == -1)
                 {
-                    var beforeBacktick = text.Substring(lastIndex, match.Index - lastIndex);
+                    // No more backticks, escape remaining text
+                    result.Append(text.Substring(position).Replace("<", "&lt;").Replace(">", "&gt;"));
+                    break;
+                }
+
+                // Escape content before backtick
+                if (nextBacktick > position)
+                {
+                    var beforeBacktick = text.Substring(position, nextBacktick - position);
                     result.Append(beforeBacktick.Replace("<", "&lt;").Replace(">", "&gt;"));
                 }
 
-                // Preserve content inside backticks without escaping
-                result.Append(match.Value);
-                lastIndex = match.Index + match.Length;
-            }
+                // Check if it's a triple backtick
+                if (nextBacktick + 2 < text.Length &&
+                    text[nextBacktick + 1] == '`' &&
+                    text[nextBacktick + 2] == '`')
+                {
+                    // Triple backtick code fence
+                    var fenceStart = nextBacktick + 3;
 
-            // Escape any remaining content after the last backtick section
-            if (lastIndex < text.Length)
-            {
-                var remaining = text.Substring(lastIndex);
-                result.Append(remaining.Replace("<", "&lt;").Replace(">", "&gt;"));
+                    // Check if it's a noescape block
+                    var isNoEscape = text.IndexOf("noescape", fenceStart, Math.Min(20, text.Length - fenceStart), StringComparison.Ordinal) == fenceStart;
+
+                    // Find closing triple backtick
+                    var closingPos = text.IndexOf("```", fenceStart, StringComparison.Ordinal);
+
+                    if (closingPos == -1)
+                    {
+                        // No closing fence, escape the rest
+                        result.Append(text.Substring(nextBacktick).Replace("<", "&lt;").Replace(">", "&gt;"));
+                        break;
+                    }
+
+                    if (isNoEscape)
+                    {
+                        // Extract content without delimiters and without escaping
+                        // Skip past "noescape" and any following newline
+                        var contentStart = fenceStart + 8; // "noescape" is 8 chars
+                        if (contentStart < text.Length && text[contentStart] == '\r') contentStart++;
+                        if (contentStart < text.Length && text[contentStart] == '\n') contentStart++;
+
+                        var content = text.Substring(contentStart, closingPos - contentStart);
+                        result.Append(content);
+                    }
+                    else
+                    {
+                        // Preserve entire code fence including delimiters
+                        result.Append(text.Substring(nextBacktick, closingPos + 3 - nextBacktick));
+                    }
+
+                    position = closingPos + 3;
+                }
+                else
+                {
+                    // Single backtick - find matching closing backtick
+                    var closingPos = text.IndexOf('`', nextBacktick + 1);
+
+                    if (closingPos == -1)
+                    {
+                        // No closing backtick, escape the rest
+                        result.Append(text.Substring(nextBacktick).Replace("<", "&lt;").Replace(">", "&gt;"));
+                        break;
+                    }
+
+                    // Preserve inline code with backticks
+                    result.Append(text.Substring(nextBacktick, closingPos + 1 - nextBacktick));
+                    position = closingPos + 1;
+                }
             }
 
             return result.ToString();
         }
-
-        /// <summary>
-        /// Pattern for matching content inside backticks (inline code).
-        /// </summary>
-        [GeneratedRegex(@"`[^`]+`", RegexOptions.None)]
-        private static partial Regex BacktickPattern();
 
         #endregion
 

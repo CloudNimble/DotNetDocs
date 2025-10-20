@@ -5,15 +5,40 @@
   "name": "CloudNimble.DotNetDocs.Tests.Shared",
   "navigation": {
     "pages": [
-      "index",
       {
         "group": "Getting Started",
         "pages": [
-          "quickstart"
+          "index",
+          "quickstart",
+          "CloudNimble-DotNetDocs-Tests-Shared",
+          "CloudNimble-DotNetDocs-Tests-Shared-AccessModifiers",
+          "CloudNimble-DotNetDocs-Tests-Shared-AccessModifiers.MixedAccessClass",
+          "CloudNimble-DotNetDocs-Tests-Shared-BasicScenarios",
+          "CloudNimble-DotNetDocs-Tests-Shared-BasicScenarios.BaseClass",
+          "CloudNimble-DotNetDocs-Tests-Shared-BasicScenarios.ClassWithMethods",
+          "CloudNimble-DotNetDocs-Tests-Shared-BasicScenarios.ClassWithProperties",
+          "CloudNimble-DotNetDocs-Tests-Shared-BasicScenarios.DerivedClass",
+          "CloudNimble-DotNetDocs-Tests-Shared-BasicScenarios.DisposableClass",
+          "CloudNimble-DotNetDocs-Tests-Shared-BasicScenarios.SimpleClass",
+          "CloudNimble-DotNetDocs-Tests-Shared-EdgeCases",
+          "CloudNimble-DotNetDocs-Tests-Shared-EdgeCases.ClassWithFullDocs",
+          "CloudNimble-DotNetDocs-Tests-Shared-EdgeCases.ClassWithMinimalDocs",
+          "CloudNimble-DotNetDocs-Tests-Shared-EdgeCases.ClassWithNoDocs",
+          "CloudNimble-DotNetDocs-Tests-Shared-EdgeCases.ClassWithSpecialCharacters",
+          "CloudNimble-DotNetDocs-Tests-Shared-Enums",
+          "CloudNimble-DotNetDocs-Tests-Shared-Enums.ByteEnum",
+          "CloudNimble-DotNetDocs-Tests-Shared-Enums.FlagsEnum",
+          "CloudNimble-DotNetDocs-Tests-Shared-Enums.LongEnum",
+          "CloudNimble-DotNetDocs-Tests-Shared-Enums.SimpleEnum",
+          "CloudNimble-DotNetDocs-Tests-Shared-Parameters",
+          "CloudNimble-DotNetDocs-Tests-Shared-Parameters.ParameterVariations",
+          "CloudNimble-DotNetDocs-Tests-Shared.DotNetDocsTestBase",
+          "CloudNimble-DotNetDocs-Tests-Shared.SampleClass"
         ]
       },
       {
         "group": "API Reference",
+        "icon": "code",
         "pages": [
           "api-reference/index",
           {

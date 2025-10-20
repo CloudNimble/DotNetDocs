@@ -34,7 +34,7 @@ The MSBuild SDK for documentation projects (`.docsproj`) that provides a clean w
 ### 1. Create a .docsproj file
 
 ```xml
-<Project Sdk="DotNetDocs.Sdk/1.0.0">
+<Project Sdk="DotNetDocs.Sdk/1.0.1">
   <!-- That's it! Everything is configured automatically -->
 </Project>
 ```
@@ -70,7 +70,7 @@ The SDK automatically detects your documentation type based on configuration fil
 ### Basic Options
 
 ```xml
-<Project Sdk="DotNetDocs.Sdk/1.0.0">
+<Project Sdk="DotNetDocs.Sdk/1.0.1">
   <PropertyGroup>
     <!-- Override auto-detected documentation type -->
     <DocumentationType>Mintlify</DocumentationType>
@@ -86,7 +86,7 @@ The SDK automatically detects your documentation type based on configuration fil
 ### Advanced Options
 
 ```xml
-<Project Sdk="DotNetDocs.Sdk/1.0.0">
+<Project Sdk="DotNetDocs.Sdk/1.0.1">
   <PropertyGroup>
     <!-- Preview and deployment -->
     <PreviewDocumentation>true</PreviewDocumentation>
@@ -104,7 +104,7 @@ The SDK automatically detects your documentation type based on configuration fil
 If your `.docsproj` file is in a different location than your documentation files (e.g., project in `src/` but docs in `docs/`), use the `DocumentationRoot` property:
 
 ```xml
-<Project Sdk="DotNetDocs.Sdk/1.0.0">
+<Project Sdk="DotNetDocs.Sdk/1.0.1">
   <PropertyGroup>
     <!-- Point to where your documentation files actually live -->
     <DocumentationRoot>$(MSBuildThisFileDirectory)..\..\docs\</DocumentationRoot>
@@ -159,7 +159,7 @@ dotnet build -t:PreviewDocumentation
 ### Mintlify Project
 
 ```xml
-<Project Sdk="DotNetDocs.Sdk/1.0.0">
+<Project Sdk="DotNetDocs.Sdk/1.0.1">
   <PropertyGroup>
     <!-- Auto-generate on build -->
     <GenerateMintlifyDocs>true</GenerateMintlifyDocs>
@@ -174,7 +174,7 @@ dotnet build -t:PreviewDocumentation
 ### Multi-Format Project
 
 ```xml
-<Project Sdk="DotNetDocs.Sdk/1.0.0">
+<Project Sdk="DotNetDocs.Sdk/1.0.1">
   <PropertyGroup>
     <!-- Override detection -->
     <DocumentationType>Generic</DocumentationType>

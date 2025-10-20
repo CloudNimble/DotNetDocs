@@ -1,4 +1,3 @@
-using System;
 using System.Text.RegularExpressions;
 
 namespace CloudNimble.DotNetDocs.Core.Renderers
@@ -11,6 +10,41 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
     {
 
         #region Fields
+
+        /// <summary>
+        /// Header text for best practices sections.
+        /// </summary>
+        protected const string BestPracticesHeader = "## Best Practices";
+
+        /// <summary>
+        /// Header text for considerations sections.
+        /// </summary>
+        protected const string ConsiderationsHeader = "## Considerations";
+
+        /// <summary>
+        /// Header text for examples sections.
+        /// </summary>
+        protected const string ExamplesHeader = "## Examples";
+
+        /// <summary>
+        /// Header text for patterns sections.
+        /// </summary>
+        protected const string PatternsHeader = "## Patterns";
+
+        /// <summary>
+        /// Header text for remarks sections.
+        /// </summary>
+        protected const string RemarksHeader = "## Remarks";
+
+        /// <summary>
+        /// Header text for summary sections.
+        /// </summary>
+        protected const string SummaryHeader = "## Summary";
+
+        /// <summary>
+        /// Header text for usage sections.
+        /// </summary>
+        protected const string UsageHeader = "## Usage";
 
         /// <summary>
         /// Regex pattern to match markdown headers (lines starting with #).
@@ -40,42 +74,17 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
         #region Protected Methods
 
         /// <summary>
-        /// Checks if the first non-blank, non-comment line in the content is a markdown header.
-        /// Only checks the first 4 lines to avoid breaking on subheaders within content.
+        /// Gets the header text to use for a content section, or null if no header should be added.
+        /// Returns null if the content already contains the specified header.
         /// </summary>
         /// <param name="content">The content to check.</param>
-        /// <returns>true if the first meaningful line is a header; otherwise, false.</returns>
-        protected static bool IsFirstLineHeader(string? content)
+        /// <param name="headerText">The header text that would be added (e.g., "## Summary").</param>
+        /// <returns>The header text to add, or null if no header should be added.</returns>
+        protected static string? GetHeaderText(string? content, string headerText)
         {
-            if (string.IsNullOrWhiteSpace(content))
-            {
-                return false;
-            }
-
-            var lines = content.Split('\n');
-            int linesToCheck = Math.Min(4, lines.Length);
-
-            for (int i = 0; i < linesToCheck; i++)
-            {
-                var trimmed = lines[i].Trim();
-
-                // Skip empty lines
-                if (string.IsNullOrWhiteSpace(trimmed))
-                {
-                    continue;
-                }
-
-                // Skip TODO comment lines
-                if (TodoCommentRegex().IsMatch(trimmed))
-                {
-                    continue;
-                }
-
-                // Check if this line is a header
-                return HeaderRegex.IsMatch(trimmed);
-            }
-
-            return false;
+            return string.IsNullOrWhiteSpace(content) || !content.Contains(headerText)
+                    ? headerText
+                    : null;
         }
 
         /// <summary>
