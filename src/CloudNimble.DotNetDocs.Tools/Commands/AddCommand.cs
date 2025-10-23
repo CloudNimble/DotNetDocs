@@ -87,8 +87,8 @@ namespace CloudNimble.DotNetDocs.Tools.Commands
                 Console.WriteLine($"📁 Found solution: {solutionFile}");
 
                 // Determine project name
-                string solutionName = ProjectName ?? Path.GetFileNameWithoutExtension(solutionFile);
-                string docsProjectName = $"{solutionName}.Docs";
+                string solutionName = Path.GetFileNameWithoutExtension(solutionFile);
+                string docsProjectName = ProjectName ?? $"{solutionName}.Docs";
 
                 // Determine output directory
                 string outputDir = OutputDirectory ?? Path.Combine(Path.GetDirectoryName(solutionFile)!, docsProjectName);
