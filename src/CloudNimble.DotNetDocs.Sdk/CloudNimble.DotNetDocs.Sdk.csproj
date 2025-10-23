@@ -19,65 +19,71 @@
         
         <!-- Suppress dependencies when packing -->
         <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
+        <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);AddDocsTasksToPackage</TargetsForTfmSpecificContentInPackage>
     </PropertyGroup>
 
     <ItemGroup>
-        <!-- Include Microsoft.Build.NoTargets for bundling its SDK files -->
-        <PackageReference Include="Microsoft.Build.NoTargets"
-                          Version="3.7.*"
-                          PrivateAssets="all"
-                          GeneratePathProperty="true" />
+        <ProjectReference Include="..\CloudNimble.DotNetDocs.Sdk.Tasks\CloudNimble.DotNetDocs.Sdk.Tasks.csproj"
+            SetTargetFramework="TargetFramework=net472"
+            ReferenceOutputAssembly="false" />
+        <ProjectReference Include="..\CloudNimble.DotNetDocs.Sdk.Tasks\CloudNimble.DotNetDocs.Sdk.Tasks.csproj"
+            SetTargetFramework="TargetFramework=net8.0"
+            ReferenceOutputAssembly="false" />
+        <ProjectReference Include="..\CloudNimble.DotNetDocs.Sdk.Tasks\CloudNimble.DotNetDocs.Sdk.Tasks.csproj"
+            SetTargetFramework="TargetFramework=net9.0"
+            ReferenceOutputAssembly="false" />
+        <ProjectReference Include="..\CloudNimble.DotNetDocs.Sdk.Tasks\CloudNimble.DotNetDocs.Sdk.Tasks.csproj"
+            SetTargetFramework="TargetFramework=net10.0"
+            ReferenceOutputAssembly="false" />
     </ItemGroup>
 
     <ItemGroup>
         <!-- Pack the SDK files -->
         <None Include="Sdk\**" Pack="true" PackagePath="Sdk" />
         <None Include="build\**" Pack="true" PackagePath="build" />
-        
-        <!-- Include pre-built task assemblies directly (only during packaging) -->
-        <!-- .NET 8.0 tasks -->
-        <None Include="..\CloudNimble.DotNetDocs.Sdk.Tasks\bin\$(Configuration)\net8.0\*.dll"
-              Pack="true"
-              PackagePath="tasks\net8.0"
-              Visible="false" />
-              
-        <!-- .NET 9.0 tasks -->
-        <None Include="..\CloudNimble.DotNetDocs.Sdk.Tasks\bin\$(Configuration)\net9.0\*.dll"
-              Pack="true"
-              PackagePath="tasks\net9.0"
-              Visible="false" />
-              
-        <!-- .NET 10.0 tasks -->
-        <None Include="..\CloudNimble.DotNetDocs.Sdk.Tasks\bin\$(Configuration)\net10.0\*.dll"
-              Pack="true"
-              PackagePath="tasks\net10.0"
-              Visible="false" />
-              
-        <!-- .NET Framework 4.7.2 tasks -->
-        <None Include="..\CloudNimble.DotNetDocs.Sdk.Tasks\bin\$(Configuration)\net472\*.dll"
-              Pack="true"
-              PackagePath="tasks\net472"
-              Visible="false" />
     </ItemGroup>
-    
-    <!-- Build the tasks project before packing this SDK (but not when NoBuild is set) -->
-    <Target Name="BuildTasksProject" BeforeTargets="Pack" Condition="'$(NoBuild)' != 'true'">
-        <MSBuild Projects="..\CloudNimble.DotNetDocs.Sdk.Tasks\CloudNimble.DotNetDocs.Sdk.Tasks.csproj"
-                 Targets="Build"
-                 Properties="Configuration=$(Configuration)" />
-        <Message Text="Built CloudNimble.DotNetDocs.Sdk.Tasks" Importance="high" />
-    </Target>
 
-    <!-- When NoBuild is set, verify task assemblies exist from previous build -->
-    <Target Name="VerifyTaskAssemblies" BeforeTargets="Pack" Condition="'$(NoBuild)' == 'true'">
+    <Target Name="AddDocsTasksToPackage" Returns="@(TfmSpecificPackageFile)" DependsOnTargets="ResolveProjectReferences">
+        <PropertyGroup>
+            <_TargetsForReferenceOutputs>ReferenceCopyLocalPathsOutputGroup;BuiltProjectOutputGroup</_TargetsForReferenceOutputs>
+        </PropertyGroup>
+        <!-- for each of our TFMs, we need to get a few kinds of outputs and put them into the package -->
+        <MSBuild Projects="..\CloudNimble.DotNetDocs.Sdk.Tasks\CloudNimble.DotNetDocs.Sdk.Tasks.csproj" 
+            Targets="$(_TargetsForReferenceOutputs)" 
+            BuildInParallel="true"
+            Properties="TargetFramework=net472">
+            <Output TaskParameter="TargetOutputs" ItemName="Net472Outputs" />
+        </MSBuild>
+        <MSBuild Projects="..\CloudNimble.DotNetDocs.Sdk.Tasks\CloudNimble.DotNetDocs.Sdk.Tasks.csproj" 
+            Targets="$(_TargetsForReferenceOutputs)" 
+            BuildInParallel="true"
+            Properties="TargetFramework=net8.0">
+            <Output TaskParameter="TargetOutputs" ItemName="Net8Outputs" />
+        </MSBuild>
+        <MSBuild Projects="..\CloudNimble.DotNetDocs.Sdk.Tasks\CloudNimble.DotNetDocs.Sdk.Tasks.csproj" 
+            Targets="$(_TargetsForReferenceOutputs)" 
+            BuildInParallel="true"
+            Properties="TargetFramework=net9.0">
+            <Output TaskParameter="TargetOutputs" ItemName="Net9Outputs" />
+        </MSBuild>
+        <MSBuild Projects="..\CloudNimble.DotNetDocs.Sdk.Tasks\CloudNimble.DotNetDocs.Sdk.Tasks.csproj" 
+            Targets="$(_TargetsForReferenceOutputs)" 
+            BuildInParallel="true"
+            Properties="TargetFramework=net10.0">
+            <Output TaskParameter="TargetOutputs" ItemName="Net10Outputs" />
+        </MSBuild>
+
         <ItemGroup>
-            <RequiredTaskFiles Include="..\CloudNimble.DotNetDocs.Sdk.Tasks\bin\$(Configuration)\**\*.dll" />
+            <Net472Outputs Update="@(Net472Outputs)" PackagePath="tasks\net472\$([MSBuild]::ValueOrDefault('%(Net472Outputs.DestinationSubPath)', '%(Net472Outputs.TargetPath)'))" />
+            <Net8Outputs Update="@(Net8Outputs)" PackagePath="tasks\net8.0\$([MSBuild]::ValueOrDefault('%(Net8Outputs.DestinationSubPath)', '%(Net8Outputs.TargetPath)'))" />
+            <Net9Outputs Update="@(Net9Outputs)" PackagePath="tasks\net9.0\$([MSBuild]::ValueOrDefault('%(Net9Outputs.DestinationSubPath)', '%(Net9Outputs.TargetPath)'))" />
+            <Net10Outputs Update="@(Net10Outputs)" PackagePath="tasks\net10.0\$([MSBuild]::ValueOrDefault('%(Net10Outputs.DestinationSubPath)', '%(Net10Outputs.TargetPath)'))" />
+
+            <TfmSpecificPackageFile Include="@(Net472Outputs)" />
+            <TfmSpecificPackageFile Include="@(Net8Outputs)" />
+            <TfmSpecificPackageFile Include="@(Net9Outputs)" />
+            <TfmSpecificPackageFile Include="@(Net10Outputs)" />
         </ItemGroup>
-
-        <Error Text="Task assemblies not found in bin folder. The Tasks project must be built before packing the SDK with --no-build."
-               Condition="!Exists('@(RequiredTaskFiles)')" />
-
-        <Message Text="Using pre-built task assemblies from bin folder (NoBuild=true)" Importance="high" />
     </Target>
 
     <!-- Automatically push SDK package to local feed after pack -->
@@ -102,19 +108,4 @@
         <Message Text="📦 Pushed $(PackageId).$(PackageVersion) to local feed at $(LocalFeedPath)" Importance="high" Condition="'$(ErrorCode)' == '0'" />
         <Message Text="⚠️ Package already exists in local feed or push failed (this is OK for local development)" Importance="normal" Condition="'$(ErrorCode)' != '0'" />
     </Target>
-
-    <!-- Include NoTargets SDK files directly from package in NuGet -->
-    <Target Name="IncludeNoTargetsInPackage" BeforeTargets="GenerateNuspec">
-        <PropertyGroup>
-            <NoTargetsSourcePath>$(PkgMicrosoft_Build_NoTargets)\Sdk</NoTargetsSourcePath>
-        </PropertyGroup>
-        
-        <ItemGroup>
-            <NoTargetsFiles Include="$(NoTargetsSourcePath)\**\*" />
-            <None Include="@(NoTargetsFiles)" Pack="true" PackagePath="Sdk\NoTargets\%(RecursiveDir)%(Filename)%(Extension)" />
-        </ItemGroup>
-        
-        <Message Text="Including NoTargets SDK files in package from $(NoTargetsSourcePath)" Importance="normal" />
-    </Target>
-
 </Project>
