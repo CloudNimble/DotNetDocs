@@ -439,6 +439,255 @@ The `GetOrCreateAssemblyManager` method implements a factory pattern...
   </Card>
 </CardGroup>
 
+## Including HTML and Components with `noescape`
+
+Conceptual documentation often needs to include rich HTML content, JSX components, or other markup that should not be escaped. DotNetDocs provides
+the ` ```noescape ` code fence specifically for this purpose.
+
+### The Problem: HTML Gets Escaped
+
+By default, the `MarkdownXmlTransformer` escapes HTML tags in your conceptual content to prevent conflicts with Markdown rendering. This is useful
+for XML documentation comments, but problematic when you want to include actual HTML or components:
+
+```markdown
+<!-- This HTML will be escaped -->
+<Note>
+  This is a note component
+</Note>
+
+<!-- Renders as: &lt;Note&gt; This is a note component &lt;/Note&gt; -->
+```
+
+### The Solution: `noescape` Code Fences
+
+The `noescape` code fence tells the transformer to pass content through **without escaping** and **without code fence markers**:
+
+````markdown
+<!-- usage.mdz -->
+```noescape
+<Note>
+  This is a note component that will render correctly!
+</Note>
+```
+````
+
+**Result**: The HTML content is included in the output exactly as written, allowing components to render properly.
+
+### How It Works
+
+When the `MarkdownXmlTransformer` processes conceptual content:
+
+1. **Regular content**: HTML tags are escaped (`<` → `&lt;`, `>` → `&gt;`)
+2. **Code fences**: Content is preserved with backticks for syntax highlighting
+3. **`noescape` fences**: Content is extracted and passed through unchanged
+
+From `MarkdownXmlTransformer.cs:750-773`:
+
+```csharp
+var isNoEscape = text.IndexOf("noescape", fenceStart, Math.Min(20, text.Length - fenceStart),
+    StringComparison.Ordinal) == fenceStart;
+
+if (isNoEscape)
+{
+    // Extract content without delimiters and without escaping
+    var contentStart = fenceStart + 8; // "noescape" is 8 chars
+    if (contentStart < text.Length && text[contentStart] == '\r') contentStart++;
+    if (contentStart < text.Length && text[contentStart] == '\n') contentStart++;
+
+    var content = text.Substring(contentStart, closingPos - contentStart);
+    result.Append(content);
+}
+```
+
+### Use Cases
+
+<AccordionGroup>
+  <Accordion title="Mintlify Components" icon="sparkles">
+    Include Mintlify's special components in your conceptual documentation:
+
+    ````markdown
+    <!-- usage.mdz -->
+    ## Configuration Options
+
+    ```noescape
+    <ParamField path="ConceptualPath" type="string" default="conceptual">
+      The directory where conceptual documentation files are stored.
+    </ParamField>
+
+    <ParamField path="ShowPlaceholders" type="bool" default="true">
+      Controls whether placeholder content is included in documentation.
+    </ParamField>
+    ```
+    ````
+  </Accordion>
+
+  <Accordion title="Custom HTML Components" icon="code">
+    Embed custom HTML when your renderer supports it:
+
+    ````markdown
+    <!-- examples.mdz -->
+    ## Interactive Demo
+
+    ```noescape
+    <div class="demo-container">
+      <button onclick="runDemo()">Try It</button>
+      <div id="output"></div>
+    </div>
+
+    <script>
+      function runDemo() {
+        document.getElementById('output').innerText = 'Demo running!';
+      }
+    </script>
+    ```
+    ````
+  </Accordion>
+
+  <Accordion title="Warning and Info Boxes" icon="triangle-exclamation">
+    Use callout components without worrying about escaping:
+
+    ````markdown
+    <!-- considerations.mdz -->
+    ## Performance Considerations
+
+    ```noescape
+    <Warning>
+      Assembly loading is expensive. Cache `AssemblyManager` instances when processing multiple assemblies.
+    </Warning>
+
+    <Info>
+      Set `ConceptualDocsEnabled = false` to skip placeholder generation and improve performance.
+    </Info>
+    ```
+    ````
+  </Accordion>
+
+  <Accordion title="Tabs and Steps" icon="layer-group">
+    Create multi-step guides with structured components:
+
+    ````markdown
+    <!-- usage.mdz -->
+    ## Setup Process
+
+    ```noescape
+    <Steps>
+      <Step title="Create Context">
+        Configure your `ProjectContext` with the required settings.
+      </Step>
+
+      <Step title="Initialize Manager">
+        Create a `DocumentationManager` with enrichers and renderers.
+      </Step>
+
+      <Step title="Process Assemblies">
+        Call `ProcessAsync()` with your assembly paths.
+      </Step>
+    </Steps>
+    ```
+    ````
+  </Accordion>
+</AccordionGroup>
+
+### Best Practices
+
+<CardGroup cols={2}>
+  <Card title="Verify Component Support" icon="check-circle">
+    Ensure your renderer (e.g., MintlifyRenderer) supports the components you're using. `noescape` only prevents escaping—rendering is up to your output format.
+  </Card>
+
+  <Card title="One Component Per Fence" icon="layer-group">
+    For clarity, use separate `noescape` blocks for distinct components rather than grouping multiple components together.
+  </Card>
+
+  <Card title="Validate HTML" icon="code-check">
+    The transformer doesn't validate HTML. Ensure your markup is well-formed to avoid rendering issues.
+  </Card>
+
+  <Card title="Mix with Markdown" icon="shuffle">
+    You can freely mix `noescape` blocks with regular Markdown content in the same file—only the content inside `noescape` fences is unescaped.
+  </Card>
+</CardGroup>
+
+### Example: Complete Conceptual File
+
+Here's a real-world example mixing Markdown and components:
+
+````markdown
+<!-- TODO: REMOVE THIS COMMENT AFTER YOU CUSTOMIZE THIS CONTENT -->
+## Using the DocumentationManager
+
+The `DocumentationManager` orchestrates the entire documentation pipeline, from assembly loading through final output generation.
+
+### Basic Setup
+
+First, create and configure a `ProjectContext`:
+
+```csharp
+var context = new ProjectContext
+{
+    ConceptualPath = "conceptual",
+    ShowPlaceholders = false,
+    OutputPath = "docs"
+};
+```
+
+### Configuration Options
+
+```noescape
+<ParamField path="ConceptualPath" type="string" default="conceptual">
+  Directory where `.mdz` conceptual files are stored, relative to the documentation root.
+</ParamField>
+
+<ParamField path="ShowPlaceholders" type="bool" default="true">
+  When `false`, placeholder files with TODO markers are excluded from output.
+</ParamField>
+```
+
+### Processing Assemblies
+
+```noescape
+<Steps>
+  <Step title="Load Assembly">
+    The manager loads your compiled assembly and XML documentation.
+  </Step>
+
+  <Step title="Generate Placeholders">
+    Missing conceptual files are created automatically (if enabled).
+  </Step>
+
+  <Step title="Transform Content">
+    XML documentation is converted to Markdown format.
+  </Step>
+
+  <Step title="Render Output">
+    Final documentation is generated in your chosen format.
+  </Step>
+</Steps>
+```
+
+### Important Considerations
+
+```noescape
+<Warning>
+  Assembly reflection can trigger code execution. Only process assemblies from trusted sources.
+</Warning>
+```
+````
+
+### Technical Details
+
+The `noescape` feature is implemented in the `EscapeRemainingXmlTags` method of `MarkdownXmlTransformer`:
+
+- **Detection**: Checks for `noescape` immediately after the opening ` ``` ` (within the first 20 characters)
+- **Extraction**: Skips the `noescape` keyword and any following newline, then extracts content up to the closing ` ``` `
+- **Processing**: Appends the content directly to the output without modifications
+- **Preservation**: Regular code fences and inline code (single backticks) are preserved with their delimiters
+
+<Note>
+  The `noescape` functionality only applies to conceptual documentation properties that go through the `MarkdownXmlTransformer`. It does **not**
+  affect XML documentation comments, which always have HTML escaped for safety.
+</Note>
+
 ## Creating Conceptual Documentation
 
 ### Automatic Placeholder Generation

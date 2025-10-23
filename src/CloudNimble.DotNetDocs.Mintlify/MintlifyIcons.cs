@@ -13,199 +13,279 @@ public static class MintlifyIcons
     #region Fields
 
     /// <summary>
+    /// FontAwesome icon for abstract class documentation.
+    /// </summary>
+    public const string AbstractClass = "shapes";
+
+    /// <summary>
     /// FontAwesome icon for assembly documentation.
     /// </summary>
     public const string Assembly = "cubes";
-    
+
     /// <summary>
-    /// FontAwesome icon for namespace documentation.
+    /// FontAwesome icon for async method documentation.
     /// </summary>
-    public const string Namespace = "folder-tree";
+    public const string AsyncMethod = "rotate";
+
+    /// <summary>
+    /// FontAwesome icon for builder type documentation.
+    /// </summary>
+    public const string Builder = "hammer";
+
+    /// <summary>
+    /// FontAwesome icon for briefcase/manager type documentation.
+    /// </summary>
+    public const string Briefcase = "briefcase";
+
+    /// <summary>
+    /// FontAwesome icon for check circle/validation documentation.
+    /// </summary>
+    public const string CheckCircle = "check-circle";
+
+    /// <summary>
+    /// FontAwesome icon for circle/core documentation.
+    /// </summary>
+    public const string Circle = "circle";
 
     /// <summary>
     /// FontAwesome icon for class documentation.
     /// </summary>
     public const string Class = "file-brackets-curly";
-    
+
     /// <summary>
-    /// FontAwesome icon for interface documentation.
+    /// FontAwesome icon for constant field documentation.
     /// </summary>
-    public const string Interface = "plug";
-    
+    public const string Constant = "anchor";
+
     /// <summary>
-    /// FontAwesome icon for struct documentation.
+    /// FontAwesome icon for constructor documentation.
     /// </summary>
-    public const string Struct = "cubes";
-    
+    public const string Constructor = "hammer";
+
     /// <summary>
-    /// FontAwesome icon for enum documentation.
+    /// FontAwesome icon for database/model documentation.
     /// </summary>
-    public const string Enum = "list-ol";
-    
+    public const string Database = "database";
+
     /// <summary>
     /// FontAwesome icon for delegate documentation.
     /// </summary>
     public const string Delegate = "arrow-right-arrow-left";
-    
-    /// <summary>
-    /// FontAwesome icon for record documentation.
-    /// </summary>
-    public const string Record = "database";
 
     /// <summary>
-    /// FontAwesome icon for abstract class documentation.
+    /// FontAwesome icon for enum documentation.
     /// </summary>
-    public const string AbstractClass = "shapes";
-    
+    public const string Enum = "list-ol";
+
     /// <summary>
-    /// FontAwesome icon for sealed class documentation.
+    /// FontAwesome icon for error documentation sections.
     /// </summary>
-    public const string SealedClass = "lock";
-    
+    public const string Error = "circle-xmark";
+
     /// <summary>
-    /// FontAwesome icon for static class documentation.
+    /// FontAwesome icon for event documentation.
     /// </summary>
-    public const string StaticClass = "bolt";
-    
+    public const string Event = "bell";
+
+    /// <summary>
+    /// FontAwesome icon for example documentation sections.
+    /// </summary>
+    public const string Example = "brackets-curly";
+
+    /// <summary>
+    /// FontAwesome icon for exchange/DTO documentation.
+    /// </summary>
+    public const string Exchange = "exchange";
+
+    /// <summary>
+    /// FontAwesome icon for extension method documentation.
+    /// </summary>
+    public const string ExtensionMethod = "puzzle-piece";
+
+    /// <summary>
+    /// FontAwesome icon for eye/view documentation.
+    /// </summary>
+    public const string Eye = "eye";
+
+    /// <summary>
+    /// FontAwesome icon for field documentation.
+    /// </summary>
+    public const string Field = "box";
+
+    /// <summary>
+    /// FontAwesome icon for flask/test documentation.
+    /// </summary>
+    public const string Flask = "flask";
+
+    /// <summary>
+    /// FontAwesome icon for gamepad/controller documentation.
+    /// </summary>
+    public const string Gamepad = "gamepad";
+
+    /// <summary>
+    /// FontAwesome icon for gears/configuration documentation.
+    /// </summary>
+    public const string Gears = "gears";
+
     /// <summary>
     /// FontAwesome icon for generic type documentation.
     /// </summary>
     public const string GenericType = "code-branch";
 
     /// <summary>
-    /// FontAwesome icon for constructor documentation.
+    /// Default FontAwesome icon for miscellaneous documentation.
     /// </summary>
-    public const string Constructor = "hammer";
-    
+    public const string Globe = "globe";
+
     /// <summary>
-    /// FontAwesome icon for method documentation.
+    /// FontAwesome icon for hand/handler documentation.
     /// </summary>
-    public const string Method = "function";
-    
-    /// <summary>
-    /// FontAwesome icon for property documentation.
-    /// </summary>
-    public const string Property = "tag";
-    
-    /// <summary>
-    /// FontAwesome icon for field documentation.
-    /// </summary>
-    public const string Field = "box";
-    
-    /// <summary>
-    /// FontAwesome icon for event documentation.
-    /// </summary>
-    public const string Event = "bell";
-    
-    /// <summary>
-    /// FontAwesome icon for constant field documentation.
-    /// </summary>
-    public const string Constant = "anchor";
-    
+    public const string Hand = "hand";
+
     /// <summary>
     /// FontAwesome icon for indexer documentation.
     /// </summary>
     public const string Indexer = "table-cells";
-    
+
+    /// <summary>
+    /// FontAwesome icon for industry/factory documentation.
+    /// </summary>
+    public const string Industry = "industry";
+
+    /// <summary>
+    /// FontAwesome icon for interface documentation.
+    /// </summary>
+    public const string Interface = "plug";
+
+    /// <summary>
+    /// FontAwesome icon for internal access modifier.
+    /// </summary>
+    public const string Internal = "building";
+
+    /// <summary>
+    /// FontAwesome icon for layer group/viewmodel documentation.
+    /// </summary>
+    public const string LayerGroup = "layer-group";
+
+    /// <summary>
+    /// FontAwesome icon for method documentation.
+    /// </summary>
+    public const string Method = "function";
+
+    /// <summary>
+    /// FontAwesome icon for namespace documentation.
+    /// </summary>
+    public const string Namespace = "folder-tree";
+
+    /// <summary>
+    /// FontAwesome icon for empty namespace documentation.
+    /// </summary>
+    public const string Namespace_Empty = "folder-open";
+
+    /// <summary>
+    /// FontAwesome icon for populated namespace documentation.
+    /// </summary>
+    public const string Namespace_Populated = "folder-tree";
+
+    /// <summary>
+    /// FontAwesome icon for note documentation sections.
+    /// </summary>
+    public const string Note = "circle-info";
+
     /// <summary>
     /// FontAwesome icon for operator documentation.
     /// </summary>
     public const string Operator = "calculator";
 
     /// <summary>
-    /// FontAwesome icon for async method documentation.
-    /// </summary>
-    public const string AsyncMethod = "rotate";
-    
-    /// <summary>
-    /// FontAwesome icon for extension method documentation.
-    /// </summary>
-    public const string ExtensionMethod = "puzzle-piece";
-    
-    /// <summary>
-    /// FontAwesome icon for virtual method documentation.
-    /// </summary>
-    public const string VirtualMethod = "code-fork";
-    
-    /// <summary>
     /// FontAwesome icon for override method documentation.
     /// </summary>
     public const string OverrideMethod = "code-merge";
-    
-    /// <summary>
-    /// FontAwesome icon for static member documentation.
-    /// </summary>
-    public const string StaticMember = "thumbtack";
 
-    /// <summary>
-    /// FontAwesome icon for public access modifier.
-    /// </summary>
-    public const string Public = "globe";
-    
-    /// <summary>
-    /// FontAwesome icon for protected access modifier.
-    /// </summary>
-    public const string Protected = "shield";
-    
-    /// <summary>
-    /// FontAwesome icon for internal access modifier.
-    /// </summary>
-    public const string Internal = "building";
-    
-    /// <summary>
-    /// FontAwesome icon for private access modifier.
-    /// </summary>
-    public const string Private = "lock";
-    
-    /// <summary>
-    /// FontAwesome icon for protected internal access modifier.
-    /// </summary>
-    public const string ProtectedInternal = "shield-halved";
-
-    /// <summary>
-    /// FontAwesome icon for empty namespace documentation.
-    /// </summary>
-    public const string Namespace_Empty = "folder-open";
-    
-    /// <summary>
-    /// FontAwesome icon for populated namespace documentation.
-    /// </summary>
-    public const string Namespace_Populated = "folder-tree";
-    
-    /// <summary>
-    /// FontAwesome icon for example documentation sections.
-    /// </summary>
-    public const string Example = "brackets-curly";
-    
-    /// <summary>
-    /// FontAwesome icon for note documentation sections.
-    /// </summary>
-    public const string Note = "circle-info";
-    
-    /// <summary>
-    /// FontAwesome icon for warning documentation sections.
-    /// </summary>
-    public const string Warning = "triangle-exclamation";
-    
-    /// <summary>
-    /// FontAwesome icon for error documentation sections.
-    /// </summary>
-    public const string Error = "circle-xmark";
-    
-    /// <summary>
-    /// FontAwesome icon for reference documentation.
-    /// </summary>
-    public const string Reference = "link";
-    
     /// <summary>
     /// FontAwesome icon for package documentation.
     /// </summary>
     public const string Package = "box-isometric";
 
     /// <summary>
-    /// Default FontAwesome icon for miscellaneous documentation.
+    /// FontAwesome icon for private access modifier.
     /// </summary>
-    public const string Globe = "globe";
+    public const string Private = "lock";
+
+    /// <summary>
+    /// FontAwesome icon for property documentation.
+    /// </summary>
+    public const string Property = "tag";
+
+    /// <summary>
+    /// FontAwesome icon for protected access modifier.
+    /// </summary>
+    public const string Protected = "shield";
+
+    /// <summary>
+    /// FontAwesome icon for protected internal access modifier.
+    /// </summary>
+    public const string ProtectedInternal = "shield-halved";
+
+    /// <summary>
+    /// FontAwesome icon for public access modifier.
+    /// </summary>
+    public const string Public = "globe";
+
+    /// <summary>
+    /// FontAwesome icon for record documentation.
+    /// </summary>
+    public const string Record = "database";
+
+    /// <summary>
+    /// FontAwesome icon for reference documentation.
+    /// </summary>
+    public const string Reference = "link";
+
+    /// <summary>
+    /// FontAwesome icon for sealed class documentation.
+    /// </summary>
+    public const string SealedClass = "lock";
+
+    /// <summary>
+    /// FontAwesome icon for server/service documentation.
+    /// </summary>
+    public const string Server = "server";
+
+    /// <summary>
+    /// FontAwesome icon for share nodes/shared/common documentation.
+    /// </summary>
+    public const string ShareNodes = "share-nodes";
+
+    /// <summary>
+    /// FontAwesome icon for static class documentation.
+    /// </summary>
+    public const string StaticClass = "bolt";
+
+    /// <summary>
+    /// FontAwesome icon for static member documentation.
+    /// </summary>
+    public const string StaticMember = "thumbtack";
+
+    /// <summary>
+    /// FontAwesome icon for struct documentation.
+    /// </summary>
+    public const string Struct = "cubes";
+
+    /// <summary>
+    /// FontAwesome icon for virtual method documentation.
+    /// </summary>
+    public const string VirtualMethod = "code-fork";
+
+    /// <summary>
+    /// FontAwesome icon for warning documentation sections.
+    /// </summary>
+    public const string Warning = "triangle-exclamation";
+
+    /// <summary>
+    /// FontAwesome icon for wrench/utility/helper documentation.
+    /// </summary>
+    public const string Wrench = "wrench";
 
     #endregion
 
@@ -397,31 +477,31 @@ public static class MintlifyIcons
 
         return lastSegment switch
         {
-            "models" => "database",
-            "services" => "server",
-            "controllers" => "gamepad",
-            "views" => "eye",
-            "viewmodels" => "layer-group",
-            "utilities" or "helpers" or "utils" => "wrench",
-            "interfaces" => "plug",
-            "extensions" => "puzzle-piece",
-            "configuration" or "config" => "gears",
-            "data" => "database",
-            "entities" => "cubes",
-            "exceptions" => "triangle-exclamation",
-            "handlers" => "hand",
-            "factories" => "industry",
-            "builders" => "hammer",
-            "validators" or "validation" => "check-circle",
-            "attributes" => "tag",
-            "enums" or "enumerations" => "list-ol",
-            "constants" => "anchor",
-            "tests" or "test" => "flask",
-            "shared" or "common" => "share-nodes",
-            "core" => "circle",
-            "api" => "plug",
-            "web" => "globe",
-            "infrastructure" => "building",
+            "models" => Database,
+            "services" => Server,
+            "controllers" => Gamepad,
+            "views" => Eye,
+            "viewmodels" => LayerGroup,
+            "utilities" or "helpers" or "utils" => Wrench,
+            "interfaces" => Interface,
+            "extensions" => ExtensionMethod,
+            "configuration" or "config" => Gears,
+            "data" => Database,
+            "entities" => Struct,
+            "exceptions" => Warning,
+            "handlers" => Hand,
+            "factories" => Industry,
+            "builders" => Builder,
+            "validators" or "validation" => CheckCircle,
+            "attributes" => Property,
+            "enums" or "enumerations" => Enum,
+            "constants" => Constant,
+            "tests" or "test" => Flask,
+            "shared" or "common" => ShareNodes,
+            "core" => Circle,
+            "api" => Interface,
+            "web" => Globe,
+            "infrastructure" => Internal,
             _ => Namespace
         };
     }
@@ -444,33 +524,33 @@ public static class MintlifyIcons
 
         // Check for common suffixes
         if (lowerName.EndsWith("exception"))
-            return "triangle-exclamation";
+            return Warning;
         if (lowerName.EndsWith("attribute"))
-            return "tag";
+            return Property;
         if (lowerName.EndsWith("handler"))
-            return "hand";
+            return Hand;
         if (lowerName.EndsWith("factory"))
-            return "industry";
+            return Industry;
         if (lowerName.EndsWith("builder"))
-            return "hammer";
+            return Builder;
         if (lowerName.EndsWith("validator"))
-            return "check-circle";
+            return CheckCircle;
         if (lowerName.EndsWith("service"))
-            return "server";
+            return Server;
         if (lowerName.EndsWith("controller"))
-            return "gamepad";
+            return Gamepad;
         if (lowerName.EndsWith("model") || lowerName.EndsWith("entity"))
-            return "database";
+            return Database;
         if (lowerName.EndsWith("dto"))
-            return "exchange";
+            return Exchange;
         if (lowerName.EndsWith("viewmodel"))
-            return "layer-group";
+            return LayerGroup;
         if (lowerName.EndsWith("helper") || lowerName.EndsWith("utility"))
-            return "wrench";
+            return Wrench;
         if (lowerName.EndsWith("manager"))
-            return "briefcase";
+            return Briefcase;
         if (lowerName.EndsWith("provider"))
-            return "plug";
+            return Interface;
 
         return Class;
     }

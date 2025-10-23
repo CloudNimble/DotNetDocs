@@ -1,4 +1,4 @@
-<Project Sdk="DotNetDocs.Sdk/1.0.0-preview.32">
+<Project Sdk="DotNetDocs.Sdk/1.0.1-preview.1">
 
 	<PropertyGroup>
 		<DocumentationType>Mintlify</DocumentationType>
