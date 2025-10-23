@@ -487,7 +487,7 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
         /// </summary>
         /// <param name="groupElement">The group XML element.</param>
         /// <returns>A GroupConfig instance, or null if parsing fails.</returns>
-        internal GroupConfig? ParseGroupConfig(XElement groupElement)
+        public GroupConfig? ParseGroupConfig(XElement groupElement)
         {
             var groupName = groupElement.Attribute("Name")?.Value;
             if (string.IsNullOrWhiteSpace(groupName))
@@ -541,7 +541,7 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
         /// </summary>
         /// <param name="integrationsElement">The integrations XML element.</param>
         /// <returns>An IntegrationsConfig instance.</returns>
-        internal IntegrationsConfig ParseIntegrationsConfig(XElement integrationsElement)
+        public IntegrationsConfig ParseIntegrationsConfig(XElement integrationsElement)
         {
             var config = new IntegrationsConfig();
 
@@ -696,7 +696,7 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
         /// </summary>
         /// <param name="stylingElement">The styling XML element.</param>
         /// <returns>A StylingConfig instance.</returns>
-        internal StylingConfig ParseStylingConfig(XElement stylingElement)
+        public StylingConfig ParseStylingConfig(XElement stylingElement)
         {
             var config = new StylingConfig();
 
@@ -722,7 +722,7 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
         /// </summary>
         /// <param name="appearanceElement">The appearance XML element.</param>
         /// <returns>An AppearanceConfig instance.</returns>
-        internal AppearanceConfig ParseAppearanceConfig(XElement appearanceElement)
+        public AppearanceConfig ParseAppearanceConfig(XElement appearanceElement)
         {
             var config = new AppearanceConfig();
 

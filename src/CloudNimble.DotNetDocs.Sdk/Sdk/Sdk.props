@@ -15,9 +15,6 @@
         <!-- This allows dotnet sln add to correctly add .docsproj files to solutions -->
         <DefaultProjectTypeGuid>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</DefaultProjectTypeGuid>
 
-        <!-- Inherit from NoTargets SDK for no-compile behavior -->
-        <UsingMicrosoftNoTargetsSdk>true</UsingMicrosoftNoTargetsSdk>
-
         <!-- Default target framework -->
         <TargetFramework Condition="'$(TargetFramework)' == ''">net8.0</TargetFramework>
         
@@ -72,7 +69,7 @@
         <MSBuildProjectExtensionsPath>$(BaseIntermediateOutputPath)</MSBuildProjectExtensionsPath>
     </PropertyGroup>
 
-    <Import Sdk="Microsoft.Build.NoTargets" Version="3.7.0" Project="Sdk.props" />
+    <Import Sdk="Microsoft.NET.Sdk" Project="Sdk.props" />
     
     <!-- Advanced Feature 2: Auto-Include Patterns by Documentation Type -->
     <!-- Common files for all documentation types -->

@@ -1,11 +1,15 @@
-<Project Sdk="CloudNimble.DotNetDocs.Sdk/1.0.0">
+<Project>
 
+  <Import Project="..\src\CloudNimble.DotNetDocs.Sdk\Sdk\Sdk.props" />
   <PropertyGroup>
     <!-- ByAssembly navigation mode - separate groups per assembly -->
     <DocumentationRoot>$(MSBuildProjectDirectory)\byassembly-docs\</DocumentationRoot>
+    <GenerateDocumentation>true</GenerateDocumentation>
     <DocumentationType>Mintlify</DocumentationType>
     <NamespaceMode>Folder</NamespaceMode>
     <MintlifyNavigationMode>ByAssembly</MintlifyNavigationMode>
+    <ExcludePatterns>*.docsproj;**.docsproj</ExcludePatterns>
+    <IncludePatterns>../src/**/*.csproj</IncludePatterns>
     
     <!-- Inline Mintlify template configuration -->
     <MintlifyTemplate>
@@ -33,5 +37,11 @@
     <Assembly Include="..\src\CloudNimble.DotNetDocs.Mintlify\bin\$(Configuration)\net8.0\CloudNimble.DotNetDocs.Mintlify.dll" />
     <Assembly Include="..\src\Mintlify.Core\bin\$(Configuration)\net8.0\Mintlify.Core.dll" />
   </ItemGroup>
+
+  <PropertyGroup>
+    <_DotNetDocsTasksFolder>$(MSBuildThisFileDirectory)..\src\CloudNimble.DotNetDocs.Sdk\bin\Debug\</_DotNetDocsTasksFolder>
+  </PropertyGroup>
+
+  <Import Project="..\src\CloudNimble.DotNetDocs.Sdk\Sdk\Sdk.targets" />
 
 </Project>

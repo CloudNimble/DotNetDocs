@@ -6,7 +6,7 @@
         Includes validation, generation, and integration targets.
         ============================================================================ -->
 
-    <Import Sdk="Microsoft.Build.NoTargets"  Version="3.7.0" Project="Sdk.targets" />
+    <Import Sdk="Microsoft.NET.SDK" Project="Sdk.targets" />
     
     <!-- Determine which task assembly to load based on MSBuild runtime -->
     <PropertyGroup>
@@ -15,11 +15,11 @@
         <_DotNetDocsTaskFramework Condition="'$(MSBuildRuntimeType)' == 'Full'">net472</_DotNetDocsTaskFramework>
         <_DotNetDocsTaskFramework Condition="'$(_DotNetDocsTaskFramework)' == ''">net8.0</_DotNetDocsTaskFramework>
         
-        <!-- Tasks are always loaded from the packaged location -->
-        <_DotNetDocsTasksFolder>$(MSBuildThisFileDirectory)..\tasks\$(_DotNetDocsTaskFramework)</_DotNetDocsTasksFolder>
-        <_DotNetDocsTasksAssembly>$(_DotNetDocsTasksFolder)\CloudNimble.DotNetDocs.Sdk.Tasks.dll</_DotNetDocsTasksAssembly>
+        <!-- Tasks are loaded from the packaged location by default, but for testing it helps to have a property override -->
+        <_DotNetDocsTasksFolder Condition="'$(_DotNetDocsTasksFolder)' == ''">$(MSBuildThisFileDirectory)..\tasks\</_DotNetDocsTasksFolder>
+        <_DotNetDocsTasksAssembly >$(_DotNetDocsTasksFolder)$(_DotNetDocsTaskFramework)\CloudNimble.DotNetDocs.Sdk.dll</_DotNetDocsTasksAssembly>
 
-        <PrepareProjectReferencesDependsOn>AssignDocumentationProjectReferences</PrepareProjectReferencesDependsOn>
+        <PrepareProjectReferencesDependsOn>AssignDocumentationProjectReferences;$(PrepareProjectReferencesDependsOn)</PrepareProjectReferencesDependsOn>
     </PropertyGroup>
     
     <UsingTask TaskName="CloudNimble.DotNetDocs.Sdk.Tasks.GenerateDocumentationTask" 
@@ -36,8 +36,8 @@
                 In MSBuild parlance, this means that we need to OutputPath and DocumentationFile properties from each project.
                 We also need to ensure that such projects are actually _built_ so that their outputs are available.
             -->
-            <_AllProjectsInRoot Include="$(MSBuildProjectDirectory)\..\**\*.*proj" Exclude="@(ExcludePatterns)"/>
-            <ProjectReference Include="@(_AllProjectsInRoot)" />
+            <_AllProjectsInRoot Include="$(IncludePatterns)" Exclude="@(ExcludePatterns)"/>
+            <ProjectReference Include="@(_AllProjectsInRoot)" ReferenceOutputAssembly="false" />
         </ItemGroup>
     </Target>
 
@@ -51,46 +51,47 @@
     <Target Name="DiscoverDocumentedProjects" Condition="'$(GenerateDocumentation)' == 'true'" DependsOnTargets="PrepareProjectReferences">
         <MSBuild Projects="@(_MSBuildProjectReferenceExistent)"
                  Targets="DocumentationProjectOutputGroup"
+                 Properties="%(_MSBuildProjectReferenceExistent.SetConfiguration); %(_MSBuildProjectReferenceExistent.SetPlatform); %(_MSBuildProjectReferenceExistent.SetTargetFramework)"
                  SkipNonexistentTargets="true"
                  BuildInParallel="true">
-            <Output TaskParameter="TargetOutputs" ItemName="_ProjectDocFiles" />
+            <Output TaskParameter="TargetOutputs" ItemName="_ProjectsWithDocFiles" />
         </MSBuild>
 
-        <!-- The _ProjectDocFiles items will have MSBuildSourceProjectFile metadata noting the project they came from.
+        <!-- The _ProjectsWithDocFiles items will have MSBuildSourceProjectFile metadata noting the project they came from.
              We will assume that any item in this list belongs to a project that will actually generate docs for us to work with.
             We take those _MSBuildProjectReferenceExistent so that they continue to have all the relevant properties set for future use.  -->
         <ItemGroup>
-            <DocumentedProjects Include="@(_MSBuildProjectReferenceExistent)" 
-                                Condition="%(_MSBuildProjectReferenceExistent->'Identity') == %(_ProjectDocFiles->'MSBuildSourceProjectFile')"
-                                DocFile="%(ProjectDocFiles.Identity)" />
+            <DocumentedProjects Include="@(_ProjectsWithDocFiles->Metadata('MSBuildSourceProjectFile'))"
+                                DocFile="%(_ProjectsWithDocFiles.Identity)" />
         </ItemGroup>
         
         <!-- We also need to compute the dll outputs for the documented projects so we can get the dlls. Both the dlls and the xml docs will be 
              Inputs to doc generation to allow for incrementality. -->
         <MSBuild Projects="@(DocumentedProjects)"
                  Targets="BuiltProjectOutputGroup"
+                 Properties="%(DocumentedProjects._ProjectsWithDocFiles); %(DocumentedProjects.SetPlatform); %(DocumentedProjects.SetTargetFramework)"
                  SkipNonexistentTargets="true"
                  BuildInParallel="true">
-            <Output TaskParameter="TargetOutputs" ItemName="_ProjectBuildOutputs" />
+            <Output TaskParameter="TargetOutputs" ItemName="_ProjectWithBuildOutputs" />
         </MSBuild>
         <ItemGroup>
-            <DocumentedProjects Update="@(DocumentedProjects)" 
-                                AssemblyFile="%(_ProjectBuildOutputs->WithMetadata('MSBuildSourceProjectFile','%(DocumentedProjects.Identity)'))" />
+            <DocumentedProjectsWithOutputs Include="@(_ProjectWithBuildOutputs->Metadata('MSBuildSourceProjectFile'))"
+                                           Condition="%(_ProjectWithBuildOutputs.Extension) == '.dll'"
+                                           AssemblyFile="%(_ProjectWithBuildOutputs.Identity)" />
         </ItemGroup>
     </Target>
 
     <!-- Generate documentation from existing assemblies. TODO: is it possible to compute the set of outputs that are expected? That would help incrementality a ton -->
     <Target Name="GenerateDocumentation"
             Condition="'$(GenerateDocumentation)' == 'true'"
-            DependsOnTargets="DiscoverDocumentedProjects"
-            Inputs="@(DocumentedProjects->'%(AssemblyFile)');@(DocumentedProjects->'%(DocFile)')">
+            DependsOnTargets="DiscoverDocumentedProjects;ResolveProjectReferences">
         <Message Text="🚀 Generating documentation from existing assemblies..." Importance="high" />
 
         <!-- Extract assembly paths from built projects (only main project assemblies) -->
         <ItemGroup>
             <!-- Get assembly paths using the actual target framework from each project -->
-            <AssemblyPaths Include="%(DocumentedProjects.AssemblyFile)" />
-            <XmlDocPaths Include="%(DocumentedProjects.DocFile)" />
+            <AssemblyPaths Include="%(DocumentedProjectsWithOutputs.AssemblyFile)" />
+            <XmlDocPaths Include="%(DocumentedProjectsWithOutputs.DocFile)" />
         </ItemGroup>
 
         <!-- Call DocumentationManager to process assemblies -->
@@ -117,7 +118,7 @@
         </CloudNimble.DotNetDocs.Sdk.Tasks.GenerateDocumentationTask>
         
         <ItemGroup>
-            <FileWrites Include="GeneratedDocumentationFiles" />
+            <FileWrites Include="@(GeneratedDocumentationFiles)" />
         </ItemGroup>
 
         <!-- Check result -->
