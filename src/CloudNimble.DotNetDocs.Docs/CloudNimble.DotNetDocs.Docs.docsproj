@@ -1,4 +1,4 @@
-<Project Sdk="DotNetDocs.Sdk/1.0.1-preview.1">
+﻿<Project Sdk="DotNetDocs.Sdk/1.1.0-preview.1">
 
 	<PropertyGroup>
 		<DocumentationType>Mintlify</DocumentationType>
@@ -65,6 +65,10 @@
 			</Integrations>
 		</MintlifyTemplate>
 	</PropertyGroup>
+
+	<ItemGroup>
+	  <None Include="guides\collections.mdx" />
+	</ItemGroup>
 
 	<ItemGroup>
 	  <None Update="D:\GitHub\DotNetDocs\src\dotnetdocs-logo.png" Link="images\logos\dotnetdocs-logo.png" />

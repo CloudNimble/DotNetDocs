@@ -33,6 +33,15 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
         public string Configuration { get; set; } = "Release";
 
         /// <summary>
+        /// Gets or sets the documentation type of the collection project.
+        /// </summary>
+        /// <remarks>
+        /// Used to validate that referenced projects use compatible documentation formats.
+        /// References with mismatched types will be skipped with a warning.
+        /// </remarks>
+        public string? DocumentationType { get; set; }
+
+        /// <summary>
         /// Gets or sets the resolved DocumentationReference items with populated metadata.
         /// </summary>
         [Output]
@@ -113,6 +122,16 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
                         {
                             Log.LogError($"Referenced project {projectPath} does not have a DocumentationType property");
                             return false;
+                        }
+
+                        // Check if the referenced project's documentation type matches the collection's type
+                        if (!string.IsNullOrWhiteSpace(DocumentationType) &&
+                            !documentationType.Equals(DocumentationType, StringComparison.OrdinalIgnoreCase))
+                        {
+                            Log.LogWarning($"⚠️  Skipping documentation reference '{Path.GetFileName(projectPath)}' because it uses '{documentationType}' format. " +
+                                         $"Only '{DocumentationType}' documentation can be combined with {DocumentationType} collections. " +
+                                         $"Cross-format documentation combination is not currently supported.");
+                            continue;
                         }
 
                         // Validate that the documentation root exists

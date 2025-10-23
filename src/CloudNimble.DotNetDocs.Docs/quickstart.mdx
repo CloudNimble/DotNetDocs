@@ -56,112 +56,255 @@ import { ValueProposition } from '/snippets/ValueProposition.jsx';
 
     <CodeGroup>
 
-    ```xml Mintlify (Default)
-    <Project Sdk="DotNetDocs.Sdk/1.0.1">
+    <Tabs>
+      <Tab title="Current (1.0.2)">
+        ```xml
+        <Project Sdk="DotNetDocs.Sdk/1.0.2">
 
-	    <PropertyGroup>
-		    <DocumentationType>Mintlify</DocumentationType>
-		    <GenerateDocumentation>true</GenerateDocumentation>
-		    <NamespaceMode>Folder</NamespaceMode>
-		    <ShowDocumentationStats>true</ShowDocumentationStats>
+	        <PropertyGroup>
+		        <DocumentationType>Mintlify</DocumentationType>
+		        <GenerateDocumentation>true</GenerateDocumentation>
+		        <NamespaceMode>Folder</NamespaceMode>
+		        <ShowDocumentationStats>true</ShowDocumentationStats>
 
-		    <ConceptualDocsEnabled>false</ConceptualDocsEnabled>
-		    <ShowPlaceholders>false</ShowPlaceholders>
+		        <ConceptualDocsEnabled>false</ConceptualDocsEnabled>
+		        <ShowPlaceholders>false</ShowPlaceholders>
 
-		    <MintlifyNavigationMode>Unified</MintlifyNavigationMode>
-		    <MintlifyTemplate>
-			    <Name>{solutionName}</Name>
-			    <Theme>maple</Theme>
-			    <Colors>
-				    <Primary>#419AC5</Primary>
-				    <Light>#419AC5</Light>
-				    <Dark>#3CD0E2</Dark>
-			    </Colors>
-		    </MintlifyTemplate>
-	    </PropertyGroup>
+		        <MintlifyNavigationMode>Unified</MintlifyNavigationMode>
+		        <MintlifyTemplate>
+			        <Name>{solutionName}</Name>
+			        <Theme>maple</Theme>
+			        <Colors>
+				        <Primary>#419AC5</Primary>
+				        <Light>#419AC5</Light>
+				        <Dark>#3CD0E2</Dark>
+			        </Colors>
+		        </MintlifyTemplate>
+	        </PropertyGroup>
 
-    </Project>
-    ```
+        </Project>
+        ```
+      </Tab>
 
-    ```xml DocFX
-    <Project Sdk="DotNetDocs.Sdk/1.0.1">
+      <Tab title="Preview (1.1.0-preview.1)">
+        ```xml
+        <Project Sdk="DotNetDocs.Sdk/1.1.0-preview.1">
 
-	    <PropertyGroup>
-		    <DocumentationType>DocFX</DocumentationType>
-		    <GenerateDocumentation>true</GenerateDocumentation>
-		    <NamespaceMode>Folder</NamespaceMode>
-		    <ShowDocumentationStats>true</ShowDocumentationStats>
+	        <PropertyGroup>
+		        <DocumentationType>Mintlify</DocumentationType>
+		        <GenerateDocumentation>true</GenerateDocumentation>
+		        <NamespaceMode>Folder</NamespaceMode>
+		        <ShowDocumentationStats>true</ShowDocumentationStats>
 
-		    <ConceptualDocsEnabled>false</ConceptualDocsEnabled>
-		    <ShowPlaceholders>false</ShowPlaceholders>
-	    </PropertyGroup>
+		        <ConceptualDocsEnabled>false</ConceptualDocsEnabled>
+		        <ShowPlaceholders>false</ShowPlaceholders>
 
-    </Project>
-    ```
+		        <MintlifyNavigationMode>Unified</MintlifyNavigationMode>
+		        <MintlifyTemplate>
+			        <Name>{solutionName}</Name>
+			        <Theme>maple</Theme>
+			        <Colors>
+				        <Primary>#419AC5</Primary>
+				        <Light>#419AC5</Light>
+				        <Dark>#3CD0E2</Dark>
+			        </Colors>
+		        </MintlifyTemplate>
+	        </PropertyGroup>
 
-    ```xml MkDocs
-    <Project Sdk="DotNetDocs.Sdk/1.0.1">
+        </Project>
+        ```
+      </Tab>
+    </Tabs>
 
-	    <PropertyGroup>
-		    <DocumentationType>MkDocs</DocumentationType>
-		    <GenerateDocumentation>true</GenerateDocumentation>
-		    <NamespaceMode>Folder</NamespaceMode>
-		    <ShowDocumentationStats>true</ShowDocumentationStats>
+    <Tabs>
+      <Tab title="Current (1.0.2)">
+        ```xml
+        <Project Sdk="DotNetDocs.Sdk/1.0.2">
 
-		    <ConceptualDocsEnabled>false</ConceptualDocsEnabled>
-		    <ShowPlaceholders>false</ShowPlaceholders>
-	    </PropertyGroup>
+	        <PropertyGroup>
+		        <DocumentationType>DocFX</DocumentationType>
+		        <GenerateDocumentation>true</GenerateDocumentation>
+		        <NamespaceMode>Folder</NamespaceMode>
+		        <ShowDocumentationStats>true</ShowDocumentationStats>
 
-    </Project>
-    ```
+		        <ConceptualDocsEnabled>false</ConceptualDocsEnabled>
+		        <ShowPlaceholders>false</ShowPlaceholders>
+	        </PropertyGroup>
 
-    ```xml Jekyll
-    <Project Sdk="DotNetDocs.Sdk/1.0.1">
+        </Project>
+        ```
+      </Tab>
 
-	    <PropertyGroup>
-		    <DocumentationType>Jekyll</DocumentationType>
-		    <GenerateDocumentation>true</GenerateDocumentation>
-		    <NamespaceMode>Folder</NamespaceMode>
-		    <ShowDocumentationStats>true</ShowDocumentationStats>
+      <Tab title="Preview (1.1.0-preview.1)">
+        ```xml
+        <Project Sdk="DotNetDocs.Sdk/1.1.0-preview.1">
 
-		    <ConceptualDocsEnabled>false</ConceptualDocsEnabled>
-		    <ShowPlaceholders>false</ShowPlaceholders>
-	    </PropertyGroup>
+	        <PropertyGroup>
+		        <DocumentationType>DocFX</DocumentationType>
+		        <GenerateDocumentation>true</GenerateDocumentation>
+		        <NamespaceMode>Folder</NamespaceMode>
+		        <ShowDocumentationStats>true</ShowDocumentationStats>
 
-    </Project>
-    ```
+		        <ConceptualDocsEnabled>false</ConceptualDocsEnabled>
+		        <ShowPlaceholders>false</ShowPlaceholders>
+	        </PropertyGroup>
 
-    ```xml Hugo
-    <Project Sdk="DotNetDocs.Sdk/1.0.1">
+        </Project>
+        ```
+      </Tab>
+    </Tabs>
 
-	    <PropertyGroup>
-		    <DocumentationType>Hugo</DocumentationType>
-		    <GenerateDocumentation>true</GenerateDocumentation>
-		    <NamespaceMode>Folder</NamespaceMode>
-		    <ShowDocumentationStats>true</ShowDocumentationStats>
+    <Tabs>
+      <Tab title="Current (1.0.2)">
+        ```xml
+        <Project Sdk="DotNetDocs.Sdk/1.0.2">
 
-		    <ConceptualDocsEnabled>false</ConceptualDocsEnabled>
-		    <ShowPlaceholders>false</ShowPlaceholders>
-	    </PropertyGroup>
+	        <PropertyGroup>
+		        <DocumentationType>MkDocs</DocumentationType>
+		        <GenerateDocumentation>true</GenerateDocumentation>
+		        <NamespaceMode>Folder</NamespaceMode>
+		        <ShowDocumentationStats>true</ShowDocumentationStats>
 
-    </Project>
-    ```
+		        <ConceptualDocsEnabled>false</ConceptualDocsEnabled>
+		        <ShowPlaceholders>false</ShowPlaceholders>
+	        </PropertyGroup>
 
-    ```xml Generic
-    <Project Sdk="DotNetDocs.Sdk/1.0.1">
+        </Project>
+        ```
+      </Tab>
 
-	    <PropertyGroup>
-		    <DocumentationType>Generic</DocumentationType>
-		    <GenerateDocumentation>true</GenerateDocumentation>
-		    <NamespaceMode>Folder</NamespaceMode>
-		    <ShowDocumentationStats>true</ShowDocumentationStats>
+      <Tab title="Preview (1.1.0-preview.1)">
+        ```xml
+        <Project Sdk="DotNetDocs.Sdk/1.1.0-preview.1">
 
-		    <ConceptualDocsEnabled>false</ConceptualDocsEnabled>
-		    <ShowPlaceholders>false</ShowPlaceholders>
-	    </PropertyGroup>
+	        <PropertyGroup>
+		        <DocumentationType>MkDocs</DocumentationType>
+		        <GenerateDocumentation>true</GenerateDocumentation>
+		        <NamespaceMode>Folder</NamespaceMode>
+		        <ShowDocumentationStats>true</ShowDocumentationStats>
 
-    </Project>
-    ```
+		        <ConceptualDocsEnabled>false</ConceptualDocsEnabled>
+		        <ShowPlaceholders>false</ShowPlaceholders>
+	        </PropertyGroup>
+
+        </Project>
+        ```
+      </Tab>
+    </Tabs>
+
+    <Tabs>
+      <Tab title="Current (1.0.2)">
+        ```xml
+        <Project Sdk="DotNetDocs.Sdk/1.0.2">
+
+	        <PropertyGroup>
+		        <DocumentationType>Jekyll</DocumentationType>
+		        <GenerateDocumentation>true</GenerateDocumentation>
+		        <NamespaceMode>Folder</NamespaceMode>
+		        <ShowDocumentationStats>true</ShowDocumentationStats>
+
+		        <ConceptualDocsEnabled>false</ConceptualDocsEnabled>
+		        <ShowPlaceholders>false</ShowPlaceholders>
+	        </PropertyGroup>
+
+        </Project>
+        ```
+      </Tab>
+
+      <Tab title="Preview (1.1.0-preview.1)">
+        ```xml
+        <Project Sdk="DotNetDocs.Sdk/1.1.0-preview.1">
+
+	        <PropertyGroup>
+		        <DocumentationType>Jekyll</DocumentationType>
+		        <GenerateDocumentation>true</GenerateDocumentation>
+		        <NamespaceMode>Folder</NamespaceMode>
+		        <ShowDocumentationStats>true</ShowDocumentationStats>
+
+		        <ConceptualDocsEnabled>false</ConceptualDocsEnabled>
+		        <ShowPlaceholders>false</ShowPlaceholders>
+	        </PropertyGroup>
+
+        </Project>
+        ```
+      </Tab>
+    </Tabs>
+
+    <Tabs>
+      <Tab title="Current (1.0.2)">
+        ```xml
+        <Project Sdk="DotNetDocs.Sdk/1.0.2">
+
+	        <PropertyGroup>
+		        <DocumentationType>Hugo</DocumentationType>
+		        <GenerateDocumentation>true</GenerateDocumentation>
+		        <NamespaceMode>Folder</NamespaceMode>
+		        <ShowDocumentationStats>true</ShowDocumentationStats>
+
+		        <ConceptualDocsEnabled>false</ConceptualDocsEnabled>
+		        <ShowPlaceholders>false</ShowPlaceholders>
+	        </PropertyGroup>
+
+        </Project>
+        ```
+      </Tab>
+
+      <Tab title="Preview (1.1.0-preview.1)">
+        ```xml
+        <Project Sdk="DotNetDocs.Sdk/1.1.0-preview.1">
+
+	        <PropertyGroup>
+		        <DocumentationType>Hugo</DocumentationType>
+		        <GenerateDocumentation>true</GenerateDocumentation>
+		        <NamespaceMode>Folder</NamespaceMode>
+		        <ShowDocumentationStats>true</ShowDocumentationStats>
+
+		        <ConceptualDocsEnabled>false</ConceptualDocsEnabled>
+		        <ShowPlaceholders>false</ShowPlaceholders>
+	        </PropertyGroup>
+
+        </Project>
+        ```
+      </Tab>
+    </Tabs>
+
+    <Tabs>
+      <Tab title="Current (1.0.2)">
+        ```xml
+        <Project Sdk="DotNetDocs.Sdk/1.0.2">
+
+	        <PropertyGroup>
+		        <DocumentationType>Generic</DocumentationType>
+		        <GenerateDocumentation>true</GenerateDocumentation>
+		        <NamespaceMode>Folder</NamespaceMode>
+		        <ShowDocumentationStats>true</ShowDocumentationStats>
+
+		        <ConceptualDocsEnabled>false</ConceptualDocsEnabled>
+		        <ShowPlaceholders>false</ShowPlaceholders>
+	        </PropertyGroup>
+
+        </Project>
+        ```
+      </Tab>
+
+      <Tab title="Preview (1.1.0-preview.1)">
+        ```xml
+        <Project Sdk="DotNetDocs.Sdk/1.1.0-preview.1">
+
+	        <PropertyGroup>
+		        <DocumentationType>Generic</DocumentationType>
+		        <GenerateDocumentation>true</GenerateDocumentation>
+		        <NamespaceMode>Folder</NamespaceMode>
+		        <ShowDocumentationStats>true</ShowDocumentationStats>
+
+		        <ConceptualDocsEnabled>false</ConceptualDocsEnabled>
+		        <ShowPlaceholders>false</ShowPlaceholders>
+	        </PropertyGroup>
+
+        </Project>
+        ```
+      </Tab>
+    </Tabs>
 
     </CodeGroup>
 

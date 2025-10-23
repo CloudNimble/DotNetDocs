@@ -39,7 +39,7 @@ namespace CloudNimble.DotNetDocs.Mintlify
         private const string MemberIconType = "duotone";
 
         private readonly MintlifyRendererOptions _options;
-        private readonly DocsJsonManager? _docsJsonManager;
+        internal readonly DocsJsonManager? _docsJsonManager;
 
         #endregion
 
@@ -124,7 +124,11 @@ namespace CloudNimble.DotNetDocs.Mintlify
                 
                 // Second: Add API reference content to existing navigation
                 BuildNavigationStructure(_docsJsonManager.Configuration, model);
-                // Write docs.json to the DocumentationRootPath
+
+                // Combine referenced navigation before saving
+                CombineReferencedNavigation();
+
+                // Write docs.json to the DocumentationRootPath (only once, with everything combined)
                 var docsJsonPath = Path.Combine(Context.DocumentationRootPath, "docs.json");
                 _docsJsonManager.Save(docsJsonPath);
             }
@@ -1437,32 +1441,29 @@ namespace CloudNimble.DotNetDocs.Mintlify
 
         #endregion
 
-        #region IDocRenderer Implementation
+        #region Internal Methods - Navigation Combining
 
         /// <summary>
-        /// Combines navigation from referenced documentation projects into the collection's navigation structure.
+        /// Combines navigation from referenced Mintlify projects into the collection's docs.json.
         /// </summary>
-        /// <param name="references">The list of documentation references to integrate.</param>
-        /// <returns>A task representing the asynchronous navigation combining operation.</returns>
         /// <remarks>
-        /// For Mintlify, this method loads the referenced docs.json files and combines their navigation
-        /// into the collection's docs.json, applying URL prefixes and integrating into Tabs or Products
-        /// based on the IntegrationType metadata.
+        /// This method is called during RenderAsync after all normal rendering is complete but before
+        /// saving the docs.json. It loads each referenced docs.json, applies URL prefixes, and adds
+        /// the navigation to either Tabs or Products arrays in the existing _docsJsonManager.
+        /// The configuration is then saved once at the end of RenderAsync with everything combined.
         /// </remarks>
-        public async Task CombineReferencedNavigationAsync(List<DocumentationReference> references)
+        internal void CombineReferencedNavigation()
         {
-            if (_docsJsonManager is null || _docsJsonManager.Configuration is null)
-            {
-                // If DocsJsonManager is not configured, skip navigation combining
-                return;
-            }
-
-            if (references is null || references.Count == 0)
+            // Check if we have references and a loaded manager
+            if (Context.DocumentationReferences.Count == 0 ||
+                _docsJsonManager is null ||
+                !_docsJsonManager.IsLoaded ||
+                _docsJsonManager.Configuration is null)
             {
                 return;
             }
 
-            foreach (var reference in references)
+            foreach (var reference in Context.DocumentationReferences)
             {
                 // Skip if no navigation file exists
                 if (string.IsNullOrWhiteSpace(reference.NavigationFilePath) || !File.Exists(reference.NavigationFilePath))
@@ -1470,13 +1471,78 @@ namespace CloudNimble.DotNetDocs.Mintlify
                     continue;
                 }
 
-                // TODO: Phase 5 - Implement navigation combining logic
-                // 1. Load the referenced docs.json using DocsJsonManager
-                // 2. Apply URL prefix to all page paths using ApplyUrlPrefixToPages
-                // 3. Add to Tabs or Products based on IntegrationType
-                await Task.CompletedTask;
+                // Create a DocsJsonManager for the referenced docs.json
+                var refManager = new DocsJsonManager(reference.NavigationFilePath);
+                refManager.Load();
+
+                if (!refManager.IsLoaded || refManager.Configuration?.Navigation?.Pages is null)
+                {
+                    continue;
+                }
+
+                // Apply URL prefix to navigation
+                refManager.ApplyUrlPrefix(reference.DestinationPath);
+
+                // Add to Tabs or Products based on IntegrationType
+                if (reference.IntegrationType.Equals("Products", StringComparison.OrdinalIgnoreCase))
+                {
+                    AddToProducts(refManager, reference);
+                }
+                else // Default to Tabs
+                {
+                    AddToTabs(refManager, reference);
+                }
             }
         }
+
+        /// <summary>
+        /// Adds referenced documentation to the Tabs array.
+        /// </summary>
+        /// <param name="source">The referenced documentation's DocsJsonManager.</param>
+        /// <param name="reference">The documentation reference metadata.</param>
+        internal void AddToTabs(DocsJsonManager source, DocumentationReference reference)
+        {
+            _docsJsonManager!.Configuration!.Navigation!.Tabs ??= [];
+
+            _docsJsonManager.Configuration.Navigation.Tabs.Add(new TabConfig
+            {
+                Tab = GetProjectName(reference.ProjectPath),
+                Href = reference.DestinationPath,
+                Pages = source.Configuration!.Navigation!.Pages
+            });
+        }
+
+        /// <summary>
+        /// Adds referenced documentation to the Products array.
+        /// </summary>
+        /// <param name="source">The referenced documentation's DocsJsonManager.</param>
+        /// <param name="reference">The documentation reference metadata.</param>
+        internal void AddToProducts(DocsJsonManager source, DocumentationReference reference)
+        {
+            _docsJsonManager!.Configuration!.Navigation!.Products ??= [];
+
+            _docsJsonManager.Configuration.Navigation.Products.Add(new ProductConfig
+            {
+                Product = GetProjectName(reference.ProjectPath),
+                Href = reference.DestinationPath,
+                Pages = source.Configuration!.Navigation!.Pages,
+                Groups = source.Configuration.Navigation.Groups
+            });
+        }
+
+        /// <summary>
+        /// Extracts the project name from a .docsproj file path.
+        /// </summary>
+        /// <param name="projectPath">The full path to the .docsproj file.</param>
+        /// <returns>The project name without extension.</returns>
+        internal string GetProjectName(string projectPath)
+        {
+            return Path.GetFileNameWithoutExtension(projectPath);
+        }
+
+        #endregion
+
+        #region Private Methods - Placeholder Generation
 
         /// <summary>
         /// Renders placeholder conceptual content files for the documentation assembly.

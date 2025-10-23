@@ -97,3 +97,32 @@ Specifies which programming languages should be included in the
             automatically generated code examples. Common values include:
             "javascript", "python", "curl", "go", "java", "php", "ruby", etc.
 
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Prefill
+
+Gets or sets whether to prefill the API playground with data from schema examples.
+
+#### Syntax
+
+```csharp
+public System.Nullable<bool> Prefill { get; set; }
+```
+
+#### Property Value
+
+Type: `System.Nullable<bool>?`
+
+#### Examples
+
+```csharp
+"examples": {
+  "prefill": true
+}
+```
+
+#### Remarks
+
+When enabled, the playground automatically populates request fields with example
+            values from your OpenAPI specification. This provides users with pre-populated
+            data to help them understand the API structure and test endpoints more easily.
+            Defaults to false when not specified.
+

@@ -2,7 +2,7 @@
 title: DropdownConfig
 description: "Represents a dropdown configuration in Mintlify navigation."
 icon: file-brackets-curly
-keywords: ['DropdownConfig', 'Mintlify.Core.Models.DropdownConfig', 'Mintlify.Core.Models', 'class', 'System.Object']
+keywords: ['DropdownConfig', 'Mintlify.Core.Models.DropdownConfig', 'Mintlify.Core.Models', 'class', 'Mintlify.Core.Models.NavigationSectionBase']
 ---
 
 ## Definition
@@ -11,7 +11,7 @@ keywords: ['DropdownConfig', 'Mintlify.Core.Models.DropdownConfig', 'Mintlify.Co
 
 **Namespace:** Mintlify.Core.Models
 
-**Inheritance:** System.Object
+**Inheritance:** Mintlify.Core.Models.NavigationSectionBase
 
 ## Syntax
 
@@ -22,6 +22,10 @@ Mintlify.Core.Models.DropdownConfig
 ## Summary
 
 Represents a dropdown configuration in Mintlify navigation.
+
+## Remarks
+
+Dropdowns create expandable navigation menus. The dropdown name is required.
 
 ## Constructors
 
@@ -49,47 +53,9 @@ public System.Collections.Generic.List<Mintlify.Core.Models.AnchorConfig> Anchor
 
 Type: `System.Collections.Generic.List<Mintlify.Core.Models.AnchorConfig>?`
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  AsyncApi
+#### Remarks
 
-Gets or sets the AsyncAPI configuration.
-
-#### Syntax
-
-```csharp
-public Mintlify.Core.Models.ApiSpecConfig AsyncApi { get; set; }
-```
-
-#### Property Value
-
-Type: `Mintlify.Core.Models.ApiSpecConfig?`
-
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Color
-
-Gets or sets the color configuration for the dropdown.
-
-#### Syntax
-
-```csharp
-public Mintlify.Core.Models.ColorPairConfig Color { get; set; }
-```
-
-#### Property Value
-
-Type: `Mintlify.Core.Models.ColorPairConfig?`
-
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Description
-
-Gets or sets the description of the dropdown.
-
-#### Syntax
-
-```csharp
-public string Description { get; set; }
-```
-
-#### Property Value
-
-Type: `string?`
+Anchors provide persistent navigation items within the dropdown.
 
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Dropdown
 
@@ -109,118 +75,6 @@ Type: `string`
 
 This is a required field that appears as the dropdown label in navigation.
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Global
-
-Gets or sets the global navigation configuration.
-
-#### Syntax
-
-```csharp
-public Mintlify.Core.Models.GlobalNavigationConfig Global { get; set; }
-```
-
-#### Property Value
-
-Type: `Mintlify.Core.Models.GlobalNavigationConfig?`
-
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Groups
-
-Gets or sets the groups for the dropdown.
-
-#### Syntax
-
-```csharp
-public System.Collections.Generic.List<Mintlify.Core.Models.GroupConfig> Groups { get; set; }
-```
-
-#### Property Value
-
-Type: `System.Collections.Generic.List<Mintlify.Core.Models.GroupConfig>?`
-
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Hidden
-
-Gets or sets whether the current option is default hidden.
-
-#### Syntax
-
-```csharp
-public System.Nullable<bool> Hidden { get; set; }
-```
-
-#### Property Value
-
-Type: `System.Nullable<bool>?`
-
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Href
-
-Gets or sets the URL or path for the dropdown.
-
-#### Syntax
-
-```csharp
-public string Href { get; set; }
-```
-
-#### Property Value
-
-Type: `string?`
-
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Icon
-
-Gets or sets the icon to be displayed in the section.
-
-#### Syntax
-
-```csharp
-public Mintlify.Core.Models.IconConfig Icon { get; set; }
-```
-
-#### Property Value
-
-Type: `Mintlify.Core.Models.IconConfig?`
-
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Languages
-
-Gets or sets the languages for the dropdown.
-
-#### Syntax
-
-```csharp
-public System.Collections.Generic.List<Mintlify.Core.Models.LanguageConfig> Languages { get; set; }
-```
-
-#### Property Value
-
-Type: `System.Collections.Generic.List<Mintlify.Core.Models.LanguageConfig>?`
-
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  OpenApi
-
-Gets or sets the OpenAPI configuration.
-
-#### Syntax
-
-```csharp
-public Mintlify.Core.Models.ApiSpecConfig OpenApi { get; set; }
-```
-
-#### Property Value
-
-Type: `Mintlify.Core.Models.ApiSpecConfig?`
-
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Pages
-
-Gets or sets the pages for the dropdown.
-
-#### Syntax
-
-```csharp
-public System.Collections.Generic.List<object> Pages { get; set; }
-```
-
-#### Property Value
-
-Type: `System.Collections.Generic.List<object>?`
-
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Tabs
 
 Gets or sets the tabs for the dropdown.
@@ -235,17 +89,7 @@ public System.Collections.Generic.List<Mintlify.Core.Models.TabConfig> Tabs { ge
 
 Type: `System.Collections.Generic.List<Mintlify.Core.Models.TabConfig>?`
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Versions
+#### Remarks
 
-Gets or sets the versions for the dropdown.
-
-#### Syntax
-
-```csharp
-public System.Collections.Generic.List<Mintlify.Core.Models.VersionConfig> Versions { get; set; }
-```
-
-#### Property Value
-
-Type: `System.Collections.Generic.List<Mintlify.Core.Models.VersionConfig>?`
+Allows creating multiple tabs within a dropdown section.
 

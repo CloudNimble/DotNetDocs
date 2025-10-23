@@ -17,22 +17,14 @@ namespace CloudNimble.DotNetDocs.Core
         #region Public Methods
 
         /// <summary>
-        /// Combines navigation from referenced documentation projects into the collection's navigation structure.
-        /// </summary>
-        /// <param name="references">The list of documentation references to integrate.</param>
-        /// <returns>A task representing the asynchronous navigation combining operation.</returns>
-        /// <remarks>
-        /// This method is called after file copying to integrate navigation structures from referenced
-        /// documentation projects. The default implementation is a no-op; renderers that support
-        /// navigation combining (e.g., Mintlify) should override this method.
-        /// </remarks>
-        Task CombineReferencedNavigationAsync(List<DocumentationReference> references);
-
-        /// <summary>
         /// Renders the documentation assembly to the output path specified in the project context.
         /// </summary>
         /// <param name="model">The documentation assembly to render.</param>
         /// <returns>A task representing the asynchronous rendering operation.</returns>
+        /// <remarks>
+        /// Renderers that support navigation combining (e.g., Mintlify) should access
+        /// Context.DocumentationReferences and combine navigation before saving their configuration.
+        /// </remarks>
         Task RenderAsync(DocAssembly model);
 
         /// <summary>

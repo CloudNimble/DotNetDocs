@@ -46,6 +46,39 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             return renderer!;
         }
 
+        /// <summary>
+        /// Recursively verifies that all page paths in a navigation structure start with the expected prefix.
+        /// </summary>
+        /// <param name="pages">The list of pages to verify (can contain strings, GroupConfig, TabConfig, etc.).</param>
+        /// <param name="expectedPrefix">The expected URL prefix for all pages.</param>
+        private void VerifyPagePrefixes(List<object>? pages, string expectedPrefix)
+        {
+            if (pages is null)
+            {
+                return;
+            }
+
+            foreach (var page in pages)
+            {
+                if (page is string stringPage)
+                {
+                    stringPage.Should().StartWith(expectedPrefix, $"page '{stringPage}' should start with '{expectedPrefix}'");
+                }
+                else if (page is GroupConfig group)
+                {
+                    VerifyPagePrefixes(group.Pages, expectedPrefix);
+                }
+                else if (page is TabConfig tab)
+                {
+                    VerifyPagePrefixes(tab.Pages, expectedPrefix);
+                }
+                else if (page is DropdownConfig dropdown)
+                {
+                    VerifyPagePrefixes(dropdown.Pages, expectedPrefix);
+                }
+            }
+        }
+
         #endregion
 
         #region Test Lifecycle
@@ -1476,6 +1509,348 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             groups[2].Group.Should().Be("Providers");
             groups[3].Group.Should().Be("Plugins");
             groups[4].Group.Should().Be("Learnings");
+        }
+
+        #endregion
+
+        #region CombineReferencedNavigationAsync Tests
+
+        [TestMethod]
+        public void CombineReferencedNavigation_NoReferences_DoesNotThrow()
+        {
+            var context = GetService<ProjectContext>();
+            var options = Options.Create(new MintlifyRendererOptions());
+            var docsJsonManager = new DocsJsonManager();
+
+            var collectionConfig = new DocsJsonConfig
+            {
+                Name = "Collection",
+                Navigation = new NavigationConfig { Pages = new List<object> { "introduction" } }
+            };
+            var collectionJson = JsonSerializer.Serialize(collectionConfig, MintlifyConstants.JsonSerializerOptions);
+            docsJsonManager.Load(collectionJson);
+
+            var renderer = new MintlifyRenderer(context, options, docsJsonManager);
+            context.DocumentationReferences.Clear();
+
+            Action act = () => renderer.CombineReferencedNavigation();
+
+            act.Should().NotThrow();
+        }
+
+        [TestMethod]
+        public void CombineReferencedNavigation_SkipsNonMintlifyReferences()
+        {
+            var context = GetService<ProjectContext>();
+            var options = Options.Create(new MintlifyRendererOptions());
+            var docsJsonManager = new DocsJsonManager();
+
+            var collectionConfig = new DocsJsonConfig
+            {
+                Name = "Collection",
+                Navigation = new NavigationConfig { Pages = [] }
+            };
+            var collectionJson = JsonSerializer.Serialize(collectionConfig, MintlifyConstants.JsonSerializerOptions);
+            docsJsonManager.Load(collectionJson);
+
+            var renderer = new MintlifyRenderer(context, options, docsJsonManager);
+            context.DocumentationReferences.Clear();
+            context.DocumentationReferences.Add(new DocumentationReference
+            {
+                ProjectPath = "test.docsproj",
+                DocumentationType = "DocFX",
+                NavigationFilePath = Path.Combine(context.DocumentationRootPath, "toc.yml"),
+                DestinationPath = "docfx",
+                IntegrationType = "Tabs"
+            });
+
+            renderer.CombineReferencedNavigation();
+
+            renderer._docsJsonManager!.Configuration!.Navigation!.Tabs.Should().BeNull();
+            renderer._docsJsonManager!.Configuration!.Navigation!.Products.Should().BeNull();
+        }
+
+        [TestMethod]
+        public void CombineReferencedNavigation_AddToTabs_CombinesNavigationCorrectly()
+        {
+            var context = GetService<ProjectContext>();
+            var options = Options.Create(new MintlifyRendererOptions());
+            var docsJsonManager = new DocsJsonManager();
+
+            var collectionConfig = new DocsJsonConfig
+            {
+                Name = "Collection",
+                Navigation = new NavigationConfig
+                {
+                    Pages = new List<object> { "introduction" }
+                }
+            };
+            var collectionJson = JsonSerializer.Serialize(collectionConfig, MintlifyConstants.JsonSerializerOptions);
+            docsJsonManager.Load(collectionJson);
+
+            var renderer = new MintlifyRenderer(context, options, docsJsonManager);
+
+            var refDocsPath = Path.Combine(context.DocumentationRootPath, "ref_docs.json");
+            var refConfig = new DocsJsonConfig
+            {
+                Name = "Service A",
+                Navigation = new NavigationConfig
+                {
+                    Pages = new List<object> { "overview", "getting-started" }
+                }
+            };
+            var refJson = JsonSerializer.Serialize(refConfig, MintlifyConstants.JsonSerializerOptions);
+            File.WriteAllText(refDocsPath, refJson);
+
+            context.DocumentationReferences.Clear();
+            context.DocumentationReferences.Add(new DocumentationReference
+            {
+                ProjectPath = "ServiceA.docsproj",
+                DocumentationType = "Mintlify",
+                NavigationFilePath = refDocsPath,
+                DestinationPath = "services/service-a",
+                IntegrationType = "Tabs"
+            });
+
+            renderer.CombineReferencedNavigation();
+
+            renderer._docsJsonManager!.Configuration!.Navigation!.Tabs.Should().NotBeNull();
+            renderer._docsJsonManager!.Configuration!.Navigation!.Tabs!.Count.Should().Be(1);
+
+            var tab = renderer._docsJsonManager!.Configuration!.Navigation!.Tabs![0];
+            tab.Tab.Should().Be("ServiceA");
+            tab.Href.Should().Be("services/service-a");
+            tab.Pages.Should().NotBeNull();
+            tab.Pages!.Count.Should().Be(2);
+
+            VerifyPagePrefixes(tab.Pages, "services/service-a/");
+        }
+
+        [TestMethod]
+        public void CombineReferencedNavigation_AddToProducts_CombinesNavigationCorrectly()
+        {
+            var context = GetService<ProjectContext>();
+            var options = Options.Create(new MintlifyRendererOptions());
+            var docsJsonManager = new DocsJsonManager();
+
+            var collectionConfig = new DocsJsonConfig
+            {
+                Name = "Collection",
+                Navigation = new NavigationConfig
+                {
+                    Pages = new List<object> { "introduction" }
+                }
+            };
+            var collectionJson = JsonSerializer.Serialize(collectionConfig, MintlifyConstants.JsonSerializerOptions);
+            docsJsonManager.Load(collectionJson);
+
+            var renderer = new MintlifyRenderer(context, options, docsJsonManager);
+
+            var refDocsPath = Path.Combine(context.DocumentationRootPath, "ref_docs.json");
+            var refConfig = new DocsJsonConfig
+            {
+                Name = "Product A",
+                Navigation = new NavigationConfig
+                {
+                    Pages = new List<object> { "overview", "getting-started" }
+                }
+            };
+            var refJson = JsonSerializer.Serialize(refConfig, MintlifyConstants.JsonSerializerOptions);
+            File.WriteAllText(refDocsPath, refJson);
+
+            context.DocumentationReferences.Clear();
+            context.DocumentationReferences.Add(new DocumentationReference
+            {
+                ProjectPath = "ProductA.docsproj",
+                DocumentationType = "Mintlify",
+                NavigationFilePath = refDocsPath,
+                DestinationPath = "products/product-a",
+                IntegrationType = "Products"
+            });
+
+            renderer.CombineReferencedNavigation();
+
+            renderer._docsJsonManager!.Configuration!.Navigation!.Products.Should().NotBeNull();
+            renderer._docsJsonManager!.Configuration!.Navigation!.Products!.Count.Should().Be(1);
+
+            var product = renderer._docsJsonManager!.Configuration!.Navigation!.Products![0];
+            product.Product.Should().Be("ProductA");
+            product.Href.Should().Be("products/product-a");
+            product.Pages.Should().NotBeNull();
+            product.Pages!.Count.Should().Be(2);
+
+            VerifyPagePrefixes(product.Pages, "products/product-a/");
+        }
+
+        [TestMethod]
+        public void CombineReferencedNavigation_MultipleReferences_CombinesAll()
+        {
+            var context = GetService<ProjectContext>();
+            var options = Options.Create(new MintlifyRendererOptions());
+            var docsJsonManager = new DocsJsonManager();
+
+            var collectionConfig = new DocsJsonConfig
+            {
+                Name = "Collection",
+                Navigation = new NavigationConfig
+                {
+                    Pages = new List<object> { "introduction" }
+                }
+            };
+            var collectionJson = JsonSerializer.Serialize(collectionConfig, MintlifyConstants.JsonSerializerOptions);
+            docsJsonManager.Load(collectionJson);
+
+            var renderer = new MintlifyRenderer(context, options, docsJsonManager);
+
+            var ref1DocsPath = Path.Combine(context.DocumentationRootPath, "ref1_docs.json");
+            var ref1Config = new DocsJsonConfig
+            {
+                Name = "Service A",
+                Navigation = new NavigationConfig { Pages = new List<object> { "overview" } }
+            };
+            var ref1Json = JsonSerializer.Serialize(ref1Config, MintlifyConstants.JsonSerializerOptions);
+            File.WriteAllText(ref1DocsPath, ref1Json);
+
+            var ref2DocsPath = Path.Combine(context.DocumentationRootPath, "ref2_docs.json");
+            var ref2Config = new DocsJsonConfig
+            {
+                Name = "Service B",
+                Navigation = new NavigationConfig { Pages = new List<object> { "getting-started" } }
+            };
+            var ref2Json = JsonSerializer.Serialize(ref2Config, MintlifyConstants.JsonSerializerOptions);
+            File.WriteAllText(ref2DocsPath, ref2Json);
+
+            context.DocumentationReferences.Clear();
+            context.DocumentationReferences.Add(new DocumentationReference
+            {
+                ProjectPath = "ServiceA.docsproj",
+                DocumentationType = "Mintlify",
+                NavigationFilePath = ref1DocsPath,
+                DestinationPath = "services/service-a",
+                IntegrationType = "Tabs"
+            });
+            context.DocumentationReferences.Add(new DocumentationReference
+            {
+                ProjectPath = "ServiceB.docsproj",
+                DocumentationType = "Mintlify",
+                NavigationFilePath = ref2DocsPath,
+                DestinationPath = "services/service-b",
+                IntegrationType = "Tabs"
+            });
+
+            renderer.CombineReferencedNavigation();
+
+            renderer._docsJsonManager!.Configuration!.Navigation!.Tabs.Should().NotBeNull();
+            renderer._docsJsonManager!.Configuration!.Navigation!.Tabs!.Count.Should().Be(2);
+
+            var tab1 = renderer._docsJsonManager!.Configuration!.Navigation!.Tabs![0];
+            tab1.Tab.Should().Be("ServiceA");
+            VerifyPagePrefixes(tab1.Pages, "services/service-a/");
+
+            var tab2 = renderer._docsJsonManager!.Configuration!.Navigation!.Tabs![1];
+            tab2.Tab.Should().Be("ServiceB");
+            VerifyPagePrefixes(tab2.Pages, "services/service-b/");
+        }
+
+        [TestMethod]
+        public void CombineReferencedNavigation_MissingDocsJson_HandlesGracefully()
+        {
+            var context = GetService<ProjectContext>();
+            var options = Options.Create(new MintlifyRendererOptions());
+            var docsJsonManager = new DocsJsonManager();
+
+            var collectionConfig = new DocsJsonConfig
+            {
+                Name = "Collection",
+                Navigation = new NavigationConfig { Pages = [] }
+            };
+            var collectionJson = JsonSerializer.Serialize(collectionConfig, MintlifyConstants.JsonSerializerOptions);
+            docsJsonManager.Load(collectionJson);
+
+            var renderer = new MintlifyRenderer(context, options, docsJsonManager);
+
+            context.DocumentationReferences.Clear();
+            context.DocumentationReferences.Add(new DocumentationReference
+            {
+                ProjectPath = "Missing.docsproj",
+                DocumentationType = "Mintlify",
+                NavigationFilePath = Path.Combine(context.DocumentationRootPath, "nonexistent_docs.json"),
+                DestinationPath = "missing",
+                IntegrationType = "Tabs"
+            });
+
+            Action act = () => renderer.CombineReferencedNavigation();
+            act.Should().NotThrow();
+
+            renderer._docsJsonManager!.Configuration!.Navigation!.Tabs.Should().BeNull();
+        }
+
+        [TestMethod]
+        public void CombineReferencedNavigation_AppliesUrlPrefixToNestedGroups()
+        {
+            var context = GetService<ProjectContext>();
+            var options = Options.Create(new MintlifyRendererOptions());
+            var docsJsonManager = new DocsJsonManager();
+
+            var collectionConfig = new DocsJsonConfig
+            {
+                Name = "Collection",
+                Navigation = new NavigationConfig { Pages = new List<object> { "introduction" } }
+            };
+            var collectionJson = JsonSerializer.Serialize(collectionConfig, MintlifyConstants.JsonSerializerOptions);
+            docsJsonManager.Load(collectionJson);
+
+            var renderer = new MintlifyRenderer(context, options, docsJsonManager);
+
+            var refDocsPath = Path.Combine(context.DocumentationRootPath, "ref_docs.json");
+            var refConfig = new DocsJsonConfig
+            {
+                Name = "Service A",
+                Navigation = new NavigationConfig
+                {
+                    Pages = new List<object>
+                    {
+                        "overview",
+                        new GroupConfig
+                        {
+                            Group = "API",
+                            Pages = new List<object>
+                            {
+                                "api/getting-started",
+                                new GroupConfig
+                                {
+                                    Group = "Endpoints",
+                                    Pages = new List<object> { "api/endpoints/users", "api/endpoints/products" }
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+            var refJson = JsonSerializer.Serialize(refConfig, MintlifyConstants.JsonSerializerOptions);
+            File.WriteAllText(refDocsPath, refJson);
+
+            context.DocumentationReferences.Clear();
+            context.DocumentationReferences.Add(new DocumentationReference
+            {
+                ProjectPath = "ServiceA.docsproj",
+                DocumentationType = "Mintlify",
+                NavigationFilePath = refDocsPath,
+                DestinationPath = "services/service-a",
+                IntegrationType = "Tabs"
+            });
+
+            renderer.CombineReferencedNavigation();
+
+            renderer._docsJsonManager!.Configuration!.Navigation!.Tabs.Should().NotBeNull();
+            renderer._docsJsonManager!.Configuration!.Navigation!.Tabs!.Count.Should().Be(1);
+
+            var tab = renderer._docsJsonManager!.Configuration!.Navigation!.Tabs![0];
+            tab.Tab.Should().Be("ServiceA");
+            tab.Href.Should().Be("services/service-a");
+            tab.Pages.Should().NotBeNull();
+
+            VerifyPagePrefixes(tab.Pages, "services/service-a/");
         }
 
         #endregion

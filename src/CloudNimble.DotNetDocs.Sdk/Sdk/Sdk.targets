@@ -72,7 +72,8 @@
         <!-- Call the resolver task -->
         <CloudNimble.DotNetDocs.Sdk.Tasks.DocumentationReferenceResolverTask
             DocumentationReferences="@(DocumentationReference)"
-            Configuration="$(Configuration)">
+            Configuration="$(Configuration)"
+            DocumentationType="$(DocumentationType)">
             <Output TaskParameter="ResolvedDocumentationReferences" ItemName="ResolvedDocumentationReference" />
         </CloudNimble.DotNetDocs.Sdk.Tasks.DocumentationReferenceResolverTask>
 

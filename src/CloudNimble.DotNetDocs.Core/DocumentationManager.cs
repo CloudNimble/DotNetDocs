@@ -149,15 +149,10 @@ namespace CloudNimble.DotNetDocs.Core
             }
 
             // STEP 5: Copy referenced documentation files if any references exist
+            // Note: Navigation combining happens inside each renderer's RenderAsync() before saving
             if (projectContext.DocumentationReferences.Any())
             {
                 await CopyReferencedDocumentationAsync();
-
-                // STEP 6: Combine navigation from referenced documentation
-                foreach (var renderer in renderers)
-                {
-                    await renderer.CombineReferencedNavigationAsync(projectContext.DocumentationReferences);
-                }
             }
         }
 

@@ -48,13 +48,13 @@
           "providers/index",
           {
             "group": "Mintlify",
+            "tag": "PARTNER",
             "icon": "/images/icons/mintlify.svg",
             "pages": [
               "providers/mintlify/index",
               "providers/mintlify/navigation",
               "providers/mintlify/dotnet-library"
-            ],
-            "tag": "PARTNER"
+            ]
           }
         ]
       },
@@ -106,6 +106,7 @@
                       "api-reference/CloudNimble/DotNetDocs/Core/DocType",
                       "api-reference/CloudNimble/DotNetDocs/Core/DocTypeParameter",
                       "api-reference/CloudNimble/DotNetDocs/Core/DocumentationManager",
+                      "api-reference/CloudNimble/DotNetDocs/Core/DocumentationReference",
                       "api-reference/CloudNimble/DotNetDocs/Core/IDocEnricher",
                       "api-reference/CloudNimble/DotNetDocs/Core/IDocRenderer",
                       "api-reference/CloudNimble/DotNetDocs/Core/IDocTransformer",
@@ -297,15 +298,21 @@
                       "api-reference/Mintlify/Core/Models/IconConfig",
                       "api-reference/Mintlify/Core/Models/IconsConfig",
                       "api-reference/Mintlify/Core/Models/IntegrationsConfig",
+                      "api-reference/Mintlify/Core/Models/InteractionConfig",
                       "api-reference/Mintlify/Core/Models/LanguageConfig",
                       "api-reference/Mintlify/Core/Models/LogoConfig",
                       "api-reference/Mintlify/Core/Models/MdxAuthConfig",
                       "api-reference/Mintlify/Core/Models/MdxConfig",
+                      "api-reference/Mintlify/Core/Models/MenuConfig",
                       "api-reference/Mintlify/Core/Models/MergeOptions",
                       "api-reference/Mintlify/Core/Models/NavbarConfig",
                       "api-reference/Mintlify/Core/Models/NavbarLink",
                       "api-reference/Mintlify/Core/Models/NavigationConfig",
+                      "api-reference/Mintlify/Core/Models/NavigationContainerBase",
+                      "api-reference/Mintlify/Core/Models/NavigationItemBase",
+                      "api-reference/Mintlify/Core/Models/NavigationSectionBase",
                       "api-reference/Mintlify/Core/Models/PrimaryNavigationConfig",
+                      "api-reference/Mintlify/Core/Models/ProductConfig",
                       "api-reference/Mintlify/Core/Models/RedirectConfig",
                       "api-reference/Mintlify/Core/Models/SearchConfig",
                       "api-reference/Mintlify/Core/Models/SeoConfig",

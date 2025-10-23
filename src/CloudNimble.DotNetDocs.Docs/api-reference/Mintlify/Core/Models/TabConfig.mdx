@@ -2,7 +2,7 @@
 title: TabConfig
 description: "Represents a tab configuration in Mintlify navigation."
 icon: file-brackets-curly
-keywords: ['TabConfig', 'Mintlify.Core.Models.TabConfig', 'Mintlify.Core.Models', 'class', 'System.Object']
+keywords: ['TabConfig', 'Mintlify.Core.Models.TabConfig', 'Mintlify.Core.Models', 'class', 'Mintlify.Core.Models.NavigationSectionBase']
 ---
 
 ## Definition
@@ -11,7 +11,7 @@ keywords: ['TabConfig', 'Mintlify.Core.Models.TabConfig', 'Mintlify.Core.Models'
 
 **Namespace:** Mintlify.Core.Models
 
-**Inheritance:** System.Object
+**Inheritance:** Mintlify.Core.Models.NavigationSectionBase
 
 ## Syntax
 
@@ -54,145 +54,27 @@ public System.Collections.Generic.List<Mintlify.Core.Models.AnchorConfig> Anchor
 
 Type: `System.Collections.Generic.List<Mintlify.Core.Models.AnchorConfig>?`
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  AsyncApi
+#### Remarks
 
-Gets or sets the AsyncAPI configuration.
+Anchors provide persistent navigation items at the top of the sidebar.
 
-#### Syntax
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Menu
 
-```csharp
-public Mintlify.Core.Models.ApiSpecConfig AsyncApi { get; set; }
-```
-
-#### Property Value
-
-Type: `Mintlify.Core.Models.ApiSpecConfig?`
-
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Dropdowns
-
-Gets or sets the dropdowns for the tab.
+Gets or sets the menu items for the tab.
 
 #### Syntax
 
 ```csharp
-public System.Collections.Generic.List<Mintlify.Core.Models.DropdownConfig> Dropdowns { get; set; }
+public System.Collections.Generic.List<Mintlify.Core.Models.MenuConfig> Menu { get; set; }
 ```
 
 #### Property Value
 
-Type: `System.Collections.Generic.List<Mintlify.Core.Models.DropdownConfig>?`
+Type: `System.Collections.Generic.List<Mintlify.Core.Models.MenuConfig>?`
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Global
+#### Remarks
 
-Gets or sets the global navigation configuration.
-
-#### Syntax
-
-```csharp
-public Mintlify.Core.Models.GlobalNavigationConfig Global { get; set; }
-```
-
-#### Property Value
-
-Type: `Mintlify.Core.Models.GlobalNavigationConfig?`
-
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Groups
-
-Gets or sets the groups for the tab.
-
-#### Syntax
-
-```csharp
-public System.Collections.Generic.List<Mintlify.Core.Models.GroupConfig> Groups { get; set; }
-```
-
-#### Property Value
-
-Type: `System.Collections.Generic.List<Mintlify.Core.Models.GroupConfig>?`
-
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Hidden
-
-Gets or sets whether the current option is default hidden.
-
-#### Syntax
-
-```csharp
-public System.Nullable<bool> Hidden { get; set; }
-```
-
-#### Property Value
-
-Type: `System.Nullable<bool>?`
-
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Href
-
-Gets or sets the URL or path for the tab.
-
-#### Syntax
-
-```csharp
-public string Href { get; set; }
-```
-
-#### Property Value
-
-Type: `string?`
-
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Icon
-
-Gets or sets the icon to be displayed in the section.
-
-#### Syntax
-
-```csharp
-public Mintlify.Core.Models.IconConfig Icon { get; set; }
-```
-
-#### Property Value
-
-Type: `Mintlify.Core.Models.IconConfig?`
-
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Languages
-
-Gets or sets the languages for the tab.
-
-#### Syntax
-
-```csharp
-public System.Collections.Generic.List<Mintlify.Core.Models.LanguageConfig> Languages { get; set; }
-```
-
-#### Property Value
-
-Type: `System.Collections.Generic.List<Mintlify.Core.Models.LanguageConfig>?`
-
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  OpenApi
-
-Gets or sets the OpenAPI configuration.
-
-#### Syntax
-
-```csharp
-public Mintlify.Core.Models.ApiSpecConfig OpenApi { get; set; }
-```
-
-#### Property Value
-
-Type: `Mintlify.Core.Models.ApiSpecConfig?`
-
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Pages
-
-Gets or sets the pages for the tab.
-
-#### Syntax
-
-```csharp
-public System.Collections.Generic.List<object> Pages { get; set; }
-```
-
-#### Property Value
-
-Type: `System.Collections.Generic.List<object>?`
+Menu items create a dropdown menu within the tab navigation.
 
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Tab
 
@@ -211,18 +93,4 @@ Type: `string`
 #### Remarks
 
 This is a required field that appears as the tab label in navigation.
-
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Versions
-
-Gets or sets the versions for the tab.
-
-#### Syntax
-
-```csharp
-public System.Collections.Generic.List<Mintlify.Core.Models.VersionConfig> Versions { get; set; }
-```
-
-#### Property Value
-
-Type: `System.Collections.Generic.List<Mintlify.Core.Models.VersionConfig>?`
 

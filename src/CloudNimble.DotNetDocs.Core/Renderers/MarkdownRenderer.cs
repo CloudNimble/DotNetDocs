@@ -717,21 +717,6 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
         #region IDocRenderer Implementation
 
         /// <summary>
-        /// Combines navigation from referenced documentation projects into the collection's navigation structure.
-        /// </summary>
-        /// <param name="references">The list of documentation references to integrate.</param>
-        /// <returns>A task representing the asynchronous navigation combining operation.</returns>
-        /// <remarks>
-        /// This is a no-op implementation for MarkdownRenderer as basic Markdown doesn't support
-        /// combined navigation structures. Override this in specialized renderers that need it.
-        /// </remarks>
-        public Task CombineReferencedNavigationAsync(List<DocumentationReference> references)
-        {
-            // No-op for basic Markdown renderer
-            return Task.CompletedTask;
-        }
-
-        /// <summary>
         /// Renders placeholder conceptual content files for the documentation assembly.
         /// </summary>
         /// <param name="model">The documentation assembly to generate placeholders for.</param>

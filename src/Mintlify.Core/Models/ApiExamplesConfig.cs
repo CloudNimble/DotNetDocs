@@ -53,6 +53,25 @@ namespace Mintlify.Core.Models
         [JsonPropertyName("languages")]
         public List<string>? Languages { get; set; }
 
+        /// <summary>
+        /// Gets or sets whether to prefill the API playground with data from schema examples.
+        /// </summary>
+        /// <remarks>
+        /// When enabled, the playground automatically populates request fields with example
+        /// values from your OpenAPI specification. This provides users with pre-populated
+        /// data to help them understand the API structure and test endpoints more easily.
+        /// Defaults to false when not specified.
+        /// </remarks>
+        /// <example>
+        /// <code>
+        /// "examples": {
+        ///   "prefill": true
+        /// }
+        /// </code>
+        /// </example>
+        [JsonPropertyName("prefill")]
+        public bool? Prefill { get; set; }
+
         #endregion
 
     }

@@ -1869,5 +1869,5 @@ namespaces:
     remarks: This class contains methods with different parameter modifiers and types.
     summary: A class demonstrating various parameter types and patterns.
   displayName: CloudNimble.DotNetDocs.Tests.Shared.Parameters
-version: 1.0.0.0
-displayName: CloudNimble.DotNetDocs.Tests.Shared, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+version: 1.1.0.0
+displayName: CloudNimble.DotNetDocs.Tests.Shared, Version=1.1.0.0, Culture=neutral, PublicKeyToken=null

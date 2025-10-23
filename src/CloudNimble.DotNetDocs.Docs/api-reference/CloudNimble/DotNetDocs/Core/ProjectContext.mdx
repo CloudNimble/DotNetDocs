@@ -117,6 +117,46 @@ public string ConceptualPath { get; set; }
 Type: `string`
 The file system path to the folder containing conceptual documentation files.
 
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  DocumentationReferences
+
+Gets or sets the collection of external documentation references to combine into this documentation collection.
+
+#### Syntax
+
+```csharp
+public System.Collections.Generic.List<CloudNimble.DotNetDocs.Core.DocumentationReference> DocumentationReferences { get; set; }
+```
+
+#### Property Value
+
+Type: `System.Collections.Generic.List<CloudNimble.DotNetDocs.Core.DocumentationReference>`
+A list of [DocumentationReference](/api-reference/CloudNimble/DotNetDocs/Core/DocumentationReference) objects representing external documentation to be combined.
+
+#### Examples
+
+```csharp
+var context = new ProjectContext
+{
+    DocumentationReferences = new List&lt;DocumentationReference&gt;
+    {
+        new DocumentationReference
+        {
+            ProjectPath = @"C:\repos\auth-service\docs\AuthService.docsproj",
+            DocumentationRoot = @"C:\repos\auth-service\docs",
+            DestinationPath = "services/auth",
+            DocumentationType = "Mintlify",
+            IntegrationType = "Tabs"
+        }
+    }
+};
+```
+
+#### Remarks
+
+Similar to MSBuild's ProjectReference, this allows creating unified documentation portals by combining
+            multiple separate .docsproj outputs. Each reference specifies where to copy files from and how to
+            integrate navigation.
+
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  DocumentationRootPath
 
 Gets or sets the output path for generated documentation.

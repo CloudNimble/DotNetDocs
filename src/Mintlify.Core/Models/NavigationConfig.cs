@@ -53,6 +53,14 @@ namespace Mintlify.Core.Models
         public List<object>? Pages { get; set; }
 
         /// <summary>
+        /// Gets or sets the products in the navigation.
+        /// </summary>
+        /// <remarks>
+        /// Products separate documentation into distinct product-specific sections.
+        /// </remarks>
+        public List<ProductConfig>? Products { get; set; }
+
+        /// <summary>
         /// Gets or sets the tabs in the navigation.
         /// </summary>
         public List<TabConfig>? Tabs { get; set; }

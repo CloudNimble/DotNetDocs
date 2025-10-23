@@ -2,7 +2,7 @@
 title: GroupConfig
 description: "Represents a group configuration in Mintlify navigation."
 icon: file-brackets-curly
-keywords: ['GroupConfig', 'Mintlify.Core.Models.GroupConfig', 'Mintlify.Core.Models', 'class', 'System.Object']
+keywords: ['GroupConfig', 'Mintlify.Core.Models.GroupConfig', 'Mintlify.Core.Models', 'class', 'Mintlify.Core.Models.NavigationItemBase']
 ---
 
 ## Definition
@@ -11,7 +11,7 @@ keywords: ['GroupConfig', 'Mintlify.Core.Models.GroupConfig', 'Mintlify.Core.Mod
 
 **Namespace:** Mintlify.Core.Models
 
-**Inheritance:** System.Object
+**Inheritance:** Mintlify.Core.Models.NavigationItemBase
 
 ## Syntax
 
@@ -39,19 +39,24 @@ public GroupConfig()
 
 ## Properties
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  AsyncApi
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Expanded
 
-Gets or sets the AsyncAPI configuration for the group.
+Gets or sets whether the group is expanded by default in the navigation sidebar.
 
 #### Syntax
 
 ```csharp
-public Mintlify.Core.Models.ApiSpecConfig AsyncApi { get; set; }
+public System.Nullable<bool> Expanded { get; set; }
 ```
 
 #### Property Value
 
-Type: `Mintlify.Core.Models.ApiSpecConfig?`
+Type: `System.Nullable<bool>?`
+
+#### Remarks
+
+When true, the group will be expanded by default showing all its pages.
+            When false or null, the group will be collapsed by default.
 
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Group
 
@@ -74,66 +79,6 @@ This is a required field that appears as the group title in navigation.
             they are not recommended as Mintlify treats each empty group as a separate
             ungrouped navigation section rather than merging them together.
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Hidden
-
-Gets or sets whether the current option is default hidden.
-
-#### Syntax
-
-```csharp
-public System.Nullable<bool> Hidden { get; set; }
-```
-
-#### Property Value
-
-Type: `System.Nullable<bool>?`
-
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Icon
-
-Gets or sets the icon to be displayed in the section.
-
-#### Syntax
-
-```csharp
-public Mintlify.Core.Models.IconConfig Icon { get; set; }
-```
-
-#### Property Value
-
-Type: `Mintlify.Core.Models.IconConfig?`
-
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  OpenApi
-
-Gets or sets the OpenAPI configuration for the group.
-
-#### Syntax
-
-```csharp
-public Mintlify.Core.Models.ApiSpecConfig OpenApi { get; set; }
-```
-
-#### Property Value
-
-Type: `Mintlify.Core.Models.ApiSpecConfig?`
-
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Pages
-
-Gets or sets the pages in the group.
-
-#### Syntax
-
-```csharp
-public System.Collections.Generic.List<object> Pages { get; set; }
-```
-
-#### Property Value
-
-Type: `System.Collections.Generic.List<object>?`
-
-#### Remarks
-
-Pages can be strings (page paths) or nested GroupConfig objects.
-
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Root
 
 Gets or sets the root page for the group.
@@ -148,6 +93,10 @@ public string Root { get; set; }
 
 Type: `string?`
 
+#### Remarks
+
+Specifies the default page to display when the group is selected.
+
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Tag
 
 Gets or sets the tag for the group.
@@ -161,4 +110,8 @@ public string Tag { get; set; }
 #### Property Value
 
 Type: `string?`
+
+#### Remarks
+
+Displays a label tag (e.g., "NEW", "BETA") next to the group name.
 
