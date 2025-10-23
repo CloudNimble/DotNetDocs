@@ -34,7 +34,8 @@
       "WebFetch(domain:mintlify.com)",
       "WebFetch(domain:natemcmaster.github.io)",
       "WebFetch(domain:stackoverflow.com)",
-      "WebFetch(domain:www.nuget.org)"
+      "WebFetch(domain:www.nuget.org)",
+      "Bash(git fetch:*)"
     ],
     "deny": [],
     "ask": [],

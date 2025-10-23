@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using CloudNimble.DotNetDocs.Tools.Commands.Base;
 using McMaster.Extensions.CommandLineUtils;

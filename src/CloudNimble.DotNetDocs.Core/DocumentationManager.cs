@@ -147,6 +147,18 @@ namespace CloudNimble.DotNetDocs.Core
             {
                 await renderer.RenderAsync(mergedModel);
             }
+
+            // STEP 5: Copy referenced documentation files if any references exist
+            if (projectContext.DocumentationReferences.Any())
+            {
+                await CopyReferencedDocumentationAsync();
+
+                // STEP 6: Combine navigation from referenced documentation
+                foreach (var renderer in renderers)
+                {
+                    await renderer.CombineReferencedNavigationAsync(projectContext.DocumentationReferences);
+                }
+            }
         }
 
 
@@ -494,6 +506,201 @@ namespace CloudNimble.DotNetDocs.Core
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// Copies referenced documentation files to the collection documentation root.
+        /// </summary>
+        /// <returns>A task representing the asynchronous copy operation.</returns>
+        internal async Task CopyReferencedDocumentationAsync()
+        {
+            foreach (var reference in projectContext.DocumentationReferences)
+            {
+                var sourcePath = reference.DocumentationRoot;
+                var destPath = Path.Combine(projectContext.DocumentationRootPath, reference.DestinationPath);
+
+                // Get file patterns based on documentation type
+                var patterns = GetFilePatternsForDocumentationType(reference.DocumentationType);
+
+                // Copy files for each pattern
+                foreach (var pattern in patterns)
+                {
+                    await CopyFilesAsync(sourcePath, destPath, pattern, skipExisting: true);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets file glob patterns for a given documentation type.
+        /// </summary>
+        /// <param name="documentationType">The documentation type (Mintlify, DocFX, MkDocs, etc.).</param>
+        /// <returns>A list of glob patterns for files that should be copied.</returns>
+        internal List<string> GetFilePatternsForDocumentationType(string documentationType)
+        {
+            return documentationType.ToLowerInvariant() switch
+            {
+                "mintlify" => new List<string>
+                {
+                    "*.md",
+                    "*.mdx",
+                    "*.mdz",
+                    "docs.json",
+                    "images/**/*",
+                    "favicon.*",
+                    "snippets/**/*"
+                },
+                "docfx" => new List<string>
+                {
+                    "*.md",
+                    "*.yml",
+                    "*.yaml",
+                    "toc.yml",
+                    "toc.yaml",
+                    "docfx.json",
+                    "images/**/*",
+                    "articles/**/*",
+                    "api/**/*"
+                },
+                "mkdocs" => new List<string>
+                {
+                    "*.md",
+                    "mkdocs.yml",
+                    "docs/**/*",
+                    "overrides/**/*",
+                    "theme/**/*"
+                },
+                "jekyll" => new List<string>
+                {
+                    "*.md",
+                    "*.html",
+                    "_config.yml",
+                    "_config.yaml",
+                    "_posts/**/*",
+                    "_layouts/**/*",
+                    "_includes/**/*",
+                    "assets/**/*"
+                },
+                "hugo" => new List<string>
+                {
+                    "*.md",
+                    "hugo.toml",
+                    "hugo.yaml",
+                    "hugo.json",
+                    "content/**/*",
+                    "static/**/*",
+                    "layouts/**/*"
+                },
+                _ => new List<string>
+                {
+                    "*.md",
+                    "*.html",
+                    "images/**/*",
+                    "assets/**/*"
+                }
+            };
+        }
+
+        /// <summary>
+        /// Copies files matching a glob pattern from source to destination directory.
+        /// </summary>
+        /// <param name="sourceDir">The source directory to copy from.</param>
+        /// <param name="destDir">The destination directory to copy to.</param>
+        /// <param name="pattern">The glob pattern for files to copy.</param>
+        /// <param name="skipExisting">Whether to skip files that already exist in the destination.</param>
+        /// <returns>A task representing the asynchronous copy operation.</returns>
+        internal async Task CopyFilesAsync(string sourceDir, string destDir, string pattern, bool skipExisting = true)
+        {
+            if (!Directory.Exists(sourceDir))
+            {
+                return;
+            }
+
+            // Ensure destination directory exists
+            Directory.CreateDirectory(destDir);
+
+            // Handle recursive patterns (e.g., "images/**/*")
+            if (pattern.Contains("**"))
+            {
+                var parts = pattern.Split(new[] { "/**/" }, StringSplitOptions.None);
+                if (parts.Length == 2)
+                {
+                    var subDir = parts[0];
+                    var filePattern = parts[1];
+
+                    var sourceSubDir = Path.Combine(sourceDir, subDir);
+                    if (Directory.Exists(sourceSubDir))
+                    {
+                        var destSubDir = Path.Combine(destDir, subDir);
+                        await CopyDirectoryRecursiveAsync(sourceSubDir, destSubDir, filePattern, skipExisting);
+                    }
+                }
+            }
+            else
+            {
+                // Simple pattern - copy files matching pattern in root directory
+                var searchPattern = pattern.Contains('*') ? pattern : pattern;
+                var files = Directory.GetFiles(sourceDir, searchPattern, SearchOption.TopDirectoryOnly);
+
+                foreach (var sourceFile in files)
+                {
+                    var fileName = Path.GetFileName(sourceFile);
+                    var destFile = Path.Combine(destDir, fileName);
+
+                    if (skipExisting && File.Exists(destFile))
+                    {
+                        continue;
+                    }
+
+                    File.Copy(sourceFile, destFile, overwrite: !skipExisting);
+                }
+
+                await Task.CompletedTask;
+            }
+        }
+
+        /// <summary>
+        /// Recursively copies a directory and its contents.
+        /// </summary>
+        /// <param name="sourceDir">The source directory.</param>
+        /// <param name="destDir">The destination directory.</param>
+        /// <param name="filePattern">The file pattern to match (e.g., "*" for all files).</param>
+        /// <param name="skipExisting">Whether to skip files that already exist.</param>
+        /// <returns>A task representing the asynchronous copy operation.</returns>
+        internal async Task CopyDirectoryRecursiveAsync(string sourceDir, string destDir, string filePattern, bool skipExisting)
+        {
+            if (!Directory.Exists(sourceDir))
+            {
+                return;
+            }
+
+            // Create destination directory
+            Directory.CreateDirectory(destDir);
+
+            // Copy files
+            var files = Directory.GetFiles(sourceDir, filePattern, SearchOption.TopDirectoryOnly);
+            foreach (var sourceFile in files)
+            {
+                var fileName = Path.GetFileName(sourceFile);
+                var destFile = Path.Combine(destDir, fileName);
+
+                if (skipExisting && File.Exists(destFile))
+                {
+                    continue;
+                }
+
+                File.Copy(sourceFile, destFile, overwrite: !skipExisting);
+            }
+
+            // Recursively copy subdirectories
+            var subDirs = Directory.GetDirectories(sourceDir);
+            foreach (var subDir in subDirs)
+            {
+                var dirName = Path.GetFileName(subDir);
+                var destSubDir = Path.Combine(destDir, dirName);
+                await CopyDirectoryRecursiveAsync(subDir, destSubDir, filePattern, skipExisting);
+            }
+
+            await Task.CompletedTask;
         }
 
         #endregion

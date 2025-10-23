@@ -126,6 +126,37 @@ namespace CloudNimble.DotNetDocs.Core
         /// </value>
         public bool ConceptualDocsEnabled { get; set; } = true;
 
+        /// <summary>
+        /// Gets or sets the collection of external documentation references to combine into this documentation collection.
+        /// </summary>
+        /// <value>
+        /// A list of <see cref="DocumentationReference"/> objects representing external documentation to be combined.
+        /// </value>
+        /// <remarks>
+        /// Similar to MSBuild's ProjectReference, this allows creating unified documentation portals by combining
+        /// multiple separate .docsproj outputs. Each reference specifies where to copy files from and how to
+        /// integrate navigation.
+        /// </remarks>
+        /// <example>
+        /// <code>
+        /// var context = new ProjectContext
+        /// {
+        ///     DocumentationReferences = new List&lt;DocumentationReference&gt;
+        ///     {
+        ///         new DocumentationReference
+        ///         {
+        ///             ProjectPath = @"C:\repos\auth-service\docs\AuthService.docsproj",
+        ///             DocumentationRoot = @"C:\repos\auth-service\docs",
+        ///             DestinationPath = "services/auth",
+        ///             DocumentationType = "Mintlify",
+        ///             IntegrationType = "Tabs"
+        ///         }
+        ///     }
+        /// };
+        /// </code>
+        /// </example>
+        public List<DocumentationReference> DocumentationReferences { get; set; } = [];
+
         #endregion
 
         #region Constructors

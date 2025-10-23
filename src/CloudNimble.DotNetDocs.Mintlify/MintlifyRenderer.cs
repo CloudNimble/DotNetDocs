@@ -1440,6 +1440,45 @@ namespace CloudNimble.DotNetDocs.Mintlify
         #region IDocRenderer Implementation
 
         /// <summary>
+        /// Combines navigation from referenced documentation projects into the collection's navigation structure.
+        /// </summary>
+        /// <param name="references">The list of documentation references to integrate.</param>
+        /// <returns>A task representing the asynchronous navigation combining operation.</returns>
+        /// <remarks>
+        /// For Mintlify, this method loads the referenced docs.json files and combines their navigation
+        /// into the collection's docs.json, applying URL prefixes and integrating into Tabs or Products
+        /// based on the IntegrationType metadata.
+        /// </remarks>
+        public async Task CombineReferencedNavigationAsync(List<DocumentationReference> references)
+        {
+            if (_docsJsonManager is null || _docsJsonManager.Configuration is null)
+            {
+                // If DocsJsonManager is not configured, skip navigation combining
+                return;
+            }
+
+            if (references is null || references.Count == 0)
+            {
+                return;
+            }
+
+            foreach (var reference in references)
+            {
+                // Skip if no navigation file exists
+                if (string.IsNullOrWhiteSpace(reference.NavigationFilePath) || !File.Exists(reference.NavigationFilePath))
+                {
+                    continue;
+                }
+
+                // TODO: Phase 5 - Implement navigation combining logic
+                // 1. Load the referenced docs.json using DocsJsonManager
+                // 2. Apply URL prefix to all page paths using ApplyUrlPrefixToPages
+                // 3. Add to Tabs or Products based on IntegrationType
+                await Task.CompletedTask;
+            }
+        }
+
+        /// <summary>
         /// Renders placeholder conceptual content files for the documentation assembly.
         /// </summary>
         /// <param name="model">The documentation assembly to generate placeholders for.</param>
