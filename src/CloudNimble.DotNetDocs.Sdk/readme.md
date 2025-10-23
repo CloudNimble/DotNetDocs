@@ -93,8 +93,6 @@ The SDK automatically detects your documentation type based on configuration fil
     <DeployDocumentation>true</DeployDocumentation>
     
     <!-- Quality assurance -->
-    <ValidateLinks>true</ValidateLinks>
-    <GeneratePdf>true</GeneratePdf>
   </PropertyGroup>
 </Project>
 ```
@@ -130,8 +128,6 @@ This is particularly useful when you want to:
 | `GenerateMintlifyDocs` | Generate Mintlify documentation (requires EasyAF.Tools) |
 | `LintMarkdown` | Lint markdown files for issues |
 | `PreviewDocumentation` | Start local preview server |
-| `ValidateLinks` | Check for broken links |
-| `GeneratePdf` | Generate PDF output |
 | `DeployDocumentation` | Deploy to hosting platform |
 
 ### DotNetDocs Integration

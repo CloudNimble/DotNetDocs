@@ -295,16 +295,6 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
                     generatedFiles.AddRange(yamlFiles);
                 }
 
-                // Log statistics
-                Log.LogMessage(MessageImportance.High, "📊 Documentation Statistics:");
-                Log.LogMessage(MessageImportance.High, $"   📄 Documentation type: {DocumentationType}");
-                Log.LogMessage(MessageImportance.High, $"   📦 Assemblies processed: {assemblyPairs.Count}");
-                
-                if (generatedFiles.Count > 0)
-                {
-                    Log.LogMessage(MessageImportance.High, $"   📝 Files generated: {generatedFiles.Distinct().Count()}");
-                }
-
                 // Return generated files as output
                 GeneratedFiles = [.. generatedFiles.Distinct().Select(f => new TaskItem(f))];
 
