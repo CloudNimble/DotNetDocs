@@ -1,8 +1,8 @@
-﻿<Project Sdk="Microsoft.Build.NoTargets/3.7.0">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <!-- SDK packages don't compile code -->
-        <TargetFramework>netstandard2.0</TargetFramework>
+        <TargetFrameworks>net8.0;net472</TargetFrameworks>
         <GenerateDocumentationFile>false</GenerateDocumentationFile>
         <Description>The MSBuild SDK for documentation projects (.docsproj) that provides a clean way to include documentation in .NET solutions.</Description>
 
@@ -10,6 +10,8 @@
         <DevelopmentDependency>true</DevelopmentDependency>
         <PackageType>MSBuildSdk</PackageType>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+        <IncludeBuildOutput>false</IncludeBuildOutput>
 
         <!-- Suppress warnings about SDK packages -->
         <NoWarn>$(NoWarn);NU5128;CS2008;NU1701;NU5100</NoWarn>
@@ -19,22 +21,32 @@
         
         <!-- Suppress dependencies when packing -->
         <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
-        <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);AddDocsTasksToPackage</TargetsForTfmSpecificContentInPackage>
+        <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);AddPerTFMDocsTasksToPackage</TargetsForTfmSpecificContentInPackage>
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\CloudNimble.DotNetDocs.Sdk.Tasks\CloudNimble.DotNetDocs.Sdk.Tasks.csproj"
-            SetTargetFramework="TargetFramework=net472"
-            ReferenceOutputAssembly="false" />
-        <ProjectReference Include="..\CloudNimble.DotNetDocs.Sdk.Tasks\CloudNimble.DotNetDocs.Sdk.Tasks.csproj"
-            SetTargetFramework="TargetFramework=net8.0"
-            ReferenceOutputAssembly="false" />
-        <ProjectReference Include="..\CloudNimble.DotNetDocs.Sdk.Tasks\CloudNimble.DotNetDocs.Sdk.Tasks.csproj"
-            SetTargetFramework="TargetFramework=net9.0"
-            ReferenceOutputAssembly="false" />
-        <ProjectReference Include="..\CloudNimble.DotNetDocs.Sdk.Tasks\CloudNimble.DotNetDocs.Sdk.Tasks.csproj"
-            SetTargetFramework="TargetFramework=net10.0"
-            ReferenceOutputAssembly="false" />
+        <!-- MSBuild task dependencies -->
+        <PackageReference Include="EasyAF.MSBuild" Version="3.*-*" />
+        <PackageReference Include="Microsoft.Build.Framework" Version="17.*" PrivateAssets="all" />
+        <PackageReference Include="Microsoft.Build.Utilities.Core" Version="17.*" PrivateAssets="all" ExcludeAssets="runtime" />
+        <PackageReference Include="System.Collections.Immutable" Version="9.*" PrivateAssets="all" />
+        
+        <!-- Microsoft.CodeAnalysis.CSharp.Workspaces needs to be available for the task -->
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.*" />
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.*" />
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
+        <PackageReference Include="System.ValueTuple" Version="4.*" />
+    </ItemGroup>
+
+    <!-- Project references for .NET Core/5+ only -->
+    <ItemGroup Condition="'$(TargetFramework)' != 'net472'">
+        <ProjectReference Include="..\CloudNimble.DotNetDocs.Core\CloudNimble.DotNetDocs.Core.csproj" />
+        <ProjectReference Include="..\CloudNimble.DotNetDocs.Mintlify\CloudNimble.DotNetDocs.Mintlify.csproj" />
     </ItemGroup>
 
     <ItemGroup>
@@ -43,46 +55,20 @@
         <None Include="build\**" Pack="true" PackagePath="build" />
     </ItemGroup>
 
-    <Target Name="AddDocsTasksToPackage" Returns="@(TfmSpecificPackageFile)" DependsOnTargets="ResolveProjectReferences">
+    <!-- This is called for each TFM of this project - so we should be able to ask ourselves what our own outputs are -->
+    <Target Name="AddPerTFMDocsTasksToPackage" Returns="@(TfmSpecificPackageFile)" DependsOnTargets="ResolveProjectReferences">
         <PropertyGroup>
             <_TargetsForReferenceOutputs>ReferenceCopyLocalPathsOutputGroup;BuiltProjectOutputGroup</_TargetsForReferenceOutputs>
         </PropertyGroup>
         <!-- for each of our TFMs, we need to get a few kinds of outputs and put them into the package -->
-        <MSBuild Projects="..\CloudNimble.DotNetDocs.Sdk.Tasks\CloudNimble.DotNetDocs.Sdk.Tasks.csproj" 
-            Targets="$(_TargetsForReferenceOutputs)" 
-            BuildInParallel="true"
-            Properties="TargetFramework=net472">
-            <Output TaskParameter="TargetOutputs" ItemName="Net472Outputs" />
+        <MSBuild Projects="$(MSBuildThisFileFullPath)" 
+            Targets="$(_TargetsForReferenceOutputs)">
+            <Output TaskParameter="TargetOutputs" ItemName="CurrentTFMOutputs" />
         </MSBuild>
-        <MSBuild Projects="..\CloudNimble.DotNetDocs.Sdk.Tasks\CloudNimble.DotNetDocs.Sdk.Tasks.csproj" 
-            Targets="$(_TargetsForReferenceOutputs)" 
-            BuildInParallel="true"
-            Properties="TargetFramework=net8.0">
-            <Output TaskParameter="TargetOutputs" ItemName="Net8Outputs" />
-        </MSBuild>
-        <MSBuild Projects="..\CloudNimble.DotNetDocs.Sdk.Tasks\CloudNimble.DotNetDocs.Sdk.Tasks.csproj" 
-            Targets="$(_TargetsForReferenceOutputs)" 
-            BuildInParallel="true"
-            Properties="TargetFramework=net9.0">
-            <Output TaskParameter="TargetOutputs" ItemName="Net9Outputs" />
-        </MSBuild>
-        <MSBuild Projects="..\CloudNimble.DotNetDocs.Sdk.Tasks\CloudNimble.DotNetDocs.Sdk.Tasks.csproj" 
-            Targets="$(_TargetsForReferenceOutputs)" 
-            BuildInParallel="true"
-            Properties="TargetFramework=net10.0">
-            <Output TaskParameter="TargetOutputs" ItemName="Net10Outputs" />
-        </MSBuild>
-
+        
         <ItemGroup>
-            <Net472Outputs Update="@(Net472Outputs)" PackagePath="tasks\net472\$([MSBuild]::ValueOrDefault('%(Net472Outputs.DestinationSubPath)', '%(Net472Outputs.TargetPath)'))" />
-            <Net8Outputs Update="@(Net8Outputs)" PackagePath="tasks\net8.0\$([MSBuild]::ValueOrDefault('%(Net8Outputs.DestinationSubPath)', '%(Net8Outputs.TargetPath)'))" />
-            <Net9Outputs Update="@(Net9Outputs)" PackagePath="tasks\net9.0\$([MSBuild]::ValueOrDefault('%(Net9Outputs.DestinationSubPath)', '%(Net9Outputs.TargetPath)'))" />
-            <Net10Outputs Update="@(Net10Outputs)" PackagePath="tasks\net10.0\$([MSBuild]::ValueOrDefault('%(Net10Outputs.DestinationSubPath)', '%(Net10Outputs.TargetPath)'))" />
-
-            <TfmSpecificPackageFile Include="@(Net472Outputs)" />
-            <TfmSpecificPackageFile Include="@(Net8Outputs)" />
-            <TfmSpecificPackageFile Include="@(Net9Outputs)" />
-            <TfmSpecificPackageFile Include="@(Net10Outputs)" />
+            <CurrentTFMOutputs Update="@(CurrentTFMOutputs)" PackagePath="tasks\$(TargetFramework)\$([MSBuild]::ValueOrDefault('%(CurrentTFMOutputs.DestinationSubPath)', '%(CurrentTFMOutputs.TargetPath)'))" />
+            <TfmSpecificPackageFile Include="@(CurrentTFMOutputs)" />
         </ItemGroup>
     </Target>
 
