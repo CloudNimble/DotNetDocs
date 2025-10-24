@@ -76,7 +76,7 @@ namespace CloudNimble.DotNetDocs.Mintlify
             ArgumentNullException.ThrowIfNull(model);
 
             var apiOutputPath = Path.Combine(Context.DocumentationRootPath, Context.ApiReferencePath);
-            Console.WriteLine($"📝 Rendering documentation to: {apiOutputPath}");
+            // Console.WriteLine($"📝 Rendering documentation to: {apiOutputPath}");
 
             // Initialize DocsJsonManager if enabled (only on first call)
             DocsJsonConfig? docsConfig = null;
@@ -1501,7 +1501,7 @@ namespace CloudNimble.DotNetDocs.Mintlify
             var namespacePath = Context.GetNamespaceFolderPath(ns.Name ?? "global");
             var namespaceDir = Path.Combine(conceptualPath, namespacePath);
 
-            Console.WriteLine($"📝 Generating namespace placeholders for: {ns.Name} at {namespaceDir}");
+            // Console.WriteLine($"📝 Generating namespace placeholders for: {ns.Name} at {namespaceDir}");
             Directory.CreateDirectory(namespaceDir);
 
             // Generate individual placeholder files

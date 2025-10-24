@@ -14,8 +14,9 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\CloudNimble.DotNetDocs.Sdk.Tasks\CloudNimble.DotNetDocs.Sdk.Tasks.csproj" />
+        <ProjectReference Include="..\CloudNimble.DotNetDocs.Sdk\CloudNimble.DotNetDocs.Sdk.csproj" />
         <ProjectReference Include="..\CloudNimble.DotNetDocs.Tests.Shared\CloudNimble.DotNetDocs.Tests.Shared.csproj" />
+        <ProjectReference Include="..\Mintlify.Core\Mintlify.Core.csproj" />
     </ItemGroup>
 
     <ItemGroup>
