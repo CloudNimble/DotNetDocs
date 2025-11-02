@@ -680,6 +680,7 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             var baselineDir = Path.Combine(
                 Directory.GetCurrentDirectory(),
                 "Baselines",
+                framework,
                 "MintlifyRenderer",
                 "FolderMode");
             var baselinePath = Path.Combine(baselineDir, baselineRelativePath);
@@ -1260,128 +1261,6 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
 
         #endregion
 
-        #region Baseline Generation
-
-        /// <summary>
-        /// Generates baseline files for the MintlifyRenderer in both FileMode and FolderMode.
-        /// This method is marked with [BreakdanceManifestGenerator] and is called by the Breakdance tool
-        /// to generate baseline files for comparison in unit tests.
-        /// </summary>
-        /// <param name="projectPath">The root path of the test project where baselines will be stored.</param>
-        /// <remarks>
-        /// This method uses Dependency Injection to get the ProjectContext and MintlifyRenderer instances.
-        /// It modifies the context properties to configure the output location and file naming options,
-        /// then uses the renderer from DI (which ensures all dependencies are properly injected,
-        /// including MintlifyRendererOptions and DocsJsonManager).
-        ///
-        /// The baseline generation intentionally does NOT use DocumentationManager.ProcessAsync because
-        /// these are unit test baselines for the renderer itself, not integration test baselines.
-        /// The renderer should be tested in isolation without transformers applied.
-        /// </remarks>
-        //[TestMethod]
-        //[DataRow(projectPath)]
-        [BreakdanceManifestGenerator]
-        public async Task GenerateMintlifyBaselines(string projectPath)
-        {
-            await GenerateFileModeBaselines(projectPath);
-            await GenerateFolderModeBaselines(projectPath);
-        }
-
-        /// <summary>
-        /// Generates baseline files for MintlifyRenderer in FileMode configuration.
-        /// </summary>
-        /// <param name="projectPath">The root path of the test project where baselines will be stored.</param>
-        /// <remarks>
-        /// This method:
-        /// 1. Gets the ProjectContext from DI to ensure consistent configuration
-        /// 2. Modifies the context properties for FileMode output
-        /// 3. Gets the MintlifyRenderer from DI with all dependencies properly injected
-        /// 4. Uses AssemblyManager directly (not DocumentationManager) to generate documentation
-        ///    without transformers, as these are unit test baselines for the renderer alone
-        /// 5. Does not restore context values since this runs in an isolated Breakdance process
-        /// </remarks>
-        private async Task GenerateFileModeBaselines(string projectPath)
-        {
-            var baselinesDir = Path.Combine(projectPath, "Baselines", "MintlifyRenderer", "FileMode");
-            if (Directory.Exists(baselinesDir))
-            {
-                Directory.Delete(baselinesDir, true);
-            }
-            Directory.CreateDirectory(baselinesDir);
-
-            var context = GetService<ProjectContext>();
-            context.FileNamingOptions = new FileNamingOptions(NamespaceMode.File, '-');
-            context.DocumentationRootPath = baselinesDir;
-
-            var renderer = GetMintlifyRenderer();
-
-            var assemblyPath = typeof(SimpleClass).Assembly.Location;
-            var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
-            var manager = new AssemblyManager(assemblyPath, xmlPath);
-            var assembly = await manager.DocumentAsync(context);
-
-            await renderer.RenderAsync(assembly);
-        }
-
-        /// <summary>
-        /// Generates baseline files for MintlifyRenderer in FolderMode configuration.
-        /// </summary>
-        /// <param name="projectPath">The root path of the test project where baselines will be stored.</param>
-        /// <remarks>
-        /// This method:
-        /// 1. Gets the ProjectContext from DI to ensure consistent configuration
-        /// 2. Modifies the context properties for FolderMode output
-        /// 3. Gets the MintlifyRenderer from DI with all dependencies properly injected
-        /// 4. Uses AssemblyManager directly (not DocumentationManager) to generate documentation
-        ///    without transformers, as these are unit test baselines for the renderer alone
-        /// 5. Does not restore context values since this runs in an isolated Breakdance process
-        /// </remarks>
-        private async Task GenerateFolderModeBaselines(string projectPath)
-        {
-            var baselinesDir = Path.Combine(projectPath, "Baselines", "MintlifyRenderer", "FolderMode");
-            if (Directory.Exists(baselinesDir))
-            {
-                Directory.Delete(baselinesDir, true);
-            }
-            Directory.CreateDirectory(baselinesDir);
-
-            // Get context from DI and modify it for baseline generation
-            var context = GetService<ProjectContext>();
-            context.FileNamingOptions = new FileNamingOptions(NamespaceMode.Folder, '-');
-            context.DocumentationRootPath = baselinesDir;
-
-            // Get renderer from DI to ensure all dependencies are properly injected
-            var renderer = GetMintlifyRenderer();
-
-            var assemblyPath = typeof(SimpleClass).Assembly.Location;
-            var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
-            var manager = new AssemblyManager(assemblyPath, xmlPath);
-            var assembly = await manager.DocumentAsync(context);
-
-            await renderer.RenderAsync(assembly);
-        }
-
-        //private static void CopyDirectoryRecursive(string sourceDir, string destDir)
-        //{
-        //    // Copy all files from the source directory
-        //    foreach (var file in Directory.GetFiles(sourceDir))
-        //    {
-        //        var destFile = Path.Combine(destDir, Path.GetFileName(file));
-        //        File.Copy(file, destFile, true);
-        //    }
-
-        //    // Recursively copy subdirectories
-        //    foreach (var subDir in Directory.GetDirectories(sourceDir))
-        //    {
-        //        var dirName = Path.GetFileName(subDir);
-        //        var destSubDir = Path.Combine(destDir, dirName);
-        //        Directory.CreateDirectory(destSubDir);
-        //        CopyDirectoryRecursive(subDir, destSubDir);
-        //    }
-        //}
-
-        #endregion
-
         #region DocsJsonManager Template Loading Tests
 
         [TestMethod]
@@ -1852,6 +1731,128 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
 
             VerifyPagePrefixes(tab.Pages, "services/service-a/");
         }
+
+        #endregion
+
+        #region Baseline Generation
+
+        /// <summary>
+        /// Generates baseline files for the MintlifyRenderer in both FileMode and FolderMode.
+        /// This method is marked with [BreakdanceManifestGenerator] and is called by the Breakdance tool
+        /// to generate baseline files for comparison in unit tests.
+        /// </summary>
+        /// <param name="projectPath">The root path of the test project where baselines will be stored.</param>
+        /// <remarks>
+        /// This method uses Dependency Injection to get the ProjectContext and MintlifyRenderer instances.
+        /// It modifies the context properties to configure the output location and file naming options,
+        /// then uses the renderer from DI (which ensures all dependencies are properly injected,
+        /// including MintlifyRendererOptions and DocsJsonManager).
+        ///
+        /// The baseline generation intentionally does NOT use DocumentationManager.ProcessAsync because
+        /// these are unit test baselines for the renderer itself, not integration test baselines.
+        /// The renderer should be tested in isolation without transformers applied.
+        /// </remarks>
+        //[TestMethod]
+        //[DataRow(projectPath)]
+        [BreakdanceManifestGenerator]
+        public async Task GenerateMintlifyBaselines(string projectPath)
+        {
+            await GenerateFileModeBaselines(projectPath);
+            await GenerateFolderModeBaselines(projectPath);
+        }
+
+        /// <summary>
+        /// Generates baseline files for MintlifyRenderer in FileMode configuration.
+        /// </summary>
+        /// <param name="projectPath">The root path of the test project where baselines will be stored.</param>
+        /// <remarks>
+        /// This method:
+        /// 1. Gets the ProjectContext from DI to ensure consistent configuration
+        /// 2. Modifies the context properties for FileMode output
+        /// 3. Gets the MintlifyRenderer from DI with all dependencies properly injected
+        /// 4. Uses AssemblyManager directly (not DocumentationManager) to generate documentation
+        ///    without transformers, as these are unit test baselines for the renderer alone
+        /// 5. Does not restore context values since this runs in an isolated Breakdance process
+        /// </remarks>
+        private async Task GenerateFileModeBaselines(string projectPath)
+        {
+            var baselinesDir = Path.Combine(projectPath, "Baselines", framework, "MintlifyRenderer", "FileMode");
+            if (Directory.Exists(baselinesDir))
+            {
+                Directory.Delete(baselinesDir, true);
+            }
+            Directory.CreateDirectory(baselinesDir);
+
+            var context = GetService<ProjectContext>();
+            context.FileNamingOptions = new FileNamingOptions(NamespaceMode.File, '-');
+            context.DocumentationRootPath = baselinesDir;
+
+            var renderer = GetMintlifyRenderer();
+
+            var assemblyPath = typeof(SimpleClass).Assembly.Location;
+            var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
+            var manager = new AssemblyManager(assemblyPath, xmlPath);
+            var assembly = await manager.DocumentAsync(context);
+
+            await renderer.RenderAsync(assembly);
+        }
+
+        /// <summary>
+        /// Generates baseline files for MintlifyRenderer in FolderMode configuration.
+        /// </summary>
+        /// <param name="projectPath">The root path of the test project where baselines will be stored.</param>
+        /// <remarks>
+        /// This method:
+        /// 1. Gets the ProjectContext from DI to ensure consistent configuration
+        /// 2. Modifies the context properties for FolderMode output
+        /// 3. Gets the MintlifyRenderer from DI with all dependencies properly injected
+        /// 4. Uses AssemblyManager directly (not DocumentationManager) to generate documentation
+        ///    without transformers, as these are unit test baselines for the renderer alone
+        /// 5. Does not restore context values since this runs in an isolated Breakdance process
+        /// </remarks>
+        private async Task GenerateFolderModeBaselines(string projectPath)
+        {
+            var baselinesDir = Path.Combine(projectPath, "Baselines", framework, "MintlifyRenderer", "FolderMode");
+            if (Directory.Exists(baselinesDir))
+            {
+                Directory.Delete(baselinesDir, true);
+            }
+            Directory.CreateDirectory(baselinesDir);
+
+            // Get context from DI and modify it for baseline generation
+            var context = GetService<ProjectContext>();
+            context.FileNamingOptions = new FileNamingOptions(NamespaceMode.Folder, '-');
+            context.DocumentationRootPath = baselinesDir;
+
+            // Get renderer from DI to ensure all dependencies are properly injected
+            var renderer = GetMintlifyRenderer();
+
+            var assemblyPath = typeof(SimpleClass).Assembly.Location;
+            var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
+            var manager = new AssemblyManager(assemblyPath, xmlPath);
+            var assembly = await manager.DocumentAsync(context);
+
+            await renderer.RenderAsync(assembly);
+        }
+
+        //private static void CopyDirectoryRecursive(string sourceDir, string destDir)
+        //{
+        //    // Copy all files from the source directory
+        //    foreach (var file in Directory.GetFiles(sourceDir))
+        //    {
+        //        var destFile = Path.Combine(destDir, Path.GetFileName(file));
+        //        File.Copy(file, destFile, true);
+        //    }
+
+        //    // Recursively copy subdirectories
+        //    foreach (var subDir in Directory.GetDirectories(sourceDir))
+        //    {
+        //        var dirName = Path.GetFileName(subDir);
+        //        var destSubDir = Path.Combine(destDir, dirName);
+        //        Directory.CreateDirectory(destSubDir);
+        //        CopyDirectoryRecursive(subDir, destSubDir);
+        //    }
+        //}
 
         #endregion
 

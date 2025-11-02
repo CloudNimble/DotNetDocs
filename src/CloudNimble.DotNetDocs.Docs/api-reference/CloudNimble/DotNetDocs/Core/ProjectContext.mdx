@@ -5,6 +5,8 @@ icon: file-brackets-curly
 keywords: ['ProjectContext', 'CloudNimble.DotNetDocs.Core.ProjectContext', 'CloudNimble.DotNetDocs.Core', 'class', 'System.Object']
 ---
 
+import { DocsBadge } from '/snippets/DocsBadge.jsx';
+
 ## Definition
 
 **Assembly:** CloudNimble.DotNetDocs.Core.dll
@@ -69,6 +71,16 @@ public ProjectContext(System.Collections.Generic.List<Microsoft.CodeAnalysis.Acc
 | `includedMembers` | `System.Collections.Generic.List<Microsoft.CodeAnalysis.Accessibility?>?` | List of member accessibilities to include. Defaults to Public if null. |
 | `references` | `string[]?` | Paths to referenced assemblies. |
 
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  .ctor <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public Object()
+```
+
 ## Properties
 
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  ApiReferencePath
@@ -116,6 +128,29 @@ public string ConceptualPath { get; set; }
 
 Type: `string`
 The file system path to the folder containing conceptual documentation files.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  CreateExternalTypeReferences
+
+Gets or sets whether to create documentation for external types that have extension methods.
+
+#### Syntax
+
+```csharp
+public bool CreateExternalTypeReferences { get; set; }
+```
+
+#### Property Value
+
+Type: `bool`
+`true` to create minimal [DocType](/api-reference/CloudNimble/DotNetDocs/Core/DocType) entries for types outside the assembly
+            that are extended by extension methods; `false` to only relocate extensions for types
+            within the assembly. Default is `true`.
+
+#### Remarks
+
+When enabled, extending `IServiceCollection` creates a documentation page showing
+            only your extension methods, with a link to Microsoft's official documentation for the
+            complete type definition.
 
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  DocumentationReferences
 
@@ -250,6 +285,28 @@ Type: `bool`
 When true, public fields (including constants) are included in the documentation.
             Defaults to false since fields are generally discouraged in favor of properties.
 
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  IncludeSystemObjectInheritance
+
+Gets or sets whether to include members inherited from [Object](https://learn.microsoft.com/dotnet/api/system.object).
+
+#### Syntax
+
+```csharp
+public bool IncludeSystemObjectInheritance { get; set; }
+```
+
+#### Property Value
+
+Type: `bool`
+`true` to document `ToString()`, `GetHashCode()`, `Equals()`, etc.
+            on every type; `false` to exclude these common members. Default is `true`.
+
+#### Remarks
+
+Setting this to `false` reduces documentation noise while still including
+            members inherited from other base types and interfaces. This matches the behavior
+            of Microsoft's official .NET documentation.
+
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  References
 
 Gets or sets the collection of paths to referenced assemblies.
@@ -306,6 +363,96 @@ This method creates the necessary folder structure when using Folder mode.
             In File mode, it simply ensures the base output directory exists.
             This centralizes folder creation logic so renderers can assume directories exist.
 
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Equals <DocsBadge text="Inherited" variant="neutral" /> <DocsBadge text="Virtual" variant="warning" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual bool Equals(object obj)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `obj` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Equals <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public static bool Equals(object objA, object objB)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `objA` | `object?` | - |
+| `objB` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  GetFullConceptualPath
+
+Gets the full path to the conceptual documentation folder.
+
+#### Syntax
+
+```csharp
+public string GetFullConceptualPath()
+```
+
+#### Returns
+
+Type: `string`
+The absolute path to the conceptual documentation folder if [ProjectContext.ConceptualPath](/api-reference/CloudNimble/DotNetDocs/Core/ProjectContext#conceptualpath) is absolute,
+             or the path combined with [ProjectContext.DocumentationRootPath](/api-reference/CloudNimble/DotNetDocs/Core/ProjectContext#documentationrootpath) if [ProjectContext.ConceptualPath](/api-reference/CloudNimble/DotNetDocs/Core/ProjectContext#conceptualpath) is relative.
+
+#### Examples
+
+```csharp
+// When ConceptualPath is absolute
+context.ConceptualPath = "C:\\Docs\\conceptual";
+var path = context.GetFullConceptualPath(); // Returns "C:\Docs\conceptual"
+
+// When ConceptualPath is relative
+context.DocumentationRootPath = "C:\\Docs";
+context.ConceptualPath = "conceptual";
+var path = context.GetFullConceptualPath(); // Returns "C:\Docs\conceptual"
+```
+
+#### Remarks
+
+This method ensures that conceptual paths are always resolved to absolute paths,
+             making it easier to work with conceptual documentation files regardless of whether
+             the path is configured as relative or absolute.
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  GetHashCode <DocsBadge text="Inherited" variant="neutral" /> <DocsBadge text="Virtual" variant="warning" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual int GetHashCode()
+```
+
+#### Returns
+
+Type: `int`
+
 ### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  GetNamespaceFolderPath
 
 Converts a namespace string to a folder path based on the configured file naming options.
@@ -355,6 +502,20 @@ public string GetSafeNamespaceName(Microsoft.CodeAnalysis.INamespaceSymbol names
 Type: `string`
 A safe namespace name, using "global" for the global namespace.
 
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  GetType <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public System.Type GetType()
+```
+
+#### Returns
+
+Type: `System.Type`
+
 ### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  GetTypeFilePath
 
 Gets the full file path for a type, including namespace folder structure if in Folder mode.
@@ -402,4 +563,53 @@ public bool IsTypeExcluded(string fullyQualifiedTypeName)
 
 Type: `bool`
 True if the type should be excluded; otherwise, false.
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  MemberwiseClone <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+protected internal object MemberwiseClone()
+```
+
+#### Returns
+
+Type: `object`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  ReferenceEquals <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public static bool ReferenceEquals(object objA, object objB)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `objA` | `object?` | - |
+| `objB` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  ToString <DocsBadge text="Inherited" variant="neutral" /> <DocsBadge text="Virtual" variant="warning" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual string ToString()
+```
+
+#### Returns
+
+Type: `string?`
 

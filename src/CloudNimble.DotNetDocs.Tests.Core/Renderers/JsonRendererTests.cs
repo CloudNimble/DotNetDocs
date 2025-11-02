@@ -60,6 +60,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
                         .ConfigureContext(ctx =>
                         {
                             ctx.DocumentationRootPath = _testOutputPath;
+                            ctx.ShowPlaceholders = false;
                             ctx.ApiReferencePath = string.Empty;
                         });
                 });
@@ -84,7 +85,6 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
         #region RenderAsync Tests
 
         [TestMethod]
-        [Ignore("Baseline needs to be regenerated after JSON serialization format change")]
         public async Task RenderAsync_ProducesConsistentBaseline()
         {
             // Arrange
@@ -96,7 +96,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             await documentationManager.ProcessAsync(assemblyPath, xmlPath);
 
             // Assert - Compare against baseline
-            var baselinePath = Path.Combine(projectPath, "Baselines", "JsonRenderer", "documentation.json");
+            var baselinePath = Path.Combine(projectPath, "Baselines", framework, "JsonRenderer", "documentation.json");
             var actualPath = Path.Combine(_testOutputPath, "documentation.json");
             
             if (File.Exists(baselinePath))
@@ -420,7 +420,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
         [BreakdanceManifestGenerator]
         public async Task GenerateJsonBaseline(string projectPath)
         {
-            var baselinesDir = Path.Combine(projectPath, "Baselines", "JsonRenderer");
+            var baselinesDir = Path.Combine(projectPath, "Baselines", framework, "JsonRenderer");
             if (!Directory.Exists(baselinesDir))
             {
                 Directory.CreateDirectory(baselinesDir);
@@ -441,7 +441,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             await renderer.RenderAsync(assembly);
         }
 
-        #endregion
+#endregion
 
     }
 

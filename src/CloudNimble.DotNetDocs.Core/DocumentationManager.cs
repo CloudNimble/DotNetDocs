@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -16,16 +17,20 @@ namespace CloudNimble.DotNetDocs.Core
     /// transformation, and rendering. It handles <see cref="AssemblyManager"/> creation,
     /// usage, and disposal for processing assemblies.
     /// </remarks>
-    public class DocumentationManager : IDisposable
+    public partial class DocumentationManager : IDisposable
     {
 
         #region Private Fields
 
-        private readonly Dictionary<string, AssemblyManager> assemblyManagerCache = [];
+        private readonly ConcurrentDictionary<string, AssemblyManager> assemblyManagerCache = new();
         private readonly IEnumerable<IDocEnricher> enrichers;
         private readonly IEnumerable<IDocRenderer> renderers;
         private readonly IEnumerable<IDocTransformer> transformers;
         private readonly ProjectContext projectContext;
+
+        [GeneratedRegex(@"^\s*<!--\s*TODO:\s*REMOVE\s+THIS\s+COMMENT\s+AFTER\s+YOU\s+CUSTOMIZE\s+THIS\s+CONTENT\s*-->\s*$",
+            RegexOptions.IgnoreCase, matchTimeoutMilliseconds: 1000)]
+        private static partial Regex TodoPlaceholderRegex();
 
         #endregion
 
@@ -103,7 +108,7 @@ namespace CloudNimble.DotNetDocs.Core
         /// <returns>A task representing the asynchronous processing operation.</returns>
         public async Task ProcessAsync(IEnumerable<(string assemblyPath, string xmlPath)> assemblies)
         {
-            // Collect all DocAssembly models
+            // STEP 1: Collect all DocAssembly models
             var docAssemblies = new List<DocAssembly>();
             foreach (var (assemblyPath, xmlPath) in assemblies)
             {
@@ -112,27 +117,23 @@ namespace CloudNimble.DotNetDocs.Core
                 docAssemblies.Add(model);
             }
 
-            if (projectContext.ConceptualDocsEnabled)
-            {
-                // Process assemblies in parallel for better performance
-                // Each assembly gets its own conceptual directory subtree, so no file conflicts
-                var assemblyTasks = docAssemblies.Select(async assembly =>
-                {
-                    // STEP 1: Generate placeholder files for this assembly with all renderers
-                    var placeholderTasks = renderers.Select(renderer => renderer.RenderPlaceholdersAsync(assembly));
-                    await Task.WhenAll(placeholderTasks);
-
-                    // STEP 2: Load conceptual content for this assembly (after placeholders exist)
-                    await LoadConceptualAsync(assembly);
-                });
-
-                await Task.WhenAll(assemblyTasks);
-            }
-
-            // STEP 3: Merge all DocAssembly models (now with conceptual content loaded)
+            // STEP 2: Merge all DocAssembly models BEFORE placeholder generation
+            // This ensures only one shadow class exists per external type, preventing race conditions
+            // when multiple assemblies extend the same external type (e.g., IServiceCollection)
             var mergedModel = await MergeDocAssembliesAsync(docAssemblies);
 
-            // STEP 4: Apply enrichers, transformers, and renderers
+            if (projectContext.ConceptualDocsEnabled)
+            {
+                // STEP 3: Generate placeholder files for merged model with all renderers
+                // No longer per-assembly, so shadow classes are deduplicated
+                var placeholderTasks = renderers.Select(renderer => renderer.RenderPlaceholdersAsync(mergedModel));
+                await Task.WhenAll(placeholderTasks);
+
+                // STEP 4: Load conceptual content for merged model (after placeholders exist)
+                await LoadConceptualAsync(mergedModel);
+            }
+
+            // STEP 5: Apply enrichers, transformers, and renderers
             foreach (var enricher in enrichers)
             {
                 await enricher.EnrichAsync(mergedModel);
@@ -148,7 +149,7 @@ namespace CloudNimble.DotNetDocs.Core
                 await renderer.RenderAsync(mergedModel);
             }
 
-            // STEP 5: Copy referenced documentation files if any references exist
+            // STEP 6: Copy referenced documentation files if any references exist
             // Note: Navigation combining happens inside each renderer's RenderAsync() before saving
             if (projectContext.DocumentationReferences.Any())
             {
@@ -168,6 +169,8 @@ namespace CloudNimble.DotNetDocs.Core
         /// <returns>A task representing the asynchronous merge operation.</returns>
         internal async Task<DocAssembly> MergeDocAssembliesAsync(List<DocAssembly> assemblies)
         {
+            ArgumentNullException.ThrowIfNull(assemblies);
+
             if (assemblies.Count == 0)
             {
                 throw new ArgumentException("At least one assembly must be provided", nameof(assemblies));
@@ -202,6 +205,9 @@ namespace CloudNimble.DotNetDocs.Core
         /// <returns>A task representing the asynchronous merge operation.</returns>
         internal async Task MergeNamespaceAsync(DocAssembly mergedAssembly, DocNamespace sourceNamespace)
         {
+            ArgumentNullException.ThrowIfNull(mergedAssembly);
+            ArgumentNullException.ThrowIfNull(sourceNamespace);
+
             // Find existing namespace or create new one
             var existingNamespace = mergedAssembly.Namespaces.FirstOrDefault(ns =>
                 ns.Symbol.ToDisplayString() == sourceNamespace.Symbol.ToDisplayString());
@@ -237,6 +243,9 @@ namespace CloudNimble.DotNetDocs.Core
         /// <returns>A task representing the asynchronous merge operation.</returns>
         internal async Task MergeTypeAsync(DocNamespace mergedNamespace, DocType sourceType)
         {
+            ArgumentNullException.ThrowIfNull(mergedNamespace);
+            ArgumentNullException.ThrowIfNull(sourceType);
+
             // Find existing type or create new one
             var existingType = mergedNamespace.Types.FirstOrDefault(t =>
                 t.Symbol.ToDisplayString() == sourceType.Symbol.ToDisplayString());
@@ -272,6 +281,9 @@ namespace CloudNimble.DotNetDocs.Core
         /// <returns>A task representing the asynchronous merge operation.</returns>
         internal Task MergeMemberAsync(DocType mergedType, DocMember sourceMember)
         {
+            ArgumentNullException.ThrowIfNull(mergedType);
+            ArgumentNullException.ThrowIfNull(sourceMember);
+
             // Find existing member or create new one
             var existingMember = mergedType.Members.FirstOrDefault(m =>
                 m.Symbol.ToDisplayString() == sourceMember.Symbol.ToDisplayString());
@@ -296,14 +308,13 @@ namespace CloudNimble.DotNetDocs.Core
         /// <param name="assemblyPath">The path to the assembly file.</param>
         /// <param name="xmlPath">The path to the XML documentation file.</param>
         /// <returns>A cached or newly created <see cref="AssemblyManager"/> instance.</returns>
+        /// <remarks>
+        /// This method is thread-safe and ensures that only one <see cref="AssemblyManager"/> instance
+        /// is created per assembly path, even when called concurrently from multiple threads.
+        /// </remarks>
         internal AssemblyManager GetOrCreateAssemblyManager(string assemblyPath, string xmlPath)
         {
-            if (!assemblyManagerCache.TryGetValue(assemblyPath, out var manager))
-            {
-                manager = new AssemblyManager(assemblyPath, xmlPath);
-                assemblyManagerCache[assemblyPath] = manager;
-            }
-            return manager;
+            return assemblyManagerCache.GetOrAdd(assemblyPath, _ => new AssemblyManager(assemblyPath, xmlPath));
         }
 
         /// <summary>
@@ -312,7 +323,8 @@ namespace CloudNimble.DotNetDocs.Core
         /// <param name="assembly">The assembly to load conceptual content for.</param>
         internal async Task LoadConceptualAsync(DocAssembly assembly)
         {
-            if (!Directory.Exists(projectContext.ConceptualPath))
+            var conceptualPath = projectContext.GetFullConceptualPath();
+            if (!Directory.Exists(conceptualPath))
             {
                 return;
             }
@@ -323,8 +335,8 @@ namespace CloudNimble.DotNetDocs.Core
             {
                 // Load namespace-level conceptual content
                 var namespacePath = ns.Symbol.IsGlobalNamespace
-                    ? projectContext?.ConceptualPath
-                    : Path.Combine(projectContext?.ConceptualPath ?? "", ns.Symbol.ToDisplayString().Replace('.', Path.DirectorySeparatorChar));
+                    ? conceptualPath
+                    : Path.Combine(conceptualPath, ns.Symbol.ToDisplayString().Replace('.', Path.DirectorySeparatorChar));
 
                 if (Directory.Exists(namespacePath))
                 {
@@ -495,9 +507,7 @@ namespace CloudNimble.DotNetDocs.Core
                     continue;
                 }
 
-                // Check if this line matches the TODO comment pattern
-                var regex = new Regex(@"^\s*<!--\s*TODO:\s*REMOVE\s+THIS\s+COMMENT\s+AFTER\s+YOU\s+CUSTOMIZE\s+THIS\s+CONTENT\s*-->\s*$", RegexOptions.IgnoreCase);
-                return regex.IsMatch(trimmed);
+                return TodoPlaceholderRegex().IsMatch(trimmed);
             }
 
             return false;
@@ -532,7 +542,7 @@ namespace CloudNimble.DotNetDocs.Core
         /// <returns>A list of glob patterns for files that should be copied.</returns>
         internal List<string> GetFilePatternsForDocumentationType(string documentationType)
         {
-            return documentationType.ToLowerInvariant() switch
+            return documentationType?.ToLowerInvariant() switch
             {
                 "mintlify" => new List<string>
                 {
@@ -584,6 +594,13 @@ namespace CloudNimble.DotNetDocs.Core
                     "content/**/*",
                     "static/**/*",
                     "layouts/**/*"
+                },
+                null or "" => new List<string>
+                {
+                    "*.md",
+                    "*.html",
+                    "images/**/*",
+                    "assets/**/*"
                 },
                 _ => new List<string>
                 {

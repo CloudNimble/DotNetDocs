@@ -92,6 +92,35 @@ namespace CloudNimble.DotNetDocs.Core
         public bool IncludeFields { get; set; } = false;
 
         /// <summary>
+        /// Gets or sets whether to include members inherited from <see cref="System.Object"/>.
+        /// </summary>
+        /// <value>
+        /// <c>true</c> to document <c>ToString()</c>, <c>GetHashCode()</c>, <c>Equals()</c>, etc.
+        /// on every type; <c>false</c> to exclude these common members. Default is <c>true</c>.
+        /// </value>
+        /// <remarks>
+        /// Setting this to <c>false</c> reduces documentation noise while still including
+        /// members inherited from other base types and interfaces. This matches the behavior
+        /// of Microsoft's official .NET documentation.
+        /// </remarks>
+        public bool IncludeSystemObjectInheritance { get; set; } = true;
+
+        /// <summary>
+        /// Gets or sets whether to create documentation for external types that have extension methods.
+        /// </summary>
+        /// <value>
+        /// <c>true</c> to create minimal <see cref="DocType"/> entries for types outside the assembly
+        /// that are extended by extension methods; <c>false</c> to only relocate extensions for types
+        /// within the assembly. Default is <c>true</c>.
+        /// </value>
+        /// <remarks>
+        /// When enabled, extending <c>IServiceCollection</c> creates a documentation page showing
+        /// only your extension methods, with a link to Microsoft's official documentation for the
+        /// complete type definition.
+        /// </remarks>
+        public bool CreateExternalTypeReferences { get; set; } = true;
+
+        /// <summary>
         /// Gets or sets the list of member accessibilities to include in documentation.
         /// </summary>
         /// <value>
@@ -192,6 +221,40 @@ namespace CloudNimble.DotNetDocs.Core
         #endregion
 
         #region Public Methods
+
+        /// <summary>
+        /// Gets the full path to the conceptual documentation folder.
+        /// </summary>
+        /// <returns>
+        /// The absolute path to the conceptual documentation folder if <see cref="ConceptualPath"/> is absolute,
+        /// or the path combined with <see cref="DocumentationRootPath"/> if <see cref="ConceptualPath"/> is relative.
+        /// </returns>
+        /// <remarks>
+        /// This method ensures that conceptual paths are always resolved to absolute paths,
+        /// making it easier to work with conceptual documentation files regardless of whether
+        /// the path is configured as relative or absolute.
+        /// </remarks>
+        /// <example>
+        /// <code>
+        /// // When ConceptualPath is absolute
+        /// context.ConceptualPath = "C:\\Docs\\conceptual";
+        /// var path = context.GetFullConceptualPath(); // Returns "C:\Docs\conceptual"
+        ///
+        /// // When ConceptualPath is relative
+        /// context.DocumentationRootPath = "C:\\Docs";
+        /// context.ConceptualPath = "conceptual";
+        /// var path = context.GetFullConceptualPath(); // Returns "C:\Docs\conceptual"
+        /// </code>
+        /// </example>
+        public string GetFullConceptualPath()
+        {
+            if (Path.IsPathRooted(ConceptualPath))
+            {
+                return ConceptualPath;
+            }
+
+            return Path.Combine(DocumentationRootPath, ConceptualPath);
+        }
 
         /// <summary>
         /// Converts a namespace string to a folder path based on the configured file naming options.

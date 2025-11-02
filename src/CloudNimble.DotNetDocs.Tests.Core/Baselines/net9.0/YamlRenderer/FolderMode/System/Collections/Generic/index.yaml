@@ -1,0 +1,146 @@
+name: System.Collections.Generic
+types:
+- members:
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: IsNullOrEmpty
+    parameters:
+    - name: list
+      parameterType:
+        assemblyName: System.Collections
+        fullName: System.Collections.Generic.List<T>
+        name: List
+        signature: System.Collections.Generic.List<T>
+        typeKind: Error
+        isExternalReference: true
+        displayName: System.Collections.Generic.List<T>
+      typeName: System.Collections.Generic.List<T>
+      displayName: System.Collections.Generic.List<T> list
+      usage: The list to check.
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: bool
+      name: Boolean
+      signature: bool
+      typeKind: Struct
+      isExternalReference: true
+      displayName: bool
+    returnTypeName: bool
+    signature: public static bool IsNullOrEmpty<T>(System.Collections.Generic.List<T> list)
+    declaringTypeName: System.Collections.Generic.TestsShared_ListExtensions
+    isExtensionMethod: true
+    extendedTypeName: System.Collections.Generic.List<T>
+    displayName: System.Collections.Generic.TestsShared_ListExtensions.IsNullOrEmpty<T>(System.Collections.Generic.List<T>)
+    examples: >-
+      <code>
+                  var numbers = new List&lt;int&gt;();
+                  if (numbers.IsNullOrEmpty())
+                  {
+                      // Handle empty list
+                  }
+                  </code>
+    returns: True if the list is null or empty, otherwise false.
+    summary: Checks if a list is null or empty.
+    typeParameters:
+    - description: The type of elements in the list.
+      name: T
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: AddMultiple
+    parameters:
+    - name: list
+      parameterType:
+        assemblyName: System.Collections
+        fullName: System.Collections.Generic.List<T>
+        name: List
+        signature: System.Collections.Generic.List<T>
+        typeKind: Error
+        isExternalReference: true
+        displayName: System.Collections.Generic.List<T>
+      typeName: System.Collections.Generic.List<T>
+      displayName: System.Collections.Generic.List<T> list
+      usage: The list to add items to.
+    - isParams: true
+      name: items
+      parameterType:
+        fullName: T[]
+        signature: T[]
+        typeKind: Array
+        isExternalReference: true
+        displayName: T[]
+      typeName: T[]
+      displayName: params T[] items
+      usage: The items to add.
+    returnType:
+      assemblyName: System.Collections
+      fullName: System.Collections.Generic.List<T>
+      name: List
+      signature: System.Collections.Generic.List<T>
+      typeKind: Error
+      isExternalReference: true
+      displayName: System.Collections.Generic.List<T>
+    returnTypeName: System.Collections.Generic.List<T>
+    signature: public static System.Collections.Generic.List<T> AddMultiple<T>(System.Collections.Generic.List<T> list, params T[] items)
+    declaringTypeName: System.Collections.Generic.TestsShared_ListExtensions
+    isExtensionMethod: true
+    extendedTypeName: System.Collections.Generic.List<T>
+    displayName: System.Collections.Generic.TestsShared_ListExtensions.AddMultiple<T>(System.Collections.Generic.List<T>, params T[])
+    examples: >-
+      <code>
+                  var numbers = new List&lt;int&gt;()
+                      .AddMultiple(1, 2, 3, 4, 5);
+                  </code>
+    returns: The list for fluent chaining.
+    summary: Adds multiple items to a list in one call.
+    typeParameters:
+    - description: The type of elements in the list.
+      name: T
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: Shuffle
+    parameters:
+    - name: list
+      parameterType:
+        assemblyName: System.Collections
+        fullName: System.Collections.Generic.List<T>
+        name: List
+        signature: System.Collections.Generic.List<T>
+        typeKind: Error
+        isExternalReference: true
+        displayName: System.Collections.Generic.List<T>
+      typeName: System.Collections.Generic.List<T>
+      displayName: System.Collections.Generic.List<T> list
+      usage: The list to shuffle.
+    returnType:
+      assemblyName: System.Collections
+      fullName: System.Collections.Generic.List<T>
+      name: List
+      signature: System.Collections.Generic.List<T>
+      typeKind: Error
+      isExternalReference: true
+      displayName: System.Collections.Generic.List<T>
+    returnTypeName: System.Collections.Generic.List<T>
+    signature: public static System.Collections.Generic.List<T> Shuffle<T>(System.Collections.Generic.List<T> list)
+    declaringTypeName: System.Collections.Generic.TestsShared_ListExtensions
+    isExtensionMethod: true
+    extendedTypeName: System.Collections.Generic.List<T>
+    displayName: System.Collections.Generic.TestsShared_ListExtensions.Shuffle<T>(System.Collections.Generic.List<T>)
+    remarks: This uses the Fisher-Yates shuffle algorithm for randomization.
+    returns: The shuffled list.
+    summary: Shuffles the elements in a list randomly.
+    typeParameters:
+    - description: The type of elements in the list.
+      name: T
+  assemblyName: System.Collections
+  fullName: System.Collections.Generic.List<T>
+  name: List
+  signature: System.Collections.Generic.List<T>
+  typeKind: Error
+  isExternalReference: true
+  displayName: System.Collections.Generic.List<T>
+  remarks: See [Microsoft documentation](https://learn.microsoft.com/dotnet/api/system.collections.generic.list{t}) for more information about the rest of the API.
+  summary: This type is defined in System.Collections.
+displayName: System.Collections.Generic

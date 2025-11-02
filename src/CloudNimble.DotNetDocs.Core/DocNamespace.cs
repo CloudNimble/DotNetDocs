@@ -49,6 +49,20 @@ namespace CloudNimble.DotNetDocs.Core
         /// <summary>
         /// Initializes a new instance of the <see cref="DocNamespace"/> class.
         /// </summary>
+        /// <remarks>
+        /// This parameterless constructor is provided for deserialization purposes only.
+        /// Use <see cref="DocNamespace(INamespaceSymbol)"/> for normal instantiation.
+        /// </remarks>
+        [Obsolete("This constructor is for deserialization only. Use DocNamespace(INamespaceSymbol) instead.", error: true)]
+        [JsonConstructor]
+        protected DocNamespace() : base()
+        {
+            Symbol = null!;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DocNamespace"/> class.
+        /// </summary>
         /// <param name="symbol">The Roslyn namespace symbol.</param>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="symbol"/> is null.</exception>
         public DocNamespace(INamespaceSymbol symbol) : base(symbol)

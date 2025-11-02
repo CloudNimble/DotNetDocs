@@ -5,6 +5,8 @@ icon: file-brackets-curly
 keywords: ['BackgroundImageConverter', 'Mintlify.Core.Converters.BackgroundImageConverter', 'Mintlify.Core.Converters', 'class', 'System.Text.Json.Serialization.JsonConverter<Mintlify.Core.Models.BackgroundImageConfig>']
 ---
 
+import { DocsBadge } from '/snippets/DocsBadge.jsx';
+
 ## Definition
 
 **Assembly:** Mintlify.Core.dll
@@ -41,7 +43,7 @@ public BackgroundImageConverter()
 
 ## Methods
 
-### <Icon icon="code-merge" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  CanConvert
+### <Icon icon="code-merge" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  CanConvert <DocsBadge text="Override" variant="info" />
 
 Determines whether the specified type can be converted by this converter.
 
@@ -62,7 +64,7 @@ public override bool CanConvert(System.Type typeToConvert)
 Type: `bool`
 True if the type is BackgroundImageConfig; otherwise, false.
 
-### <Icon icon="code-merge" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Read
+### <Icon icon="code-merge" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Read <DocsBadge text="Override" variant="info" />
 
 Reads and converts the JSON to a BackgroundImageConfig object.
 
@@ -91,7 +93,7 @@ A BackgroundImageConfig for both simple URLs and theme-specific configurations.
 |-----------|-------------|
 | `JsonException` | Thrown when the JSON token type is not supported. |
 
-### <Icon icon="code-merge" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Write
+### <Icon icon="code-merge" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Write <DocsBadge text="Override" variant="info" />
 
 Writes the BackgroundImageConfig object to JSON.
 

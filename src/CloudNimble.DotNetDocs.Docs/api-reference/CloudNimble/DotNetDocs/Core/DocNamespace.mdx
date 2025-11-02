@@ -5,6 +5,8 @@ icon: file-brackets-curly
 keywords: ['DocNamespace', 'CloudNimble.DotNetDocs.Core.DocNamespace', 'CloudNimble.DotNetDocs.Core', 'class', 'CloudNimble.DotNetDocs.Core.DocEntity']
 ---
 
+import { DocsBadge } from '/snippets/DocsBadge.jsx';
+
 ## Definition
 
 **Assembly:** CloudNimble.DotNetDocs.Core.dll
@@ -52,7 +54,149 @@ public DocNamespace(Microsoft.CodeAnalysis.INamespaceSymbol symbol)
 |-----------|-------------|
 | `ArgumentNullException` | Thrown when *symbol* is null. |
 
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  .ctor <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Core.DocEntity`</Note>
+
+Initializes a new instance of the [DocEntity](/api-reference/CloudNimble/DotNetDocs/Core/DocEntity) class.
+
+#### Syntax
+
+```csharp
+protected DocEntity()
+```
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  .ctor <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Core.DocEntity`</Note>
+
+Initializes a new instance of the [DocEntity](/api-reference/CloudNimble/DotNetDocs/Core/DocEntity) class with an ISymbol.
+
+#### Syntax
+
+```csharp
+protected DocEntity(Microsoft.CodeAnalysis.ISymbol symbol)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `symbol` | `Microsoft.CodeAnalysis.ISymbol?` | The symbol to store as the original reference. |
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  .ctor <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public Object()
+```
+
 ## Properties
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  BestPractices <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Core.DocEntity`</Note>
+
+Gets or sets the best practices documentation content.
+
+#### Syntax
+
+```csharp
+public string BestPractices { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+Markdown content with best practices, recommendations, and guidelines from conceptual documentation.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Considerations <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Core.DocEntity`</Note>
+
+Gets or sets the considerations or notes related to the current context.
+
+#### Syntax
+
+```csharp
+public string Considerations { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+Markdown content with gotchas, performance, or security notes from conceptual documentation.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  DisplayName <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Core.DocEntity`</Note>
+
+Gets or sets the display name of the entity.
+
+#### Syntax
+
+```csharp
+public string DisplayName { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+The fully qualified display name extracted from the Symbol.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Examples <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Core.DocEntity`</Note>
+
+Gets or sets the examples documentation content.
+
+#### Syntax
+
+```csharp
+public string Examples { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+Markdown content containing code examples from XML &lt;example&gt; tags.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Exceptions <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Core.DocEntity`</Note>
+
+Gets or sets the collection of exceptions that can be thrown.
+
+#### Syntax
+
+```csharp
+public System.Collections.Generic.ICollection<CloudNimble.DotNetDocs.Core.DocException> Exceptions { get; set; }
+```
+
+#### Property Value
+
+Type: `System.Collections.Generic.ICollection<CloudNimble.DotNetDocs.Core.DocException>?`
+Collection of exception documentation from XML &lt;exception&gt; tags.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  IncludedMembers <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Core.DocEntity`</Note>
+
+Gets or sets the list of member accessibilities to include (default: Public).
+
+#### Syntax
+
+```csharp
+public System.Collections.Generic.List<Microsoft.CodeAnalysis.Accessibility> IncludedMembers { get; set; }
+```
+
+#### Property Value
+
+Type: `System.Collections.Generic.List<Microsoft.CodeAnalysis.Accessibility>`
+List of accessibility levels to include when processing child members.
 
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Name
 
@@ -69,6 +213,125 @@ public string Name { get; set; }
 Type: `string`
 The namespace name.
 
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  OriginalSymbol <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Core.DocEntity`</Note>
+
+Gets the original symbol this documentation entity was created from.
+
+#### Syntax
+
+```csharp
+public Microsoft.CodeAnalysis.ISymbol OriginalSymbol { get; protected set; }
+```
+
+#### Property Value
+
+Type: `Microsoft.CodeAnalysis.ISymbol?`
+The Roslyn ISymbol that was used to create this entity, preserved for reference.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Patterns <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Core.DocEntity`</Note>
+
+Gets or sets the patterns documentation content.
+
+#### Syntax
+
+```csharp
+public string Patterns { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+Markdown content explaining common usage patterns and architectural guidance from conceptual documentation.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  RelatedApis <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Core.DocEntity`</Note>
+
+Gets or sets a list of related API names.
+
+#### Syntax
+
+```csharp
+public System.Collections.Generic.ICollection<string> RelatedApis { get; set; }
+```
+
+#### Property Value
+
+Type: `System.Collections.Generic.ICollection<string>?`
+List of fully qualified names or URLs for related APIs from conceptual documentation.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Remarks <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Core.DocEntity`</Note>
+
+Gets or sets the remarks from XML documentation.
+
+#### Syntax
+
+```csharp
+public string Remarks { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+Content from the XML documentation's &lt;remarks&gt; element.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Returns <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Core.DocEntity`</Note>
+
+Gets or sets the return value documentation.
+
+#### Syntax
+
+```csharp
+public string Returns { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+Description of the return value from XML &lt;returns&gt; tag.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  SeeAlso <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Core.DocEntity`</Note>
+
+Gets or sets the collection of see-also references.
+
+#### Syntax
+
+```csharp
+public System.Collections.Generic.ICollection<CloudNimble.DotNetDocs.Core.DocReference> SeeAlso { get; set; }
+```
+
+#### Property Value
+
+Type: `System.Collections.Generic.ICollection<CloudNimble.DotNetDocs.Core.DocReference>?`
+Collection of related items from XML &lt;seealso&gt; tags.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Summary <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Core.DocEntity`</Note>
+
+Gets or sets the summary from XML documentation.
+
+#### Syntax
+
+```csharp
+public string Summary { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+Brief description of what the API element IS, from XML &lt;summary&gt; tag.
+
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Symbol
 
 Gets the Roslyn symbol for the namespace.
@@ -84,6 +347,23 @@ public Microsoft.CodeAnalysis.INamespaceSymbol Symbol { get; }
 Type: `Microsoft.CodeAnalysis.INamespaceSymbol`
 The underlying Roslyn namespace symbol containing metadata.
 
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  TypeParameters <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Core.DocEntity`</Note>
+
+Gets or sets the collection of type parameters.
+
+#### Syntax
+
+```csharp
+public System.Collections.Generic.ICollection<CloudNimble.DotNetDocs.Core.DocTypeParameter> TypeParameters { get; set; }
+```
+
+#### Property Value
+
+Type: `System.Collections.Generic.ICollection<CloudNimble.DotNetDocs.Core.DocTypeParameter>?`
+Collection of type parameter documentation from XML &lt;typeparam&gt; tags.
+
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Types
 
 Gets the collection of types in the namespace.
@@ -98,4 +378,175 @@ public System.Collections.Generic.List<CloudNimble.DotNetDocs.Core.DocType> Type
 
 Type: `System.Collections.Generic.List<CloudNimble.DotNetDocs.Core.DocType>`
 List of documented types within this namespace.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Usage <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Core.DocEntity`</Note>
+
+Gets or sets the usage documentation content.
+
+#### Syntax
+
+```csharp
+public string Usage { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+Markdown content explaining HOW to use the API element, from conceptual documentation.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Value <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Core.DocEntity`</Note>
+
+Gets or sets the value description for properties.
+
+#### Syntax
+
+```csharp
+public string Value { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+Description of what the property represents from XML &lt;value&gt; tag.
+
+## Methods
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Equals <DocsBadge text="Inherited" variant="neutral" /> <DocsBadge text="Virtual" variant="warning" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual bool Equals(object obj)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `obj` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Equals <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public static bool Equals(object objA, object objB)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `objA` | `object?` | - |
+| `objB` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  GetHashCode <DocsBadge text="Inherited" variant="neutral" /> <DocsBadge text="Virtual" variant="warning" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual int GetHashCode()
+```
+
+#### Returns
+
+Type: `int`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  GetType <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public System.Type GetType()
+```
+
+#### Returns
+
+Type: `System.Type`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  MemberwiseClone <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+protected internal object MemberwiseClone()
+```
+
+#### Returns
+
+Type: `object`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  ReferenceEquals <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public static bool ReferenceEquals(object objA, object objB)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `objA` | `object?` | - |
+| `objB` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  ToJson <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Core.DocEntity`</Note>
+
+Serializes this entity to JSON using consistent options.
+
+#### Syntax
+
+```csharp
+public string ToJson()
+```
+
+#### Returns
+
+Type: `string`
+The JSON string representation of this entity.
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  ToString <DocsBadge text="Inherited" variant="neutral" /> <DocsBadge text="Virtual" variant="warning" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual string ToString()
+```
+
+#### Returns
+
+Type: `string?`
 

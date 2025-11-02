@@ -1,0 +1,83 @@
+# String
+
+## Definition
+
+**Assembly:** System.Private.CoreLib.dll
+
+**Namespace:** System
+
+## Syntax
+
+```csharp
+string
+```
+
+## Summary
+
+This type is defined in System.Private.CoreLib.
+
+## Remarks
+
+See [Microsoft documentation](https://learn.microsoft.com/dotnet/api/system.string) for more information about the rest of the API.
+
+## Methods
+
+### Repeat
+
+Repeats a string a specified number of times.
+
+#### Syntax
+
+```csharp
+public static string Repeat(string value, int count)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `value` | `string` | The string to repeat. |
+| `count` | `int` | The number of times to repeat the string. |
+
+#### Returns
+
+Type: `string`
+The repeated string.
+
+#### Examples
+
+<code>
+var result = "ha".Repeat(3);
+// result = "hahaha"
+</code>
+
+### Reverse
+
+Reverses the characters in a string.
+
+#### Syntax
+
+```csharp
+public static string Reverse(string value)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `value` | `string` | The string to reverse. |
+
+#### Returns
+
+Type: `string`
+The reversed string.
+
+#### Examples
+
+<code>
+using CloudNimble.DotNetDocs.Tests.Shared.Extensions;
+
+var result = "hello".Reverse();
+// result = "olleh"
+</code>
+

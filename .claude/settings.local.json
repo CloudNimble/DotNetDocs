@@ -35,7 +35,8 @@
       "WebFetch(domain:natemcmaster.github.io)",
       "WebFetch(domain:stackoverflow.com)",
       "WebFetch(domain:www.nuget.org)",
-      "Bash(git fetch:*)"
+      "Bash(git fetch:*)",
+      "Bash(ls:*)"
     ],
     "deny": [],
     "ask": [],

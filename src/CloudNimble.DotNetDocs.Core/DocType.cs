@@ -72,9 +72,37 @@ namespace CloudNimble.DotNetDocs.Core
         /// <value>The kind of type (Class, Interface, Struct, Enum, Delegate, etc.).</value>
         public TypeKind TypeKind { get; set; }
 
+        /// <summary>
+        /// Gets or sets whether this type is an external reference created to host extension methods.
+        /// </summary>
+        /// <value>
+        /// <c>true</c> if this type is not part of the documented assembly but was created
+        /// to show extension methods that apply to it; otherwise <c>false</c>.
+        /// </value>
+        /// <remarks>
+        /// External references are minimal <see cref="DocType"/> instances created when
+        /// extension methods target types outside the current assembly. These types link to
+        /// official documentation rather than duplicating external API documentation.
+        /// </remarks>
+        public bool IsExternalReference { get; set; }
+
         #endregion
 
         #region Constructors
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DocType"/> class.
+        /// </summary>
+        /// <remarks>
+        /// This parameterless constructor is provided for deserialization purposes only.
+        /// Use <see cref="DocType(ITypeSymbol)"/> for normal instantiation.
+        /// </remarks>
+        [Obsolete("This constructor is for deserialization only. Use DocType(ITypeSymbol) instead.", error: true)]
+        [JsonConstructor]
+        protected DocType() : base()
+        {
+            Symbol = null!;
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DocType"/> class.

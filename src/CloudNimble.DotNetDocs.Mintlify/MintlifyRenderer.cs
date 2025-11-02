@@ -101,6 +101,9 @@ namespace CloudNimble.DotNetDocs.Mintlify
             // Ensure all necessary directories exist based on the file naming mode
             Context.EnsureOutputDirectoryStructure(model, apiOutputPath);
 
+            // Create DocsBadge component snippet for Mintlify (used by inherited/extension member badges)
+            await CreateDocsBadgeSnippetAsync();
+
             // Render assembly overview
             await RenderAssemblyAsync(model, apiOutputPath);
 
@@ -490,6 +493,11 @@ namespace CloudNimble.DotNetDocs.Mintlify
                 var namespaceName = docNamespace.Name ?? "global";
                 sb.AppendLine($"description: \"Summary of the {namespaceName} Namespace\"");
             }
+            else if (entity is DocType externalType && externalType.IsExternalReference)
+            {
+                // For external types, use a shorter description without the URL
+                sb.AppendLine($"description: \"Extension methods for {externalType.Name} from {externalType.AssemblyName ?? "external assembly"}\"");
+            }
             else if (!string.IsNullOrWhiteSpace(entity.Summary))
             {
                 // Clean up the summary for single-line description
@@ -615,6 +623,13 @@ namespace CloudNimble.DotNetDocs.Mintlify
 
             sb.AppendLine("---");
             sb.AppendLine();
+
+            // Add snippet import for DocType pages to support DocsBadge component
+            if (entity is DocType)
+            {
+                sb.AppendLine("import { DocsBadge } from '/snippets/DocsBadge.jsx';");
+                sb.AppendLine();
+            }
 
             return sb.ToString();
         }
@@ -889,10 +904,16 @@ namespace CloudNimble.DotNetDocs.Mintlify
                 {
                     sb.AppendLine($"### <Icon icon=\"{MintlifyIcons.Class}\" iconType=\"{MemberIconType}\" color=\"{primaryColor}\" size={{{MemberIconSize}}} style={{{{ paddingRight: '8px' }}}} /> Classes");
                     sb.AppendLine();
+                    sb.AppendLine("| Name | Summary |");
+                    sb.AppendLine("| ---- | ------- |");
                     foreach (var type in classes)
                     {
-                        var typeFileName = Path.GetFileName(GetTypeFilePath(type, ns, outputPath, "mdx"));
-                        sb.AppendLine($"- [{type.Name}]({typeFileName})");
+                        var typeFilePath = GetTypeFilePath(type, ns, outputPath, "mdx");
+                        var typeRelativePath = "/" + Path.GetRelativePath(Context.DocumentationRootPath, typeFilePath)
+                            .Replace(Path.DirectorySeparatorChar, '/')
+                            .Replace(".mdx", "");
+                        var summary = type.Summary?.Replace("\n", " ").Replace("\r", " ").Replace("|", "\\|") ?? "";
+                        sb.AppendLine($"| [{type.Name}]({typeRelativePath}) | {summary} |");
                     }
                     sb.AppendLine();
                 }
@@ -902,10 +923,16 @@ namespace CloudNimble.DotNetDocs.Mintlify
                 {
                     sb.AppendLine($"### <Icon icon=\"{MintlifyIcons.Interface}\" iconType=\"{MemberIconType}\" color=\"{primaryColor}\" size={{{MemberIconSize}}} style={{{{ paddingRight: '8px' }}}} /> Interfaces");
                     sb.AppendLine();
+                    sb.AppendLine("| Name | Summary |");
+                    sb.AppendLine("| ---- | ------- |");
                     foreach (var type in interfaces)
                     {
-                        var typeFileName = Path.GetFileName(GetTypeFilePath(type, ns, outputPath, "mdx"));
-                        sb.AppendLine($"- [{type.Name}]({typeFileName})");
+                        var typeFilePath = GetTypeFilePath(type, ns, outputPath, "mdx");
+                        var typeRelativePath = "/" + Path.GetRelativePath(Context.DocumentationRootPath, typeFilePath)
+                            .Replace(Path.DirectorySeparatorChar, '/')
+                            .Replace(".mdx", "");
+                        var summary = type.Summary?.Replace("\n", " ").Replace("\r", " ").Replace("|", "\\|") ?? "";
+                        sb.AppendLine($"| [{type.Name}]({typeRelativePath}) | {summary} |");
                     }
                     sb.AppendLine();
                 }
@@ -915,10 +942,16 @@ namespace CloudNimble.DotNetDocs.Mintlify
                 {
                     sb.AppendLine($"### <Icon icon=\"{MintlifyIcons.Struct}\" iconType=\"{MemberIconType}\" color=\"{primaryColor}\" size={{{MemberIconSize}}} style={{{{ paddingRight: '8px' }}}} /> Structs");
                     sb.AppendLine();
+                    sb.AppendLine("| Name | Summary |");
+                    sb.AppendLine("| ---- | ------- |");
                     foreach (var type in structs)
                     {
-                        var typeFileName = Path.GetFileName(GetTypeFilePath(type, ns, outputPath, "mdx"));
-                        sb.AppendLine($"- [{type.Name}]({typeFileName})");
+                        var typeFilePath = GetTypeFilePath(type, ns, outputPath, "mdx");
+                        var typeRelativePath = "/" + Path.GetRelativePath(Context.DocumentationRootPath, typeFilePath)
+                            .Replace(Path.DirectorySeparatorChar, '/')
+                            .Replace(".mdx", "");
+                        var summary = type.Summary?.Replace("\n", " ").Replace("\r", " ").Replace("|", "\\|") ?? "";
+                        sb.AppendLine($"| [{type.Name}]({typeRelativePath}) | {summary} |");
                     }
                     sb.AppendLine();
                 }
@@ -928,10 +961,16 @@ namespace CloudNimble.DotNetDocs.Mintlify
                 {
                     sb.AppendLine($"### <Icon icon=\"{MintlifyIcons.Enum}\" iconType=\"{MemberIconType}\" color=\"{primaryColor}\" size={{{MemberIconSize}}} style={{{{ paddingRight: '8px' }}}} /> Enums");
                     sb.AppendLine();
+                    sb.AppendLine("| Name | Summary |");
+                    sb.AppendLine("| ---- | ------- |");
                     foreach (var type in enums)
                     {
-                        var typeFileName = Path.GetFileName(GetTypeFilePath(type, ns, outputPath, "mdx"));
-                        sb.AppendLine($"- [{type.Name}]({typeFileName})");
+                        var typeFilePath = GetTypeFilePath(type, ns, outputPath, "mdx");
+                        var typeRelativePath = "/" + Path.GetRelativePath(Context.DocumentationRootPath, typeFilePath)
+                            .Replace(Path.DirectorySeparatorChar, '/')
+                            .Replace(".mdx", "");
+                        var summary = type.Summary?.Replace("\n", " ").Replace("\r", " ").Replace("|", "\\|") ?? "";
+                        sb.AppendLine($"| [{type.Name}]({typeRelativePath}) | {summary} |");
                     }
                     sb.AppendLine();
                 }
@@ -941,10 +980,16 @@ namespace CloudNimble.DotNetDocs.Mintlify
                 {
                     sb.AppendLine($"### <Icon icon=\"{MintlifyIcons.Delegate}\" iconType=\"{MemberIconType}\" color=\"{primaryColor}\" size={{{MemberIconSize}}} style={{{{ paddingRight: '8px' }}}} /> Delegates");
                     sb.AppendLine();
+                    sb.AppendLine("| Name | Summary |");
+                    sb.AppendLine("| ---- | ------- |");
                     foreach (var type in delegates)
                     {
-                        var typeFileName = Path.GetFileName(GetTypeFilePath(type, ns, outputPath, "mdx"));
-                        sb.AppendLine($"- [{type.Name}]({typeFileName})");
+                        var typeFilePath = GetTypeFilePath(type, ns, outputPath, "mdx");
+                        var typeRelativePath = "/" + Path.GetRelativePath(Context.DocumentationRootPath, typeFilePath)
+                            .Replace(Path.DirectorySeparatorChar, '/')
+                            .Replace(".mdx", "");
+                        var summary = type.Summary?.Replace("\n", " ").Replace("\r", " ").Replace("|", "\\|") ?? "";
+                        sb.AppendLine($"| [{type.Name}]({typeRelativePath}) | {summary} |");
                     }
                     sb.AppendLine();
                 }
@@ -1000,6 +1045,7 @@ namespace CloudNimble.DotNetDocs.Mintlify
                 sb.AppendLine(type.Summary);
                 sb.AppendLine();
             }
+
 
             if (!string.IsNullOrWhiteSpace(type.Usage))
             {
@@ -1088,6 +1134,7 @@ namespace CloudNimble.DotNetDocs.Mintlify
             // Render enum values if this is an enum
             if (type is DocEnum enumType)
             {
+                // Render enum values table
                 if (enumType.Values.Any())
                 {
                     sb.AppendLine("## Values");
@@ -1209,9 +1256,51 @@ namespace CloudNimble.DotNetDocs.Mintlify
             // Get the primary color from the template configuration or use default
             var primaryColor = _options?.Template?.Colors?.Primary ?? "#0D9373";
 
+            // Build badges for member provenance
+            var badges = new List<string>();
+
+            if (member.IsExtensionMethod)
+            {
+                badges.Add("<DocsBadge text=\"Extension\" variant=\"success\" />");
+            }
+
+            if (member.IsInherited && !member.IsOverride)
+            {
+                badges.Add("<DocsBadge text=\"Inherited\" variant=\"neutral\" />");
+            }
+
+            if (member.IsOverride)
+            {
+                badges.Add("<DocsBadge text=\"Override\" variant=\"info\" />");
+            }
+
+            if (member.IsVirtual && !member.IsOverride)
+            {
+                badges.Add("<DocsBadge text=\"Virtual\" variant=\"warning\" />");
+            }
+
+            if (member.IsAbstract)
+            {
+                badges.Add("<DocsBadge text=\"Abstract\" variant=\"warning\" />");
+            }
+
+            var badgeString = badges.Any() ? " " + string.Join(" ", badges) : "";
+
             // Add the member header with icon including iconType, color, size, and margin
-            sb.AppendLine($"### <Icon icon=\"{MintlifyIcons.GetIconForMember(member)}\" iconType=\"{MemberIconType}\" color=\"{primaryColor}\" size={{{MemberIconSize}}} style={{{{ paddingRight: '8px' }}}} />  {member.Name}");
+            sb.AppendLine($"### <Icon icon=\"{MintlifyIcons.GetIconForMember(member)}\" iconType=\"{MemberIconType}\" color=\"{primaryColor}\" size={{{MemberIconSize}}} style={{{{ paddingRight: '8px' }}}} />  {member.Name}{badgeString}");
             sb.AppendLine();
+
+            // Add provenance note if inherited or extension
+            if (member.IsExtensionMethod && !string.IsNullOrWhiteSpace(member.DeclaringTypeName))
+            {
+                sb.AppendLine($"<Note>Extension method from `{member.DeclaringTypeName}`</Note>");
+                sb.AppendLine();
+            }
+            else if (member.IsInherited && !string.IsNullOrWhiteSpace(member.DeclaringTypeName))
+            {
+                sb.AppendLine($"<Note>Inherited from `{member.DeclaringTypeName}`</Note>");
+                sb.AppendLine();
+            }
 
             // Summary/Description
             if (!string.IsNullOrWhiteSpace(member.Summary))
@@ -1437,6 +1526,62 @@ namespace CloudNimble.DotNetDocs.Mintlify
 
             config.Navigation!.Pages!.Add(assemblyGroup);
             return assemblyGroup;
+        }
+
+        #endregion
+
+        #region Internal Methods - Snippet Generation
+
+        /// <summary>
+        /// Creates the DocsBadge.jsx component snippet for displaying member provenance badges.
+        /// </summary>
+        /// <returns>A task representing the asynchronous file write operation.</returns>
+        internal async Task CreateDocsBadgeSnippetAsync()
+        {
+            var snippetsPath = Path.Combine(Context.DocumentationRootPath, "snippets");
+            Directory.CreateDirectory(snippetsPath);
+
+            var badgeFilePath = Path.Combine(snippetsPath, "DocsBadge.jsx");
+
+            var badgeComponent = """
+/**
+ * DocsBadge Component for Mintlify Documentation
+ *
+ * A customizable badge component that matches Mintlify's design system.
+ * Used to display member provenance (Extension, Inherited, Override, Virtual, Abstract).
+ *
+ * Usage:
+ *   <DocsBadge text="Extension" variant="success" />
+ *   <DocsBadge text="Inherited" variant="neutral" />
+ *   <DocsBadge text="Override" variant="info" />
+ *   <DocsBadge text="Virtual" variant="warning" />
+ *   <DocsBadge text="Abstract" variant="warning" />
+ */
+
+export function DocsBadge({ text, variant = 'neutral' }) {
+  // Tailwind color classes for consistent theming
+  // Using standard Tailwind colors that work in both light and dark modes
+  const variantClasses = {
+    success: 'mint-bg-green-500/10 mint-text-green-600 dark:mint-text-green-400 mint-border-green-500/20',
+    neutral: 'mint-bg-slate-500/10 mint-text-slate-600 dark:mint-text-slate-400 mint-border-slate-500/20',
+    info: 'mint-bg-blue-500/10 mint-text-blue-600 dark:mint-text-blue-400 mint-border-blue-500/20',
+    warning: 'mint-bg-amber-500/10 mint-text-amber-600 dark:mint-text-amber-400 mint-border-amber-500/20',
+    danger: 'mint-bg-red-500/10 mint-text-red-600 dark:mint-text-red-400 mint-border-red-500/20'
+  };
+
+  const classes = variantClasses[variant] || variantClasses.neutral;
+
+  return (
+    <span
+      className={`mint-inline-flex mint-items-center mint-px-2 mint-py-0.5 mint-rounded-full mint-text-xs mint-font-medium mint-tracking-wide mint-border mint-ml-1.5 mint-align-middle mint-whitespace-nowrap ${classes}`}
+    >
+      {text}
+    </span>
+  );
+}
+""";
+
+            await File.WriteAllTextAsync(badgeFilePath, badgeComponent);
         }
 
         #endregion

@@ -4,6 +4,8 @@ icon: file-brackets-curly
 keywords: ['BuildCommand', 'CloudNimble.DotNetDocs.Tools.Commands.BuildCommand', 'CloudNimble.DotNetDocs.Tools.Commands', 'class', 'CloudNimble.DotNetDocs.Tools.Commands.Base.DocsCommandBase']
 ---
 
+import { DocsBadge } from '/snippets/DocsBadge.jsx';
+
 ## Definition
 
 **Assembly:** CloudNimble.DotNetDocs.Tools.dll
@@ -26,6 +28,26 @@ CloudNimble.DotNetDocs.Tools.Commands.BuildCommand
 
 ```csharp
 public BuildCommand()
+```
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  .ctor <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Tools.Commands.Base.DocsCommandBase`</Note>
+
+#### Syntax
+
+```csharp
+public DocsCommandBase()
+```
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  .ctor <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public Object()
 ```
 
 ## Properties
@@ -92,6 +114,129 @@ Type: `string`
 
 ## Methods
 
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Equals <DocsBadge text="Inherited" variant="neutral" /> <DocsBadge text="Virtual" variant="warning" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual bool Equals(object obj)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `obj` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Equals <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public static bool Equals(object objA, object objB)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `objA` | `object?` | - |
+| `objB` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  GetHashCode <DocsBadge text="Inherited" variant="neutral" /> <DocsBadge text="Virtual" variant="warning" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual int GetHashCode()
+```
+
+#### Returns
+
+Type: `int`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  GetLatestSdkVersionAsync <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Tools.Commands.Base.DocsCommandBase`</Note>
+
+Queries NuGet.org for the latest version of the DotNetDocs.Sdk package.
+
+#### Syntax
+
+```csharp
+protected static System.Threading.Tasks.Task<string> GetLatestSdkVersionAsync(bool includePrerelease)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `includePrerelease` | `bool` | Whether to include prerelease versions in the search. |
+
+#### Returns
+
+Type: `System.Threading.Tasks.Task<string?>`
+The latest version string, or null if the query fails.
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  GetType <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public System.Type GetType()
+```
+
+#### Returns
+
+Type: `System.Type`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  GetVersion <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Tools.Commands.Base.DocsCommandBase`</Note>
+
+Gets the version string for the tool.
+
+#### Syntax
+
+```csharp
+internal static string GetVersion()
+```
+
+#### Returns
+
+Type: `string`
+The version string.
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  MemberwiseClone <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+protected internal object MemberwiseClone()
+```
+
+#### Returns
+
+Type: `object`
+
 ### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  OnExecute
 
 #### Syntax
@@ -109,4 +254,57 @@ public System.Threading.Tasks.Task<int> OnExecute(McMaster.Extensions.CommandLin
 #### Returns
 
 Type: `System.Threading.Tasks.Task<int>`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  ReferenceEquals <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public static bool ReferenceEquals(object objA, object objB)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `objA` | `object?` | - |
+| `objB` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  ToString <DocsBadge text="Inherited" variant="neutral" /> <DocsBadge text="Virtual" variant="warning" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual string ToString()
+```
+
+#### Returns
+
+Type: `string?`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  WriteHeader <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Tools.Commands.Base.DocsCommandBase`</Note>
+
+Writes the DotNetDocs CLI header to the console with colorful ASCII art and version information.
+
+#### Syntax
+
+```csharp
+public static void WriteHeader()
+```
+
+#### Remarks
+
+This method displays a multi-line ASCII art logo combining the DotNetDocs branding with
+            version and attribution information. The output uses console colors to create an eye-catching
+            header for CLI operations.
 
