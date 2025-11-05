@@ -146,7 +146,8 @@
             MintlifyTemplate="$(MintlifyTemplate)"
             SolutionName="$(_SolutionName)"
             ConceptualDocsEnabled="$(ConceptualDocsEnabled)"
-            ShowPlaceholders="$(ShowPlaceholders)">
+            ShowPlaceholders="$(ShowPlaceholders)"
+            ResolvedDocumentationReferences="@(ResolvedDocumentationReference)">
             <Output TaskParameter="GeneratedFiles" ItemName="GeneratedDocumentationFiles" />
         </CloudNimble.DotNetDocs.Sdk.Tasks.GenerateDocumentationTask>
 

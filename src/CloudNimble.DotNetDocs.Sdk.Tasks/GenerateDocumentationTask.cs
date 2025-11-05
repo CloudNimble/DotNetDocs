@@ -110,6 +110,11 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
         /// </summary>
         public bool ShowPlaceholders { get; set; } = true;
 
+        /// <summary>
+        /// Gets or sets the resolved documentation references to combine with this documentation project.
+        /// </summary>
+        public ITaskItem[]? ResolvedDocumentationReferences { get; set; }
+
         #endregion
 
         #region Public Methods
@@ -137,6 +142,28 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
                     context.FileNamingOptions.NamespaceMode = Enum.TryParse<NamespaceMode>(NamespaceMode, true, out var mode) ? mode : Core.Configuration.NamespaceMode.Folder;
                     context.ConceptualDocsEnabled = ConceptualDocsEnabled;
                     context.ShowPlaceholders = ShowPlaceholders;
+
+                    // Populate DocumentationReferences from resolved items
+                    if (ResolvedDocumentationReferences is not null && ResolvedDocumentationReferences.Length > 0)
+                    {
+                        Log.LogMessage(MessageImportance.Normal, $"   📚 Processing {ResolvedDocumentationReferences.Length} documentation reference(s)");
+
+                        foreach (var item in ResolvedDocumentationReferences)
+                        {
+                            var reference = new DocumentationReference
+                            {
+                                ProjectPath = item.GetMetadata("ProjectPath"),
+                                DocumentationRoot = item.GetMetadata("DocumentationRoot"),
+                                DestinationPath = item.GetMetadata("DestinationPath"),
+                                IntegrationType = item.GetMetadata("IntegrationType"),
+                                DocumentationType = item.GetMetadata("DocumentationType"),
+                                NavigationFilePath = item.GetMetadata("NavigationFilePath")
+                            };
+
+                            context.DocumentationReferences.Add(reference);
+                            Log.LogMessage(MessageImportance.Normal, $"      Added reference: {Path.GetFileName(reference.ProjectPath)} → {reference.DestinationPath}");
+                        }
+                    }
 
                     // NamespaceFileMode will be set via the NamespaceMode property
                     // This is handled internally by the Core library
