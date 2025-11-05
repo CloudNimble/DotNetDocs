@@ -108,9 +108,9 @@
 
         <!-- Extract assembly paths from built projects (only main project assemblies) -->
         <ItemGroup>
-            <!-- Get assembly paths using the actual target framework from each project -->
-            <AssemblyPaths Include="%(DocumentedProjects.RootDir)%(DocumentedProjects.Directory)bin\$(Configuration)\%(DocumentedProjects.TargetFramework)\%(DocumentedProjects.Filename).dll" />
-            <XmlDocPaths Include="%(DocumentedProjects.RootDir)%(DocumentedProjects.Directory)bin\$(Configuration)\%(DocumentedProjects.TargetFramework)\%(DocumentedProjects.Filename).xml" />
+            <!-- Get assembly paths using the actual target framework and AssemblyName from each project -->
+            <AssemblyPaths Include="%(DocumentedProjects.RootDir)%(DocumentedProjects.Directory)bin\$(Configuration)\%(DocumentedProjects.TargetFramework)\%(DocumentedProjects.AssemblyName).dll" />
+            <XmlDocPaths Include="%(DocumentedProjects.RootDir)%(DocumentedProjects.Directory)bin\$(Configuration)\%(DocumentedProjects.TargetFramework)\%(DocumentedProjects.AssemblyName).xml" />
         </ItemGroup>
 
         <Message Text="📁 Found @(AssemblyPaths->Count()) assemblies for documentation generation" Importance="normal" />

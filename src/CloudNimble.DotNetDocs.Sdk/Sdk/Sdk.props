@@ -1,6 +1,6 @@
 <Project>
     <!-- ============================================================================
-       CloudNimble.DotNer SDK - Props
+       DotNetDocs SDK - Props
        
        Provides MSBuild SDK support for documentation projects (.docsproj)
        Enables documentation files to be included in Visual Studio solutions
