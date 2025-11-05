@@ -440,6 +440,13 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
                     config.Integrations = ParseIntegrationsConfig(integrationsElement);
                 }
 
+                // Parse Interaction
+                var interactionElement = root.Element("Interaction");
+                if (interactionElement is not null)
+                {
+                    config.Interaction = ParseInteractionConfig(interactionElement);
+                }
+
                 return config;
             }
             catch (Exception ex)
@@ -750,6 +757,28 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
                 if (bool.TryParse(strictElement.Value.Trim(), out var strict))
                 {
                     config.Strict = strict;
+                }
+            }
+
+            return config;
+        }
+
+        /// <summary>
+        /// Parses the Interaction element from the MintlifyTemplate XML.
+        /// </summary>
+        /// <param name="interactionElement">The interaction XML element.</param>
+        /// <returns>An InteractionConfig instance.</returns>
+        internal InteractionConfig ParseInteractionConfig(XElement interactionElement)
+        {
+            var config = new InteractionConfig();
+
+            // Parse Drilldown
+            var drilldownElement = interactionElement.Element("Drilldown");
+            if (drilldownElement is not null && !string.IsNullOrWhiteSpace(drilldownElement.Value))
+            {
+                if (bool.TryParse(drilldownElement.Value.Trim(), out var drilldown))
+                {
+                    config.Drilldown = drilldown;
                 }
             }
 

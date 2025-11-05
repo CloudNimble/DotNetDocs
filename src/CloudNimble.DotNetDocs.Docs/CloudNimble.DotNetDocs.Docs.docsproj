@@ -60,6 +60,9 @@
 					</Groups>
 				</Pages>
 			</Navigation>
+            <Interaction>
+                <Drilldown>true</Drilldown>
+            </Interaction>
             <Integrations>
                 <GoogleAnalytics4 MeasurementId="G-QZLKD91M9D" />
 			</Integrations>

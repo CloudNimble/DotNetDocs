@@ -723,6 +723,116 @@ namespace CloudNimble.DotNetDocs.Tests.Sdk.Tasks
 
         #endregion
 
+        #region Interaction Configuration Tests
+
+        /// <summary>
+        /// Tests that ParseInteractionConfig correctly parses Drilldown property set to true.
+        /// </summary>
+        [TestMethod]
+        public void ParseInteractionConfig_WithDrilldownTrue_ParsesCorrectly()
+        {
+            // Arrange
+            var xml = """
+                <Interaction>
+                    <Drilldown>true</Drilldown>
+                </Interaction>
+                """;
+            var interactionElement = XElement.Parse(xml);
+
+            // Act
+            var result = _task.ParseInteractionConfig(interactionElement);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Drilldown.Should().BeTrue();
+        }
+
+        /// <summary>
+        /// Tests that ParseInteractionConfig correctly parses Drilldown property set to false.
+        /// </summary>
+        [TestMethod]
+        public void ParseInteractionConfig_WithDrilldownFalse_ParsesCorrectly()
+        {
+            // Arrange
+            var xml = """
+                <Interaction>
+                    <Drilldown>false</Drilldown>
+                </Interaction>
+                """;
+            var interactionElement = XElement.Parse(xml);
+
+            // Act
+            var result = _task.ParseInteractionConfig(interactionElement);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Drilldown.Should().BeFalse();
+        }
+
+        /// <summary>
+        /// Tests that ParseInteractionConfig handles empty interaction correctly.
+        /// </summary>
+        [TestMethod]
+        public void ParseInteractionConfig_WithEmptyElement_ReturnsEmptyConfig()
+        {
+            // Arrange
+            var xml = "<Interaction></Interaction>";
+            var interactionElement = XElement.Parse(xml);
+
+            // Act
+            var result = _task.ParseInteractionConfig(interactionElement);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Drilldown.Should().BeNull();
+        }
+
+        /// <summary>
+        /// Tests that ParseInteractionConfig ignores invalid boolean values for Drilldown.
+        /// </summary>
+        [TestMethod]
+        public void ParseInteractionConfig_WithInvalidDrilldownValue_IgnoresValue()
+        {
+            // Arrange
+            var xml = """
+                <Interaction>
+                    <Drilldown>invalid</Drilldown>
+                </Interaction>
+                """;
+            var interactionElement = XElement.Parse(xml);
+
+            // Act
+            var result = _task.ParseInteractionConfig(interactionElement);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Drilldown.Should().BeNull(); // Invalid value should be ignored
+        }
+
+        /// <summary>
+        /// Tests that ParseInteractionConfig handles case-insensitive boolean values.
+        /// </summary>
+        [TestMethod]
+        public void ParseInteractionConfig_WithCaseInsensitiveBooleans_ParsesCorrectly()
+        {
+            // Arrange
+            var xml = """
+                <Interaction>
+                    <Drilldown>True</Drilldown>
+                </Interaction>
+                """;
+            var interactionElement = XElement.Parse(xml);
+
+            // Act
+            var result = _task.ParseInteractionConfig(interactionElement);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Drilldown.Should().BeTrue();
+        }
+
+        #endregion
+
     }
 
 }
