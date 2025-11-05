@@ -524,8 +524,8 @@ namespace CloudNimble.DotNetDocs.Core
                 var sourcePath = reference.DocumentationRoot;
                 var destPath = Path.Combine(projectContext.DocumentationRootPath, reference.DestinationPath);
 
-                // Get file patterns based on documentation type
-                var patterns = GetFilePatternsForDocumentationType(reference.DocumentationType);
+                // Get file patterns based on documentation type, excluding root navigation files for references
+                var patterns = GetFilePatternsForDocumentationType(reference.DocumentationType, excludeRootNavigationFiles: true);
 
                 // Copy files for each pattern
                 foreach (var pattern in patterns)
@@ -539,10 +539,11 @@ namespace CloudNimble.DotNetDocs.Core
         /// Gets file glob patterns for a given documentation type.
         /// </summary>
         /// <param name="documentationType">The documentation type (Mintlify, DocFX, MkDocs, etc.).</param>
+        /// <param name="excludeRootNavigationFiles">When true, excludes root navigation files like docs.json, toc.yml, etc. Set to true when copying DocumentationReferences to prevent navigation file conflicts.</param>
         /// <returns>A list of glob patterns for files that should be copied.</returns>
-        internal List<string> GetFilePatternsForDocumentationType(string documentationType)
+        internal List<string> GetFilePatternsForDocumentationType(string documentationType, bool excludeRootNavigationFiles = false)
         {
-            return documentationType?.ToLowerInvariant() switch
+            var patterns = documentationType?.ToLowerInvariant() switch
             {
                 "mintlify" => new List<string>
                 {
@@ -610,6 +611,36 @@ namespace CloudNimble.DotNetDocs.Core
                     "assets/**/*"
                 }
             };
+
+            if (excludeRootNavigationFiles)
+            {
+                // Remove root navigation files based on documentation type
+                switch (documentationType?.ToLowerInvariant())
+                {
+                    case "mintlify":
+                        patterns.Remove("docs.json");
+                        break;
+                    case "docfx":
+                        patterns.Remove("toc.yml");
+                        patterns.Remove("toc.yaml");
+                        patterns.Remove("docfx.json");
+                        break;
+                    case "mkdocs":
+                        patterns.Remove("mkdocs.yml");
+                        break;
+                    case "jekyll":
+                        patterns.Remove("_config.yml");
+                        patterns.Remove("_config.yaml");
+                        break;
+                    case "hugo":
+                        patterns.Remove("hugo.toml");
+                        patterns.Remove("hugo.yaml");
+                        patterns.Remove("hugo.json");
+                        break;
+                }
+            }
+
+            return patterns;
         }
 
         /// <summary>

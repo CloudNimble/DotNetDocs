@@ -124,11 +124,14 @@ namespace CloudNimble.DotNetDocs.Mintlify
             {
                 // First: Discover existing MDX files in documentation root, preserving template navigation
                 _docsJsonManager.PopulateNavigationFromPath(Context.DocumentationRootPath, new[] { ".mdx" }, includeApiReference: false, preserveExisting: true);
-                
+
                 // Second: Add API reference content to existing navigation
                 BuildNavigationStructure(_docsJsonManager.Configuration, model);
 
-                // Combine referenced navigation before saving
+                // Third: Apply NavigationType from template to move root content to Tabs/Products if configured
+                ApplyNavigationType();
+
+                // Fourth: Combine referenced navigation
                 CombineReferencedNavigation();
 
                 // Write docs.json to the DocumentationRootPath (only once, with everything combined)
@@ -1683,6 +1686,78 @@ export function DocsBadge({ text, variant = 'neutral' }) {
         internal string GetProjectName(string projectPath)
         {
             return Path.GetFileNameWithoutExtension(projectPath);
+        }
+
+        /// <summary>
+        /// Applies the NavigationType setting from the template to move the root project's navigation
+        /// from Pages to Tabs or Products if configured.
+        /// </summary>
+        /// <remarks>
+        /// This method is called after BuildNavigationStructure and before CombineReferencedNavigation.
+        /// It moves the entire Pages navigation (including the API Reference group) into a Tab or Product
+        /// based on the NavigationType setting in the template.
+        /// </remarks>
+        internal void ApplyNavigationType()
+        {
+            // Check if we have a manager with loaded configuration
+            if (_docsJsonManager is null ||
+                !_docsJsonManager.IsLoaded ||
+                _docsJsonManager.Configuration?.Navigation?.Pages is null ||
+                _options.Template is null)
+            {
+                return;
+            }
+
+            var navigationType = _options.Template.NavigationType?.Trim() ?? "Pages";
+
+            // If NavigationType is Pages (default), do nothing
+            if (navigationType.Equals("Pages", StringComparison.OrdinalIgnoreCase))
+            {
+                return;
+            }
+
+            // Get the current pages and groups to move
+            var currentPages = _docsJsonManager.Configuration.Navigation.Pages;
+            var currentGroups = _docsJsonManager.Configuration.Navigation.Groups;
+
+            // Determine the name for the root project
+            var rootName = !string.IsNullOrWhiteSpace(_options.Template.NavigationName)
+                ? _options.Template.NavigationName
+                : _options.Template.Name ?? "Documentation";
+
+            // Move to Tabs or Products based on setting
+            if (navigationType.Equals("Tabs", StringComparison.OrdinalIgnoreCase))
+            {
+                // Initialize Tabs if needed
+                _docsJsonManager.Configuration.Navigation.Tabs ??= [];
+
+                // Add root content as a new tab
+                _docsJsonManager.Configuration.Navigation.Tabs.Add(new TabConfig
+                {
+                    Tab = rootName,
+                    Pages = currentPages
+                });
+
+                // Clear the Pages array since content is now in Tabs
+                _docsJsonManager.Configuration.Navigation.Pages = [];
+            }
+            else if (navigationType.Equals("Products", StringComparison.OrdinalIgnoreCase))
+            {
+                // Initialize Products if needed
+                _docsJsonManager.Configuration.Navigation.Products ??= [];
+
+                // Add root content as a new product
+                _docsJsonManager.Configuration.Navigation.Products.Add(new ProductConfig
+                {
+                    Product = rootName,
+                    Pages = currentPages,
+                    Groups = currentGroups
+                });
+
+                // Clear the Pages and Groups arrays since content is now in Products
+                _docsJsonManager.Configuration.Navigation.Pages = [];
+                _docsJsonManager.Configuration.Navigation.Groups = null;
+            }
         }
 
         #endregion

@@ -73,6 +73,29 @@ namespace CloudNimble.DotNetDocs.Mintlify
         /// </value>
         public string UnifiedGroupName { get; set; } = "API Reference";
 
+        /// <summary>
+        /// Gets or sets the integration type for the root project's navigation.
+        /// </summary>
+        /// <value>
+        /// The integration type for the root project. Valid values are "Pages" (default), "Tabs", or "Products".
+        /// When set to "Pages", the root project appears in the main navigation.
+        /// When set to "Tabs", the root project appears as a top-level tab.
+        /// When set to "Products", the root project appears as a product in the products section.
+        /// </value>
+        /// <remarks>
+        /// This property controls how the root project's documentation is integrated into the navigation structure.
+        /// Referenced projects use the IntegrationType specified in their DocumentationReference metadata.
+        /// </remarks>
+        public string RootIntegrationType { get; set; } = "Pages";
+
+        /// <summary>
+        /// Gets or sets the name/title for the root project when RootIntegrationType is "Tabs" or "Products".
+        /// </summary>
+        /// <value>
+        /// The display name for the root project tab or product. If not specified, the project name will be used.
+        /// </value>
+        public string? RootIntegrationName { get; set; }
+
         #endregion
 
     }

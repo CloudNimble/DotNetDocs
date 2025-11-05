@@ -385,7 +385,9 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
                 {
                     Name = nameValue ?? "API Documentation",
                     Description = root.Element("Description")?.Value,
-                    Theme = root.Element("Theme")?.Value ?? "mint"
+                    Theme = root.Element("Theme")?.Value ?? "mint",
+                    NavigationType = root.Element("NavigationType")?.Value ?? "Pages",
+                    NavigationName = root.Element("NavigationName")?.Value
                 };
 
                 // Parse Colors

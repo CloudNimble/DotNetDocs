@@ -63,6 +63,12 @@ namespace Mintlify.Core.Converters
                                     nav.Tabs = JsonSerializer.Deserialize<List<TabConfig>>(ref reader, options);
                                 }
                                 break;
+                            case "products":
+                                if (reader.TokenType == JsonTokenType.StartArray)
+                                {
+                                    nav.Products = JsonSerializer.Deserialize<List<ProductConfig>>(ref reader, options);
+                                }
+                                break;
                             case "anchors":
                                 if (reader.TokenType == JsonTokenType.StartArray)
                                 {
@@ -113,6 +119,12 @@ namespace Mintlify.Core.Converters
             {
                 writer.WritePropertyName("tabs");
                 JsonSerializer.Serialize(writer, value.Tabs, options);
+            }
+
+            if (value.Products is not null)
+            {
+                writer.WritePropertyName("products");
+                JsonSerializer.Serialize(writer, value.Products, options);
             }
 
             if (value.Anchors is not null)

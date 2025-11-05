@@ -11,7 +11,7 @@ navigation sources without duplication.
 
 ## Overview
 
-Navigation generation happens in three distinct phases:
+Navigation generation happens in five distinct phases:
 
 <Steps>
   <Step title="Load Template Navigation">
@@ -22,6 +22,12 @@ Navigation generation happens in three distinct phases:
   </Step>
   <Step title="Add API Reference">
     Generated API documentation is added to the navigation, organized either as a unified structure or by assembly depending on `NavigationMode`.
+  </Step>
+  <Step title="Apply NavigationType">
+    If the template specifies a `NavigationType`, the root project's navigation is moved to Tabs or Products section.
+  </Step>
+  <Step title="Combine Documentation References">
+    If `DocumentationReference` items are defined, external documentation is copied and merged into the navigation structure.
   </Step>
 </Steps>
 
@@ -235,9 +241,220 @@ BuildNavigationStructure(_docsJsonManager.Configuration, model);
 The `BuildNavigationStructure` method:
 1. Finds or creates the API Reference group using `FindOrCreateApiReferenceGroup`
 2. Iterates through all namespaces in the documentation model
-3. Creates nested groups for namespace hierarchy (e.g., `CloudNimble` ’ `DotNetDocs` ’ `Core`)
+3. Creates nested groups for namespace hierarchy (e.g., `CloudNimble` ï¿½ `DotNetDocs` ï¿½ `Core`)
 4. Adds page paths for each type using `_docsJsonManager.AddPage()`
 5. Respects the `_knownPagePaths` hashset to avoid duplicates
+
+## Phase 4: Documentation References (Collections)
+
+DotNetDocs supports creating documentation collections by combining multiple `.docsproj` projects into a unified documentation site. This is perfect for multi-library ecosystems or monorepo documentation.
+
+### DocumentationReference Basics
+
+Add references to other documentation projects in your `.docsproj` file:
+
+```xml CloudNimble.EasyAF.Docs.docsproj
+<ItemGroup>
+    <DocumentationReference
+        Include="..\..\external\Breakdance\src\CloudNimble.Breakdance.Docs\Breakdance.Docs.docsproj"
+        DestinationPath="breakdance"
+        IntegrationType="Tabs" />
+</ItemGroup>
+```
+
+**Parameters:**
+- `Include`: Path to the referenced `.docsproj` file
+- `DestinationPath`: Subfolder where documentation will be copied (relative to output)
+- `IntegrationType`: How the reference appears in navigation (`Tabs` or `Products`)
+
+### How It Works
+
+When you build a project with DocumentationReferences:
+
+1. **Resolution**: The `DocumentationReferenceResolverTask` validates each reference and extracts metadata
+2. **File Copying**: Content files (`.mdx`, images, snippets) are copied to `DestinationPath`
+3. **Navigation files excluded**: Root navigation files (`docs.json`) are automatically excluded
+4. **Navigation Integration**: Referenced navigation is merged into the parent project's `docs.json`
+
+### Integration Types
+
+<Tabs>
+  <Tab title="Tabs (Default)">
+    Referenced documentation appears as a top-level tab:
+
+    ```json Result in docs.json
+    {
+      "navigation": {
+        "tabs": [
+          {
+            "tab": "Breakdance.Docs",
+            "href": "breakdance",
+            "pages": ["breakdance/index", "breakdance/quickstart"]
+          }
+        ]
+      }
+    }
+    ```
+
+    **Best for:** Related libraries or companion tools that deserve their own dedicated section
+  </Tab>
+
+  <Tab title="Products">
+    Referenced documentation appears in the products section:
+
+    ```xml
+    <DocumentationReference
+        Include="path/to/project.docsproj"
+        DestinationPath="my-product"
+        IntegrationType="Products" />
+    ```
+
+    **Best for:** Product suites or service-oriented documentation structures
+  </Tab>
+</Tabs>
+
+### File Copying Behavior
+
+The system automatically copies documentation-type-specific files while **excluding root navigation files**:
+
+**Mintlify (excludes `docs.json`):**
+- `*.md`, `*.mdx`, `*.mdz`
+- `images/**/*`
+- `favicon.*`
+- `snippets/**/*`
+
+**DocFX (excludes `toc.yml`, `toc.yaml`, `docfx.json`):**
+- `*.md`, `*.yml`, `*.yaml`
+- `images/**/*`
+- `articles/**/*`
+- `api/**/*`
+
+**MkDocs (excludes `mkdocs.yml`):**
+- `*.md`
+- `docs/**/*`
+- `overrides/**/*`
+- `theme/**/*`
+
+<Info>
+Root navigation files are excluded automatically to prevent conflicts. The parent project maintains full control over the unified navigation structure.
+</Info>
+
+### Complete Example: Multi-Library Collection
+
+```xml CloudNimble.Platform.Docs.docsproj
+<Project Sdk="DotNetDocs.Sdk/1.1.0-preview.3">
+    <PropertyGroup>
+        <DocumentationType>Mintlify</DocumentationType>
+        <MintlifyNavigationMode>Unified</MintlifyNavigationMode>
+        <MintlifyTemplate>
+            <Name>CloudNimble Platform</Name>
+            <NavigationType>Tabs</NavigationType>
+            <NavigationName>Platform Core</NavigationName>
+            <Theme>maple</Theme>
+        </MintlifyTemplate>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <!-- Main platform appears as "Platform Core" tab -->
+
+        <!-- Related libraries as additional tabs -->
+        <DocumentationReference
+            Include="..\..\EasyAF\src\CloudNimble.EasyAF.Docs\CloudNimble.EasyAF.Docs.docsproj"
+            DestinationPath="easyaf"
+            IntegrationType="Tabs" />
+
+        <DocumentationReference
+            Include="..\..\Breakdance\src\CloudNimble.Breakdance.Docs\Breakdance.Docs.docsproj"
+            DestinationPath="breakdance"
+            IntegrationType="Tabs" />
+    </ItemGroup>
+</Project>
+```
+
+**Result:** Three-tab documentation site with Platform Core, EasyAF, and Breakdance each in their own tab.
+
+## Controlling Root Project Navigation Type
+
+By default, the root project's documentation appears in the main `Pages` navigation. You can change this behavior using the `NavigationType` and `NavigationName` properties in your `MintlifyTemplate`.
+
+### NavigationType Property
+
+Add to your `.docsproj` template:
+
+```xml
+<MintlifyTemplate>
+    <Name>EasyAF</Name>
+    <NavigationType>Tabs</NavigationType>
+    <NavigationName>EasyAF API</NavigationName>  <!-- Optional custom name -->
+    <Theme>maple</Theme>
+</MintlifyTemplate>
+```
+
+**Valid NavigationType values:**
+- `Pages` (default) - Appears in main navigation
+- `Tabs` - Appears as a top-level tab
+- `Products` - Appears in products section
+
+### When to Use NavigationType
+
+<CardGroup cols={2}>
+  <Card title="Use Pages (default)" icon="file-lines">
+    **When:** You're building a single-project documentation site
+
+    The root project should be the primary content in the main navigation.
+  </Card>
+
+  <Card title="Use Tabs" icon="folder-tree">
+    **When:** You're building a multi-project collection where all projects should have equal prominence
+
+    Perfect for monorepos or related library collections.
+  </Card>
+
+  <Card title="Use Products" icon="boxes-stacked">
+    **When:** You're documenting a product suite with multiple distinct offerings
+
+    Each product gets its own section in the products navigation.
+  </Card>
+</CardGroup>
+
+### Example: Pure Collection Site
+
+```xml Collection.Docs.docsproj
+<MintlifyTemplate>
+    <Name>CloudNimble Docs</Name>
+    <Theme>maple</Theme>
+    <Navigation>
+        <Pages>
+            <Groups>
+                <Group Name="Getting Started" Icon="rocket">
+                    <Pages>index;overview</Pages>
+                </Group>
+            </Groups>
+        </Pages>
+    </Navigation>
+</MintlifyTemplate>
+
+<ItemGroup>
+    <!-- All libraries as tabs, no root project content -->
+    <DocumentationReference Include="path/to/EasyAF.docsproj" DestinationPath="easyaf" IntegrationType="Tabs" />
+    <DocumentationReference Include="path/to/Breakdance.docsproj" DestinationPath="breakdance" IntegrationType="Tabs" />
+    <DocumentationReference Include="path/to/BlazorEssentials.docsproj" DestinationPath="blazor" IntegrationType="Tabs" />
+</ItemGroup>
+```
+
+**Result:** A landing page with Getting Started content, and three library tabs for the actual API documentation.
+
+### NavigationType Processing Order
+
+The system applies navigation transformations in this order:
+
+1. **Load Template** - Base configuration and styling
+2. **Discover Files** - Scan for conceptual `.mdx` files
+3. **Add API Reference** - Generated API documentation
+4. **Apply NavigationType** - Move root content to Tabs/Products if configured
+5. **Combine References** - Merge DocumentationReference navigation
+
+This ensures referenced projects are properly integrated regardless of the root project's navigation type.
 
 ## DocsJsonManager Deep Dive
 
