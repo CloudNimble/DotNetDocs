@@ -148,6 +148,26 @@ Either "Tabs" or "Products" for Mintlify navigation structure.
 Only applicable when DocumentationType is "Mintlify". Determines whether the referenced
             documentation appears in the top-level tabs or in the products section.
 
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Name
+
+Gets or sets the display name for this documentation reference in navigation.
+
+#### Syntax
+
+```csharp
+public string Name { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+The name to display for this documentation in tabs, products, or other navigation structures.
+
+#### Remarks
+
+When specified, this name is used instead of deriving the name from the project or other metadata.
+            Useful for providing user-friendly names in navigation elements.
+
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  NavigationFilePath
 
 Gets or sets the path to the navigation configuration file for the referenced documentation.

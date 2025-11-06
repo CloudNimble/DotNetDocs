@@ -524,14 +524,11 @@ namespace CloudNimble.DotNetDocs.Core
                 var sourcePath = reference.DocumentationRoot;
                 var destPath = Path.Combine(projectContext.DocumentationRootPath, reference.DestinationPath);
 
-                // Get file patterns based on documentation type, excluding root navigation files for references
-                var patterns = GetFilePatternsForDocumentationType(reference.DocumentationType, excludeRootNavigationFiles: true);
+                // Get exclusion patterns for this documentation type
+                var exclusionPatterns = GetExclusionPatternsForDocumentationType(reference.DocumentationType);
 
-                // Copy files for each pattern
-                foreach (var pattern in patterns)
-                {
-                    await CopyFilesAsync(sourcePath, destPath, pattern, skipExisting: true);
-                }
+                // Copy all files except those matching exclusion patterns
+                await CopyDirectoryWithExclusionsAsync(sourcePath, destPath, exclusionPatterns, skipExisting: true);
             }
         }
 
@@ -644,6 +641,48 @@ namespace CloudNimble.DotNetDocs.Core
         }
 
         /// <summary>
+        /// Gets file exclusion patterns for a given documentation type when copying DocumentationReferences.
+        /// </summary>
+        /// <param name="documentationType">The documentation type (Mintlify, DocFX, MkDocs, etc.).</param>
+        /// <returns>A list of glob patterns for files that should be excluded from copying.</returns>
+        internal List<string> GetExclusionPatternsForDocumentationType(string documentationType)
+        {
+            return documentationType?.ToLowerInvariant() switch
+            {
+                "mintlify" => new List<string>
+                {
+                    "**/*.mdz",           // Generated zone files
+                    "conceptual/**/*",    // Conceptual docs are project-specific
+                    "**/*.css",           // Styles should come from collection project
+                    "docs.json"           // Navigation file handled separately
+                },
+                "docfx" => new List<string>
+                {
+                    "toc.yml",
+                    "toc.yaml",
+                    "docfx.json"
+                },
+                "mkdocs" => new List<string>
+                {
+                    "mkdocs.yml"
+                },
+                "jekyll" => new List<string>
+                {
+                    "_config.yml",
+                    "_config.yaml"
+                },
+                "hugo" => new List<string>
+                {
+                    "hugo.toml",
+                    "hugo.yaml",
+                    "hugo.json",
+                    "config.*"
+                },
+                _ => new List<string>()
+            };
+        }
+
+        /// <summary>
         /// Copies files matching a glob pattern from source to destination directory.
         /// </summary>
         /// <param name="sourceDir">The source directory to copy from.</param>
@@ -744,6 +783,137 @@ namespace CloudNimble.DotNetDocs.Core
             }
 
             await Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Recursively copies a directory and its contents, excluding files that match exclusion patterns.
+        /// </summary>
+        /// <param name="sourceDir">The source directory to copy from.</param>
+        /// <param name="destDir">The destination directory to copy to.</param>
+        /// <param name="exclusionPatterns">List of glob patterns for files to exclude.</param>
+        /// <param name="skipExisting">Whether to skip files that already exist in the destination.</param>
+        /// <returns>A task representing the asynchronous copy operation.</returns>
+        internal Task CopyDirectoryWithExclusionsAsync(string sourceDir, string destDir, List<string> exclusionPatterns, bool skipExisting = true)
+        {
+            return CopyDirectoryWithExclusionsAsync(sourceDir, destDir, sourceDir, exclusionPatterns, skipExisting);
+        }
+
+        /// <summary>
+        /// Recursively copies a directory and its contents, excluding files that match exclusion patterns.
+        /// </summary>
+        /// <param name="sourceDir">The current source directory to copy from.</param>
+        /// <param name="destDir">The current destination directory to copy to.</param>
+        /// <param name="baseSourceDir">The base source directory for calculating relative paths.</param>
+        /// <param name="exclusionPatterns">List of glob patterns for files to exclude.</param>
+        /// <param name="skipExisting">Whether to skip files that already exist in the destination.</param>
+        /// <returns>A task representing the asynchronous copy operation.</returns>
+        private async Task CopyDirectoryWithExclusionsAsync(string sourceDir, string destDir, string baseSourceDir, List<string> exclusionPatterns, bool skipExisting)
+        {
+            if (!Directory.Exists(sourceDir))
+            {
+                return;
+            }
+
+            Directory.CreateDirectory(destDir);
+
+            // Get all files to copy (excluding those that match patterns)
+            var filesToCopy = Directory.GetFiles(sourceDir)
+                .Select(sourceFile => new
+                {
+                    SourceFile = sourceFile,
+                    FileName = Path.GetFileName(sourceFile),
+                    RelativePath = Path.GetRelativePath(baseSourceDir, sourceFile).Replace("\\", "/"),
+                    DestFile = Path.Combine(destDir, Path.GetFileName(sourceFile))
+                })
+                .Where(f => !ShouldExcludeFile(f.RelativePath, exclusionPatterns))
+                .Where(f => !skipExisting || !File.Exists(f.DestFile))
+                .ToList();
+
+            // Copy files in parallel
+            await Parallel.ForEachAsync(filesToCopy, async (fileInfo, ct) =>
+            {
+                await Task.Run(() =>
+                {
+                    File.Copy(fileInfo.SourceFile, fileInfo.DestFile, overwrite: !skipExisting);
+                }, ct);
+            });
+
+            // Get all subdirectories
+            var subDirectories = Directory.GetDirectories(sourceDir)
+                .Select(sourceSubDir => new
+                {
+                    SourceSubDir = sourceSubDir,
+                    DestSubDir = Path.Combine(destDir, Path.GetFileName(sourceSubDir))
+                })
+                .ToList();
+
+            // Recursively copy subdirectories in parallel
+            await Parallel.ForEachAsync(subDirectories, async (dirInfo, ct) =>
+            {
+                await CopyDirectoryWithExclusionsAsync(dirInfo.SourceSubDir, dirInfo.DestSubDir, baseSourceDir, exclusionPatterns, skipExisting);
+            });
+        }
+
+        /// <summary>
+        /// Determines if a file should be excluded based on exclusion patterns.
+        /// </summary>
+        /// <param name="relativePath">The relative path of the file.</param>
+        /// <param name="exclusionPatterns">List of glob patterns for exclusion.</param>
+        /// <returns>True if the file should be excluded, false otherwise.</returns>
+        internal bool ShouldExcludeFile(string relativePath, List<string> exclusionPatterns)
+        {
+            foreach (var pattern in exclusionPatterns)
+            {
+                if (MatchesGlobPattern(relativePath, pattern))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Matches a file path against a glob pattern.
+        /// </summary>
+        /// <param name="path">The file path to match.</param>
+        /// <param name="pattern">The glob pattern.</param>
+        /// <returns>True if the path matches the pattern, false otherwise.</returns>
+        internal bool MatchesGlobPattern(string path, string pattern)
+        {
+            // Normalize path separators to forward slashes
+            path = path.Replace("\\", "/");
+            pattern = pattern.Replace("\\", "/");
+
+            // Handle **/* patterns (matches files in any subdirectory)
+            if (pattern.StartsWith("**/"))
+            {
+                var suffix = pattern.Substring(3);
+                // Match if path ends with the suffix or contains it as a path component
+                if (suffix.Contains("*"))
+                {
+                    // Convert suffix wildcard pattern to simple check
+                    var extension = suffix.TrimStart('*');
+                    return path.EndsWith(extension);
+                }
+                return path.EndsWith(suffix) || path.Contains("/" + suffix);
+            }
+
+            // Handle directory patterns like "conceptual/**/*"
+            if (pattern.EndsWith("/**/*"))
+            {
+                var prefix = pattern.Substring(0, pattern.Length - 5);
+                return path.StartsWith(prefix + "/") || path == prefix;
+            }
+
+            // Handle simple wildcards like "*.css"
+            if (pattern.StartsWith("*."))
+            {
+                var extension = pattern.Substring(1);
+                return path.EndsWith(extension);
+            }
+
+            // Exact match
+            return path == pattern;
         }
 
         #endregion

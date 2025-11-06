@@ -1,4 +1,4 @@
-﻿<Project Sdk="DotNetDocs.Sdk/1.1.0-preview.5">
+﻿<Project Sdk="DotNetDocs.Sdk/1.1.0-preview.6">
 
     <PropertyGroup>
         <DocumentationType>Mintlify</DocumentationType>
@@ -11,7 +11,6 @@
         <ConceptualDocsEnabled>true</ConceptualDocsEnabled>
         <ShowPlaceholders>false</ShowPlaceholders>
 
-        <MintlifyNavigationMode>Unified</MintlifyNavigationMode>
         <MintlifyTemplate>
             <Name>DotNetDocs</Name>
             <Theme>maple</Theme>
@@ -34,7 +33,7 @@
             <Styling>
                 <CodeBlocks>dark</CodeBlocks>
             </Styling>
-            <Navigation>
+            <Navigation Mode="Unified">
                 <Pages>
                     <Groups>
                         <Group Name="Getting Started" Icon="stars">

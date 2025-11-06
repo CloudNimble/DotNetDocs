@@ -1654,7 +1654,7 @@ export function DocsBadge({ text, variant = 'neutral' }) {
 
             _docsJsonManager.Configuration.Navigation.Tabs.Add(new TabConfig
             {
-                Tab = GetProjectName(reference.ProjectPath),
+                Tab = !string.IsNullOrWhiteSpace(reference.Name) ? reference.Name : GetProjectName(reference.ProjectPath),
                 Href = reference.DestinationPath,
                 Pages = source.Configuration!.Navigation!.Pages
             });
@@ -1671,7 +1671,7 @@ export function DocsBadge({ text, variant = 'neutral' }) {
 
             _docsJsonManager.Configuration.Navigation.Products.Add(new ProductConfig
             {
-                Product = GetProjectName(reference.ProjectPath),
+                Product = !string.IsNullOrWhiteSpace(reference.Name) ? reference.Name : GetProjectName(reference.ProjectPath),
                 Href = reference.DestinationPath,
                 Pages = source.Configuration!.Navigation!.Pages,
                 Groups = source.Configuration.Navigation.Groups

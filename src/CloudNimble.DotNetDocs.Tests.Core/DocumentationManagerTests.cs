@@ -2817,6 +2817,191 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
             parameter!.Usage.Should().Be("The first number.");
         }
 
+        [TestMethod]
+        public void GetExclusionPatternsForDocumentationType_Mintlify_ReturnsCorrectPatterns()
+        {
+            // Arrange
+            var manager = GetDocumentationManager();
+
+            // Act
+            var patterns = manager.GetExclusionPatternsForDocumentationType("Mintlify");
+
+            // Assert
+            patterns.Should().NotBeNull();
+            patterns.Should().Contain("**/*.mdz");
+            patterns.Should().Contain("conceptual/**/*");
+            patterns.Should().Contain("**/*.css");
+            patterns.Should().Contain("docs.json");
+        }
+
+        [TestMethod]
+        public void GetExclusionPatternsForDocumentationType_UnknownType_ReturnsEmptyList()
+        {
+            // Arrange
+            var manager = GetDocumentationManager();
+
+            // Act
+            var patterns = manager.GetExclusionPatternsForDocumentationType("UnknownType");
+
+            // Assert
+            patterns.Should().NotBeNull();
+            patterns.Should().BeEmpty();
+        }
+
+        [TestMethod]
+        public void ShouldExcludeFile_WithMdzPattern_ExcludesMdzFiles()
+        {
+            // Arrange
+            var manager = GetDocumentationManager();
+            var exclusionPatterns = new List<string> { "**/*.mdz" };
+
+            // Act & Assert
+            manager.ShouldExcludeFile("file.mdz", exclusionPatterns).Should().BeTrue();
+            manager.ShouldExcludeFile("api-reference/test.mdz", exclusionPatterns).Should().BeTrue();
+            manager.ShouldExcludeFile("deeply/nested/path/file.mdz", exclusionPatterns).Should().BeTrue();
+            manager.ShouldExcludeFile("file.md", exclusionPatterns).Should().BeFalse();
+            manager.ShouldExcludeFile("file.mdx", exclusionPatterns).Should().BeFalse();
+        }
+
+        [TestMethod]
+        public void ShouldExcludeFile_WithConceptualPattern_ExcludesConceptualFolder()
+        {
+            // Arrange
+            var manager = GetDocumentationManager();
+            var exclusionPatterns = new List<string> { "conceptual/**/*" };
+
+            // Act & Assert
+            manager.ShouldExcludeFile("conceptual/guide.md", exclusionPatterns).Should().BeTrue();
+            manager.ShouldExcludeFile("conceptual/nested/file.mdx", exclusionPatterns).Should().BeTrue();
+            manager.ShouldExcludeFile("api-reference/file.md", exclusionPatterns).Should().BeFalse();
+            manager.ShouldExcludeFile("guide.md", exclusionPatterns).Should().BeFalse();
+        }
+
+        [TestMethod]
+        public void ShouldExcludeFile_WithCssPattern_ExcludesCssFiles()
+        {
+            // Arrange
+            var manager = GetDocumentationManager();
+            var exclusionPatterns = new List<string> { "**/*.css" };
+
+            // Act & Assert
+            manager.ShouldExcludeFile("style.css", exclusionPatterns).Should().BeTrue();
+            manager.ShouldExcludeFile("assets/main.css", exclusionPatterns).Should().BeTrue();
+            manager.ShouldExcludeFile("deeply/nested/theme.css", exclusionPatterns).Should().BeTrue();
+            manager.ShouldExcludeFile("style.scss", exclusionPatterns).Should().BeFalse();
+            manager.ShouldExcludeFile("file.css.map", exclusionPatterns).Should().BeFalse();
+        }
+
+        [TestMethod]
+        public void ShouldExcludeFile_WithDocsJsonPattern_ExcludesDocsJson()
+        {
+            // Arrange
+            var manager = GetDocumentationManager();
+            var exclusionPatterns = new List<string> { "docs.json" };
+
+            // Act & Assert
+            manager.ShouldExcludeFile("docs.json", exclusionPatterns).Should().BeTrue();
+            manager.ShouldExcludeFile("nested/docs.json", exclusionPatterns).Should().BeFalse(); // Exact match only
+            manager.ShouldExcludeFile("docs-template.json", exclusionPatterns).Should().BeFalse();
+        }
+
+        [TestMethod]
+        public void ShouldExcludeFile_NonMatchingFile_DoesNotExclude()
+        {
+            // Arrange
+            var manager = GetDocumentationManager();
+            var exclusionPatterns = new List<string> { "**/*.mdz", "conceptual/**/*", "**/*.css", "docs.json" };
+
+            // Act & Assert - These should NOT be excluded
+            manager.ShouldExcludeFile("index.mdx", exclusionPatterns).Should().BeFalse();
+            manager.ShouldExcludeFile("api-reference/class.md", exclusionPatterns).Should().BeFalse();
+            manager.ShouldExcludeFile("snippets/example.jsx", exclusionPatterns).Should().BeFalse();
+            manager.ShouldExcludeFile("images/logo.png", exclusionPatterns).Should().BeFalse();
+        }
+
+        [TestMethod]
+        public async Task CopyDirectoryWithExclusionsAsync_SkipsExcludedFiles()
+        {
+            // Arrange
+            var sourceDir = Path.Combine(_tempDirectory!, "source");
+            var destDir = Path.Combine(_tempDirectory!, "dest");
+            Directory.CreateDirectory(sourceDir);
+
+            // Create test files
+            File.WriteAllText(Path.Combine(sourceDir, "index.mdx"), "content");
+            File.WriteAllText(Path.Combine(sourceDir, "test.mdz"), "content");
+            File.WriteAllText(Path.Combine(sourceDir, "style.css"), "content");
+            File.WriteAllText(Path.Combine(sourceDir, "docs.json"), "content");
+
+            var manager = GetDocumentationManager();
+            var exclusionPatterns = new List<string> { "**/*.mdz", "**/*.css", "docs.json" };
+
+            // Act
+            await manager.CopyDirectoryWithExclusionsAsync(sourceDir, destDir, exclusionPatterns);
+
+            // Assert
+            File.Exists(Path.Combine(destDir, "index.mdx")).Should().BeTrue("index.mdx should be copied");
+            File.Exists(Path.Combine(destDir, "test.mdz")).Should().BeFalse("test.mdz should be excluded");
+            File.Exists(Path.Combine(destDir, "style.css")).Should().BeFalse("style.css should be excluded");
+            File.Exists(Path.Combine(destDir, "docs.json")).Should().BeFalse("docs.json should be excluded");
+        }
+
+        [TestMethod]
+        public async Task CopyDirectoryWithExclusionsAsync_CopiesNestedDirectories()
+        {
+            // Arrange
+            var sourceDir = Path.Combine(_tempDirectory!, "source2");
+            var destDir = Path.Combine(_tempDirectory!, "dest2");
+            Directory.CreateDirectory(sourceDir);
+            Directory.CreateDirectory(Path.Combine(sourceDir, "api-reference"));
+            Directory.CreateDirectory(Path.Combine(sourceDir, "conceptual"));
+
+            // Create test files
+            File.WriteAllText(Path.Combine(sourceDir, "index.mdx"), "content");
+            File.WriteAllText(Path.Combine(sourceDir, "api-reference", "class.md"), "content");
+            File.WriteAllText(Path.Combine(sourceDir, "conceptual", "guide.md"), "content");
+
+            var manager = GetDocumentationManager();
+            var exclusionPatterns = new List<string> { "conceptual/**/*" };
+
+            // Act
+            await manager.CopyDirectoryWithExclusionsAsync(sourceDir, destDir, exclusionPatterns);
+
+            // Assert
+            File.Exists(Path.Combine(destDir, "index.mdx")).Should().BeTrue("index.mdx should be copied");
+            File.Exists(Path.Combine(destDir, "api-reference", "class.md")).Should().BeTrue("api-reference/class.md should be copied");
+            Directory.Exists(Path.Combine(destDir, "conceptual")).Should().BeTrue("conceptual directory should exist");
+            File.Exists(Path.Combine(destDir, "conceptual", "guide.md")).Should().BeFalse("conceptual/guide.md should be excluded");
+        }
+
+        [TestMethod]
+        public void MatchesGlobPattern_WithVariousPatterns_MatchesCorrectly()
+        {
+            // Arrange
+            var manager = GetDocumentationManager();
+
+            // Act & Assert
+            // Test **/*.ext pattern
+            manager.MatchesGlobPattern("file.mdz", "**/*.mdz").Should().BeTrue();
+            manager.MatchesGlobPattern("path/file.mdz", "**/*.mdz").Should().BeTrue();
+            manager.MatchesGlobPattern("deep/nested/file.mdz", "**/*.mdz").Should().BeTrue();
+            manager.MatchesGlobPattern("file.md", "**/*.mdz").Should().BeFalse();
+
+            // Test directory/**/* pattern
+            manager.MatchesGlobPattern("conceptual/file.md", "conceptual/**/*").Should().BeTrue();
+            manager.MatchesGlobPattern("conceptual/nested/file.md", "conceptual/**/*").Should().BeTrue();
+            manager.MatchesGlobPattern("api-reference/file.md", "conceptual/**/*").Should().BeFalse();
+
+            // Test exact match
+            manager.MatchesGlobPattern("docs.json", "docs.json").Should().BeTrue();
+            manager.MatchesGlobPattern("nested/docs.json", "docs.json").Should().BeFalse();
+
+            // Test *.ext pattern
+            manager.MatchesGlobPattern("file.css", "*.css").Should().BeTrue();
+            manager.MatchesGlobPattern("path/file.css", "*.css").Should().BeTrue();
+            manager.MatchesGlobPattern("file.scss", "*.css").Should().BeFalse();
+        }
+
         #endregion
 
         #region Setup and Cleanup

@@ -125,6 +125,16 @@ Add `<DocumentationReference>` items to your collection's `.docsproj` file, simi
   ```
 </ParamField>
 
+<ParamField path="Name" type="string">
+  Custom display name for this documentation in navigation. If not specified, the project file name (without extension) will be used.
+
+  ```xml
+  Name="User Management Service"
+  ```
+
+  This is especially useful when project file names aren't user-friendly (e.g., `ServiceA.docsproj` can display as "Authentication Service").
+</ParamField>
+
 ## Integration Types
 
 Mintlify supports two ways to integrate referenced documentation into your navigation structure.
@@ -137,10 +147,12 @@ Tabs appear as top-level navigation items in your documentation site. This is th
 <ItemGroup>
   <DocumentationReference Include="../UserService/UserService.docsproj"
                          DestinationPath="services/users"
-                         IntegrationType="Tabs" />
+                         IntegrationType="Tabs"
+                         Name="User Management" />
   <DocumentationReference Include="../OrderService/OrderService.docsproj"
                          DestinationPath="services/orders"
-                         IntegrationType="Tabs" />
+                         IntegrationType="Tabs"
+                         Name="Order Processing" />
 </ItemGroup>
 ```
 
@@ -150,7 +162,7 @@ Tabs appear as top-level navigation items in your documentation site. This is th
   "name": "Microservices Platform",
   "tabs": [
     {
-      "tab": "UserService",
+      "tab": "User Management",
       "href": "services/users",
       "pages": [
         "services/users/introduction",
@@ -159,7 +171,7 @@ Tabs appear as top-level navigation items in your documentation site. This is th
       ]
     },
     {
-      "tab": "OrderService",
+      "tab": "Order Processing",
       "href": "services/orders",
       "pages": [
         "services/orders/introduction",
@@ -171,6 +183,10 @@ Tabs appear as top-level navigation items in your documentation site. This is th
 }
 ```
 
+<Note>
+  If you omit the `Name` attribute, the project file name is used (e.g., "UserService" and "OrderService").
+</Note>
+
 ### Products Integration
 
 Products are designed for multi-product documentation portals where each product has its own complete documentation set.
@@ -179,13 +195,16 @@ Products are designed for multi-product documentation portals where each product
 <ItemGroup>
   <DocumentationReference Include="../Core/Core.docsproj"
                          DestinationPath="core"
-                         IntegrationType="Products" />
+                         IntegrationType="Products"
+                         Name="EasyAF Core" />
   <DocumentationReference Include="../Http/Http.docsproj"
                          DestinationPath="http"
-                         IntegrationType="Products" />
+                         IntegrationType="Products"
+                         Name="HTTP Client" />
   <DocumentationReference Include="../Validation/Validation.docsproj"
                          DestinationPath="validation"
-                         IntegrationType="Products" />
+                         IntegrationType="Products"
+                         Name="Validation Framework" />
 </ItemGroup>
 ```
 
@@ -196,14 +215,20 @@ Products are designed for multi-product documentation portals where each product
   "navigation": {
     "products": [
       {
-        "product": "Core",
+        "product": "EasyAF Core",
         "href": "core",
         "pages": [...],
         "groups": [...]
       },
       {
-        "product": "Http",
+        "product": "HTTP Client",
         "href": "http",
+        "pages": [...],
+        "groups": [...]
+      },
+      {
+        "product": "Validation Framework",
+        "href": "validation",
         "pages": [...],
         "groups": [...]
       }
@@ -274,19 +299,23 @@ Create a unified documentation portal for a microservices architecture:
   </PropertyGroup>
 
   <ItemGroup>
-    <!-- Reference individual service documentation -->
+    <!-- Reference individual service documentation with custom names -->
     <DocumentationReference Include="../services/UserService/UserService.docsproj"
                            DestinationPath="services/users"
-                           IntegrationType="Tabs" />
+                           IntegrationType="Tabs"
+                           Name="User Management" />
     <DocumentationReference Include="../services/OrderService/OrderService.docsproj"
                            DestinationPath="services/orders"
-                           IntegrationType="Tabs" />
+                           IntegrationType="Tabs"
+                           Name="Order Processing" />
     <DocumentationReference Include="../services/PaymentService/PaymentService.docsproj"
                            DestinationPath="services/payments"
-                           IntegrationType="Tabs" />
+                           IntegrationType="Tabs"
+                           Name="Payments" />
     <DocumentationReference Include="../services/NotificationService/NotificationService.docsproj"
                            DestinationPath="services/notifications"
-                           IntegrationType="Tabs" />
+                           IntegrationType="Tabs"
+                           Name="Notifications" />
   </ItemGroup>
 </Project>
 ```
@@ -352,16 +381,19 @@ Create a unified portal for related open-source products:
   </PropertyGroup>
 
   <ItemGroup>
-    <!-- Reference separate product repositories -->
+    <!-- Reference separate product repositories with custom names -->
     <DocumentationReference Include="../../EasyAF.Core/docs/EasyAF.Core.docsproj"
                            DestinationPath="core"
-                           IntegrationType="Products" />
+                           IntegrationType="Products"
+                           Name="Core Framework" />
     <DocumentationReference Include="../../EasyAF.Http/docs/EasyAF.Http.docsproj"
                            DestinationPath="http"
-                           IntegrationType="Products" />
+                           IntegrationType="Products"
+                           Name="HTTP Client" />
     <DocumentationReference Include="../../EasyAF.Validation/docs/EasyAF.Validation.docsproj"
                            DestinationPath="validation"
-                           IntegrationType="Products" />
+                           IntegrationType="Products"
+                           Name="Validation" />
   </ItemGroup>
 </Project>
 ```

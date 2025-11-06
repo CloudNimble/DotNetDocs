@@ -50,6 +50,16 @@ namespace CloudNimble.DotNetDocs.Core
         public string IntegrationType { get; set; } = "Tabs";
 
         /// <summary>
+        /// Gets or sets the display name for this documentation reference in navigation.
+        /// </summary>
+        /// <value>The name to display for this documentation in tabs, products, or other navigation structures.</value>
+        /// <remarks>
+        /// When specified, this name is used instead of deriving the name from the project or other metadata.
+        /// Useful for providing user-friendly names in navigation elements.
+        /// </remarks>
+        public string? Name { get; set; }
+
+        /// <summary>
         /// Gets or sets the path to the navigation configuration file for the referenced documentation.
         /// </summary>
         /// <value>The absolute path to the navigation file (e.g., docs.json for Mintlify).</value>

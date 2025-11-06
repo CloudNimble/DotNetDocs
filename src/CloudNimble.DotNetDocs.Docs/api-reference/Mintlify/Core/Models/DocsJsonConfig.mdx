@@ -321,49 +321,6 @@ Type: `Mintlify.Core.Models.NavigationConfig`
 
 This is a required field that defines the structure of your documentation.
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  NavigationName
-
-Gets or sets the navigation name/title for this documentation project when NavigationType is "Tabs" or "Products".
-
-#### Syntax
-
-```csharp
-public string NavigationName { get; set; }
-```
-
-#### Property Value
-
-Type: `string?`
-The display name for the tab or product. If not specified, the project name will be used.
-
-#### Remarks
-
-This property is NOT serialized to docs.json. It's used internally during documentation generation.
-
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  NavigationType
-
-Gets or sets the navigation type for this documentation project.
-
-#### Syntax
-
-```csharp
-public string NavigationType { get; set; }
-```
-
-#### Property Value
-
-Type: `string`
-The navigation type. Valid values are "Pages" (default), "Tabs", or "Products".
-            When set to "Pages", the documentation appears in the main navigation.
-            When set to "Tabs", the documentation appears as a top-level tab.
-            When set to "Products", the documentation appears as a product in the products section.
-
-#### Remarks
-
-This property is NOT serialized to docs.json. It's used internally during documentation generation
-            to control how the navigation structure is organized. This is typically set via the MintlifyTemplate
-            in .docsproj files and applies to the root project. Referenced projects use IntegrationType metadata.
-
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Redirects
 
 Gets or sets the redirects.
