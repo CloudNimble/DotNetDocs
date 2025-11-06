@@ -2,7 +2,6 @@ using System;
 using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
-using CloudNimble.Breakdance.Assemblies;
 using CloudNimble.DotNetDocs.Core;
 using CloudNimble.DotNetDocs.Core.Configuration;
 using CloudNimble.DotNetDocs.Mintlify;
@@ -151,7 +150,7 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             var config = JsonSerializer.Deserialize<DocsJsonConfig>(json, MintlifyConstants.JsonSerializerOptions);
 
             config.Should().NotBeNull();
-            config!.Navigation.Pages.Should().BeEmpty("Pages should be empty when using Tabs");
+            config!.Navigation.Pages.Should().BeNull("Pages should be empty when using Tabs");
             config.Navigation.Tabs.Should().NotBeNullOrEmpty("Tabs should contain the navigation");
             config.Navigation.Tabs![0].Tab.Should().Be("Test API");
             config.Navigation.Tabs[0].Pages.Should().NotBeNullOrEmpty();
@@ -222,7 +221,7 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             var config = JsonSerializer.Deserialize<DocsJsonConfig>(json, MintlifyConstants.JsonSerializerOptions);
 
             config.Should().NotBeNull();
-            config!.Navigation.Pages.Should().BeEmpty("Pages should be empty when using Products");
+            config!.Navigation.Pages.Should().BeNull("Pages should be null when using Products");
             config.Navigation.Products.Should().NotBeNullOrEmpty("Products should contain the navigation");
             config.Navigation.Products![0].Product.Should().Be("Test Product");
             config.Navigation.Products[0].Pages.Should().NotBeNullOrEmpty();

@@ -102,7 +102,7 @@ namespace Mintlify.Core.Converters
             // Manually write the object to avoid infinite recursion
             writer.WriteStartObject();
 
-            if (value.Pages is not null)
+            if (value.Pages is not null && value.Pages.Count > 0)
             {
                 writer.WritePropertyName("pages");
                 var converter = new NavigationPageListConverter();

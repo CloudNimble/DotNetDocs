@@ -1,6 +1,4 @@
-using System;
 using System.Linq;
-using System.Threading.Tasks;
 using CloudNimble.DotNetDocs.Core;
 using CloudNimble.DotNetDocs.Tests.Shared;
 using CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios;
