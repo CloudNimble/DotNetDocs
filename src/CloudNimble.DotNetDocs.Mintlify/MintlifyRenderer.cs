@@ -174,7 +174,7 @@ namespace CloudNimble.DotNetDocs.Mintlify
 
             // Note: Index page handling is now done by PopulateNavigationFromPath
 
-            if (_options.NavigationMode == NavigationMode.Unified)
+            if (_options.Navigation.Mode == NavigationMode.Unified)
             {
                 // Find or create the API Reference group - smart merging with template
                 var apiReferenceGroup = FindOrCreateApiReferenceGroup(config);
@@ -1708,10 +1708,10 @@ export function DocsBadge({ text, variant = 'neutral' }) {
                 return;
             }
 
-            var navigationType = _options.Template.NavigationType?.Trim() ?? "Pages";
+            var navigationType = _options.Navigation.Type;
 
             // If NavigationType is Pages (default), do nothing
-            if (navigationType.Equals("Pages", StringComparison.OrdinalIgnoreCase))
+            if (navigationType == NavigationType.Pages)
             {
                 return;
             }
@@ -1721,12 +1721,12 @@ export function DocsBadge({ text, variant = 'neutral' }) {
             var currentGroups = _docsJsonManager.Configuration.Navigation.Groups;
 
             // Determine the name for the root project
-            var rootName = !string.IsNullOrWhiteSpace(_options.Template.NavigationName)
-                ? _options.Template.NavigationName
+            var rootName = !string.IsNullOrWhiteSpace(_options.Navigation.Name)
+                ? _options.Navigation.Name
                 : _options.Template.Name ?? "Documentation";
 
             // Move to Tabs or Products based on setting
-            if (navigationType.Equals("Tabs", StringComparison.OrdinalIgnoreCase))
+            if (navigationType == NavigationType.Tabs)
             {
                 // Initialize Tabs if needed
                 _docsJsonManager.Configuration.Navigation.Tabs ??= [];
@@ -1741,7 +1741,7 @@ export function DocsBadge({ text, variant = 'neutral' }) {
                 // Clear the Pages array since content is now in Tabs
                 _docsJsonManager.Configuration.Navigation.Pages = [];
             }
-            else if (navigationType.Equals("Products", StringComparison.OrdinalIgnoreCase))
+            else if (navigationType == NavigationType.Products)
             {
                 // Initialize Products if needed
                 _docsJsonManager.Configuration.Navigation.Products ??= [];

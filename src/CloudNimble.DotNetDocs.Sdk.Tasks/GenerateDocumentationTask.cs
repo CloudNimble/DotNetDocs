@@ -179,12 +179,12 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
                             options.GenerateNamespaceIndex = true;
                             options.IncludeIcons = true;
 
-                            // Parse navigation mode
+                            // Parse navigation mode from property (legacy support)
                             if (!string.IsNullOrWhiteSpace(MintlifyNavigationMode))
                             {
                                 if (Enum.TryParse<NavigationMode>(MintlifyNavigationMode, true, out var navMode))
                                 {
-                                    options.NavigationMode = navMode;
+                                    options.Navigation.Mode = navMode;
                                     Log.LogMessage(MessageImportance.Normal, $"   Using navigation mode: {navMode}");
                                 }
                                 else
@@ -202,11 +202,14 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
 
                             // Load template from XML or file
                             DocsJsonConfig? template = null;
-                            
+                            DocsNavigationConfig? docsNavConfig = null;
+
                             // First try inline XML template
                             if (!string.IsNullOrWhiteSpace(MintlifyTemplate))
                             {
-                                template = ParseMintlifyTemplate(MintlifyTemplate);
+                                var (parsedTemplate, parsedNavConfig) = ParseMintlifyTemplate(MintlifyTemplate);
+                                template = parsedTemplate;
+                                docsNavConfig = parsedNavConfig;
                                 if (template is not null)
                                 {
                                     Log.LogMessage(MessageImportance.Normal, "   Loaded Mintlify template from inline XML");
@@ -242,6 +245,13 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
                             if (template is not null)
                             {
                                 options.Template = template;
+                            }
+
+                            // Apply DocsNavigationConfig if parsed from template
+                            if (docsNavConfig is not null)
+                            {
+                                options.Navigation = docsNavConfig;
+                                Log.LogMessage(MessageImportance.Normal, $"   Using navigation config: Mode={docsNavConfig.Mode}, Type={docsNavConfig.Type}");
                             }
                         });
                         break;
@@ -361,7 +371,7 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
         /// </summary>
         /// <param name="xmlTemplate">The XML template string.</param>
         /// <returns>A DocsJsonConfig instance, or null if parsing fails.</returns>
-        internal DocsJsonConfig? ParseMintlifyTemplate(string xmlTemplate)
+        internal (DocsJsonConfig? config, DocsNavigationConfig? navConfig) ParseMintlifyTemplate(string xmlTemplate)
         {
             try
             {
@@ -371,7 +381,7 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
                 if (root is null)
                 {
                     Log.LogWarning("Failed to parse MintlifyTemplate XML: root element is null");
-                    return null;
+                    return (null, null);
                 }
 
                 // Get the name with fallback to solution name
@@ -385,10 +395,11 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
                 {
                     Name = nameValue ?? "API Documentation",
                     Description = root.Element("Description")?.Value,
-                    Theme = root.Element("Theme")?.Value ?? "mint",
-                    NavigationType = root.Element("NavigationType")?.Value ?? "Pages",
-                    NavigationName = root.Element("NavigationName")?.Value
+                    Theme = root.Element("Theme")?.Value ?? "mint"
                 };
+
+                // Parse DocsNavigationConfig from Navigation element attributes and legacy elements
+                var docsNavConfig = ParseDocsNavigationConfig(root);
 
                 // Parse Colors
                 var colorsElement = root.Element("Colors");
@@ -441,7 +452,7 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
                     }
                 }
 
-                // Parse Navigation
+                // Parse Navigation structure
                 var navigationElement = root.Element("Navigation");
                 if (navigationElement is not null)
                 {
@@ -476,13 +487,84 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
                     config.Interaction = ParseInteractionConfig(interactionElement);
                 }
 
-                return config;
+                return (config, docsNavConfig);
             }
             catch (Exception ex)
             {
                 Log.LogWarning($"Failed to parse MintlifyTemplate XML: {ex.Message}");
-                return null;
+                return (null, null);
             }
+        }
+
+        /// <summary>
+        /// Parses the DocsNavigationConfig from the root element.
+        /// Supports both new attribute-based format and legacy element-based format.
+        /// </summary>
+        /// <param name="root">The root XML element.</param>
+        /// <returns>A DocsNavigationConfig instance.</returns>
+        internal DocsNavigationConfig ParseDocsNavigationConfig(XElement root)
+        {
+            var navConfig = new DocsNavigationConfig();
+            var navigationElement = root.Element("Navigation");
+
+            // Try new attribute-based format first
+            if (navigationElement is not null)
+            {
+                // Parse Mode attribute
+                var modeAttr = navigationElement.Attribute("Mode")?.Value;
+                if (!string.IsNullOrWhiteSpace(modeAttr))
+                {
+                    if (Enum.TryParse<NavigationMode>(modeAttr, true, out var mode))
+                    {
+                        navConfig.Mode = mode;
+                    }
+                }
+
+                // Parse Type attribute
+                var typeAttr = navigationElement.Attribute("Type")?.Value;
+                if (!string.IsNullOrWhiteSpace(typeAttr))
+                {
+                    if (Enum.TryParse<NavigationType>(typeAttr, true, out var type))
+                    {
+                        navConfig.Type = type;
+                    }
+                }
+
+                // Parse Name attribute
+                var nameAttr = navigationElement.Attribute("Name")?.Value;
+                if (!string.IsNullOrWhiteSpace(nameAttr))
+                {
+                    navConfig.Name = nameAttr;
+                }
+            }
+
+            // Fall back to legacy element-based format for backward compatibility
+            if (navigationElement is null || (navigationElement.Attribute("Mode") is null &&
+                                              navigationElement.Attribute("Type") is null &&
+                                              navigationElement.Attribute("Name") is null))
+            {
+                // Try NavigationType legacy element
+                var navTypeElement = root.Element("NavigationType");
+                if (navTypeElement is not null && !string.IsNullOrWhiteSpace(navTypeElement.Value))
+                {
+                    if (Enum.TryParse<NavigationType>(navTypeElement.Value, true, out var type))
+                    {
+                        navConfig.Type = type;
+                    }
+                }
+
+                // Try NavigationName legacy element
+                var navNameElement = root.Element("NavigationName");
+                if (navNameElement is not null && !string.IsNullOrWhiteSpace(navNameElement.Value))
+                {
+                    navConfig.Name = navNameElement.Value;
+                }
+
+                // Note: NavigationMode was previously handled separately via MintlifyNavigationMode property,
+                // so we don't need a legacy element for it here
+            }
+
+            return navConfig;
         }
 
         /// <summary>

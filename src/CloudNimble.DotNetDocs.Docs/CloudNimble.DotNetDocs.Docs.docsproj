@@ -1,80 +1,80 @@
-﻿<Project Sdk="DotNetDocs.Sdk/1.1.0-preview.4">
+﻿<Project Sdk="DotNetDocs.Sdk/1.1.0-preview.5">
 
-	<PropertyGroup>
-		<DocumentationType>Mintlify</DocumentationType>
-		<GenerateDocumentation>true</GenerateDocumentation>
-		<NamespaceMode>Folder</NamespaceMode>
-		<ShowDocumentationStats>true</ShowDocumentationStats>
-		<!-- Exclude test projects from documentation -->
-		<ExcludePatterns>Tests.Shared;*.Sdk</ExcludePatterns>
+    <PropertyGroup>
+        <DocumentationType>Mintlify</DocumentationType>
+        <GenerateDocumentation>true</GenerateDocumentation>
+        <NamespaceMode>Folder</NamespaceMode>
+        <ShowDocumentationStats>true</ShowDocumentationStats>
+        <!-- Exclude test projects from documentation -->
+        <ExcludePatterns>Tests.Shared;*.Sdk</ExcludePatterns>
 
-		<ConceptualDocsEnabled>true</ConceptualDocsEnabled>
-		<ShowPlaceholders>false</ShowPlaceholders>
+        <ConceptualDocsEnabled>true</ConceptualDocsEnabled>
+        <ShowPlaceholders>false</ShowPlaceholders>
 
-		<MintlifyNavigationMode>Unified</MintlifyNavigationMode>
-		<MintlifyTemplate>
-			<Name>DotNetDocs</Name>
-			<Theme>maple</Theme>
-			<Colors>
-				<Primary>#419AC5</Primary>
-				<Light>#419AC5</Light>
-				<Dark>#3CD0E2</Dark>
-			</Colors>
-			<Logo>
-				<Light>/images/logos/dotnetdocs.light.svg</Light>
-				<Dark>/images/logos/dotnetdocs.dark.svg</Dark>
-			</Logo>
-			<Favicon>
-				<Light>/images/icons/favicon-96x96.png</Light>
-				<Dark>/images/icons/favicon-96x96.png</Dark>
-			</Favicon>
+        <MintlifyNavigationMode>Unified</MintlifyNavigationMode>
+        <MintlifyTemplate>
+            <Name>DotNetDocs</Name>
+            <Theme>maple</Theme>
+            <Colors>
+                <Primary>#419AC5</Primary>
+                <Light>#419AC5</Light>
+                <Dark>#3CD0E2</Dark>
+            </Colors>
+            <Logo>
+                <Light>/images/logos/dotnetdocs.light.svg</Light>
+                <Dark>/images/logos/dotnetdocs.dark.svg</Dark>
+            </Logo>
+            <Favicon>
+                <Light>/images/icons/favicon-96x96.png</Light>
+                <Dark>/images/icons/favicon-96x96.png</Dark>
+            </Favicon>
             <Appearance>
                 <Default>dark</Default>
-			</Appearance>
+            </Appearance>
             <Styling>
                 <CodeBlocks>dark</CodeBlocks>
-			</Styling>
-			<Navigation>
-				<Pages>
-					<Groups>
-						<Group Name="Getting Started" Icon="stars">
-							<Pages>index;why-dotnetdocs;quickstart</Pages>
-						</Group>
-						<Group Name="Guides" Icon="dog-leashed">
-							<Pages>guides/index;guides/pipeline;guides/conceptual-docs;guides/deployment</Pages>
-						</Group>
-						<Group Name="Providers" Icon="books">
-							<Pages>providers/index</Pages>
-							<Groups>
-								<Group Name="Mintlify" Icon="/images/icons/mintlify.svg" Tag="PARTNER">
-									<Pages>providers/mintlify/index;providers/mintlify/navigation;providers/mintlify/dotnet-library</Pages>
-								</Group>
-							</Groups>
-						</Group>
-						<Group Name="Plugins" Icon="outlet">
-							<Pages>plugins/index</Pages>
-						</Group>
-						<Group Name="Learnings" Icon="chalkboard-user">
-							<Pages>learnings/bridge-assemblies;learnings/sdk-packaging</Pages>
-						</Group>
-					</Groups>
-				</Pages>
-			</Navigation>
+            </Styling>
+            <Navigation>
+                <Pages>
+                    <Groups>
+                        <Group Name="Getting Started" Icon="stars">
+                            <Pages>index;why-dotnetdocs;quickstart</Pages>
+                        </Group>
+                        <Group Name="Guides" Icon="dog-leashed">
+                            <Pages>guides/index;guides/pipeline;guides/conceptual-docs;guides/deployment</Pages>
+                        </Group>
+                        <Group Name="Providers" Icon="books">
+                            <Pages>providers/index</Pages>
+                            <Groups>
+                                <Group Name="Mintlify" Icon="/images/icons/mintlify.svg" Tag="PARTNER">
+                                    <Pages>providers/mintlify/index;providers/mintlify/navigation;providers/mintlify/dotnet-library</Pages>
+                                </Group>
+                            </Groups>
+                        </Group>
+                        <Group Name="Plugins" Icon="outlet">
+                            <Pages>plugins/index</Pages>
+                        </Group>
+                        <Group Name="Learnings" Icon="chalkboard-user">
+                            <Pages>learnings/bridge-assemblies;learnings/sdk-packaging</Pages>
+                        </Group>
+                    </Groups>
+                </Pages>
+            </Navigation>
             <Interaction>
                 <Drilldown>true</Drilldown>
             </Interaction>
             <Integrations>
                 <GoogleAnalytics4 MeasurementId="G-QZLKD91M9D" />
-			</Integrations>
-		</MintlifyTemplate>
-	</PropertyGroup>
+            </Integrations>
+        </MintlifyTemplate>
+    </PropertyGroup>
 
-	<ItemGroup>
-	  <None Include="guides\collections.mdx" />
-	</ItemGroup>
+    <ItemGroup>
+        <None Include="guides\collections.mdx" />
+    </ItemGroup>
 
-	<ItemGroup>
-	  <None Update="D:\GitHub\DotNetDocs\src\dotnetdocs-logo.png" Link="images\logos\dotnetdocs-logo.png" />
-	</ItemGroup>
+    <ItemGroup>
+        <None Update="D:\GitHub\DotNetDocs\src\dotnetdocs-logo.png" Link="images\logos\dotnetdocs-logo.png" />
+    </ItemGroup>
 
 </Project>

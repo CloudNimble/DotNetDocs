@@ -126,6 +126,44 @@ public CloudNimble.DotNetDocs.Mintlify.NavigationMode NavigationMode { get; set;
 Type: `CloudNimble.DotNetDocs.Mintlify.NavigationMode`
 The navigation organization mode. Default is NavigationMode.Unified.
 
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  RootIntegrationName
+
+Gets or sets the name/title for the root project when RootIntegrationType is "Tabs" or "Products".
+
+#### Syntax
+
+```csharp
+public string RootIntegrationName { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+The display name for the root project tab or product. If not specified, the project name will be used.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  RootIntegrationType
+
+Gets or sets the integration type for the root project's navigation.
+
+#### Syntax
+
+```csharp
+public string RootIntegrationType { get; set; }
+```
+
+#### Property Value
+
+Type: `string`
+The integration type for the root project. Valid values are "Pages" (default), "Tabs", or "Products".
+            When set to "Pages", the root project appears in the main navigation.
+            When set to "Tabs", the root project appears as a top-level tab.
+            When set to "Products", the root project appears as a product in the products section.
+
+#### Remarks
+
+This property controls how the root project's documentation is integrated into the navigation structure.
+            Referenced projects use the IntegrationType specified in their DocumentationReference metadata.
+
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Template
 
 Gets or sets a custom template for the docs.json configuration.

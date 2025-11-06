@@ -191,35 +191,6 @@ namespace Mintlify.Core.Models
         [JsonPropertyName("thumbnails")]
         public Dictionary<string, string>? Thumbnails { get; set; }
 
-        /// <summary>
-        /// Gets or sets the navigation type for this documentation project.
-        /// </summary>
-        /// <value>
-        /// The navigation type. Valid values are "Pages" (default), "Tabs", or "Products".
-        /// When set to "Pages", the documentation appears in the main navigation.
-        /// When set to "Tabs", the documentation appears as a top-level tab.
-        /// When set to "Products", the documentation appears as a product in the products section.
-        /// </value>
-        /// <remarks>
-        /// This property is NOT serialized to docs.json. It's used internally during documentation generation
-        /// to control how the navigation structure is organized. This is typically set via the MintlifyTemplate
-        /// in .docsproj files and applies to the root project. Referenced projects use IntegrationType metadata.
-        /// </remarks>
-        [JsonIgnore]
-        public string NavigationType { get; set; } = "Pages";
-
-        /// <summary>
-        /// Gets or sets the navigation name/title for this documentation project when NavigationType is "Tabs" or "Products".
-        /// </summary>
-        /// <value>
-        /// The display name for the tab or product. If not specified, the project name will be used.
-        /// </value>
-        /// <remarks>
-        /// This property is NOT serialized to docs.json. It's used internally during documentation generation.
-        /// </remarks>
-        [JsonIgnore]
-        public string? NavigationName { get; set; }
-
         #endregion
 
     }

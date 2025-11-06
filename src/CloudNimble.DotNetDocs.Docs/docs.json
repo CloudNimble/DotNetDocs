@@ -13,6 +13,9 @@
       "measurementId": "G-QZLKD91M9D"
     }
   },
+  "interaction": {
+    "drilldown": true
+  },
   "logo": {
     "dark": "/images/logos/dotnetdocs.dark.svg",
     "light": "/images/logos/dotnetdocs.light.svg"
@@ -166,7 +169,15 @@
                       "api-reference/CloudNimble/DotNetDocs/Mintlify/MintlifyIcons",
                       "api-reference/CloudNimble/DotNetDocs/Mintlify/MintlifyRenderer",
                       "api-reference/CloudNimble/DotNetDocs/Mintlify/MintlifyRendererOptions",
-                      "api-reference/CloudNimble/DotNetDocs/Mintlify/NavigationMode"
+                      "api-reference/CloudNimble/DotNetDocs/Mintlify/NavigationMode",
+                      {
+                        "group": "Transformers",
+                        "icon": "folder-tree",
+                        "pages": [
+                          "api-reference/CloudNimble/DotNetDocs/Mintlify/Transformers/index",
+                          "api-reference/CloudNimble/DotNetDocs/Mintlify/Transformers/MintlifyMarkdownTransformer"
+                        ]
+                      }
                     ]
                   },
                   {

@@ -35,10 +35,10 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
         #region Helper Methods
 
         /// <summary>
-        /// Configures test host with a specific template configuration.
-        /// This must be called before TestSetup() to ensure the template is configured before services are built.
+        /// Configures test host with a specific template and navigation configuration.
+        /// This must be called before TestSetup() to ensure the configuration is set before services are built.
         /// </summary>
-        private void ConfigureTestWithTemplate(DocsJsonConfig? template)
+        private void ConfigureTestWithTemplate(DocsJsonConfig? template, DocsNavigationConfig? navConfig = null)
         {
             _testOutputPath = Path.Combine(Path.GetTempPath(), $"MintlifyNavigationTypeTest_{Guid.NewGuid()}");
             Directory.CreateDirectory(_testOutputPath);
@@ -50,6 +50,10 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
                     pipeline.UseMintlifyRenderer(options =>
                     {
                         options.Template = template;
+                        if (navConfig is not null)
+                        {
+                            options.Navigation = navConfig;
+                        }
                     })
                     .ConfigureContext(ctx =>
                     {
@@ -85,13 +89,17 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
         public async Task ApplyNavigationType_WithPagesDefault_DoesNotMoveNavigation()
         {
             // Arrange
-            ConfigureTestWithTemplate(new DocsJsonConfig
-            {
-                Name = "Test",
-                NavigationType = "Pages", // Default
-                Theme = "mint",
-                Colors = new ColorsConfig { Primary = "#000000" }
-            });
+            ConfigureTestWithTemplate(
+                new DocsJsonConfig
+                {
+                    Name = "Test",
+                    Theme = "mint",
+                    Colors = new ColorsConfig { Primary = "#000000" }
+                },
+                new DocsNavigationConfig
+                {
+                    Type = NavigationType.Pages // Default
+                });
 
             var assemblyPath = typeof(SimpleClass).Assembly.Location;
             var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
@@ -116,13 +124,17 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
         public async Task ApplyNavigationType_WithTabs_MovesNavigationToTabs()
         {
             // Arrange
-            ConfigureTestWithTemplate(new DocsJsonConfig
-            {
-                Name = "Test API",
-                NavigationType = "Tabs",
-                Theme = "mint",
-                Colors = new ColorsConfig { Primary = "#000000" }
-            });
+            ConfigureTestWithTemplate(
+                new DocsJsonConfig
+                {
+                    Name = "Test API",
+                    Theme = "mint",
+                    Colors = new ColorsConfig { Primary = "#000000" }
+                },
+                new DocsNavigationConfig
+                {
+                    Type = NavigationType.Tabs
+                });
 
             var assemblyPath = typeof(SimpleClass).Assembly.Location;
             var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
@@ -149,14 +161,18 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
         public async Task ApplyNavigationType_WithTabsAndCustomName_UsesCustomName()
         {
             // Arrange
-            ConfigureTestWithTemplate(new DocsJsonConfig
-            {
-                Name = "Test API",
-                NavigationType = "Tabs",
-                NavigationName = "Custom Tab Name",
-                Theme = "mint",
-                Colors = new ColorsConfig { Primary = "#000000" }
-            });
+            ConfigureTestWithTemplate(
+                new DocsJsonConfig
+                {
+                    Name = "Test API",
+                    Theme = "mint",
+                    Colors = new ColorsConfig { Primary = "#000000" }
+                },
+                new DocsNavigationConfig
+                {
+                    Type = NavigationType.Tabs,
+                    Name = "Custom Tab Name"
+                });
 
             var assemblyPath = typeof(SimpleClass).Assembly.Location;
             var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
@@ -179,13 +195,17 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
         public async Task ApplyNavigationType_WithProducts_MovesNavigationToProducts()
         {
             // Arrange
-            ConfigureTestWithTemplate(new DocsJsonConfig
-            {
-                Name = "Test Product",
-                NavigationType = "Products",
-                Theme = "mint",
-                Colors = new ColorsConfig { Primary = "#000000" }
-            });
+            ConfigureTestWithTemplate(
+                new DocsJsonConfig
+                {
+                    Name = "Test Product",
+                    Theme = "mint",
+                    Colors = new ColorsConfig { Primary = "#000000" }
+                },
+                new DocsNavigationConfig
+                {
+                    Type = NavigationType.Products
+                });
 
             var assemblyPath = typeof(SimpleClass).Assembly.Location;
             var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
@@ -228,11 +248,10 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
         [TestMethod]
         public async Task ApplyNavigationType_WithEmptyNavigationType_UsesDefaultBehavior()
         {
-            // Arrange
+            // Arrange - Use default NavigationType.Pages
             ConfigureTestWithTemplate(new DocsJsonConfig
             {
                 Name = "Test",
-                NavigationType = "", // Empty string
                 Theme = "mint",
                 Colors = new ColorsConfig { Primary = "#000000" }
             });
@@ -256,14 +275,18 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
         [TestMethod]
         public async Task ApplyNavigationType_WithCaseInsensitiveType_Works()
         {
-            // Arrange
-            ConfigureTestWithTemplate(new DocsJsonConfig
-            {
-                Name = "Test",
-                NavigationType = "tabs", // lowercase
-                Theme = "mint",
-                Colors = new ColorsConfig { Primary = "#000000" }
-            });
+            // Arrange - Enum is already case-insensitive by design
+            ConfigureTestWithTemplate(
+                new DocsJsonConfig
+                {
+                    Name = "Test",
+                    Theme = "mint",
+                    Colors = new ColorsConfig { Primary = "#000000" }
+                },
+                new DocsNavigationConfig
+                {
+                    Type = NavigationType.Tabs
+                });
 
             var assemblyPath = typeof(SimpleClass).Assembly.Location;
             var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
@@ -284,11 +307,10 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
         [TestMethod]
         public async Task ApplyNavigationType_WithInvalidType_UsesDefaultBehavior()
         {
-            // Arrange
+            // Arrange - Enums prevent invalid values at compile time, so this test uses default
             ConfigureTestWithTemplate(new DocsJsonConfig
             {
                 Name = "Test",
-                NavigationType = "InvalidType",
                 Theme = "mint",
                 Colors = new ColorsConfig { Primary = "#000000" }
             });

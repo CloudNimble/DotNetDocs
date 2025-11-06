@@ -2,6 +2,7 @@ using System;
 using CloudNimble.DotNetDocs.Core;
 using CloudNimble.DotNetDocs.Core.Transformers;
 using CloudNimble.DotNetDocs.Mintlify;
+using CloudNimble.DotNetDocs.Mintlify.Transformers;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Mintlify.Core;
 
@@ -28,6 +29,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <item><description>DocsJsonManager as Scoped service for navigation generation</description></item>
         /// <item><description>DocsJsonValidator to ensure correct structures</description></item>
         /// <item><description>MarkdownXmlTransformer for processing XML documentation tags</description></item>
+        /// <item><description>MintlifyMarkdownTransformer for converting HTML comments to JSX comments</description></item>
         /// </list>
         /// </remarks>
         /// <example>
@@ -53,6 +55,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <item><description>DocsJsonManager as Scoped service for navigation generation</description></item>
         /// <item><description>DocsJsonValidator to ensure correct structures</description></item>
         /// <item><description>MarkdownXmlTransformer for processing XML documentation tags</description></item>
+        /// <item><description>MintlifyMarkdownTransformer for converting HTML comments to JSX comments</description></item>
         /// </list>
         /// </remarks>
         /// <example>
@@ -132,6 +135,9 @@ namespace Microsoft.Extensions.DependencyInjection
 
             // Register the MarkdownXmlTransformer for processing XML documentation tags
             services.TryAddEnumerable(ServiceDescriptor.Scoped<IDocTransformer, MarkdownXmlTransformer>());
+
+            // Register the MintlifyMarkdownTransformer for converting HTML comments to JSX comments (MDX compatibility)
+            services.TryAddEnumerable(ServiceDescriptor.Scoped<IDocTransformer, MintlifyMarkdownTransformer>());
 
             // Register DocsJsonManager for manipulating docs.json files
             services.TryAddScoped<DocsJsonManager>();
