@@ -2832,6 +2832,8 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
             patterns.Should().Contain("conceptual/**/*");
             patterns.Should().Contain("**/*.css");
             patterns.Should().Contain("docs.json");
+            patterns.Should().Contain("assembly-list.txt");
+            patterns.Should().Contain("*.docsproj");
         }
 
         [TestMethod]
@@ -2906,11 +2908,53 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
         }
 
         [TestMethod]
+        public void ShouldExcludeFile_WithAssemblyListPattern_ExcludesAssemblyList()
+        {
+            // Arrange
+            var manager = GetDocumentationManager();
+            var exclusionPatterns = new List<string> { "assembly-list.txt" };
+
+            // Act & Assert
+            manager.ShouldExcludeFile("assembly-list.txt", exclusionPatterns).Should().BeTrue();
+            manager.ShouldExcludeFile("nested/assembly-list.txt", exclusionPatterns).Should().BeFalse(); // Exact match only
+            manager.ShouldExcludeFile("assembly-list-backup.txt", exclusionPatterns).Should().BeFalse();
+        }
+
+        [TestMethod]
+        public void ShouldExcludeFile_WithDocsprojPattern_ExcludesDocsprojFiles()
+        {
+            // Arrange
+            var manager = GetDocumentationManager();
+            var exclusionPatterns = new List<string> { "*.docsproj" };
+
+            // Act & Assert
+            manager.ShouldExcludeFile("MyProject.docsproj", exclusionPatterns).Should().BeTrue();
+            manager.ShouldExcludeFile("Documentation.docsproj", exclusionPatterns).Should().BeTrue();
+            manager.ShouldExcludeFile("nested/Project.docsproj", exclusionPatterns).Should().BeTrue();
+            manager.ShouldExcludeFile("MyProject.csproj", exclusionPatterns).Should().BeFalse();
+        }
+
+        [TestMethod]
+        public void ShouldExcludeDirectory_WithConceptualPattern_ExcludesConceptualDirectory()
+        {
+            // Arrange
+            var manager = GetDocumentationManager();
+            var exclusionPatterns = new List<string> { "conceptual/**/*" };
+
+            // Act & Assert
+            manager.ShouldExcludeDirectory("conceptual", exclusionPatterns).Should().BeTrue();
+            manager.ShouldExcludeDirectory("conceptual/guides", exclusionPatterns).Should().BeTrue();
+            manager.ShouldExcludeDirectory("conceptual/guides/nested", exclusionPatterns).Should().BeTrue();
+            manager.ShouldExcludeDirectory("api-reference", exclusionPatterns).Should().BeFalse();
+            manager.ShouldExcludeDirectory("guides", exclusionPatterns).Should().BeFalse();
+        }
+
+        [TestMethod]
         public void ShouldExcludeFile_NonMatchingFile_DoesNotExclude()
         {
             // Arrange
             var manager = GetDocumentationManager();
-            var exclusionPatterns = new List<string> { "**/*.mdz", "conceptual/**/*", "**/*.css", "docs.json" };
+            var exclusionPatterns = new List<string> { "**/*.mdz", "conceptual/**/*", "**/*.css", "docs.json", "assembly-list.txt", "*.docsproj" };
 
             // Act & Assert - These should NOT be excluded
             manager.ShouldExcludeFile("index.mdx", exclusionPatterns).Should().BeFalse();
@@ -2970,7 +3014,7 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
             // Assert
             File.Exists(Path.Combine(destDir, "index.mdx")).Should().BeTrue("index.mdx should be copied");
             File.Exists(Path.Combine(destDir, "api-reference", "class.md")).Should().BeTrue("api-reference/class.md should be copied");
-            Directory.Exists(Path.Combine(destDir, "conceptual")).Should().BeTrue("conceptual directory should exist");
+            Directory.Exists(Path.Combine(destDir, "conceptual")).Should().BeFalse("conceptual directory should not be copied");
             File.Exists(Path.Combine(destDir, "conceptual", "guide.md")).Should().BeFalse("conceptual/guide.md should be excluded");
         }
 

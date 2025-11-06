@@ -654,7 +654,9 @@ namespace CloudNimble.DotNetDocs.Core
                     "**/*.mdz",           // Generated zone files
                     "conceptual/**/*",    // Conceptual docs are project-specific
                     "**/*.css",           // Styles should come from collection project
-                    "docs.json"           // Navigation file handled separately
+                    "docs.json",          // Navigation file handled separately
+                    "assembly-list.txt",  // Internal documentation generation file
+                    "*.docsproj"          // MSBuild project file
                 },
                 "docfx" => new List<string>
                 {
@@ -838,13 +840,15 @@ namespace CloudNimble.DotNetDocs.Core
                 }, ct);
             });
 
-            // Get all subdirectories
+            // Get all subdirectories (excluding those that match patterns)
             var subDirectories = Directory.GetDirectories(sourceDir)
                 .Select(sourceSubDir => new
                 {
                     SourceSubDir = sourceSubDir,
+                    RelativePath = Path.GetRelativePath(baseSourceDir, sourceSubDir).Replace("\\", "/"),
                     DestSubDir = Path.Combine(destDir, Path.GetFileName(sourceSubDir))
                 })
+                .Where(d => !ShouldExcludeDirectory(d.RelativePath, exclusionPatterns))
                 .ToList();
 
             // Recursively copy subdirectories in parallel
@@ -852,6 +856,34 @@ namespace CloudNimble.DotNetDocs.Core
             {
                 await CopyDirectoryWithExclusionsAsync(dirInfo.SourceSubDir, dirInfo.DestSubDir, baseSourceDir, exclusionPatterns, skipExisting);
             });
+        }
+
+        /// <summary>
+        /// Determines if a directory should be excluded based on exclusion patterns.
+        /// </summary>
+        /// <param name="relativePath">The relative path of the directory.</param>
+        /// <param name="exclusionPatterns">List of glob patterns for exclusion.</param>
+        /// <returns>True if the directory should be excluded, false otherwise.</returns>
+        internal bool ShouldExcludeDirectory(string relativePath, List<string> exclusionPatterns)
+        {
+            // Normalize path separators to forward slashes
+            relativePath = relativePath.Replace("\\", "/");
+
+            foreach (var pattern in exclusionPatterns)
+            {
+                var normalizedPattern = pattern.Replace("\\", "/");
+
+                // Handle directory patterns like "conceptual/**/*"
+                if (normalizedPattern.EndsWith("/**/*"))
+                {
+                    var prefix = normalizedPattern.Substring(0, normalizedPattern.Length - 5);
+                    if (relativePath == prefix || relativePath.StartsWith(prefix + "/"))
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
 
         /// <summary>
