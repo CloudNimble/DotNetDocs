@@ -157,6 +157,9 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
                             integrationType = "Tabs";
                         }
 
+                        // Get Name from metadata (optional custom display name)
+                        var name = reference.GetMetadata("Name");
+
                         // Determine navigation file path based on documentation type
                         var navigationFilePath = GetNavigationFilePath(documentationRoot, documentationType);
                         if (!string.IsNullOrWhiteSpace(navigationFilePath) && !File.Exists(navigationFilePath))
@@ -173,12 +176,20 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
                         resolvedItem.SetMetadata("DocumentationType", documentationType);
                         resolvedItem.SetMetadata("IntegrationType", integrationType);
                         resolvedItem.SetMetadata("NavigationFilePath", navigationFilePath);
+                        if (!string.IsNullOrWhiteSpace(name))
+                        {
+                            resolvedItem.SetMetadata("Name", name);
+                        }
 
                         resolvedReferences.Add(resolvedItem);
 
                         Log.LogMessage(MessageImportance.Normal, $"      DocumentationType: {documentationType}");
                         Log.LogMessage(MessageImportance.Normal, $"      DestinationPath: {destinationPath}");
                         Log.LogMessage(MessageImportance.Normal, $"      IntegrationType: {integrationType}");
+                        if (!string.IsNullOrWhiteSpace(name))
+                        {
+                            Log.LogMessage(MessageImportance.Normal, $"      Name: {name}");
+                        }
                     }
                     finally
                     {
