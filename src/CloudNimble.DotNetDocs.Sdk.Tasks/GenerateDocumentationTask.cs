@@ -150,6 +150,7 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
 
                         foreach (var item in ResolvedDocumentationReferences)
                         {
+                            var name = item.GetMetadata("Name");
                             var reference = new DocumentationReference
                             {
                                 ProjectPath = item.GetMetadata("ProjectPath"),
@@ -157,11 +158,13 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
                                 DestinationPath = item.GetMetadata("DestinationPath"),
                                 IntegrationType = item.GetMetadata("IntegrationType"),
                                 DocumentationType = item.GetMetadata("DocumentationType"),
-                                NavigationFilePath = item.GetMetadata("NavigationFilePath")
+                                NavigationFilePath = item.GetMetadata("NavigationFilePath"),
+                                Name = !string.IsNullOrWhiteSpace(name) ? name : null
                             };
 
                             context.DocumentationReferences.Add(reference);
-                            Log.LogMessage(MessageImportance.Normal, $"      Added reference: {Path.GetFileName(reference.ProjectPath)} → {reference.DestinationPath}");
+                            var displayName = !string.IsNullOrWhiteSpace(reference.Name) ? $"{reference.Name} ({Path.GetFileName(reference.ProjectPath)})" : Path.GetFileName(reference.ProjectPath);
+                            Log.LogMessage(MessageImportance.Normal, $"      Added reference: {displayName} → {reference.DestinationPath}");
                         }
                     }
 

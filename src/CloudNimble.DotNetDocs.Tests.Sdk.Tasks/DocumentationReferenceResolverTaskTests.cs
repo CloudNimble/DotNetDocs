@@ -793,6 +793,105 @@ namespace CloudNimble.DotNetDocs.Tests.Sdk.Tasks
 
         #endregion
 
+        #region Name Metadata Tests
+
+        [TestMethod]
+        public void Execute_WithNameMetadata_PreservesValue()
+        {
+            // Arrange
+            var projectPath = CreateTestDocsproj("ServiceA.docsproj", "Mintlify");
+            var reference = new TaskItem(projectPath);
+            reference.SetMetadata("Name", "My Custom Service Name");
+            reference.SetMetadata("DestinationPath", "services/a");
+
+            _task.DocumentationReferences = [reference];
+            _task.DocumentationType = "Mintlify";
+
+            var originalDir = Directory.GetCurrentDirectory();
+            try
+            {
+                Directory.SetCurrentDirectory(_tempDirectory);
+
+                // Act
+                var result = _task.Execute();
+
+                // Assert
+                result.Should().BeTrue();
+                _task.ResolvedDocumentationReferences.Should().HaveCount(1);
+                _task.ResolvedDocumentationReferences[0].GetMetadata("Name").Should().Be("My Custom Service Name");
+                _buildEngine.LoggedMessages.Where(m => m.Message != null).Should().Contain(m => m.Message!.Contains("Name: My Custom Service Name"));
+            }
+            finally
+            {
+                Directory.SetCurrentDirectory(originalDir);
+            }
+        }
+
+        [TestMethod]
+        public void Execute_WithoutNameMetadata_DoesNotSetName()
+        {
+            // Arrange
+            var projectPath = CreateTestDocsproj("ServiceA.docsproj", "Mintlify");
+            var reference = new TaskItem(projectPath);
+            reference.SetMetadata("DestinationPath", "services/a");
+            // Name metadata not set
+
+            _task.DocumentationReferences = [reference];
+            _task.DocumentationType = "Mintlify";
+
+            var originalDir = Directory.GetCurrentDirectory();
+            try
+            {
+                Directory.SetCurrentDirectory(_tempDirectory);
+
+                // Act
+                var result = _task.Execute();
+
+                // Assert
+                result.Should().BeTrue();
+                _task.ResolvedDocumentationReferences.Should().HaveCount(1);
+                _task.ResolvedDocumentationReferences[0].GetMetadata("Name").Should().BeEmpty();
+                _buildEngine.LoggedMessages.Where(m => m.Message != null).Should().NotContain(m => m.Message!.Contains("Name:"));
+            }
+            finally
+            {
+                Directory.SetCurrentDirectory(originalDir);
+            }
+        }
+
+        [TestMethod]
+        public void Execute_WithEmptyNameMetadata_DoesNotSetName()
+        {
+            // Arrange
+            var projectPath = CreateTestDocsproj("ServiceA.docsproj", "Mintlify");
+            var reference = new TaskItem(projectPath);
+            reference.SetMetadata("Name", "");
+            reference.SetMetadata("DestinationPath", "services/a");
+
+            _task.DocumentationReferences = [reference];
+            _task.DocumentationType = "Mintlify";
+
+            var originalDir = Directory.GetCurrentDirectory();
+            try
+            {
+                Directory.SetCurrentDirectory(_tempDirectory);
+
+                // Act
+                var result = _task.Execute();
+
+                // Assert
+                result.Should().BeTrue();
+                _task.ResolvedDocumentationReferences.Should().HaveCount(1);
+                _task.ResolvedDocumentationReferences[0].GetMetadata("Name").Should().BeEmpty();
+            }
+            finally
+            {
+                Directory.SetCurrentDirectory(originalDir);
+            }
+        }
+
+        #endregion
+
         #region Complex Scenario Tests
 
         [TestMethod]
