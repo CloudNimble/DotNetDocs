@@ -122,8 +122,15 @@ namespace CloudNimble.DotNetDocs.Mintlify
             // Generate docs.json if enabled
             if (_options.GenerateDocsJson && _docsJsonManager is not null && _docsJsonManager.Configuration is not null)
             {
+                // Build exclusion list from DocumentationReference DestinationPaths to prevent scanning output directories
+                var excludeDirectories = Context.DocumentationReferences
+                    .Select(r => Path.GetFileName(r.DestinationPath))
+                    .Where(d => !string.IsNullOrWhiteSpace(d))
+                    .ToArray();
+
                 // First: Discover existing MDX files in documentation root, preserving template navigation
-                _docsJsonManager.PopulateNavigationFromPath(Context.DocumentationRootPath, new[] { ".mdx" }, includeApiReference: false, preserveExisting: true);
+                // Exclude DocumentationReference output directories to prevent them from being treated as conceptual docs
+                _docsJsonManager.PopulateNavigationFromPath(Context.DocumentationRootPath, new[] { ".mdx" }, includeApiReference: false, preserveExisting: true, excludeDirectories: excludeDirectories);
 
                 // Second: Add API reference content to existing navigation
                 BuildNavigationStructure(_docsJsonManager.Configuration, model);
