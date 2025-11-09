@@ -528,7 +528,8 @@ namespace CloudNimble.DotNetDocs.Core
                 var exclusionPatterns = GetExclusionPatternsForDocumentationType(reference.DocumentationType);
 
                 // Copy all files except those matching exclusion patterns
-                await CopyDirectoryWithExclusionsAsync(sourcePath, destPath, exclusionPatterns, skipExisting: true);
+                // External documentation is authoritative - always overwrite existing files
+                await CopyDirectoryWithExclusionsAsync(sourcePath, destPath, exclusionPatterns, skipExisting: false);
             }
         }
 
