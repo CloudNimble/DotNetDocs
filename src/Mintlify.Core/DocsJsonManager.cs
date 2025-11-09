@@ -1168,6 +1168,7 @@ namespace Mintlify.Core
 
             var groupsByName = new Dictionary<string, GroupConfig>();
             var groupsWithoutNames = new List<GroupConfig>();
+            var targetGroupNames = new HashSet<string>();
 
             // First, catalog what's in the target
             foreach (var group in targetGroups)
@@ -1175,6 +1176,7 @@ namespace Mintlify.Core
                 if (!string.IsNullOrWhiteSpace(group.Group))
                 {
                     groupsByName[group.Group] = group;
+                    targetGroupNames.Add(group.Group);
                 }
                 else
                 {
@@ -1182,7 +1184,8 @@ namespace Mintlify.Core
                 }
             }
 
-            // Process source groups
+            // Process source groups and track new ones
+            var newGroups = new List<GroupConfig>();
             foreach (var sourceGroup in sourceGroups)
             {
                 if (!string.IsNullOrWhiteSpace(sourceGroup.Group))
@@ -1194,7 +1197,9 @@ namespace Mintlify.Core
                     }
                     else
                     {
+                        // This is a new group from source, add it to our tracking list
                         groupsByName[sourceGroup.Group] = sourceGroup;
+                        newGroups.Add(sourceGroup);
                     }
                 }
                 else
@@ -1203,9 +1208,24 @@ namespace Mintlify.Core
                 }
             }
 
-            // Rebuild the groups list
+            // Rebuild the groups list:
+            // 1. Preserve target groups in original order
+            // 2. Append new source groups in alphabetical order
             targetGroups.Clear();
-            targetGroups.AddRange(groupsByName.Values.OrderBy(g => g.Group));
+
+            // Add existing target groups in their original order (preserved by dictionary insertion order)
+            foreach (var group in groupsByName.Values)
+            {
+                if (targetGroupNames.Contains(group.Group))
+                {
+                    targetGroups.Add(group);
+                }
+            }
+
+            // Add new groups in alphabetical order
+            targetGroups.AddRange(newGroups.OrderBy(g => g.Group));
+
+            // Add groups without names
             targetGroups.AddRange(groupsWithoutNames);
         }
 

@@ -650,13 +650,25 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
                 }
             }
 
-            // Parse nested groups
+            // Parse nested groups - check both <Groups> wrapper and direct <Group> children
             var nestedGroupsElement = groupElement.Element("Groups");
             if (nestedGroupsElement is not null)
             {
                 foreach (var nestedGroupElement in nestedGroupsElement.Elements("Group"))
                 {
                     var nestedGroup = ParseGroupConfig(nestedGroupElement);
+                    if (nestedGroup is not null)
+                    {
+                        group.Pages.Add(nestedGroup);
+                    }
+                }
+            }
+            else
+            {
+                // Also check for direct Group children (when Groups wrapper is not used)
+                foreach (var directGroupElement in groupElement.Elements("Group"))
+                {
+                    var nestedGroup = ParseGroupConfig(directGroupElement);
                     if (nestedGroup is not null)
                     {
                         group.Pages.Add(nestedGroup);

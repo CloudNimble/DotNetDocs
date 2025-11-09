@@ -421,6 +421,85 @@ namespace Mintlify.Tests.Core
             targetGroups.Should().HaveCount(4); // All groups without names kept separate
         }
 
+        /// <summary>
+        /// Tests that MergeGroupsList preserves template group order and alphabetizes new groups.
+        /// </summary>
+        [TestMethod]
+        public void MergeGroupsList_PreservesTemplateOrderAndAlphabetizesNewGroups()
+        {
+            // Template groups in specific order (not alphabetical)
+            var targetGroups = new List<GroupConfig>
+            {
+                new GroupConfig { Group = "Server" },
+                new GroupConfig { Group = "Extending Restier" },
+                new GroupConfig { Group = "Clients" }
+            };
+
+            // Auto-discovered groups (alphabetical order doesn't matter for input)
+            var sourceGroups = new List<GroupConfig>
+            {
+                new GroupConfig { Group = "Utils" },
+                new GroupConfig { Group = "API Reference" },
+                new GroupConfig { Group = "Models" }
+            };
+
+            var manager = new DocsJsonManager();
+            manager.MergeGroupsList(sourceGroups, targetGroups);
+
+            // Should have all 6 groups
+            targetGroups.Should().HaveCount(6);
+
+            // Template groups should be first in their original order
+            targetGroups[0].Group.Should().Be("Server");
+            targetGroups[1].Group.Should().Be("Extending Restier");
+            targetGroups[2].Group.Should().Be("Clients");
+
+            // New groups should be alphabetized and appended
+            targetGroups[3].Group.Should().Be("API Reference");
+            targetGroups[4].Group.Should().Be("Models");
+            targetGroups[5].Group.Should().Be("Utils");
+        }
+
+        /// <summary>
+        /// Tests that MergeGroupsList preserves order when merging groups with same names.
+        /// </summary>
+        [TestMethod]
+        public void MergeGroupsList_WithMatchingGroups_PreservesTemplateOrder()
+        {
+            // Template groups in specific order
+            var targetGroups = new List<GroupConfig>
+            {
+                new GroupConfig { Group = "Zebra", Pages = new List<object> { "z1" } },
+                new GroupConfig { Group = "Apple", Pages = new List<object> { "a1" } },
+                new GroupConfig { Group = "Middle", Pages = new List<object> { "m1" } }
+            };
+
+            // Source groups with some matching names
+            var sourceGroups = new List<GroupConfig>
+            {
+                new GroupConfig { Group = "Apple", Pages = new List<object> { "a2" } },
+                new GroupConfig { Group = "New Group", Pages = new List<object> { "n1" } }
+            };
+
+            var manager = new DocsJsonManager();
+            manager.MergeGroupsList(sourceGroups, targetGroups);
+
+            // Should have 4 groups total
+            targetGroups.Should().HaveCount(4);
+
+            // Template order should be preserved (not alphabetical)
+            targetGroups[0].Group.Should().Be("Zebra");
+            targetGroups[1].Group.Should().Be("Apple");
+            targetGroups[2].Group.Should().Be("Middle");
+            targetGroups[3].Group.Should().Be("New Group");
+
+            // Apple group should have merged pages
+            var appleGroup = targetGroups[1];
+            appleGroup.Pages.Should().HaveCount(2);
+            appleGroup.Pages.Should().Contain("a1");
+            appleGroup.Pages.Should().Contain("a2");
+        }
+
         #endregion
 
         #region MergeTabsList Tests
