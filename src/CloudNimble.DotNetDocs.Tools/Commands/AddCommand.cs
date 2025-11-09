@@ -237,8 +237,9 @@ namespace CloudNimble.DotNetDocs.Tools.Commands
             string mintlifyConfig = string.Empty;
             if (documentationType.Equals("Mintlify", StringComparison.OrdinalIgnoreCase))
             {
-                mintlifyConfig = $@"
-		<MintlifyNavigationMode>Unified</MintlifyNavigationMode>
+                mintlifyConfig = 
+$"""
+
 		<MintlifyTemplate>
 			<Name>{solutionName}</Name>
 			<Theme>maple</Theme>
@@ -247,7 +248,17 @@ namespace CloudNimble.DotNetDocs.Tools.Commands
 				<Light>#419AC5</Light>
 				<Dark>#3CD0E2</Dark>
 			</Colors>
-		</MintlifyTemplate>";
+            <Navigation Mode="Unified">
+                <Pages>
+                    <Groups>
+                        <Group Name="Getting Started" Icon="stars">
+                            <Pages>index;why-{solutionName.Replace(".", "-")};quickstart</Pages>
+                        </Group>
+                    </Groups>
+                </Pages>
+            </Navigation>
+		</MintlifyTemplate>
+""";
             }
 
             string content = $@"<Project Sdk=""DotNetDocs.Sdk/{sdkVersion}"">
