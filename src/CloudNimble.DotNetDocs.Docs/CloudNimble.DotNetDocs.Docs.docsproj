@@ -37,16 +37,29 @@
                 <Pages>
                     <Groups>
                         <Group Name="Getting Started" Icon="stars">
-                            <Pages>index;why-dotnetdocs;quickstart</Pages>
+                            <Pages>
+                                index;
+                                why-dotnetdocs;
+                                quickstart
+                            </Pages>
                         </Group>
                         <Group Name="Guides" Icon="dog-leashed">
-                            <Pages>guides/index;guides/pipeline;guides/conceptual-docs;guides/deployment</Pages>
+                            <Pages>
+                                guides/index;
+                                guides/pipeline;
+                                guides/conceptual-docs;
+                                guides/deployment
+                            </Pages>
                         </Group>
                         <Group Name="Providers" Icon="books">
                             <Pages>providers/index</Pages>
                             <Groups>
                                 <Group Name="Mintlify" Icon="/images/icons/mintlify.svg" Tag="PARTNER">
-                                    <Pages>providers/mintlify/index;providers/mintlify/navigation;providers/mintlify/dotnet-library</Pages>
+                                    <Pages>
+                                        providers/mintlify/index;
+                                        providers/mintlify/navigation;
+                                        providers/mintlify/dotnet-library
+                                    </Pages>
                                 </Group>
                             </Groups>
                         </Group>
@@ -54,7 +67,10 @@
                             <Pages>plugins/index</Pages>
                         </Group>
                         <Group Name="Learnings" Icon="chalkboard-user">
-                            <Pages>learnings/bridge-assemblies;learnings/sdk-packaging</Pages>
+                            <Pages>
+                                learnings/bridge-assemblies;
+                                learnings/sdk-packaging
+                            </Pages>
                         </Group>
                     </Groups>
                 </Pages>
@@ -67,10 +83,6 @@
             </Integrations>
         </MintlifyTemplate>
     </PropertyGroup>
-
-    <ItemGroup>
-        <None Include="guides\collections.mdx" />
-    </ItemGroup>
 
     <ItemGroup>
         <None Update="D:\GitHub\DotNetDocs\src\dotnetdocs-logo.png" Link="images\logos\dotnetdocs-logo.png" />
