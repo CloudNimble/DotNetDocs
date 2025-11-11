@@ -1297,7 +1297,7 @@ namespace CloudNimble.DotNetDocs.Mintlify
             var badgeString = badges.Any() ? " " + string.Join(" ", badges) : "";
 
             // Add the member header with icon including iconType, color, size, and margin
-            sb.AppendLine($"### <Icon icon=\"{MintlifyIcons.GetIconForMember(member)}\" iconType=\"{MemberIconType}\" color=\"{primaryColor}\" size={{{MemberIconSize}}} style={{{{ paddingRight: '8px' }}}} />  {member.Name}{badgeString}");
+            sb.AppendLine($"### <Icon icon=\"{MintlifyIcons.GetIconForMember(member)}\" iconType=\"{MemberIconType}\" color=\"{primaryColor}\" size={{{MemberIconSize}}} style={{{{ paddingRight: '8px' }}}} /> {member.Name}{badgeString}");
             sb.AppendLine();
 
             // Add provenance note if inherited or extension

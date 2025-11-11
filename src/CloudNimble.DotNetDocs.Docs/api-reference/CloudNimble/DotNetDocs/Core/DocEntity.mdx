@@ -44,7 +44,7 @@ var docType = new DocType(symbol)
 
 ## Constructors
 
-### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  .ctor <DocsBadge text="Inherited" variant="neutral" />
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> .ctor <DocsBadge text="Inherited" variant="neutral" />
 
 <Note>Inherited from `object`</Note>
 
@@ -56,7 +56,7 @@ public Object()
 
 ## Properties
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  BestPractices
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> BestPractices
 
 Gets or sets the best practices documentation content.
 
@@ -71,7 +71,7 @@ public string BestPractices { get; set; }
 Type: `string?`
 Markdown content with best practices, recommendations, and guidelines from conceptual documentation.
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Considerations
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Considerations
 
 Gets or sets the considerations or notes related to the current context.
 
@@ -86,7 +86,7 @@ public string Considerations { get; set; }
 Type: `string?`
 Markdown content with gotchas, performance, or security notes from conceptual documentation.
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  DisplayName
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> DisplayName
 
 Gets or sets the display name of the entity.
 
@@ -101,7 +101,7 @@ public string DisplayName { get; set; }
 Type: `string?`
 The fully qualified display name extracted from the Symbol.
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Examples
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Examples
 
 Gets or sets the examples documentation content.
 
@@ -116,7 +116,7 @@ public string Examples { get; set; }
 Type: `string?`
 Markdown content containing code examples from XML &lt;example&gt; tags.
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Exceptions
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Exceptions
 
 Gets or sets the collection of exceptions that can be thrown.
 
@@ -131,7 +131,7 @@ public System.Collections.Generic.ICollection<CloudNimble.DotNetDocs.Core.DocExc
 Type: `System.Collections.Generic.ICollection<CloudNimble.DotNetDocs.Core.DocException>?`
 Collection of exception documentation from XML &lt;exception&gt; tags.
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  IncludedMembers
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> IncludedMembers
 
 Gets or sets the list of member accessibilities to include (default: Public).
 
@@ -146,7 +146,7 @@ public System.Collections.Generic.List<Microsoft.CodeAnalysis.Accessibility> Inc
 Type: `System.Collections.Generic.List<Microsoft.CodeAnalysis.Accessibility>`
 List of accessibility levels to include when processing child members.
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  OriginalSymbol
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> OriginalSymbol
 
 Gets the original symbol this documentation entity was created from.
 
@@ -161,7 +161,7 @@ public Microsoft.CodeAnalysis.ISymbol OriginalSymbol { get; protected set; }
 Type: `Microsoft.CodeAnalysis.ISymbol?`
 The Roslyn ISymbol that was used to create this entity, preserved for reference.
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Patterns
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Patterns
 
 Gets or sets the patterns documentation content.
 
@@ -176,7 +176,7 @@ public string Patterns { get; set; }
 Type: `string?`
 Markdown content explaining common usage patterns and architectural guidance from conceptual documentation.
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  RelatedApis
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> RelatedApis
 
 Gets or sets a list of related API names.
 
@@ -191,7 +191,7 @@ public System.Collections.Generic.ICollection<string> RelatedApis { get; set; }
 Type: `System.Collections.Generic.ICollection<string>?`
 List of fully qualified names or URLs for related APIs from conceptual documentation.
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Remarks
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Remarks
 
 Gets or sets the remarks from XML documentation.
 
@@ -206,7 +206,7 @@ public string Remarks { get; set; }
 Type: `string?`
 Content from the XML documentation's &lt;remarks&gt; element.
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Returns
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Returns
 
 Gets or sets the return value documentation.
 
@@ -221,7 +221,7 @@ public string Returns { get; set; }
 Type: `string?`
 Description of the return value from XML &lt;returns&gt; tag.
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  SeeAlso
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> SeeAlso
 
 Gets or sets the collection of see-also references.
 
@@ -236,7 +236,7 @@ public System.Collections.Generic.ICollection<CloudNimble.DotNetDocs.Core.DocRef
 Type: `System.Collections.Generic.ICollection<CloudNimble.DotNetDocs.Core.DocReference>?`
 Collection of related items from XML &lt;seealso&gt; tags.
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Summary
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Summary
 
 Gets or sets the summary from XML documentation.
 
@@ -251,7 +251,7 @@ public string Summary { get; set; }
 Type: `string?`
 Brief description of what the API element IS, from XML &lt;summary&gt; tag.
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  TypeParameters
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> TypeParameters
 
 Gets or sets the collection of type parameters.
 
@@ -266,7 +266,7 @@ public System.Collections.Generic.ICollection<CloudNimble.DotNetDocs.Core.DocTyp
 Type: `System.Collections.Generic.ICollection<CloudNimble.DotNetDocs.Core.DocTypeParameter>?`
 Collection of type parameter documentation from XML &lt;typeparam&gt; tags.
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Usage
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Usage
 
 Gets or sets the usage documentation content.
 
@@ -281,7 +281,7 @@ public string Usage { get; set; }
 Type: `string?`
 Markdown content explaining HOW to use the API element, from conceptual documentation.
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Value
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Value
 
 Gets or sets the value description for properties.
 
@@ -298,7 +298,7 @@ Description of what the property represents from XML &lt;value&gt; tag.
 
 ## Methods
 
-### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Equals <DocsBadge text="Inherited" variant="neutral" /> <DocsBadge text="Virtual" variant="warning" />
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Equals <DocsBadge text="Inherited" variant="neutral" /> <DocsBadge text="Virtual" variant="warning" />
 
 <Note>Inherited from `object`</Note>
 
@@ -318,7 +318,7 @@ public virtual bool Equals(object obj)
 
 Type: `bool`
 
-### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Equals <DocsBadge text="Inherited" variant="neutral" />
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Equals <DocsBadge text="Inherited" variant="neutral" />
 
 <Note>Inherited from `object`</Note>
 
@@ -339,7 +339,7 @@ public static bool Equals(object objA, object objB)
 
 Type: `bool`
 
-### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  GetHashCode <DocsBadge text="Inherited" variant="neutral" /> <DocsBadge text="Virtual" variant="warning" />
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> GetHashCode <DocsBadge text="Inherited" variant="neutral" /> <DocsBadge text="Virtual" variant="warning" />
 
 <Note>Inherited from `object`</Note>
 
@@ -353,7 +353,7 @@ public virtual int GetHashCode()
 
 Type: `int`
 
-### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  GetType <DocsBadge text="Inherited" variant="neutral" />
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> GetType <DocsBadge text="Inherited" variant="neutral" />
 
 <Note>Inherited from `object`</Note>
 
@@ -367,7 +367,7 @@ public System.Type GetType()
 
 Type: `System.Type`
 
-### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  MemberwiseClone <DocsBadge text="Inherited" variant="neutral" />
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> MemberwiseClone <DocsBadge text="Inherited" variant="neutral" />
 
 <Note>Inherited from `object`</Note>
 
@@ -381,7 +381,7 @@ protected internal object MemberwiseClone()
 
 Type: `object`
 
-### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  ReferenceEquals <DocsBadge text="Inherited" variant="neutral" />
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> ReferenceEquals <DocsBadge text="Inherited" variant="neutral" />
 
 <Note>Inherited from `object`</Note>
 
@@ -402,7 +402,7 @@ public static bool ReferenceEquals(object objA, object objB)
 
 Type: `bool`
 
-### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  ToJson
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> ToJson
 
 Serializes this entity to JSON using consistent options.
 
@@ -417,7 +417,7 @@ public string ToJson()
 Type: `string`
 The JSON string representation of this entity.
 
-### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  ToString <DocsBadge text="Inherited" variant="neutral" /> <DocsBadge text="Virtual" variant="warning" />
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> ToString <DocsBadge text="Inherited" variant="neutral" /> <DocsBadge text="Virtual" variant="warning" />
 
 <Note>Inherited from `object`</Note>
 

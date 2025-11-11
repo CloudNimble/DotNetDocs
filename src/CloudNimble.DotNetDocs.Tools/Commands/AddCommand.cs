@@ -126,7 +126,7 @@ namespace CloudNimble.DotNetDocs.Tools.Commands
                 // Create default .mdx files for Mintlify projects
                 if (docType.Equals("Mintlify", StringComparison.OrdinalIgnoreCase))
                 {
-                    await CreateDefaultMdxFilesAsync(outputDir, solutionName);
+                    await CreateDefaultMintlifyFilesAsync(outputDir, solutionName);
                     Console.WriteLine($"✅ Created default documentation files");
                 }
 
@@ -244,28 +244,27 @@ namespace CloudNimble.DotNetDocs.Tools.Commands
             string mintlifyConfig = string.Empty;
             if (documentationType.Equals("Mintlify", StringComparison.OrdinalIgnoreCase))
             {
-                mintlifyConfig = 
-$"""
+                mintlifyConfig = $"""
 
-		<MintlifyTemplate>
-			<Name>{solutionName}</Name>
-			<Theme>maple</Theme>
-			<Colors>
-				<Primary>#419AC5</Primary>
-				<Light>#419AC5</Light>
-				<Dark>#3CD0E2</Dark>
-			</Colors>
-            <Navigation Mode="Unified">
-                <Pages>
-                    <Groups>
-                        <Group Name="Getting Started" Icon="stars">
-                            <Pages>index;why-{solutionName.Replace(".", "-")};quickstart</Pages>
-                        </Group>
-                    </Groups>
-                </Pages>
-            </Navigation>
-		</MintlifyTemplate>
-""";
+                    <MintlifyTemplate>
+                        <Name>{solutionName}</Name>
+                        <Theme>maple</Theme>
+                        <Colors>
+                            <Primary>#419AC5</Primary>
+                            <Light>#419AC5</Light>
+                            <Dark>#3CD0E2</Dark>
+                        </Colors>
+                        <Navigation Mode="Unified">
+                            <Pages>
+                                <Groups>
+                                    <Group Name="Getting Started" Icon="stars">
+                                        <Pages>index;why-{solutionName.Replace(".", "-")};quickstart</Pages>
+                                    </Group>
+                                </Groups>
+                            </Pages>
+                        </Navigation>
+                    </MintlifyTemplate>
+                """;
             }
 
             string content = $$"""
@@ -293,7 +292,7 @@ $"""
         /// <param name="outputDir">The output directory for the documentation project.</param>
         /// <param name="solutionName">The name of the solution, used in file names and content.</param>
         /// <returns>A task that represents the asynchronous operation.</returns>
-        internal async Task CreateDefaultMdxFilesAsync(string outputDir, string solutionName)
+        internal async Task CreateDefaultMintlifyFilesAsync(string outputDir, string solutionName)
         {
             // Create index.mdx
             string indexPath = Path.Combine(outputDir, "index.mdx");
@@ -472,6 +471,69 @@ $"""
                 </CardGroup>
                 """;
             await File.WriteAllTextAsync(quickstartPath, quickstartContent);
+
+            // Create style.css
+            string stylePath = Path.Combine(outputDir, "style.css");
+            string styleContent = """
+                /* Custom styles for your documentation site */
+
+                /* Fix <Icon> rendering in headers */
+                h1 > span.cursor-pointer > svg.icon.inline,
+                h2 > span.cursor-pointer > svg.icon.inline,
+                h3 > span.cursor-pointer > svg.icon.inline {
+                    padding-right: 8px;
+                    vertical-align: top !important;
+                }
+
+                /* Custom scrollbar styling */
+                ::-webkit-scrollbar {
+                    width: 8px;
+                }
+
+                    ::-webkit-scrollbar:horizontal {
+                        height: 8px;
+                    }
+
+                ::-webkit-scrollbar-track {
+                    background: #0A1628;
+                }
+
+                ::-webkit-scrollbar-thumb {
+                    background: linear-gradient(180deg, #3CD0E2, #419AC5);
+                    border-radius: 6px;
+                }
+
+                    ::-webkit-scrollbar-thumb:hover {
+                        background: linear-gradient(180deg, #419AC5, #3CD0E2);
+                    }
+
+                /* Smooth scrolling */
+                html {
+                    scroll-behavior: smooth;
+                }
+
+                /* Animation keyframes */
+                @keyframes fadeIn {
+                    from {
+                        opacity: 0;
+                        transform: translateY(10px);
+                    }
+
+                    to {
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
+                }
+
+                code, kbd, pre, samp {
+                    font-family: "Cascadia Code",var(--font-jetbrains-mono),ui-monospace,SFMono-Regular,Menlo,Monaco,"Liberation Mono","Courier New",monospace;
+                    font-feature-settings: normal;
+                    font-variation-settings: normal;
+                    font-size: 1em;
+                    line-height: 1.5em;
+                }
+                """;
+            await File.WriteAllTextAsync(stylePath, styleContent);
         }
 
         /// <summary>
