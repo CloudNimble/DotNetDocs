@@ -612,7 +612,7 @@ Populates the navigation structure from a directory path by scanning for MDX fil
 #### Syntax
 
 ```csharp
-public void PopulateNavigationFromPath(string path, string[] fileExtensions = null, bool includeApiReference = false, bool preserveExisting = true, bool allowDuplicatePaths = false)
+public void PopulateNavigationFromPath(string path, string[] fileExtensions = null, bool includeApiReference = false, bool preserveExisting = true, bool allowDuplicatePaths = false, string[] excludeDirectories = null)
 ```
 
 #### Parameters
@@ -624,6 +624,7 @@ public void PopulateNavigationFromPath(string path, string[] fileExtensions = nu
 | `includeApiReference` | `bool` | Whether to include the 'api-reference' directory in discovery (defaults to false). |
 | `preserveExisting` | `bool` | Whether to preserve existing navigation structure and merge discovered content (defaults to true). |
 | `allowDuplicatePaths` | `bool` | If true, allows adding duplicate paths; otherwise, skips duplicates. |
+| `excludeDirectories` | `string[]?` | Optional array of directory names to exclude from navigation discovery (e.g., DocumentationReference output directories). |
 
 #### Exceptions
 

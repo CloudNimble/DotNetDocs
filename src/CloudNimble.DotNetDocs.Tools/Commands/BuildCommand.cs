@@ -24,8 +24,7 @@ namespace CloudNimble.DotNetDocs.Tools.Commands
         /// <summary>
         /// 
         /// </summary>
-        [Option("--assembly-list|-a", Description = "Path to assembly list file")]
-        [Required]
+        [Option("--assembly-list|-a", Description = "Optional. Path to assembly list file. Defaults to assembly-list.txt in current directory.")]
         public string AssemblyListFile { get; set; } = null!;
 
         /// <summary>
@@ -63,6 +62,18 @@ namespace CloudNimble.DotNetDocs.Tools.Commands
             WriteHeader();
             try
             {
+                // Default to assembly-list.txt in current directory if not specified
+                AssemblyListFile ??= Path.Combine(Directory.GetCurrentDirectory(), "assembly-list.txt");
+
+                // Validate DocumentationType (renderer type)
+                var validRendererTypes = new[] { RendererType.Mintlify, RendererType.Markdown, RendererType.Json, RendererType.Yaml, "Default" };
+                if (!validRendererTypes.Contains(DocumentationType, StringComparer.OrdinalIgnoreCase))
+                {
+                    var validValues = string.Join(", ", validRendererTypes);
+                    Console.WriteLine($"❌ Invalid DocumentationType '{DocumentationType}'. Valid values are: {validValues}");
+                    return 1;
+                }
+
                 Console.WriteLine($"🔧 Starting documentation generation...");
                 Console.WriteLine($"📁 Assembly list: {AssemblyListFile}");
                 Console.WriteLine($"📂 Output path: {OutputPath}");
@@ -121,22 +132,22 @@ namespace CloudNimble.DotNetDocs.Tools.Commands
                         });
 
                         // Register renderer based on documentation type
-                        switch (DocumentationType.ToLowerInvariant())
+                        switch (DocumentationType)
                         {
-                            case "mintlify":
+                            case var _ when DocumentationType.Equals(RendererType.Mintlify, StringComparison.OrdinalIgnoreCase):
                                 services.AddMintlifyServices();
                                 Console.WriteLine("🎨 Using Mintlify renderer");
                                 break;
-                            case "json":
+                            case var _ when DocumentationType.Equals(RendererType.Json, StringComparison.OrdinalIgnoreCase):
                                 services.AddJsonRenderer();
                                 Console.WriteLine("🎨 Using JSON renderer");
                                 break;
-                            case "yaml":
+                            case var _ when DocumentationType.Equals(RendererType.Yaml, StringComparison.OrdinalIgnoreCase):
                                 services.AddYamlRenderer();
                                 Console.WriteLine("🎨 Using YAML renderer");
                                 break;
-                            case "markdown":
-                            case "default":
+                            case var _ when DocumentationType.Equals(RendererType.Markdown, StringComparison.OrdinalIgnoreCase):
+                            case var _ when DocumentationType.Equals("Default", StringComparison.OrdinalIgnoreCase):
                             default:
                                 services.AddMarkdownRenderer();
                                 Console.WriteLine("🎨 Using Markdown renderer (default)");

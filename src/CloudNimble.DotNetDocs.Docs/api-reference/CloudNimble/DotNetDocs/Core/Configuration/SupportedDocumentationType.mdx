@@ -1,0 +1,46 @@
+---
+title: SupportedDocumentationType
+description: "Specifies the type of documentation framework being used for the project."
+icon: list-ol
+tag: "ENUM"
+keywords: ['SupportedDocumentationType', 'CloudNimble.DotNetDocs.Core.Configuration.SupportedDocumentationType', 'CloudNimble.DotNetDocs.Core.Configuration', 'class', 'System.Enum']
+---
+
+import { DocsBadge } from '/snippets/DocsBadge.jsx';
+
+## Definition
+
+**Assembly:** CloudNimble.DotNetDocs.Core.dll
+
+**Namespace:** CloudNimble.DotNetDocs.Core.Configuration
+
+**Inheritance:** System.Enum
+
+## Syntax
+
+```csharp
+CloudNimble.DotNetDocs.Core.Configuration.SupportedDocumentationType
+```
+
+## Summary
+
+Specifies the type of documentation framework being used for the project.
+
+## Remarks
+
+This enum defines the supported documentation frameworks that DotNetDocs.Sdk can work with.
+            Each type has specific file patterns, configuration files, and rendering behaviors defined in the SDK.
+            The SDK automatically detects the documentation type based on the presence of framework-specific
+            configuration files (e.g., docs.json for Mintlify, docfx.json for DocFX).
+
+## Values
+
+| Name | Value | Description |
+|------|-------|-------------|
+| `Mintlify` | 0 | Mintlify documentation framework. |
+| `DocFX` | 1 | DocFX documentation framework. |
+| `MkDocs` | 2 | MkDocs documentation framework. |
+| `Jekyll` | 3 | Jekyll static site generator. |
+| `Hugo` | 4 | Hugo static site generator. |
+| `Generic` | 5 | Generic documentation type for frameworks not specifically supported. |
+

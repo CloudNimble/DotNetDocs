@@ -123,6 +123,13 @@ namespace CloudNimble.DotNetDocs.Tools.Commands
 
                 Console.WriteLine($"✅ Created {docsProjPath}");
 
+                // Create default .mdx files for Mintlify projects
+                if (docType.Equals("Mintlify", StringComparison.OrdinalIgnoreCase))
+                {
+                    await CreateDefaultMdxFilesAsync(outputDir, solutionName);
+                    Console.WriteLine($"✅ Created default documentation files");
+                }
+
                 // Add to solution
                 await AddProjectToSolution(solutionFile, docsProjPath, docsProjectName);
 
@@ -261,21 +268,210 @@ $"""
 """;
             }
 
-            string content = $@"<Project Sdk=""DotNetDocs.Sdk/{sdkVersion}"">
+            string content = $$"""
+                <Project Sdk="DotNetDocs.Sdk/{{sdkVersion}}">
 
-	<PropertyGroup>
-		<DocumentationType>{documentationType}</DocumentationType>
-		<GenerateDocumentation>true</GenerateDocumentation>
-		<NamespaceMode>Folder</NamespaceMode>
-		<ShowDocumentationStats>true</ShowDocumentationStats>
+                	<PropertyGroup>
+                		<DocumentationType>{{documentationType}}</DocumentationType>
+                		<GenerateDocumentation>true</GenerateDocumentation>
+                		<NamespaceMode>Folder</NamespaceMode>
+                		<ShowDocumentationStats>true</ShowDocumentationStats>
 
-		<ConceptualDocsEnabled>false</ConceptualDocsEnabled>
-		<ShowPlaceholders>false</ShowPlaceholders>{mintlifyConfig}
-	</PropertyGroup>
+                		<ConceptualDocsEnabled>false</ConceptualDocsEnabled>
+                		<ShowPlaceholders>false</ShowPlaceholders>{{mintlifyConfig}}
+                	</PropertyGroup>
 
-</Project>";
+                </Project>
+                """;
 
             await File.WriteAllTextAsync(filePath, content);
+        }
+
+        /// <summary>
+        /// Creates default .mdx files (index, why-{projectname}, quickstart) for Mintlify documentation projects.
+        /// </summary>
+        /// <param name="outputDir">The output directory for the documentation project.</param>
+        /// <param name="solutionName">The name of the solution, used in file names and content.</param>
+        /// <returns>A task that represents the asynchronous operation.</returns>
+        internal async Task CreateDefaultMdxFilesAsync(string outputDir, string solutionName)
+        {
+            // Create index.mdx
+            string indexPath = Path.Combine(outputDir, "index.mdx");
+            string indexContent = $$"""
+                ---
+                title: {{solutionName}} Documentation
+                sidebarTitle: Home
+                description: Welcome to the {{solutionName}} documentation
+                icon: house
+                ---
+
+                # {{solutionName}}
+
+                Welcome to the {{solutionName}} documentation. This documentation is automatically generated from XML comments in the source code and kept up-to-date with every build.
+
+                ## Getting Started
+
+                <CardGroup cols={2}>
+                  <Card title="Why {{solutionName}}?" icon="square-question" href="why-{{solutionName.Replace(".", "-").ToLowerInvariant()}}">
+                    Learn about the motivation and design philosophy behind {{solutionName}}
+                  </Card>
+                  <Card title="Quickstart" icon="play" href="quickstart">
+                    Get up and running with {{solutionName}} in minutes
+                  </Card>
+                </CardGroup>
+
+                ## Features
+
+                - Feature 1: Description
+                - Feature 2: Description
+                - Feature 3: Description
+
+                ## Documentation Sections
+
+                <CardGroup cols={2}>
+                  <Card title="API Reference" icon="code" href="api-reference">
+                    Complete API documentation for all public types and members
+                  </Card>
+                  <Card title="Guides" icon="book-open">
+                    Step-by-step guides and tutorials
+                  </Card>
+                </CardGroup>
+                """;
+            await File.WriteAllTextAsync(indexPath, indexContent);
+
+            // Create why-{projectname}.mdx
+            string whyFileName = $"why-{solutionName.Replace(".", "-").ToLowerInvariant()}.mdx";
+            string whyPath = Path.Combine(outputDir, whyFileName);
+            string whyContent = $$"""
+                ---
+                title: Why {{solutionName}}?
+                sidebarTitle: Why {{solutionName}}?
+                description: Learn about the motivation and design philosophy behind {{solutionName}}
+                icon: square-question
+                ---
+
+                ## Introduction
+
+                Describe the problem that {{solutionName}} solves and why it was created.
+
+                ## Design Principles
+
+                Outline the key design principles that guide the development of {{solutionName}}:
+
+                - **Principle 1**: Description
+                - **Principle 2**: Description
+                - **Principle 3**: Description
+
+                ## What Makes {{solutionName}} Special
+
+                <CardGroup cols={2}>
+                  <Card title="Feature 1" icon="star">
+                    Detailed description of this feature and its benefits
+                  </Card>
+                  <Card title="Feature 2" icon="rocket">
+                    Detailed description of this feature and its benefits
+                  </Card>
+                  <Card title="Feature 3" icon="shield">
+                    Detailed description of this feature and its benefits
+                  </Card>
+                  <Card title="Feature 4" icon="code">
+                    Detailed description of this feature and its benefits
+                  </Card>
+                </CardGroup>
+
+                ## Use Cases
+
+                Describe the primary use cases and scenarios where {{solutionName}} excels.
+
+                ### Use Case 1
+
+                Description and example of the first use case.
+
+                ### Use Case 2
+
+                Description and example of the second use case.
+                """;
+            await File.WriteAllTextAsync(whyPath, whyContent);
+
+            // Create quickstart.mdx
+            string quickstartPath = Path.Combine(outputDir, "quickstart.mdx");
+            string quickstartContent = $$"""
+                ---
+                title: Getting Started with {{solutionName}}
+                sidebarTitle: Quickstart
+                description: Get up and running with {{solutionName}} in minutes
+                icon: play
+                ---
+
+                <Steps>
+                  <Step title="Install" titleSize="h2">
+
+                    ### Install {{solutionName}}
+
+                    Install the NuGet package:
+
+                    ```bash
+                    dotnet add package {{solutionName}}
+                    ```
+
+                    Or use the Package Manager Console:
+
+                    ```powershell
+                    Install-Package {{solutionName}}
+                    ```
+
+                  </Step>
+
+                  <Step title="Configure" titleSize="h2">
+
+                    ### Configure your application
+
+                    Add {{solutionName}} to your application's service collection:
+
+                    ```csharp
+                    using {{solutionName}};
+
+                    // In your Program.cs or Startup.cs
+                    services.Add{{solutionName.Replace(".", "")}}();
+                    ```
+
+                    <Note>
+                      Customize the configuration based on your needs. See the [Configuration Guide](/guides/configuration) for more options.
+                    </Note>
+
+                  </Step>
+
+                  <Step title="Use" titleSize="h2">
+
+                    ### Start using {{solutionName}}
+
+                    Basic usage example:
+
+                    ```csharp
+                    // Example code showing how to use {{solutionName}}
+                    var service = serviceProvider.GetRequiredService<IMyService>();
+                    var result = await service.DoSomethingAsync();
+                    ```
+
+                    <Check>
+                      You're now ready to start using {{solutionName}}! Check out the [API Reference](/api-reference) for more details.
+                    </Check>
+
+                  </Step>
+                </Steps>
+
+                ## Next Steps
+
+                <CardGroup cols={2}>
+                  <Card title="API Reference" icon="code" href="/api-reference">
+                    Explore the complete API documentation
+                  </Card>
+                  <Card title="Guides" icon="book-open" href="/guides">
+                    Learn more with detailed guides and tutorials
+                  </Card>
+                </CardGroup>
+                """;
+            await File.WriteAllTextAsync(quickstartPath, quickstartContent);
         }
 
         /// <summary>

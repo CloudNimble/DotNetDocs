@@ -1,4 +1,5 @@
 using System;
+using CloudNimble.DotNetDocs.Core.Configuration;
 using CloudNimble.DotNetDocs.Core;
 using CloudNimble.DotNetDocs.Tests.Shared;
 using FluentAssertions;
@@ -25,7 +26,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             // Assert
             reference.DestinationPath.Should().BeEmpty();
             reference.DocumentationRoot.Should().BeEmpty();
-            reference.DocumentationType.Should().BeEmpty();
+            reference.DocumentationType.Should().Be(SupportedDocumentationType.Generic);
             reference.IntegrationType.Should().Be("Tabs");
             reference.NavigationFilePath.Should().BeEmpty();
             reference.ProjectPath.Should().BeEmpty();
@@ -44,7 +45,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             reference.ProjectPath.Should().Be(projectPath);
             reference.DestinationPath.Should().BeEmpty();
             reference.DocumentationRoot.Should().BeEmpty();
-            reference.DocumentationType.Should().BeEmpty();
+            reference.DocumentationType.Should().Be(SupportedDocumentationType.Generic);
             reference.IntegrationType.Should().Be("Tabs");
             reference.NavigationFilePath.Should().BeEmpty();
         }
@@ -180,7 +181,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core
         {
             // Arrange
             var reference = new DocumentationReference();
-            var docType = "Mintlify";
+            var docType = SupportedDocumentationType.Mintlify;
 
             // Act
             reference.DocumentationType = docType;
@@ -194,7 +195,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core
         {
             // Arrange
             var reference = new DocumentationReference();
-            var docTypes = new[] { "Mintlify", "DocFX", "MkDocs", "Jekyll", "Hugo", "Custom" };
+            var docTypes = new[] { SupportedDocumentationType.Mintlify, SupportedDocumentationType.DocFX, SupportedDocumentationType.MkDocs, SupportedDocumentationType.Jekyll, SupportedDocumentationType.Hugo, SupportedDocumentationType.Generic };
 
             foreach (var docType in docTypes)
             {
@@ -326,7 +327,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             var projectPath = @"C:\repos\auth-service\AuthService.docsproj";
             var docRoot = @"C:\repos\auth-service\docs";
             var destinationPath = "services/auth";
-            var docType = "Mintlify";
+            var docType = SupportedDocumentationType.Mintlify;
             var integrationType = "Products";
             var navPath = @"C:\repos\auth-service\docs\docs.json";
 
@@ -358,7 +359,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core
                 ProjectPath = @"..\ServiceA\ServiceA.docsproj",
                 DocumentationRoot = @"..\ServiceA\docs",
                 DestinationPath = "services/service-a",
-                DocumentationType = "Mintlify",
+                DocumentationType = SupportedDocumentationType.Mintlify,
                 IntegrationType = "Tabs",
                 NavigationFilePath = @"..\ServiceA\docs\docs.json"
             };
@@ -367,7 +368,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             reference.ProjectPath.Should().Be(@"..\ServiceA\ServiceA.docsproj");
             reference.DocumentationRoot.Should().Be(@"..\ServiceA\docs");
             reference.DestinationPath.Should().Be("services/service-a");
-            reference.DocumentationType.Should().Be("Mintlify");
+            reference.DocumentationType.Should().Be(SupportedDocumentationType.Mintlify);
             reference.IntegrationType.Should().Be("Tabs");
             reference.NavigationFilePath.Should().Be(@"..\ServiceA\docs\docs.json");
         }
@@ -382,7 +383,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             reference.ProjectPath = @"C:\new\path.docsproj";
             reference.DocumentationRoot = @"C:\new\docs";
             reference.DestinationPath = "new/destination";
-            reference.DocumentationType = "DocFX";
+            reference.DocumentationType = SupportedDocumentationType.DocFX;
             reference.IntegrationType = "Products";
             reference.NavigationFilePath = @"C:\new\docs\toc.yml";
 
@@ -390,7 +391,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             reference.ProjectPath.Should().Be(@"C:\new\path.docsproj");
             reference.DocumentationRoot.Should().Be(@"C:\new\docs");
             reference.DestinationPath.Should().Be("new/destination");
-            reference.DocumentationType.Should().Be("DocFX");
+            reference.DocumentationType.Should().Be(SupportedDocumentationType.DocFX);
             reference.IntegrationType.Should().Be("Products");
             reference.NavigationFilePath.Should().Be(@"C:\new\docs\toc.yml");
         }
@@ -422,7 +423,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             {
                 DocumentationRoot = @"..\services\AuthService\docs",
                 DestinationPath = "services/auth",
-                DocumentationType = "Mintlify",
+                DocumentationType = SupportedDocumentationType.Mintlify,
                 IntegrationType = "Tabs",
                 NavigationFilePath = @"..\services\AuthService\docs\docs.json"
             };
@@ -431,7 +432,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             {
                 DocumentationRoot = @"..\services\OrderService\docs",
                 DestinationPath = "services/orders",
-                DocumentationType = "Mintlify",
+                DocumentationType = SupportedDocumentationType.Mintlify,
                 IntegrationType = "Tabs",
                 NavigationFilePath = @"..\services\OrderService\docs\docs.json"
             };
@@ -440,7 +441,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             {
                 DocumentationRoot = @"..\services\PaymentService\docs",
                 DestinationPath = "services/payments",
-                DocumentationType = "Mintlify",
+                DocumentationType = SupportedDocumentationType.Mintlify,
                 IntegrationType = "Tabs",
                 NavigationFilePath = @"..\services\PaymentService\docs\docs.json"
             };
@@ -454,9 +455,9 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             orderReference.IntegrationType.Should().Be("Tabs");
             paymentReference.IntegrationType.Should().Be("Tabs");
 
-            authReference.DocumentationType.Should().Be("Mintlify");
-            orderReference.DocumentationType.Should().Be("Mintlify");
-            paymentReference.DocumentationType.Should().Be("Mintlify");
+            authReference.DocumentationType.Should().Be(SupportedDocumentationType.Mintlify);
+            orderReference.DocumentationType.Should().Be(SupportedDocumentationType.Mintlify);
+            paymentReference.DocumentationType.Should().Be(SupportedDocumentationType.Mintlify);
         }
 
         [TestMethod]
@@ -467,7 +468,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             {
                 DocumentationRoot = @"..\..\EasyAF.Core\docs",
                 DestinationPath = "core",
-                DocumentationType = "Mintlify",
+                DocumentationType = SupportedDocumentationType.Mintlify,
                 IntegrationType = "Products",
                 NavigationFilePath = @"..\..\EasyAF.Core\docs\docs.json"
             };
@@ -476,7 +477,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             {
                 DocumentationRoot = @"..\..\EasyAF.Http\docs",
                 DestinationPath = "http",
-                DocumentationType = "Mintlify",
+                DocumentationType = SupportedDocumentationType.Mintlify,
                 IntegrationType = "Products",
                 NavigationFilePath = @"..\..\EasyAF.Http\docs\docs.json"
             };
@@ -488,8 +489,8 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             coreReference.DestinationPath.Should().Be("core");
             httpReference.DestinationPath.Should().Be("http");
 
-            coreReference.DocumentationType.Should().Be("Mintlify");
-            httpReference.DocumentationType.Should().Be("Mintlify");
+            coreReference.DocumentationType.Should().Be(SupportedDocumentationType.Mintlify);
+            httpReference.DocumentationType.Should().Be(SupportedDocumentationType.Mintlify);
         }
 
         [TestMethod]
@@ -498,46 +499,91 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             // Arrange - Different documentation system formats
             var mintlifyRef = new DocumentationReference
             {
-                DocumentationType = "Mintlify",
+                DocumentationType = SupportedDocumentationType.Mintlify,
                 NavigationFilePath = "docs.json"
             };
 
             var docfxRef = new DocumentationReference
             {
-                DocumentationType = "DocFX",
+                DocumentationType = SupportedDocumentationType.DocFX,
                 NavigationFilePath = "toc.yml"
             };
 
             var mkdocsRef = new DocumentationReference
             {
-                DocumentationType = "MkDocs",
+                DocumentationType = SupportedDocumentationType.MkDocs,
                 NavigationFilePath = "mkdocs.yml"
             };
 
             var jekyllRef = new DocumentationReference
             {
-                DocumentationType = "Jekyll",
+                DocumentationType = SupportedDocumentationType.Jekyll,
                 NavigationFilePath = "_config.yml"
             };
 
             var hugoRef = new DocumentationReference
             {
-                DocumentationType = "Hugo",
+                DocumentationType = SupportedDocumentationType.Hugo,
                 NavigationFilePath = "hugo.toml"
             };
 
             // Assert
-            mintlifyRef.DocumentationType.Should().Be("Mintlify");
-            docfxRef.DocumentationType.Should().Be("DocFX");
-            mkdocsRef.DocumentationType.Should().Be("MkDocs");
-            jekyllRef.DocumentationType.Should().Be("Jekyll");
-            hugoRef.DocumentationType.Should().Be("Hugo");
+            mintlifyRef.DocumentationType.Should().Be(SupportedDocumentationType.Mintlify);
+            docfxRef.DocumentationType.Should().Be(SupportedDocumentationType.DocFX);
+            mkdocsRef.DocumentationType.Should().Be(SupportedDocumentationType.MkDocs);
+            jekyllRef.DocumentationType.Should().Be(SupportedDocumentationType.Jekyll);
+            hugoRef.DocumentationType.Should().Be(SupportedDocumentationType.Hugo);
 
             mintlifyRef.NavigationFilePath.Should().Be("docs.json");
             docfxRef.NavigationFilePath.Should().Be("toc.yml");
             mkdocsRef.NavigationFilePath.Should().Be("mkdocs.yml");
             jekyllRef.NavigationFilePath.Should().Be("_config.yml");
             hugoRef.NavigationFilePath.Should().Be("hugo.toml");
+        }
+
+        [TestMethod]
+        public void DocumentationReference_WithGenericDocumentationType_WorksCorrectly()
+        {
+            var genericRef = new DocumentationReference
+            {
+                DocumentationType = SupportedDocumentationType.Generic,
+                DocumentationRoot = @"C:
+eposstom-docs",
+                DestinationPath = "custom",
+                NavigationFilePath = "custom-nav.json"
+            };
+
+            genericRef.DocumentationType.Should().Be(SupportedDocumentationType.Generic);
+            genericRef.DocumentationRoot.Should().Be(@"C:
+eposstom-docs");
+            genericRef.DestinationPath.Should().Be("custom");
+            genericRef.NavigationFilePath.Should().Be("custom-nav.json");
+        }
+
+        [TestMethod]
+        public void DocumentationReference_CanSwitchFromKnownToGenericType()
+        {
+            var reference = new DocumentationReference
+            {
+                DocumentationType = SupportedDocumentationType.Mintlify
+            };
+
+            reference.DocumentationType = SupportedDocumentationType.Generic;
+
+            reference.DocumentationType.Should().Be(SupportedDocumentationType.Generic);
+        }
+
+        [TestMethod]
+        public void DocumentationReference_CanSwitchFromGenericToKnownType()
+        {
+            var reference = new DocumentationReference
+            {
+                DocumentationType = SupportedDocumentationType.Generic
+            };
+
+            reference.DocumentationType = SupportedDocumentationType.DocFX;
+
+            reference.DocumentationType.Should().Be(SupportedDocumentationType.DocFX);
         }
 
         #endregion

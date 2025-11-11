@@ -1,4 +1,5 @@
 using CloudNimble.DotNetDocs.Core;
+using CloudNimble.DotNetDocs.Core.Configuration;
 using CloudNimble.DotNetDocs.Tests.Shared;
 using CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios;
 using FluentAssertions;
@@ -33,7 +34,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             var manager = GetDocumentationManager();
 
             // Act
-            var patterns = manager.GetFilePatternsForDocumentationType("Mintlify");
+            var patterns = manager.GetFilePatternsForDocumentationType(SupportedDocumentationType.Mintlify);
 
             // Assert
             patterns.Should().NotBeNull();
@@ -53,7 +54,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             var manager = GetDocumentationManager();
 
             // Act
-            var patterns = manager.GetFilePatternsForDocumentationType("DocFX");
+            var patterns = manager.GetFilePatternsForDocumentationType(SupportedDocumentationType.DocFX);
 
             // Assert
             patterns.Should().NotBeNull();
@@ -71,7 +72,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             var manager = GetDocumentationManager();
 
             // Act
-            var patterns = manager.GetFilePatternsForDocumentationType("MkDocs");
+            var patterns = manager.GetFilePatternsForDocumentationType(SupportedDocumentationType.MkDocs);
 
             // Assert
             patterns.Should().NotBeNull();
@@ -87,7 +88,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             var manager = GetDocumentationManager();
 
             // Act
-            var patterns = manager.GetFilePatternsForDocumentationType("Unknown");
+            var patterns = manager.GetFilePatternsForDocumentationType(SupportedDocumentationType.Generic);
 
             // Assert
             patterns.Should().NotBeNull();
@@ -183,14 +184,14 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             {
                 DocumentationRoot = sourceDir1,
                 DestinationPath = "ref1",
-                DocumentationType = "Mintlify"
+                DocumentationType = SupportedDocumentationType.Mintlify
             });
 
             context.DocumentationReferences.Add(new DocumentationReference
             {
                 DocumentationRoot = sourceDir2,
                 DestinationPath = "ref2",
-                DocumentationType = "Mintlify"
+                DocumentationType = SupportedDocumentationType.Mintlify
             });
 
             // Act
@@ -847,7 +848,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             {
                 DocumentationRoot = sourceDir,
                 DestinationPath = Path.Combine(context.DocumentationRootPath, "references"),
-                DocumentationType = "Mintlify"
+                DocumentationType = SupportedDocumentationType.Mintlify
             });
 
             await manager.ProcessAsync(_testAssemblyPath!, _testXmlPath!);
@@ -1863,14 +1864,14 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
             {
                 DocumentationRoot = source1,
                 DestinationPath = "dest1",
-                DocumentationType = "Mintlify"
+                DocumentationType = SupportedDocumentationType.Mintlify
             });
 
             context.DocumentationReferences.Add(new DocumentationReference
             {
                 DocumentationRoot = source2,
                 DestinationPath = "dest2",
-                DocumentationType = "Mintlify"
+                DocumentationType = SupportedDocumentationType.Mintlify
             });
 
             await manager.CopyReferencedDocumentationAsync();
@@ -1899,14 +1900,14 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
             {
                 DocumentationRoot = mintlifySource,
                 DestinationPath = "mintlify",
-                DocumentationType = "Mintlify"
+                DocumentationType = SupportedDocumentationType.Mintlify
             });
 
             context.DocumentationReferences.Add(new DocumentationReference
             {
                 DocumentationRoot = docfxSource,
                 DestinationPath = "docfx",
-                DocumentationType = "DocFX"
+                DocumentationType = SupportedDocumentationType.DocFX
             });
 
             await manager.CopyReferencedDocumentationAsync();
@@ -1929,14 +1930,14 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
             {
                 DocumentationRoot = Path.Combine(_tempDirectory!, "nonexistent"),
                 DestinationPath = "missing",
-                DocumentationType = "Mintlify"
+                DocumentationType = SupportedDocumentationType.Mintlify
             });
 
             context.DocumentationReferences.Add(new DocumentationReference
             {
                 DocumentationRoot = validSource,
                 DestinationPath = "valid",
-                DocumentationType = "Mintlify"
+                DocumentationType = SupportedDocumentationType.Mintlify
             });
 
             await manager.CopyReferencedDocumentationAsync();
@@ -1953,23 +1954,21 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
         {
             var manager = GetDocumentationManager();
 
-            var lowerCase = manager.GetFilePatternsForDocumentationType("mintlify");
-            var mixedCase = manager.GetFilePatternsForDocumentationType("MiNtLiFy");
+            var lowerCase = manager.GetFilePatternsForDocumentationType(SupportedDocumentationType.Mintlify);
+            var mixedCase = manager.GetFilePatternsForDocumentationType(SupportedDocumentationType.Mintlify);
 
             lowerCase.Should().NotBeNull();
             mixedCase.Should().NotBeNull();
         }
 
         [TestMethod]
-        public void GetFilePatternsForDocumentationType_NullOrEmpty_ReturnsDefaultPatterns()
+        public void GetFilePatternsForDocumentationType_Generic_ReturnsDefaultPatterns()
         {
             var manager = GetDocumentationManager();
 
-            var nullResult = manager.GetFilePatternsForDocumentationType(null!);
-            var emptyResult = manager.GetFilePatternsForDocumentationType("");
+            var result = manager.GetFilePatternsForDocumentationType(SupportedDocumentationType.Generic);
 
-            nullResult.Should().NotBeNull();
-            emptyResult.Should().NotBeNull();
+            result.Should().NotBeNull();
         }
 
         [TestMethod]
@@ -1977,9 +1976,9 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
         {
             var manager = GetDocumentationManager();
 
-            var mintlify = manager.GetFilePatternsForDocumentationType("Mintlify");
-            var docfx = manager.GetFilePatternsForDocumentationType("DocFX");
-            var mkdocs = manager.GetFilePatternsForDocumentationType("MkDocs");
+            var mintlify = manager.GetFilePatternsForDocumentationType(SupportedDocumentationType.Mintlify);
+            var docfx = manager.GetFilePatternsForDocumentationType(SupportedDocumentationType.DocFX);
+            var mkdocs = manager.GetFilePatternsForDocumentationType(SupportedDocumentationType.MkDocs);
 
             mintlify.Should().Contain("*.mdx");
             docfx.Should().Contain("*.yml");
@@ -2104,7 +2103,7 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
             {
                 DocumentationRoot = sourceDir,
                 DestinationPath = "references",
-                DocumentationType = "Mintlify"
+                DocumentationType = SupportedDocumentationType.Mintlify
             });
 
             await manager.ProcessAsync(_testAssemblyPath!, _testXmlPath!);
@@ -2208,7 +2207,7 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
         {
             var manager = GetDocumentationManager();
 
-            var patterns = manager.GetFilePatternsForDocumentationType("UnknownDocType123");
+            var patterns = manager.GetFilePatternsForDocumentationType(SupportedDocumentationType.Generic);
 
             patterns.Should().NotBeEmpty();
             patterns.Should().Contain("*.md", "default patterns should include markdown");
@@ -2232,13 +2231,13 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
             {
                 DocumentationRoot = source1,
                 DestinationPath = "shared",
-                DocumentationType = "Mintlify"
+                DocumentationType = SupportedDocumentationType.Mintlify
             });
             context.DocumentationReferences.Add(new DocumentationReference
             {
                 DocumentationRoot = source2,
                 DestinationPath = "shared",
-                DocumentationType = "Mintlify"
+                DocumentationType = SupportedDocumentationType.Mintlify
             });
 
             await manager.CopyReferencedDocumentationAsync();
@@ -2313,7 +2312,7 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
             {
                 DocumentationRoot = Path.Combine(_tempDirectory!, "does-not-exist"),
                 DestinationPath = "missing",
-                DocumentationType = "Mintlify"
+                DocumentationType = SupportedDocumentationType.Mintlify
             });
 
             var act = async () => await manager.CopyReferencedDocumentationAsync();
@@ -2824,7 +2823,7 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
             var manager = GetDocumentationManager();
 
             // Act
-            var patterns = manager.GetExclusionPatternsForDocumentationType("Mintlify");
+            var patterns = manager.GetExclusionPatternsForDocumentationType(SupportedDocumentationType.Mintlify);
 
             // Assert
             patterns.Should().NotBeNull();
@@ -2843,7 +2842,7 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
             var manager = GetDocumentationManager();
 
             // Act
-            var patterns = manager.GetExclusionPatternsForDocumentationType("UnknownType");
+            var patterns = manager.GetExclusionPatternsForDocumentationType(SupportedDocumentationType.Generic);
 
             // Assert
             patterns.Should().NotBeNull();

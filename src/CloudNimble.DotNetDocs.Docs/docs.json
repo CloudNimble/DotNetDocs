@@ -123,7 +123,9 @@
                           "api-reference/CloudNimble/DotNetDocs/Core/Configuration/index",
                           "api-reference/CloudNimble/DotNetDocs/Core/Configuration/DotNetDocsBuilder",
                           "api-reference/CloudNimble/DotNetDocs/Core/Configuration/FileNamingOptions",
-                          "api-reference/CloudNimble/DotNetDocs/Core/Configuration/NamespaceMode"
+                          "api-reference/CloudNimble/DotNetDocs/Core/Configuration/NamespaceMode",
+                          "api-reference/CloudNimble/DotNetDocs/Core/Configuration/RendererType",
+                          "api-reference/CloudNimble/DotNetDocs/Core/Configuration/SupportedDocumentationType"
                         ]
                       },
                       {
@@ -178,41 +180,6 @@
                         "pages": [
                           "api-reference/CloudNimble/DotNetDocs/Mintlify/Transformers/index",
                           "api-reference/CloudNimble/DotNetDocs/Mintlify/Transformers/MintlifyMarkdownTransformer"
-                        ]
-                      }
-                    ]
-                  },
-                  {
-                    "group": "Tools",
-                    "icon": "folder-tree",
-                    "pages": [
-                      "api-reference/CloudNimble/DotNetDocs/Tools/index",
-                      "api-reference/CloudNimble/DotNetDocs/Tools/Program",
-                      {
-                        "group": "Commands",
-                        "icon": "folder-tree",
-                        "pages": [
-                          "api-reference/CloudNimble/DotNetDocs/Tools/Commands/index",
-                          "api-reference/CloudNimble/DotNetDocs/Tools/Commands/AddCommand",
-                          "api-reference/CloudNimble/DotNetDocs/Tools/Commands/BuildCommand",
-                          "api-reference/CloudNimble/DotNetDocs/Tools/Commands/DocsRootCommand",
-                          "api-reference/CloudNimble/DotNetDocs/Tools/Commands/UpdateCommand",
-                          {
-                            "group": "Base",
-                            "icon": "folder-tree",
-                            "pages": [
-                              "api-reference/CloudNimble/DotNetDocs/Tools/Commands/Base/index",
-                              "api-reference/CloudNimble/DotNetDocs/Tools/Commands/Base/DocsCommandBase"
-                            ]
-                          }
-                        ]
-                      },
-                      {
-                        "group": "Models",
-                        "icon": "folder-tree",
-                        "pages": [
-                          "api-reference/CloudNimble/DotNetDocs/Tools/Models/index",
-                          "api-reference/CloudNimble/DotNetDocs/Tools/Models/NuGetVersion"
                         ]
                       }
                     ]

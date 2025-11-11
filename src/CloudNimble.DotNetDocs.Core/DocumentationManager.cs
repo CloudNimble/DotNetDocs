@@ -1,3 +1,4 @@
+using CloudNimble.DotNetDocs.Core.Configuration;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -539,12 +540,12 @@ namespace CloudNimble.DotNetDocs.Core
         /// <param name="documentationType">The documentation type (Mintlify, DocFX, MkDocs, etc.).</param>
         /// <param name="excludeRootNavigationFiles">When true, excludes root navigation files like docs.json, toc.yml, etc. Set to true when copying DocumentationReferences to prevent navigation file conflicts.</param>
         /// <returns>A list of glob patterns for files that should be copied.</returns>
-        internal List<string> GetFilePatternsForDocumentationType(string documentationType, bool excludeRootNavigationFiles = false)
+        internal List<string> GetFilePatternsForDocumentationType(SupportedDocumentationType documentationType, bool excludeRootNavigationFiles = false)
         {
-            var patterns = documentationType?.ToLowerInvariant() switch
+            var patterns = documentationType switch
             {
-                "mintlify" => new List<string>
-                {
+                SupportedDocumentationType.Mintlify =>
+                [
                     "*.md",
                     "*.mdx",
                     "*.mdz",
@@ -552,9 +553,9 @@ namespace CloudNimble.DotNetDocs.Core
                     "images/**/*",
                     "favicon.*",
                     "snippets/**/*"
-                },
-                "docfx" => new List<string>
-                {
+                ],
+                SupportedDocumentationType.DocFX =>
+                [
                     "*.md",
                     "*.yml",
                     "*.yaml",
@@ -564,17 +565,17 @@ namespace CloudNimble.DotNetDocs.Core
                     "images/**/*",
                     "articles/**/*",
                     "api/**/*"
-                },
-                "mkdocs" => new List<string>
-                {
+                ],
+                SupportedDocumentationType.MkDocs =>
+                [
                     "*.md",
                     "mkdocs.yml",
                     "docs/**/*",
                     "overrides/**/*",
                     "theme/**/*"
-                },
-                "jekyll" => new List<string>
-                {
+                ],
+                SupportedDocumentationType.Jekyll =>
+                [
                     "*.md",
                     "*.html",
                     "_config.yml",
@@ -583,9 +584,9 @@ namespace CloudNimble.DotNetDocs.Core
                     "_layouts/**/*",
                     "_includes/**/*",
                     "assets/**/*"
-                },
-                "hugo" => new List<string>
-                {
+                ],
+                SupportedDocumentationType.Hugo =>
+                [
                     "*.md",
                     "hugo.toml",
                     "hugo.yaml",
@@ -593,14 +594,14 @@ namespace CloudNimble.DotNetDocs.Core
                     "content/**/*",
                     "static/**/*",
                     "layouts/**/*"
-                },
-                null or "" => new List<string>
-                {
+                ],
+                SupportedDocumentationType.Generic =>
+                [
                     "*.md",
                     "*.html",
                     "images/**/*",
                     "assets/**/*"
-                },
+                ],
                 _ => new List<string>
                 {
                     "*.md",
@@ -613,24 +614,24 @@ namespace CloudNimble.DotNetDocs.Core
             if (excludeRootNavigationFiles)
             {
                 // Remove root navigation files based on documentation type
-                switch (documentationType?.ToLowerInvariant())
+                switch (documentationType)
                 {
-                    case "mintlify":
+                    case SupportedDocumentationType.Mintlify:
                         patterns.Remove("docs.json");
                         break;
-                    case "docfx":
+                    case SupportedDocumentationType.DocFX:
                         patterns.Remove("toc.yml");
                         patterns.Remove("toc.yaml");
                         patterns.Remove("docfx.json");
                         break;
-                    case "mkdocs":
+                    case SupportedDocumentationType.MkDocs:
                         patterns.Remove("mkdocs.yml");
                         break;
-                    case "jekyll":
+                    case SupportedDocumentationType.Jekyll:
                         patterns.Remove("_config.yml");
                         patterns.Remove("_config.yaml");
                         break;
-                    case "hugo":
+                    case SupportedDocumentationType.Hugo:
                         patterns.Remove("hugo.toml");
                         patterns.Remove("hugo.yaml");
                         patterns.Remove("hugo.json");
@@ -646,42 +647,42 @@ namespace CloudNimble.DotNetDocs.Core
         /// </summary>
         /// <param name="documentationType">The documentation type (Mintlify, DocFX, MkDocs, etc.).</param>
         /// <returns>A list of glob patterns for files that should be excluded from copying.</returns>
-        internal List<string> GetExclusionPatternsForDocumentationType(string documentationType)
+        internal List<string> GetExclusionPatternsForDocumentationType(SupportedDocumentationType documentationType)
         {
-            return documentationType?.ToLowerInvariant() switch
+            return documentationType switch
             {
-                "mintlify" => new List<string>
-                {
+                SupportedDocumentationType.Mintlify =>
+                [
                     "**/*.mdz",           // Generated zone files
                     "conceptual/**/*",    // Conceptual docs are project-specific
                     "**/*.css",           // Styles should come from collection project
                     "docs.json",          // Navigation file handled separately
                     "assembly-list.txt",  // Internal documentation generation file
                     "*.docsproj"          // MSBuild project file
-                },
-                "docfx" => new List<string>
-                {
+                ],
+                SupportedDocumentationType.DocFX =>
+                [
                     "toc.yml",
                     "toc.yaml",
                     "docfx.json"
-                },
-                "mkdocs" => new List<string>
-                {
+                ],
+                SupportedDocumentationType.MkDocs =>
+                [
                     "mkdocs.yml"
-                },
-                "jekyll" => new List<string>
-                {
+                ],
+                SupportedDocumentationType.Jekyll =>
+                [
                     "_config.yml",
                     "_config.yaml"
-                },
-                "hugo" => new List<string>
-                {
+                ],
+                SupportedDocumentationType.Hugo =>
+                [
                     "hugo.toml",
                     "hugo.yaml",
                     "hugo.json",
                     "config.*"
-                },
-                _ => new List<string>()
+                ],
+                _ => []
             };
         }
 

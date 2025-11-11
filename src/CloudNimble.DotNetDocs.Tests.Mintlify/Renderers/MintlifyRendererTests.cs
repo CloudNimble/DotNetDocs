@@ -1437,7 +1437,7 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             context.DocumentationReferences.Add(new DocumentationReference
             {
                 ProjectPath = "test.docsproj",
-                DocumentationType = "DocFX",
+                DocumentationType = SupportedDocumentationType.DocFX,
                 NavigationFilePath = Path.Combine(context.DocumentationRootPath, "toc.yml"),
                 DestinationPath = "docfx",
                 IntegrationType = "Tabs"
@@ -1485,7 +1485,7 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             context.DocumentationReferences.Add(new DocumentationReference
             {
                 ProjectPath = "ServiceA.docsproj",
-                DocumentationType = "Mintlify",
+                DocumentationType = SupportedDocumentationType.Mintlify,
                 NavigationFilePath = refDocsPath,
                 DestinationPath = "services/service-a",
                 IntegrationType = "Tabs"
@@ -1541,7 +1541,7 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             context.DocumentationReferences.Add(new DocumentationReference
             {
                 ProjectPath = "ProductA.docsproj",
-                DocumentationType = "Mintlify",
+                DocumentationType = SupportedDocumentationType.Mintlify,
                 NavigationFilePath = refDocsPath,
                 DestinationPath = "products/product-a",
                 IntegrationType = "Products"
@@ -1603,7 +1603,7 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             context.DocumentationReferences.Add(new DocumentationReference
             {
                 ProjectPath = "ServiceA.docsproj",
-                DocumentationType = "Mintlify",
+                DocumentationType = SupportedDocumentationType.Mintlify,
                 NavigationFilePath = ref1DocsPath,
                 DestinationPath = "services/service-a",
                 IntegrationType = "Tabs"
@@ -1611,7 +1611,7 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             context.DocumentationReferences.Add(new DocumentationReference
             {
                 ProjectPath = "ServiceB.docsproj",
-                DocumentationType = "Mintlify",
+                DocumentationType = SupportedDocumentationType.Mintlify,
                 NavigationFilePath = ref2DocsPath,
                 DestinationPath = "services/service-b",
                 IntegrationType = "Tabs"
@@ -1652,7 +1652,7 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             context.DocumentationReferences.Add(new DocumentationReference
             {
                 ProjectPath = "Missing.docsproj",
-                DocumentationType = "Mintlify",
+                DocumentationType = SupportedDocumentationType.Mintlify,
                 NavigationFilePath = Path.Combine(context.DocumentationRootPath, "nonexistent_docs.json"),
                 DestinationPath = "missing",
                 IntegrationType = "Tabs"
@@ -1713,7 +1713,7 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             context.DocumentationReferences.Add(new DocumentationReference
             {
                 ProjectPath = "ServiceA.docsproj",
-                DocumentationType = "Mintlify",
+                DocumentationType = SupportedDocumentationType.Mintlify,
                 NavigationFilePath = refDocsPath,
                 DestinationPath = "services/service-a",
                 IntegrationType = "Tabs"

@@ -502,7 +502,7 @@ namespace CloudNimble.DotNetDocs.Tests.Sdk.Tasks
         #region Styling Configuration Tests
 
         /// <summary>
-        /// Tests that ParseStylingConfig correctly parses CodeBlocks property.
+        /// Tests that ParseStylingConfig correctly parses Codeblocks property.
         /// </summary>
         [TestMethod]
         public void ParseStylingConfig_WithCodeBlocks_ParsesCorrectly()
@@ -510,7 +510,7 @@ namespace CloudNimble.DotNetDocs.Tests.Sdk.Tasks
             // Arrange
             var xml = """
                 <Styling>
-                    <CodeBlocks>dark</CodeBlocks>
+                    <Codeblocks>dark</Codeblocks>
                 </Styling>
                 """;
             var stylingElement = XElement.Parse(xml);
@@ -554,7 +554,7 @@ namespace CloudNimble.DotNetDocs.Tests.Sdk.Tasks
             // Arrange
             var xml = """
                 <Styling>
-                    <CodeBlocks>dark</CodeBlocks>
+                    <Codeblocks>dark</Codeblocks>
                     <Eyebrows>subtle</Eyebrows>
                 </Styling>
                 """;

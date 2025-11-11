@@ -1,3 +1,4 @@
+using CloudNimble.DotNetDocs.Core.Configuration;
 using System;
 
 namespace CloudNimble.DotNetDocs.Core
@@ -33,11 +34,11 @@ namespace CloudNimble.DotNetDocs.Core
         /// <summary>
         /// Gets or sets the documentation type of the referenced project.
         /// </summary>
-        /// <value>The documentation format (e.g., "Mintlify", "DocFX", "MkDocs").</value>
+        /// <value>The documentation format (Mintlify, DocFX, MkDocs, Jekyll, Hugo, or Generic).</value>
         /// <remarks>
         /// This determines which file patterns to copy and whether navigation combining is supported.
         /// </remarks>
-        public string DocumentationType { get; set; } = string.Empty;
+        public SupportedDocumentationType DocumentationType { get; set; } = SupportedDocumentationType.Generic;
 
         /// <summary>
         /// Gets or sets the integration type for Mintlify navigation.
