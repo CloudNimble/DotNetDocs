@@ -101,8 +101,8 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             
             if (File.Exists(baselinePath))
             {
-                var baseline = await File.ReadAllTextAsync(baselinePath, TestContext.CancellationTokenSource.Token);
-                var actual = await File.ReadAllTextAsync(actualPath, TestContext.CancellationTokenSource.Token);
+                var baseline = await File.ReadAllTextAsync(baselinePath, TestContext.CancellationToken);
+                var actual = await File.ReadAllTextAsync(actualPath, TestContext.CancellationToken);
                 
                 // Normalize line endings for cross-platform compatibility
                 var normalizedActual = actual.ReplaceLineEndings(Environment.NewLine);

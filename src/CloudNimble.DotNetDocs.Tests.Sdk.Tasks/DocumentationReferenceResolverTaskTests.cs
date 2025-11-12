@@ -14,6 +14,7 @@ namespace CloudNimble.DotNetDocs.Tests.Sdk.Tasks
     /// Tests for the DocumentationReferenceResolverTask class.
     /// </summary>
     [TestClass]
+    [DoNotParallelize]
     public class DocumentationReferenceResolverTaskTests : DotNetDocsTestBase
     {
 

@@ -937,6 +937,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             await renderer.RenderAsync(assembly);
         }
 
+
         #endregion
 
     }

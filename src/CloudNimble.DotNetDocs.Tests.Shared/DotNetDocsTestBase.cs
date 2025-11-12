@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using CloudNimble.Breakdance.Extensions.MSTest2;
 using CloudNimble.DotNetDocs.Core;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace CloudNimble.DotNetDocs.Tests.Shared
 {
@@ -17,6 +18,11 @@ namespace CloudNimble.DotNetDocs.Tests.Shared
 #elif NET10_0
             public const string framework = "net10.0";
 #endif
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public new required TestContext TestContext { get; set; }
 
         #region Internal Methods
 

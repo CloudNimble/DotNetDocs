@@ -162,27 +162,6 @@
                         ]
                       }
                     ]
-                  },
-                  {
-                    "group": "Mintlify",
-                    "icon": "folder-tree",
-                    "pages": [
-                      "api-reference/CloudNimble/DotNetDocs/Mintlify/index",
-                      "api-reference/CloudNimble/DotNetDocs/Mintlify/DocsNavigationConfig",
-                      "api-reference/CloudNimble/DotNetDocs/Mintlify/MintlifyIcons",
-                      "api-reference/CloudNimble/DotNetDocs/Mintlify/MintlifyRenderer",
-                      "api-reference/CloudNimble/DotNetDocs/Mintlify/MintlifyRendererOptions",
-                      "api-reference/CloudNimble/DotNetDocs/Mintlify/NavigationMode",
-                      "api-reference/CloudNimble/DotNetDocs/Mintlify/NavigationType",
-                      {
-                        "group": "Transformers",
-                        "icon": "folder-tree",
-                        "pages": [
-                          "api-reference/CloudNimble/DotNetDocs/Mintlify/Transformers/index",
-                          "api-reference/CloudNimble/DotNetDocs/Mintlify/Transformers/MintlifyMarkdownTransformer"
-                        ]
-                      }
-                    ]
                   }
                 ]
               }

@@ -964,7 +964,7 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             GetMintlifyRenderer().RenderMember(sb, member!);
 
             var result = sb.ToString();
-            result.Should().Contain($$$"""### <Icon icon="function" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} />  {{{member!.Symbol.Name}}}""");
+            result.Should().Contain($$$"""### <Icon icon="function" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} /> {{{member!.Symbol.Name}}}""");
         }
 
         [TestMethod]
@@ -1855,7 +1855,6 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
         //}
 
         #endregion
-
 
     }
 

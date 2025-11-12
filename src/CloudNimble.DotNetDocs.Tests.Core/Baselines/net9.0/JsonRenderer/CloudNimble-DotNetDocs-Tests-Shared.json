@@ -37,6 +37,68 @@
         {
           "accessibility": "public",
           "memberKind": "method",
+          "methodKind": "propertyGet",
+          "name": "get_TestContext",
+          "parameters": [],
+          "returnType": {
+            "members": [],
+            "assemblyName": "MSTest.TestFramework.Extensions",
+            "fullName": "Microsoft.VisualStudio.TestTools.UnitTesting.TestContext",
+            "name": "TestContext",
+            "signature": "Microsoft.VisualStudio.TestTools.UnitTesting.TestContext",
+            "typeKind": "error",
+            "isExternalReference": true,
+            "displayName": "Microsoft.VisualStudio.TestTools.UnitTesting.TestContext"
+          },
+          "returnTypeName": "Microsoft.VisualStudio.TestTools.UnitTesting.TestContext",
+          "signature": "public Microsoft.VisualStudio.TestTools.UnitTesting.TestContext TestContext.get",
+          "isInherited": false,
+          "isOverride": false,
+          "isVirtual": false,
+          "isAbstract": false,
+          "declaringTypeName": "CloudNimble.DotNetDocs.Tests.Shared.DotNetDocsTestBase",
+          "isExtensionMethod": false,
+          "displayName": "CloudNimble.DotNetDocs.Tests.Shared.DotNetDocsTestBase.TestContext.get"
+        },
+        {
+          "accessibility": "public",
+          "memberKind": "method",
+          "methodKind": "propertySet",
+          "name": "set_TestContext",
+          "parameters": [
+            {
+              "hasDefaultValue": false,
+              "isOptional": false,
+              "isParams": false,
+              "name": "value",
+              "parameterType": {
+                "members": [],
+                "assemblyName": "MSTest.TestFramework.Extensions",
+                "fullName": "Microsoft.VisualStudio.TestTools.UnitTesting.TestContext",
+                "name": "TestContext",
+                "signature": "Microsoft.VisualStudio.TestTools.UnitTesting.TestContext",
+                "typeKind": "error",
+                "isExternalReference": true,
+                "displayName": "Microsoft.VisualStudio.TestTools.UnitTesting.TestContext"
+              },
+              "typeName": "Microsoft.VisualStudio.TestTools.UnitTesting.TestContext",
+              "displayName": "Microsoft.VisualStudio.TestTools.UnitTesting.TestContext value",
+              "usage": ""
+            }
+          ],
+          "returnTypeName": "void",
+          "signature": "public void TestContext.set",
+          "isInherited": false,
+          "isOverride": false,
+          "isVirtual": false,
+          "isAbstract": false,
+          "declaringTypeName": "CloudNimble.DotNetDocs.Tests.Shared.DotNetDocsTestBase",
+          "isExtensionMethod": false,
+          "displayName": "CloudNimble.DotNetDocs.Tests.Shared.DotNetDocsTestBase.TestContext.set"
+        },
+        {
+          "accessibility": "public",
+          "memberKind": "method",
           "methodKind": "ordinary",
           "name": "GetTestsDotSharedAssembly",
           "parameters": [],
@@ -75,6 +137,21 @@
           "declaringTypeName": "CloudNimble.DotNetDocs.Tests.Shared.DotNetDocsTestBase",
           "isExtensionMethod": false,
           "displayName": "CloudNimble.DotNetDocs.Tests.Shared.DotNetDocsTestBase.DotNetDocsTestBase()"
+        },
+        {
+          "accessibility": "public",
+          "memberKind": "property",
+          "name": "TestContext",
+          "parameters": [],
+          "returnTypeName": "Microsoft.VisualStudio.TestTools.UnitTesting.TestContext",
+          "signature": "public required Microsoft.VisualStudio.TestTools.UnitTesting.TestContext TestContext { get; set; }",
+          "isInherited": false,
+          "isOverride": false,
+          "isVirtual": false,
+          "isAbstract": false,
+          "declaringTypeName": "CloudNimble.DotNetDocs.Tests.Shared.DotNetDocsTestBase",
+          "isExtensionMethod": false,
+          "displayName": "CloudNimble.DotNetDocs.Tests.Shared.DotNetDocsTestBase.TestContext"
         }
       ],
       "assemblyName": "CloudNimble.DotNetDocs.Tests.Shared",
