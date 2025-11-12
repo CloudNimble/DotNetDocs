@@ -26,6 +26,7 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
     /// Tests for the MintlifyRenderer class.
     /// </summary>
     [TestClass]
+    [DoNotParallelize]
     public class MintlifyRendererTests : DotNetDocsTestBase
     {
 

@@ -21,6 +21,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
     /// Tests for the JsonRenderer class.
     /// </summary>
     [TestClass]
+    [DoNotParallelize]
     public class JsonRendererTests : DotNetDocsTestBase
     {
 
