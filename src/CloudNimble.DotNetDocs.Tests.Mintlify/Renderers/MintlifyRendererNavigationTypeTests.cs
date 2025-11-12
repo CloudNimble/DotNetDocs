@@ -22,6 +22,7 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
     /// of the Template property before services are built.
     /// </summary>
     [TestClass]
+    [DoNotParallelize]
     public class MintlifyRendererNavigationTypeTests : DotNetDocsTestBase
     {
 
