@@ -45,11 +45,11 @@ jobs:
          foreach ($version in $versions) {
            Write-Host "Installing .NET $version..."
            Invoke-WebRequest -Uri "https://dot.net/v1/dotnet-install.ps1" -OutFile "dotnet-install.ps1"
-           if ($version -eq "10.0") {
-             ./dotnet-install.ps1 -Channel $version -Quality preview -InstallDir "$env:ProgramFiles\dotnet"
-           } else {
-             ./dotnet-install.ps1 -Channel $version -InstallDir "$env:ProgramFiles\dotnet"
-           }
+           # if ($version -eq "10.0") {
+           #   ./dotnet-install.ps1 -Channel $version -Quality preview -InstallDir "$env:ProgramFiles\dotnet"
+           # } else {
+           ./dotnet-install.ps1 -Channel $version -InstallDir "$env:ProgramFiles\dotnet"
+           # }
          }
          
          # Add to PATH for this job
