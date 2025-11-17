@@ -20,8 +20,8 @@
     <ItemGroup>
         <!-- MSBuild task dependencies -->
         <PackageReference Include="EasyAF.MSBuild" Version="3.*-*" />
-        <PackageReference Include="Microsoft.Build.Framework" Version="17.*" PrivateAssets="all" />
-        <PackageReference Include="Microsoft.Build.Utilities.Core" Version="17.*" PrivateAssets="all" ExcludeAssets="runtime" />
+        <PackageReference Include="Microsoft.Build.Framework" Version="18.0.2" PrivateAssets="all" />
+        <PackageReference Include="Microsoft.Build.Utilities.Core" Version="18.0.2" PrivateAssets="all" ExcludeAssets="runtime" />
         <PackageReference Include="System.Collections.Immutable" Version="9.*" PrivateAssets="all" />
         
         <!-- Microsoft.CodeAnalysis.CSharp.Workspaces needs to be available for the task -->
