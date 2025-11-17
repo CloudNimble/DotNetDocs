@@ -26,6 +26,7 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
     /// Tests for the MintlifyRenderer class.
     /// </summary>
     [TestClass]
+    [DoNotParallelize]
     public class MintlifyRendererTests : DotNetDocsTestBase
     {
 
@@ -44,6 +45,39 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
                 .FirstOrDefault();
             renderer.Should().NotBeNull("MintlifyRenderer should be registered in DI");
             return renderer!;
+        }
+
+        /// <summary>
+        /// Recursively verifies that all page paths in a navigation structure start with the expected prefix.
+        /// </summary>
+        /// <param name="pages">The list of pages to verify (can contain strings, GroupConfig, TabConfig, etc.).</param>
+        /// <param name="expectedPrefix">The expected URL prefix for all pages.</param>
+        private void VerifyPagePrefixes(List<object>? pages, string expectedPrefix)
+        {
+            if (pages is null)
+            {
+                return;
+            }
+
+            foreach (var page in pages)
+            {
+                if (page is string stringPage)
+                {
+                    stringPage.Should().StartWith(expectedPrefix, $"page '{stringPage}' should start with '{expectedPrefix}'");
+                }
+                else if (page is GroupConfig group)
+                {
+                    VerifyPagePrefixes(group.Pages, expectedPrefix);
+                }
+                else if (page is TabConfig tab)
+                {
+                    VerifyPagePrefixes(tab.Pages, expectedPrefix);
+                }
+                else if (page is DropdownConfig dropdown)
+                {
+                    VerifyPagePrefixes(dropdown.Pages, expectedPrefix);
+                }
+            }
         }
 
         #endregion
@@ -647,6 +681,7 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             var baselineDir = Path.Combine(
                 Directory.GetCurrentDirectory(),
                 "Baselines",
+                framework,
                 "MintlifyRenderer",
                 "FolderMode");
             var baselinePath = Path.Combine(baselineDir, baselineRelativePath);
@@ -930,7 +965,7 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             GetMintlifyRenderer().RenderMember(sb, member!);
 
             var result = sb.ToString();
-            result.Should().Contain($$$"""### <Icon icon="function" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} />  {{{member!.Symbol.Name}}}""");
+            result.Should().Contain($$$"""### <Icon icon="function" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} /> {{{member!.Symbol.Name}}}""");
         }
 
         [TestMethod]
@@ -1227,128 +1262,6 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
 
         #endregion
 
-        #region Baseline Generation
-
-        /// <summary>
-        /// Generates baseline files for the MintlifyRenderer in both FileMode and FolderMode.
-        /// This method is marked with [BreakdanceManifestGenerator] and is called by the Breakdance tool
-        /// to generate baseline files for comparison in unit tests.
-        /// </summary>
-        /// <param name="projectPath">The root path of the test project where baselines will be stored.</param>
-        /// <remarks>
-        /// This method uses Dependency Injection to get the ProjectContext and MintlifyRenderer instances.
-        /// It modifies the context properties to configure the output location and file naming options,
-        /// then uses the renderer from DI (which ensures all dependencies are properly injected,
-        /// including MintlifyRendererOptions and DocsJsonManager).
-        ///
-        /// The baseline generation intentionally does NOT use DocumentationManager.ProcessAsync because
-        /// these are unit test baselines for the renderer itself, not integration test baselines.
-        /// The renderer should be tested in isolation without transformers applied.
-        /// </remarks>
-        //[TestMethod]
-        //[DataRow(projectPath)]
-        [BreakdanceManifestGenerator]
-        public async Task GenerateMintlifyBaselines(string projectPath)
-        {
-            await GenerateFileModeBaselines(projectPath);
-            await GenerateFolderModeBaselines(projectPath);
-        }
-
-        /// <summary>
-        /// Generates baseline files for MintlifyRenderer in FileMode configuration.
-        /// </summary>
-        /// <param name="projectPath">The root path of the test project where baselines will be stored.</param>
-        /// <remarks>
-        /// This method:
-        /// 1. Gets the ProjectContext from DI to ensure consistent configuration
-        /// 2. Modifies the context properties for FileMode output
-        /// 3. Gets the MintlifyRenderer from DI with all dependencies properly injected
-        /// 4. Uses AssemblyManager directly (not DocumentationManager) to generate documentation
-        ///    without transformers, as these are unit test baselines for the renderer alone
-        /// 5. Does not restore context values since this runs in an isolated Breakdance process
-        /// </remarks>
-        private async Task GenerateFileModeBaselines(string projectPath)
-        {
-            var baselinesDir = Path.Combine(projectPath, "Baselines", "MintlifyRenderer", "FileMode");
-            if (Directory.Exists(baselinesDir))
-            {
-                Directory.Delete(baselinesDir, true);
-            }
-            Directory.CreateDirectory(baselinesDir);
-
-            var context = GetService<ProjectContext>();
-            context.FileNamingOptions = new FileNamingOptions(NamespaceMode.File, '-');
-            context.DocumentationRootPath = baselinesDir;
-
-            var renderer = GetMintlifyRenderer();
-
-            var assemblyPath = typeof(SimpleClass).Assembly.Location;
-            var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
-            var manager = new AssemblyManager(assemblyPath, xmlPath);
-            var assembly = await manager.DocumentAsync(context);
-
-            await renderer.RenderAsync(assembly);
-        }
-
-        /// <summary>
-        /// Generates baseline files for MintlifyRenderer in FolderMode configuration.
-        /// </summary>
-        /// <param name="projectPath">The root path of the test project where baselines will be stored.</param>
-        /// <remarks>
-        /// This method:
-        /// 1. Gets the ProjectContext from DI to ensure consistent configuration
-        /// 2. Modifies the context properties for FolderMode output
-        /// 3. Gets the MintlifyRenderer from DI with all dependencies properly injected
-        /// 4. Uses AssemblyManager directly (not DocumentationManager) to generate documentation
-        ///    without transformers, as these are unit test baselines for the renderer alone
-        /// 5. Does not restore context values since this runs in an isolated Breakdance process
-        /// </remarks>
-        private async Task GenerateFolderModeBaselines(string projectPath)
-        {
-            var baselinesDir = Path.Combine(projectPath, "Baselines", "MintlifyRenderer", "FolderMode");
-            if (Directory.Exists(baselinesDir))
-            {
-                Directory.Delete(baselinesDir, true);
-            }
-            Directory.CreateDirectory(baselinesDir);
-
-            // Get context from DI and modify it for baseline generation
-            var context = GetService<ProjectContext>();
-            context.FileNamingOptions = new FileNamingOptions(NamespaceMode.Folder, '-');
-            context.DocumentationRootPath = baselinesDir;
-
-            // Get renderer from DI to ensure all dependencies are properly injected
-            var renderer = GetMintlifyRenderer();
-
-            var assemblyPath = typeof(SimpleClass).Assembly.Location;
-            var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
-            var manager = new AssemblyManager(assemblyPath, xmlPath);
-            var assembly = await manager.DocumentAsync(context);
-
-            await renderer.RenderAsync(assembly);
-        }
-
-        //private static void CopyDirectoryRecursive(string sourceDir, string destDir)
-        //{
-        //    // Copy all files from the source directory
-        //    foreach (var file in Directory.GetFiles(sourceDir))
-        //    {
-        //        var destFile = Path.Combine(destDir, Path.GetFileName(file));
-        //        File.Copy(file, destFile, true);
-        //    }
-
-        //    // Recursively copy subdirectories
-        //    foreach (var subDir in Directory.GetDirectories(sourceDir))
-        //    {
-        //        var dirName = Path.GetFileName(subDir);
-        //        var destSubDir = Path.Combine(destDir, dirName);
-        //        Directory.CreateDirectory(destSubDir);
-        //        CopyDirectoryRecursive(subDir, destSubDir);
-        //    }
-        //}
-
-        #endregion
-
         #region DocsJsonManager Template Loading Tests
 
         [TestMethod]
@@ -1477,6 +1390,470 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             groups[3].Group.Should().Be("Plugins");
             groups[4].Group.Should().Be("Learnings");
         }
+
+        #endregion
+
+        #region CombineReferencedNavigationAsync Tests
+
+        [TestMethod]
+        public void CombineReferencedNavigation_NoReferences_DoesNotThrow()
+        {
+            var context = GetService<ProjectContext>();
+            var options = Options.Create(new MintlifyRendererOptions());
+            var docsJsonManager = new DocsJsonManager();
+
+            var collectionConfig = new DocsJsonConfig
+            {
+                Name = "Collection",
+                Navigation = new NavigationConfig { Pages = new List<object> { "introduction" } }
+            };
+            var collectionJson = JsonSerializer.Serialize(collectionConfig, MintlifyConstants.JsonSerializerOptions);
+            docsJsonManager.Load(collectionJson);
+
+            var renderer = new MintlifyRenderer(context, options, docsJsonManager);
+            context.DocumentationReferences.Clear();
+
+            Action act = () => renderer.CombineReferencedNavigation();
+
+            act.Should().NotThrow();
+        }
+
+        [TestMethod]
+        public void CombineReferencedNavigation_SkipsNonMintlifyReferences()
+        {
+            var context = GetService<ProjectContext>();
+            var options = Options.Create(new MintlifyRendererOptions());
+            var docsJsonManager = new DocsJsonManager();
+
+            var collectionConfig = new DocsJsonConfig
+            {
+                Name = "Collection",
+                Navigation = new NavigationConfig { Pages = [] }
+            };
+            var collectionJson = JsonSerializer.Serialize(collectionConfig, MintlifyConstants.JsonSerializerOptions);
+            docsJsonManager.Load(collectionJson);
+
+            var renderer = new MintlifyRenderer(context, options, docsJsonManager);
+            context.DocumentationReferences.Clear();
+            context.DocumentationReferences.Add(new DocumentationReference
+            {
+                ProjectPath = "test.docsproj",
+                DocumentationType = SupportedDocumentationType.DocFX,
+                NavigationFilePath = Path.Combine(context.DocumentationRootPath, "toc.yml"),
+                DestinationPath = "docfx",
+                IntegrationType = "Tabs"
+            });
+
+            renderer.CombineReferencedNavigation();
+
+            renderer._docsJsonManager!.Configuration!.Navigation!.Tabs.Should().BeNull();
+            renderer._docsJsonManager!.Configuration!.Navigation!.Products.Should().BeNull();
+        }
+
+        [TestMethod]
+        public void CombineReferencedNavigation_AddToTabs_CombinesNavigationCorrectly()
+        {
+            var context = GetService<ProjectContext>();
+            var options = Options.Create(new MintlifyRendererOptions());
+            var docsJsonManager = new DocsJsonManager();
+
+            var collectionConfig = new DocsJsonConfig
+            {
+                Name = "Collection",
+                Navigation = new NavigationConfig
+                {
+                    Pages = new List<object> { "introduction" }
+                }
+            };
+            var collectionJson = JsonSerializer.Serialize(collectionConfig, MintlifyConstants.JsonSerializerOptions);
+            docsJsonManager.Load(collectionJson);
+
+            var renderer = new MintlifyRenderer(context, options, docsJsonManager);
+
+            var refDocsPath = Path.Combine(context.DocumentationRootPath, "ref_docs.json");
+            var refConfig = new DocsJsonConfig
+            {
+                Name = "Service A",
+                Navigation = new NavigationConfig
+                {
+                    Pages = new List<object> { "overview", "getting-started" }
+                }
+            };
+            var refJson = JsonSerializer.Serialize(refConfig, MintlifyConstants.JsonSerializerOptions);
+            File.WriteAllText(refDocsPath, refJson);
+
+            context.DocumentationReferences.Clear();
+            context.DocumentationReferences.Add(new DocumentationReference
+            {
+                ProjectPath = "ServiceA.docsproj",
+                DocumentationType = SupportedDocumentationType.Mintlify,
+                NavigationFilePath = refDocsPath,
+                DestinationPath = "services/service-a",
+                IntegrationType = "Tabs"
+            });
+
+            renderer.CombineReferencedNavigation();
+
+            renderer._docsJsonManager!.Configuration!.Navigation!.Tabs.Should().NotBeNull();
+            renderer._docsJsonManager!.Configuration!.Navigation!.Tabs!.Count.Should().Be(1);
+
+            var tab = renderer._docsJsonManager!.Configuration!.Navigation!.Tabs![0];
+            tab.Tab.Should().Be("ServiceA");
+            tab.Href.Should().Be("services/service-a");
+            tab.Pages.Should().NotBeNull();
+            tab.Pages!.Count.Should().Be(2);
+
+            VerifyPagePrefixes(tab.Pages, "services/service-a/");
+        }
+
+        [TestMethod]
+        public void CombineReferencedNavigation_AddToProducts_CombinesNavigationCorrectly()
+        {
+            var context = GetService<ProjectContext>();
+            var options = Options.Create(new MintlifyRendererOptions());
+            var docsJsonManager = new DocsJsonManager();
+
+            var collectionConfig = new DocsJsonConfig
+            {
+                Name = "Collection",
+                Navigation = new NavigationConfig
+                {
+                    Pages = new List<object> { "introduction" }
+                }
+            };
+            var collectionJson = JsonSerializer.Serialize(collectionConfig, MintlifyConstants.JsonSerializerOptions);
+            docsJsonManager.Load(collectionJson);
+
+            var renderer = new MintlifyRenderer(context, options, docsJsonManager);
+
+            var refDocsPath = Path.Combine(context.DocumentationRootPath, "ref_docs.json");
+            var refConfig = new DocsJsonConfig
+            {
+                Name = "Product A",
+                Navigation = new NavigationConfig
+                {
+                    Pages = new List<object> { "overview", "getting-started" }
+                }
+            };
+            var refJson = JsonSerializer.Serialize(refConfig, MintlifyConstants.JsonSerializerOptions);
+            File.WriteAllText(refDocsPath, refJson);
+
+            context.DocumentationReferences.Clear();
+            context.DocumentationReferences.Add(new DocumentationReference
+            {
+                ProjectPath = "ProductA.docsproj",
+                DocumentationType = SupportedDocumentationType.Mintlify,
+                NavigationFilePath = refDocsPath,
+                DestinationPath = "products/product-a",
+                IntegrationType = "Products"
+            });
+
+            renderer.CombineReferencedNavigation();
+
+            renderer._docsJsonManager!.Configuration!.Navigation!.Products.Should().NotBeNull();
+            renderer._docsJsonManager!.Configuration!.Navigation!.Products!.Count.Should().Be(1);
+
+            var product = renderer._docsJsonManager!.Configuration!.Navigation!.Products![0];
+            product.Product.Should().Be("ProductA");
+            product.Href.Should().Be("products/product-a");
+            product.Pages.Should().NotBeNull();
+            product.Pages!.Count.Should().Be(2);
+
+            VerifyPagePrefixes(product.Pages, "products/product-a/");
+        }
+
+        [TestMethod]
+        public void CombineReferencedNavigation_MultipleReferences_CombinesAll()
+        {
+            var context = GetService<ProjectContext>();
+            var options = Options.Create(new MintlifyRendererOptions());
+            var docsJsonManager = new DocsJsonManager();
+
+            var collectionConfig = new DocsJsonConfig
+            {
+                Name = "Collection",
+                Navigation = new NavigationConfig
+                {
+                    Pages = new List<object> { "introduction" }
+                }
+            };
+            var collectionJson = JsonSerializer.Serialize(collectionConfig, MintlifyConstants.JsonSerializerOptions);
+            docsJsonManager.Load(collectionJson);
+
+            var renderer = new MintlifyRenderer(context, options, docsJsonManager);
+
+            var ref1DocsPath = Path.Combine(context.DocumentationRootPath, "ref1_docs.json");
+            var ref1Config = new DocsJsonConfig
+            {
+                Name = "Service A",
+                Navigation = new NavigationConfig { Pages = new List<object> { "overview" } }
+            };
+            var ref1Json = JsonSerializer.Serialize(ref1Config, MintlifyConstants.JsonSerializerOptions);
+            File.WriteAllText(ref1DocsPath, ref1Json);
+
+            var ref2DocsPath = Path.Combine(context.DocumentationRootPath, "ref2_docs.json");
+            var ref2Config = new DocsJsonConfig
+            {
+                Name = "Service B",
+                Navigation = new NavigationConfig { Pages = new List<object> { "getting-started" } }
+            };
+            var ref2Json = JsonSerializer.Serialize(ref2Config, MintlifyConstants.JsonSerializerOptions);
+            File.WriteAllText(ref2DocsPath, ref2Json);
+
+            context.DocumentationReferences.Clear();
+            context.DocumentationReferences.Add(new DocumentationReference
+            {
+                ProjectPath = "ServiceA.docsproj",
+                DocumentationType = SupportedDocumentationType.Mintlify,
+                NavigationFilePath = ref1DocsPath,
+                DestinationPath = "services/service-a",
+                IntegrationType = "Tabs"
+            });
+            context.DocumentationReferences.Add(new DocumentationReference
+            {
+                ProjectPath = "ServiceB.docsproj",
+                DocumentationType = SupportedDocumentationType.Mintlify,
+                NavigationFilePath = ref2DocsPath,
+                DestinationPath = "services/service-b",
+                IntegrationType = "Tabs"
+            });
+
+            renderer.CombineReferencedNavigation();
+
+            renderer._docsJsonManager!.Configuration!.Navigation!.Tabs.Should().NotBeNull();
+            renderer._docsJsonManager!.Configuration!.Navigation!.Tabs!.Count.Should().Be(2);
+
+            var tab1 = renderer._docsJsonManager!.Configuration!.Navigation!.Tabs![0];
+            tab1.Tab.Should().Be("ServiceA");
+            VerifyPagePrefixes(tab1.Pages, "services/service-a/");
+
+            var tab2 = renderer._docsJsonManager!.Configuration!.Navigation!.Tabs![1];
+            tab2.Tab.Should().Be("ServiceB");
+            VerifyPagePrefixes(tab2.Pages, "services/service-b/");
+        }
+
+        [TestMethod]
+        public void CombineReferencedNavigation_MissingDocsJson_HandlesGracefully()
+        {
+            var context = GetService<ProjectContext>();
+            var options = Options.Create(new MintlifyRendererOptions());
+            var docsJsonManager = new DocsJsonManager();
+
+            var collectionConfig = new DocsJsonConfig
+            {
+                Name = "Collection",
+                Navigation = new NavigationConfig { Pages = [] }
+            };
+            var collectionJson = JsonSerializer.Serialize(collectionConfig, MintlifyConstants.JsonSerializerOptions);
+            docsJsonManager.Load(collectionJson);
+
+            var renderer = new MintlifyRenderer(context, options, docsJsonManager);
+
+            context.DocumentationReferences.Clear();
+            context.DocumentationReferences.Add(new DocumentationReference
+            {
+                ProjectPath = "Missing.docsproj",
+                DocumentationType = SupportedDocumentationType.Mintlify,
+                NavigationFilePath = Path.Combine(context.DocumentationRootPath, "nonexistent_docs.json"),
+                DestinationPath = "missing",
+                IntegrationType = "Tabs"
+            });
+
+            Action act = () => renderer.CombineReferencedNavigation();
+            act.Should().NotThrow();
+
+            renderer._docsJsonManager!.Configuration!.Navigation!.Tabs.Should().BeNull();
+        }
+
+        [TestMethod]
+        public void CombineReferencedNavigation_AppliesUrlPrefixToNestedGroups()
+        {
+            var context = GetService<ProjectContext>();
+            var options = Options.Create(new MintlifyRendererOptions());
+            var docsJsonManager = new DocsJsonManager();
+
+            var collectionConfig = new DocsJsonConfig
+            {
+                Name = "Collection",
+                Navigation = new NavigationConfig { Pages = new List<object> { "introduction" } }
+            };
+            var collectionJson = JsonSerializer.Serialize(collectionConfig, MintlifyConstants.JsonSerializerOptions);
+            docsJsonManager.Load(collectionJson);
+
+            var renderer = new MintlifyRenderer(context, options, docsJsonManager);
+
+            var refDocsPath = Path.Combine(context.DocumentationRootPath, "ref_docs.json");
+            var refConfig = new DocsJsonConfig
+            {
+                Name = "Service A",
+                Navigation = new NavigationConfig
+                {
+                    Pages = new List<object>
+                    {
+                        "overview",
+                        new GroupConfig
+                        {
+                            Group = "API",
+                            Pages = new List<object>
+                            {
+                                "api/getting-started",
+                                new GroupConfig
+                                {
+                                    Group = "Endpoints",
+                                    Pages = new List<object> { "api/endpoints/users", "api/endpoints/products" }
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+            var refJson = JsonSerializer.Serialize(refConfig, MintlifyConstants.JsonSerializerOptions);
+            File.WriteAllText(refDocsPath, refJson);
+
+            context.DocumentationReferences.Clear();
+            context.DocumentationReferences.Add(new DocumentationReference
+            {
+                ProjectPath = "ServiceA.docsproj",
+                DocumentationType = SupportedDocumentationType.Mintlify,
+                NavigationFilePath = refDocsPath,
+                DestinationPath = "services/service-a",
+                IntegrationType = "Tabs"
+            });
+
+            renderer.CombineReferencedNavigation();
+
+            renderer._docsJsonManager!.Configuration!.Navigation!.Tabs.Should().NotBeNull();
+            renderer._docsJsonManager!.Configuration!.Navigation!.Tabs!.Count.Should().Be(1);
+
+            var tab = renderer._docsJsonManager!.Configuration!.Navigation!.Tabs![0];
+            tab.Tab.Should().Be("ServiceA");
+            tab.Href.Should().Be("services/service-a");
+            tab.Pages.Should().NotBeNull();
+
+            VerifyPagePrefixes(tab.Pages, "services/service-a/");
+        }
+
+        #endregion
+
+        #region Baseline Generation
+
+        /// <summary>
+        /// Generates baseline files for the MintlifyRenderer in both FileMode and FolderMode.
+        /// This method is marked with [BreakdanceManifestGenerator] and is called by the Breakdance tool
+        /// to generate baseline files for comparison in unit tests.
+        /// </summary>
+        /// <param name="projectPath">The root path of the test project where baselines will be stored.</param>
+        /// <remarks>
+        /// This method uses Dependency Injection to get the ProjectContext and MintlifyRenderer instances.
+        /// It modifies the context properties to configure the output location and file naming options,
+        /// then uses the renderer from DI (which ensures all dependencies are properly injected,
+        /// including MintlifyRendererOptions and DocsJsonManager).
+        ///
+        /// The baseline generation intentionally does NOT use DocumentationManager.ProcessAsync because
+        /// these are unit test baselines for the renderer itself, not integration test baselines.
+        /// The renderer should be tested in isolation without transformers applied.
+        /// </remarks>
+        //[TestMethod]
+        //[DataRow(projectPath)]
+        [BreakdanceManifestGenerator]
+        public async Task GenerateMintlifyBaselines(string projectPath)
+        {
+            await GenerateFileModeBaselines(projectPath);
+            await GenerateFolderModeBaselines(projectPath);
+        }
+
+        /// <summary>
+        /// Generates baseline files for MintlifyRenderer in FileMode configuration.
+        /// </summary>
+        /// <param name="projectPath">The root path of the test project where baselines will be stored.</param>
+        /// <remarks>
+        /// This method:
+        /// 1. Gets the ProjectContext from DI to ensure consistent configuration
+        /// 2. Modifies the context properties for FileMode output
+        /// 3. Gets the MintlifyRenderer from DI with all dependencies properly injected
+        /// 4. Uses AssemblyManager directly (not DocumentationManager) to generate documentation
+        ///    without transformers, as these are unit test baselines for the renderer alone
+        /// 5. Does not restore context values since this runs in an isolated Breakdance process
+        /// </remarks>
+        private async Task GenerateFileModeBaselines(string projectPath)
+        {
+            var baselinesDir = Path.Combine(projectPath, "Baselines", framework, "MintlifyRenderer", "FileMode");
+            if (Directory.Exists(baselinesDir))
+            {
+                Directory.Delete(baselinesDir, true);
+            }
+            Directory.CreateDirectory(baselinesDir);
+
+            var context = GetService<ProjectContext>();
+            context.FileNamingOptions = new FileNamingOptions(NamespaceMode.File, '-');
+            context.DocumentationRootPath = baselinesDir;
+
+            var renderer = GetMintlifyRenderer();
+
+            var assemblyPath = typeof(SimpleClass).Assembly.Location;
+            var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
+            var manager = new AssemblyManager(assemblyPath, xmlPath);
+            var assembly = await manager.DocumentAsync(context);
+
+            await renderer.RenderAsync(assembly);
+        }
+
+        /// <summary>
+        /// Generates baseline files for MintlifyRenderer in FolderMode configuration.
+        /// </summary>
+        /// <param name="projectPath">The root path of the test project where baselines will be stored.</param>
+        /// <remarks>
+        /// This method:
+        /// 1. Gets the ProjectContext from DI to ensure consistent configuration
+        /// 2. Modifies the context properties for FolderMode output
+        /// 3. Gets the MintlifyRenderer from DI with all dependencies properly injected
+        /// 4. Uses AssemblyManager directly (not DocumentationManager) to generate documentation
+        ///    without transformers, as these are unit test baselines for the renderer alone
+        /// 5. Does not restore context values since this runs in an isolated Breakdance process
+        /// </remarks>
+        private async Task GenerateFolderModeBaselines(string projectPath)
+        {
+            var baselinesDir = Path.Combine(projectPath, "Baselines", framework, "MintlifyRenderer", "FolderMode");
+            if (Directory.Exists(baselinesDir))
+            {
+                Directory.Delete(baselinesDir, true);
+            }
+            Directory.CreateDirectory(baselinesDir);
+
+            // Get context from DI and modify it for baseline generation
+            var context = GetService<ProjectContext>();
+            context.FileNamingOptions = new FileNamingOptions(NamespaceMode.Folder, '-');
+            context.DocumentationRootPath = baselinesDir;
+
+            // Get renderer from DI to ensure all dependencies are properly injected
+            var renderer = GetMintlifyRenderer();
+
+            var assemblyPath = typeof(SimpleClass).Assembly.Location;
+            var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
+            var manager = new AssemblyManager(assemblyPath, xmlPath);
+            var assembly = await manager.DocumentAsync(context);
+
+            await renderer.RenderAsync(assembly);
+        }
+
+        //private static void CopyDirectoryRecursive(string sourceDir, string destDir)
+        //{
+        //    // Copy all files from the source directory
+        //    foreach (var file in Directory.GetFiles(sourceDir))
+        //    {
+        //        var destFile = Path.Combine(destDir, Path.GetFileName(file));
+        //        File.Copy(file, destFile, true);
+        //    }
+
+        //    // Recursively copy subdirectories
+        //    foreach (var subDir in Directory.GetDirectories(sourceDir))
+        //    {
+        //        var dirName = Path.GetFileName(subDir);
+        //        var destSubDir = Path.Combine(destDir, dirName);
+        //        Directory.CreateDirectory(destSubDir);
+        //        CopyDirectoryRecursive(subDir, destSubDir);
+        //    }
+        //}
 
         #endregion
 

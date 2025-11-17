@@ -1,6 +1,6 @@
 <Project>
     <!-- ============================================================================
-       CloudNimble.DotNer SDK - Props
+       DotNetDocs SDK - Props
        
        Provides MSBuild SDK support for documentation projects (.docsproj)
        Enables documentation files to be included in Visual Studio solutions
@@ -210,6 +210,26 @@
         <None Include="$(DocumentationRoot)**/*.otf" />
         <None Include="$(DocumentationRoot)**/*.eot" />
     </ItemGroup>
+
+    <!-- Documentation Reference ItemGroup Definition -->
+    <!-- Allows referencing external .docsproj files to create unified documentation portals -->
+    <!-- Similar to ProjectReference, but for combining documentation outputs -->
+    <ItemDefinitionGroup>
+        <DocumentationReference>
+            <!-- Path to the .docsproj file being referenced -->
+            <ProjectPath></ProjectPath>
+            <!-- Root directory containing the referenced documentation outputs -->
+            <DocumentationRoot></DocumentationRoot>
+            <!-- Destination path within the collection's documentation root -->
+            <DestinationPath></DestinationPath>
+            <!-- Documentation type (Mintlify, DocFX, MkDocs, etc.) -->
+            <DocumentationType></DocumentationType>
+            <!-- For Mintlify: Tabs or Products integration -->
+            <IntegrationType>Tabs</IntegrationType>
+            <!-- Path to the navigation file (e.g., docs.json) -->
+            <NavigationFilePath></NavigationFilePath>
+        </DocumentationReference>
+    </ItemDefinitionGroup>
 
     <!-- Exclude common build and system directories -->
     <ItemGroup>

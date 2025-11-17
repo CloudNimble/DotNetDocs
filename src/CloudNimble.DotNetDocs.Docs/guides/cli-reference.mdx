@@ -104,8 +104,9 @@ dotnet docs add --output ./documentation --type Hugo
 
 <Tabs>
   <Tab title="Mintlify (Default)">
-    ```xml
-    <Project Sdk="DotNetDocs.Sdk/1.0.1">
+    <CodeGroup>
+    ```xml Current (1.1.0)
+    <Project Sdk="DotNetDocs.Sdk/1.1.0">
       <PropertyGroup>
         <DocumentationType>Mintlify</DocumentationType>
         <GenerateDocumentation>true</GenerateDocumentation>
@@ -128,11 +129,38 @@ dotnet docs add --output ./documentation --type Hugo
       </PropertyGroup>
     </Project>
     ```
+
+    ```xml Preview (1.2.0-preview.1)
+    <Project Sdk="DotNetDocs.Sdk/1.2.0-preview.1">
+      <PropertyGroup>
+        <DocumentationType>Mintlify</DocumentationType>
+        <GenerateDocumentation>true</GenerateDocumentation>
+        <NamespaceMode>Folder</NamespaceMode>
+        <ShowDocumentationStats>true</ShowDocumentationStats>
+
+        <ConceptualDocsEnabled>false</ConceptualDocsEnabled>
+        <ShowPlaceholders>false</ShowPlaceholders>
+
+        <MintlifyNavigationMode>Unified</MintlifyNavigationMode>
+        <MintlifyTemplate>
+          <Name>YourSolution</Name>
+          <Theme>maple</Theme>
+          <Colors>
+            <Primary>#419AC5</Primary>
+            <Light>#419AC5</Light>
+            <Dark>#3CD0E2</Dark>
+          </Colors>
+        </MintlifyTemplate>
+      </PropertyGroup>
+    </Project>
+    ```
+    </CodeGroup>
   </Tab>
 
   <Tab title="Other Types">
-    ```xml
-    <Project Sdk="DotNetDocs.Sdk/1.0.1">
+    <CodeGroup>
+    ```xml Current (1.1.0)
+    <Project Sdk="DotNetDocs.Sdk/1.1.0">
       <PropertyGroup>
         <DocumentationType>DocFX</DocumentationType>
         <GenerateDocumentation>true</GenerateDocumentation>
@@ -144,6 +172,21 @@ dotnet docs add --output ./documentation --type Hugo
       </PropertyGroup>
     </Project>
     ```
+
+    ```xml Preview (1.2.0-preview.1)
+    <Project Sdk="DotNetDocs.Sdk/1.2.0-preview.1">
+      <PropertyGroup>
+        <DocumentationType>DocFX</DocumentationType>
+        <GenerateDocumentation>true</GenerateDocumentation>
+        <NamespaceMode>Folder</NamespaceMode>
+        <ShowDocumentationStats>true</ShowDocumentationStats>
+
+        <ConceptualDocsEnabled>false</ConceptualDocsEnabled>
+        <ShowPlaceholders>false</ShowPlaceholders>
+      </PropertyGroup>
+    </Project>
+    ```
+    </CodeGroup>
 
     <Note>Replace `DocFX` with your chosen documentation type (`MkDocs`, `Jekyll`, `Hugo`, or `Generic`).</Note>
   </Tab>

@@ -110,6 +110,11 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
         /// </summary>
         public bool ShowPlaceholders { get; set; } = true;
 
+        /// <summary>
+        /// Gets or sets the resolved documentation references to combine with this documentation project.
+        /// </summary>
+        public ITaskItem[]? ResolvedDocumentationReferences { get; set; }
+
         #endregion
 
         #region Public Methods
@@ -124,6 +129,50 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
             try
             {
                 Log.LogMessage(MessageImportance.High, $"🚀 Generating {DocumentationType} documentation...");
+                // Validate DocumentationType (renderer type)
+                var validRendererTypes = new[] { RendererType.Mintlify, RendererType.Markdown, RendererType.Json, RendererType.Yaml };
+                if (!validRendererTypes.Contains(DocumentationType, StringComparer.OrdinalIgnoreCase))
+                {
+                    var validValues = string.Join(", ", validRendererTypes);
+                    Log.LogError($"Invalid DocumentationType '{DocumentationType}'. Valid values are: {validValues}");
+                    return false;
+                }
+
+
+                // Validate DocumentationReferences before building service container
+                var documentationReferences = new List<DocumentationReference>();
+                if (ResolvedDocumentationReferences is not null && ResolvedDocumentationReferences.Length > 0)
+                {
+                    Log.LogMessage(MessageImportance.Normal, $"   📚 Processing {ResolvedDocumentationReferences.Length} documentation reference(s)");
+
+                    foreach (var item in ResolvedDocumentationReferences)
+                    {
+                        var name = item.GetMetadata("Name");
+                        var docTypeString = item.GetMetadata("DocumentationType");
+
+                        if (!Enum.TryParse<SupportedDocumentationType>(docTypeString, true, out var docType))
+                        {
+                            var validValues = string.Join(", ", Enum.GetNames<SupportedDocumentationType>());
+                            Log.LogError($"Invalid DocumentationType '{docTypeString}' for reference '{item.GetMetadata("ProjectPath")}'. Valid values are: {validValues}");
+                            return false;
+                        }
+
+                        var reference = new DocumentationReference
+                        {
+                            ProjectPath = item.GetMetadata("ProjectPath"),
+                            DocumentationRoot = item.GetMetadata("DocumentationRoot"),
+                            DestinationPath = item.GetMetadata("DestinationPath"),
+                            IntegrationType = item.GetMetadata("IntegrationType"),
+                            DocumentationType = docType,
+                            NavigationFilePath = item.GetMetadata("NavigationFilePath"),
+                            Name = !string.IsNullOrWhiteSpace(name) ? name : null
+                        };
+
+                        documentationReferences.Add(reference);
+                        var displayName = !string.IsNullOrWhiteSpace(reference.Name) ? $"{reference.Name} ({Path.GetFileName(reference.ProjectPath)})" : Path.GetFileName(reference.ProjectPath);
+                        Log.LogMessage(MessageImportance.Normal, $"      Added reference: {displayName} → {reference.DestinationPath}");
+                    }
+                }
 
                 // Set up dependency injection
                 var services = new ServiceCollection();
@@ -138,26 +187,32 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
                     context.ConceptualDocsEnabled = ConceptualDocsEnabled;
                     context.ShowPlaceholders = ShowPlaceholders;
 
+                    // Add the validated documentation references
+                    foreach (var reference in documentationReferences)
+                    {
+                        context.DocumentationReferences.Add(reference);
+                    }
+
                     // NamespaceFileMode will be set via the NamespaceMode property
                     // This is handled internally by the Core library
                 });
 
                 // Add the appropriate renderer based on documentation type
-                switch (DocumentationType.ToLowerInvariant())
+                switch (DocumentationType)
                 {
-                    case "mintlify":
+                    case var _ when DocumentationType.Equals(RendererType.Mintlify, StringComparison.OrdinalIgnoreCase):
                         services.AddMintlifyServices(options =>
                         {
                             options.GenerateDocsJson = true;
                             options.GenerateNamespaceIndex = true;
                             options.IncludeIcons = true;
 
-                            // Parse navigation mode
+                            // Parse navigation mode from property (legacy support)
                             if (!string.IsNullOrWhiteSpace(MintlifyNavigationMode))
                             {
                                 if (Enum.TryParse<NavigationMode>(MintlifyNavigationMode, true, out var navMode))
                                 {
-                                    options.NavigationMode = navMode;
+                                    options.Navigation.Mode = navMode;
                                     Log.LogMessage(MessageImportance.Normal, $"   Using navigation mode: {navMode}");
                                 }
                                 else
@@ -175,11 +230,14 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
 
                             // Load template from XML or file
                             DocsJsonConfig? template = null;
-                            
+                            DocsNavigationConfig? docsNavConfig = null;
+
                             // First try inline XML template
                             if (!string.IsNullOrWhiteSpace(MintlifyTemplate))
                             {
-                                template = ParseMintlifyTemplate(MintlifyTemplate);
+                                var (parsedTemplate, parsedNavConfig) = ParseMintlifyTemplate(MintlifyTemplate);
+                                template = parsedTemplate;
+                                docsNavConfig = parsedNavConfig;
                                 if (template is not null)
                                 {
                                     Log.LogMessage(MessageImportance.Normal, "   Loaded Mintlify template from inline XML");
@@ -216,19 +274,28 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
                             {
                                 options.Template = template;
                             }
+
+                            // Apply DocsNavigationConfig if parsed from template
+                            if (docsNavConfig is not null)
+                            {
+                                options.Navigation = docsNavConfig;
+                                Log.LogMessage(MessageImportance.Normal, $"   Using navigation config: Mode={docsNavConfig.Mode}, Type={docsNavConfig.Type}");
+                            }
                         });
                         break;
-                    case "markdown":
+                    case var _ when DocumentationType.Equals(RendererType.Markdown, StringComparison.OrdinalIgnoreCase):
                         services.AddMarkdownRenderer();
                         break;
-                    case "json":
+                    case var _ when DocumentationType.Equals(RendererType.Json, StringComparison.OrdinalIgnoreCase):
                         services.AddJsonRenderer();
                         break;
-                    case "yaml":
+                    case var _ when DocumentationType.Equals(RendererType.Yaml, StringComparison.OrdinalIgnoreCase):
                         services.AddYamlRenderer();
                         break;
                     default:
-                        Log.LogError($"Unknown documentation type: {DocumentationType}");
+                        // This should never happen due to validation above, but keeping for safety
+                        var validValues = string.Join(", ", new[] { RendererType.Mintlify, RendererType.Markdown, RendererType.Json, RendererType.Yaml });
+                        Log.LogError($"Unknown documentation type: {DocumentationType}. Valid values are: {validValues}");
                         return false;
                 }
 
@@ -273,23 +340,23 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
 
                 // Collect statistics after processing
                 var generatedFiles = new List<string>();
-                
-                if (DocumentationType.Equals("Mintlify", StringComparison.OrdinalIgnoreCase))
+
+                if (DocumentationType.Equals(RendererType.Mintlify, StringComparison.OrdinalIgnoreCase))
                 {
                     var mdFiles = Directory.GetFiles(OutputPath, "*.mdx", SearchOption.AllDirectories);
                     generatedFiles.AddRange(mdFiles);
                 }
-                else if (DocumentationType.Equals("Markdown", StringComparison.OrdinalIgnoreCase))
+                else if (DocumentationType.Equals(RendererType.Markdown, StringComparison.OrdinalIgnoreCase))
                 {
                     var mdFiles = Directory.GetFiles(OutputPath, "*.md", SearchOption.AllDirectories);
                     generatedFiles.AddRange(mdFiles);
                 }
-                else if (DocumentationType.Equals("Json", StringComparison.OrdinalIgnoreCase))
+                else if (DocumentationType.Equals(RendererType.Json, StringComparison.OrdinalIgnoreCase))
                 {
                     var jsonFiles = Directory.GetFiles(OutputPath, "*.json", SearchOption.AllDirectories);
                     generatedFiles.AddRange(jsonFiles);
                 }
-                else if (DocumentationType.Equals("Yaml", StringComparison.OrdinalIgnoreCase))
+                else if (DocumentationType.Equals(RendererType.Yaml, StringComparison.OrdinalIgnoreCase))
                 {
                     var yamlFiles = Directory.GetFiles(OutputPath, "*.yaml", SearchOption.AllDirectories);
                     generatedFiles.AddRange(yamlFiles);
@@ -334,7 +401,7 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
         /// </summary>
         /// <param name="xmlTemplate">The XML template string.</param>
         /// <returns>A DocsJsonConfig instance, or null if parsing fails.</returns>
-        internal DocsJsonConfig? ParseMintlifyTemplate(string xmlTemplate)
+        internal (DocsJsonConfig? config, DocsNavigationConfig? navConfig) ParseMintlifyTemplate(string xmlTemplate)
         {
             try
             {
@@ -344,11 +411,11 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
                 if (root is null)
                 {
                     Log.LogWarning("Failed to parse MintlifyTemplate XML: root element is null");
-                    return null;
+                    return (null, null);
                 }
 
                 // Get the name with fallback to solution name
-                var nameValue = root.Element("Name")?.Value;
+                var nameValue = root.Element(nameof(DocsJsonConfig.Name))?.Value;
                 if (string.IsNullOrWhiteSpace(nameValue) && !string.IsNullOrWhiteSpace(SolutionName))
                 {
                     nameValue = SolutionName;
@@ -357,41 +424,44 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
                 var config = new DocsJsonConfig
                 {
                     Name = nameValue ?? "API Documentation",
-                    Description = root.Element("Description")?.Value,
-                    Theme = root.Element("Theme")?.Value ?? "mint"
+                    Description = root.Element(nameof(DocsJsonConfig.Description))?.Value,
+                    Theme = root.Element(nameof(DocsJsonConfig.Theme))?.Value ?? "mint"
                 };
 
+                // Parse DocsNavigationConfig from Navigation element attributes and legacy elements
+                var docsNavConfig = ParseDocsNavigationConfig(root);
+
                 // Parse Colors
-                var colorsElement = root.Element("Colors");
+                var colorsElement = root.Element(nameof(DocsJsonConfig.Colors));
                 if (colorsElement is not null)
                 {
                     config.Colors = new ColorsConfig
                     {
-                        Primary = colorsElement.Element("Primary")?.Value ?? "#000000",
-                        Light = colorsElement.Element("Light")?.Value,
-                        Dark = colorsElement.Element("Dark")?.Value
+                        Primary = colorsElement.Element(nameof(ColorsConfig.Primary))?.Value ?? "#000000",
+                        Light = colorsElement.Element(nameof(ColorsConfig.Light))?.Value,
+                        Dark = colorsElement.Element(nameof(ColorsConfig.Dark))?.Value
                     };
                 }
 
                 // Parse Logo
-                var logoElement = root.Element("Logo");
+                var logoElement = root.Element(nameof(DocsJsonConfig.Logo));
                 if (logoElement is not null)
                 {
                     config.Logo = new LogoConfig
                     {
-                        Light = logoElement.Element("Light")?.Value,
-                        Dark = logoElement.Element("Dark")?.Value,
-                        Href = logoElement.Element("Href")?.Value
+                        Light = logoElement.Element(nameof(LogoConfig.Light))?.Value,
+                        Dark = logoElement.Element(nameof(LogoConfig.Dark))?.Value,
+                        Href = logoElement.Element(nameof(LogoConfig.Href))?.Value
                     };
                 }
 
                 // Parse Favicon
-                var faviconElement = root.Element("Favicon");
+                var faviconElement = root.Element(nameof(DocsJsonConfig.Favicon));
                 if (faviconElement is not null)
                 {
                     // Check if it has Light/Dark sub-elements
-                    var lightFavicon = faviconElement.Element("Light")?.Value;
-                    var darkFavicon = faviconElement.Element("Dark")?.Value;
+                    var lightFavicon = faviconElement.Element(nameof(FaviconConfig.Light))?.Value;
+                    var darkFavicon = faviconElement.Element(nameof(FaviconConfig.Dark))?.Value;
 
                     if (lightFavicon is not null || darkFavicon is not null)
                     {
@@ -412,41 +482,119 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
                     }
                 }
 
-                // Parse Navigation
-                var navigationElement = root.Element("Navigation");
+                // Parse Navigation structure
+                var navigationElement = root.Element(nameof(DocsJsonConfig.Navigation));
                 if (navigationElement is not null)
                 {
                     config.Navigation = ParseNavigationConfig(navigationElement);
                 }
 
                 // Parse Styling
-                var stylingElement = root.Element("Styling");
+                var stylingElement = root.Element(nameof(DocsJsonConfig.Styling));
                 if (stylingElement is not null)
                 {
                     config.Styling = ParseStylingConfig(stylingElement);
                 }
 
                 // Parse Appearance
-                var appearanceElement = root.Element("Appearance");
+                var appearanceElement = root.Element(nameof(DocsJsonConfig.Appearance));
                 if (appearanceElement is not null)
                 {
                     config.Appearance = ParseAppearanceConfig(appearanceElement);
                 }
 
                 // Parse Integrations
-                var integrationsElement = root.Element("Integrations");
+                var integrationsElement = root.Element(nameof(DocsJsonConfig.Integrations));
                 if (integrationsElement is not null)
                 {
                     config.Integrations = ParseIntegrationsConfig(integrationsElement);
                 }
 
-                return config;
+                // Parse Interaction
+                var interactionElement = root.Element(nameof(DocsJsonConfig.Interaction));
+                if (interactionElement is not null)
+                {
+                    config.Interaction = ParseInteractionConfig(interactionElement);
+                }
+
+                return (config, docsNavConfig);
             }
             catch (Exception ex)
             {
                 Log.LogWarning($"Failed to parse MintlifyTemplate XML: {ex.Message}");
-                return null;
+                return (null, null);
             }
+        }
+
+        /// <summary>
+        /// Parses the DocsNavigationConfig from the root element.
+        /// Supports both new attribute-based format and legacy element-based format.
+        /// </summary>
+        /// <param name="root">The root XML element.</param>
+        /// <returns>A DocsNavigationConfig instance.</returns>
+        internal DocsNavigationConfig ParseDocsNavigationConfig(XElement root)
+        {
+            var navConfig = new DocsNavigationConfig();
+            var navigationElement = root.Element(nameof(DocsJsonConfig.Navigation));
+
+            // Try new attribute-based format first
+            if (navigationElement is not null)
+            {
+                // Parse Mode attribute
+                var modeAttr = navigationElement.Attribute("Mode")?.Value;
+                if (!string.IsNullOrWhiteSpace(modeAttr))
+                {
+                    if (Enum.TryParse<NavigationMode>(modeAttr, true, out var mode))
+                    {
+                        navConfig.Mode = mode;
+                    }
+                }
+
+                // Parse Type attribute
+                var typeAttr = navigationElement.Attribute("Type")?.Value;
+                if (!string.IsNullOrWhiteSpace(typeAttr))
+                {
+                    if (Enum.TryParse<NavigationType>(typeAttr, true, out var type))
+                    {
+                        navConfig.Type = type;
+                    }
+                }
+
+                // Parse Name attribute
+                var nameAttr = navigationElement.Attribute("Name")?.Value;
+                if (!string.IsNullOrWhiteSpace(nameAttr))
+                {
+                    navConfig.Name = nameAttr;
+                }
+            }
+
+            // Fall back to legacy element-based format for backward compatibility
+            if (navigationElement is null || (navigationElement.Attribute("Mode") is null &&
+                                              navigationElement.Attribute("Type") is null &&
+                                              navigationElement.Attribute("Name") is null))
+            {
+                // Try NavigationType legacy element
+                var navTypeElement = root.Element("NavigationType");
+                if (navTypeElement is not null && !string.IsNullOrWhiteSpace(navTypeElement.Value))
+                {
+                    if (Enum.TryParse<NavigationType>(navTypeElement.Value, true, out var type))
+                    {
+                        navConfig.Type = type;
+                    }
+                }
+
+                // Try NavigationName legacy element
+                var navNameElement = root.Element("NavigationName");
+                if (navNameElement is not null && !string.IsNullOrWhiteSpace(navNameElement.Value))
+                {
+                    navConfig.Name = navNameElement.Value;
+                }
+
+                // Note: NavigationMode was previously handled separately via MintlifyNavigationMode property,
+                // so we don't need a legacy element for it here
+            }
+
+            return navConfig;
         }
 
         /// <summary>
@@ -461,7 +609,7 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
                 Pages = []
             };
 
-            var pagesElement = navigationElement.Element("Pages");
+            var pagesElement = navigationElement.Element(nameof(NavigationConfig.Pages));
             if (pagesElement is not null)
             {
                 var groupsElement = pagesElement.Element("Groups");
@@ -515,7 +663,7 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
             };
 
             // Parse direct pages (semicolon-separated list)
-            var pagesElement = groupElement.Element("Pages");
+            var pagesElement = groupElement.Element(nameof(GroupConfig.Pages));
             if (pagesElement is not null && !string.IsNullOrWhiteSpace(pagesElement.Value))
             {
                 var pageList = pagesElement.Value.Split(';', StringSplitOptions.RemoveEmptyEntries);
@@ -529,13 +677,25 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
                 }
             }
 
-            // Parse nested groups
+            // Parse nested groups - check both <Groups> wrapper and direct <Group> children
             var nestedGroupsElement = groupElement.Element("Groups");
             if (nestedGroupsElement is not null)
             {
                 foreach (var nestedGroupElement in nestedGroupsElement.Elements("Group"))
                 {
                     var nestedGroup = ParseGroupConfig(nestedGroupElement);
+                    if (nestedGroup is not null)
+                    {
+                        group.Pages.Add(nestedGroup);
+                    }
+                }
+            }
+            else
+            {
+                // Also check for direct Group children (when Groups wrapper is not used)
+                foreach (var directGroupElement in groupElement.Elements("Group"))
+                {
+                    var nestedGroup = ParseGroupConfig(directGroupElement);
                     if (nestedGroup is not null)
                     {
                         group.Pages.Add(nestedGroup);
@@ -556,145 +716,145 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
             var config = new IntegrationsConfig();
 
             // Parse Amplitude
-            var amplitudeElement = integrationsElement.Element("Amplitude");
+            var amplitudeElement = integrationsElement.Element(nameof(IntegrationsConfig.Amplitude));
             if (amplitudeElement is not null)
             {
                 config.Amplitude = new AmplitudeConfig
                 {
-                    ApiKey = amplitudeElement.Attribute("ApiKey")?.Value
+                    ApiKey = amplitudeElement.Attribute(nameof(AmplitudeConfig.ApiKey))?.Value
                 };
             }
 
             // Parse Clearbit
-            var clearbitElement = integrationsElement.Element("Clearbit");
+            var clearbitElement = integrationsElement.Element(nameof(IntegrationsConfig.Clearbit));
             if (clearbitElement is not null)
             {
                 config.Clearbit = new ClearbitConfig
                 {
-                    PublicApiKey = clearbitElement.Attribute("PublicApiKey")?.Value
+                    PublicApiKey = clearbitElement.Attribute(nameof(ClearbitConfig.PublicApiKey))?.Value
                 };
             }
 
             // Parse Fathom
-            var fathomElement = integrationsElement.Element("Fathom");
+            var fathomElement = integrationsElement.Element(nameof(IntegrationsConfig.Fathom));
             if (fathomElement is not null)
             {
                 config.Fathom = new FathomConfig
                 {
-                    SiteId = fathomElement.Attribute("SiteId")?.Value
+                    SiteId = fathomElement.Attribute(nameof(FathomConfig.SiteId))?.Value
                 };
             }
 
             // Parse Google Analytics 4
-            var ga4Element = integrationsElement.Element("GoogleAnalytics4");
+            var ga4Element = integrationsElement.Element(nameof(IntegrationsConfig.GoogleAnalytics4));
             if (ga4Element is not null)
             {
                 config.GoogleAnalytics4 = new GoogleAnalytics4Config
                 {
-                    MeasurementId = ga4Element.Attribute("MeasurementId")?.Value
+                    MeasurementId = ga4Element.Attribute(nameof(GoogleAnalytics4Config.MeasurementId))?.Value
                 };
             }
 
             // Parse Google Tag Manager
-            var gtmElement = integrationsElement.Element("Gtm");
+            var gtmElement = integrationsElement.Element(nameof(IntegrationsConfig.Gtm));
             if (gtmElement is not null)
             {
                 config.Gtm = new GtmConfig
                 {
-                    TagId = gtmElement.Attribute("TagId")?.Value
+                    TagId = gtmElement.Attribute(nameof(GtmConfig.TagId))?.Value
                 };
             }
 
             // Parse Heap
-            var heapElement = integrationsElement.Element("Heap");
+            var heapElement = integrationsElement.Element(nameof(IntegrationsConfig.Heap));
             if (heapElement is not null)
             {
                 config.Heap = new HeapConfig
                 {
-                    AppId = heapElement.Attribute("AppId")?.Value
+                    AppId = heapElement.Attribute(nameof(HeapConfig.AppId))?.Value
                 };
             }
 
             // Parse Hightouch
-            var hightouchElement = integrationsElement.Element("Hightouch");
+            var hightouchElement = integrationsElement.Element(nameof(IntegrationsConfig.Hightouch));
             if (hightouchElement is not null)
             {
                 config.Hightouch = new HightouchConfig
                 {
-                    ApiKey = hightouchElement.Attribute("ApiKey")?.Value
+                    ApiKey = hightouchElement.Attribute(nameof(HightouchConfig.ApiKey))?.Value
                 };
             }
 
             // Parse Hotjar
-            var hotjarElement = integrationsElement.Element("Hotjar");
+            var hotjarElement = integrationsElement.Element(nameof(IntegrationsConfig.Hotjar));
             if (hotjarElement is not null)
             {
                 config.Hotjar = new HotjarConfig
                 {
-                    Hjid = hotjarElement.Attribute("Hjid")?.Value,
-                    Hjsv = hotjarElement.Attribute("Hjsv")?.Value
+                    Hjid = hotjarElement.Attribute(nameof(HotjarConfig.Hjid))?.Value,
+                    Hjsv = hotjarElement.Attribute(nameof(HotjarConfig.Hjsv))?.Value
                 };
             }
 
             // Parse LogRocket
-            var logrocketElement = integrationsElement.Element("LogRocket");
+            var logrocketElement = integrationsElement.Element(nameof(IntegrationsConfig.LogRocket));
             if (logrocketElement is not null)
             {
                 config.LogRocket = new LogRocketConfig
                 {
-                    AppId = logrocketElement.Attribute("AppId")?.Value
+                    AppId = logrocketElement.Attribute(nameof(LogRocketConfig.AppId))?.Value
                 };
             }
 
             // Parse Mixpanel
-            var mixpanelElement = integrationsElement.Element("Mixpanel");
+            var mixpanelElement = integrationsElement.Element(nameof(IntegrationsConfig.Mixpanel));
             if (mixpanelElement is not null)
             {
                 config.Mixpanel = new MixpanelConfig
                 {
-                    ProjectToken = mixpanelElement.Attribute("ProjectToken")?.Value
+                    ProjectToken = mixpanelElement.Attribute(nameof(MixpanelConfig.ProjectToken))?.Value
                 };
             }
 
             // Parse Pirsch
-            var pirschElement = integrationsElement.Element("Pirsch");
+            var pirschElement = integrationsElement.Element(nameof(IntegrationsConfig.Pirsch));
             if (pirschElement is not null)
             {
                 config.Pirsch = new PirschConfig
                 {
-                    Id = pirschElement.Attribute("Id")?.Value
+                    Id = pirschElement.Attribute(nameof(PirschConfig.Id))?.Value
                 };
             }
 
             // Parse Plausible
-            var plausibleElement = integrationsElement.Element("Plausible");
+            var plausibleElement = integrationsElement.Element(nameof(IntegrationsConfig.Plausible));
             if (plausibleElement is not null)
             {
                 config.Plausible = new PlausibleConfig
                 {
-                    Domain = plausibleElement.Attribute("Domain")?.Value,
-                    Server = plausibleElement.Attribute("Server")?.Value
+                    Domain = plausibleElement.Attribute(nameof(PlausibleConfig.Domain))?.Value,
+                    Server = plausibleElement.Attribute(nameof(PlausibleConfig.Server))?.Value
                 };
             }
 
             // Parse PostHog
-            var posthogElement = integrationsElement.Element("PostHog");
+            var posthogElement = integrationsElement.Element(nameof(IntegrationsConfig.PostHog));
             if (posthogElement is not null)
             {
                 config.PostHog = new PostHogConfig
                 {
-                    ApiKey = posthogElement.Attribute("ApiKey")?.Value,
-                    ApiHost = posthogElement.Attribute("ApiHost")?.Value
+                    ApiKey = posthogElement.Attribute(nameof(PostHogConfig.ApiKey))?.Value,
+                    ApiHost = posthogElement.Attribute(nameof(PostHogConfig.ApiHost))?.Value
                 };
             }
 
             // Parse Segment
-            var segmentElement = integrationsElement.Element("Segment");
+            var segmentElement = integrationsElement.Element(nameof(IntegrationsConfig.Segment));
             if (segmentElement is not null)
             {
                 config.Segment = new SegmentConfig
                 {
-                    Key = segmentElement.Attribute("Key")?.Value
+                    Key = segmentElement.Attribute(nameof(SegmentConfig.Key))?.Value
                 };
             }
 
@@ -710,15 +870,15 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
         {
             var config = new StylingConfig();
 
-            // Parse CodeBlocks
-            var codeBlocksElement = stylingElement.Element("CodeBlocks");
+            // Parse Codeblocks
+            var codeBlocksElement = stylingElement.Element(nameof(StylingConfig.Codeblocks));
             if (codeBlocksElement is not null && !string.IsNullOrWhiteSpace(codeBlocksElement.Value))
             {
                 config.Codeblocks = codeBlocksElement.Value.Trim();
             }
 
             // Parse Eyebrows
-            var eyebrowsElement = stylingElement.Element("Eyebrows");
+            var eyebrowsElement = stylingElement.Element(nameof(StylingConfig.Eyebrows));
             if (eyebrowsElement is not null && !string.IsNullOrWhiteSpace(eyebrowsElement.Value))
             {
                 config.Eyebrows = eyebrowsElement.Value.Trim();
@@ -737,19 +897,41 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
             var config = new AppearanceConfig();
 
             // Parse Default
-            var defaultElement = appearanceElement.Element("Default");
+            var defaultElement = appearanceElement.Element(nameof(AppearanceConfig.Default));
             if (defaultElement is not null && !string.IsNullOrWhiteSpace(defaultElement.Value))
             {
                 config.Default = defaultElement.Value.Trim();
             }
 
             // Parse Strict
-            var strictElement = appearanceElement.Element("Strict");
+            var strictElement = appearanceElement.Element(nameof(AppearanceConfig.Strict));
             if (strictElement is not null && !string.IsNullOrWhiteSpace(strictElement.Value))
             {
                 if (bool.TryParse(strictElement.Value.Trim(), out var strict))
                 {
                     config.Strict = strict;
+                }
+            }
+
+            return config;
+        }
+
+        /// <summary>
+        /// Parses the Interaction element from the MintlifyTemplate XML.
+        /// </summary>
+        /// <param name="interactionElement">The interaction XML element.</param>
+        /// <returns>An InteractionConfig instance.</returns>
+        internal InteractionConfig ParseInteractionConfig(XElement interactionElement)
+        {
+            var config = new InteractionConfig();
+
+            // Parse Drilldown
+            var drilldownElement = interactionElement.Element(nameof(InteractionConfig.Drilldown));
+            if (drilldownElement is not null && !string.IsNullOrWhiteSpace(drilldownElement.Value))
+            {
+                if (bool.TryParse(drilldownElement.Value.Trim(), out var drilldown))
+                {
+                    config.Drilldown = drilldown;
                 }
             }
 

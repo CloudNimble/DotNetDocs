@@ -24,6 +24,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
     /// Tests for the YamlRenderer class.
     /// </summary>
     [TestClass]
+    [DoNotParallelize]
     public class YamlRendererTests : DotNetDocsTestBase
     {
 
@@ -54,7 +55,11 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
         {
             _testOutputPath = Path.Combine(Path.GetTempPath(), $"YamlRendererTest_{Guid.NewGuid()}");
             Directory.CreateDirectory(_testOutputPath);
-            _yamlDeserializer = new DeserializerBuilder().Build();
+            _yamlDeserializer = new DeserializerBuilder()
+                .EnablePrivateConstructors()
+                .WithNamingConvention(YamlDotNet.Serialization.NamingConventions.CamelCaseNamingConvention.Instance)
+                .IgnoreUnmatchedProperties()
+                .Build();
 
             // Configure services for DI
             TestHostBuilder.ConfigureServices((context, services) =>
@@ -248,7 +253,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             // Assert
             var context = GetService<ProjectContext>();
             var tocPath = Path.Combine(_testOutputPath, context.ApiReferencePath, "toc.yaml");
-            var yaml = await File.ReadAllTextAsync(tocPath);
+            var yaml = await File.ReadAllTextAsync(tocPath, TestContext.CancellationToken);
             var toc = _yamlDeserializer.Deserialize<Dictionary<string, object>>(yaml);
 
             toc.Should().ContainKey("title");
@@ -796,6 +801,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             var baselineDir = Path.Combine(
                 Directory.GetCurrentDirectory(),
                 "Baselines",
+                framework,
                 "YamlRenderer",
                 "FolderMode");
             var baselinePath = Path.Combine(baselineDir, baselineRelativePath);
@@ -813,12 +819,12 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             }
             
             // Parse YAML for comparison
-            var actualYaml = _yamlDeserializer.Deserialize<object>(actualContent);
+            var actualYaml = _yamlDeserializer.Deserialize<DocNamespace>(actualContent);
             var baselineContent = await File.ReadAllTextAsync(baselinePath);
-            var baselineYaml = _yamlDeserializer.Deserialize<object>(baselineContent);
-            
+            var baselineYaml = _yamlDeserializer.Deserialize<DocNamespace>(baselineContent);
+
             // Compare YAML structures
-            actualYaml.Should().BeEquivalentTo(baselineYaml, 
+            actualYaml.Should().BeEquivalentTo(baselineYaml,
                 $"YAML output should match baseline at {baselinePath}");
         }
 
@@ -866,7 +872,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
         /// </remarks>
         private async Task GenerateFileModeBaselines(string projectPath)
         {
-            var baselinesDir = Path.Combine(projectPath, "Baselines", "YamlRenderer", "FileMode");
+            var baselinesDir = Path.Combine(projectPath, "Baselines", framework, "YamlRenderer", "FileMode");
             if (Directory.Exists(baselinesDir))
             {
                 Directory.Delete(baselinesDir, true);
@@ -908,7 +914,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
         /// </remarks>
         private async Task GenerateFolderModeBaselines(string projectPath)
         {
-            var baselinesDir = Path.Combine(projectPath, "Baselines", "YamlRenderer", "FolderMode");
+            var baselinesDir = Path.Combine(projectPath, "Baselines", framework, "YamlRenderer", "FolderMode");
             if (Directory.Exists(baselinesDir))
             {
                 Directory.Delete(baselinesDir, true);
@@ -931,6 +937,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
 
             await renderer.RenderAsync(assembly);
         }
+
 
         #endregion
 

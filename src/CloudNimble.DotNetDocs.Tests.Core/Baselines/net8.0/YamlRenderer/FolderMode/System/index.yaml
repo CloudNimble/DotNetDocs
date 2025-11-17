@@ -1,0 +1,97 @@
+name: System
+types:
+- members:
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: Reverse
+    parameters:
+    - name: value
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: string
+        name: String
+        signature: string
+        typeKind: Class
+        isExternalReference: true
+        displayName: string
+      typeName: string
+      displayName: string value
+      usage: The string to reverse.
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: string
+      name: String
+      signature: string
+      typeKind: Class
+      isExternalReference: true
+      displayName: string
+    returnTypeName: string
+    signature: public static string Reverse(string value)
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.Extensions.StringExtensions
+    isExtensionMethod: true
+    extendedTypeName: string
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.Extensions.StringExtensions.Reverse(string)
+    examples: "<code>\r\n             using CloudNimble.DotNetDocs.Tests.Shared.Extensions;\r\n            \r\n             var result = \"hello\".Reverse();\r\n             // result = \"olleh\"\r\n             </code>"
+    returns: The reversed string.
+    summary: Reverses the characters in a string.
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: Repeat
+    parameters:
+    - name: value
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: string
+        name: String
+        signature: string
+        typeKind: Class
+        isExternalReference: true
+        displayName: string
+      typeName: string
+      displayName: string value
+      usage: The string to repeat.
+    - name: count
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: int
+        name: Int32
+        signature: int
+        typeKind: Struct
+        isExternalReference: true
+        displayName: int
+      typeName: int
+      displayName: int count
+      usage: The number of times to repeat the string.
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: string
+      name: String
+      signature: string
+      typeKind: Class
+      isExternalReference: true
+      displayName: string
+    returnTypeName: string
+    signature: public static string Repeat(string value, int count)
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.Extensions.StringExtensions
+    isExtensionMethod: true
+    extendedTypeName: string
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.Extensions.StringExtensions.Repeat(string, int)
+    examples: >-
+      <code>
+                  var result = "ha".Repeat(3);
+                  // result = "hahaha"
+                  </code>
+    returns: The repeated string.
+    summary: Repeats a string a specified number of times.
+  assemblyName: System.Private.CoreLib
+  fullName: string
+  name: String
+  signature: string
+  typeKind: Class
+  isExternalReference: true
+  displayName: string
+  remarks: See [Microsoft documentation](https://learn.microsoft.com/dotnet/api/system.string) for more information about the rest of the API.
+  summary: This type is defined in System.Private.CoreLib.
+displayName: System

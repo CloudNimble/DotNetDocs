@@ -153,6 +153,7 @@ Customize the generated `docs.json` configuration by providing a template with p
 - Configure integrations (Google Analytics, etc.)
 - Define custom logos and favicons
 - Pre-populate navigation structure
+- Control navigation type (Pages, Tabs, or Products)
 
 ```csharp
 services.AddDotNetDocsMintlify(options =>
@@ -161,6 +162,8 @@ services.AddDotNetDocsMintlify(options =>
     {
         Name = "My API",
         Theme = "quill",
+        NavigationType = "Tabs",           // NEW: Control root nav placement
+        NavigationName = "My API Reference", // NEW: Custom name for tab/product
         Colors = new ColorsConfig
         {
             Primary = "#007ACC",
@@ -176,6 +179,10 @@ services.AddDotNetDocsMintlify(options =>
     options.GenerateDocsJson = true;
 });
 ```
+
+<Info>
+Set `NavigationType` to control whether the root project appears in main navigation (`Pages`), as a top-level tab (`Tabs`), or in the products section (`Products`). This is particularly useful for multi-project documentation collections.
+</Info>
 
 ### React Component Support
 
@@ -253,12 +260,22 @@ React components must be placed in the `snippets` folder and exported as named e
     var result = await builder.BuildAsync();
     ```
 
-    ```csharp With MSBuild Integration
-    <PropertyGroup>
-      <GenerateDotNetDocs>true</GenerateDotNetDocs>
-      <DotNetDocsRenderer>Mintlify</DotNetDocsRenderer>
-      <DotNetDocsOutputPath>$(MSBuildProjectDirectory)/docs</DotNetDocsOutputPath>
-    </PropertyGroup>
+    ```xml With MSBuild Integration (.docsproj)
+    <Project Sdk="DotNetDocs.Sdk/1.1.0-preview.3">
+      <PropertyGroup>
+        <DocumentationType>Mintlify</DocumentationType>
+        <MintlifyNavigationMode>Unified</MintlifyNavigationMode>
+        <MintlifyTemplate>
+          <Name>My Project</Name>
+          <NavigationType>Tabs</NavigationType>
+          <NavigationName>My API</NavigationName>
+          <Theme>maple</Theme>
+          <Colors>
+            <Primary>#419AC5</Primary>
+          </Colors>
+        </MintlifyTemplate>
+      </PropertyGroup>
+    </Project>
     ```
     </CodeGroup>
   </Step>

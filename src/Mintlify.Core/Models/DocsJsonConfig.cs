@@ -100,6 +100,16 @@ namespace Mintlify.Core.Models
         public IntegrationsConfig? Integrations { get; set; }
 
         /// <summary>
+        /// Gets or sets the interaction configuration for navigation elements.
+        /// </summary>
+        /// <remarks>
+        /// Controls how users interact with navigation elements such as groups and dropdowns,
+        /// including whether expanding a group automatically navigates to its first page.
+        /// </remarks>
+        [JsonPropertyName("interaction")]
+        public InteractionConfig? Interaction { get; set; }
+
+        /// <summary>
         /// Gets or sets the logo configuration.
         /// </summary>
         [JsonPropertyName("logo")]

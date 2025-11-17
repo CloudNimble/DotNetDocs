@@ -58,12 +58,13 @@ namespace CloudNimble.DotNetDocs.Mintlify
         public DocsJsonConfig? Template { get; set; }
 
         /// <summary>
-        /// Gets or sets the navigation mode for multi-assembly documentation.
+        /// Gets or sets the navigation configuration for DotNetDocs-specific properties.
         /// </summary>
         /// <value>
-        /// The navigation organization mode. Default is NavigationMode.Unified.
+        /// A DocsNavigationConfig instance that controls navigation mode, type, and name.
+        /// Default is a new instance with Mode=Unified, Type=Pages, and Name=null.
         /// </value>
-        public NavigationMode NavigationMode { get; set; } = NavigationMode.Unified;
+        public DocsNavigationConfig Navigation { get; set; } = new DocsNavigationConfig();
 
         /// <summary>
         /// Gets or sets the group name used when NavigationMode is Unified.

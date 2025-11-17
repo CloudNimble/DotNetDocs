@@ -1,0 +1,115 @@
+---
+title: ITestInterface
+description: "A test interface for demonstrating interface inheritance and extension methods."
+icon: plug
+keywords: ['ITestInterface', 'CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ITestInterface', 'CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios', 'interface']
+---
+
+import { DocsBadge } from '/snippets/DocsBadge.jsx';
+
+## Definition
+
+**Assembly:** CloudNimble.DotNetDocs.Tests.Shared.dll
+
+**Namespace:** CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios
+
+## Syntax
+
+```csharp
+CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ITestInterface
+```
+
+## Summary
+
+A test interface for demonstrating interface inheritance and extension methods.
+
+## Remarks
+
+This interface is used to test extension methods on interfaces and to verify
+            that inherited members from interfaces are properly documented.
+
+## Properties
+
+### <Icon icon="tag" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} /> TestValue <DocsBadge text="Abstract" variant="warning" />
+
+Gets the test value.
+
+#### Syntax
+
+```csharp
+string TestValue { get; }
+```
+
+#### Property Value
+
+Type: `string`
+
+## Methods
+
+### <Icon icon="puzzle-piece" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} /> GetFormattedValue <DocsBadge text="Extension" variant="success" />
+
+<Note>Extension method from `CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.TestsShared_ITestInterfaceExtensions`</Note>
+
+Gets a formatted string from the interface.
+
+#### Syntax
+
+```csharp
+public static string GetFormattedValue(CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ITestInterface instance)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `instance` | `CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ITestInterface` | The interface instance. |
+
+#### Returns
+
+Type: `string`
+A formatted string containing the test value.
+
+#### Examples
+
+<code>
+ITestInterface test = new TestImplementation();
+var formatted = test.GetFormattedValue();
+</code>
+
+### <Icon icon="function" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} /> TestMethod <DocsBadge text="Abstract" variant="warning" />
+
+Performs a test operation.
+
+#### Syntax
+
+```csharp
+void TestMethod()
+```
+
+### <Icon icon="puzzle-piece" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} /> Validate <DocsBadge text="Extension" variant="success" />
+
+<Note>Extension method from `CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.TestsShared_ITestInterfaceExtensions`</Note>
+
+Validates the interface instance.
+
+#### Syntax
+
+```csharp
+public static bool Validate(CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ITestInterface instance)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `instance` | `CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ITestInterface` | The interface instance. |
+
+#### Returns
+
+Type: `bool`
+True if the instance is valid, otherwise false.
+
+#### Remarks
+
+This extension provides common validation logic for all ITestInterface implementers.
+

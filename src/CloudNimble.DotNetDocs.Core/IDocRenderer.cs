@@ -20,6 +20,10 @@ namespace CloudNimble.DotNetDocs.Core
         /// </summary>
         /// <param name="model">The documentation assembly to render.</param>
         /// <returns>A task representing the asynchronous rendering operation.</returns>
+        /// <remarks>
+        /// Renderers that support navigation combining (e.g., Mintlify) should access
+        /// Context.DocumentationReferences and combine navigation before saving their configuration.
+        /// </remarks>
         Task RenderAsync(DocAssembly model);
 
         /// <summary>

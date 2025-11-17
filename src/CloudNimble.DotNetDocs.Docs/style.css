@@ -7,6 +7,14 @@
     padding: 0 !important;
 }
 
+/* Fix <Icon> rendering in headers */
+h1 > span.cursor-pointer > svg.icon.inline,
+h2 > span.cursor-pointer > svg.icon.inline,
+h3 > span.cursor-pointer > svg.icon.inline {
+    padding-right: 8px;
+    vertical-align: top !important;
+}
+
 li button div {
     display: flex;
     gap: 6px;
@@ -28,8 +36,12 @@ li button div {
 
 /* Custom scrollbar styling */
 ::-webkit-scrollbar {
-    width: 12px;
+    width: 8px;
 }
+
+    ::-webkit-scrollbar:horizontal {
+        height: 8px;
+    }
 
 ::-webkit-scrollbar-track {
     background: #0A1628;

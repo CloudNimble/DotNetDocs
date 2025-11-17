@@ -644,6 +644,163 @@ namespace CloudNimble.DotNetDocs.Tests.Core
 
         #endregion
 
+        #region GetFullConceptualPath Tests
+
+        [TestMethod]
+        public void GetFullConceptualPath_WithDefaultRelativePath_CombinesWithDocumentationRootPath()
+        {
+            // Arrange
+            var context = new ProjectContext
+            {
+                DocumentationRootPath = "C:\\Docs",
+                ConceptualPath = "conceptual"
+            };
+
+            // Act
+            var result = context.GetFullConceptualPath();
+
+            // Assert
+            result.Should().Be("C:\\Docs\\conceptual");
+        }
+
+        [TestMethod]
+        public void GetFullConceptualPath_WithAbsolutePath_ReturnsAbsolutePath()
+        {
+            // Arrange
+            var context = new ProjectContext
+            {
+                DocumentationRootPath = "C:\\Docs",
+                ConceptualPath = "C:\\OtherLocation\\conceptual"
+            };
+
+            // Act
+            var result = context.GetFullConceptualPath();
+
+            // Assert
+            result.Should().Be("C:\\OtherLocation\\conceptual");
+        }
+
+        [TestMethod]
+        public void GetFullConceptualPath_WithRelativePathAndAbsoluteDocRoot_CombinesCorrectly()
+        {
+            // Arrange
+            var context = new ProjectContext
+            {
+                DocumentationRootPath = "D:\\Projects\\MyApp\\docs",
+                ConceptualPath = "conceptual"
+            };
+
+            // Act
+            var result = context.GetFullConceptualPath();
+
+            // Assert
+            result.Should().Be("D:\\Projects\\MyApp\\docs\\conceptual");
+        }
+
+        [TestMethod]
+        public void GetFullConceptualPath_WithRelativeSubfolder_CombinesCorrectly()
+        {
+            // Arrange
+            var context = new ProjectContext
+            {
+                DocumentationRootPath = "C:\\Docs",
+                ConceptualPath = "content\\conceptual"
+            };
+
+            // Act
+            var result = context.GetFullConceptualPath();
+
+            // Assert
+            result.Should().Be("C:\\Docs\\content\\conceptual");
+        }
+
+        [TestMethod]
+        public void GetFullConceptualPath_WithWindowsAbsolutePath_ReturnsAsIs()
+        {
+            // Arrange
+            var context = new ProjectContext
+            {
+                DocumentationRootPath = "docs",
+                ConceptualPath = "C:\\Temp\\abc123\\conceptual"
+            };
+
+            // Act
+            var result = context.GetFullConceptualPath();
+
+            // Assert
+            result.Should().Be("C:\\Temp\\abc123\\conceptual");
+        }
+
+        [TestMethod]
+        public void GetFullConceptualPath_WithUnixAbsolutePath_ReturnsAsIs()
+        {
+            // Arrange
+            var context = new ProjectContext
+            {
+                DocumentationRootPath = "docs",
+                ConceptualPath = "/tmp/abc123/conceptual"
+            };
+
+            // Act
+            var result = context.GetFullConceptualPath();
+
+            // Assert
+            result.Should().Be("/tmp/abc123/conceptual");
+        }
+
+        [TestMethod]
+        public void GetFullConceptualPath_WithUNCPath_ReturnsAsIs()
+        {
+            // Arrange
+            var context = new ProjectContext
+            {
+                DocumentationRootPath = "docs",
+                ConceptualPath = "\\\\server\\share\\conceptual"
+            };
+
+            // Act
+            var result = context.GetFullConceptualPath();
+
+            // Assert
+            result.Should().Be("\\\\server\\share\\conceptual");
+        }
+
+        [TestMethod]
+        public void GetFullConceptualPath_WithDefaultValues_UsesDefaults()
+        {
+            // Arrange
+            var context = new ProjectContext(); // DocumentationRootPath = "docs", ConceptualPath = "conceptual"
+
+            // Act
+            var result = context.GetFullConceptualPath();
+
+            // Assert
+            result.Should().Be(Path.Combine("docs", "conceptual"));
+        }
+
+        [TestMethod]
+        public void GetFullConceptualPath_AfterModifyingConceptualPath_ReturnsUpdatedValue()
+        {
+            // Arrange
+            var context = new ProjectContext
+            {
+                DocumentationRootPath = "C:\\Temp\\output"
+            };
+
+            context.ConceptualPath = "original";
+            var firstResult = context.GetFullConceptualPath();
+
+            // Act
+            context.ConceptualPath = "C:\\Temp\\conceptual";
+            var secondResult = context.GetFullConceptualPath();
+
+            // Assert
+            firstResult.Should().Be("C:\\Temp\\output\\original");
+            secondResult.Should().Be("C:\\Temp\\conceptual");
+        }
+
+        #endregion
+
     }
 
 }

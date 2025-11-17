@@ -22,6 +22,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
     /// Tests for the MarkdownRenderer class.
     /// </summary>
     [TestClass]
+    [DoNotParallelize]
     public class MarkdownRendererTests : DotNetDocsTestBase
     {
 
@@ -605,6 +606,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             var baselineDir = Path.Combine(
                 Directory.GetCurrentDirectory(),
                 "Baselines",
+                framework,
                 "MarkdownRenderer",
                 "FolderMode");
             var baselinePath = Path.Combine(baselineDir, baselineRelativePath);
@@ -623,12 +625,12 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             
             // Compare with baseline - normalize line endings for cross-platform compatibility
             var baselineContent = await File.ReadAllTextAsync(baselinePath);
-            
+
             // Normalize both to Environment.NewLine to handle any line ending differences
             var normalizedActual = actualContent.ReplaceLineEndings(Environment.NewLine);
             var normalizedBaseline = baselineContent.ReplaceLineEndings(Environment.NewLine);
-            
-            normalizedActual.Should().Be(normalizedBaseline, 
+
+            normalizedActual.Should().Be(normalizedBaseline,
                 $"Output should match baseline at {baselinePath}");
         }
 
@@ -1155,7 +1157,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
         /// </remarks>
         private async Task GenerateFileModeBaselines(string projectPath)
         {
-            var baselinesDir = Path.Combine(projectPath, "Baselines", "MarkdownRenderer", "FileMode");
+            var baselinesDir = Path.Combine(projectPath, "Baselines", framework, "MarkdownRenderer", "FileMode");
             if (Directory.Exists(baselinesDir))
             {
                 Directory.Delete(baselinesDir, true);
@@ -1196,7 +1198,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
         /// </remarks>
         private async Task GenerateFolderModeBaselines(string projectPath)
         {
-            var baselinesDir = Path.Combine(projectPath, "Baselines", "MarkdownRenderer", "FolderMode");
+            var baselinesDir = Path.Combine(projectPath, "Baselines", framework, "MarkdownRenderer", "FolderMode");
             if (Directory.Exists(baselinesDir))
             {
                 Directory.Delete(baselinesDir, true);

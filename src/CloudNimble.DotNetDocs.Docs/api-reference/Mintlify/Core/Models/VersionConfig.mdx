@@ -5,6 +5,8 @@ icon: file-brackets-curly
 keywords: ['VersionConfig', 'Mintlify.Core.Models.VersionConfig', 'Mintlify.Core.Models', 'class', 'System.Object']
 ---
 
+import { DocsBadge } from '/snippets/DocsBadge.jsx';
+
 ## Definition
 
 **Assembly:** Mintlify.Core.dll
@@ -30,7 +32,7 @@ Versions allow you to maintain multiple documentation versions.
 
 ## Constructors
 
-### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  .ctor
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> .ctor
 
 #### Syntax
 
@@ -38,9 +40,19 @@ Versions allow you to maintain multiple documentation versions.
 public VersionConfig()
 ```
 
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> .ctor <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public Object()
+```
+
 ## Properties
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Anchors
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Anchors
 
 Gets or sets the anchors for the version.
 
@@ -54,7 +66,7 @@ public System.Collections.Generic.List<Mintlify.Core.Models.AnchorConfig> Anchor
 
 Type: `System.Collections.Generic.List<Mintlify.Core.Models.AnchorConfig>?`
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  AsyncApi
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> AsyncApi
 
 Gets or sets the AsyncAPI configuration.
 
@@ -68,7 +80,7 @@ public object AsyncApi { get; set; }
 
 Type: `object?`
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Default
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Default
 
 Gets or sets whether this version is the default version.
 
@@ -82,7 +94,7 @@ public System.Nullable<bool> Default { get; set; }
 
 Type: `System.Nullable<bool>?`
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Dropdowns
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Dropdowns
 
 Gets or sets the dropdowns for the version.
 
@@ -96,7 +108,7 @@ public System.Collections.Generic.List<Mintlify.Core.Models.DropdownConfig> Drop
 
 Type: `System.Collections.Generic.List<Mintlify.Core.Models.DropdownConfig>?`
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Global
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Global
 
 Gets or sets the global navigation configuration.
 
@@ -110,7 +122,7 @@ public Mintlify.Core.Models.GlobalNavigationConfig Global { get; set; }
 
 Type: `Mintlify.Core.Models.GlobalNavigationConfig?`
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Groups
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Groups
 
 Gets or sets the groups for the version.
 
@@ -124,7 +136,7 @@ public System.Collections.Generic.List<Mintlify.Core.Models.GroupConfig> Groups 
 
 Type: `System.Collections.Generic.List<Mintlify.Core.Models.GroupConfig>?`
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Hidden
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Hidden
 
 Gets or sets whether the current option is default hidden.
 
@@ -138,7 +150,7 @@ public System.Nullable<bool> Hidden { get; set; }
 
 Type: `System.Nullable<bool>?`
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Href
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Href
 
 Gets or sets the URL or path for the version.
 
@@ -152,7 +164,7 @@ public string Href { get; set; }
 
 Type: `string?`
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Languages
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Languages
 
 Gets or sets the languages for the version.
 
@@ -166,7 +178,7 @@ public System.Collections.Generic.List<Mintlify.Core.Models.LanguageConfig> Lang
 
 Type: `System.Collections.Generic.List<Mintlify.Core.Models.LanguageConfig>?`
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  OpenApi
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> OpenApi
 
 Gets or sets the OpenAPI configuration.
 
@@ -180,7 +192,7 @@ public object OpenApi { get; set; }
 
 Type: `object?`
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Pages
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Pages
 
 Gets or sets the pages for the version.
 
@@ -194,7 +206,7 @@ public System.Collections.Generic.List<object> Pages { get; set; }
 
 Type: `System.Collections.Generic.List<object>?`
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Tabs
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Tabs
 
 Gets or sets the tabs for the version.
 
@@ -208,7 +220,7 @@ public System.Collections.Generic.List<Mintlify.Core.Models.TabConfig> Tabs { ge
 
 Type: `System.Collections.Generic.List<Mintlify.Core.Models.TabConfig>?`
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Version
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Version
 
 Gets or sets the name of the version.
 
@@ -225,4 +237,124 @@ Type: `string`
 #### Remarks
 
 This is a required field that identifies the version.
+
+## Methods
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Equals <DocsBadge text="Inherited" variant="neutral" /> <DocsBadge text="Virtual" variant="warning" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual bool Equals(object obj)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `obj` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Equals <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public static bool Equals(object objA, object objB)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `objA` | `object?` | - |
+| `objB` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> GetHashCode <DocsBadge text="Inherited" variant="neutral" /> <DocsBadge text="Virtual" variant="warning" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual int GetHashCode()
+```
+
+#### Returns
+
+Type: `int`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> GetType <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public System.Type GetType()
+```
+
+#### Returns
+
+Type: `System.Type`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> MemberwiseClone <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+protected internal object MemberwiseClone()
+```
+
+#### Returns
+
+Type: `object`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> ReferenceEquals <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public static bool ReferenceEquals(object objA, object objB)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `objA` | `object?` | - |
+| `objB` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> ToString <DocsBadge text="Inherited" variant="neutral" /> <DocsBadge text="Virtual" variant="warning" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual string ToString()
+```
+
+#### Returns
+
+Type: `string?`
 

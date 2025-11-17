@@ -1,7 +1,5 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Text.Json.Serialization;
-using Mintlify.Core.Converters;
 
 namespace Mintlify.Core.Models
 {
@@ -9,7 +7,10 @@ namespace Mintlify.Core.Models
     /// <summary>
     /// Represents a dropdown configuration in Mintlify navigation.
     /// </summary>
-    public class DropdownConfig
+    /// <remarks>
+    /// Dropdowns create expandable navigation menus. The dropdown name is required.
+    /// </remarks>
+    public class DropdownConfig : NavigationSectionBase
     {
 
         #region Properties
@@ -17,24 +18,10 @@ namespace Mintlify.Core.Models
         /// <summary>
         /// Gets or sets the anchors for the dropdown.
         /// </summary>
+        /// <remarks>
+        /// Anchors provide persistent navigation items within the dropdown.
+        /// </remarks>
         public List<AnchorConfig>? Anchors { get; set; }
-
-        /// <summary>
-        /// Gets or sets the AsyncAPI configuration.
-        /// </summary>
-        [JsonPropertyName("asyncapi")]
-        [JsonConverter(typeof(ApiConfigConverter))]
-        public ApiSpecConfig? AsyncApi { get; set; }
-
-        /// <summary>
-        /// Gets or sets the color configuration for the dropdown.
-        /// </summary>
-        public ColorPairConfig? Color { get; set; }
-
-        /// <summary>
-        /// Gets or sets the description of the dropdown.
-        /// </summary>
-        public string? Description { get; set; }
 
         /// <summary>
         /// Gets or sets the name of the dropdown.
@@ -46,58 +33,12 @@ namespace Mintlify.Core.Models
         public string Dropdown { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the global navigation configuration.
-        /// </summary>
-        public GlobalNavigationConfig? Global { get; set; }
-
-        /// <summary>
-        /// Gets or sets the groups for the dropdown.
-        /// </summary>
-        public List<GroupConfig>? Groups { get; set; }
-
-        /// <summary>
-        /// Gets or sets whether the current option is default hidden.
-        /// </summary>
-        public bool? Hidden { get; set; }
-
-        /// <summary>
-        /// Gets or sets the URL or path for the dropdown.
-        /// </summary>
-        public string? Href { get; set; }
-
-        /// <summary>
-        /// Gets or sets the icon to be displayed in the section.
-        /// </summary>
-        [JsonConverter(typeof(IconConverter))]
-        public IconConfig? Icon { get; set; }
-
-        /// <summary>
-        /// Gets or sets the languages for the dropdown.
-        /// </summary>
-        public List<LanguageConfig>? Languages { get; set; }
-
-        /// <summary>
-        /// Gets or sets the OpenAPI configuration.
-        /// </summary>
-        [JsonPropertyName("openapi")]
-        [JsonConverter(typeof(ApiConfigConverter))]
-        public ApiSpecConfig? OpenApi { get; set; }
-
-        /// <summary>
-        /// Gets or sets the pages for the dropdown.
-        /// </summary>
-        [JsonConverter(typeof(NavigationPageListConverter))]
-        public List<object>? Pages { get; set; }
-
-        /// <summary>
         /// Gets or sets the tabs for the dropdown.
         /// </summary>
+        /// <remarks>
+        /// Allows creating multiple tabs within a dropdown section.
+        /// </remarks>
         public List<TabConfig>? Tabs { get; set; }
-
-        /// <summary>
-        /// Gets or sets the versions for the dropdown.
-        /// </summary>
-        public List<VersionConfig>? Versions { get; set; }
 
         #endregion
 

@@ -81,9 +81,91 @@ namespace CloudNimble.DotNetDocs.Core
         [YamlIgnore]
         public ISymbol Symbol { get; }
 
+        /// <summary>
+        /// Gets or sets whether this member is inherited from a base type or interface.
+        /// </summary>
+        /// <value>
+        /// <c>true</c> if the member is declared in a base type or interface;
+        /// <c>false</c> if declared in the containing type.
+        /// </value>
+        public bool IsInherited { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether this member overrides a base implementation.
+        /// </summary>
+        /// <value>
+        /// <c>true</c> if the member uses the <c>override</c> keyword; otherwise <c>false</c>.
+        /// </value>
+        public bool IsOverride { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether this member is virtual.
+        /// </summary>
+        /// <value>
+        /// <c>true</c> if the member uses the <c>virtual</c> keyword; otherwise <c>false</c>.
+        /// </value>
+        public bool IsVirtual { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether this member is abstract.
+        /// </summary>
+        /// <value>
+        /// <c>true</c> if the member uses the <c>abstract</c> keyword; otherwise <c>false</c>.
+        /// </value>
+        public bool IsAbstract { get; set; }
+
+        /// <summary>
+        /// Gets or sets the fully qualified name of the type that declares this member.
+        /// </summary>
+        /// <value>
+        /// For inherited members, this is the base type or interface name.
+        /// For extension methods, this is the static class containing the method.
+        /// For declared members, this matches the containing type.
+        /// </value>
+        public string? DeclaringTypeName { get; set; }
+
+        /// <summary>
+        /// Gets or sets the signature of the member being overridden, if applicable.
+        /// </summary>
+        /// <value>
+        /// The fully qualified signature of the base member, or <c>null</c> if not an override.
+        /// </value>
+        public string? OverriddenMember { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether this member is an extension method.
+        /// </summary>
+        /// <value>
+        /// <c>true</c> if this is a static method with the <c>this</c> modifier on its first parameter;
+        /// otherwise <c>false</c>.
+        /// </value>
+        public bool IsExtensionMethod { get; set; }
+
+        /// <summary>
+        /// Gets or sets the fully qualified name of the type this extension method extends.
+        /// </summary>
+        /// <value>
+        /// The type of the first parameter (with <c>this</c> modifier), or <c>null</c> if not an extension method.
+        /// </value>
+        public string? ExtendedTypeName { get; set; }
+
         #endregion
 
         #region Constructors
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DocMember"/> class.
+        /// </summary>
+        /// <remarks>
+        /// This parameterless constructor is provided for deserialization purposes only.
+        /// Use <see cref="DocMember(ISymbol)"/> for normal instantiation.
+        /// </remarks>
+        [Obsolete("This constructor is for deserialization only. Use DocMember(ISymbol) instead.", error: true)]
+        [JsonConstructor]
+        protected DocMember() : base()
+        {
+            Symbol = null!;
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DocMember"/> class.

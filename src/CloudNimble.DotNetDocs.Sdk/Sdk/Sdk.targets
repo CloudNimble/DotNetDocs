@@ -40,10 +40,13 @@
     <UsingTask TaskName="CloudNimble.DotNetDocs.Sdk.Tasks.DiscoverDocumentedProjectsTask" 
                AssemblyFile="$(_DotNetDocsTasksAssembly)"
                Condition="Exists('$(_DotNetDocsTasksAssembly)') AND '$(GenerateDocumentation)' == 'true'" />
-    <UsingTask TaskName="CloudNimble.DotNetDocs.Sdk.Tasks.GenerateDocumentationTask" 
+    <UsingTask TaskName="CloudNimble.DotNetDocs.Sdk.Tasks.GenerateDocumentationTask"
                AssemblyFile="$(_DotNetDocsTasksAssembly)"
                Condition="Exists('$(_DotNetDocsTasksAssembly)') AND '$(GenerateDocumentation)' == 'true'" />
-    
+    <UsingTask TaskName="CloudNimble.DotNetDocs.Sdk.Tasks.DocumentationReferenceResolverTask"
+               AssemblyFile="$(_DotNetDocsTasksAssembly)"
+               Condition="Exists('$(_DotNetDocsTasksAssembly)')" />
+
     <!-- Clean up any implicit package references that might cause warnings -->
     <Target Name="RemoveImplicitPackageReferences" BeforeTargets="CollectPackageReferences">
         <ItemGroup>
@@ -58,6 +61,23 @@
         <Message Text="📄 Documentation type: $(DocumentationType)" Importance="high" />
         <Message Text="📂 Documentation root: $(DocumentationRoot)" Importance="high" Condition="'$(DocumentationRoot)' != '$(MSBuildProjectDirectory)\'" />
         <Message Text="🔧 Generate documentation: $(GenerateDocumentation)" Importance="normal" />
+    </Target>
+
+    <!-- Resolve DocumentationReference items to populate metadata -->
+    <Target Name="ResolveDocumentationReferences"
+            AfterTargets="ValidateDocumentationProject"
+            Condition="'@(DocumentationReference->Count())' > '0'">
+        <Message Text="🔗 Resolving DocumentationReferences..." Importance="high" />
+
+        <!-- Call the resolver task -->
+        <CloudNimble.DotNetDocs.Sdk.Tasks.DocumentationReferenceResolverTask
+            DocumentationReferences="@(DocumentationReference)"
+            Configuration="$(Configuration)"
+            DocumentationType="$(DocumentationType)">
+            <Output TaskParameter="ResolvedDocumentationReferences" ItemName="ResolvedDocumentationReference" />
+        </CloudNimble.DotNetDocs.Sdk.Tasks.DocumentationReferenceResolverTask>
+
+        <Message Text="✅ Resolved @(ResolvedDocumentationReference->Count()) DocumentationReference(s)" Importance="high" />
     </Target>
 
     <!-- Discover documented projects in solution for documentation generation -->
@@ -88,9 +108,9 @@
 
         <!-- Extract assembly paths from built projects (only main project assemblies) -->
         <ItemGroup>
-            <!-- Get assembly paths using the actual target framework from each project -->
-            <AssemblyPaths Include="%(DocumentedProjects.RootDir)%(DocumentedProjects.Directory)bin\$(Configuration)\%(DocumentedProjects.TargetFramework)\%(DocumentedProjects.Filename).dll" />
-            <XmlDocPaths Include="%(DocumentedProjects.RootDir)%(DocumentedProjects.Directory)bin\$(Configuration)\%(DocumentedProjects.TargetFramework)\%(DocumentedProjects.Filename).xml" />
+            <!-- Get assembly paths using the actual target framework and AssemblyName from each project -->
+            <AssemblyPaths Include="%(DocumentedProjects.RootDir)%(DocumentedProjects.Directory)bin\$(Configuration)\%(DocumentedProjects.TargetFramework)\%(DocumentedProjects.AssemblyName).dll" />
+            <XmlDocPaths Include="%(DocumentedProjects.RootDir)%(DocumentedProjects.Directory)bin\$(Configuration)\%(DocumentedProjects.TargetFramework)\%(DocumentedProjects.AssemblyName).xml" />
         </ItemGroup>
 
         <Message Text="📁 Found @(AssemblyPaths->Count()) assemblies for documentation generation" Importance="normal" />
@@ -126,7 +146,8 @@
             MintlifyTemplate="$(MintlifyTemplate)"
             SolutionName="$(_SolutionName)"
             ConceptualDocsEnabled="$(ConceptualDocsEnabled)"
-            ShowPlaceholders="$(ShowPlaceholders)">
+            ShowPlaceholders="$(ShowPlaceholders)"
+            ResolvedDocumentationReferences="@(ResolvedDocumentationReference)">
             <Output TaskParameter="GeneratedFiles" ItemName="GeneratedDocumentationFiles" />
         </CloudNimble.DotNetDocs.Sdk.Tasks.GenerateDocumentationTask>
 

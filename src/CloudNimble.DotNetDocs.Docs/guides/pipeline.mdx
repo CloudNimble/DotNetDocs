@@ -562,8 +562,9 @@ The `ProjectContext` class configures the entire pipeline. You can configure it 
   </Tab>
 
   <Tab title="In .docsproj File">
-    ```xml
-    <Project Sdk="DotNetDocs.Sdk/1.0.1">
+    <CodeGroup>
+    ```xml Current (1.1.0)
+    <Project Sdk="DotNetDocs.Sdk/1.1.0">
 
       <PropertyGroup>
         <!-- Documentation Type -->
@@ -593,17 +594,54 @@ The `ProjectContext` class configures the entire pipeline. You can configure it 
             <Light>/images/logo-light.svg</Light>
             <Dark>/images/logo-dark.svg</Dark>
           </Logo>
+          <Navigation Mode="Unified">
+          </Navigation>
         </MintlifyTemplate>
       </PropertyGroup>
 
-      <ItemGroup>
-        <!-- Assemblies to document -->
-        <Assembly Include="../MyLib/bin/$(Configuration)/net8.0/MyLib.dll" />
-        <Assembly Include="../MyLib.Extensions/bin/$(Configuration)/net8.0/MyLib.Extensions.dll" />
-      </ItemGroup>
+    </Project>
+    ```
+
+    ```xml Preview (1.2.0-preview.1)
+    <Project Sdk="DotNetDocs.Sdk/1.2.0-preview.1">
+
+      <PropertyGroup>
+        <!-- Documentation Type -->
+        <DocumentationType>Mintlify</DocumentationType>
+        <GenerateDocumentation>true</GenerateDocumentation>
+
+        <!-- File Organization -->
+        <NamespaceMode>Folder</NamespaceMode>
+
+        <!-- Features -->
+        <ConceptualDocsEnabled>true</ConceptualDocsEnabled>
+        <ShowPlaceholders>false</ShowPlaceholders>
+
+        <!-- Type Filtering -->
+        <ExcludePatterns>Tests.Shared;*.Sdk</ExcludePatterns>
+
+        <!-- Mintlify Template (optional) -->
+        <MintlifyTemplate>
+          <Name>My API Documentation</Name>
+          <Theme>maple</Theme>
+          <Colors>
+            <Primary>#419AC5</Primary>
+            <Light>#419AC5</Light>
+            <Dark>#3CD0E2</Dark>
+          </Colors>
+          <Logo>
+            <Light>/images/logo-light.svg</Light>
+            <Dark>/images/logo-dark.svg</Dark>
+          </Logo>
+          <Navigation Mode="Unified">
+          </Navigation>
+        </MintlifyTemplate>
+      </PropertyGroup>
+
 
     </Project>
     ```
+    </CodeGroup>
 
     **Build the documentation**:
     ```bash

@@ -2,8 +2,10 @@
 title: GroupConfig
 description: "Represents a group configuration in Mintlify navigation."
 icon: file-brackets-curly
-keywords: ['GroupConfig', 'Mintlify.Core.Models.GroupConfig', 'Mintlify.Core.Models', 'class', 'System.Object']
+keywords: ['GroupConfig', 'Mintlify.Core.Models.GroupConfig', 'Mintlify.Core.Models', 'class', 'Mintlify.Core.Models.NavigationItemBase']
 ---
+
+import { DocsBadge } from '/snippets/DocsBadge.jsx';
 
 ## Definition
 
@@ -11,7 +13,7 @@ keywords: ['GroupConfig', 'Mintlify.Core.Models.GroupConfig', 'Mintlify.Core.Mod
 
 **Namespace:** Mintlify.Core.Models
 
-**Inheritance:** System.Object
+**Inheritance:** Mintlify.Core.Models.NavigationItemBase
 
 ## Syntax
 
@@ -29,7 +31,7 @@ Groups organize pages into sections in your navigation. The group name is requir
 
 ## Constructors
 
-### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  .ctor
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> .ctor
 
 #### Syntax
 
@@ -37,11 +39,33 @@ Groups organize pages into sections in your navigation. The group name is requir
 public GroupConfig()
 ```
 
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> .ctor <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `Mintlify.Core.Models.NavigationItemBase`</Note>
+
+#### Syntax
+
+```csharp
+protected NavigationItemBase()
+```
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> .ctor <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public Object()
+```
+
 ## Properties
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  AsyncApi
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> AsyncApi <DocsBadge text="Inherited" variant="neutral" />
 
-Gets or sets the AsyncAPI configuration for the group.
+<Note>Inherited from `Mintlify.Core.Models.NavigationItemBase`</Note>
+
+Gets or sets the AsyncAPI configuration.
 
 #### Syntax
 
@@ -53,7 +77,31 @@ public Mintlify.Core.Models.ApiSpecConfig AsyncApi { get; set; }
 
 Type: `Mintlify.Core.Models.ApiSpecConfig?`
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Group
+#### Remarks
+
+Can be a string URL, an array of URLs, or an object with source and directory properties
+            pointing to AsyncAPI specification files.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Expanded
+
+Gets or sets whether the group is expanded by default in the navigation sidebar.
+
+#### Syntax
+
+```csharp
+public System.Nullable<bool> Expanded { get; set; }
+```
+
+#### Property Value
+
+Type: `System.Nullable<bool>?`
+
+#### Remarks
+
+When true, the group will be expanded by default showing all its pages.
+            When false or null, the group will be collapsed by default.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Group
 
 Gets or sets the name of the group.
 
@@ -74,7 +122,9 @@ This is a required field that appears as the group title in navigation.
             they are not recommended as Mintlify treats each empty group as a separate
             ungrouped navigation section rather than merging them together.
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Hidden
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Hidden <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `Mintlify.Core.Models.NavigationItemBase`</Note>
 
 Gets or sets whether the current option is default hidden.
 
@@ -88,7 +138,13 @@ public System.Nullable<bool> Hidden { get; set; }
 
 Type: `System.Nullable<bool>?`
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Icon
+#### Remarks
+
+When true, this navigation item will not be displayed in the navigation by default.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Icon <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `Mintlify.Core.Models.NavigationItemBase`</Note>
 
 Gets or sets the icon to be displayed in the section.
 
@@ -102,9 +158,16 @@ public Mintlify.Core.Models.IconConfig Icon { get; set; }
 
 Type: `Mintlify.Core.Models.IconConfig?`
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  OpenApi
+#### Remarks
 
-Gets or sets the OpenAPI configuration for the group.
+Can be a Font Awesome icon name, Lucide icon name, JSX-compatible SVG code,
+            URL to an externally hosted icon, or path to an icon file in your project.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> OpenApi <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `Mintlify.Core.Models.NavigationItemBase`</Note>
+
+Gets or sets the OpenAPI configuration.
 
 #### Syntax
 
@@ -116,9 +179,16 @@ public Mintlify.Core.Models.ApiSpecConfig OpenApi { get; set; }
 
 Type: `Mintlify.Core.Models.ApiSpecConfig?`
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Pages
+#### Remarks
 
-Gets or sets the pages in the group.
+Can be a string URL, an array of URLs, or an object with source and directory properties
+            pointing to OpenAPI specification files.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Pages <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `Mintlify.Core.Models.NavigationItemBase`</Note>
+
+Gets or sets the pages for this navigation item.
 
 #### Syntax
 
@@ -132,9 +202,9 @@ Type: `System.Collections.Generic.List<object>?`
 
 #### Remarks
 
-Pages can be strings (page paths) or nested GroupConfig objects.
+Pages can be strings (page paths) or nested GroupConfig objects for hierarchical navigation.
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Root
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Root
 
 Gets or sets the root page for the group.
 
@@ -148,7 +218,11 @@ public string Root { get; set; }
 
 Type: `string?`
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Tag
+#### Remarks
+
+Specifies the default page to display when the group is selected.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Tag
 
 Gets or sets the tag for the group.
 
@@ -159,6 +233,130 @@ public string Tag { get; set; }
 ```
 
 #### Property Value
+
+Type: `string?`
+
+#### Remarks
+
+Displays a label tag (e.g., "NEW", "BETA") next to the group name.
+
+## Methods
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Equals <DocsBadge text="Inherited" variant="neutral" /> <DocsBadge text="Virtual" variant="warning" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual bool Equals(object obj)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `obj` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Equals <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public static bool Equals(object objA, object objB)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `objA` | `object?` | - |
+| `objB` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> GetHashCode <DocsBadge text="Inherited" variant="neutral" /> <DocsBadge text="Virtual" variant="warning" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual int GetHashCode()
+```
+
+#### Returns
+
+Type: `int`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> GetType <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public System.Type GetType()
+```
+
+#### Returns
+
+Type: `System.Type`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> MemberwiseClone <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+protected internal object MemberwiseClone()
+```
+
+#### Returns
+
+Type: `object`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> ReferenceEquals <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public static bool ReferenceEquals(object objA, object objB)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `objA` | `object?` | - |
+| `objB` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> ToString <DocsBadge text="Inherited" variant="neutral" /> <DocsBadge text="Virtual" variant="warning" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual string ToString()
+```
+
+#### Returns
 
 Type: `string?`
 

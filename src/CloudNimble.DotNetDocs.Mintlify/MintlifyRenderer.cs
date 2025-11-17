@@ -39,7 +39,7 @@ namespace CloudNimble.DotNetDocs.Mintlify
         private const string MemberIconType = "duotone";
 
         private readonly MintlifyRendererOptions _options;
-        private readonly DocsJsonManager? _docsJsonManager;
+        internal readonly DocsJsonManager? _docsJsonManager;
 
         #endregion
 
@@ -101,6 +101,9 @@ namespace CloudNimble.DotNetDocs.Mintlify
             // Ensure all necessary directories exist based on the file naming mode
             Context.EnsureOutputDirectoryStructure(model, apiOutputPath);
 
+            // Create DocsBadge component snippet for Mintlify (used by inherited/extension member badges)
+            await CreateDocsBadgeSnippetAsync();
+
             // Render assembly overview
             await RenderAssemblyAsync(model, apiOutputPath);
 
@@ -119,12 +122,26 @@ namespace CloudNimble.DotNetDocs.Mintlify
             // Generate docs.json if enabled
             if (_options.GenerateDocsJson && _docsJsonManager is not null && _docsJsonManager.Configuration is not null)
             {
+                // Build exclusion list from DocumentationReference DestinationPaths to prevent scanning output directories
+                var excludeDirectories = Context.DocumentationReferences
+                    .Select(r => Path.GetFileName(r.DestinationPath))
+                    .Where(d => !string.IsNullOrWhiteSpace(d))
+                    .ToArray();
+
                 // First: Discover existing MDX files in documentation root, preserving template navigation
-                _docsJsonManager.PopulateNavigationFromPath(Context.DocumentationRootPath, new[] { ".mdx" }, includeApiReference: false, preserveExisting: true);
-                
+                // Exclude DocumentationReference output directories to prevent them from being treated as conceptual docs
+                _docsJsonManager.PopulateNavigationFromPath(Context.DocumentationRootPath, new[] { ".mdx" }, includeApiReference: false, preserveExisting: true, excludeDirectories: excludeDirectories);
+
                 // Second: Add API reference content to existing navigation
                 BuildNavigationStructure(_docsJsonManager.Configuration, model);
-                // Write docs.json to the DocumentationRootPath
+
+                // Third: Apply NavigationType from template to move root content to Tabs/Products if configured
+                ApplyNavigationType();
+
+                // Fourth: Combine referenced navigation
+                CombineReferencedNavigation();
+
+                // Write docs.json to the DocumentationRootPath (only once, with everything combined)
                 var docsJsonPath = Path.Combine(Context.DocumentationRootPath, "docs.json");
                 _docsJsonManager.Save(docsJsonPath);
             }
@@ -164,7 +181,7 @@ namespace CloudNimble.DotNetDocs.Mintlify
 
             // Note: Index page handling is now done by PopulateNavigationFromPath
 
-            if (_options.NavigationMode == NavigationMode.Unified)
+            if (_options.Navigation.Mode == NavigationMode.Unified)
             {
                 // Find or create the API Reference group - smart merging with template
                 var apiReferenceGroup = FindOrCreateApiReferenceGroup(config);
@@ -486,6 +503,11 @@ namespace CloudNimble.DotNetDocs.Mintlify
                 var namespaceName = docNamespace.Name ?? "global";
                 sb.AppendLine($"description: \"Summary of the {namespaceName} Namespace\"");
             }
+            else if (entity is DocType externalType && externalType.IsExternalReference)
+            {
+                // For external types, use a shorter description without the URL
+                sb.AppendLine($"description: \"Extension methods for {externalType.Name} from {externalType.AssemblyName ?? "external assembly"}\"");
+            }
             else if (!string.IsNullOrWhiteSpace(entity.Summary))
             {
                 // Clean up the summary for single-line description
@@ -611,6 +633,13 @@ namespace CloudNimble.DotNetDocs.Mintlify
 
             sb.AppendLine("---");
             sb.AppendLine();
+
+            // Add snippet import for DocType pages to support DocsBadge component
+            if (entity is DocType)
+            {
+                sb.AppendLine("import { DocsBadge } from '/snippets/DocsBadge.jsx';");
+                sb.AppendLine();
+            }
 
             return sb.ToString();
         }
@@ -885,10 +914,16 @@ namespace CloudNimble.DotNetDocs.Mintlify
                 {
                     sb.AppendLine($"### <Icon icon=\"{MintlifyIcons.Class}\" iconType=\"{MemberIconType}\" color=\"{primaryColor}\" size={{{MemberIconSize}}} style={{{{ paddingRight: '8px' }}}} /> Classes");
                     sb.AppendLine();
+                    sb.AppendLine("| Name | Summary |");
+                    sb.AppendLine("| ---- | ------- |");
                     foreach (var type in classes)
                     {
-                        var typeFileName = Path.GetFileName(GetTypeFilePath(type, ns, outputPath, "mdx"));
-                        sb.AppendLine($"- [{type.Name}]({typeFileName})");
+                        var typeFilePath = GetTypeFilePath(type, ns, outputPath, "mdx");
+                        var typeRelativePath = "/" + Path.GetRelativePath(Context.DocumentationRootPath, typeFilePath)
+                            .Replace(Path.DirectorySeparatorChar, '/')
+                            .Replace(".mdx", "");
+                        var summary = type.Summary?.Replace("\n", " ").Replace("\r", " ").Replace("|", "\\|") ?? "";
+                        sb.AppendLine($"| [{type.Name}]({typeRelativePath}) | {summary} |");
                     }
                     sb.AppendLine();
                 }
@@ -898,10 +933,16 @@ namespace CloudNimble.DotNetDocs.Mintlify
                 {
                     sb.AppendLine($"### <Icon icon=\"{MintlifyIcons.Interface}\" iconType=\"{MemberIconType}\" color=\"{primaryColor}\" size={{{MemberIconSize}}} style={{{{ paddingRight: '8px' }}}} /> Interfaces");
                     sb.AppendLine();
+                    sb.AppendLine("| Name | Summary |");
+                    sb.AppendLine("| ---- | ------- |");
                     foreach (var type in interfaces)
                     {
-                        var typeFileName = Path.GetFileName(GetTypeFilePath(type, ns, outputPath, "mdx"));
-                        sb.AppendLine($"- [{type.Name}]({typeFileName})");
+                        var typeFilePath = GetTypeFilePath(type, ns, outputPath, "mdx");
+                        var typeRelativePath = "/" + Path.GetRelativePath(Context.DocumentationRootPath, typeFilePath)
+                            .Replace(Path.DirectorySeparatorChar, '/')
+                            .Replace(".mdx", "");
+                        var summary = type.Summary?.Replace("\n", " ").Replace("\r", " ").Replace("|", "\\|") ?? "";
+                        sb.AppendLine($"| [{type.Name}]({typeRelativePath}) | {summary} |");
                     }
                     sb.AppendLine();
                 }
@@ -911,10 +952,16 @@ namespace CloudNimble.DotNetDocs.Mintlify
                 {
                     sb.AppendLine($"### <Icon icon=\"{MintlifyIcons.Struct}\" iconType=\"{MemberIconType}\" color=\"{primaryColor}\" size={{{MemberIconSize}}} style={{{{ paddingRight: '8px' }}}} /> Structs");
                     sb.AppendLine();
+                    sb.AppendLine("| Name | Summary |");
+                    sb.AppendLine("| ---- | ------- |");
                     foreach (var type in structs)
                     {
-                        var typeFileName = Path.GetFileName(GetTypeFilePath(type, ns, outputPath, "mdx"));
-                        sb.AppendLine($"- [{type.Name}]({typeFileName})");
+                        var typeFilePath = GetTypeFilePath(type, ns, outputPath, "mdx");
+                        var typeRelativePath = "/" + Path.GetRelativePath(Context.DocumentationRootPath, typeFilePath)
+                            .Replace(Path.DirectorySeparatorChar, '/')
+                            .Replace(".mdx", "");
+                        var summary = type.Summary?.Replace("\n", " ").Replace("\r", " ").Replace("|", "\\|") ?? "";
+                        sb.AppendLine($"| [{type.Name}]({typeRelativePath}) | {summary} |");
                     }
                     sb.AppendLine();
                 }
@@ -924,10 +971,16 @@ namespace CloudNimble.DotNetDocs.Mintlify
                 {
                     sb.AppendLine($"### <Icon icon=\"{MintlifyIcons.Enum}\" iconType=\"{MemberIconType}\" color=\"{primaryColor}\" size={{{MemberIconSize}}} style={{{{ paddingRight: '8px' }}}} /> Enums");
                     sb.AppendLine();
+                    sb.AppendLine("| Name | Summary |");
+                    sb.AppendLine("| ---- | ------- |");
                     foreach (var type in enums)
                     {
-                        var typeFileName = Path.GetFileName(GetTypeFilePath(type, ns, outputPath, "mdx"));
-                        sb.AppendLine($"- [{type.Name}]({typeFileName})");
+                        var typeFilePath = GetTypeFilePath(type, ns, outputPath, "mdx");
+                        var typeRelativePath = "/" + Path.GetRelativePath(Context.DocumentationRootPath, typeFilePath)
+                            .Replace(Path.DirectorySeparatorChar, '/')
+                            .Replace(".mdx", "");
+                        var summary = type.Summary?.Replace("\n", " ").Replace("\r", " ").Replace("|", "\\|") ?? "";
+                        sb.AppendLine($"| [{type.Name}]({typeRelativePath}) | {summary} |");
                     }
                     sb.AppendLine();
                 }
@@ -937,10 +990,16 @@ namespace CloudNimble.DotNetDocs.Mintlify
                 {
                     sb.AppendLine($"### <Icon icon=\"{MintlifyIcons.Delegate}\" iconType=\"{MemberIconType}\" color=\"{primaryColor}\" size={{{MemberIconSize}}} style={{{{ paddingRight: '8px' }}}} /> Delegates");
                     sb.AppendLine();
+                    sb.AppendLine("| Name | Summary |");
+                    sb.AppendLine("| ---- | ------- |");
                     foreach (var type in delegates)
                     {
-                        var typeFileName = Path.GetFileName(GetTypeFilePath(type, ns, outputPath, "mdx"));
-                        sb.AppendLine($"- [{type.Name}]({typeFileName})");
+                        var typeFilePath = GetTypeFilePath(type, ns, outputPath, "mdx");
+                        var typeRelativePath = "/" + Path.GetRelativePath(Context.DocumentationRootPath, typeFilePath)
+                            .Replace(Path.DirectorySeparatorChar, '/')
+                            .Replace(".mdx", "");
+                        var summary = type.Summary?.Replace("\n", " ").Replace("\r", " ").Replace("|", "\\|") ?? "";
+                        sb.AppendLine($"| [{type.Name}]({typeRelativePath}) | {summary} |");
                     }
                     sb.AppendLine();
                 }
@@ -996,6 +1055,7 @@ namespace CloudNimble.DotNetDocs.Mintlify
                 sb.AppendLine(type.Summary);
                 sb.AppendLine();
             }
+
 
             if (!string.IsNullOrWhiteSpace(type.Usage))
             {
@@ -1084,6 +1144,7 @@ namespace CloudNimble.DotNetDocs.Mintlify
             // Render enum values if this is an enum
             if (type is DocEnum enumType)
             {
+                // Render enum values table
                 if (enumType.Values.Any())
                 {
                     sb.AppendLine("## Values");
@@ -1205,9 +1266,51 @@ namespace CloudNimble.DotNetDocs.Mintlify
             // Get the primary color from the template configuration or use default
             var primaryColor = _options?.Template?.Colors?.Primary ?? "#0D9373";
 
+            // Build badges for member provenance
+            var badges = new List<string>();
+
+            if (member.IsExtensionMethod)
+            {
+                badges.Add("<DocsBadge text=\"Extension\" variant=\"success\" />");
+            }
+
+            if (member.IsInherited && !member.IsOverride)
+            {
+                badges.Add("<DocsBadge text=\"Inherited\" variant=\"neutral\" />");
+            }
+
+            if (member.IsOverride)
+            {
+                badges.Add("<DocsBadge text=\"Override\" variant=\"info\" />");
+            }
+
+            if (member.IsVirtual && !member.IsOverride)
+            {
+                badges.Add("<DocsBadge text=\"Virtual\" variant=\"warning\" />");
+            }
+
+            if (member.IsAbstract)
+            {
+                badges.Add("<DocsBadge text=\"Abstract\" variant=\"warning\" />");
+            }
+
+            var badgeString = badges.Any() ? " " + string.Join(" ", badges) : "";
+
             // Add the member header with icon including iconType, color, size, and margin
-            sb.AppendLine($"### <Icon icon=\"{MintlifyIcons.GetIconForMember(member)}\" iconType=\"{MemberIconType}\" color=\"{primaryColor}\" size={{{MemberIconSize}}} style={{{{ paddingRight: '8px' }}}} />  {member.Name}");
+            sb.AppendLine($"### <Icon icon=\"{MintlifyIcons.GetIconForMember(member)}\" iconType=\"{MemberIconType}\" color=\"{primaryColor}\" size={{{MemberIconSize}}} style={{{{ paddingRight: '8px' }}}} /> {member.Name}{badgeString}");
             sb.AppendLine();
+
+            // Add provenance note if inherited or extension
+            if (member.IsExtensionMethod && !string.IsNullOrWhiteSpace(member.DeclaringTypeName))
+            {
+                sb.AppendLine($"<Note>Extension method from `{member.DeclaringTypeName}`</Note>");
+                sb.AppendLine();
+            }
+            else if (member.IsInherited && !string.IsNullOrWhiteSpace(member.DeclaringTypeName))
+            {
+                sb.AppendLine($"<Note>Inherited from `{member.DeclaringTypeName}`</Note>");
+                sb.AppendLine();
+            }
 
             // Summary/Description
             if (!string.IsNullOrWhiteSpace(member.Summary))
@@ -1437,7 +1540,236 @@ namespace CloudNimble.DotNetDocs.Mintlify
 
         #endregion
 
-        #region IDocRenderer Implementation
+        #region Internal Methods - Snippet Generation
+
+        /// <summary>
+        /// Creates the DocsBadge.jsx component snippet for displaying member provenance badges.
+        /// </summary>
+        /// <returns>A task representing the asynchronous file write operation.</returns>
+        internal async Task CreateDocsBadgeSnippetAsync()
+        {
+            var snippetsPath = Path.Combine(Context.DocumentationRootPath, "snippets");
+            Directory.CreateDirectory(snippetsPath);
+
+            var badgeFilePath = Path.Combine(snippetsPath, "DocsBadge.jsx");
+
+            var badgeComponent = """
+/**
+ * DocsBadge Component for Mintlify Documentation
+ *
+ * A customizable badge component that matches Mintlify's design system.
+ * Used to display member provenance (Extension, Inherited, Override, Virtual, Abstract).
+ *
+ * Usage:
+ *   <DocsBadge text="Extension" variant="success" />
+ *   <DocsBadge text="Inherited" variant="neutral" />
+ *   <DocsBadge text="Override" variant="info" />
+ *   <DocsBadge text="Virtual" variant="warning" />
+ *   <DocsBadge text="Abstract" variant="warning" />
+ */
+
+export function DocsBadge({ text, variant = 'neutral' }) {
+  // Tailwind color classes for consistent theming
+  // Using standard Tailwind colors that work in both light and dark modes
+  const variantClasses = {
+    success: 'mint-bg-green-500/10 mint-text-green-600 dark:mint-text-green-400 mint-border-green-500/20',
+    neutral: 'mint-bg-slate-500/10 mint-text-slate-600 dark:mint-text-slate-400 mint-border-slate-500/20',
+    info: 'mint-bg-blue-500/10 mint-text-blue-600 dark:mint-text-blue-400 mint-border-blue-500/20',
+    warning: 'mint-bg-amber-500/10 mint-text-amber-600 dark:mint-text-amber-400 mint-border-amber-500/20',
+    danger: 'mint-bg-red-500/10 mint-text-red-600 dark:mint-text-red-400 mint-border-red-500/20'
+  };
+
+  const classes = variantClasses[variant] || variantClasses.neutral;
+
+  return (
+    <span
+      className={`mint-inline-flex mint-items-center mint-px-2 mint-py-0.5 mint-rounded-full mint-text-xs mint-font-medium mint-tracking-wide mint-border mint-ml-1.5 mint-align-middle mint-whitespace-nowrap ${classes}`}
+    >
+      {text}
+    </span>
+  );
+}
+""";
+
+            await File.WriteAllTextAsync(badgeFilePath, badgeComponent);
+        }
+
+        #endregion
+
+        #region Internal Methods - Navigation Combining
+
+        /// <summary>
+        /// Combines navigation from referenced Mintlify projects into the collection's docs.json.
+        /// </summary>
+        /// <remarks>
+        /// This method is called during RenderAsync after all normal rendering is complete but before
+        /// saving the docs.json. It loads each referenced docs.json, applies URL prefixes, and adds
+        /// the navigation to either Tabs or Products arrays in the existing _docsJsonManager.
+        /// The configuration is then saved once at the end of RenderAsync with everything combined.
+        /// </remarks>
+        internal void CombineReferencedNavigation()
+        {
+            // Check if we have references and a loaded manager
+            if (Context.DocumentationReferences.Count == 0 ||
+                _docsJsonManager is null ||
+                !_docsJsonManager.IsLoaded ||
+                _docsJsonManager.Configuration is null)
+            {
+                return;
+            }
+
+            foreach (var reference in Context.DocumentationReferences)
+            {
+                // Skip if no navigation file exists
+                if (string.IsNullOrWhiteSpace(reference.NavigationFilePath) || !File.Exists(reference.NavigationFilePath))
+                {
+                    continue;
+                }
+
+                // Create a DocsJsonManager for the referenced docs.json
+                var refManager = new DocsJsonManager(reference.NavigationFilePath);
+                refManager.Load();
+
+                if (!refManager.IsLoaded || refManager.Configuration?.Navigation?.Pages is null)
+                {
+                    continue;
+                }
+
+                // Apply URL prefix to navigation
+                refManager.ApplyUrlPrefix(reference.DestinationPath);
+
+                // Add to Tabs or Products based on IntegrationType
+                if (reference.IntegrationType.Equals("Products", StringComparison.OrdinalIgnoreCase))
+                {
+                    AddToProducts(refManager, reference);
+                }
+                else // Default to Tabs
+                {
+                    AddToTabs(refManager, reference);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Adds referenced documentation to the Tabs array.
+        /// </summary>
+        /// <param name="source">The referenced documentation's DocsJsonManager.</param>
+        /// <param name="reference">The documentation reference metadata.</param>
+        internal void AddToTabs(DocsJsonManager source, DocumentationReference reference)
+        {
+            _docsJsonManager!.Configuration!.Navigation!.Tabs ??= [];
+
+            _docsJsonManager.Configuration.Navigation.Tabs.Add(new TabConfig
+            {
+                Tab = !string.IsNullOrWhiteSpace(reference.Name) ? reference.Name : GetProjectName(reference.ProjectPath),
+                Href = reference.DestinationPath,
+                Pages = source.Configuration!.Navigation!.Pages
+            });
+        }
+
+        /// <summary>
+        /// Adds referenced documentation to the Products array.
+        /// </summary>
+        /// <param name="source">The referenced documentation's DocsJsonManager.</param>
+        /// <param name="reference">The documentation reference metadata.</param>
+        internal void AddToProducts(DocsJsonManager source, DocumentationReference reference)
+        {
+            _docsJsonManager!.Configuration!.Navigation!.Products ??= [];
+
+            _docsJsonManager.Configuration.Navigation.Products.Add(new ProductConfig
+            {
+                Product = !string.IsNullOrWhiteSpace(reference.Name) ? reference.Name : GetProjectName(reference.ProjectPath),
+                Href = reference.DestinationPath,
+                Pages = source.Configuration!.Navigation!.Pages,
+                Groups = source.Configuration.Navigation.Groups
+            });
+        }
+
+        /// <summary>
+        /// Extracts the project name from a .docsproj file path.
+        /// </summary>
+        /// <param name="projectPath">The full path to the .docsproj file.</param>
+        /// <returns>The project name without extension.</returns>
+        internal string GetProjectName(string projectPath)
+        {
+            return Path.GetFileNameWithoutExtension(projectPath);
+        }
+
+        /// <summary>
+        /// Applies the NavigationType setting from the template to move the root project's navigation
+        /// from Pages to Tabs or Products if configured.
+        /// </summary>
+        /// <remarks>
+        /// This method is called after BuildNavigationStructure and before CombineReferencedNavigation.
+        /// It moves the entire Pages navigation (including the API Reference group) into a Tab or Product
+        /// based on the NavigationType setting in the template.
+        /// </remarks>
+        internal void ApplyNavigationType()
+        {
+            // Check if we have a manager with loaded configuration
+            if (_docsJsonManager is null ||
+                !_docsJsonManager.IsLoaded ||
+                _docsJsonManager.Configuration?.Navigation?.Pages is null ||
+                _options.Template is null)
+            {
+                return;
+            }
+
+            var navigationType = _options.Navigation.Type;
+
+            // If NavigationType is Pages (default), do nothing
+            if (navigationType == NavigationType.Pages)
+            {
+                return;
+            }
+
+            // Get the current pages and groups to move
+            var currentPages = _docsJsonManager.Configuration.Navigation.Pages;
+            var currentGroups = _docsJsonManager.Configuration.Navigation.Groups;
+
+            // Determine the name for the root project
+            var rootName = !string.IsNullOrWhiteSpace(_options.Navigation.Name)
+                ? _options.Navigation.Name
+                : _options.Template.Name ?? "Documentation";
+
+            // Move to Tabs or Products based on setting
+            if (navigationType == NavigationType.Tabs)
+            {
+                // Initialize Tabs if needed
+                _docsJsonManager.Configuration.Navigation.Tabs ??= [];
+
+                // Add root content as a new tab
+                _docsJsonManager.Configuration.Navigation.Tabs.Add(new TabConfig
+                {
+                    Tab = rootName,
+                    Pages = currentPages
+                });
+
+                // Clear the Pages array since content is now in Tabs
+                _docsJsonManager.Configuration.Navigation.Pages = [];
+            }
+            else if (navigationType == NavigationType.Products)
+            {
+                // Initialize Products if needed
+                _docsJsonManager.Configuration.Navigation.Products ??= [];
+
+                // Add root content as a new product
+                _docsJsonManager.Configuration.Navigation.Products.Add(new ProductConfig
+                {
+                    Product = rootName,
+                    Pages = currentPages,
+                    Groups = currentGroups
+                });
+
+                // Clear the Pages and Groups arrays since content is now in Products
+                _docsJsonManager.Configuration.Navigation.Pages = [];
+                _docsJsonManager.Configuration.Navigation.Groups = null;
+            }
+        }
+
+        #endregion
+
+        #region Private Methods - Placeholder Generation
 
         /// <summary>
         /// Renders placeholder conceptual content files for the documentation assembly.

@@ -2,8 +2,10 @@
 title: DropdownConfig
 description: "Represents a dropdown configuration in Mintlify navigation."
 icon: file-brackets-curly
-keywords: ['DropdownConfig', 'Mintlify.Core.Models.DropdownConfig', 'Mintlify.Core.Models', 'class', 'System.Object']
+keywords: ['DropdownConfig', 'Mintlify.Core.Models.DropdownConfig', 'Mintlify.Core.Models', 'class', 'Mintlify.Core.Models.NavigationSectionBase']
 ---
+
+import { DocsBadge } from '/snippets/DocsBadge.jsx';
 
 ## Definition
 
@@ -11,7 +13,7 @@ keywords: ['DropdownConfig', 'Mintlify.Core.Models.DropdownConfig', 'Mintlify.Co
 
 **Namespace:** Mintlify.Core.Models
 
-**Inheritance:** System.Object
+**Inheritance:** Mintlify.Core.Models.NavigationSectionBase
 
 ## Syntax
 
@@ -23,9 +25,13 @@ Mintlify.Core.Models.DropdownConfig
 
 Represents a dropdown configuration in Mintlify navigation.
 
+## Remarks
+
+Dropdowns create expandable navigation menus. The dropdown name is required.
+
 ## Constructors
 
-### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  .ctor
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> .ctor
 
 #### Syntax
 
@@ -33,9 +39,49 @@ Represents a dropdown configuration in Mintlify navigation.
 public DropdownConfig()
 ```
 
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> .ctor <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `Mintlify.Core.Models.NavigationSectionBase`</Note>
+
+#### Syntax
+
+```csharp
+protected NavigationSectionBase()
+```
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> .ctor <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `Mintlify.Core.Models.NavigationContainerBase`</Note>
+
+#### Syntax
+
+```csharp
+protected NavigationContainerBase()
+```
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> .ctor <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `Mintlify.Core.Models.NavigationItemBase`</Note>
+
+#### Syntax
+
+```csharp
+protected NavigationItemBase()
+```
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> .ctor <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public Object()
+```
+
 ## Properties
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Anchors
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Anchors
 
 Gets or sets the anchors for the dropdown.
 
@@ -49,7 +95,13 @@ public System.Collections.Generic.List<Mintlify.Core.Models.AnchorConfig> Anchor
 
 Type: `System.Collections.Generic.List<Mintlify.Core.Models.AnchorConfig>?`
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  AsyncApi
+#### Remarks
+
+Anchors provide persistent navigation items within the dropdown.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> AsyncApi <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `Mintlify.Core.Models.NavigationItemBase`</Note>
 
 Gets or sets the AsyncAPI configuration.
 
@@ -63,9 +115,16 @@ public Mintlify.Core.Models.ApiSpecConfig AsyncApi { get; set; }
 
 Type: `Mintlify.Core.Models.ApiSpecConfig?`
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Color
+#### Remarks
 
-Gets or sets the color configuration for the dropdown.
+Can be a string URL, an array of URLs, or an object with source and directory properties
+            pointing to AsyncAPI specification files.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Color <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `Mintlify.Core.Models.NavigationSectionBase`</Note>
+
+Gets or sets the color configuration for this navigation section.
 
 #### Syntax
 
@@ -77,9 +136,15 @@ public Mintlify.Core.Models.ColorPairConfig Color { get; set; }
 
 Type: `Mintlify.Core.Models.ColorPairConfig?`
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Description
+#### Remarks
 
-Gets or sets the description of the dropdown.
+Defines the primary and secondary colors used for this section's visual styling.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Description <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `Mintlify.Core.Models.NavigationSectionBase`</Note>
+
+Gets or sets the description of this navigation section.
 
 #### Syntax
 
@@ -91,7 +156,11 @@ public string Description { get; set; }
 
 Type: `string?`
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Dropdown
+#### Remarks
+
+Provides additional descriptive text about this navigation section.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Dropdown
 
 Gets or sets the name of the dropdown.
 
@@ -109,9 +178,31 @@ Type: `string`
 
 This is a required field that appears as the dropdown label in navigation.
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Global
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Dropdowns <DocsBadge text="Inherited" variant="neutral" />
 
-Gets or sets the global navigation configuration.
+<Note>Inherited from `Mintlify.Core.Models.NavigationSectionBase`</Note>
+
+Gets or sets the dropdowns for this navigation section.
+
+#### Syntax
+
+```csharp
+public System.Collections.Generic.List<Mintlify.Core.Models.DropdownConfig> Dropdowns { get; set; }
+```
+
+#### Property Value
+
+Type: `System.Collections.Generic.List<Mintlify.Core.Models.DropdownConfig>?`
+
+#### Remarks
+
+Dropdowns create expandable menu sections within this navigation section.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Global <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `Mintlify.Core.Models.NavigationSectionBase`</Note>
+
+Gets or sets global navigation items that appear on all sections and pages.
 
 #### Syntax
 
@@ -123,9 +214,15 @@ public Mintlify.Core.Models.GlobalNavigationConfig Global { get; set; }
 
 Type: `Mintlify.Core.Models.GlobalNavigationConfig?`
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Groups
+#### Remarks
 
-Gets or sets the groups for the dropdown.
+Global navigation items persist across different tabs and pages for consistent navigation.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Groups <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `Mintlify.Core.Models.NavigationContainerBase`</Note>
+
+Gets or sets the groups for this navigation container.
 
 #### Syntax
 
@@ -137,7 +234,13 @@ public System.Collections.Generic.List<Mintlify.Core.Models.GroupConfig> Groups 
 
 Type: `System.Collections.Generic.List<Mintlify.Core.Models.GroupConfig>?`
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Hidden
+#### Remarks
+
+Groups organize pages into labeled sections within this navigation container.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Hidden <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `Mintlify.Core.Models.NavigationItemBase`</Note>
 
 Gets or sets whether the current option is default hidden.
 
@@ -151,9 +254,15 @@ public System.Nullable<bool> Hidden { get; set; }
 
 Type: `System.Nullable<bool>?`
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Href
+#### Remarks
 
-Gets or sets the URL or path for the dropdown.
+When true, this navigation item will not be displayed in the navigation by default.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Href <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `Mintlify.Core.Models.NavigationContainerBase`</Note>
+
+Gets or sets the URL or path for this navigation container.
 
 #### Syntax
 
@@ -165,7 +274,13 @@ public string Href { get; set; }
 
 Type: `string?`
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Icon
+#### Remarks
+
+Can be used to link to an external URL or specify a path for this container.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Icon <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `Mintlify.Core.Models.NavigationItemBase`</Note>
 
 Gets or sets the icon to be displayed in the section.
 
@@ -179,9 +294,16 @@ public Mintlify.Core.Models.IconConfig Icon { get; set; }
 
 Type: `Mintlify.Core.Models.IconConfig?`
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Languages
+#### Remarks
 
-Gets or sets the languages for the dropdown.
+Can be a Font Awesome icon name, Lucide icon name, JSX-compatible SVG code,
+            URL to an externally hosted icon, or path to an icon file in your project.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Languages <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `Mintlify.Core.Models.NavigationSectionBase`</Note>
+
+Gets or sets the languages for this navigation section.
 
 #### Syntax
 
@@ -193,7 +315,13 @@ public System.Collections.Generic.List<Mintlify.Core.Models.LanguageConfig> Lang
 
 Type: `System.Collections.Generic.List<Mintlify.Core.Models.LanguageConfig>?`
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  OpenApi
+#### Remarks
+
+Allows partitioning navigation into different language-specific versions.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> OpenApi <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `Mintlify.Core.Models.NavigationItemBase`</Note>
 
 Gets or sets the OpenAPI configuration.
 
@@ -207,9 +335,16 @@ public Mintlify.Core.Models.ApiSpecConfig OpenApi { get; set; }
 
 Type: `Mintlify.Core.Models.ApiSpecConfig?`
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Pages
+#### Remarks
 
-Gets or sets the pages for the dropdown.
+Can be a string URL, an array of URLs, or an object with source and directory properties
+            pointing to OpenAPI specification files.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Pages <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `Mintlify.Core.Models.NavigationItemBase`</Note>
+
+Gets or sets the pages for this navigation item.
 
 #### Syntax
 
@@ -221,7 +356,11 @@ public System.Collections.Generic.List<object> Pages { get; set; }
 
 Type: `System.Collections.Generic.List<object>?`
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Tabs
+#### Remarks
+
+Pages can be strings (page paths) or nested GroupConfig objects for hierarchical navigation.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Tabs
 
 Gets or sets the tabs for the dropdown.
 
@@ -235,9 +374,15 @@ public System.Collections.Generic.List<Mintlify.Core.Models.TabConfig> Tabs { ge
 
 Type: `System.Collections.Generic.List<Mintlify.Core.Models.TabConfig>?`
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Versions
+#### Remarks
 
-Gets or sets the versions for the dropdown.
+Allows creating multiple tabs within a dropdown section.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Versions <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `Mintlify.Core.Models.NavigationSectionBase`</Note>
+
+Gets or sets the versions for this navigation section.
 
 #### Syntax
 
@@ -248,4 +393,128 @@ public System.Collections.Generic.List<Mintlify.Core.Models.VersionConfig> Versi
 #### Property Value
 
 Type: `System.Collections.Generic.List<Mintlify.Core.Models.VersionConfig>?`
+
+#### Remarks
+
+Allows partitioning navigation into different version-specific documentation.
+
+## Methods
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Equals <DocsBadge text="Inherited" variant="neutral" /> <DocsBadge text="Virtual" variant="warning" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual bool Equals(object obj)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `obj` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Equals <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public static bool Equals(object objA, object objB)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `objA` | `object?` | - |
+| `objB` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> GetHashCode <DocsBadge text="Inherited" variant="neutral" /> <DocsBadge text="Virtual" variant="warning" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual int GetHashCode()
+```
+
+#### Returns
+
+Type: `int`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> GetType <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public System.Type GetType()
+```
+
+#### Returns
+
+Type: `System.Type`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> MemberwiseClone <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+protected internal object MemberwiseClone()
+```
+
+#### Returns
+
+Type: `object`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> ReferenceEquals <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public static bool ReferenceEquals(object objA, object objB)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `objA` | `object?` | - |
+| `objB` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> ToString <DocsBadge text="Inherited" variant="neutral" /> <DocsBadge text="Virtual" variant="warning" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual string ToString()
+```
+
+#### Returns
+
+Type: `string?`
 

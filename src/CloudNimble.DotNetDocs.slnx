@@ -27,6 +27,7 @@
     <File Path="../NuGet.config" />
     <File Path=".editorconfig" />
     <File Path="Directory.Build.props" />
+    <File Path="dotnet.config" />
     <File Path="global.json" />
   </Folder>
   <Folder Name="/Solution Items/Build/">

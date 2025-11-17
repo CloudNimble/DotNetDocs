@@ -1,0 +1,272 @@
+---
+title: ClassWithMethods
+description: "A class demonstrating various method documentation scenarios."
+icon: file-brackets-curly
+keywords: ['ClassWithMethods', 'CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ClassWithMethods', 'CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios', 'class', 'System.Object']
+---
+
+import { DocsBadge } from '/snippets/DocsBadge.jsx';
+
+## Definition
+
+**Assembly:** CloudNimble.DotNetDocs.Tests.Shared.dll
+
+**Namespace:** CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios
+
+**Inheritance:** System.Object
+
+## Syntax
+
+```csharp
+CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ClassWithMethods
+```
+
+## Summary
+
+A class demonstrating various method documentation scenarios.
+
+## Remarks
+
+Contains methods with different signatures, parameters, and return types.
+
+## Examples
+
+<code>
+var obj = new ClassWithMethods();
+var result = obj.Calculate(5, 10);
+</code>
+
+## Constructors
+
+### <Icon icon="hammer" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} /> .ctor
+
+#### Syntax
+
+```csharp
+public ClassWithMethods()
+```
+
+### <Icon icon="hammer" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} /> .ctor <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public Object()
+```
+
+## Methods
+
+### <Icon icon="function" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} /> Calculate
+
+Calculates the sum of two numbers.
+
+#### Syntax
+
+```csharp
+public int Calculate(int a, int b)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `a` | `int` | The first number. |
+| `b` | `int` | The second number. |
+
+#### Returns
+
+Type: `int`
+The sum of a and b.
+
+#### Examples
+
+<code>
+var result = Calculate(3, 4); // Returns 7
+</code>
+
+### <Icon icon="code-fork" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} /> Equals <DocsBadge text="Inherited" variant="neutral" /> <DocsBadge text="Virtual" variant="warning" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual bool Equals(object obj)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `obj` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} /> Equals <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public static bool Equals(object objA, object objB)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `objA` | `object?` | - |
+| `objB` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="function" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} /> GetConditionalValue
+
+Gets a value based on a condition.
+
+#### Syntax
+
+```csharp
+public string GetConditionalValue(bool condition)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `condition` | `bool` | The condition to evaluate. |
+
+#### Returns
+
+Type: `string`
+Returns "Yes" if condition is true, "No" otherwise.
+
+### <Icon icon="code-fork" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} /> GetHashCode <DocsBadge text="Inherited" variant="neutral" /> <DocsBadge text="Virtual" variant="warning" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual int GetHashCode()
+```
+
+#### Returns
+
+Type: `int`
+
+### <Icon icon="function" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} /> GetType <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public System.Type GetType()
+```
+
+#### Returns
+
+Type: `System.Type`
+
+### <Icon icon="function" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} /> MemberwiseClone <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+protected object MemberwiseClone()
+```
+
+#### Returns
+
+Type: `object`
+
+### <Icon icon="function" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} /> PerformAction
+
+A void method that performs an action.
+
+#### Syntax
+
+```csharp
+public void PerformAction()
+```
+
+#### Remarks
+
+This method doesn't return anything.
+
+### <Icon icon="function" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} /> Process
+
+Processes the input string.
+
+#### Syntax
+
+```csharp
+public string Process(string input)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `input` | `string` | The string to process. |
+
+#### Returns
+
+Type: `string`
+The processed string in uppercase.
+
+#### Exceptions
+
+| Exception | Description |
+|-----------|-------------|
+| `ArgumentNullException` | Thrown when input is null. |
+
+#### Remarks
+
+This method performs a simple transformation for testing purposes.
+
+### <Icon icon="thumbtack" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} /> ReferenceEquals <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public static bool ReferenceEquals(object objA, object objB)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `objA` | `object?` | - |
+| `objB` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="code-fork" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} /> ToString <DocsBadge text="Inherited" variant="neutral" /> <DocsBadge text="Virtual" variant="warning" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual string ToString()
+```
+
+#### Returns
+
+Type: `string?`
+

@@ -5,6 +5,8 @@ icon: file-brackets-curly
 keywords: ['DocsJsonConfig', 'Mintlify.Core.Models.DocsJsonConfig', 'Mintlify.Core.Models', 'class', 'System.Object']
 ---
 
+import { DocsBadge } from '/snippets/DocsBadge.jsx';
+
 ## Definition
 
 **Assembly:** Mintlify.Core.dll
@@ -30,7 +32,7 @@ This class represents the complete structure of a Mintlify docs.json configurati
 
 ## Constructors
 
-### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  .ctor
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> .ctor
 
 #### Syntax
 
@@ -38,9 +40,19 @@ This class represents the complete structure of a Mintlify docs.json configurati
 public DocsJsonConfig()
 ```
 
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> .ctor <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public Object()
+```
+
 ## Properties
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Api
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Api
 
 Gets or sets the API reference configuration.
 
@@ -54,7 +66,7 @@ public Mintlify.Core.Models.ApiConfig Api { get; set; }
 
 Type: `Mintlify.Core.Models.ApiConfig?`
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Appearance
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Appearance
 
 Gets or sets the appearance configuration.
 
@@ -68,7 +80,7 @@ public Mintlify.Core.Models.AppearanceConfig Appearance { get; set; }
 
 Type: `Mintlify.Core.Models.AppearanceConfig?`
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Background
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Background
 
 Gets or sets the background configuration.
 
@@ -82,7 +94,7 @@ public Mintlify.Core.Models.BackgroundConfig Background { get; set; }
 
 Type: `Mintlify.Core.Models.BackgroundConfig?`
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Banner
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Banner
 
 Gets or sets the banner configuration.
 
@@ -96,7 +108,7 @@ public Mintlify.Core.Models.BannerConfig Banner { get; set; }
 
 Type: `Mintlify.Core.Models.BannerConfig?`
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Colors
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Colors
 
 Gets or sets the color configuration.
 
@@ -114,7 +126,7 @@ Type: `Mintlify.Core.Models.ColorsConfig`
 
 This is a required field. At minimum, the primary color must be defined.
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Contextual
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Contextual
 
 Gets or sets the contextual options configuration.
 
@@ -128,7 +140,7 @@ public Mintlify.Core.Models.ContextualConfig Contextual { get; set; }
 
 Type: `Mintlify.Core.Models.ContextualConfig?`
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Description
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Description
 
 Gets or sets the optional description used for SEO and LLM indexing.
 
@@ -142,7 +154,7 @@ public string Description { get; set; }
 
 Type: `string?`
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Errors
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Errors
 
 Gets or sets the error pages configuration.
 
@@ -156,7 +168,7 @@ public Mintlify.Core.Models.ErrorsConfig Errors { get; set; }
 
 Type: `Mintlify.Core.Models.ErrorsConfig?`
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Favicon
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Favicon
 
 Gets or sets the favicon configuration.
 
@@ -170,7 +182,7 @@ public Mintlify.Core.Models.FaviconConfig Favicon { get; set; }
 
 Type: `Mintlify.Core.Models.FaviconConfig?`
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Fonts
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Fonts
 
 Gets or sets the fonts configuration.
 
@@ -184,7 +196,7 @@ public Mintlify.Core.Models.FontsConfig Fonts { get; set; }
 
 Type: `Mintlify.Core.Models.FontsConfig?`
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Footer
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Footer
 
 Gets or sets the footer configuration.
 
@@ -198,7 +210,7 @@ public Mintlify.Core.Models.FooterConfig Footer { get; set; }
 
 Type: `Mintlify.Core.Models.FooterConfig?`
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Icons
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Icons
 
 Gets or sets the icons configuration.
 
@@ -212,7 +224,7 @@ public Mintlify.Core.Models.IconsConfig Icons { get; set; }
 
 Type: `Mintlify.Core.Models.IconsConfig?`
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Integrations
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Integrations
 
 Gets or sets the integrations configuration.
 
@@ -226,7 +238,26 @@ public Mintlify.Core.Models.IntegrationsConfig Integrations { get; set; }
 
 Type: `Mintlify.Core.Models.IntegrationsConfig?`
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Logo
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Interaction
+
+Gets or sets the interaction configuration for navigation elements.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.InteractionConfig Interaction { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.InteractionConfig?`
+
+#### Remarks
+
+Controls how users interact with navigation elements such as groups and dropdowns,
+            including whether expanding a group automatically navigates to its first page.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Logo
 
 Gets or sets the logo configuration.
 
@@ -240,7 +271,7 @@ public Mintlify.Core.Models.LogoConfig Logo { get; set; }
 
 Type: `Mintlify.Core.Models.LogoConfig?`
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Name
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Name
 
 Gets or sets the name of the project, organization, or product.
 
@@ -258,7 +289,7 @@ Type: `string`
 
 This is a required field.
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Navbar
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Navbar
 
 Gets or sets the navbar configuration.
 
@@ -272,7 +303,7 @@ public Mintlify.Core.Models.NavbarConfig Navbar { get; set; }
 
 Type: `Mintlify.Core.Models.NavbarConfig?`
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Navigation
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Navigation
 
 Gets or sets the navigation structure.
 
@@ -290,7 +321,7 @@ Type: `Mintlify.Core.Models.NavigationConfig`
 
 This is a required field that defines the structure of your documentation.
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Redirects
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Redirects
 
 Gets or sets the redirects.
 
@@ -304,7 +335,7 @@ public System.Collections.Generic.List<Mintlify.Core.Models.RedirectConfig> Redi
 
 Type: `System.Collections.Generic.List<Mintlify.Core.Models.RedirectConfig>?`
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Schema
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Schema
 
 Gets or sets the JSON schema URL.
 
@@ -318,7 +349,7 @@ public string Schema { get; set; }
 
 Type: `string?`
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Search
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Search
 
 Gets or sets the search configuration.
 
@@ -332,7 +363,7 @@ public Mintlify.Core.Models.SearchConfig Search { get; set; }
 
 Type: `Mintlify.Core.Models.SearchConfig?`
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Seo
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Seo
 
 Gets or sets the SEO configuration.
 
@@ -346,7 +377,7 @@ public Mintlify.Core.Models.SeoConfig Seo { get; set; }
 
 Type: `Mintlify.Core.Models.SeoConfig?`
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Styling
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Styling
 
 Gets or sets the styling configuration.
 
@@ -360,7 +391,7 @@ public Mintlify.Core.Models.StylingConfig Styling { get; set; }
 
 Type: `Mintlify.Core.Models.StylingConfig?`
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Theme
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Theme
 
 Gets or sets the theme name.
 
@@ -378,7 +409,7 @@ Type: `string`
 
 This is a required field. Valid values are: mint, maple, palm, willow, linden, almond, aspen.
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Thumbnails
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Thumbnails
 
 Gets or sets the thumbnails configuration.
 
@@ -396,4 +427,124 @@ Type: `System.Collections.Generic.Dictionary<string, string>?`
 
 Defines custom thumbnail images for social media sharing and link previews.
             Can include background images and other preview assets.
+
+## Methods
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Equals <DocsBadge text="Inherited" variant="neutral" /> <DocsBadge text="Virtual" variant="warning" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual bool Equals(object obj)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `obj` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Equals <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public static bool Equals(object objA, object objB)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `objA` | `object?` | - |
+| `objB` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> GetHashCode <DocsBadge text="Inherited" variant="neutral" /> <DocsBadge text="Virtual" variant="warning" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual int GetHashCode()
+```
+
+#### Returns
+
+Type: `int`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> GetType <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public System.Type GetType()
+```
+
+#### Returns
+
+Type: `System.Type`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> MemberwiseClone <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+protected internal object MemberwiseClone()
+```
+
+#### Returns
+
+Type: `object`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> ReferenceEquals <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public static bool ReferenceEquals(object objA, object objB)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `objA` | `object?` | - |
+| `objB` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> ToString <DocsBadge text="Inherited" variant="neutral" /> <DocsBadge text="Virtual" variant="warning" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual string ToString()
+```
+
+#### Returns
+
+Type: `string?`
 

@@ -416,6 +416,7 @@ namespace Mintlify.Core
         /// <param name="includeApiReference">Whether to include the 'api-reference' directory in discovery (defaults to false).</param>
         /// <param name="preserveExisting">Whether to preserve existing navigation structure and merge discovered content (defaults to true).</param>
         /// <param name="allowDuplicatePaths">If true, allows adding duplicate paths; otherwise, skips duplicates.</param>
+        /// <param name="excludeDirectories">Optional array of directory names to exclude from navigation discovery (e.g., DocumentationReference output directories).</param>
         /// <exception cref="ArgumentException">Thrown when path is null or whitespace.</exception>
         /// <exception cref="InvalidOperationException">Thrown when no configuration is loaded.</exception>
         /// <exception cref="DirectoryNotFoundException">Thrown when the specified path does not exist.</exception>
@@ -441,7 +442,7 @@ namespace Mintlify.Core
         /// <para>The method preserves the directory structure in the navigation while applying these intelligent
         /// processing rules to create clean, organized documentation.</para>
         /// </remarks>
-        public void PopulateNavigationFromPath(string path, string[]? fileExtensions = null, bool includeApiReference = false, bool preserveExisting = true, bool allowDuplicatePaths = false)
+        public void PopulateNavigationFromPath(string path, string[]? fileExtensions = null, bool includeApiReference = false, bool preserveExisting = true, bool allowDuplicatePaths = false, string[]? excludeDirectories = null)
         {
             Ensure.ArgumentNotNullOrWhiteSpace(path, nameof(path));
 
@@ -466,7 +467,7 @@ namespace Mintlify.Core
                 var discoveredNavigation = new NavigationConfig { Pages = [] };
 
                 // Populate the discovered navigation from directory structure
-                PopulateNavigationFromDirectory(path, discoveredNavigation.Pages, path, fileExtensions, includeApiReference, true, allowDuplicatePaths);
+                PopulateNavigationFromDirectory(path, discoveredNavigation.Pages, path, fileExtensions, includeApiReference, true, allowDuplicatePaths, excludeDirectories);
 
                 // Merge discovered navigation into existing configuration, adding new root pages to Getting Started
                 var mergeOptions = new MergeOptions();
@@ -478,7 +479,7 @@ namespace Mintlify.Core
                 Configuration.Navigation.Pages.Clear();
 
                 // Populate from directory structure
-                PopulateNavigationFromDirectory(path, Configuration.Navigation.Pages, path, fileExtensions, includeApiReference, true, allowDuplicatePaths);
+                PopulateNavigationFromDirectory(path, Configuration.Navigation.Pages, path, fileExtensions, includeApiReference, true, allowDuplicatePaths, excludeDirectories);
             }
         }
 
@@ -1167,6 +1168,7 @@ namespace Mintlify.Core
 
             var groupsByName = new Dictionary<string, GroupConfig>();
             var groupsWithoutNames = new List<GroupConfig>();
+            var targetGroupNames = new HashSet<string>();
 
             // First, catalog what's in the target
             foreach (var group in targetGroups)
@@ -1174,6 +1176,7 @@ namespace Mintlify.Core
                 if (!string.IsNullOrWhiteSpace(group.Group))
                 {
                     groupsByName[group.Group] = group;
+                    targetGroupNames.Add(group.Group);
                 }
                 else
                 {
@@ -1181,7 +1184,8 @@ namespace Mintlify.Core
                 }
             }
 
-            // Process source groups
+            // Process source groups and track new ones
+            var newGroups = new List<GroupConfig>();
             foreach (var sourceGroup in sourceGroups)
             {
                 if (!string.IsNullOrWhiteSpace(sourceGroup.Group))
@@ -1193,7 +1197,9 @@ namespace Mintlify.Core
                     }
                     else
                     {
+                        // This is a new group from source, add it to our tracking list
                         groupsByName[sourceGroup.Group] = sourceGroup;
+                        newGroups.Add(sourceGroup);
                     }
                 }
                 else
@@ -1202,9 +1208,24 @@ namespace Mintlify.Core
                 }
             }
 
-            // Rebuild the groups list
+            // Rebuild the groups list:
+            // 1. Preserve target groups in original order
+            // 2. Append new source groups in alphabetical order
             targetGroups.Clear();
-            targetGroups.AddRange(groupsByName.Values.OrderBy(g => g.Group));
+
+            // Add existing target groups in their original order (preserved by dictionary insertion order)
+            foreach (var group in groupsByName.Values)
+            {
+                if (targetGroupNames.Contains(group.Group))
+                {
+                    targetGroups.Add(group);
+                }
+            }
+
+            // Add new groups in alphabetical order
+            targetGroups.AddRange(newGroups.OrderBy(g => g.Group));
+
+            // Add groups without names
             targetGroups.AddRange(groupsWithoutNames);
         }
 
@@ -1364,6 +1385,7 @@ namespace Mintlify.Core
         /// <param name="includeApiReference">Whether to include the 'api-reference' directory in discovery (defaults to false).</param>
         /// <param name="groupRootFiles">Whether to group root-level files under "Getting Started" (defaults to false).</param>
         /// <param name="allowDuplicatePaths">If true, allows adding duplicate paths; otherwise, skips duplicates.</param>
+        /// <param name="excludeDirectories">Optional array of directory names to exclude from navigation discovery (e.g., DocumentationReference output directories).</param>
         /// <remarks>
         /// <para>This internal method implements the core navigation generation logic with the following processing order:</para>
         /// <list type="number">
@@ -1380,7 +1402,7 @@ namespace Mintlify.Core
         /// </list>
         /// <para>Warning messages are added to ConfigurationErrors for .md files encountered during processing.</para>
         /// </remarks>
-        internal void PopulateNavigationFromDirectory(string currentPath, List<object> pages, string rootPath, string[] fileExtensions, bool includeApiReference = false, bool groupRootFiles = false, bool allowDuplicatePaths = false)
+        internal void PopulateNavigationFromDirectory(string currentPath, List<object> pages, string rootPath, string[] fileExtensions, bool includeApiReference = false, bool groupRootFiles = false, bool allowDuplicatePaths = false, string[]? excludeDirectories = null)
         {
             // Check for navigation.json override first
             var navigationJsonPath = Path.Combine(currentPath, "navigation.json");
@@ -1458,8 +1480,10 @@ namespace Mintlify.Core
                 if (!dirName.StartsWith(".") &&
 #if NETSTANDARD2_0
                     !ExcludedDirectories.Any(excluded => string.Equals(excluded, dirName, StringComparison.OrdinalIgnoreCase)) &&
+                    (excludeDirectories is null || !excludeDirectories.Any(excluded => string.Equals(excluded, dirName, StringComparison.OrdinalIgnoreCase))) &&
 #else
                     !ExcludedDirectories.Contains(dirName, StringComparer.OrdinalIgnoreCase) &&
+                    (excludeDirectories is null || !excludeDirectories.Contains(dirName, StringComparer.OrdinalIgnoreCase)) &&
 #endif
                     (includeApiReference || !string.Equals(dirName, "api-reference", StringComparison.OrdinalIgnoreCase))
                     )
@@ -1484,7 +1508,7 @@ namespace Mintlify.Core
                 if (isDirectory)
                 {
                     var subPages = new List<object>();
-                    PopulateNavigationFromDirectory(path, subPages, rootPath, fileExtensions, includeApiReference, false, allowDuplicatePaths);
+                    PopulateNavigationFromDirectory(path, subPages, rootPath, fileExtensions, includeApiReference, false, allowDuplicatePaths, excludeDirectories);
 
                     if (subPages.Any())
                     {
