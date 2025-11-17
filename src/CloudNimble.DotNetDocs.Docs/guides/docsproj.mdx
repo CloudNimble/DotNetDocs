@@ -16,14 +16,14 @@ The `.docsproj` file is the heart of your DotNetDocs project. It uses the DotNet
 Every `.docsproj` file must reference the DotNetDocs.Sdk:
 
 <CodeGroup>
-```xml Current (1.0.2)
-<Project Sdk="DotNetDocs.Sdk/1.0.2">
+```xml Current (1.1.0)
+<Project Sdk="DotNetDocs.Sdk/1.1.0">
   <!-- Your configuration here -->
 </Project>
 ```
 
-```xml Preview (1.1.0-preview.1)
-<Project Sdk="DotNetDocs.Sdk/1.1.0-preview.1">
+```xml Preview (1.2.0-preview.1)
+<Project Sdk="DotNetDocs.Sdk/1.2.0-preview.1">
   <!-- Your configuration here -->
 </Project>
 ```
@@ -125,7 +125,7 @@ Every `.docsproj` file must reference the DotNetDocs.Sdk:
 ### Navigation Settings
 
 <Note>
-  **Preview 1.1.0+**: Navigation configuration has been refactored. The `<Navigation>` element now uses attributes for Mode, Type, and Name. Legacy properties (`MintlifyNavigationMode`, `MintlifyNavigationType`, `MintlifyNavigationName`) are still supported for backward compatibility.
+  **1.1.0+**: Navigation configuration has been refactored. The `<Navigation>` element now uses attributes for Mode, Type, and Name. Legacy properties (`MintlifyNavigationMode`, `MintlifyNavigationType`, `MintlifyNavigationName`) are still supported for backward compatibility.
 </Note>
 
 <ParamField path="MintlifyNavigationMode" type="string" default="Unified">
@@ -140,7 +140,7 @@ Every `.docsproj` file must reference the DotNetDocs.Sdk:
   <MintlifyNavigationMode>Unified</MintlifyNavigationMode>
   ```
 
-  ```xml Preview (1.1.0+)
+  ```xml 1.1.0+
   <MintlifyTemplate>
     <Navigation Mode="Unified">
       <Pages>
@@ -152,7 +152,7 @@ Every `.docsproj` file must reference the DotNetDocs.Sdk:
   </CodeGroup>
 
   <Tip>
-    In Preview 1.1.0+, use the `<Navigation Mode="...">` attribute in `MintlifyTemplate` instead of the top-level property.
+    In 1.1.0 and later, use the `<Navigation Mode="...">` attribute in `MintlifyTemplate` instead of the top-level property.
   </Tip>
 </ParamField>
 
@@ -164,7 +164,7 @@ Every `.docsproj` file must reference the DotNetDocs.Sdk:
   <MintlifyUnifiedGroupName>API Documentation</MintlifyUnifiedGroupName>
   ```
 
-  ```xml Preview (1.1.0+)
+  ```xml 1.1.0+
   <!-- This is now configured via MintlifyRenderer options in code -->
   <!-- or remains as a top-level property for backward compatibility -->
   <MintlifyUnifiedGroupName>API Documentation</MintlifyUnifiedGroupName>
@@ -198,7 +198,7 @@ Every `.docsproj` file must reference the DotNetDocs.Sdk:
   </MintlifyTemplate>
   ```
 
-  ```xml Preview (1.1.0+)
+  ```xml 1.1.0+
   <MintlifyTemplate>
     <Name>My Project</Name>
     <Theme>maple</Theme>
@@ -223,13 +223,13 @@ Every `.docsproj` file must reference the DotNetDocs.Sdk:
     - `<Primary>` - Primary brand color
     - `<Light>` - Light mode accent color
     - `<Dark>` - Dark mode accent color
-  - `<Navigation>` - **(Preview 1.1.0+)** Navigation configuration with attributes:
+  - `<Navigation>` - **(1.1.0+)** Navigation configuration with attributes:
     - `Mode` - Navigation organization mode: `Unified` (default) or `Separated`
     - `Type` - Integration type: `Pages` (default), `Tabs`, or `Products`
     - `Name` - Custom display name for tabs/products (optional, defaults to project name)
 
   <Info>
-    The `<Navigation>` element and its attributes are only available in Preview 1.1.0 and later. For 1.0.x, use the legacy `MintlifyNavigationMode` property.
+    The `<Navigation>` element and its attributes are only available in 1.1.0 and later. For 1.0.x, use the legacy `MintlifyNavigationMode` property.
   </Info>
 </ParamField>
 
@@ -276,8 +276,8 @@ Every `.docsproj` file must reference the DotNetDocs.Sdk:
 Here's a complete `.docsproj` file demonstrating common configuration:
 
 <CodeGroup>
-```xml Current (1.0.2)
-<Project Sdk="DotNetDocs.Sdk/1.0.2">
+```xml Current (1.1.0)
+<Project Sdk="DotNetDocs.Sdk/1.1.0">
 
   <PropertyGroup>
     <!-- Documentation Type -->
@@ -308,8 +308,8 @@ Here's a complete `.docsproj` file demonstrating common configuration:
 </Project>
 ```
 
-```xml Preview (1.1.0-preview.1)
-<Project Sdk="DotNetDocs.Sdk/1.1.0-preview.1">
+```xml Preview (1.2.0-preview.1)
+<Project Sdk="DotNetDocs.Sdk/1.2.0-preview.1">
 
   <PropertyGroup>
     <!-- Documentation Type -->
@@ -333,7 +333,7 @@ Here's a complete `.docsproj` file demonstrating common configuration:
         <Light>#419AC5</Light>
         <Dark>#3CD0E2</Dark>
       </Colors>
-      <!-- New navigation configuration (1.1.0+) -->
+      <!-- Navigation configuration (1.1.0+) -->
       <Navigation Mode="Unified" Type="Tabs" Name="API Reference">
         <Pages>
           <!-- Your navigation structure here -->

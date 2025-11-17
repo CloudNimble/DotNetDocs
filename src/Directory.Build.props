@@ -1,6 +1,5 @@
 <Project>
 
-    <!-- Folder layout -->
     <PropertyGroup>
         <IsBenchmarkProject Condition="$(MSBuildProjectName.ToLower().EndsWith('.benchmarks'))">true</IsBenchmarkProject>
         <IsTestProject Condition="$(MSBuildProjectName.ToLower().Contains('.tests.'))">true</IsTestProject>
