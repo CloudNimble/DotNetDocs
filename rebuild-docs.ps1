@@ -75,7 +75,7 @@ Write-Host ""
 Write-Host "Step 2: Cleaning up build artifacts..." -ForegroundColor Yellow
 try {
     # Check if EasyAF.Tools is installed
-    $easyAfCheck = & dotnet tool list --global | Select-String "easyaf.tools"
+    $easyAfCheck = & dotnet tool list --global | Select-String "easyaf"
     if ($easyAfCheck) {
         Write-Host "   Running dotnet easyaf cleanup..." -ForegroundColor Gray
         & dotnet easyaf cleanup

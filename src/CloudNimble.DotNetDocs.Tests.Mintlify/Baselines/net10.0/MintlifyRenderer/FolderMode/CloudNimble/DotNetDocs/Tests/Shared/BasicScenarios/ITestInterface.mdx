@@ -5,8 +5,6 @@ icon: plug
 keywords: ['ITestInterface', 'CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ITestInterface', 'CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios', 'interface']
 ---
 
-import { DocsBadge } from '/snippets/DocsBadge.jsx';
-
 ## Definition
 
 **Assembly:** CloudNimble.DotNetDocs.Tests.Shared.dll
@@ -30,7 +28,7 @@ This interface is used to test extension methods on interfaces and to verify
 
 ## Properties
 
-### <Icon icon="tag" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} /> TestValue <DocsBadge text="Abstract" variant="warning" />
+### <Icon icon="tag" iconType="duotone" color="#0D9373" size={24} className="mr-2" /> TestValue <Badge color="orange">Abstract</Badge>
 
 Gets the test value.
 
@@ -46,7 +44,7 @@ Type: `string`
 
 ## Methods
 
-### <Icon icon="puzzle-piece" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} /> GetFormattedValue <DocsBadge text="Extension" variant="success" />
+### <Icon icon="puzzle-piece" iconType="duotone" color="#0D9373" size={24} className="mr-2" /> GetFormattedValue <Badge color="green">Extension</Badge>
 
 <Note>Extension method from `CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.TestsShared_ITestInterfaceExtensions`</Note>
 
@@ -76,7 +74,7 @@ ITestInterface test = new TestImplementation();
 var formatted = test.GetFormattedValue();
 </code>
 
-### <Icon icon="function" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} /> TestMethod <DocsBadge text="Abstract" variant="warning" />
+### <Icon icon="function" iconType="duotone" color="#0D9373" size={24} className="mr-2" /> TestMethod <Badge color="orange">Abstract</Badge>
 
 Performs a test operation.
 
@@ -86,7 +84,7 @@ Performs a test operation.
 void TestMethod()
 ```
 
-### <Icon icon="puzzle-piece" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} /> Validate <DocsBadge text="Extension" variant="success" />
+### <Icon icon="puzzle-piece" iconType="duotone" color="#0D9373" size={24} className="mr-2" /> Validate <Badge color="green">Extension</Badge>
 
 <Note>Extension method from `CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.TestsShared_ITestInterfaceExtensions`</Note>
 

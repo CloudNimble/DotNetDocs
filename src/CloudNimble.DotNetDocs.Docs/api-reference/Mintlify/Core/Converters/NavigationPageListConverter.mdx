@@ -5,8 +5,6 @@ icon: file-brackets-curly
 keywords: ['NavigationPageListConverter', 'Mintlify.Core.Converters.NavigationPageListConverter', 'Mintlify.Core.Converters', 'class', 'System.Text.Json.Serialization.JsonConverter<System.Collections.Generic.List<object>>']
 ---
 
-import { DocsBadge } from '/snippets/DocsBadge.jsx';
-
 ## Definition
 
 **Assembly:** Mintlify.Core.dll
@@ -32,7 +30,7 @@ This converter uses a static NavigationPageConverter instance for efficient conv
 
 ## Constructors
 
-### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> .ctor
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor
 
 #### Syntax
 
@@ -42,7 +40,7 @@ public NavigationPageListConverter()
 
 ## Methods
 
-### <Icon icon="code-merge" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Read <DocsBadge text="Override" variant="info" />
+### <Icon icon="code-merge" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Read <Badge color="blue">Override</Badge>
 
 Reads and converts the JSON array to a list of navigation page objects.
 
@@ -71,7 +69,7 @@ A list containing string and GroupConfig objects.
 |-----------|-------------|
 | `JsonException` | Thrown when the JSON token is not a StartArray. |
 
-### <Icon icon="code-merge" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Write <DocsBadge text="Override" variant="info" />
+### <Icon icon="code-merge" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Write <Badge color="blue">Override</Badge>
 
 Writes the list of navigation page objects to JSON array.
 

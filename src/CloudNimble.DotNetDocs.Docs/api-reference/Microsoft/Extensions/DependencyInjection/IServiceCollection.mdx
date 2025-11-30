@@ -5,8 +5,6 @@ icon: file-brackets-curly
 keywords: ['IServiceCollection', 'Microsoft.Extensions.DependencyInjection.IServiceCollection', 'Microsoft.Extensions.DependencyInjection', 'error']
 ---
 
-import { DocsBadge } from '/snippets/DocsBadge.jsx';
-
 ## Definition
 
 **Assembly:** Microsoft.Extensions.DependencyInjection.Abstractions.dll
@@ -29,7 +27,7 @@ See [Microsoft documentation](https://learn.microsoft.com/dotnet/api/microsoft.e
 
 ## Methods
 
-### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> AddDocEnricher <DocsBadge text="Extension" variant="success" />
+### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> AddDocEnricher <Badge color="green">Extension</Badge>
 
 <Note>Extension method from `Microsoft.Extensions.DependencyInjection.DotNetDocsCore_IServiceCollectionExtensions`</Note>
 
@@ -67,7 +65,7 @@ services.AddDocEnricher&lt;ConceptualContentEnricher&gt;();
 Registers the enricher as Scoped implementation of IDocEnricher.
             Enrichers add conceptual content to documentation entities.
 
-### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> AddDocRenderer <DocsBadge text="Extension" variant="success" />
+### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> AddDocRenderer <Badge color="green">Extension</Badge>
 
 <Note>Extension method from `Microsoft.Extensions.DependencyInjection.DotNetDocsCore_IServiceCollectionExtensions`</Note>
 
@@ -104,7 +102,7 @@ services.AddDocRenderer&lt;MyCustomRenderer&gt;();
 
 Registers the renderer as Scoped implementation of IDocRenderer.
 
-### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> AddDocTransformer <DocsBadge text="Extension" variant="success" />
+### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> AddDocTransformer <Badge color="green">Extension</Badge>
 
 <Note>Extension method from `Microsoft.Extensions.DependencyInjection.DotNetDocsCore_IServiceCollectionExtensions`</Note>
 
@@ -142,7 +140,7 @@ services.AddDocTransformer&lt;InheritDocTransformer&gt;();
 Registers the transformer as Scoped implementation of IDocTransformer.
             Transformers modify the documentation model before rendering.
 
-### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> AddDotNetDocs <DocsBadge text="Extension" variant="success" />
+### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> AddDotNetDocs <Badge color="green">Extension</Badge>
 
 <Note>Extension method from `Microsoft.Extensions.DependencyInjection.DotNetDocsCore_IServiceCollectionExtensions`</Note>
 
@@ -184,7 +182,7 @@ This method registers:
             - All built-in renderers (Markdown, JSON, YAML) as Scoped
             - MarkdownXmlTransformer for processing XML documentation tags
 
-### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> AddDotNetDocsCore <DocsBadge text="Extension" variant="success" />
+### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> AddDotNetDocsCore <Badge color="green">Extension</Badge>
 
 <Note>Extension method from `Microsoft.Extensions.DependencyInjection.DotNetDocsCore_IServiceCollectionExtensions`</Note>
 
@@ -225,7 +223,7 @@ Use this method when you want to manually register specific renderers.
             - ProjectContext as Singleton
             - DocumentationManager as Scoped
 
-### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> AddDotNetDocsPipeline <DocsBadge text="Extension" variant="success" />
+### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> AddDotNetDocsPipeline <Badge color="green">Extension</Badge>
 
 <Note>Extension method from `Microsoft.Extensions.DependencyInjection.DotNetDocsCore_IServiceCollectionExtensions`</Note>
 
@@ -262,7 +260,7 @@ services.AddDotNetDocsPipeline(pipeline =&gt;
 });
 ```
 
-### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> AddJsonRenderer <DocsBadge text="Extension" variant="success" />
+### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> AddJsonRenderer <Badge color="green">Extension</Badge>
 
 <Note>Extension method from `Microsoft.Extensions.DependencyInjection.DotNetDocsCore_IServiceCollectionExtensions`</Note>
 
@@ -300,7 +298,7 @@ services.AddJsonRenderer(options =&gt;
 
 Registers JsonRenderer as Scoped implementation of IDocRenderer.
 
-### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> AddMarkdownRenderer <DocsBadge text="Extension" variant="success" />
+### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> AddMarkdownRenderer <Badge color="green">Extension</Badge>
 
 <Note>Extension method from `Microsoft.Extensions.DependencyInjection.DotNetDocsCore_IServiceCollectionExtensions`</Note>
 
@@ -328,7 +326,176 @@ The service collection for chaining.
 Registers MarkdownRenderer as Scoped implementation of IDocRenderer.
             Also registers MarkdownXmlTransformer to process XML documentation tags.
 
-### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> AddYamlRenderer <DocsBadge text="Extension" variant="success" />
+### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> AddMintlifyRenderer <Badge color="green">Extension</Badge>
+
+<Note>Extension method from `Microsoft.Extensions.DependencyInjection.DotNetDocsMintlify_IServiceCollectionExtensions`</Note>
+
+Adds the Mintlify renderer to the service collection.
+
+#### Syntax
+
+```csharp
+public static Microsoft.Extensions.DependencyInjection.IServiceCollection AddMintlifyRenderer(Microsoft.Extensions.DependencyInjection.IServiceCollection services)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `services` | `Microsoft.Extensions.DependencyInjection.IServiceCollection` | The service collection. |
+
+#### Returns
+
+Type: `Microsoft.Extensions.DependencyInjection.IServiceCollection`
+The service collection for chaining.
+
+#### Examples
+
+```csharp
+services.AddMintlifyRenderer();
+```
+
+#### Remarks
+
+
+
+This method registers:
+
+
+
+
+### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> AddMintlifyRenderer <Badge color="green">Extension</Badge>
+
+<Note>Extension method from `Microsoft.Extensions.DependencyInjection.DotNetDocsMintlify_IServiceCollectionExtensions`</Note>
+
+Adds a custom Mintlify renderer implementation to the service collection.
+
+#### Syntax
+
+```csharp
+public static Microsoft.Extensions.DependencyInjection.IServiceCollection AddMintlifyRenderer<TRenderer>(Microsoft.Extensions.DependencyInjection.IServiceCollection services) where TRenderer : CloudNimble.DotNetDocs.Mintlify.MintlifyRenderer
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `services` | `Microsoft.Extensions.DependencyInjection.IServiceCollection` | The service collection. |
+
+#### Returns
+
+Type: `Microsoft.Extensions.DependencyInjection.IServiceCollection`
+The service collection for chaining.
+
+#### Type Parameters
+
+- `TRenderer` - The type of Mintlify renderer to add.
+
+#### Examples
+
+```csharp
+services.AddMintlifyRenderer&lt;CustomMintlifyRenderer&gt;();
+```
+
+#### Remarks
+
+
+
+Registers the custom renderer as Scoped implementation of IDocRenderer.
+
+
+
+The renderer must inherit from MintlifyRenderer.
+
+
+
+This method also registers:
+
+
+
+
+### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> AddMintlifyServices <Badge color="green">Extension</Badge>
+
+<Note>Extension method from `Microsoft.Extensions.DependencyInjection.DotNetDocsMintlify_IServiceCollectionExtensions`</Note>
+
+Adds Mintlify documentation services including the renderer and DocsJsonManager.
+
+#### Syntax
+
+```csharp
+public static Microsoft.Extensions.DependencyInjection.IServiceCollection AddMintlifyServices(Microsoft.Extensions.DependencyInjection.IServiceCollection services)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `services` | `Microsoft.Extensions.DependencyInjection.IServiceCollection` | The service collection. |
+
+#### Returns
+
+Type: `Microsoft.Extensions.DependencyInjection.IServiceCollection`
+The service collection for chaining.
+
+#### Examples
+
+```csharp
+services.AddMintlifyServices();
+```
+
+#### Remarks
+
+
+
+This method registers:
+
+
+
+
+### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> AddMintlifyServices <Badge color="green">Extension</Badge>
+
+<Note>Extension method from `Microsoft.Extensions.DependencyInjection.DotNetDocsMintlify_IServiceCollectionExtensions`</Note>
+
+Adds Mintlify documentation services with configuration options.
+
+#### Syntax
+
+```csharp
+public static Microsoft.Extensions.DependencyInjection.IServiceCollection AddMintlifyServices(Microsoft.Extensions.DependencyInjection.IServiceCollection services, System.Action<CloudNimble.DotNetDocs.Mintlify.MintlifyRendererOptions> configureMintlify)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `services` | `Microsoft.Extensions.DependencyInjection.IServiceCollection` | The service collection. |
+| `configureMintlify` | `System.Action<CloudNimble.DotNetDocs.Mintlify.MintlifyRendererOptions>` | Action to configure Mintlify options. |
+
+#### Returns
+
+Type: `Microsoft.Extensions.DependencyInjection.IServiceCollection`
+The service collection for chaining.
+
+#### Examples
+
+```csharp
+services.AddMintlifyServices(options =&gt;
+{
+    options.GenerateDocsJson = true;
+    options.IncludeIcons = true;
+});
+```
+
+#### Remarks
+
+
+
+This method registers:
+
+
+
+
+### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> AddYamlRenderer <Badge color="green">Extension</Badge>
 
 <Note>Extension method from `Microsoft.Extensions.DependencyInjection.DotNetDocsCore_IServiceCollectionExtensions`</Note>
 

@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.Build.NoTargets/3.7.0">
+﻿<Project Sdk="Microsoft.Build.NoTargets/3.7.134">
 
     <PropertyGroup>
         <!-- SDK packages don't compile code -->
@@ -17,14 +17,17 @@
         <!-- Don't create symbols package for SDK projects -->
         <IncludeSymbols>false</IncludeSymbols>
         
-        <!-- Suppress dependencies when packing -->
+        <!-- Suppress dependencies when packing - NoTargets is bundled, not a runtime dependency -->
         <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
+
+        <!-- Use TargetsForTfmSpecificContentInPackage to add NoTargets files at the right time -->
+        <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);IncludeNoTargetsInPackage</TargetsForTfmSpecificContentInPackage>
     </PropertyGroup>
 
     <ItemGroup>
-        <!-- Include Microsoft.Build.NoTargets for bundling its SDK files -->
+        <!-- Reference Microsoft.Build.NoTargets to bundle its SDK files into our package -->
         <PackageReference Include="Microsoft.Build.NoTargets"
-                          Version="3.7.*"
+                          Version="3.7.134"
                           PrivateAssets="all"
                           GeneratePathProperty="true" />
     </ItemGroup>
@@ -103,18 +106,20 @@
         <Message Text="⚠️ Package already exists in local feed or push failed (this is OK for local development)" Importance="normal" Condition="'$(ErrorCode)' != '0'" />
     </Target>
 
-    <!-- Include NoTargets SDK files directly from package in NuGet -->
-    <Target Name="IncludeNoTargetsInPackage" BeforeTargets="GenerateNuspec">
+    <!-- Bundle NoTargets SDK files into our package so consumers don't need SDK resolution -->
+    <Target Name="IncludeNoTargetsInPackage">
         <PropertyGroup>
             <NoTargetsSourcePath>$(PkgMicrosoft_Build_NoTargets)\Sdk</NoTargetsSourcePath>
         </PropertyGroup>
-        
+
         <ItemGroup>
             <NoTargetsFiles Include="$(NoTargetsSourcePath)\**\*" />
-            <None Include="@(NoTargetsFiles)" Pack="true" PackagePath="Sdk\NoTargets\%(RecursiveDir)%(Filename)%(Extension)" />
+            <TfmSpecificPackageFile Include="@(NoTargetsFiles)">
+                <PackagePath>Sdk\NoTargets\%(RecursiveDir)%(Filename)%(Extension)</PackagePath>
+            </TfmSpecificPackageFile>
         </ItemGroup>
-        
-        <Message Text="Including NoTargets SDK files in package from $(NoTargetsSourcePath)" Importance="normal" />
+
+        <Message Text="Bundling NoTargets SDK files from $(NoTargetsSourcePath)" Importance="high" />
     </Target>
 
 </Project>

@@ -5,25 +5,24 @@
         <TargetFrameworks>net10.0;net9.0;net8.0;net472</TargetFrameworks>
         <GenerateDocumentationFile>false</GenerateDocumentationFile>
         <Description>MSBuild tasks for CloudNimble.DotNetDocs.Sdk</Description>
-        
+
         <!-- This is a task library, not a package -->
         <IsPackable>false</IsPackable>
         <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-        
+
         <!-- Suppress warnings -->
         <NoWarn>$(NoWarn);CS2008;NU1701</NoWarn>
-        
+
         <!-- Copy dependencies for task execution -->
         <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+        <DisableMSBuildAssemblyCopyCheck>true</DisableMSBuildAssemblyCopyCheck>
     </PropertyGroup>
 
     <ItemGroup>
         <!-- MSBuild task dependencies -->
-        <PackageReference Include="EasyAF.MSBuild" Version="3.*-*" />
-        <PackageReference Include="Microsoft.Build.Framework" Version="17.*" PrivateAssets="all" />
-        <PackageReference Include="Microsoft.Build.Utilities.Core" Version="17.*" PrivateAssets="all" ExcludeAssets="runtime" />
+        <PackageReference Include="EasyAF.MSBuild" Version="4.*-*" />
         <PackageReference Include="System.Collections.Immutable" Version="9.*" PrivateAssets="all" />
-        
+
         <!-- Microsoft.CodeAnalysis.CSharp.Workspaces needs to be available for the task -->
         <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.*" />
     </ItemGroup>
