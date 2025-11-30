@@ -67,7 +67,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core
                 Considerations = "Important considerations"
             };
 
-            docType.RelatedApis ??= new List<string>();
+            docType.RelatedApis ??= [];
             docType.RelatedApis.Add("System.String");
             docType.RelatedApis.Add("System.Object");
 

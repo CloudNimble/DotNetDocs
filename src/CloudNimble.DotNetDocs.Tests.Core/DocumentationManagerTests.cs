@@ -107,9 +107,9 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             var destDir = Path.Combine(_tempDirectory!, "dest");
 
             Directory.CreateDirectory(sourceDir);
-            await File.WriteAllTextAsync(Path.Combine(sourceDir, "test1.md"), "Test content 1");
-            await File.WriteAllTextAsync(Path.Combine(sourceDir, "test2.md"), "Test content 2");
-            await File.WriteAllTextAsync(Path.Combine(sourceDir, "test.txt"), "Not copied");
+            await File.WriteAllTextAsync(Path.Combine(sourceDir, "test1.md"), "Test content 1", TestContext.CancellationToken);
+            await File.WriteAllTextAsync(Path.Combine(sourceDir, "test2.md"), "Test content 2", TestContext.CancellationToken);
+            await File.WriteAllTextAsync(Path.Combine(sourceDir, "test.txt"), "Not copied", TestContext.CancellationToken);
 
             // Act
             await manager.CopyFilesAsync(sourceDir, destDir, "*.md", skipExisting: true);
@@ -131,14 +131,14 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             Directory.CreateDirectory(sourceDir);
             Directory.CreateDirectory(destDir);
 
-            await File.WriteAllTextAsync(Path.Combine(sourceDir, "test.md"), "New content");
-            await File.WriteAllTextAsync(Path.Combine(destDir, "test.md"), "Original content");
+            await File.WriteAllTextAsync(Path.Combine(sourceDir, "test.md"), "New content", TestContext.CancellationToken);
+            await File.WriteAllTextAsync(Path.Combine(destDir, "test.md"), "Original content", TestContext.CancellationToken);
 
             // Act
             await manager.CopyFilesAsync(sourceDir, destDir, "*.md", skipExisting: true);
 
             // Assert
-            var content = await File.ReadAllTextAsync(Path.Combine(destDir, "test.md"));
+            var content = await File.ReadAllTextAsync(Path.Combine(destDir, "test.md"), TestContext.CancellationToken);
             content.Should().Be("Original content", "existing files should not be overwritten when skipExisting is true");
         }
 
@@ -152,9 +152,9 @@ namespace CloudNimble.DotNetDocs.Tests.Core
 
             Directory.CreateDirectory(Path.Combine(sourceDir, "subdir1"));
             Directory.CreateDirectory(Path.Combine(sourceDir, "subdir2"));
-            await File.WriteAllTextAsync(Path.Combine(sourceDir, "root.md"), "Root file");
-            await File.WriteAllTextAsync(Path.Combine(sourceDir, "subdir1", "file1.md"), "File 1");
-            await File.WriteAllTextAsync(Path.Combine(sourceDir, "subdir2", "file2.md"), "File 2");
+            await File.WriteAllTextAsync(Path.Combine(sourceDir, "root.md"), "Root file", TestContext.CancellationToken);
+            await File.WriteAllTextAsync(Path.Combine(sourceDir, "subdir1", "file1.md"), "File 1", TestContext.CancellationToken);
+            await File.WriteAllTextAsync(Path.Combine(sourceDir, "subdir2", "file2.md"), "File 2", TestContext.CancellationToken);
 
             // Act
             await manager.CopyDirectoryRecursiveAsync(sourceDir, destDir, "*", skipExisting: true);
@@ -177,8 +177,8 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             Directory.CreateDirectory(sourceDir1);
             Directory.CreateDirectory(sourceDir2);
 
-            await File.WriteAllTextAsync(Path.Combine(sourceDir1, "test1.md"), "Content 1");
-            await File.WriteAllTextAsync(Path.Combine(sourceDir2, "test2.md"), "Content 2");
+            await File.WriteAllTextAsync(Path.Combine(sourceDir1, "test1.md"), "Content 1", TestContext.CancellationToken);
+            await File.WriteAllTextAsync(Path.Combine(sourceDir2, "test2.md"), "Content 2", TestContext.CancellationToken);
 
             context.DocumentationReferences.Add(new DocumentationReference
             {
@@ -591,7 +591,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core
 
             await manager.MergeTypeAsync(ns, typeToAdd);
 
-            ns.Types.Should().HaveCount(1);
+            ns.Types.Should().ContainSingle();
             ns.Types.Should().Contain(t => t.Symbol.ToDisplayString() == typeToAdd.Symbol.ToDisplayString());
         }
 
@@ -723,7 +723,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core
 
             await manager.MergeMemberAsync(type, memberToAdd);
 
-            type.Members.Should().HaveCount(1);
+            type.Members.Should().ContainSingle();
             type.Members.Should().Contain(m => m.Symbol.ToDisplayString() == memberToAdd.Symbol.ToDisplayString());
         }
 
@@ -742,7 +742,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core
 
             await manager.MergeMemberAsync(type, member);
 
-            type.Members.Should().HaveCount(1, "duplicate member should not be added");
+            type.Members.Should().ContainSingle("duplicate member should not be added");
         }
 
         [TestMethod]
@@ -842,7 +842,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core
 
             var sourceDir = Path.Combine(_tempDirectory!, "refSource");
             Directory.CreateDirectory(sourceDir);
-            await File.WriteAllTextAsync(Path.Combine(sourceDir, "test.md"), "Reference content");
+            await File.WriteAllTextAsync(Path.Combine(sourceDir, "test.md"), "Reference content", TestContext.CancellationToken);
 
             context.DocumentationReferences.Add(new DocumentationReference
             {
@@ -853,7 +853,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core
 
             await manager.ProcessAsync(_testAssemblyPath!, _testXmlPath!);
 
-            context.DocumentationReferences.Should().HaveCount(1);
+            context.DocumentationReferences.Should().ContainSingle();
         }
 
         [TestMethod]
@@ -932,7 +932,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             context.ConceptualPath = Path.Combine(_tempDirectory!, "conceptual");
 
             Directory.CreateDirectory(context.ConceptualPath);
-            await File.WriteAllTextAsync(Path.Combine(context.ConceptualPath, "summary.mdz"), "Global namespace summary");
+            await File.WriteAllTextAsync(Path.Combine(context.ConceptualPath, "summary.mdz"), "Global namespace summary", TestContext.CancellationToken);
 
             var assembly = await GetSingleTestAssembly();
 
@@ -959,7 +959,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core
 System.Linq.Enumerable
 <!-- This is a comment -->
 System.String";
-            await File.WriteAllTextAsync(Path.Combine(nsPath, "related-apis.mdz"), relatedApisContent);
+            await File.WriteAllTextAsync(Path.Combine(nsPath, "related-apis.mdz"), relatedApisContent, TestContext.CancellationToken);
 
             var assembly = await GetSingleTestAssembly();
 
@@ -987,7 +987,7 @@ System.String";
 
             var relatedApisContent = @"CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.BaseClass
 CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
-            await File.WriteAllTextAsync(Path.Combine(typePath, "related-apis.mdz"), relatedApisContent);
+            await File.WriteAllTextAsync(Path.Combine(typePath, "related-apis.mdz"), relatedApisContent, TestContext.CancellationToken);
 
             var assembly = await GetSingleTestAssembly();
 
@@ -1023,7 +1023,7 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
                 Directory.CreateDirectory(memberDir);
 
                 var relatedApisContent = "System.String.Empty\nSystem.String.IsNullOrWhiteSpace";
-                await File.WriteAllTextAsync(Path.Combine(memberDir, "related-apis.mdz"), relatedApisContent);
+                await File.WriteAllTextAsync(Path.Combine(memberDir, "related-apis.mdz"), relatedApisContent, TestContext.CancellationToken);
 
                 await manager.LoadConceptualAsync(assembly);
 
@@ -1044,7 +1044,7 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
             Directory.CreateDirectory(nsPath);
 
             var placeholderContent = "<!-- TODO: REMOVE THIS COMMENT AFTER YOU CUSTOMIZE THIS CONTENT -->";
-            await File.WriteAllTextAsync(Path.Combine(nsPath, "related-apis.mdz"), placeholderContent);
+            await File.WriteAllTextAsync(Path.Combine(nsPath, "related-apis.mdz"), placeholderContent, TestContext.CancellationToken);
 
             var assembly = await GetSingleTestAssembly();
 
@@ -1065,12 +1065,12 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
             var nsPath = Path.Combine(context.ConceptualPath, "CloudNimble", "DotNetDocs", "Tests", "Shared", "BasicScenarios");
             Directory.CreateDirectory(nsPath);
 
-            await File.WriteAllTextAsync(Path.Combine(nsPath, "summary.mdz"), "Summary content");
-            await File.WriteAllTextAsync(Path.Combine(nsPath, "usage.mdz"), "Usage content");
-            await File.WriteAllTextAsync(Path.Combine(nsPath, "examples.mdz"), "Examples content");
-            await File.WriteAllTextAsync(Path.Combine(nsPath, "best-practices.mdz"), "Best practices content");
-            await File.WriteAllTextAsync(Path.Combine(nsPath, "patterns.mdz"), "Patterns content");
-            await File.WriteAllTextAsync(Path.Combine(nsPath, "considerations.mdz"), "Considerations content");
+            await File.WriteAllTextAsync(Path.Combine(nsPath, "summary.mdz"), "Summary content", TestContext.CancellationToken);
+            await File.WriteAllTextAsync(Path.Combine(nsPath, "usage.mdz"), "Usage content", TestContext.CancellationToken);
+            await File.WriteAllTextAsync(Path.Combine(nsPath, "examples.mdz"), "Examples content", TestContext.CancellationToken);
+            await File.WriteAllTextAsync(Path.Combine(nsPath, "best-practices.mdz"), "Best practices content", TestContext.CancellationToken);
+            await File.WriteAllTextAsync(Path.Combine(nsPath, "patterns.mdz"), "Patterns content", TestContext.CancellationToken);
+            await File.WriteAllTextAsync(Path.Combine(nsPath, "considerations.mdz"), "Considerations content", TestContext.CancellationToken);
 
             var assembly = await GetSingleTestAssembly();
 
@@ -1096,11 +1096,11 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
             var typePath = Path.Combine(context.ConceptualPath, "CloudNimble", "DotNetDocs", "Tests", "Shared", "BasicScenarios", "SimpleClass");
             Directory.CreateDirectory(typePath);
 
-            await File.WriteAllTextAsync(Path.Combine(typePath, "usage.mdz"), "Type usage");
-            await File.WriteAllTextAsync(Path.Combine(typePath, "examples.mdz"), "Type examples");
-            await File.WriteAllTextAsync(Path.Combine(typePath, "best-practices.mdz"), "Type best practices");
-            await File.WriteAllTextAsync(Path.Combine(typePath, "patterns.mdz"), "Type patterns");
-            await File.WriteAllTextAsync(Path.Combine(typePath, "considerations.mdz"), "Type considerations");
+            await File.WriteAllTextAsync(Path.Combine(typePath, "usage.mdz"), "Type usage", TestContext.CancellationToken);
+            await File.WriteAllTextAsync(Path.Combine(typePath, "examples.mdz"), "Type examples", TestContext.CancellationToken);
+            await File.WriteAllTextAsync(Path.Combine(typePath, "best-practices.mdz"), "Type best practices", TestContext.CancellationToken);
+            await File.WriteAllTextAsync(Path.Combine(typePath, "patterns.mdz"), "Type patterns", TestContext.CancellationToken);
+            await File.WriteAllTextAsync(Path.Combine(typePath, "considerations.mdz"), "Type considerations", TestContext.CancellationToken);
 
             var assembly = await GetSingleTestAssembly();
 
@@ -1131,7 +1131,7 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
             Directory.CreateDirectory(testDir);
 
             var contentWithBom = "\uFEFFTest content with BOM";
-            await File.WriteAllTextAsync(Path.Combine(testDir, "test.md"), contentWithBom);
+            await File.WriteAllTextAsync(Path.Combine(testDir, "test.md"), contentWithBom, TestContext.CancellationToken);
 
             string? loadedContent = null;
             await manager.LoadConceptualFileAsync(testDir, "test.md", content => loadedContent = content);
@@ -1148,7 +1148,7 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
             Directory.CreateDirectory(testDir);
 
             var placeholderContent = "<!-- TODO: REMOVE THIS COMMENT AFTER YOU CUSTOMIZE THIS CONTENT -->";
-            await File.WriteAllTextAsync(Path.Combine(testDir, "test.md"), placeholderContent);
+            await File.WriteAllTextAsync(Path.Combine(testDir, "test.md"), placeholderContent, TestContext.CancellationToken);
 
             string? loadedContent = null;
             await manager.LoadConceptualFileAsync(testDir, "test.md", content => loadedContent = content, showPlaceholders: false);
@@ -1164,7 +1164,7 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
             Directory.CreateDirectory(testDir);
 
             var placeholderContent = "<!-- TODO: REMOVE THIS COMMENT AFTER YOU CUSTOMIZE THIS CONTENT -->";
-            await File.WriteAllTextAsync(Path.Combine(testDir, "test.md"), placeholderContent);
+            await File.WriteAllTextAsync(Path.Combine(testDir, "test.md"), placeholderContent, TestContext.CancellationToken);
 
             string? loadedContent = null;
             await manager.LoadConceptualFileAsync(testDir, "test.md", content => loadedContent = content, showPlaceholders: true);
@@ -1179,7 +1179,7 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
             var testDir = Path.Combine(_tempDirectory!, "emptyTest");
             Directory.CreateDirectory(testDir);
 
-            await File.WriteAllTextAsync(Path.Combine(testDir, "empty.md"), "");
+            await File.WriteAllTextAsync(Path.Combine(testDir, "empty.md"), "", TestContext.CancellationToken);
 
             bool setterCalled = false;
             await manager.LoadConceptualFileAsync(testDir, "empty.md", content => setterCalled = true);
@@ -1194,7 +1194,7 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
             var testDir = Path.Combine(_tempDirectory!, "whitespaceTest");
             Directory.CreateDirectory(testDir);
 
-            await File.WriteAllTextAsync(Path.Combine(testDir, "whitespace.md"), "   \n\t\r\n   ");
+            await File.WriteAllTextAsync(Path.Combine(testDir, "whitespace.md"), "   \n\t\r\n   ", TestContext.CancellationToken);
 
             bool setterCalled = false;
             await manager.LoadConceptualFileAsync(testDir, "whitespace.md", content => setterCalled = true);
@@ -1223,7 +1223,7 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
             Directory.CreateDirectory(testDir);
 
             var contentWithWhitespace = "\n\n  Content with whitespace  \n\n";
-            await File.WriteAllTextAsync(Path.Combine(testDir, "trim.md"), contentWithWhitespace);
+            await File.WriteAllTextAsync(Path.Combine(testDir, "trim.md"), contentWithWhitespace, TestContext.CancellationToken);
 
             string? loadedContent = null;
             await manager.LoadConceptualFileAsync(testDir, "trim.md", content => loadedContent = content);
@@ -1239,7 +1239,7 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
             Directory.CreateDirectory(testDir);
 
             var contentWithBomAndWhitespace = "\uFEFF  \n\nActual content\n\n  ";
-            await File.WriteAllTextAsync(Path.Combine(testDir, "combined.md"), contentWithBomAndWhitespace);
+            await File.WriteAllTextAsync(Path.Combine(testDir, "combined.md"), contentWithBomAndWhitespace, TestContext.CancellationToken);
 
             string? loadedContent = null;
             await manager.LoadConceptualFileAsync(testDir, "combined.md", content => loadedContent = content);
@@ -1258,7 +1258,7 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
             Directory.CreateDirectory(testDir);
 
             var placeholderWithWhitespace = "  \n  <!-- TODO: REMOVE THIS COMMENT AFTER YOU CUSTOMIZE THIS CONTENT -->  \n";
-            await File.WriteAllTextAsync(Path.Combine(testDir, "placeholder.md"), placeholderWithWhitespace);
+            await File.WriteAllTextAsync(Path.Combine(testDir, "placeholder.md"), placeholderWithWhitespace, TestContext.CancellationToken);
 
             string? loadedContent = null;
             await manager.LoadConceptualFileAsync(testDir, "placeholder.md", content => loadedContent = content, showPlaceholders: false);
@@ -1274,7 +1274,7 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
             Directory.CreateDirectory(testDir);
 
             var normalContent = "This is normal content\nWith multiple lines\nAnd no placeholder";
-            await File.WriteAllTextAsync(Path.Combine(testDir, "normal.md"), normalContent);
+            await File.WriteAllTextAsync(Path.Combine(testDir, "normal.md"), normalContent, TestContext.CancellationToken);
 
             string? loadedContent = null;
             await manager.LoadConceptualFileAsync(testDir, "normal.md", content => loadedContent = content, showPlaceholders: false);
@@ -1511,8 +1511,8 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
             var destDir = Path.Combine(_tempDirectory!, "dest");
 
             Directory.CreateDirectory(Path.Combine(sourceDir, "images", "icons"));
-            await File.WriteAllTextAsync(Path.Combine(sourceDir, "images", "logo.png"), "logo");
-            await File.WriteAllTextAsync(Path.Combine(sourceDir, "images", "icons", "check.png"), "check");
+            await File.WriteAllTextAsync(Path.Combine(sourceDir, "images", "logo.png"), "logo", TestContext.CancellationToken);
+            await File.WriteAllTextAsync(Path.Combine(sourceDir, "images", "icons", "check.png"), "check", TestContext.CancellationToken);
 
             await manager.CopyFilesAsync(sourceDir, destDir, "images/**/*", skipExisting: true);
 
@@ -1542,12 +1542,12 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
             Directory.CreateDirectory(sourceDir);
             Directory.CreateDirectory(destDir);
 
-            await File.WriteAllTextAsync(Path.Combine(sourceDir, "test.md"), "New content");
-            await File.WriteAllTextAsync(Path.Combine(destDir, "test.md"), "Original content");
+            await File.WriteAllTextAsync(Path.Combine(sourceDir, "test.md"), "New content", TestContext.CancellationToken);
+            await File.WriteAllTextAsync(Path.Combine(destDir, "test.md"), "Original content", TestContext.CancellationToken);
 
             await manager.CopyFilesAsync(sourceDir, destDir, "*.md", skipExisting: false);
 
-            var content = await File.ReadAllTextAsync(Path.Combine(destDir, "test.md"));
+            var content = await File.ReadAllTextAsync(Path.Combine(destDir, "test.md"), TestContext.CancellationToken);
             content.Should().Be("New content", "file should be overwritten when skipExisting is false");
         }
 
@@ -1559,9 +1559,9 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
             var destDir = Path.Combine(_tempDirectory!, "dest");
 
             Directory.CreateDirectory(sourceDir);
-            await File.WriteAllTextAsync(Path.Combine(sourceDir, "file1.md"), "content1");
-            await File.WriteAllTextAsync(Path.Combine(sourceDir, "file2.md"), "content2");
-            await File.WriteAllTextAsync(Path.Combine(sourceDir, "file3.md"), "content3");
+            await File.WriteAllTextAsync(Path.Combine(sourceDir, "file1.md"), "content1", TestContext.CancellationToken);
+            await File.WriteAllTextAsync(Path.Combine(sourceDir, "file2.md"), "content2", TestContext.CancellationToken);
+            await File.WriteAllTextAsync(Path.Combine(sourceDir, "file3.md"), "content3", TestContext.CancellationToken);
 
             await manager.CopyFilesAsync(sourceDir, destDir, "*.md", skipExisting: true);
 
@@ -1576,8 +1576,8 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
             var destDir = Path.Combine(_tempDirectory!, "dest");
 
             Directory.CreateDirectory(sourceDir);
-            await File.WriteAllTextAsync(Path.Combine(sourceDir, "docs.json"), "{}");
-            await File.WriteAllTextAsync(Path.Combine(sourceDir, "other.json"), "{}");
+            await File.WriteAllTextAsync(Path.Combine(sourceDir, "docs.json"), "{}", TestContext.CancellationToken);
+            await File.WriteAllTextAsync(Path.Combine(sourceDir, "other.json"), "{}", TestContext.CancellationToken);
 
             await manager.CopyFilesAsync(sourceDir, destDir, "docs.json", skipExisting: true);
 
@@ -1593,7 +1593,7 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
             var destDir = Path.Combine(_tempDirectory!, "dest");
 
             Directory.CreateDirectory(sourceDir);
-            await File.WriteAllTextAsync(Path.Combine(sourceDir, "test.txt"), "content");
+            await File.WriteAllTextAsync(Path.Combine(sourceDir, "test.txt"), "content", TestContext.CancellationToken);
 
             await manager.CopyFilesAsync(sourceDir, destDir, "*.md", skipExisting: true);
 
@@ -1615,9 +1615,9 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
             Directory.CreateDirectory(iconsDir);
             Directory.CreateDirectory(badgesDir);
 
-            await File.WriteAllTextAsync(Path.Combine(iconsDir, "icon1.png"), "icon1");
-            await File.WriteAllTextAsync(Path.Combine(iconsDir, "icon2.svg"), "icon2");
-            await File.WriteAllTextAsync(Path.Combine(badgesDir, "badge.png"), "badge");
+            await File.WriteAllTextAsync(Path.Combine(iconsDir, "icon1.png"), "icon1", TestContext.CancellationToken);
+            await File.WriteAllTextAsync(Path.Combine(iconsDir, "icon2.svg"), "icon2", TestContext.CancellationToken);
+            await File.WriteAllTextAsync(Path.Combine(badgesDir, "badge.png"), "badge", TestContext.CancellationToken);
 
             await manager.CopyFilesAsync(sourceDir, destDir, "images/**/*", skipExisting: true);
 
@@ -1651,7 +1651,7 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
 
             for (int i = 0; i < 50; i++)
             {
-                await File.WriteAllTextAsync(Path.Combine(sourceDir, $"file{i}.md"), $"content{i}");
+                await File.WriteAllTextAsync(Path.Combine(sourceDir, $"file{i}.md"), $"content{i}", TestContext.CancellationToken);
             }
 
             await manager.CopyFilesAsync(sourceDir, destDir, "*.md", skipExisting: true);
@@ -1667,9 +1667,9 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
             var destDir = Path.Combine(_tempDirectory!, "dest");
 
             Directory.CreateDirectory(sourceDir);
-            await File.WriteAllTextAsync(Path.Combine(sourceDir, "file.md"), "md");
-            await File.WriteAllTextAsync(Path.Combine(sourceDir, "file.mdx"), "mdx");
-            await File.WriteAllTextAsync(Path.Combine(sourceDir, "file.txt"), "txt");
+            await File.WriteAllTextAsync(Path.Combine(sourceDir, "file.md"), "md", TestContext.CancellationToken);
+            await File.WriteAllTextAsync(Path.Combine(sourceDir, "file.mdx"), "mdx", TestContext.CancellationToken);
+            await File.WriteAllTextAsync(Path.Combine(sourceDir, "file.txt"), "txt", TestContext.CancellationToken);
 
             await manager.CopyFilesAsync(sourceDir, destDir, "*.md", skipExisting: true);
 
@@ -1704,12 +1704,12 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
             Directory.CreateDirectory(Path.Combine(sourceDir, "sub"));
             Directory.CreateDirectory(Path.Combine(destDir, "sub"));
 
-            await File.WriteAllTextAsync(Path.Combine(sourceDir, "sub", "file.md"), "New content");
-            await File.WriteAllTextAsync(Path.Combine(destDir, "sub", "file.md"), "Original content");
+            await File.WriteAllTextAsync(Path.Combine(sourceDir, "sub", "file.md"), "New content", TestContext.CancellationToken);
+            await File.WriteAllTextAsync(Path.Combine(destDir, "sub", "file.md"), "Original content", TestContext.CancellationToken);
 
             await manager.CopyDirectoryRecursiveAsync(sourceDir, destDir, "*", skipExisting: false);
 
-            var content = await File.ReadAllTextAsync(Path.Combine(destDir, "sub", "file.md"));
+            var content = await File.ReadAllTextAsync(Path.Combine(destDir, "sub", "file.md"), TestContext.CancellationToken);
             content.Should().Be("New content");
         }
 
@@ -1737,10 +1737,10 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
             var destDir = Path.Combine(_tempDirectory!, "dest");
 
             Directory.CreateDirectory(Path.Combine(sourceDir, "sub"));
-            await File.WriteAllTextAsync(Path.Combine(sourceDir, "test.md"), "md");
-            await File.WriteAllTextAsync(Path.Combine(sourceDir, "test.txt"), "txt");
-            await File.WriteAllTextAsync(Path.Combine(sourceDir, "sub", "nested.md"), "nested md");
-            await File.WriteAllTextAsync(Path.Combine(sourceDir, "sub", "nested.txt"), "nested txt");
+            await File.WriteAllTextAsync(Path.Combine(sourceDir, "test.md"), "md", TestContext.CancellationToken);
+            await File.WriteAllTextAsync(Path.Combine(sourceDir, "test.txt"), "txt", TestContext.CancellationToken);
+            await File.WriteAllTextAsync(Path.Combine(sourceDir, "sub", "nested.md"), "nested md", TestContext.CancellationToken);
+            await File.WriteAllTextAsync(Path.Combine(sourceDir, "sub", "nested.txt"), "nested txt", TestContext.CancellationToken);
 
             await manager.CopyDirectoryRecursiveAsync(sourceDir, destDir, "*.md", skipExisting: true);
 
@@ -1759,7 +1759,7 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
 
             var deepPath = Path.Combine(sourceDir, "level1", "level2", "level3", "level4");
             Directory.CreateDirectory(deepPath);
-            await File.WriteAllTextAsync(Path.Combine(deepPath, "deep.md"), "deep content");
+            await File.WriteAllTextAsync(Path.Combine(deepPath, "deep.md"), "deep content", TestContext.CancellationToken);
 
             await manager.CopyDirectoryRecursiveAsync(sourceDir, destDir, "*", skipExisting: true);
 
@@ -1777,9 +1777,9 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
             Directory.CreateDirectory(Path.Combine(sourceDir, "images"));
             Directory.CreateDirectory(Path.Combine(sourceDir, "scripts"));
 
-            await File.WriteAllTextAsync(Path.Combine(sourceDir, "docs", "readme.md"), "readme");
-            await File.WriteAllTextAsync(Path.Combine(sourceDir, "images", "logo.png"), "logo");
-            await File.WriteAllTextAsync(Path.Combine(sourceDir, "scripts", "build.js"), "build");
+            await File.WriteAllTextAsync(Path.Combine(sourceDir, "docs", "readme.md"), "readme", TestContext.CancellationToken);
+            await File.WriteAllTextAsync(Path.Combine(sourceDir, "images", "logo.png"), "logo", TestContext.CancellationToken);
+            await File.WriteAllTextAsync(Path.Combine(sourceDir, "scripts", "build.js"), "build", TestContext.CancellationToken);
 
             await manager.CopyDirectoryRecursiveAsync(sourceDir, destDir, "*", skipExisting: true);
 
@@ -1796,8 +1796,8 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
             var destDir = Path.Combine(_tempDirectory!, "dest");
 
             Directory.CreateDirectory(sourceDir);
-            await File.WriteAllTextAsync(Path.Combine(sourceDir, "file1.md"), "content1");
-            await File.WriteAllTextAsync(Path.Combine(sourceDir, "file2.md"), "content2");
+            await File.WriteAllTextAsync(Path.Combine(sourceDir, "file1.md"), "content1", TestContext.CancellationToken);
+            await File.WriteAllTextAsync(Path.Combine(sourceDir, "file2.md"), "content2", TestContext.CancellationToken);
 
             await manager.CopyDirectoryRecursiveAsync(sourceDir, destDir, "*", skipExisting: true);
 
@@ -1816,14 +1816,14 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
             Directory.CreateDirectory(Path.Combine(sourceDir, "sub"));
             Directory.CreateDirectory(Path.Combine(destDir, "sub"));
 
-            await File.WriteAllTextAsync(Path.Combine(sourceDir, "sub", "new.md"), "new");
-            await File.WriteAllTextAsync(Path.Combine(sourceDir, "sub", "existing.md"), "source version");
-            await File.WriteAllTextAsync(Path.Combine(destDir, "sub", "existing.md"), "dest version");
+            await File.WriteAllTextAsync(Path.Combine(sourceDir, "sub", "new.md"), "new", TestContext.CancellationToken);
+            await File.WriteAllTextAsync(Path.Combine(sourceDir, "sub", "existing.md"), "source version", TestContext.CancellationToken);
+            await File.WriteAllTextAsync(Path.Combine(destDir, "sub", "existing.md"), "dest version", TestContext.CancellationToken);
 
             await manager.CopyDirectoryRecursiveAsync(sourceDir, destDir, "*", skipExisting: true);
 
-            var newContent = await File.ReadAllTextAsync(Path.Combine(destDir, "sub", "new.md"));
-            var existingContent = await File.ReadAllTextAsync(Path.Combine(destDir, "sub", "existing.md"));
+            var newContent = await File.ReadAllTextAsync(Path.Combine(destDir, "sub", "new.md"), TestContext.CancellationToken);
+            var existingContent = await File.ReadAllTextAsync(Path.Combine(destDir, "sub", "existing.md"), TestContext.CancellationToken);
 
             newContent.Should().Be("new");
             existingContent.Should().Be("dest version", "existing file should not be overwritten");
@@ -1857,8 +1857,8 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
             Directory.CreateDirectory(source1);
             Directory.CreateDirectory(source2);
 
-            await File.WriteAllTextAsync(Path.Combine(source1, "test1.md"), "ref1");
-            await File.WriteAllTextAsync(Path.Combine(source2, "test2.md"), "ref2");
+            await File.WriteAllTextAsync(Path.Combine(source1, "test1.md"), "ref1", TestContext.CancellationToken);
+            await File.WriteAllTextAsync(Path.Combine(source2, "test2.md"), "ref2", TestContext.CancellationToken);
 
             context.DocumentationReferences.Add(new DocumentationReference
             {
@@ -1893,8 +1893,8 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
             Directory.CreateDirectory(mintlifySource);
             Directory.CreateDirectory(docfxSource);
 
-            await File.WriteAllTextAsync(Path.Combine(mintlifySource, "test.mdx"), "mintlify");
-            await File.WriteAllTextAsync(Path.Combine(docfxSource, "test.yml"), "docfx");
+            await File.WriteAllTextAsync(Path.Combine(mintlifySource, "test.mdx"), "mintlify", TestContext.CancellationToken);
+            await File.WriteAllTextAsync(Path.Combine(docfxSource, "test.yml"), "docfx", TestContext.CancellationToken);
 
             context.DocumentationReferences.Add(new DocumentationReference
             {
@@ -1924,7 +1924,7 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
 
             var validSource = Path.Combine(_tempDirectory!, "valid");
             Directory.CreateDirectory(validSource);
-            await File.WriteAllTextAsync(Path.Combine(validSource, "test.md"), "content");
+            await File.WriteAllTextAsync(Path.Combine(validSource, "test.md"), "content", TestContext.CancellationToken);
 
             context.DocumentationReferences.Add(new DocumentationReference
             {
@@ -2097,7 +2097,7 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
 
             var sourceDir = Path.Combine(_tempDirectory!, "reference-source");
             Directory.CreateDirectory(sourceDir);
-            await File.WriteAllTextAsync(Path.Combine(sourceDir, "test.mdx"), "# Test");
+            await File.WriteAllTextAsync(Path.Combine(sourceDir, "test.mdx"), "# Test", TestContext.CancellationToken);
 
             context.DocumentationReferences.Add(new DocumentationReference
             {
@@ -2150,11 +2150,11 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
             var assembly1 = await GetSingleTestAssembly();
             var assembly2 = await GetSingleTestAssembly();
 
-            var merged = await manager.MergeDocAssembliesAsync(new List<DocAssembly> { assembly1, assembly2 });
+            var merged = await manager.MergeDocAssembliesAsync([assembly1, assembly2]);
 
             merged.Should().NotBeNull();
             merged.Namespaces.Should().NotBeEmpty();
-            merged.Namespaces.Count.Should().Be(assembly1.Namespaces.Count, "identical assemblies should not duplicate namespaces");
+            merged.Namespaces.Should().HaveCount(assembly1.Namespaces.Count, "identical assemblies should not duplicate namespaces");
         }
 
         [TestMethod]
@@ -2164,7 +2164,7 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
             var sourceDir = Path.Combine(_tempDirectory!, "symlink-source");
             var destDir = Path.Combine(_tempDirectory!, "symlink-dest");
             Directory.CreateDirectory(sourceDir);
-            await File.WriteAllTextAsync(Path.Combine(sourceDir, "test.md"), "content");
+            await File.WriteAllTextAsync(Path.Combine(sourceDir, "test.md"), "content", TestContext.CancellationToken);
 
             await manager.CopyFilesAsync(sourceDir, destDir, "*.md", skipExisting: true);
 
@@ -2178,7 +2178,7 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
             var sourceDir = Path.Combine(_tempDirectory!, "circular-source");
             var destDir = Path.Combine(_tempDirectory!, "circular-dest");
             Directory.CreateDirectory(sourceDir);
-            await File.WriteAllTextAsync(Path.Combine(sourceDir, "test.md"), "content");
+            await File.WriteAllTextAsync(Path.Combine(sourceDir, "test.md"), "content", TestContext.CancellationToken);
 
             await manager.CopyDirectoryRecursiveAsync(sourceDir, destDir, "*.md", skipExisting: true);
 
@@ -2193,7 +2193,7 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
             Directory.CreateDirectory(directory);
 
             var content = "\uFEFF   \r\n  Test Content  \r\n   ";
-            await File.WriteAllTextAsync(Path.Combine(directory, "test.md"), content, new System.Text.UTF8Encoding(true));
+            await File.WriteAllTextAsync(Path.Combine(directory, "test.md"), content, new System.Text.UTF8Encoding(true), TestContext.CancellationToken);
 
             string? result = null;
             await manager.LoadConceptualFileAsync(directory, "test.md", s => result = s, showPlaceholders: false);
@@ -2224,8 +2224,8 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
             var source2 = Path.Combine(_tempDirectory!, "ref2");
             Directory.CreateDirectory(source1);
             Directory.CreateDirectory(source2);
-            await File.WriteAllTextAsync(Path.Combine(source1, "file1.md"), "content1");
-            await File.WriteAllTextAsync(Path.Combine(source2, "file2.md"), "content2");
+            await File.WriteAllTextAsync(Path.Combine(source1, "file1.md"), "content1", TestContext.CancellationToken);
+            await File.WriteAllTextAsync(Path.Combine(source2, "file2.md"), "content2", TestContext.CancellationToken);
 
             context.DocumentationReferences.Add(new DocumentationReference
             {
@@ -2259,9 +2259,9 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
             Directory.CreateDirectory(sourceDir);
             Directory.CreateDirectory(destDir);
 
-            await File.WriteAllTextAsync(Path.Combine(sourceDir, "test.md"), "new content");
+            await File.WriteAllTextAsync(Path.Combine(sourceDir, "test.md"), "new content", TestContext.CancellationToken);
             var destFile = Path.Combine(destDir, "test.md");
-            await File.WriteAllTextAsync(destFile, "old content");
+            await File.WriteAllTextAsync(destFile, "old content", TestContext.CancellationToken);
             File.SetAttributes(destFile, FileAttributes.ReadOnly);
 
             var act = async () => await manager.CopyFilesAsync(sourceDir, destDir, "*.md", skipExisting: false);
@@ -2279,8 +2279,8 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
             var destDir = Path.Combine(_tempDirectory!, "locked-dest");
             Directory.CreateDirectory(sourceDir);
 
-            await File.WriteAllTextAsync(Path.Combine(sourceDir, "file1.md"), "content1");
-            await File.WriteAllTextAsync(Path.Combine(sourceDir, "file2.md"), "content2");
+            await File.WriteAllTextAsync(Path.Combine(sourceDir, "file1.md"), "content1", TestContext.CancellationToken);
+            await File.WriteAllTextAsync(Path.Combine(sourceDir, "file2.md"), "content2", TestContext.CancellationToken);
 
             await manager.CopyDirectoryRecursiveAsync(sourceDir, destDir, "*.md", skipExisting: true);
 
@@ -2348,7 +2348,7 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
             var assembly1 = await GetSingleTestAssembly();
             var assembly2 = await GetSingleTestAssembly();
 
-            var merged = await manager.MergeDocAssembliesAsync(new List<DocAssembly> { assembly1, assembly2 });
+            var merged = await manager.MergeDocAssembliesAsync([assembly1, assembly2]);
 
             merged.Namespaces.Should().NotBeEmpty();
             foreach (var ns in merged.Namespaces)
@@ -2412,7 +2412,7 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
                 var sourceDir = Path.Combine(_tempDirectory!, $"concurrent-source-{i}");
                 var destDir = Path.Combine(_tempDirectory!, $"concurrent-dest-{i}");
                 Directory.CreateDirectory(sourceDir);
-                await File.WriteAllTextAsync(Path.Combine(sourceDir, "test.md"), $"content-{i}");
+                await File.WriteAllTextAsync(Path.Combine(sourceDir, "test.md"), $"content-{i}", TestContext.CancellationToken);
 
                 await manager.CopyFilesAsync(sourceDir, destDir, "*.md", skipExisting: true);
             });
@@ -2451,7 +2451,7 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
             {
                 var assembly1 = await GetSingleTestAssembly();
                 var assembly2 = await GetSingleTestAssembly();
-                return await manager.MergeDocAssembliesAsync(new List<DocAssembly> { assembly1, assembly2 });
+                return await manager.MergeDocAssembliesAsync([assembly1, assembly2]);
             });
 
             var results = await Task.WhenAll(tasks);

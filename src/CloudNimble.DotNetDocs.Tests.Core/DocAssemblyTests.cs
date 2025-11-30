@@ -55,7 +55,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core
 
             docAssembly.Namespaces.Add(docNamespace);
 
-            docAssembly.Namespaces.Should().HaveCount(1);
+            docAssembly.Namespaces.Should().ContainSingle();
             docAssembly.Namespaces.Should().Contain(docNamespace);
         }
 

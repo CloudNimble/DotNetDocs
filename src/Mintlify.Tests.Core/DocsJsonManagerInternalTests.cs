@@ -55,7 +55,7 @@ namespace Mintlify.Tests.Core
             manager.LoadInternal(invalidJson);
 
             manager.Configuration.Should().BeNull();
-            manager.ConfigurationErrors.Should().HaveCount(1);
+            manager.ConfigurationErrors.Should().ContainSingle();
             manager.ConfigurationErrors[0].ErrorNumber.Should().Be("JSON");
         }
 
@@ -71,7 +71,7 @@ namespace Mintlify.Tests.Core
             manager.LoadInternal(nullJson);
 
             manager.Configuration.Should().BeNull();
-            manager.ConfigurationErrors.Should().HaveCount(1);
+            manager.ConfigurationErrors.Should().ContainSingle();
             manager.ConfigurationErrors[0].ErrorNumber.Should().Be("JSON");
             manager.ConfigurationErrors[0].ErrorText.Should().Contain("Failed to deserialize");
         }
@@ -86,7 +86,7 @@ namespace Mintlify.Tests.Core
 
             // First load with invalid JSON
             manager.LoadInternal("{ invalid }");
-            manager.ConfigurationErrors.Should().HaveCount(1);
+            manager.ConfigurationErrors.Should().ContainSingle();
 
             // Second load with valid JSON
             var validJson = """{"name": "Test", "navigation": {"pages": ["index"]}}""";
@@ -141,7 +141,7 @@ namespace Mintlify.Tests.Core
 
             //manager.ValidateConfiguration(); // Method removed - validation moved to DocsJsonValidator
 
-            manager.ConfigurationErrors.Should().HaveCount(1);
+            manager.ConfigurationErrors.Should().ContainSingle();
             manager.ConfigurationErrors[0].IsWarning.Should().BeTrue();
             manager.ConfigurationErrors[0].ErrorText.Should().Contain("Navigation");
         }
@@ -161,7 +161,7 @@ namespace Mintlify.Tests.Core
 
             //manager.ValidateConfiguration(); // Method removed - validation moved to DocsJsonValidator
 
-            manager.ConfigurationErrors.Should().HaveCount(1);
+            manager.ConfigurationErrors.Should().ContainSingle();
             manager.ConfigurationErrors[0].IsWarning.Should().BeTrue();
         }
 
@@ -177,7 +177,7 @@ namespace Mintlify.Tests.Core
                 Name = "Test API",
                 Navigation = new NavigationConfig
                 {
-                    Pages = new List<object> { "index" }
+                    Pages = ["index"]
                 }
             };
 
@@ -203,7 +203,7 @@ namespace Mintlify.Tests.Core
                 Name = "Test",
                 Navigation = new NavigationConfig
                 {
-                    Pages = new List<object> { "index" }
+                    Pages = ["index"]
                 }
             });
             var target = manager.Configuration!.Navigation;
@@ -227,19 +227,19 @@ namespace Mintlify.Tests.Core
                 Name = "Test",
                 Navigation = new NavigationConfig
                 {
-                    Pages = new List<object> { "index" },
-                    Groups = new List<GroupConfig> { new GroupConfig { Group = "API" } },
-                    Tabs = new List<TabConfig> { new TabConfig { Tab = "Docs" } },
-                    Anchors = new List<AnchorConfig> { new AnchorConfig { Anchor = "anchor1" } }
+                    Pages = ["index"],
+                    Groups = [new GroupConfig { Group = "API" }],
+                    Tabs = [new TabConfig { Tab = "Docs" }],
+                    Anchors = [new AnchorConfig { Anchor = "anchor1" }]
                 }
             });
 
             var source = new NavigationConfig
             {
-                Pages = new List<object> { "quickstart" },
-                Groups = new List<GroupConfig> { new GroupConfig { Group = "Guides" } },
-                Tabs = new List<TabConfig> { new TabConfig { Tab = "Examples" } },
-                Anchors = new List<AnchorConfig> { new AnchorConfig { Anchor = "anchor2" } },
+                Pages = ["quickstart"],
+                Groups = [new GroupConfig { Group = "Guides" }],
+                Tabs = [new TabConfig { Tab = "Examples" }],
+                Anchors = [new AnchorConfig { Anchor = "anchor2" }],
                 Global = new GlobalNavigationConfig()
             };
 
@@ -284,7 +284,7 @@ namespace Mintlify.Tests.Core
                 new GroupConfig
                 {
                     Group = "API",
-                    Pages = new List<object> { "api/overview" }
+                    Pages = ["api/overview"]
                 }
             };
 
@@ -293,7 +293,7 @@ namespace Mintlify.Tests.Core
                 new GroupConfig
                 {
                     Group = "API",
-                    Pages = new List<object> { "api/reference" }
+                    Pages = ["api/reference"]
                 }
             };
 
@@ -351,7 +351,7 @@ namespace Mintlify.Tests.Core
                 new GroupConfig
                 {
                     Group = "API",
-                    Pages = new List<object> { "api/overview" }
+                    Pages = ["api/overview"]
                 }
             };
 
@@ -360,14 +360,14 @@ namespace Mintlify.Tests.Core
                 new GroupConfig
                 {
                     Group = "API",
-                    Pages = new List<object> { "api/reference" }
+                    Pages = ["api/reference"]
                 }
             };
 
             var manager = new DocsJsonManager();
             manager.MergeGroupsList(sourceGroups, targetGroups);
 
-            targetGroups.Should().HaveCount(1);
+            targetGroups.Should().ContainSingle();
             var apiGroup = targetGroups.FirstOrDefault(g => g.Group == "API");
             apiGroup.Should().NotBeNull();
             apiGroup!.Pages.Should().HaveCount(2);
@@ -469,16 +469,16 @@ namespace Mintlify.Tests.Core
             // Template groups in specific order
             var targetGroups = new List<GroupConfig>
             {
-                new GroupConfig { Group = "Zebra", Pages = new List<object> { "z1" } },
-                new GroupConfig { Group = "Apple", Pages = new List<object> { "a1" } },
-                new GroupConfig { Group = "Middle", Pages = new List<object> { "m1" } }
+                new GroupConfig { Group = "Zebra", Pages = ["z1"] },
+                new GroupConfig { Group = "Apple", Pages = ["a1"] },
+                new GroupConfig { Group = "Middle", Pages = ["m1"] }
             };
 
             // Source groups with some matching names
             var sourceGroups = new List<GroupConfig>
             {
-                new GroupConfig { Group = "Apple", Pages = new List<object> { "a2" } },
-                new GroupConfig { Group = "New Group", Pages = new List<object> { "n1" } }
+                new GroupConfig { Group = "Apple", Pages = ["a2"] },
+                new GroupConfig { Group = "New Group", Pages = ["n1"] }
             };
 
             var manager = new DocsJsonManager();
@@ -515,7 +515,7 @@ namespace Mintlify.Tests.Core
                 new TabConfig
                 {
                     Tab = "API",
-                    Pages = new List<object> { "api/overview" }
+                    Pages = ["api/overview"]
                 }
             };
 
@@ -524,7 +524,7 @@ namespace Mintlify.Tests.Core
                 new TabConfig
                 {
                     Tab = "API",
-                    Pages = new List<object> { "api/reference" }
+                    Pages = ["api/reference"]
                 }
             };
 
@@ -537,7 +537,7 @@ namespace Mintlify.Tests.Core
             });
             manager.MergeTabsList(sourceTabs, targetTabs);
 
-            targetTabs.Should().HaveCount(1);
+            targetTabs.Should().ContainSingle();
             var apiTab = targetTabs.FirstOrDefault(t => t.Tab == "API");
             apiTab.Should().NotBeNull();
             apiTab!.Pages.Should().HaveCount(2);
@@ -555,7 +555,7 @@ namespace Mintlify.Tests.Core
                 {
                     Tab = "Documentation",
                     Href = "/docs",
-                    Pages = new List<object> { "intro" }
+                    Pages = ["intro"]
                 }
             };
 
@@ -565,7 +565,7 @@ namespace Mintlify.Tests.Core
                 {
                     Tab = "Docs",
                     Href = "/docs",
-                    Pages = new List<object> { "quickstart" }
+                    Pages = ["quickstart"]
                 }
             };
 
@@ -578,7 +578,7 @@ namespace Mintlify.Tests.Core
             });
             manager.MergeTabsList(sourceTabs, targetTabs);
 
-            targetTabs.Should().HaveCount(1);
+            targetTabs.Should().ContainSingle();
             var tab = targetTabs[0];
             tab.Tab.Should().Be("Docs"); // Source takes precedence
             tab.Href.Should().Be("/docs");
@@ -630,7 +630,7 @@ namespace Mintlify.Tests.Core
             var target = new GroupConfig
             {
                 Group = "API",
-                Pages = new List<object> { "api/overview" }
+                Pages = ["api/overview"]
             };
 
             var source = new GroupConfig
@@ -641,7 +641,7 @@ namespace Mintlify.Tests.Core
                 Icon = "api-icon",
                 AsyncApi = "async-config",
                 OpenApi = "openapi-config",
-                Pages = new List<object> { "api/reference" }
+                Pages = ["api/reference"]
             };
 
             var manager = new DocsJsonManager();
@@ -665,13 +665,13 @@ namespace Mintlify.Tests.Core
             var target = new GroupConfig { Group = "API" };
             var source = new GroupConfig
             {
-                Pages = new List<object> { "api/reference" }
+                Pages = ["api/reference"]
             };
 
             var manager = new DocsJsonManager();
             manager.MergeGroupConfig(target, source);
 
-            target.Pages.Should().HaveCount(1);
+            target.Pages.Should().ContainSingle();
             target.Pages.Should().Contain("api/reference");
         }
 
@@ -688,7 +688,7 @@ namespace Mintlify.Tests.Core
             var target = new TabConfig
             {
                 Tab = "API",
-                Pages = new List<object> { "api/overview" }
+                Pages = ["api/overview"]
             };
 
             var source = new TabConfig
@@ -698,12 +698,12 @@ namespace Mintlify.Tests.Core
                 Icon = "api-icon",
                 AsyncApi = "async-config",
                 OpenApi = "openapi-config",
-                Pages = new List<object> { "api/reference" },
-                Groups = new List<GroupConfig> { new GroupConfig { Group = "Endpoints" } },
-                Anchors = new List<AnchorConfig> { new AnchorConfig { Anchor = "test" } },
-                Dropdowns = new List<DropdownConfig> { new DropdownConfig { Dropdown = "dropdown" } },
-                Languages = new List<LanguageConfig> { new LanguageConfig { Language = "en" } },
-                Versions = new List<VersionConfig> { new VersionConfig { Version = "v1" } },
+                Pages = ["api/reference"],
+                Groups = [new GroupConfig { Group = "Endpoints" }],
+                Anchors = [new AnchorConfig { Anchor = "test" }],
+                Dropdowns = [new DropdownConfig { Dropdown = "dropdown" }],
+                Languages = [new LanguageConfig { Language = "en" }],
+                Versions = [new VersionConfig { Version = "v1" }],
                 Global = new GlobalNavigationConfig()
             };
 
@@ -716,11 +716,11 @@ namespace Mintlify.Tests.Core
             ((string?)target.AsyncApi).Should().Be("async-config");
             ((string?)target.OpenApi).Should().Be("openapi-config");
             target.Pages.Should().HaveCount(2);
-            target.Groups.Should().HaveCount(1);
-            target.Anchors.Should().HaveCount(1);
-            target.Dropdowns.Should().HaveCount(1);
-            target.Languages.Should().HaveCount(1);
-            target.Versions.Should().HaveCount(1);
+            target.Groups.Should().ContainSingle();
+            target.Anchors.Should().ContainSingle();
+            target.Dropdowns.Should().ContainSingle();
+            target.Languages.Should().ContainSingle();
+            target.Versions.Should().ContainSingle();
             target.Global.Should().NotBeNull();
         }
 
@@ -733,17 +733,17 @@ namespace Mintlify.Tests.Core
             var target = new TabConfig { Tab = "API" };
             var source = new TabConfig
             {
-                Pages = new List<object> { "page1" },
-                Groups = new List<GroupConfig> { new GroupConfig { Group = "group1" } },
-                Anchors = new List<AnchorConfig> { new AnchorConfig { Anchor = "anchor1" } }
+                Pages = ["page1"],
+                Groups = [new GroupConfig { Group = "group1" }],
+                Anchors = [new AnchorConfig { Anchor = "anchor1" }]
             };
 
             var manager = new DocsJsonManager();
             manager.MergeTabConfig(target, source);
 
-            target.Pages.Should().HaveCount(1);
-            target.Groups.Should().HaveCount(1);
-            target.Anchors.Should().HaveCount(1);
+            target.Pages.Should().ContainSingle();
+            target.Groups.Should().ContainSingle();
+            target.Anchors.Should().ContainSingle();
         }
 
         #endregion
@@ -796,7 +796,7 @@ namespace Mintlify.Tests.Core
                 new GroupConfig
                 {
                     Group = "API",
-                    Pages = new List<object> { "api/endpoint" }
+                    Pages = ["api/endpoint"]
                 }
             };
 
@@ -830,7 +830,7 @@ namespace Mintlify.Tests.Core
             {
                 Group = "API",
                 Root = "api",
-                Pages = new List<object> { "overview", "reference" }
+                Pages = ["overview", "reference"]
             };
 
             manager.ApplyUrlPrefixToGroup(group, "/docs");
@@ -863,15 +863,15 @@ namespace Mintlify.Tests.Core
             {
                 Tab = "Examples",
                 Href = "examples",
-                Pages = new List<object> { "basic" },
-                Groups = new List<GroupConfig>
-                {
+                Pages = ["basic"],
+                Groups =
+                [
                     new GroupConfig
                     {
                         Group = "Advanced",
-                        Pages = new List<object> { "advanced/topic" }
+                        Pages = ["advanced/topic"]
                     }
-                }
+                ]
             };
 
             manager.ApplyUrlPrefixToTab(tab, "/docs");
@@ -892,24 +892,24 @@ namespace Mintlify.Tests.Core
             {
                 Anchor = "Resources",
                 Href = "resources",
-                Pages = new List<object> { "links" },
-                Groups = new List<GroupConfig>
-                {
+                Pages = ["links"],
+                Groups =
+                [
                     new GroupConfig
                     {
                         Group = "External",
-                        Pages = new List<object> { "external/apis" }
+                        Pages = ["external/apis"]
                     }
-                },
-                Tabs = new List<TabConfig>
-                {
+                ],
+                Tabs =
+                [
                     new TabConfig
                     {
                         Tab = "Tools",
                         Href = "tools",
-                        Pages = new List<object> { "tools/cli" }
+                        Pages = ["tools/cli"]
                     }
-                }
+                ]
             };
 
             manager.ApplyUrlPrefixToAnchor(anchor, "/v2");
@@ -983,13 +983,13 @@ namespace Mintlify.Tests.Core
                 Name = "Test",
                 Navigation = new NavigationConfig
                 {
-                    Pages = new List<object>
-                    {
+                    Pages =
+                    [
                         "index",
                         new GroupConfig { Group = null! },
                         new GroupConfig { Group = "Valid Group" },
                         "quickstart"
-                    }
+                    ]
                 }
             };
 
@@ -1000,7 +1000,7 @@ namespace Mintlify.Tests.Core
             manager.Configuration.Navigation.Pages.Should().Contain("quickstart");
             manager.Configuration.Navigation.Pages?.OfType<GroupConfig>().Should().HaveCount(1);
             manager.Configuration.Navigation.Pages?.OfType<GroupConfig>().First().Group.Should().Be("Valid Group");
-            manager.ConfigurationErrors.Should().HaveCount(1);
+            manager.ConfigurationErrors.Should().ContainSingle();
             manager.ConfigurationErrors[0].ErrorText.Should().Contain("Group with null name found and removed");
         }
 
@@ -1016,12 +1016,12 @@ namespace Mintlify.Tests.Core
                 Name = "Test",
                 Navigation = new NavigationConfig
                 {
-                    Pages = new List<object>
-                    {
+                    Pages =
+                    [
                         new GroupConfig { Group = "" },
                         new GroupConfig { Group = "   " },
                         new GroupConfig { Group = "Valid Group" }
-                    }
+                    ]
                 }
             };
 
@@ -1029,8 +1029,8 @@ namespace Mintlify.Tests.Core
 
             manager.Configuration.Navigation.Pages.Should().HaveCount(3);
             manager.ConfigurationErrors.Should().HaveCount(2);
-            manager.ConfigurationErrors.All(e => e.IsWarning).Should().BeTrue();
-            manager.ConfigurationErrors.All(e => e.ErrorText.Contains("Empty group name found")).Should().BeTrue();
+            manager.ConfigurationErrors.Should().OnlyContain(e => e.IsWarning);
+            manager.ConfigurationErrors.Should().OnlyContain(e => e.ErrorText.Contains("Empty group name found"));
         }
 
         /// <summary>
@@ -1045,20 +1045,20 @@ namespace Mintlify.Tests.Core
                 Name = "Test",
                 Navigation = new NavigationConfig
                 {
-                    Pages = new List<object>
-                    {
+                    Pages =
+                    [
                         new GroupConfig
                         {
                             Group = "Parent Group",
-                            Pages = new List<object>
-                            {
+                            Pages =
+                            [
                                 "page1",
                                 new GroupConfig { Group = null! },
                                 new GroupConfig { Group = "Valid Nested" },
                                 "page2"
-                            }
+                            ]
                         }
-                    }
+                    ]
                 }
             };
 
@@ -1068,9 +1068,9 @@ namespace Mintlify.Tests.Core
             parentGroup!.Pages.Should().HaveCount(3);
             parentGroup.Pages!.Should().Contain("page1");
             parentGroup.Pages.Should().Contain("page2");
-            parentGroup.Pages!.OfType<GroupConfig>().Should().HaveCount(1);
+            parentGroup.Pages!.OfType<GroupConfig>().Should().ContainSingle();
             parentGroup.Pages!.OfType<GroupConfig>().First().Group.Should().Be("Valid Nested");
-            manager.ConfigurationErrors.Should().HaveCount(1);
+            manager.ConfigurationErrors.Should().ContainSingle();
             manager.ConfigurationErrors[0].ErrorText.Should().Contain("Nested group with null name found and removed");
         }
 
@@ -1086,13 +1086,13 @@ namespace Mintlify.Tests.Core
                 Name = "Test",
                 Navigation = new NavigationConfig
                 {
-                    Pages = new List<object> { "index" },
-                    Groups = new List<GroupConfig>
-                    {
+                    Pages = ["index"],
+                    Groups =
+                    [
                         new GroupConfig { Group = "Valid Group" },
                         new GroupConfig { Group = null! },
                         new GroupConfig { Group = "" }
-                    }
+                    ]
                 }
             };
 
@@ -1118,16 +1118,16 @@ namespace Mintlify.Tests.Core
                 Name = "Test",
                 Navigation = new NavigationConfig
                 {
-                    Pages = new List<object>
-                    {
+                    Pages =
+                    [
                         "index",
                         new GroupConfig
                         {
                             Group = "API Reference",
-                            Pages = new List<object> { "api/overview" }
+                            Pages = ["api/overview"]
                         },
                         "quickstart"
-                    }
+                    ]
                 }
             };
 
@@ -1153,21 +1153,21 @@ namespace Mintlify.Tests.Core
                 Name = "Test",
                 Navigation = new NavigationConfig
                 {
-                    Pages = new List<object>
-                    {
+                    Pages =
+                    [
                         "index",
                         new GroupConfig { Group = null! },
                         new GroupConfig
                         {
                             Group = "Parent",
-                            Pages = new List<object>
-                            {
+                            Pages =
+                            [
                                 new GroupConfig { Group = "" },
                                 new GroupConfig { Group = null! }
-                            }
+                            ]
                         },
                         new GroupConfig { Group = "Valid" }
-                    }
+                    ]
                 }
             };
 
@@ -1177,7 +1177,7 @@ namespace Mintlify.Tests.Core
             manager.Configuration.Navigation.Pages.Should().Contain("index");
 
             var parentGroup = manager.Configuration.Navigation.Pages?.OfType<GroupConfig>().First(g => g.Group == "Parent");
-            parentGroup!.Pages!.Should().HaveCount(1); // Only empty group remains
+            parentGroup!.Pages!.Should().ContainSingle(); // Only empty group remains
 
             manager.ConfigurationErrors.Should().HaveCount(3); // 1 root null + 1 nested null + 1 nested empty warning
             manager.ConfigurationErrors.Count(e => !e.IsWarning).Should().Be(2); // 2 null groups
@@ -1248,14 +1248,14 @@ namespace Mintlify.Tests.Core
                 Name = "Test",
                 Navigation = new NavigationConfig
                 {
-                    Pages = new List<object>
-                    {
+                    Pages =
+                    [
                         new GroupConfig
                         {
                             Group = "Learnings",
-                            Pages = new List<object> { "learnings/bridge-assemblies" }
+                            Pages = ["learnings/bridge-assemblies"]
                         }
-                    }
+                    ]
                 }
             });
 
@@ -1350,7 +1350,7 @@ namespace Mintlify.Tests.Core
                 Name = "Test",
                 Navigation = new NavigationConfig
                 {
-                    Pages = new List<object> { "index" }
+                    Pages = ["index"]
                 }
             });
 
@@ -1475,7 +1475,7 @@ namespace Mintlify.Tests.Core
                 Name = "Test",
                 Navigation = new NavigationConfig
                 {
-                    Pages = new List<object> { "index" }
+                    Pages = ["index"]
                 }
             });
 
@@ -1528,7 +1528,7 @@ namespace Mintlify.Tests.Core
                 Name = "Test",
                 Navigation = new NavigationConfig
                 {
-                    Pages = new List<object> { "index" }
+                    Pages = ["index"]
                 }
             });
 
@@ -1548,7 +1548,7 @@ namespace Mintlify.Tests.Core
                 // Should only include the MDX file in Getting Started
                 var gettingStartedGroup = manager.Configuration!.Navigation.Pages?.OfType<GroupConfig>().FirstOrDefault(g => g.Group == "Getting Started");
                 gettingStartedGroup.Should().NotBeNull();
-                gettingStartedGroup!.Pages.Should().HaveCount(1);
+                gettingStartedGroup!.Pages.Should().ContainSingle();
                 gettingStartedGroup.Pages.Should().Contain("valid");
             }
             finally
@@ -1569,7 +1569,7 @@ namespace Mintlify.Tests.Core
                 Name = "Test",
                 Navigation = new NavigationConfig
                 {
-                    Pages = new List<object> { "index" }
+                    Pages = ["index"]
                 }
             });
 
@@ -1613,7 +1613,7 @@ namespace Mintlify.Tests.Core
                 Name = "Test",
                 Navigation = new NavigationConfig
                 {
-                    Pages = new List<object> { "index" }
+                    Pages = ["index"]
                 }
             });
 
@@ -1654,7 +1654,7 @@ namespace Mintlify.Tests.Core
                 Name = "Test",
                 Navigation = new NavigationConfig
                 {
-                    Pages = new List<object> { "index" }
+                    Pages = ["index"]
                 }
             });
 
@@ -1672,7 +1672,7 @@ namespace Mintlify.Tests.Core
                 manager.PopulateNavigationFromPath(tempDir, [".mdx"], includeApiReference: false, preserveExisting: true);
 
                 // Should not include api-reference directory
-                manager.Configuration!.Navigation.Pages.Should().HaveCount(1); // only index
+                manager.Configuration!.Navigation.Pages.Should().ContainSingle(); // only index
                 manager.Configuration.Navigation.Pages.Should().Contain("index");
             }
             finally
@@ -1733,7 +1733,7 @@ namespace Mintlify.Tests.Core
                 Name = "Test",
                 Navigation = new NavigationConfig
                 {
-                    Pages = new List<object> { "index" }
+                    Pages = ["index"]
                 }
             });
 
@@ -1779,7 +1779,7 @@ namespace Mintlify.Tests.Core
                 Name = "Test",
                 Navigation = new NavigationConfig
                 {
-                    Pages = new List<object> { "index" }
+                    Pages = ["index"]
                 }
             });
 
@@ -1826,15 +1826,15 @@ namespace Mintlify.Tests.Core
                 Name = "Test",
                 Navigation = new NavigationConfig
                 {
-                    Pages = new List<object>
-                    {
+                    Pages =
+                    [
                         "old-index",
                         new GroupConfig
                         {
                             Group = "Old Group",
-                            Pages = new List<object> { "old/page" }
+                            Pages = ["old/page"]
                         }
-                    }
+                    ]
                 }
             });
 

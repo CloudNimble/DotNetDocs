@@ -89,7 +89,7 @@ namespace CloudNimble.DotNetDocs.Tests.Sdk.Tasks
             var excludePatterns = new[] { "Tests", "IntegrationTests" };
             var result = _task.DiscoverProjectFiles(_tempDirectory, excludePatterns);
 
-            result.Should().HaveCount(1);
+            result.Should().ContainSingle();
             result.Should().Contain(p => p.EndsWith("MyProject.csproj"));
         }
 

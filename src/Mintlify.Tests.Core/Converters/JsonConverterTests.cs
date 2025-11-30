@@ -39,15 +39,15 @@ namespace Mintlify.Tests.Core.Converters
                 Icon = "api",
                 AsyncApi = "https://api.example.com/asyncapi.json",
                 OpenApi = new List<string> { "spec1.json", "spec2.json" },
-                Pages = new List<object>
-                {
+                Pages =
+                [
                     "api/overview",
                     new GroupConfig
                     {
                         Group = "Endpoints",
-                        Pages = new List<object> { "api/users", "api/orders" }
+                        Pages = ["api/users", "api/orders"]
                     }
-                }
+                ]
             };
 
             var json = JsonSerializer.Serialize(original, _jsonOptions);
@@ -70,7 +70,7 @@ namespace Mintlify.Tests.Core.Converters
         {
             var config = new NavigationConfig
             {
-                Pages = new List<object> { "index", "getting-started" }
+                Pages = ["index", "getting-started"]
             };
 
             var json = JsonSerializer.Serialize(config, _jsonOptions);

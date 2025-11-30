@@ -240,13 +240,13 @@ namespace CloudNimble.DotNetDocs.Tests.Core
                 namespace TestNamespace
                 {
                     public class TestClass { }
-                }");
+                }", cancellationToken: TestContext.CancellationToken);
             var compilation = CSharpCompilation.Create("Test", new[] { syntaxTree });
             var semanticModel = compilation.GetSemanticModel(syntaxTree);
-            var namespaceDeclaration = syntaxTree.GetRoot().DescendantNodes()
+            var namespaceDeclaration = syntaxTree.GetRoot(TestContext.CancellationToken).DescendantNodes()
                 .OfType<NamespaceDeclarationSyntax>()
                 .First();
-            var namespaceSymbol = semanticModel.GetDeclaredSymbol(namespaceDeclaration);
+            var namespaceSymbol = semanticModel.GetDeclaredSymbol(namespaceDeclaration, TestContext.CancellationToken);
 
             // Act
             var result = context.GetSafeNamespaceName(namespaceSymbol!);
@@ -264,13 +264,13 @@ namespace CloudNimble.DotNetDocs.Tests.Core
                 namespace CloudNimble.DotNetDocs.Core
                 {
                     public class TestClass { }
-                }");
+                }", cancellationToken: TestContext.CancellationToken);
             var compilation = CSharpCompilation.Create("Test", new[] { syntaxTree });
             var semanticModel = compilation.GetSemanticModel(syntaxTree);
-            var namespaceDeclaration = syntaxTree.GetRoot().DescendantNodes()
+            var namespaceDeclaration = syntaxTree.GetRoot(TestContext.CancellationToken).DescendantNodes()
                 .OfType<NamespaceDeclarationSyntax>()
                 .First();
-            var namespaceSymbol = semanticModel.GetDeclaredSymbol(namespaceDeclaration);
+            var namespaceSymbol = semanticModel.GetDeclaredSymbol(namespaceDeclaration, TestContext.CancellationToken);
 
             // Act
             var result = context.GetSafeNamespaceName(namespaceSymbol!);
@@ -475,7 +475,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core
                 namespace TestNamespace.SubNamespace
                 {
                     public class TestClass { }
-                }");
+                }", cancellationToken: TestContext.CancellationToken);
             var compilation = CSharpCompilation.Create("TestAssembly", new[] { syntaxTree });
             var assemblySymbol = compilation.Assembly;
             var namespaceSymbol = compilation.GlobalNamespace.GetNamespaceMembers()
@@ -523,7 +523,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core
                 namespace AnotherNamespace
                 {
                     public class AnotherClass { }
-                }");
+                }", cancellationToken: TestContext.CancellationToken);
             var compilation = CSharpCompilation.Create("TestAssembly", new[] { syntaxTree });
             var assemblySymbol = compilation.Assembly;
             
@@ -573,7 +573,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             var tempPath = Path.Combine(Path.GetTempPath(), $"EnsureTest_{Guid.NewGuid()}");
             
             var syntaxTree = CSharpSyntaxTree.ParseText(@"
-                public class GlobalClass { }");
+                public class GlobalClass { }", cancellationToken: TestContext.CancellationToken);
             var compilation = CSharpCompilation.Create("TestAssembly", new[] { syntaxTree });
             var assemblySymbol = compilation.Assembly;
             

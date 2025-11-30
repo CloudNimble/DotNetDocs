@@ -147,7 +147,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core
                 .Where(t => t.Name == "List" && t.IsExternalReference)
                 .ToList();
 
-            listTypes.Should().HaveCount(1, "Should only create one external reference even with multiple extensions");
+            listTypes.Should().ContainSingle("Should only create one external reference even with multiple extensions");
 
             // Should have multiple extension methods on the single List type
             if (listTypes.Any())

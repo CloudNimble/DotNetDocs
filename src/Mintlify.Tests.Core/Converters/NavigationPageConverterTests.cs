@@ -39,7 +39,7 @@ namespace Mintlify.Tests.Core.Converters
             var result = JsonSerializer.Deserialize<GroupConfig>(json, _jsonOptions);
 
             result.Should().NotBeNull();
-            result!.Pages.Should().HaveCount(1);
+            result!.Pages.Should().ContainSingle();
             result!.Pages![0].Should().BeOfType<string>();
             result!.Pages![0].Should().Be("cli/index");
         }
@@ -101,7 +101,7 @@ namespace Mintlify.Tests.Core.Converters
             var value = new GroupConfig
             {
                 Group = "CLI Tools",
-                Pages = new List<object> { "cli/index", "cli/commands" }
+                Pages = ["cli/index", "cli/commands"]
             };
 
             var json = JsonSerializer.Serialize<object>(value, _jsonOptions);

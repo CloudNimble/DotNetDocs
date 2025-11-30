@@ -64,7 +64,7 @@ namespace Mintlify.Tests.Core.Converters
                 new GroupConfig
                 {
                     Group = "Advanced",
-                    Pages = new List<object> { "advanced/topic1" }
+                    Pages = ["advanced/topic1"]
                 }
             };
 

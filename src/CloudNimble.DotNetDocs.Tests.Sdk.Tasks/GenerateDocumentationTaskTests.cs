@@ -167,7 +167,7 @@ namespace CloudNimble.DotNetDocs.Tests.Sdk.Tasks
             mintlifyGroup!.Group.Should().Be("Mintlify");
             mintlifyGroup.Icon!.Name.Should().Be("/mintlify.svg");
             mintlifyGroup.Tag.Should().Be("PARTNER");
-            mintlifyGroup.Pages.Should().HaveCount(1);
+            mintlifyGroup.Pages.Should().ContainSingle();
             mintlifyGroup.Pages![0].Should().Be("providers/mintlify/index");
 
             // Third item should be the nested GitHub group
@@ -869,7 +869,7 @@ namespace CloudNimble.DotNetDocs.Tests.Sdk.Tasks
 
             _task.ResolvedDocumentationReferences = references;
 
-            _task.ResolvedDocumentationReferences.Should().HaveCount(1);
+            _task.ResolvedDocumentationReferences.Should().ContainSingle();
             _task.ResolvedDocumentationReferences[0].GetMetadata("ProjectPath").Should().Be(@"D:\projects\ServiceA\ServiceA.docsproj");
             _task.ResolvedDocumentationReferences[0].GetMetadata("DocumentationRoot").Should().Be(@"D:\projects\ServiceA\docs");
             _task.ResolvedDocumentationReferences[0].GetMetadata("DestinationPath").Should().Be("services/service-a");
@@ -1040,7 +1040,7 @@ namespace CloudNimble.DotNetDocs.Tests.Sdk.Tasks
             };
 
             _task.ResolvedDocumentationReferences = references1;
-            _task.ResolvedDocumentationReferences.Should().HaveCount(1);
+            _task.ResolvedDocumentationReferences.Should().ContainSingle();
 
             var references2 = new ITaskItem[]
             {

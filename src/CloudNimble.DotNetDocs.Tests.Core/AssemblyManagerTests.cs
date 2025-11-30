@@ -320,7 +320,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core
 
             if (File.Exists(baselinePath))
             {
-                var baseline = await File.ReadAllTextAsync(baselinePath);
+                var baseline = await File.ReadAllTextAsync(baselinePath, TestContext.CancellationToken);
 
                 // Normalize line endings for cross-platform compatibility
                 var normalizedJson = json.ReplaceLineEndings(Environment.NewLine);

@@ -240,7 +240,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core
                 .Where(t => t.Name == "List" && t.IsExternalReference)
                 .ToList();
 
-            listTypes.Should().HaveCount(1, "Should reuse existing external type instead of creating duplicates");
+            listTypes.Should().ContainSingle("Should reuse existing external type instead of creating duplicates");
 
             // And it should have all the extension methods
             var listType = listTypes.First();
