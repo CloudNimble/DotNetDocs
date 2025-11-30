@@ -65,9 +65,9 @@
         <_SolutionName Condition="'$(SolutionName)' == '' AND '$(SolutionFileName)' != ''">$([System.IO.Path]::GetFileNameWithoutExtension('$(SolutionFileName)'))</_SolutionName>
         <_SolutionName Condition="'$(_SolutionName)' == ''">Documentation</_SolutionName>
 
-        <!-- Redirect output to temp to keep documentation folders clean -->
-        <BaseIntermediateOutputPath Condition="'$(BaseIntermediateOutputPath)' == ''">$([System.IO.Path]::GetTempPath())$(_SolutionName)\$(MSBuildProjectName)\obj\</BaseIntermediateOutputPath>
-        <BaseOutputPath Condition="'$(BaseOutputPath)' == ''">$([System.IO.Path]::GetTempPath())$(_SolutionName)\$(MSBuildProjectName)\bin\</BaseOutputPath>
+        <!-- Redirect output to temp to keep documentation folders clean (skip in CI for vulnerability scans) -->
+        <BaseIntermediateOutputPath Condition="'$(BaseIntermediateOutputPath)' == '' AND '$(CI)' != 'true'">$([System.IO.Path]::GetTempPath())$(_SolutionName)\$(MSBuildProjectName)\obj\</BaseIntermediateOutputPath>
+        <BaseOutputPath Condition="'$(BaseOutputPath)' == '' AND '$(CI)' != 'true'">$([System.IO.Path]::GetTempPath())$(_SolutionName)\$(MSBuildProjectName)\bin\</BaseOutputPath>
         <IntermediateOutputPath>$(BaseIntermediateOutputPath)</IntermediateOutputPath>
         <OutputPath>$(BaseOutputPath)</OutputPath>
         <MSBuildProjectExtensionsPath>$(BaseIntermediateOutputPath)</MSBuildProjectExtensionsPath>
