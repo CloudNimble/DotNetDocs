@@ -20,6 +20,42 @@ namespaces:
       displayName: CloudNimble.DotNetDocs.Tests.Shared.DotNetDocsTestBase.framework
     - accessibility: Public
       memberKind: Method
+      methodKind: PropertyGet
+      name: get_TestContext
+      returnType:
+        assemblyName: MSTest.TestFramework.Extensions
+        fullName: Microsoft.VisualStudio.TestTools.UnitTesting.TestContext
+        name: TestContext
+        signature: Microsoft.VisualStudio.TestTools.UnitTesting.TestContext
+        typeKind: Error
+        isExternalReference: true
+        displayName: Microsoft.VisualStudio.TestTools.UnitTesting.TestContext
+      returnTypeName: Microsoft.VisualStudio.TestTools.UnitTesting.TestContext
+      signature: public Microsoft.VisualStudio.TestTools.UnitTesting.TestContext TestContext.get
+      declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.DotNetDocsTestBase
+      displayName: CloudNimble.DotNetDocs.Tests.Shared.DotNetDocsTestBase.TestContext.get
+    - accessibility: Public
+      memberKind: Method
+      methodKind: PropertySet
+      name: set_TestContext
+      parameters:
+      - name: value
+        parameterType:
+          assemblyName: MSTest.TestFramework.Extensions
+          fullName: Microsoft.VisualStudio.TestTools.UnitTesting.TestContext
+          name: TestContext
+          signature: Microsoft.VisualStudio.TestTools.UnitTesting.TestContext
+          typeKind: Error
+          isExternalReference: true
+          displayName: Microsoft.VisualStudio.TestTools.UnitTesting.TestContext
+        typeName: Microsoft.VisualStudio.TestTools.UnitTesting.TestContext
+        displayName: Microsoft.VisualStudio.TestTools.UnitTesting.TestContext value
+      returnTypeName: void
+      signature: public void TestContext.set
+      declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.DotNetDocsTestBase
+      displayName: CloudNimble.DotNetDocs.Tests.Shared.DotNetDocsTestBase.TestContext.set
+    - accessibility: Public
+      memberKind: Method
       methodKind: Ordinary
       name: GetTestsDotSharedAssembly
       returnType:
@@ -42,6 +78,13 @@ namespaces:
       signature: public DotNetDocsTestBase()
       declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.DotNetDocsTestBase
       displayName: CloudNimble.DotNetDocs.Tests.Shared.DotNetDocsTestBase.DotNetDocsTestBase()
+    - accessibility: Public
+      memberKind: Property
+      name: TestContext
+      returnTypeName: Microsoft.VisualStudio.TestTools.UnitTesting.TestContext
+      signature: public required Microsoft.VisualStudio.TestTools.UnitTesting.TestContext TestContext { get; set; }
+      declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.DotNetDocsTestBase
+      displayName: CloudNimble.DotNetDocs.Tests.Shared.DotNetDocsTestBase.TestContext
     assemblyName: CloudNimble.DotNetDocs.Tests.Shared
     fullName: CloudNimble.DotNetDocs.Tests.Shared.DotNetDocsTestBase
     name: DotNetDocsTestBase
