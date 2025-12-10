@@ -1,0 +1,613 @@
+---
+title: ProjectContext
+description: "Represents MSBuild project context for source intent in documentation generation."
+icon: file-brackets-curly
+keywords: ['ProjectContext', 'CloudNimble.DotNetDocs.Core.ProjectContext', 'CloudNimble.DotNetDocs.Core', 'class', 'System.Object']
+---
+
+## Definition
+
+**Assembly:** CloudNimble.DotNetDocs.Core.dll
+
+**Namespace:** CloudNimble.DotNetDocs.Core
+
+**Inheritance:** System.Object
+
+## Syntax
+
+```csharp
+CloudNimble.DotNetDocs.Core.ProjectContext
+```
+
+## Summary
+
+Represents MSBuild project context for source intent in documentation generation.
+
+## Remarks
+
+Provides metadata such as referenced assembly paths and the conceptual documentation folder path.
+             Used by `ProjectContext)` to enhance metadata extraction.
+
+## Examples
+
+```csharp
+// Default (public members only)
+var context = new ProjectContext("ref1.dll", "ref2.dll") { ConceptualPath = "conceptual" };
+
+// Include public and internal members
+var context = new ProjectContext([Accessibility.Public, Accessibility.Internal], "ref1.dll", "ref2.dll");
+
+var model = await manager.DocumentAsync("MyLib.dll", "MyLib.xml", context);
+```
+
+## Constructors
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor
+
+Initializes a new instance of [ProjectContext](/api-reference/CloudNimble/DotNetDocs/Core/ProjectContext) with default settings.
+
+#### Syntax
+
+```csharp
+public ProjectContext()
+```
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor
+
+Initializes a new instance of [ProjectContext](/api-reference/CloudNimble/DotNetDocs/Core/ProjectContext) with optional included members and referenced assemblies.
+
+#### Syntax
+
+```csharp
+public ProjectContext(System.Collections.Generic.List<Microsoft.CodeAnalysis.Accessibility> includedMembers, params string[] references)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `includedMembers` | `System.Collections.Generic.List<Microsoft.CodeAnalysis.Accessibility?>?` | List of member accessibilities to include. Defaults to Public if null. |
+| `references` | `string[]?` | Paths to referenced assemblies. |
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public Object()
+```
+
+## Properties
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ApiReferencePath
+
+Gets or sets the path to the API reference documentation.
+
+#### Syntax
+
+```csharp
+public string ApiReferencePath { get; set; }
+```
+
+#### Property Value
+
+Type: `string`
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ConceptualDocsEnabled
+
+Gets or sets whether conceptual documentation features are enabled.
+
+#### Syntax
+
+```csharp
+public bool ConceptualDocsEnabled { get; set; }
+```
+
+#### Property Value
+
+Type: `bool`
+When true (default), conceptual documentation files are generated for new types
+            and existing conceptual content is loaded. When false, only API documentation
+            from XML comments is processed.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ConceptualPath
+
+Gets or sets the path to the conceptual documentation folder.
+
+#### Syntax
+
+```csharp
+public string ConceptualPath { get; set; }
+```
+
+#### Property Value
+
+Type: `string`
+The file system path to the folder containing conceptual documentation files.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> CreateExternalTypeReferences
+
+Gets or sets whether to create documentation for external types that have extension methods.
+
+#### Syntax
+
+```csharp
+public bool CreateExternalTypeReferences { get; set; }
+```
+
+#### Property Value
+
+Type: `bool`
+`true` to create minimal [DocType](/api-reference/CloudNimble/DotNetDocs/Core/DocType) entries for types outside the assembly
+            that are extended by extension methods; `false` to only relocate extensions for types
+            within the assembly. Default is `true`.
+
+#### Remarks
+
+When enabled, extending `IServiceCollection` creates a documentation page showing
+            only your extension methods, with a link to Microsoft's official documentation for the
+            complete type definition.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> DocumentationReferences
+
+Gets or sets the collection of external documentation references to combine into this documentation collection.
+
+#### Syntax
+
+```csharp
+public System.Collections.Generic.List<CloudNimble.DotNetDocs.Core.DocumentationReference> DocumentationReferences { get; set; }
+```
+
+#### Property Value
+
+Type: `System.Collections.Generic.List<CloudNimble.DotNetDocs.Core.DocumentationReference>`
+A list of [DocumentationReference](/api-reference/CloudNimble/DotNetDocs/Core/DocumentationReference) objects representing external documentation to be combined.
+
+#### Examples
+
+```csharp
+var context = new ProjectContext
+{
+    DocumentationReferences = new List&lt;DocumentationReference&gt;
+    {
+        new DocumentationReference
+        {
+            ProjectPath = @"C:\repos\auth-service\docs\AuthService.docsproj",
+            DocumentationRoot = @"C:\repos\auth-service\docs",
+            DestinationPath = "services/auth",
+            DocumentationType = "Mintlify",
+            IntegrationType = "Tabs"
+        }
+    }
+};
+```
+
+#### Remarks
+
+Similar to MSBuild's ProjectReference, this allows creating unified documentation portals by combining
+            multiple separate .docsproj outputs. Each reference specifies where to copy files from and how to
+            integrate navigation.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> DocumentationRootPath
+
+Gets or sets the output path for generated documentation.
+
+#### Syntax
+
+```csharp
+public string DocumentationRootPath { get; set; }
+```
+
+#### Property Value
+
+Type: `string`
+The file system path where documentation output will be generated.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ExcludedTypes
+
+Gets or sets the list of type patterns to exclude from documentation.
+
+#### Syntax
+
+```csharp
+public System.Collections.Generic.HashSet<string> ExcludedTypes { get; set; }
+```
+
+#### Property Value
+
+Type: `System.Collections.Generic.HashSet<string>`
+Set of type patterns to exclude. Supports wildcards (*) for flexible matching.
+            This is useful for filtering out compiler-generated or test framework-injected types.
+
+#### Examples
+
+ExcludedTypes = new HashSet&lt;string&gt;
+{
+    "*.MicrosoftTestingPlatformEntryPoint",  // Matches in any namespace
+    "*.SelfRegisteredExtensions",             // Matches in any namespace
+    "System.Runtime.CompilerServices.*"       // Matches any type in this namespace
+}
+
+#### Remarks
+
+Patterns can use wildcards:
+            - "*.TypeName" matches TypeName in any namespace
+            - "Namespace.*.TypeName" matches TypeName in any sub-namespace of Namespace
+            - "Full.Namespace.TypeName" matches exact fully qualified type name
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> FileNamingOptions
+
+Gets or sets the file naming options for documentation generation.
+
+#### Syntax
+
+```csharp
+public CloudNimble.DotNetDocs.Core.Configuration.FileNamingOptions FileNamingOptions { get; set; }
+```
+
+#### Property Value
+
+Type: `CloudNimble.DotNetDocs.Core.Configuration.FileNamingOptions`
+Configuration for how documentation files are named and organized.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> IncludedMembers
+
+Gets or sets the list of member accessibilities to include in documentation.
+
+#### Syntax
+
+```csharp
+public System.Collections.Generic.List<Microsoft.CodeAnalysis.Accessibility> IncludedMembers { get; set; }
+```
+
+#### Property Value
+
+Type: `System.Collections.Generic.List<Microsoft.CodeAnalysis.Accessibility>`
+List of accessibility levels to include. Defaults to Public only.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> IncludeFields
+
+Gets or sets whether to include fields in the documentation.
+
+#### Syntax
+
+```csharp
+public bool IncludeFields { get; set; }
+```
+
+#### Property Value
+
+Type: `bool`
+When true, public fields (including constants) are included in the documentation.
+            Defaults to false since fields are generally discouraged in favor of properties.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> IncludeSystemObjectInheritance
+
+Gets or sets whether to include members inherited from [Object](https://learn.microsoft.com/dotnet/api/system.object).
+
+#### Syntax
+
+```csharp
+public bool IncludeSystemObjectInheritance { get; set; }
+```
+
+#### Property Value
+
+Type: `bool`
+`true` to document `ToString()`, `GetHashCode()`, `Equals()`, etc.
+            on every type; `false` to exclude these common members. Default is `true`.
+
+#### Remarks
+
+Setting this to `false` reduces documentation noise while still including
+            members inherited from other base types and interfaces. This matches the behavior
+            of Microsoft's official .NET documentation.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> References
+
+Gets or sets the collection of paths to referenced assemblies.
+
+#### Syntax
+
+```csharp
+public System.Collections.Generic.List<string> References { get; set; }
+```
+
+#### Property Value
+
+Type: `System.Collections.Generic.List<string>`
+A collection of file system paths to assemblies referenced by the project being documented.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ShowPlaceholders
+
+Gets or sets whether to show placeholder content in the documentation.
+
+#### Syntax
+
+```csharp
+public bool ShowPlaceholders { get; set; }
+```
+
+#### Property Value
+
+Type: `bool`
+When true (default), placeholder content is included. When false, files containing the
+            TODO marker comment are skipped during loading.
+
+## Methods
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> EnsureOutputDirectoryStructure
+
+Ensures that the output directory structure exists for all namespaces in the assembly model.
+
+#### Syntax
+
+```csharp
+public void EnsureOutputDirectoryStructure(CloudNimble.DotNetDocs.Core.DocAssembly assemblyModel, string outputPath)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `assemblyModel` | `CloudNimble.DotNetDocs.Core.DocAssembly` | The assembly model containing namespaces to create directories for. |
+| `outputPath` | `string` | The base output path where directories will be created. |
+
+#### Remarks
+
+This method creates the necessary folder structure when using Folder mode.
+            In File mode, it simply ensures the base output directory exists.
+            This centralizes folder creation logic so renderers can assume directories exist.
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Equals <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual bool Equals(object obj)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `obj` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Equals <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public static bool Equals(object objA, object objB)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `objA` | `object?` | - |
+| `objB` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetFullConceptualPath
+
+Gets the full path to the conceptual documentation folder.
+
+#### Syntax
+
+```csharp
+public string GetFullConceptualPath()
+```
+
+#### Returns
+
+Type: `string`
+The absolute path to the conceptual documentation folder if [ProjectContext.ConceptualPath](/api-reference/CloudNimble/DotNetDocs/Core/ProjectContext#conceptualpath) is absolute,
+             or the path combined with [ProjectContext.DocumentationRootPath](/api-reference/CloudNimble/DotNetDocs/Core/ProjectContext#documentationrootpath) if [ProjectContext.ConceptualPath](/api-reference/CloudNimble/DotNetDocs/Core/ProjectContext#conceptualpath) is relative.
+
+#### Examples
+
+```csharp
+// When ConceptualPath is absolute
+context.ConceptualPath = "C:\\Docs\\conceptual";
+var path = context.GetFullConceptualPath(); // Returns "C:\Docs\conceptual"
+
+// When ConceptualPath is relative
+context.DocumentationRootPath = "C:\\Docs";
+context.ConceptualPath = "conceptual";
+var path = context.GetFullConceptualPath(); // Returns "C:\Docs\conceptual"
+```
+
+#### Remarks
+
+This method ensures that conceptual paths are always resolved to absolute paths,
+             making it easier to work with conceptual documentation files regardless of whether
+             the path is configured as relative or absolute.
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetHashCode <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual int GetHashCode()
+```
+
+#### Returns
+
+Type: `int`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetNamespaceFolderPath
+
+Converts a namespace string to a folder path based on the configured file naming options.
+
+#### Syntax
+
+```csharp
+public string GetNamespaceFolderPath(string namespaceName)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `namespaceName` | `string` | The namespace name to convert (e.g., "System.Collections.Generic"). |
+
+#### Returns
+
+Type: `string`
+The folder path representation of the namespace.
+
+#### Remarks
+
+When [FileNamingOptions.NamespaceMode](/api-reference/CloudNimble/DotNetDocs/Core/Configuration/FileNamingOptions#namespacemode) is [NamespaceMode.Folder](/api-reference/CloudNimble/DotNetDocs/Core/Configuration/NamespaceMode#folder),
+            this returns a path with folders for each namespace part (e.g., "System/Collections/Generic").
+            When using [NamespaceMode.File](/api-reference/CloudNimble/DotNetDocs/Core/Configuration/NamespaceMode#file), this returns an empty string as no folder
+            structure is created.
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetSafeNamespaceName
+
+Gets the safe namespace name for a given namespace symbol.
+
+#### Syntax
+
+```csharp
+public string GetSafeNamespaceName(Microsoft.CodeAnalysis.INamespaceSymbol namespaceSymbol)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `namespaceSymbol` | `Microsoft.CodeAnalysis.INamespaceSymbol` | The namespace symbol. |
+
+#### Returns
+
+Type: `string`
+A safe namespace name, using "global" for the global namespace.
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetType <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public System.Type GetType()
+```
+
+#### Returns
+
+Type: `System.Type`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetTypeFilePath
+
+Gets the full file path for a type, including namespace folder structure if in Folder mode.
+
+#### Syntax
+
+```csharp
+public string GetTypeFilePath(string fullyQualifiedTypeName, string extension)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `fullyQualifiedTypeName` | `string` | The fully qualified type name (e.g., "System.Text.Json.JsonSerializer"). |
+| `extension` | `string` | The file extension without the dot (e.g., "md", "yaml"). |
+
+#### Returns
+
+Type: `string`
+The file path for the type.
+
+#### Remarks
+
+In Folder mode: "System.Text.Json.JsonSerializer" becomes "System/Text/Json/JsonSerializer.md"
+            In File mode: "System.Text.Json.JsonSerializer" becomes "System_Text_Json_JsonSerializer.md" (using configured separator)
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> IsTypeExcluded
+
+Checks if a type should be excluded from documentation based on exclusion patterns.
+
+#### Syntax
+
+```csharp
+public bool IsTypeExcluded(string fullyQualifiedTypeName)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `fullyQualifiedTypeName` | `string` | The fully qualified type name to check. |
+
+#### Returns
+
+Type: `bool`
+True if the type should be excluded; otherwise, false.
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> MemberwiseClone <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+protected internal object MemberwiseClone()
+```
+
+#### Returns
+
+Type: `object`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ReferenceEquals <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public static bool ReferenceEquals(object objA, object objB)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `objA` | `object?` | - |
+| `objB` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ToString <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual string ToString()
+```
+
+#### Returns
+
+Type: `string?`
+

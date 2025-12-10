@@ -69,60 +69,67 @@ namespace CloudNimble.DotNetDocs.Mintlify
         /// <summary>
         /// Renders the documentation assembly to MDX files with optional docs.json generation.
         /// </summary>
-        /// <param name="model">The documentation assembly to render.</param>
+        /// <param name="model">The documentation assembly to render, or null for documentation-only mode.</param>
         /// <returns>A task representing the asynchronous rendering operation.</returns>
-        public async Task RenderAsync(DocAssembly model)
+        public async Task RenderAsync(DocAssembly? model)
         {
-            ArgumentNullException.ThrowIfNull(model);
+            // If model is not null, generate API reference files
+            if (model is not null)
+            {
+                var apiOutputPath = Path.Combine(Context.DocumentationRootPath, Context.ApiReferencePath);
+                Console.WriteLine($"📝 Rendering documentation to: {apiOutputPath}");
 
-            var apiOutputPath = Path.Combine(Context.DocumentationRootPath, Context.ApiReferencePath);
-            Console.WriteLine($"📝 Rendering documentation to: {apiOutputPath}");
+                // Initialize DocsJsonManager if enabled (only on first call)
+                if (_options.GenerateDocsJson && _docsJsonManager is not null)
+                {
+                    // Only initialize if not already configured
+                    if (_docsJsonManager.Configuration is null)
+                    {
+                        var docsConfig = _options.Template ?? DocsJsonManager.CreateDefault(
+                            model.AssemblyName ?? "API Documentation",
+                            "mint"
+                        );
+                        // Load configuration directly without JSON round-trip
+                        _docsJsonManager.Load(docsConfig);
+                    }
+                }
 
-            // Initialize DocsJsonManager if enabled (only on first call)
-            DocsJsonConfig? docsConfig = null;
+                // Ensure all necessary directories exist based on the file naming mode
+                Context.EnsureOutputDirectoryStructure(model, apiOutputPath);
+
+                // Create DocsBadge component snippet for Mintlify (used by inherited/extension member badges)
+                // RWM: This returns a no-op for now but the code is commented out in case we want to do other snippets.
+                await CreateDocsBadgeSnippetAsync();
+
+                // Render assembly overview
+                await RenderAssemblyAsync(model, apiOutputPath);
+
+                // Render each namespace
+                foreach (var ns in model.Namespaces)
+                {
+                    await RenderNamespaceAsync(ns, apiOutputPath);
+
+                    // Render each type in the namespace
+                    foreach (var type in ns.Types)
+                    {
+                        await RenderTypeAsync(type, ns, apiOutputPath);
+                    }
+                }
+            }
+
+            // Generate docs.json if enabled - runs even without a model for documentation-only mode
             if (_options.GenerateDocsJson && _docsJsonManager is not null)
             {
-                // Only initialize if not already configured
+                // Initialize from template if not already configured
                 if (_docsJsonManager.Configuration is null)
                 {
-                    docsConfig = _options.Template ?? DocsJsonManager.CreateDefault(
-                        model.AssemblyName ?? "API Documentation",
+                    var docsConfig = _options.Template ?? DocsJsonManager.CreateDefault(
+                        model?.AssemblyName ?? "Documentation",
                         "mint"
                     );
-                    // Load configuration directly without JSON round-trip
                     _docsJsonManager.Load(docsConfig);
                 }
-                else
-                {
-                    docsConfig = _docsJsonManager.Configuration;
-                }
-            }
 
-            // Ensure all necessary directories exist based on the file naming mode
-            Context.EnsureOutputDirectoryStructure(model, apiOutputPath);
-
-            // Create DocsBadge component snippet for Mintlify (used by inherited/extension member badges)
-            // RWM: This returns a no-op for now but the code is commented out in case we want to do other snippets.
-            await CreateDocsBadgeSnippetAsync();
-
-            // Render assembly overview
-            await RenderAssemblyAsync(model, apiOutputPath);
-
-            // Render each namespace
-            foreach (var ns in model.Namespaces)
-            {
-                await RenderNamespaceAsync(ns, apiOutputPath);
-
-                // Render each type in the namespace
-                foreach (var type in ns.Types)
-                {
-                    await RenderTypeAsync(type, ns, apiOutputPath);
-                }
-            }
-
-            // Generate docs.json if enabled
-            if (_options.GenerateDocsJson && _docsJsonManager is not null && _docsJsonManager.Configuration is not null)
-            {
                 // Build exclusion list from DocumentationReference DestinationPaths to prevent scanning output directories
                 var excludeDirectories = Context.DocumentationReferences
                     .Select(r => Path.GetFileName(r.DestinationPath))
@@ -133,8 +140,11 @@ namespace CloudNimble.DotNetDocs.Mintlify
                 // Exclude DocumentationReference output directories to prevent them from being treated as conceptual docs
                 _docsJsonManager.PopulateNavigationFromPath(Context.DocumentationRootPath, new[] { ".mdx" }, includeApiReference: false, preserveExisting: true, excludeDirectories: excludeDirectories);
 
-                // Second: Add API reference content to existing navigation
-                BuildNavigationStructure(_docsJsonManager.Configuration, model);
+                // Second: Add API reference content to existing navigation ONLY if model exists
+                if (model is not null)
+                {
+                    BuildNavigationStructure(_docsJsonManager.Configuration!, model);
+                }
 
                 // Third: Apply NavigationType from template to move root content to Tabs/Products if configured
                 ApplyNavigationType();

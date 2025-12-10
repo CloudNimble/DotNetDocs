@@ -598,7 +598,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Extensions
         private class TestRenderer : IDocRenderer
         {
             public string OutputFormat => "Test";
-            public Task RenderAsync(DocAssembly model) => Task.CompletedTask;
+            public Task RenderAsync(DocAssembly? model) => Task.CompletedTask;
             public Task RenderPlaceholdersAsync(DocAssembly model) => Task.CompletedTask;
         }
 

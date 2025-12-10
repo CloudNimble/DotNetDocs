@@ -1,0 +1,238 @@
+---
+title: SymbolTypeConverter
+description: "Custom type converter for ISymbol interface to prevent serialization."
+icon: file-brackets-curly
+keywords: ['SymbolTypeConverter', 'CloudNimble.DotNetDocs.Core.Renderers.YamlConverters.SymbolTypeConverter', 'CloudNimble.DotNetDocs.Core.Renderers.YamlConverters', 'class', 'System.Object', 'YamlDotNet.Serialization.IYamlTypeConverter']
+---
+
+## Definition
+
+**Assembly:** CloudNimble.DotNetDocs.Core.dll
+
+**Namespace:** CloudNimble.DotNetDocs.Core.Renderers.YamlConverters
+
+**Inheritance:** System.Object
+
+## Syntax
+
+```csharp
+CloudNimble.DotNetDocs.Core.Renderers.YamlConverters.SymbolTypeConverter
+```
+
+## Summary
+
+Custom type converter for ISymbol interface to prevent serialization.
+
+## Constructors
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor
+
+#### Syntax
+
+```csharp
+public SymbolTypeConverter()
+```
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public Object()
+```
+
+## Methods
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Accepts
+
+Determines whether this converter can handle the specified type.
+
+#### Syntax
+
+```csharp
+public bool Accepts(System.Type type)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `type` | `System.Type` | The type to check. |
+
+#### Returns
+
+Type: `bool`
+true if this converter can handle the type; otherwise, false.
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Equals <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual bool Equals(object obj)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `obj` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Equals <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public static bool Equals(object objA, object objB)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `objA` | `object?` | - |
+| `objB` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetHashCode <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual int GetHashCode()
+```
+
+#### Returns
+
+Type: `int`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetType <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public System.Type GetType()
+```
+
+#### Returns
+
+Type: `System.Type`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> MemberwiseClone <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+protected internal object MemberwiseClone()
+```
+
+#### Returns
+
+Type: `object`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ReadYaml
+
+Reads the YAML representation of the object.
+
+#### Syntax
+
+```csharp
+public object ReadYaml(YamlDotNet.Core.IParser parser, System.Type type, YamlDotNet.Serialization.ObjectDeserializer rootDeserializer)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `parser` | `YamlDotNet.Core.IParser` | The parser to read from. |
+| `type` | `System.Type` | The type of the object. |
+| `rootDeserializer` | `YamlDotNet.Serialization.ObjectDeserializer` | The root deserializer. |
+
+#### Returns
+
+Type: `object?`
+The deserialized object.
+
+#### Exceptions
+
+| Exception | Description |
+|-----------|-------------|
+| `NotImplementedException` | Reading is not supported. |
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ReferenceEquals <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public static bool ReferenceEquals(object objA, object objB)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `objA` | `object?` | - |
+| `objB` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ToString <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual string ToString()
+```
+
+#### Returns
+
+Type: `string?`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> WriteYaml
+
+Writes the YAML representation of the object.
+
+#### Syntax
+
+```csharp
+public void WriteYaml(YamlDotNet.Core.IEmitter emitter, object value, System.Type type, YamlDotNet.Serialization.ObjectSerializer serializer)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `emitter` | `YamlDotNet.Core.IEmitter` | The emitter to write to. |
+| `value` | `object?` | The value to serialize. |
+| `type` | `System.Type` | The type of the value. |
+| `serializer` | `YamlDotNet.Serialization.ObjectSerializer` | The serializer. |
+
+## Related APIs
+
+- YamlDotNet.Serialization.IYamlTypeConverter
+

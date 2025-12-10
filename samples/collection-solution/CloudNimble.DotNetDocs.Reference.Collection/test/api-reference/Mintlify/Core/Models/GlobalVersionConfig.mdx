@@ -1,0 +1,251 @@
+---
+title: GlobalVersionConfig
+description: "Represents a version configuration for global navigation in the Mintlify documentation site."
+icon: file-brackets-curly
+keywords: ['GlobalVersionConfig', 'Mintlify.Core.Models.GlobalVersionConfig', 'Mintlify.Core.Models', 'class', 'System.Object']
+---
+
+## Definition
+
+**Assembly:** Mintlify.Core.dll
+
+**Namespace:** Mintlify.Core.Models
+
+**Inheritance:** System.Object
+
+## Syntax
+
+```csharp
+Mintlify.Core.Models.GlobalVersionConfig
+```
+
+## Summary
+
+Represents a version configuration for global navigation in the Mintlify documentation site.
+
+## Remarks
+
+This configuration defines a version option that appears globally across all sections
+            and pages, allowing users to switch between different versions of the documentation.
+
+## Constructors
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor
+
+#### Syntax
+
+```csharp
+public GlobalVersionConfig()
+```
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public Object()
+```
+
+## Properties
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Default
+
+Gets or sets whether this version is the default version for the documentation.
+
+#### Syntax
+
+```csharp
+public System.Nullable<bool> Default { get; set; }
+```
+
+#### Property Value
+
+Type: `System.Nullable<bool>`
+
+#### Remarks
+
+When true, this version will be selected by default when users first visit
+            the documentation. Only one version should be marked as default.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Hidden
+
+Gets or sets whether this version option is hidden by default.
+
+#### Syntax
+
+```csharp
+public System.Nullable<bool> Hidden { get; set; }
+```
+
+#### Property Value
+
+Type: `System.Nullable<bool>`
+
+#### Remarks
+
+When true, this version option will not be visible in the version selector
+            unless specifically shown. This can be useful for versions that are deprecated,
+            in development, or not ready for public access.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Href
+
+Gets or sets the URL or path for this version of the documentation.
+
+#### Syntax
+
+```csharp
+public string Href { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+
+#### Remarks
+
+Specifies where users should be directed when they select this version.
+            Can be a relative path (e.g., "/v2/") or an absolute URL for a different domain
+            (e.g., "https://v2.docs.example.com/").
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Version
+
+Gets or sets the version identifier or name.
+
+#### Syntax
+
+```csharp
+public string Version { get; set; }
+```
+
+#### Property Value
+
+Type: `string`
+
+#### Remarks
+
+Specifies the version name that will be displayed to users, such as "v1.0",
+            "v2.0", "latest", "beta", or any descriptive version label. This should be
+            concise and meaningful to your users. This is a required field.
+
+## Methods
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Equals <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual bool Equals(object obj)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `obj` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Equals <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public static bool Equals(object objA, object objB)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `objA` | `object?` | - |
+| `objB` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetHashCode <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual int GetHashCode()
+```
+
+#### Returns
+
+Type: `int`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetType <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public System.Type GetType()
+```
+
+#### Returns
+
+Type: `System.Type`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> MemberwiseClone <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+protected internal object MemberwiseClone()
+```
+
+#### Returns
+
+Type: `object`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ReferenceEquals <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public static bool ReferenceEquals(object objA, object objB)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `objA` | `object?` | - |
+| `objB` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ToString <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual string ToString()
+```
+
+#### Returns
+
+Type: `string?`
+

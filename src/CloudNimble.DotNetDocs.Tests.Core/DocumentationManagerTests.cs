@@ -391,14 +391,17 @@ namespace CloudNimble.DotNetDocs.Tests.Core
         #region Merge Tests - MergeDocAssembliesAsync
 
         [TestMethod]
-        public async Task MergeDocAssembliesAsync_EmptyList_ThrowsArgumentException()
+        public async Task MergeDocAssembliesAsync_EmptyList_ReturnsNull()
         {
+            // Arrange
             var manager = GetDocumentationManager();
             var emptyList = new List<DocAssembly>();
 
-            Func<Task> act = async () => await manager.MergeDocAssembliesAsync(emptyList);
+            // Act - In documentation-only mode, an empty list is valid and returns null
+            var result = await manager.MergeDocAssembliesAsync(emptyList);
 
-            await act.Should().ThrowAsync<ArgumentException>();
+            // Assert - Empty lists now return null to support documentation-only scenarios
+            result.Should().BeNull();
         }
 
         [TestMethod]
@@ -430,7 +433,8 @@ namespace CloudNimble.DotNetDocs.Tests.Core
 
             var result = await manager.MergeDocAssembliesAsync([assembly1, assembly2]);
 
-            result.Namespaces.Should().HaveCount(2);
+            result.Should().NotBeNull();
+            result!.Namespaces.Should().HaveCount(2);
             result.Namespaces.Should().Contain(ns => ns.Symbol.ToDisplayString() == ns1.Symbol.ToDisplayString());
             result.Namespaces.Should().Contain(ns => ns.Symbol.ToDisplayString() == ns2.Symbol.ToDisplayString());
         }
@@ -457,8 +461,9 @@ namespace CloudNimble.DotNetDocs.Tests.Core
 
             var result = await manager.MergeDocAssembliesAsync([assembly1, assembly2]);
 
+            result.Should().NotBeNull();
             result.Should().BeSameAs(assembly1);
-            result.Namespaces.Should().BeEmpty();
+            result!.Namespaces.Should().BeEmpty();
         }
 
         #endregion
@@ -903,7 +908,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core
 
             Func<Task> act = async () => await manager.ProcessAsync(emptyAssemblies);
 
-            await act.Should().ThrowAsync<ArgumentException>("empty assembly list should throw");
+            await act.Should().NotThrowAsync<ArgumentException>("empty assembly list should not throw");
         }
 
         #endregion
@@ -2153,7 +2158,7 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
             var merged = await manager.MergeDocAssembliesAsync([assembly1, assembly2]);
 
             merged.Should().NotBeNull();
-            merged.Namespaces.Should().NotBeEmpty();
+            merged!.Namespaces.Should().NotBeEmpty();
             merged.Namespaces.Should().HaveCount(assembly1.Namespaces.Count, "identical assemblies should not duplicate namespaces");
         }
 
@@ -2350,7 +2355,8 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
 
             var merged = await manager.MergeDocAssembliesAsync([assembly1, assembly2]);
 
-            merged.Namespaces.Should().NotBeEmpty();
+            merged.Should().NotBeNull();
+            merged!.Namespaces.Should().NotBeEmpty();
             foreach (var ns in merged.Namespaces)
             {
                 var typeNames = ns.Types.Select(t => t.Name).ToList();
@@ -2457,7 +2463,7 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
             var results = await Task.WhenAll(tasks);
 
             results.Should().AllSatisfy(r => r.Should().NotBeNull());
-            results.Should().AllSatisfy(r => r.Namespaces.Should().NotBeEmpty());
+            results.Should().AllSatisfy(r => r!.Namespaces.Should().NotBeEmpty());
         }
 
         [TestMethod]
@@ -3262,7 +3268,7 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
                 this.projectContext = projectContext;
             }
 
-            public Task RenderAsync(DocAssembly model)
+            public Task RenderAsync(DocAssembly? model)
             {
                 Executed = true;
 

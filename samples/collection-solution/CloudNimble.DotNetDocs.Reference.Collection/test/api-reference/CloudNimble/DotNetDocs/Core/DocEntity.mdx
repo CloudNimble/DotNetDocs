@@ -1,0 +1,431 @@
+---
+title: DocEntity
+description: "Base class for documentation entities, providing common contextual metadata."
+icon: shapes
+tag: "ABSTRACT"
+keywords: ['DocEntity', 'CloudNimble.DotNetDocs.Core.DocEntity', 'CloudNimble.DotNetDocs.Core', 'class', 'System.Object']
+---
+
+## Definition
+
+**Assembly:** CloudNimble.DotNetDocs.Core.dll
+
+**Namespace:** CloudNimble.DotNetDocs.Core
+
+**Inheritance:** System.Object
+
+## Syntax
+
+```csharp
+CloudNimble.DotNetDocs.Core.DocEntity
+```
+
+## Summary
+
+Base class for documentation entities, providing common contextual metadata.
+
+## Remarks
+
+Represents shared documentation properties for assemblies, namespaces, types, members, or parameters.
+            Now supports both XML documentation extraction and conceptual content loading with proper separation.
+
+## Examples
+
+```csharp
+var docType = new DocType(symbol)
+{
+    Summary = "Represents a logging service.",
+    Usage = "Use this class for application logging.",
+    Examples = "\`\`\`csharp\nLogger.LogInfo(\"Message\");\n\`\`\`"
+};
+```
+
+## Constructors
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public Object()
+```
+
+## Properties
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> BestPractices
+
+Gets or sets the best practices documentation content.
+
+#### Syntax
+
+```csharp
+public string BestPractices { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+Markdown content with best practices, recommendations, and guidelines from conceptual documentation.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Considerations
+
+Gets or sets the considerations or notes related to the current context.
+
+#### Syntax
+
+```csharp
+public string Considerations { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+Markdown content with gotchas, performance, or security notes from conceptual documentation.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> DisplayName
+
+Gets or sets the display name of the entity.
+
+#### Syntax
+
+```csharp
+public string DisplayName { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+The fully qualified display name extracted from the Symbol.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Examples
+
+Gets or sets the examples documentation content.
+
+#### Syntax
+
+```csharp
+public string Examples { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+Markdown content containing code examples from XML &lt;example&gt; tags.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Exceptions
+
+Gets or sets the collection of exceptions that can be thrown.
+
+#### Syntax
+
+```csharp
+public System.Collections.Generic.ICollection<CloudNimble.DotNetDocs.Core.DocException> Exceptions { get; set; }
+```
+
+#### Property Value
+
+Type: `System.Collections.Generic.ICollection<CloudNimble.DotNetDocs.Core.DocException>?`
+Collection of exception documentation from XML &lt;exception&gt; tags.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> IncludedMembers
+
+Gets or sets the list of member accessibilities to include (default: Public).
+
+#### Syntax
+
+```csharp
+public System.Collections.Generic.List<Microsoft.CodeAnalysis.Accessibility> IncludedMembers { get; set; }
+```
+
+#### Property Value
+
+Type: `System.Collections.Generic.List<Microsoft.CodeAnalysis.Accessibility>`
+List of accessibility levels to include when processing child members.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> OriginalSymbol
+
+Gets the original symbol this documentation entity was created from.
+
+#### Syntax
+
+```csharp
+public Microsoft.CodeAnalysis.ISymbol OriginalSymbol { get; protected set; }
+```
+
+#### Property Value
+
+Type: `Microsoft.CodeAnalysis.ISymbol?`
+The Roslyn ISymbol that was used to create this entity, preserved for reference.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Patterns
+
+Gets or sets the patterns documentation content.
+
+#### Syntax
+
+```csharp
+public string Patterns { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+Markdown content explaining common usage patterns and architectural guidance from conceptual documentation.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> RelatedApis
+
+Gets or sets a list of related API names.
+
+#### Syntax
+
+```csharp
+public System.Collections.Generic.ICollection<string> RelatedApis { get; set; }
+```
+
+#### Property Value
+
+Type: `System.Collections.Generic.ICollection<string>?`
+List of fully qualified names or URLs for related APIs from conceptual documentation.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Remarks
+
+Gets or sets the remarks from XML documentation.
+
+#### Syntax
+
+```csharp
+public string Remarks { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+Content from the XML documentation's &lt;remarks&gt; element.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Returns
+
+Gets or sets the return value documentation.
+
+#### Syntax
+
+```csharp
+public string Returns { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+Description of the return value from XML &lt;returns&gt; tag.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> SeeAlso
+
+Gets or sets the collection of see-also references.
+
+#### Syntax
+
+```csharp
+public System.Collections.Generic.ICollection<CloudNimble.DotNetDocs.Core.DocReference> SeeAlso { get; set; }
+```
+
+#### Property Value
+
+Type: `System.Collections.Generic.ICollection<CloudNimble.DotNetDocs.Core.DocReference>?`
+Collection of related items from XML &lt;seealso&gt; tags.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Summary
+
+Gets or sets the summary from XML documentation.
+
+#### Syntax
+
+```csharp
+public string Summary { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+Brief description of what the API element IS, from XML &lt;summary&gt; tag.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> TypeParameters
+
+Gets or sets the collection of type parameters.
+
+#### Syntax
+
+```csharp
+public System.Collections.Generic.ICollection<CloudNimble.DotNetDocs.Core.DocTypeParameter> TypeParameters { get; set; }
+```
+
+#### Property Value
+
+Type: `System.Collections.Generic.ICollection<CloudNimble.DotNetDocs.Core.DocTypeParameter>?`
+Collection of type parameter documentation from XML &lt;typeparam&gt; tags.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Usage
+
+Gets or sets the usage documentation content.
+
+#### Syntax
+
+```csharp
+public string Usage { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+Markdown content explaining HOW to use the API element, from conceptual documentation.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Value
+
+Gets or sets the value description for properties.
+
+#### Syntax
+
+```csharp
+public string Value { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+Description of what the property represents from XML &lt;value&gt; tag.
+
+## Methods
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Equals <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual bool Equals(object obj)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `obj` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Equals <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public static bool Equals(object objA, object objB)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `objA` | `object?` | - |
+| `objB` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetHashCode <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual int GetHashCode()
+```
+
+#### Returns
+
+Type: `int`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetType <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public System.Type GetType()
+```
+
+#### Returns
+
+Type: `System.Type`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> MemberwiseClone <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+protected internal object MemberwiseClone()
+```
+
+#### Returns
+
+Type: `object`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ReferenceEquals <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public static bool ReferenceEquals(object objA, object objB)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `objA` | `object?` | - |
+| `objB` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ToJson
+
+Serializes this entity to JSON using consistent options.
+
+#### Syntax
+
+```csharp
+public string ToJson()
+```
+
+#### Returns
+
+Type: `string`
+The JSON string representation of this entity.
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ToString <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual string ToString()
+```
+
+#### Returns
+
+Type: `string?`
+

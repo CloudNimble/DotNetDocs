@@ -1,0 +1,442 @@
+---
+title: .docsproj Reference
+sidebarTitle: .docsproj Reference
+description: Configure your documentation project with MSBuild properties
+icon: gear-complex-code
+---
+
+## Overview
+
+The `.docsproj` file is the heart of your DotNetDocs project. It uses the DotNetDocs.Sdk MSBuild SDK to configure how your documentation is generated, organized, and rendered. This guide covers all available MSBuild properties you can configure.
+
+## Basic Configuration
+
+### SDK Reference
+
+Every `.docsproj` file must reference the DotNetDocs.Sdk:
+
+<CodeGroup>
+```xml Current (1.1.0)
+<Project Sdk="DotNetDocs.Sdk/1.1.0">
+  <!-- Your configuration here -->
+</Project>
+```
+
+```xml Preview (1.2.0-preview.1)
+<Project Sdk="DotNetDocs.Sdk/1.2.0-preview.1">
+  <!-- Your configuration here -->
+</Project>
+```
+</CodeGroup>
+
+### Essential Properties
+
+<ParamField path="DocumentationType" type="string" default="Auto-detected">
+  The type of documentation system you're using. Supported values:
+  - `Mintlify` - Mintlify documentation (auto-detected from `docs.json`)
+  - `DocFX` - DocFX documentation (auto-detected from `docfx.json`)
+  - `MkDocs` - MkDocs documentation (auto-detected from `mkdocs.yml`)
+  - `Jekyll` - Jekyll documentation (auto-detected from `_config.yml`)
+  - `Hugo` - Hugo documentation (auto-detected from `hugo.toml`)
+  - `Generic` - Generic markdown documentation (default fallback)
+
+  The SDK automatically detects your documentation type based on configuration files in your `DocumentationRoot`.
+</ParamField>
+
+<ParamField path="DocumentationRoot" type="string" default="$(MSBuildProjectDirectory)">
+  The root directory containing your documentation files. This allows the `.docsproj` file to be in a different location than your actual documentation files.
+
+  ```xml
+  <DocumentationRoot>$(MSBuildProjectDirectory)\..\docs\</DocumentationRoot>
+  ```
+</ParamField>
+
+<ParamField path="GenerateDocumentation" type="bool" default="false">
+  When `true`, automatically generates API documentation from all packable projects in the solution during build.
+
+  ```xml
+  <GenerateDocumentation>true</GenerateDocumentation>
+  ```
+</ParamField>
+
+## Output Configuration
+
+### Path Settings
+
+<ParamField path="ApiReferencePath" type="string" default="api-reference">
+  The output directory for generated API reference documentation, relative to `DocumentationRoot`.
+
+  ```xml
+  <ApiReferencePath>api</ApiReferencePath>
+  ```
+</ParamField>
+
+<ParamField path="ConceptualPath" type="string" default="conceptual">
+  The output directory for conceptual documentation, relative to `DocumentationRoot`.
+
+  ```xml
+  <ConceptualPath>guides</ConceptualPath>
+  ```
+</ParamField>
+
+## Documentation Generation
+
+### Namespace Organization
+
+<ParamField path="NamespaceMode" type="string" default="Folder">
+  Controls how namespaces are organized in generated documentation:
+  - `Folder` - Each namespace gets its own folder
+  - `File` - All namespaces in a single file
+  - `Flat` - Flat file structure without namespace hierarchy
+
+  ```xml
+  <NamespaceMode>Folder</NamespaceMode>
+  ```
+</ParamField>
+
+### Content Options
+
+<ParamField path="ConceptualDocsEnabled" type="bool" default="false">
+  When `true`, enables generation of conceptual documentation from XML comments.
+
+  ```xml
+  <ConceptualDocsEnabled>true</ConceptualDocsEnabled>
+  ```
+</ParamField>
+
+<ParamField path="ShowPlaceholders" type="bool" default="false">
+  When `true`, shows placeholder content for types/members that don't have XML documentation.
+
+  ```xml
+  <ShowPlaceholders>false</ShowPlaceholders>
+  ```
+</ParamField>
+
+<ParamField path="ShowDocumentationStats" type="bool" default="false">
+  When `true`, displays documentation statistics during build (file counts, etc.).
+
+  ```xml
+  <ShowDocumentationStats>true</ShowDocumentationStats>
+  ```
+</ParamField>
+
+## Mintlify-Specific Configuration
+
+### Navigation Settings
+
+<Note>
+  **1.1.0+**: Navigation configuration has been refactored. The `<Navigation>` element now uses attributes for Mode, Type, and Name. Legacy properties (`MintlifyNavigationMode`, `MintlifyNavigationType`, `MintlifyNavigationName`) are still supported for backward compatibility.
+</Note>
+
+<ParamField path="MintlifyNavigationMode" type="string" default="Unified">
+  Controls how API reference navigation is organized in Mintlify:
+  - `Unified` - Single unified navigation group
+  - `Separated` - Separate navigation groups per namespace/assembly
+
+  Only applies when `DocumentationType` is `Mintlify`.
+
+  <CodeGroup>
+  ```xml Current (1.0.x)
+  <MintlifyNavigationMode>Unified</MintlifyNavigationMode>
+  ```
+
+  ```xml 1.1.0+
+  <MintlifyTemplate>
+    <Navigation Mode="Unified">
+      <Pages>
+        <!-- Navigation structure -->
+      </Pages>
+    </Navigation>
+  </MintlifyTemplate>
+  ```
+  </CodeGroup>
+
+  <Tip>
+    In 1.1.0 and later, use the `<Navigation Mode="...">` attribute in `MintlifyTemplate` instead of the top-level property.
+  </Tip>
+</ParamField>
+
+<ParamField path="MintlifyUnifiedGroupName" type="string" default="API Reference">
+  The name of the unified navigation group when using `MintlifyNavigationMode=Unified`.
+
+  <CodeGroup>
+  ```xml Current (1.0.x)
+  <MintlifyUnifiedGroupName>API Documentation</MintlifyUnifiedGroupName>
+  ```
+
+  ```xml 1.1.0+
+  <!-- This is now configured via MintlifyRenderer options in code -->
+  <!-- or remains as a top-level property for backward compatibility -->
+  <MintlifyUnifiedGroupName>API Documentation</MintlifyUnifiedGroupName>
+  ```
+  </CodeGroup>
+</ParamField>
+
+### Template Configuration
+
+<ParamField path="DocsJsonTemplatePath" type="string" default="Auto-detected">
+  Path to an external `docs.json` template file. Auto-detected if `docs-template.json` exists in `DocumentationRoot`.
+
+  ```xml
+  <DocsJsonTemplatePath>$(DocumentationRoot)templates\docs-template.json</DocsJsonTemplatePath>
+  ```
+</ParamField>
+
+<ParamField path="MintlifyTemplate" type="XML element">
+  Inline Mintlify theme and branding configuration. This XML element allows you to configure the visual appearance and navigation structure of your Mintlify documentation.
+
+  <CodeGroup>
+  ```xml Current (1.0.x)
+  <MintlifyTemplate>
+    <Name>My Project</Name>
+    <Theme>maple</Theme>
+    <Colors>
+      <Primary>#419AC5</Primary>
+      <Light>#419AC5</Light>
+      <Dark>#3CD0E2</Dark>
+    </Colors>
+  </MintlifyTemplate>
+  ```
+
+  ```xml 1.1.0+
+  <MintlifyTemplate>
+    <Name>My Project</Name>
+    <Theme>maple</Theme>
+    <Colors>
+      <Primary>#419AC5</Primary>
+      <Light>#419AC5</Light>
+      <Dark>#3CD0E2</Dark>
+    </Colors>
+    <Navigation Mode="Unified" Type="Tabs" Name="My Project">
+      <Pages>
+        <!-- Navigation structure -->
+      </Pages>
+    </Navigation>
+  </MintlifyTemplate>
+  ```
+  </CodeGroup>
+
+  **Supported child elements:**
+  - `<Name>` - Project name displayed in documentation
+  - `<Theme>` - Mintlify theme name (e.g., `maple`, `quill`, `venus`)
+  - `<Colors>` - Color scheme configuration
+    - `<Primary>` - Primary brand color
+    - `<Light>` - Light mode accent color
+    - `<Dark>` - Dark mode accent color
+  - `<Navigation>` - **(1.1.0+)** Navigation configuration with attributes:
+    - `Mode` - Navigation organization mode: `Unified` (default) or `Separated`
+    - `Type` - Integration type: `Pages` (default), `Tabs`, or `Products`
+    - `Name` - Custom display name for tabs/products (optional, defaults to project name)
+
+  <Info>
+    The `<Navigation>` element and its attributes are only available in 1.1.0 and later. For 1.0.x, use the legacy `MintlifyNavigationMode` property.
+  </Info>
+</ParamField>
+
+## Advanced Configuration
+
+### Build Behavior
+
+<ParamField path="IsPackable" type="bool" default="false">
+  Controls whether the documentation project produces a NuGet package. Generally should remain `false` for documentation projects.
+
+  ```xml
+  <IsPackable>false</IsPackable>
+  ```
+</ParamField>
+
+<ParamField path="IsPublishable" type="bool" default="false">
+  Controls whether the documentation project can be published. Generally should remain `false` for documentation projects.
+
+  ```xml
+  <IsPublishable>false</IsPublishable>
+  ```
+</ParamField>
+
+<ParamField path="GeneratePackageOnBuild" type="bool" default="false">
+  Controls whether a NuGet package is generated during build. Generally should remain `false` for documentation projects.
+
+  ```xml
+  <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+  ```
+</ParamField>
+
+### Project Discovery
+
+<ParamField path="ExcludePatterns" type="string">
+  Semicolon-separated list of glob patterns for excluding projects from documentation generation.
+
+  ```xml
+  <ExcludePatterns>**/*.Tests.csproj;**/*Benchmark*.csproj</ExcludePatterns>
+  ```
+</ParamField>
+
+## Complete Example
+
+Here's a complete `.docsproj` file demonstrating common configuration:
+
+<CodeGroup>
+```xml Current (1.1.0)
+<Project Sdk="DotNetDocs.Sdk/1.1.0">
+
+  <PropertyGroup>
+    <!-- Documentation Type -->
+    <DocumentationType>Mintlify</DocumentationType>
+
+    <!-- Generation Settings -->
+    <GenerateDocumentation>true</GenerateDocumentation>
+    <NamespaceMode>Folder</NamespaceMode>
+    <ShowDocumentationStats>true</ShowDocumentationStats>
+
+    <!-- Content Options -->
+    <ConceptualDocsEnabled>true</ConceptualDocsEnabled>
+    <ShowPlaceholders>false</ShowPlaceholders>
+
+    <!-- Mintlify Configuration -->
+    <MintlifyNavigationMode>Unified</MintlifyNavigationMode>
+    <MintlifyTemplate>
+      <Name>My Amazing Library</Name>
+      <Theme>maple</Theme>
+      <Colors>
+        <Primary>#419AC5</Primary>
+        <Light>#419AC5</Light>
+        <Dark>#3CD0E2</Dark>
+      </Colors>
+    </MintlifyTemplate>
+  </PropertyGroup>
+
+</Project>
+```
+
+```xml Preview (1.2.0-preview.1)
+<Project Sdk="DotNetDocs.Sdk/1.2.0-preview.1">
+
+  <PropertyGroup>
+    <!-- Documentation Type -->
+    <DocumentationType>Mintlify</DocumentationType>
+
+    <!-- Generation Settings -->
+    <GenerateDocumentation>true</GenerateDocumentation>
+    <NamespaceMode>Folder</NamespaceMode>
+    <ShowDocumentationStats>true</ShowDocumentationStats>
+
+    <!-- Content Options -->
+    <ConceptualDocsEnabled>true</ConceptualDocsEnabled>
+    <ShowPlaceholders>false</ShowPlaceholders>
+
+    <!-- Mintlify Configuration -->
+    <MintlifyTemplate>
+      <Name>My Amazing Library</Name>
+      <Theme>maple</Theme>
+      <Colors>
+        <Primary>#419AC5</Primary>
+        <Light>#419AC5</Light>
+        <Dark>#3CD0E2</Dark>
+      </Colors>
+      <!-- Navigation configuration (1.1.0+) -->
+      <Navigation Mode="Unified" Type="Tabs" Name="API Reference">
+        <Pages>
+          <!-- Your navigation structure here -->
+        </Pages>
+      </Navigation>
+    </MintlifyTemplate>
+  </PropertyGroup>
+
+</Project>
+```
+</CodeGroup>
+
+## Environment Variables
+
+The SDK also respects standard MSBuild environment variables:
+
+- `$(Configuration)` - Build configuration (Debug/Release)
+- `$(SolutionName)` - Name of the solution
+- `$(SolutionFileName)` - Full filename of the solution file
+- `$(MSBuildProjectDirectory)` - Directory containing the `.docsproj` file
+
+## Auto-Included Files
+
+The SDK automatically includes files based on your `DocumentationType`. You don't need to manually specify `<None Include="...">` for these patterns:
+
+### Common Files (All Types)
+- `README.md`
+- `LICENSE*`
+- `CHANGELOG*`
+- `**/*.txt`
+- All image files (png, jpg, gif, svg, webp, ico, pdf)
+- All font files (woff, ttf, otf, eot)
+- All web assets (css, scss, js, ts)
+
+### Mintlify-Specific
+- `docs.json`
+- `**/*.md`, `**/*.mdx`, `**/*.mdz`
+- `api-reference/**/*`
+- `conceptual/**/*`
+- `overrides/**/*`
+- `guides/**/*`
+- `images/**/*`
+- `snippets/**/*`
+- `favicon.*`
+
+### DocFX-Specific
+- `docfx.json`
+- `toc.yml`, `toc.yaml`
+- `**/*.yml`, `**/*.yaml`
+- `articles/**/*`
+- `api/**/*`
+- `templates/**/*`
+
+### MkDocs-Specific
+- `mkdocs.yml`
+- `docs/**/*.md`
+- `requirements.txt`
+- `overrides/**/*`
+- `theme/**/*`
+
+### Jekyll-Specific
+- `_config.yml`, `_config.yaml`
+- `_posts/**/*`
+- `_layouts/**/*`
+- `_includes/**/*`
+- `_sass/**/*`
+- `_data/**/*`
+- `assets/**/*`
+- `Gemfile*`
+
+### Hugo-Specific
+- `hugo.toml`, `hugo.yaml`, `hugo.json`
+- `config.*`
+- `content/**/*`
+- `layouts/**/*`
+- `static/**/*`
+- `themes/**/*`
+- `archetypes/**/*`
+- `data/**/*`
+- `i18n/**/*`
+
+## Build Targets
+
+You can invoke specific documentation tasks using MSBuild targets:
+
+```bash
+# Show available options and current configuration
+dotnet build -t:DocumentationHelp
+
+# Show documentation statistics
+dotnet build -t:DocumentationStats
+
+# Generate documentation explicitly
+dotnet build -t:GenerateDocumentation
+```
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Pipeline Overview" icon="faucet-drip" href="/guides/pipeline">
+    Learn how the documentation pipeline works
+  </Card>
+  <Card title="Conceptual Docs" icon="book" href="/guides/conceptual-docs">
+    Add conceptual documentation to your project
+  </Card>
+</CardGroup>

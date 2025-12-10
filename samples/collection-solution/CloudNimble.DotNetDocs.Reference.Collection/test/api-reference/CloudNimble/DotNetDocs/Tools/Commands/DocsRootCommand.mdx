@@ -1,0 +1,260 @@
+---
+title: DocsRootCommand
+description: "Represents the root command for the DotNetDocs command-line interface (CLI) application."
+icon: file-brackets-curly
+keywords: ['DocsRootCommand', 'CloudNimble.DotNetDocs.Tools.Commands.DocsRootCommand', 'CloudNimble.DotNetDocs.Tools.Commands', 'class', 'CloudNimble.DotNetDocs.Tools.Commands.Base.DocsCommandBase']
+---
+
+## Definition
+
+**Assembly:** CloudNimble.DotNetDocs.Tools.dll
+
+**Namespace:** CloudNimble.DotNetDocs.Tools.Commands
+
+**Inheritance:** CloudNimble.DotNetDocs.Tools.Commands.Base.DocsCommandBase
+
+## Syntax
+
+```csharp
+CloudNimble.DotNetDocs.Tools.Commands.DocsRootCommand
+```
+
+## Summary
+
+Represents the root command for the DotNetDocs command-line interface (CLI) application.
+
+## Remarks
+
+This command serves as the entry point for the DotNetDocs CLI and provides access to
+            subcommands such as build and add. When invoked without a subcommand or with insufficient arguments, it displays
+            help information describing available commands and usage.
+
+## Constructors
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor
+
+#### Syntax
+
+```csharp
+public DocsRootCommand()
+```
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Tools.Commands.Base.DocsCommandBase`</Note>
+
+#### Syntax
+
+```csharp
+public DocsCommandBase()
+```
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public Object()
+```
+
+## Methods
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Equals <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual bool Equals(object obj)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `obj` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Equals <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public static bool Equals(object objA, object objB)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `objA` | `object?` | - |
+| `objB` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetHashCode <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual int GetHashCode()
+```
+
+#### Returns
+
+Type: `int`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetLatestSdkVersionAsync <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Tools.Commands.Base.DocsCommandBase`</Note>
+
+Queries NuGet.org for the latest version of the DotNetDocs.Sdk package.
+
+#### Syntax
+
+```csharp
+protected static System.Threading.Tasks.Task<string> GetLatestSdkVersionAsync(bool includePrerelease)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `includePrerelease` | `bool` | Whether to include prerelease versions in the search. |
+
+#### Returns
+
+Type: `System.Threading.Tasks.Task<string?>`
+The latest version string, or null if the query fails.
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetType <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public System.Type GetType()
+```
+
+#### Returns
+
+Type: `System.Type`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetVersion <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Tools.Commands.Base.DocsCommandBase`</Note>
+
+Gets the version string for the tool.
+
+#### Syntax
+
+```csharp
+internal static string GetVersion()
+```
+
+#### Returns
+
+Type: `string`
+The version string.
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> MemberwiseClone <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+protected internal object MemberwiseClone()
+```
+
+#### Returns
+
+Type: `object`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> OnExecute
+
+Displays the help information for the specified command-line application.
+
+#### Syntax
+
+```csharp
+public int OnExecute(McMaster.Extensions.CommandLineUtils.CommandLineApplication app)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `app` | `McMaster.Extensions.CommandLineUtils.CommandLineApplication` | The command-line application for which to display help information. Cannot be null. |
+
+#### Returns
+
+Type: `int`
+Always returns 0 after displaying the help information.
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ReferenceEquals <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public static bool ReferenceEquals(object objA, object objB)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `objA` | `object?` | - |
+| `objB` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ToString <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual string ToString()
+```
+
+#### Returns
+
+Type: `string?`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> WriteHeader <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Tools.Commands.Base.DocsCommandBase`</Note>
+
+Writes the DotNetDocs CLI header to the console with colorful ASCII art and version information.
+
+#### Syntax
+
+```csharp
+public static void WriteHeader()
+```
+
+#### Remarks
+
+This method displays a multi-line ASCII art logo combining the DotNetDocs branding with
+            version and attribution information. The output uses console colors to create an eye-catching
+            header for CLI operations.
+

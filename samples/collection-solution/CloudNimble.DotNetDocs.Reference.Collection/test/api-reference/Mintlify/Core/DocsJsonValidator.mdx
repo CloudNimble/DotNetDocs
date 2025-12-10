@@ -1,0 +1,361 @@
+---
+title: DocsJsonValidator
+description: "Validates Mintlify docs.json configuration against the official schema requirements."
+icon: file-brackets-curly
+keywords: ['DocsJsonValidator', 'Mintlify.Core.DocsJsonValidator', 'Mintlify.Core', 'class', 'System.Object']
+---
+
+## Definition
+
+**Assembly:** Mintlify.Core.dll
+
+**Namespace:** Mintlify.Core
+
+**Inheritance:** System.Object
+
+## Syntax
+
+```csharp
+Mintlify.Core.DocsJsonValidator
+```
+
+## Summary
+
+Validates Mintlify docs.json configuration against the official schema requirements.
+
+## Remarks
+
+This class provides comprehensive validation of the docs.json configuration to ensure
+            it complies with the Mintlify schema and will work correctly when deployed.
+
+## Constructors
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor
+
+#### Syntax
+
+```csharp
+public DocsJsonValidator()
+```
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public Object()
+```
+
+## Methods
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Equals <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual bool Equals(object obj)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `obj` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Equals <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public static bool Equals(object objA, object objB)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `objA` | `object?` | - |
+| `objB` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetHashCode <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual int GetHashCode()
+```
+
+#### Returns
+
+Type: `int`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetType <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public System.Type GetType()
+```
+
+#### Returns
+
+Type: `System.Type`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> MemberwiseClone <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+protected internal object MemberwiseClone()
+```
+
+#### Returns
+
+Type: `object`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ReferenceEquals <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public static bool ReferenceEquals(object objA, object objB)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `objA` | `object?` | - |
+| `objB` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ToString <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual string ToString()
+```
+
+#### Returns
+
+Type: `string?`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Validate
+
+Validates a docs.json configuration against the Mintlify schema.
+
+#### Syntax
+
+```csharp
+public System.Collections.Generic.List<string> Validate(Mintlify.Core.Models.DocsJsonConfig config)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `config` | `Mintlify.Core.Models.DocsJsonConfig` | The configuration to validate. |
+
+#### Returns
+
+Type: `System.Collections.Generic.List<string>`
+A list of validation errors. Empty if configuration is valid.
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ValidateApi
+
+Validates the API configuration.
+
+#### Syntax
+
+```csharp
+public void ValidateApi(Mintlify.Core.Models.DocsJsonConfig config, System.Collections.Generic.List<string> errors)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `config` | `Mintlify.Core.Models.DocsJsonConfig` | The configuration to validate. |
+| `errors` | `System.Collections.Generic.List<string>` | The list to add errors to. |
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ValidateAppearance
+
+Validates the appearance configuration.
+
+#### Syntax
+
+```csharp
+public void ValidateAppearance(Mintlify.Core.Models.DocsJsonConfig config, System.Collections.Generic.List<string> errors)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `config` | `Mintlify.Core.Models.DocsJsonConfig` | The configuration to validate. |
+| `errors` | `System.Collections.Generic.List<string>` | The list to add errors to. |
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ValidateColors
+
+Validates the color configuration.
+
+#### Syntax
+
+```csharp
+public void ValidateColors(Mintlify.Core.Models.DocsJsonConfig config, System.Collections.Generic.List<string> errors)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `config` | `Mintlify.Core.Models.DocsJsonConfig` | The configuration to validate. |
+| `errors` | `System.Collections.Generic.List<string>` | The list to add errors to. |
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ValidateGroups
+
+Validates group configurations in navigation.
+
+#### Syntax
+
+```csharp
+public void ValidateGroups(Mintlify.Core.Models.DocsJsonConfig config, System.Collections.Generic.List<string> errors)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `config` | `Mintlify.Core.Models.DocsJsonConfig` | The configuration to validate. |
+| `errors` | `System.Collections.Generic.List<string>` | The list to add errors to. |
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ValidateIcons
+
+Validates the icons configuration.
+
+#### Syntax
+
+```csharp
+public void ValidateIcons(Mintlify.Core.Models.DocsJsonConfig config, System.Collections.Generic.List<string> errors)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `config` | `Mintlify.Core.Models.DocsJsonConfig` | The configuration to validate. |
+| `errors` | `System.Collections.Generic.List<string>` | The list to add errors to. |
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ValidateLogo
+
+Validates the logo configuration.
+
+#### Syntax
+
+```csharp
+public void ValidateLogo(Mintlify.Core.Models.DocsJsonConfig config, System.Collections.Generic.List<string> errors)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `config` | `Mintlify.Core.Models.DocsJsonConfig` | The configuration to validate. |
+| `errors` | `System.Collections.Generic.List<string>` | The list to add errors to. |
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ValidateNavigation
+
+Validates the navigation configuration.
+
+#### Syntax
+
+```csharp
+public void ValidateNavigation(Mintlify.Core.Models.DocsJsonConfig config, System.Collections.Generic.List<string> errors)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `config` | `Mintlify.Core.Models.DocsJsonConfig` | The configuration to validate. |
+| `errors` | `System.Collections.Generic.List<string>` | The list to add errors to. |
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ValidateRequired
+
+Validates that the configuration has all required properties.
+
+#### Syntax
+
+```csharp
+public void ValidateRequired(Mintlify.Core.Models.DocsJsonConfig config, System.Collections.Generic.List<string> errors)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `config` | `Mintlify.Core.Models.DocsJsonConfig` | The configuration to validate. |
+| `errors` | `System.Collections.Generic.List<string>` | The list to add errors to. |
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ValidateSeo
+
+Validates the SEO configuration.
+
+#### Syntax
+
+```csharp
+public void ValidateSeo(Mintlify.Core.Models.DocsJsonConfig config, System.Collections.Generic.List<string> errors)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `config` | `Mintlify.Core.Models.DocsJsonConfig` | The configuration to validate. |
+| `errors` | `System.Collections.Generic.List<string>` | The list to add errors to. |
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ValidateTheme
+
+Validates the theme configuration.
+
+#### Syntax
+
+```csharp
+public void ValidateTheme(Mintlify.Core.Models.DocsJsonConfig config, System.Collections.Generic.List<string> errors)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `config` | `Mintlify.Core.Models.DocsJsonConfig` | The configuration to validate. |
+| `errors` | `System.Collections.Generic.List<string>` | The list to add errors to. |
+

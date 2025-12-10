@@ -1,0 +1,437 @@
+---
+title: NavigationSectionBase
+description: "Base class for top-level navigation sections (tabs, anchors, dropdowns)."
+icon: shapes
+tag: "ABSTRACT"
+keywords: ['NavigationSectionBase', 'Mintlify.Core.Models.NavigationSectionBase', 'Mintlify.Core.Models', 'class', 'Mintlify.Core.Models.NavigationContainerBase']
+---
+
+## Definition
+
+**Assembly:** Mintlify.Core.dll
+
+**Namespace:** Mintlify.Core.Models
+
+**Inheritance:** Mintlify.Core.Models.NavigationContainerBase
+
+## Syntax
+
+```csharp
+Mintlify.Core.Models.NavigationSectionBase
+```
+
+## Summary
+
+Base class for top-level navigation sections (tabs, anchors, dropdowns).
+
+## Remarks
+
+Extends NavigationContainerBase to add support for colors, descriptions,
+            global navigation, versioning, and language support. Used by tabs, anchors,
+            and dropdowns which are the primary navigation sections.
+
+## Constructors
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `Mintlify.Core.Models.NavigationContainerBase`</Note>
+
+#### Syntax
+
+```csharp
+protected NavigationContainerBase()
+```
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `Mintlify.Core.Models.NavigationItemBase`</Note>
+
+#### Syntax
+
+```csharp
+protected NavigationItemBase()
+```
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public Object()
+```
+
+## Properties
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> AsyncApi <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `Mintlify.Core.Models.NavigationItemBase`</Note>
+
+Gets or sets the AsyncAPI configuration.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.ApiSpecConfig AsyncApi { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.ApiSpecConfig?`
+
+#### Remarks
+
+Can be a string URL, an array of URLs, or an object with source and directory properties
+            pointing to AsyncAPI specification files.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Color
+
+Gets or sets the color configuration for this navigation section.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.ColorPairConfig Color { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.ColorPairConfig?`
+
+#### Remarks
+
+Defines the primary and secondary colors used for this section's visual styling.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Description
+
+Gets or sets the description of this navigation section.
+
+#### Syntax
+
+```csharp
+public string Description { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+
+#### Remarks
+
+Provides additional descriptive text about this navigation section.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Dropdowns
+
+Gets or sets the dropdowns for this navigation section.
+
+#### Syntax
+
+```csharp
+public System.Collections.Generic.List<Mintlify.Core.Models.DropdownConfig> Dropdowns { get; set; }
+```
+
+#### Property Value
+
+Type: `System.Collections.Generic.List<Mintlify.Core.Models.DropdownConfig>?`
+
+#### Remarks
+
+Dropdowns create expandable menu sections within this navigation section.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Global
+
+Gets or sets global navigation items that appear on all sections and pages.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.GlobalNavigationConfig Global { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.GlobalNavigationConfig?`
+
+#### Remarks
+
+Global navigation items persist across different tabs and pages for consistent navigation.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Groups <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `Mintlify.Core.Models.NavigationContainerBase`</Note>
+
+Gets or sets the groups for this navigation container.
+
+#### Syntax
+
+```csharp
+public System.Collections.Generic.List<Mintlify.Core.Models.GroupConfig> Groups { get; set; }
+```
+
+#### Property Value
+
+Type: `System.Collections.Generic.List<Mintlify.Core.Models.GroupConfig>?`
+
+#### Remarks
+
+Groups organize pages into labeled sections within this navigation container.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Hidden <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `Mintlify.Core.Models.NavigationItemBase`</Note>
+
+Gets or sets whether the current option is default hidden.
+
+#### Syntax
+
+```csharp
+public System.Nullable<bool> Hidden { get; set; }
+```
+
+#### Property Value
+
+Type: `System.Nullable<bool>?`
+
+#### Remarks
+
+When true, this navigation item will not be displayed in the navigation by default.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Href <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `Mintlify.Core.Models.NavigationContainerBase`</Note>
+
+Gets or sets the URL or path for this navigation container.
+
+#### Syntax
+
+```csharp
+public string Href { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+
+#### Remarks
+
+Can be used to link to an external URL or specify a path for this container.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Icon <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `Mintlify.Core.Models.NavigationItemBase`</Note>
+
+Gets or sets the icon to be displayed in the section.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.IconConfig Icon { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.IconConfig?`
+
+#### Remarks
+
+Can be a Font Awesome icon name, Lucide icon name, JSX-compatible SVG code,
+            URL to an externally hosted icon, or path to an icon file in your project.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Languages
+
+Gets or sets the languages for this navigation section.
+
+#### Syntax
+
+```csharp
+public System.Collections.Generic.List<Mintlify.Core.Models.LanguageConfig> Languages { get; set; }
+```
+
+#### Property Value
+
+Type: `System.Collections.Generic.List<Mintlify.Core.Models.LanguageConfig>?`
+
+#### Remarks
+
+Allows partitioning navigation into different language-specific versions.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> OpenApi <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `Mintlify.Core.Models.NavigationItemBase`</Note>
+
+Gets or sets the OpenAPI configuration.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.ApiSpecConfig OpenApi { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.ApiSpecConfig?`
+
+#### Remarks
+
+Can be a string URL, an array of URLs, or an object with source and directory properties
+            pointing to OpenAPI specification files.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Pages <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `Mintlify.Core.Models.NavigationItemBase`</Note>
+
+Gets or sets the pages for this navigation item.
+
+#### Syntax
+
+```csharp
+public System.Collections.Generic.List<object> Pages { get; set; }
+```
+
+#### Property Value
+
+Type: `System.Collections.Generic.List<object>?`
+
+#### Remarks
+
+Pages can be strings (page paths) or nested GroupConfig objects for hierarchical navigation.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Versions
+
+Gets or sets the versions for this navigation section.
+
+#### Syntax
+
+```csharp
+public System.Collections.Generic.List<Mintlify.Core.Models.VersionConfig> Versions { get; set; }
+```
+
+#### Property Value
+
+Type: `System.Collections.Generic.List<Mintlify.Core.Models.VersionConfig>?`
+
+#### Remarks
+
+Allows partitioning navigation into different version-specific documentation.
+
+## Methods
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Equals <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual bool Equals(object obj)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `obj` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Equals <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public static bool Equals(object objA, object objB)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `objA` | `object?` | - |
+| `objB` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetHashCode <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual int GetHashCode()
+```
+
+#### Returns
+
+Type: `int`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetType <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public System.Type GetType()
+```
+
+#### Returns
+
+Type: `System.Type`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> MemberwiseClone <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+protected internal object MemberwiseClone()
+```
+
+#### Returns
+
+Type: `object`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ReferenceEquals <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public static bool ReferenceEquals(object objA, object objB)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `objA` | `object?` | - |
+| `objB` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ToString <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual string ToString()
+```
+
+#### Returns
+
+Type: `string?`
+

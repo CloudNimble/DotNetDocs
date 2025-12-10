@@ -193,16 +193,20 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
         }
 
         [TestMethod]
-        public async Task RenderAsync_WithNullModel_ThrowsArgumentNullException()
+        public async Task RenderAsync_WithNullModel_ReturnsWithoutError()
         {
             // Arrange
             var renderer = GetJsonRenderer();
 
-            // Act
-            Func<Task> act = async () => await renderer.RenderAsync(null!);
+            // Act - Documentation-only mode passes null model to renderers
+            Func<Task> act = async () => await renderer.RenderAsync(null);
 
-            // Assert
-            await act.Should().ThrowAsync<ArgumentNullException>();
+            // Assert - Should not throw, should return gracefully
+            await act.Should().NotThrowAsync();
+
+            // Verify no documentation.json was created (nothing to render)
+            var docJsonPath = Path.Combine(_testOutputPath, "documentation.json");
+            File.Exists(docJsonPath).Should().BeFalse("No documentation file should be created for null model");
         }
 
         #endregion

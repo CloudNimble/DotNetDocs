@@ -1,0 +1,87 @@
+---
+title: RendererType
+description: "Defines constants for documentation renderer types and provides mapping functionality             between documentation framework types and their correspondi..."
+icon: bolt
+tag: "STATIC"
+keywords: ['RendererType', 'CloudNimble.DotNetDocs.Core.Configuration.RendererType', 'CloudNimble.DotNetDocs.Core.Configuration', 'class', 'System.Object']
+---
+
+## Definition
+
+**Assembly:** CloudNimble.DotNetDocs.Core.dll
+
+**Namespace:** CloudNimble.DotNetDocs.Core.Configuration
+
+**Inheritance:** System.Object
+
+## Syntax
+
+```csharp
+CloudNimble.DotNetDocs.Core.Configuration.RendererType
+```
+
+## Summary
+
+Defines constants for documentation renderer types and provides mapping functionality
+            between documentation framework types and their corresponding renderers.
+
+## Remarks
+
+This class provides a centralized way to manage renderer type strings used throughout
+            the documentation generation pipeline. It also provides intelligent mapping from
+            source documentation framework types to appropriate output renderers.
+
+## Methods
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetRendererType
+
+Maps a [SupportedDocumentationType](/api-reference/CloudNimble/DotNetDocs/Core/Configuration/SupportedDocumentationType) to its corresponding renderer type constant.
+
+#### Syntax
+
+```csharp
+public static string GetRendererType(CloudNimble.DotNetDocs.Core.Configuration.SupportedDocumentationType documentationType)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `documentationType` | `CloudNimble.DotNetDocs.Core.Configuration.SupportedDocumentationType` | The source documentation framework type. |
+
+#### Returns
+
+Type: `string`
+The renderer type constant that should be used for the given documentation type.
+             Returns [RendererType.Mintlify](/api-reference/CloudNimble/DotNetDocs/Core/Configuration/RendererType#mintlify) for Mintlify projects, and [RendererType.Markdown](/api-reference/CloudNimble/DotNetDocs/Core/Configuration/RendererType#markdown) for all other types.
+
+#### Examples
+
+```csharp
+var docType = SupportedDocumentationType.Mintlify;
+var renderer = RendererType.GetRendererType(docType);
+// renderer == "Mintlify"
+
+var docType2 = SupportedDocumentationType.DocFX;
+var renderer2 = RendererType.GetRendererType(docType2);
+// renderer2 == "Markdown"
+```
+
+#### Remarks
+
+
+
+
+             The mapping logic is as follows:
+             
+
+
+
+
+
+             This mapping ensures that documentation from various frameworks is rendered in a compatible format.
+             Most frameworks work well with standard Markdown, while Mintlify requires its specific MDX format.
+             
+
+
+

@@ -1,0 +1,239 @@
+---
+title: CrossReferenceResolver
+description: "Resolves cross-references in documentation to their target entities and generates appropriate links."
+icon: file-brackets-curly
+keywords: ['CrossReferenceResolver', 'CloudNimble.DotNetDocs.Core.CrossReferenceResolver', 'CloudNimble.DotNetDocs.Core', 'class', 'System.Object']
+---
+
+## Definition
+
+**Assembly:** CloudNimble.DotNetDocs.Core.dll
+
+**Namespace:** CloudNimble.DotNetDocs.Core
+
+**Inheritance:** System.Object
+
+## Syntax
+
+```csharp
+CloudNimble.DotNetDocs.Core.CrossReferenceResolver
+```
+
+## Summary
+
+Resolves cross-references in documentation to their target entities and generates appropriate links.
+
+## Remarks
+
+This class builds a comprehensive map of all documentation entities and their identifiers,
+            allowing for resolution of see and seealso references to the correct relative paths and anchors.
+            It handles all types of references including types, members, parameters, and external references.
+
+## Constructors
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor
+
+Initializes a new instance of the [CrossReferenceResolver](/api-reference/CloudNimble/DotNetDocs/Core/CrossReferenceResolver) class.
+
+#### Syntax
+
+```csharp
+public CrossReferenceResolver(CloudNimble.DotNetDocs.Core.ProjectContext context)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `context` | `CloudNimble.DotNetDocs.Core.ProjectContext` | The project context containing configuration and file naming options. |
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public Object()
+```
+
+## Methods
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> BuildReferenceMap
+
+Builds the reference map from a documentation assembly.
+
+#### Syntax
+
+```csharp
+public void BuildReferenceMap(CloudNimble.DotNetDocs.Core.DocAssembly assembly)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `assembly` | `CloudNimble.DotNetDocs.Core.DocAssembly` | The documentation assembly to index. |
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Equals <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual bool Equals(object obj)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `obj` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Equals <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public static bool Equals(object objA, object objB)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `objA` | `object?` | - |
+| `objB` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetHashCode <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual int GetHashCode()
+```
+
+#### Returns
+
+Type: `int`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetType <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public System.Type GetType()
+```
+
+#### Returns
+
+Type: `System.Type`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> MemberwiseClone <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+protected internal object MemberwiseClone()
+```
+
+#### Returns
+
+Type: `object`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ReferenceEquals <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public static bool ReferenceEquals(object objA, object objB)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `objA` | `object?` | - |
+| `objB` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ResolveReference
+
+Resolves a documentation reference to a DocReference object with full path and anchor information.
+
+#### Syntax
+
+```csharp
+public CloudNimble.DotNetDocs.Core.DocReference ResolveReference(string rawReference, string currentPath)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `rawReference` | `string` | The raw reference string (e.g., "T:System.String" or "F:NamespaceMode.File"). |
+| `currentPath` | `string` | The current document path for calculating relative paths. |
+
+#### Returns
+
+Type: `CloudNimble.DotNetDocs.Core.DocReference`
+A resolved DocReference object.
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ResolveReferences
+
+Resolves all references in a collection of raw reference strings.
+
+#### Syntax
+
+```csharp
+public System.Collections.Generic.ICollection<CloudNimble.DotNetDocs.Core.DocReference> ResolveReferences(System.Collections.Generic.IEnumerable<string> rawReferences, string currentPath)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `rawReferences` | `System.Collections.Generic.IEnumerable<string>` | The collection of raw reference strings. |
+| `currentPath` | `string` | The current document path for calculating relative paths. |
+
+#### Returns
+
+Type: `System.Collections.Generic.ICollection<CloudNimble.DotNetDocs.Core.DocReference>`
+A collection of resolved DocReference objects.
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ToString <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual string ToString()
+```
+
+#### Returns
+
+Type: `string?`
+

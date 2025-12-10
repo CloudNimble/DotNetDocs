@@ -177,13 +177,19 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
         }
 
         [TestMethod]
-        public async Task RenderAsync_WithNullModel_ThrowsArgumentNullException()
+        public async Task RenderAsync_WithNullModel_ReturnsWithoutError()
         {
-            // Act
-            Func<Task> act = async () => await GetMintlifyRenderer().RenderAsync(null!);
+            // Arrange
+            var renderer = GetMintlifyRenderer();
 
-            // Assert
-            await act.Should().ThrowAsync<ArgumentNullException>();
+            // Act - Documentation-only mode passes null model to renderers
+            Func<Task> act = async () => await renderer.RenderAsync(null);
+
+            // Assert - Should not throw, should return gracefully
+            await act.Should().NotThrowAsync();
+
+            // For MintlifyRenderer, docs.json may still be generated even without API docs
+            // because it handles navigation merging for DocumentationReferences
         }
 
         [TestMethod]

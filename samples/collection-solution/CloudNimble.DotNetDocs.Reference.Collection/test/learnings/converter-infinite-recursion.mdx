@@ -1,0 +1,445 @@
+---
+title: "Taming System.Text.Json Infinite Recursion in Custom Converters"
+sidebarTitle: Converter Recursion
+description: "How we solved a critical infinite recursion bug in JSON serialization that was causing stack overflows during documentation generation, and the elegant solution that prevents it."
+icon: "arrows-spin"
+---
+
+You're deep in a complex C# project when suddenly your JSON serialization starts throwing `StackOverflowException`. The stack trace shows your custom `JsonConverter` calling itself infinitely. Sound familiar?
+
+This is the story of how we discovered, diagnosed, and solved a subtle but critical bug in our JSON serialization pipeline that was causing documentation generation to fail spectacularly - and how our solution can prevent similar issues in any System.Text.Json-based application.
+
+<Warning>
+This problem affects any System.Text.Json custom converter that calls `JsonSerializer.Serialize()` or `JsonSerializer.Deserialize()` with the same `JsonSerializerOptions` that contains the converter itself.
+</Warning>
+
+## The Problem: When Good Converters Go Bad
+
+Our DotNetDocs system uses a sophisticated JSON serialization pipeline for handling Mintlify documentation configuration. We had custom converters for polymorphic types like icons (which could be simple strings or complex objects), API configurations, and background images.
+
+Everything worked perfectly until we started implementing ServerConfig support with implicit operators, following the same pattern as our successful IconConfig implementation. That's when the documentation generation process started crashing with stack overflow errors during the final serialization step.
+
+Here's what a typical problematic converter looked like:
+
+```csharp
+public class IconConverter : JsonConverter<IconConfig>
+{
+    public override IconConfig? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        return reader.TokenType switch
+        {
+            JsonTokenType.String => new IconConfig { Name = reader.GetString() ?? string.Empty },
+            JsonTokenType.StartObject => JsonSerializer.Deserialize<IconConfig>(ref reader, options), // ⚠️ Problem!
+            JsonTokenType.Null => null,
+            _ => throw new JsonException($"Unexpected token type for icon: {reader.TokenType}")
+        };
+    }
+
+    public override void Write(Utf8JsonWriter writer, IconConfig? value, JsonSerializerOptions options)
+    {
+        if (value is null)
+        {
+            writer.WriteNullValue();
+            return;
+        }
+
+        // If only Name is set (simple icon), write as string
+        if (!string.IsNullOrWhiteSpace(value.Name) &&
+            string.IsNullOrWhiteSpace(value.Library) &&
+            string.IsNullOrWhiteSpace(value.Style))
+        {
+            writer.WriteStringValue(value.Name);
+        }
+        else
+        {
+            // Write as object for complex configurations
+            JsonSerializer.Serialize(writer, value, options); // ⚠️ Problem!
+        }
+    }
+}
+```
+
+The issue was subtle but deadly: **both the `Read` and `Write` methods were passing the same `options` parameter back to `JsonSerializer`, which included the converter itself, creating infinite recursion.**
+
+## The Diagnosis: Stack Overflow Detective Work
+
+Initially, we thought the problem was with our new ServerConfig implementation. The error messages pointed to MdxConfig.Server serialization failures, and the timing coincided with our ServerConfig changes.
+
+But as we dug deeper, we realized this was a fundamental flaw in how we were implementing our custom converters. The stack trace revealed the true culprit:
+
+```
+Stack overflow.
+   at Mintlify.Core.Converters.IconConverter.Read(...)
+   at System.Text.Json.JsonSerializer.Deserialize<IconConfig>(...)
+   at Mintlify.Core.Converters.IconConverter.Read(...)
+   at System.Text.Json.JsonSerializer.Deserialize<IconConfig>(...)
+   [... repeats infinitely]
+```
+
+The recursion happened because:
+
+<Steps>
+  <Step title="Converter Registration">
+    Our converter was registered in `MintlifyConstants.JsonSerializerOptions`
+  </Step>
+
+  <Step title="Serialization Request">
+    When serializing an object containing an IconConfig, the converter's `Write` method was called
+  </Step>
+
+  <Step title="Recursive Call">
+    The converter called `JsonSerializer.Serialize(writer, value, options)` with the same options
+  </Step>
+
+  <Step title="Self-Invocation">
+    Since the options contained the same converter, it immediately called the converter again
+  </Step>
+
+  <Step title="Infinite Loop">
+    This process repeated until the stack overflowed
+  </Step>
+</Steps>
+
+## The Research: Learning from the Community
+
+A deep dive into System.Text.Json documentation and Stack Overflow revealed this is a well-known problem. The core issue is that **when you call `JsonSerializer.Serialize()` or `JsonSerializer.Deserialize()` from within a converter, you must be careful about which options you pass**.
+
+The most common solutions were:
+
+1. **Pass no options**: `JsonSerializer.Serialize(writer, value)` - loses all configuration
+2. **Create new options**: Build a fresh `JsonSerializerOptions` without converters
+3. **Use proxy types**: Create wrapper types without the `[JsonConverter]` attribute
+4. **Manual serialization**: Write JSON properties manually without using the serializer
+
+Each approach had trade-offs, but none felt elegant for our complex nested object scenarios.
+
+## Our Innovation: Self-Excluding Options
+
+The breakthrough came from a simple but powerful insight: **what if each converter maintained its own copy of the serialization options with itself removed?**
+
+This approach would:
+- ✅ Preserve all other converters for nested objects
+- ✅ Maintain the same configuration (naming policies, etc.)
+- ✅ Be thread-safe through lazy initialization
+- ✅ Be testable and verifiable
+
+Here's our solution:
+
+```csharp
+public class IconConverter : JsonConverter<IconConfig>
+{
+    #region Private Fields
+
+    /// <summary>
+    /// Lazy-initialized JsonSerializerOptions that excludes this converter to prevent infinite recursion.
+    /// </summary>
+    private static readonly Lazy<JsonSerializerOptions> _optionsWithoutThis = new Lazy<JsonSerializerOptions>(() =>
+    {
+        var options = new JsonSerializerOptions(MintlifyConstants.JsonSerializerOptions);
+        // Remove this converter to prevent recursion
+        for (int i = options.Converters.Count - 1; i >= 0; i--)
+        {
+            if (options.Converters[i] is IconConverter)
+            {
+                options.Converters.RemoveAt(i);
+            }
+        }
+        return options;
+    });
+
+    /// <summary>
+    /// Gets the JsonSerializerOptions instance without this converter to prevent infinite recursion.
+    /// </summary>
+    internal static JsonSerializerOptions OptionsWithoutThis => _optionsWithoutThis.Value;
+
+    #endregion
+
+    public override IconConfig? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        return reader.TokenType switch
+        {
+            JsonTokenType.String => new IconConfig { Name = reader.GetString() ?? string.Empty },
+            JsonTokenType.StartObject => JsonSerializer.Deserialize<IconConfig>(ref reader, OptionsWithoutThis), // ✅ Fixed!
+            JsonTokenType.Null => null,
+            _ => throw new JsonException($"Unexpected token type for icon: {reader.TokenType}")
+        };
+    }
+
+    public override void Write(Utf8JsonWriter writer, IconConfig? value, JsonSerializerOptions options)
+    {
+        if (value is null)
+        {
+            writer.WriteNullValue();
+            return;
+        }
+
+        if (!string.IsNullOrWhiteSpace(value.Name) &&
+            string.IsNullOrWhiteSpace(value.Library) &&
+            string.IsNullOrWhiteSpace(value.Style))
+        {
+            writer.WriteStringValue(value.Name);
+        }
+        else
+        {
+            JsonSerializer.Serialize(writer, value, OptionsWithoutThis); // ✅ Fixed!
+        }
+    }
+}
+```
+
+### Why This Approach Works
+
+<CardGroup cols={2}>
+  <Card title="Converter Isolation" icon="shield-alt">
+    Each converter creates options that exclude only itself, preventing direct recursion while preserving all other converters
+  </Card>
+
+  <Card title="Nested Object Support" icon="sitemap">
+    Complex objects can still use other converters for their properties (like GroupConfig with Icon properties)
+  </Card>
+
+  <Card title="Configuration Preservation" icon="cog">
+    All JsonSerializerOptions settings (naming policy, null handling, etc.) are preserved
+  </Card>
+
+  <Card title="Thread Safety" icon="lock">
+    Lazy initialization ensures the options are created once and safely shared across threads
+  </Card>
+</CardGroup>
+
+## Verification Through Testing
+
+To ensure our solution worked correctly, we created comprehensive unit tests that verify both the recursion prevention and the functional correctness:
+
+```csharp
+[TestMethod]
+public void OptionsWithoutThis_ExcludesIconConverter()
+{
+    var originalOptions = MintlifyConstants.JsonSerializerOptions;
+    var optionsWithoutThis = IconConverter.OptionsWithoutThis;
+
+    // Should not be the same instance
+    optionsWithoutThis.Should().NotBeSameAs(originalOptions);
+
+    // Original should have IconConverter
+    originalOptions.Converters.Should().Contain(c => c is IconConverter);
+
+    // OptionsWithoutThis should NOT have IconConverter
+    optionsWithoutThis.Converters.Should().NotContain(c => c is IconConverter);
+
+    // Should preserve other important settings
+    optionsWithoutThis.PropertyNamingPolicy.Should().Be(originalOptions.PropertyNamingPolicy);
+    optionsWithoutThis.DefaultIgnoreCondition.Should().Be(originalOptions.DefaultIgnoreCondition);
+}
+
+[TestMethod]
+public void Serialize_GroupConfigWithIcon_NoStackOverflow()
+{
+    var group = new GroupConfig
+    {
+        Group = "API Reference",
+        Icon = new IconConfig { Name = "folder" }
+    };
+
+    var act = () => JsonSerializer.Serialize(group, MintlifyConstants.JsonSerializerOptions);
+
+    act.Should().NotThrow(); // This would throw StackOverflowException before the fix
+    var json = act();
+    json.Should().Contain("\"group\": \"API Reference\"");
+    json.Should().Contain("\"icon\": \"folder\"");
+}
+```
+
+These tests proved that:
+- ✅ The converter exclusion logic works correctly
+- ✅ Nested objects serialize without stack overflow
+- ✅ Both simple and complex serialization scenarios work
+- ✅ Configuration settings are preserved
+
+## Real-World Impact
+
+The fix resolved several critical issues in our documentation generation pipeline:
+
+<Tabs>
+  <Tab title="Before: System Failures">
+    ```bash
+    # Documentation generation would fail with:
+    Stack overflow.
+       at Mintlify.Core.Converters.IconConverter.Write(...)
+       at System.Text.Json.JsonSerializer.Serialize(...)
+       [... infinite recursion]
+
+    # Result: No documentation generated, complete build failure
+    ```
+  </Tab>
+  <Tab title="After: Smooth Operation">
+    ```bash
+    # Documentation generation succeeds:
+    📊 Documentation Statistics:
+         📄 Documentation type: Mintlify
+         📦 Assemblies processed: 5
+         📝 Files generated: 125
+    ✅ Documentation generation completed successfully
+
+    # Result: Complete documentation with preserved template structure
+    ```
+  </Tab>
+</Tabs>
+
+### Performance Benefits
+
+<Card title="Lazy Initialization" icon="bolt">
+The options are computed once per converter type and cached, making subsequent serializations very fast. The overhead is minimal - just one additional property access.
+</Card>
+
+<Card title="Memory Efficiency" icon="memory">
+Each converter type maintains only one additional JsonSerializerOptions instance, and the lazy initialization ensures they're only created when actually needed.
+</Card>
+
+## Implementation Guide
+
+To implement this pattern in your own converters:
+
+<Steps>
+  <Step title="Add the Options Field">
+    Create a lazy-initialized field that copies your main options and removes the current converter:
+    ```csharp
+    private static readonly Lazy<JsonSerializerOptions> _optionsWithoutThis =
+        new Lazy<JsonSerializerOptions>(() =>
+        {
+            var options = new JsonSerializerOptions(YourConstants.JsonSerializerOptions);
+            for (int i = options.Converters.Count - 1; i >= 0; i--)
+            {
+                if (options.Converters[i] is YourConverter)
+                {
+                    options.Converters.RemoveAt(i);
+                }
+            }
+            return options;
+        });
+    ```
+  </Step>
+
+  <Step title="Create the Property">
+    Add a property (make it internal for testing):
+    ```csharp
+    internal static JsonSerializerOptions OptionsWithoutThis => _optionsWithoutThis.Value;
+    ```
+  </Step>
+
+  <Step title="Update Read/Write Methods">
+    Replace any calls to `JsonSerializer` that pass the original options:
+    ```csharp
+    // Replace this:
+    JsonSerializer.Deserialize<T>(ref reader, options)
+
+    // With this:
+    JsonSerializer.Deserialize<T>(ref reader, OptionsWithoutThis)
+    ```
+  </Step>
+
+  <Step title="Add Unit Tests">
+    Create tests to verify the converter exclusion works and serialization doesn't cause stack overflow
+  </Step>
+</Steps>
+
+## Anti-Patterns to Avoid
+
+<Tabs>
+  <Tab title="❌ Don't Do This">
+    ```csharp
+    // Passing the same options that contain your converter
+    JsonSerializer.Serialize(writer, value, options);
+
+    // Creating options without any converters
+    JsonSerializer.Serialize(writer, value, new JsonSerializerOptions());
+
+    // Manually checking for recursion with static flags
+    private static bool _isSerializing = false;
+    ```
+  </Tab>
+
+  <Tab title="✅ Do This Instead">
+    ```csharp
+    // Use options that exclude your converter
+    JsonSerializer.Serialize(writer, value, OptionsWithoutThis);
+
+    // Preserve configuration while excluding problematic converters
+    var safeOptions = new JsonSerializerOptions(originalOptions);
+    // ... remove only the problematic converters
+
+    // Use lazy initialization for thread safety and performance
+    private static readonly Lazy<JsonSerializerOptions> _safeOptions = ...
+    ```
+  </Tab>
+</Tabs>
+
+## Advanced Considerations
+
+### Multiple Converter Dependencies
+
+If your converters depend on each other, you might need more sophisticated exclusion logic:
+
+```csharp
+private static readonly Lazy<JsonSerializerOptions> _optionsWithoutThis =
+    new Lazy<JsonSerializerOptions>(() =>
+    {
+        var options = new JsonSerializerOptions(MintlifyConstants.JsonSerializerOptions);
+
+        // Remove converters that could cause recursion
+        for (int i = options.Converters.Count - 1; i >= 0; i--)
+        {
+            var converter = options.Converters[i];
+            if (converter is IconConverter or RelatedConverter)
+            {
+                options.Converters.RemoveAt(i);
+            }
+        }
+        return options;
+    });
+```
+
+### Framework Compatibility
+
+This pattern works across all .NET versions that support System.Text.Json, including:
+- ✅ .NET 8.0+
+- ✅ .NET Core 3.1+
+- ✅ .NET Framework 4.6.2+ (with NuGet package)
+
+## Looking Forward: Preventing Future Issues
+
+This experience taught us valuable lessons about System.Text.Json converter development:
+
+<CardGroup cols={2}>
+  <Card title="Always Test Recursion" icon="sync">
+    Every custom converter should have unit tests that verify it doesn't cause stack overflow in nested scenarios
+  </Card>
+
+  <Card title="Options Management" icon="sliders-h">
+    Maintain clear patterns for how JsonSerializerOptions are used within converters
+  </Card>
+
+  <Card title="Lazy Initialization" icon="clock">
+    Use lazy initialization for computed options to ensure thread safety and performance
+  </Card>
+
+  <Card title="Internal Testability" icon="vial">
+    Make critical internal logic testable with internal access modifiers
+  </Card>
+</CardGroup>
+
+## Conclusion
+
+The infinite recursion bug in our JSON converters was a subtle but critical issue that completely broke our documentation generation pipeline. What started as a mysterious stack overflow turned into an opportunity to create a robust, testable solution that prevents similar issues across our entire codebase.
+
+The key insight was that **converters need to exclude themselves from recursive serialization calls while preserving all other configuration**. Our self-excluding options pattern achieves this elegantly with minimal performance overhead and maximum maintainability.
+
+This isn't just about fixing a bug - it's about understanding the fundamental principles of how System.Text.Json converters work and building resilient patterns that prevent entire categories of problems. The lazy-initialized, self-excluding options approach can be applied to any custom converter that needs to call back into the serializer.
+
+<Info>
+The complete source code for our converter implementations is available in the [DotNetDocs repository](https://github.com/CloudNimble/DotNetDocs), including all unit tests that verify the recursion prevention works correctly.
+</Info>
+
+---
+
+*Special thanks to the System.Text.Json team and the broader .NET community whose documentation and Stack Overflow answers helped us understand the underlying principles that made this solution possible.*

@@ -93,7 +93,8 @@
         <Message Text="🚀 Generating documentation from existing assemblies..." Importance="high" />
 
         <!-- Extract assembly paths from built projects (only main project assemblies) -->
-        <ItemGroup>
+        <!-- Only create AssemblyPaths if DocumentedProjects has items to prevent malformed paths from empty batching -->
+        <ItemGroup Condition="'@(DocumentedProjects->Count())' > '0'">
             <!-- Get assembly paths using the actual target framework and AssemblyName from each project -->
             <AssemblyPaths Include="%(DocumentedProjects.RootDir)%(DocumentedProjects.Directory)bin\$(Configuration)\%(DocumentedProjects.TargetFramework)\%(DocumentedProjects.AssemblyName).dll" />
             <XmlDocPaths Include="%(DocumentedProjects.RootDir)%(DocumentedProjects.Directory)bin\$(Configuration)\%(DocumentedProjects.TargetFramework)\%(DocumentedProjects.AssemblyName).xml" />

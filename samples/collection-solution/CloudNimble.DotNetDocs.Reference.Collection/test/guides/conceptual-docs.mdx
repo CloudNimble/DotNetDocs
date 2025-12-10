@@ -1,0 +1,897 @@
+---
+title: Conceptual Documentation
+sidebarTitle: Conceptual Docs
+description: Expanding your documentation experience with Conceptual Docs
+icon: book
+---
+
+## What is Conceptual Documentation?
+
+Conceptual Documentation is DotNetDocs' system for enriching API reference documentation with rich, context-aware content that goes beyond what XML 
+documentation comments can provide. While XML comments describe **what** an API element is, conceptual documentation explains **how** to use it effectively.
+
+Conceptual documentation is inspired by best practices from major documentation platforms like [Microsoft Learn](https://learn.microsoft.com), 
+[Read the Docs](https://readthedocs.org), and [Mintlify](https://mintlify.com). It brings the power of rich, structured content to your .NET projects.
+
+Conceptual content is stored in separate `.mdz` files organized alongside your code, allowing technical writers and developers to collaborate 
+on comprehensive documentation without cluttering source files.
+
+<Note>
+    The `.mdz` file extension was chosen to avoid being picked up by documentation platforms that autiomatically look for `.md` or `.mdx` files. It 
+    does not stand for anything in particular, except that if you have the file `index.md` and `index.mdx` and `index.mdz` in the same folder, 
+    the `index.mdz` file will appear last in the list.
+</Note>
+
+## How Conceptual Documentation Works
+
+DotNetDocs follows a two-phase documentation pipeline:
+
+<Steps>
+  <Step title="XML Extraction">
+    The `AssemblyManager` extracts documentation from XML comments in your compiled assemblies, populating basic API metadata like summaries, 
+    remarks, parameters, and return values.
+  </Step>
+
+  <Step title="Conceptual Loading">
+    The `DocumentationManager` loads conceptual content from `.mdz` files in the configured `ConceptualPath` directory, enriching the documentation 
+    model with usage guides, examples, best practices, patterns, and considerations.
+  </Step>
+</Steps>
+
+These two content sources are merged into a unified documentation model that renderers (like MintlifyRenderer) transform into beautiful, comprehensive 
+documentation sites.
+
+## Configuration
+
+### Enabling Conceptual Documentation
+
+Conceptual documentation is enabled by default in `ProjectContext`:
+
+```csharp
+var context = new ProjectContext
+{
+    ConceptualPath = "conceptual",           // Where .mdz files are stored
+    ConceptualDocsEnabled = true,            // Enable conceptual docs (default: true)
+    ShowPlaceholders = true                  // Show placeholder content (default: true)
+};
+```
+
+### Configuration Properties
+
+<ParamField path="ConceptualPath" type="string" default="conceptual">
+  The directory where conceptual documentation files (`.mdz`) are stored, relative to the documentation root.
+</ParamField>
+
+<ParamField path="ConceptualDocsEnabled" type="bool" default="true">
+  When `true`, DotNetDocs generates placeholder files for new types and loads existing conceptual content. When `false`, only XML comments are processed.
+</ParamField>
+
+<ParamField path="ShowPlaceholders" type="bool" default="true">
+  Controls whether placeholder content is included in the final documentation. See [Placeholders](#placeholders-and-the-showplaceholders-property) 
+  section below.
+</ParamField>
+
+## Conceptual Documentation Sections
+
+DotNetDocs supports seven distinct conceptual sections, each with a specific purpose. These sections are available at three levels: **namespace**, 
+**type**, and **member**.
+
+### Available Sections
+
+<AccordionGroup>
+  <Accordion title="Summary" icon="align-left">
+    **File**: `summary.mdz`
+    **Level**: Namespace only
+    **Purpose**: Brief description of what the namespace contains and its purpose
+
+    This section is only available at the namespace level since types and members already have summaries from XML `<summary>` tags.
+
+    ```markdown
+    <!-- summary.mdz -->
+    This namespace contains core documentation processing types including assembly management,
+    entity models, and the transformation pipeline.
+    ```
+  </Accordion>
+
+  <Accordion title="Usage" icon="book-open">
+    **File**: `usage.mdz`
+    **Level**: Namespace, Type, Member
+    **Purpose**: Explains **how to use** the API element
+
+    Usage documentation provides step-by-step guides for common scenarios. This is where you explain HOW developers should interact with your API.
+
+    ```markdown
+    <!-- usage.mdz -->
+    ## Basic Usage
+
+    To use the `DocumentationManager`, first create a `ProjectContext`:
+
+    1. Configure your project context with references
+    2. Create the manager with enrichers, transformers, and renderers
+    3. Call `ProcessAsync()` with your assembly paths
+
+    The manager orchestrates the entire documentation pipeline automatically.
+    ```
+  </Accordion>
+
+  <Accordion title="Examples" icon="code">
+    **File**: `examples.mdz`
+    **Level**: Namespace, Type, Member
+    **Purpose**: Concrete code examples showing the API in action
+
+    Examples should be complete, runnable code snippets that demonstrate real-world usage patterns.
+
+    ```markdown
+    <!-- examples.mdz -->
+    ## Basic Example
+
+    ```csharp
+    var context = new ProjectContext
+    {
+        ConceptualPath = "conceptual",
+        ShowPlaceholders = false
+    };
+
+    var manager = new DocumentationManager(context);
+    await manager.ProcessAsync("MyAssembly.dll", "MyAssembly.xml");
+    ```
+
+    ## Advanced Example
+
+    ```csharp
+    // Multi-assembly processing with custom configuration
+    var assemblies = new[]
+    {
+        ("Core.dll", "Core.xml"),
+        ("Extensions.dll", "Extensions.xml")
+    };
+
+    await manager.ProcessAsync(assemblies);
+    ```
+    ```
+  </Accordion>
+
+  <Accordion title="Best Practices" icon="star">
+    **File**: `best-practices.mdz`
+    **Level**: Namespace, Type, Member
+    **Purpose**: Recommendations for effective usage
+
+    Best practices guide developers toward optimal usage patterns and away from common pitfalls.
+
+    ```markdown
+    <!-- best-practices.mdz -->
+    ## Best Practices
+
+    - Always dispose of `DocumentationManager` when done to free assembly manager resources
+    - Use dependency injection containers to manage enricher and renderer lifecycles
+    - Set `ShowPlaceholders = false` for production documentation builds
+    - Cache `ProjectContext` instances when processing multiple assemblies
+    ```
+  </Accordion>
+
+  <Accordion title="Patterns" icon="diagram-project">
+    **File**: `patterns.mdz`
+    **Level**: Namespace, Type, Member
+    **Purpose**: Common usage patterns and architectural guidance
+
+    Patterns documentation explains recurring solutions and architectural approaches.
+
+    ```markdown
+    <!-- patterns.mdz -->
+    ## Pipeline Pattern
+
+    The DocumentationManager implements a pipeline pattern with three stages:
+
+    1. **Enrichment**: Add metadata from external sources
+    2. **Transformation**: Modify the documentation model
+    3. **Rendering**: Generate output formats
+
+    Each stage operates on the complete model, allowing cross-assembly transformations.
+    ```
+  </Accordion>
+
+  <Accordion title="Considerations" icon="triangle-exclamation">
+    **File**: `considerations.mdz`
+    **Level**: Namespace, Type, Member
+    **Purpose**: Important notes, gotchas, performance, and security considerations
+
+    This section highlights important things developers need to know before using the API.
+
+    ```markdown
+    <!-- considerations.mdz -->
+    ## Performance Considerations
+
+    - Assembly loading is expensive; use `GetOrCreateAssemblyManager` for caching
+    - Conceptual file loading happens in parallel per assembly for better performance
+    - Large assemblies may benefit from setting `ConceptualDocsEnabled = false`
+
+    ## Security Considerations
+
+    - Assembly reflection can trigger code execution; only process trusted assemblies
+    - File system access requires appropriate permissions for conceptual paths
+    ```
+  </Accordion>
+
+  <Accordion title="Related APIs" icon="link">
+    **File**: `related-apis.mdz`
+    **Level**: Type, Member
+    **Purpose**: List of related API elements
+
+    Related APIs are specified as one API per line in the markdown file. The renderer formats these appropriately.
+
+    ```markdown
+    <!-- related-apis.mdz -->
+    CloudNimble.DotNetDocs.Core.AssemblyManager
+    CloudNimble.DotNetDocs.Core.ProjectContext
+    CloudNimble.DotNetDocs.Core.IDocRenderer
+    CloudNimble.DotNetDocs.Core.IDocEnricher
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## File Organization
+
+Conceptual documentation files follow a hierarchical folder structure that mirrors your code organization:
+
+```
+conceptual/
+├── YourNamespace/
+│   ├── summary.mdz                    # Namespace summary
+│   ├── usage.mdz                      # Namespace usage guide
+│   ├── examples.mdz                   # Namespace examples
+│   ├── YourClass/
+│   │   ├── usage.mdz                  # Type usage guide
+│   │   ├── examples.mdz               # Type examples
+│   │   ├── best-practices.mdz         # Type best practices
+│   │   ├── patterns.mdz               # Type patterns
+│   │   ├── considerations.mdz         # Type considerations
+│   │   ├── related-apis.mdz           # Type related APIs
+│   │   ├── YourMethod/
+│   │   │   ├── usage.mdz              # Member usage guide
+│   │   │   ├── examples.mdz           # Member examples
+│   │   │   ├── best-practices.mdz     # Member best practices
+│   │   │   ├── patterns.mdz           # Member patterns
+│   │   │   ├── considerations.mdz     # Member considerations
+│   │   │   └── related-apis.mdz       # Member related APIs
+│   │   └── YourProperty/
+│   │       └── usage.mdz              # Member usage guide
+│   └── AnotherClass/
+│       └── usage.mdz
+└── AnotherNamespace/
+    └── usage.mdz
+```
+
+### Path Construction
+
+The `DocumentationManager` constructs file paths based on the fully qualified names of your types:
+
+- **Namespace**: `conceptual/{Namespace}/`
+- **Type**: `conceptual/{Namespace}/{TypeName}/`
+- **Member**: `conceptual/{Namespace}/{TypeName}/{MemberName}/`
+
+<Note>
+  Dots in namespace names are converted to directory separators. For example, `System.Text.Json` becomes `conceptual/System/Text/Json/`.
+</Note>
+
+## Placeholders and the ShowPlaceholders Property
+
+When `ConceptualDocsEnabled = true`, DotNetDocs automatically generates placeholder files for any conceptual sections that don't exist yet. These 
+placeholders help you identify documentation gaps and provide a starting point for writing.
+
+### Placeholder Format
+
+Placeholder files include a special TODO comment marker:
+
+```markdown
+<!-- TODO: REMOVE THIS COMMENT AFTER YOU CUSTOMIZE THIS CONTENT -->
+# Usage
+
+Describe how to use `DocumentationManager` here.
+
+Consider including:
+- Step-by-step instructions
+- Common scenarios
+- Configuration options
+```
+
+### Controlling Placeholder Visibility
+
+The `ShowPlaceholders` property controls whether placeholder content appears in your final documentation:
+
+<Tabs>
+  <Tab title="Development Mode">
+    ```csharp
+    var context = new ProjectContext
+    {
+        ShowPlaceholders = true  // Default
+    };
+    ```
+
+    **When to use**: During development to see documentation gaps and track progress.
+
+    **Result**: All conceptual content loads, including placeholders. You'll see placeholder sections in your generated documentation.
+  </Tab>
+
+  <Tab title="Production Mode">
+    ```csharp
+    var context = new ProjectContext
+    {
+        ShowPlaceholders = false
+    };
+    ```
+
+    **When to use**: For production documentation builds where you only want to show completed content.
+
+    **Result**: Files containing the TODO comment marker are skipped during loading. Only customized content appears in documentation.
+  </Tab>
+</Tabs>
+
+### How Placeholder Detection Works
+
+The `DocumentationManager.IsTodoPlaceholderFile()` method checks if a file starts with the TODO marker:
+
+```csharp
+internal static bool IsTodoPlaceholderFile(string content)
+{
+    if (string.IsNullOrWhiteSpace(content))
+        return false;
+
+    var regex = new Regex(
+        @"^\s*<!--\s*TODO:\s*REMOVE\s+THIS\s+COMMENT\s+AFTER\s+YOU\s+CUSTOMIZE\s+THIS\s+CONTENT\s*-->\s*$",
+        RegexOptions.IgnoreCase
+    );
+
+    // Check first non-empty line
+    foreach (var line in content.Split('\n'))
+    {
+        var trimmed = line.Trim();
+        if (!string.IsNullOrWhiteSpace(trimmed))
+            return regex.IsMatch(trimmed);
+    }
+
+    return false;
+}
+```
+
+<Warning>
+  The TODO marker must be on the **first non-empty line** of the file to be recognized as a placeholder. Once you start customizing content, **delete the TODO comment** so DotNetDocs knows the file contains real documentation.
+</Warning>
+
+## Using Markdown to Override Titles
+
+Conceptual documentation files support full Markdown syntax, including headers. Renderers respect the structure of your Markdown, allowing you to override default section titles and organize content hierarchically.
+
+### Default Titles
+
+By default, renderers use section names as titles:
+
+```markdown
+<!-- usage.mdz -->
+Describe how to use this API...
+```
+
+**Rendered as**: A section titled "Usage" with your content
+
+### Custom Titles with Markdown Headers
+
+Add your own headers to customize the title and create subsections:
+
+```markdown
+<!-- usage.mdz -->
+## Getting Started with DocumentationManager
+
+The `DocumentationManager` orchestrates the documentation pipeline...
+
+### Basic Configuration
+
+First, create a `ProjectContext`:
+
+### Processing Assemblies
+
+Call `ProcessAsync()` with your assembly paths:
+```
+
+**Rendered as**: Custom "Getting Started with DocumentationManager" title with "Basic Configuration" and "Processing Assemblies" subsections
+
+### Multi-Level Organization
+
+Create deep hierarchies for complex topics:
+
+```markdown
+<!-- patterns.mdz -->
+## Architectural Patterns
+
+The DocumentationManager supports several patterns:
+
+### Pipeline Pattern
+
+#### Enrichment Stage
+Enrichers add metadata from external sources...
+
+#### Transformation Stage
+Transformers modify the documentation model...
+
+#### Rendering Stage
+Renderers generate output formats...
+
+### Factory Pattern
+
+The `GetOrCreateAssemblyManager` method implements a factory pattern...
+```
+
+### Best Practices for Markdown Headers
+
+<CardGroup cols={2}>
+  <Card title="Use Semantic Levels" icon="layer-group">
+    Start with `##` (H2) for main titles and nest logically with `###` (H3) and `####` (H4) for subsections.
+  </Card>
+
+  <Card title="Be Consistent" icon="equals">
+    Use the same header style across all conceptual files in your project for a cohesive documentation experience.
+  </Card>
+
+  <Card title="Avoid H1" icon="ban">
+    Reserve `#` (H1) for page titles. Start conceptual content with `##` (H2) to maintain proper document hierarchy.
+  </Card>
+
+  <Card title="Include Code Fences" icon="code">
+    Use proper code fences with language identifiers for syntax highlighting: ` ```csharp `
+  </Card>
+</CardGroup>
+
+## Including HTML and Components with `noescape`
+
+Conceptual documentation often needs to include rich HTML content, JSX components, or other markup that should not be escaped. DotNetDocs provides
+the ` ```noescape ` code fence specifically for this purpose.
+
+### The Problem: HTML Gets Escaped
+
+By default, the `MarkdownXmlTransformer` escapes HTML tags in your conceptual content to prevent conflicts with Markdown rendering. This is useful
+for XML documentation comments, but problematic when you want to include actual HTML or components:
+
+```markdown
+<!-- This HTML will be escaped -->
+<Note>
+  This is a note component
+</Note>
+
+<!-- Renders as: &lt;Note&gt; This is a note component &lt;/Note&gt; -->
+```
+
+### The Solution: `noescape` Code Fences
+
+The `noescape` code fence tells the transformer to pass content through **without escaping** and **without code fence markers**:
+
+````markdown
+<!-- usage.mdz -->
+```noescape
+<Note>
+  This is a note component that will render correctly!
+</Note>
+```
+````
+
+**Result**: The HTML content is included in the output exactly as written, allowing components to render properly.
+
+### How It Works
+
+When the `MarkdownXmlTransformer` processes conceptual content:
+
+1. **Regular content**: HTML tags are escaped (`<` → `&lt;`, `>` → `&gt;`)
+2. **Code fences**: Content is preserved with backticks for syntax highlighting
+3. **`noescape` fences**: Content is extracted and passed through unchanged
+
+From `MarkdownXmlTransformer.cs:750-773`:
+
+```csharp
+var isNoEscape = text.IndexOf("noescape", fenceStart, Math.Min(20, text.Length - fenceStart),
+    StringComparison.Ordinal) == fenceStart;
+
+if (isNoEscape)
+{
+    // Extract content without delimiters and without escaping
+    var contentStart = fenceStart + 8; // "noescape" is 8 chars
+    if (contentStart < text.Length && text[contentStart] == '\r') contentStart++;
+    if (contentStart < text.Length && text[contentStart] == '\n') contentStart++;
+
+    var content = text.Substring(contentStart, closingPos - contentStart);
+    result.Append(content);
+}
+```
+
+### Use Cases
+
+<AccordionGroup>
+  <Accordion title="Mintlify Components" icon="sparkles">
+    Include Mintlify's special components in your conceptual documentation:
+
+    ````markdown
+    <!-- usage.mdz -->
+    ## Configuration Options
+
+    ```noescape
+    <ParamField path="ConceptualPath" type="string" default="conceptual">
+      The directory where conceptual documentation files are stored.
+    </ParamField>
+
+    <ParamField path="ShowPlaceholders" type="bool" default="true">
+      Controls whether placeholder content is included in documentation.
+    </ParamField>
+    ```
+    ````
+  </Accordion>
+
+  <Accordion title="Custom HTML Components" icon="code">
+    Embed custom HTML when your renderer supports it:
+
+    ````markdown
+    <!-- examples.mdz -->
+    ## Interactive Demo
+
+    ```noescape
+    <div class="demo-container">
+      <button onclick="runDemo()">Try It</button>
+      <div id="output"></div>
+    </div>
+
+    <script>
+      function runDemo() {
+        document.getElementById('output').innerText = 'Demo running!';
+      }
+    </script>
+    ```
+    ````
+  </Accordion>
+
+  <Accordion title="Warning and Info Boxes" icon="triangle-exclamation">
+    Use callout components without worrying about escaping:
+
+    ````markdown
+    <!-- considerations.mdz -->
+    ## Performance Considerations
+
+    ```noescape
+    <Warning>
+      Assembly loading is expensive. Cache `AssemblyManager` instances when processing multiple assemblies.
+    </Warning>
+
+    <Info>
+      Set `ConceptualDocsEnabled = false` to skip placeholder generation and improve performance.
+    </Info>
+    ```
+    ````
+  </Accordion>
+
+  <Accordion title="Tabs and Steps" icon="layer-group">
+    Create multi-step guides with structured components:
+
+    ````markdown
+    <!-- usage.mdz -->
+    ## Setup Process
+
+    ```noescape
+    <Steps>
+      <Step title="Create Context">
+        Configure your `ProjectContext` with the required settings.
+      </Step>
+
+      <Step title="Initialize Manager">
+        Create a `DocumentationManager` with enrichers and renderers.
+      </Step>
+
+      <Step title="Process Assemblies">
+        Call `ProcessAsync()` with your assembly paths.
+      </Step>
+    </Steps>
+    ```
+    ````
+  </Accordion>
+</AccordionGroup>
+
+### Best Practices
+
+<CardGroup cols={2}>
+  <Card title="Verify Component Support" icon="check-circle">
+    Ensure your renderer (e.g., MintlifyRenderer) supports the components you're using. `noescape` only prevents escaping—rendering is up to your output format.
+  </Card>
+
+  <Card title="One Component Per Fence" icon="layer-group">
+    For clarity, use separate `noescape` blocks for distinct components rather than grouping multiple components together.
+  </Card>
+
+  <Card title="Validate HTML" icon="code-check">
+    The transformer doesn't validate HTML. Ensure your markup is well-formed to avoid rendering issues.
+  </Card>
+
+  <Card title="Mix with Markdown" icon="shuffle">
+    You can freely mix `noescape` blocks with regular Markdown content in the same file—only the content inside `noescape` fences is unescaped.
+  </Card>
+</CardGroup>
+
+### Example: Complete Conceptual File
+
+Here's a real-world example mixing Markdown and components:
+
+````markdown
+<!-- TODO: REMOVE THIS COMMENT AFTER YOU CUSTOMIZE THIS CONTENT -->
+## Using the DocumentationManager
+
+The `DocumentationManager` orchestrates the entire documentation pipeline, from assembly loading through final output generation.
+
+### Basic Setup
+
+First, create and configure a `ProjectContext`:
+
+```csharp
+var context = new ProjectContext
+{
+    ConceptualPath = "conceptual",
+    ShowPlaceholders = false,
+    OutputPath = "docs"
+};
+```
+
+### Configuration Options
+
+```noescape
+<ParamField path="ConceptualPath" type="string" default="conceptual">
+  Directory where `.mdz` conceptual files are stored, relative to the documentation root.
+</ParamField>
+
+<ParamField path="ShowPlaceholders" type="bool" default="true">
+  When `false`, placeholder files with TODO markers are excluded from output.
+</ParamField>
+```
+
+### Processing Assemblies
+
+```noescape
+<Steps>
+  <Step title="Load Assembly">
+    The manager loads your compiled assembly and XML documentation.
+  </Step>
+
+  <Step title="Generate Placeholders">
+    Missing conceptual files are created automatically (if enabled).
+  </Step>
+
+  <Step title="Transform Content">
+    XML documentation is converted to Markdown format.
+  </Step>
+
+  <Step title="Render Output">
+    Final documentation is generated in your chosen format.
+  </Step>
+</Steps>
+```
+
+### Important Considerations
+
+```noescape
+<Warning>
+  Assembly reflection can trigger code execution. Only process assemblies from trusted sources.
+</Warning>
+```
+````
+
+### Technical Details
+
+The `noescape` feature is implemented in the `EscapeRemainingXmlTags` method of `MarkdownXmlTransformer`:
+
+- **Detection**: Checks for `noescape` immediately after the opening ` ``` ` (within the first 20 characters)
+- **Extraction**: Skips the `noescape` keyword and any following newline, then extracts content up to the closing ` ``` `
+- **Processing**: Appends the content directly to the output without modifications
+- **Preservation**: Regular code fences and inline code (single backticks) are preserved with their delimiters
+
+<Note>
+  The `noescape` functionality only applies to conceptual documentation properties that go through the `MarkdownXmlTransformer`. It does **not**
+  affect XML documentation comments, which always have HTML escaped for safety.
+</Note>
+
+## Creating Conceptual Documentation
+
+### Automatic Placeholder Generation
+
+When you process an assembly with `ConceptualDocsEnabled = true`, DotNetDocs automatically creates placeholder files:
+
+```csharp
+var context = new ProjectContext
+{
+    ConceptualPath = "conceptual",
+    ConceptualDocsEnabled = true
+};
+
+var manager = new DocumentationManager(context);
+
+// This generates placeholder files for all types and members
+await manager.ProcessAsync("MyAssembly.dll", "MyAssembly.xml");
+```
+
+After running, you'll find a complete folder structure in your `conceptual/` directory with placeholders for all sections.
+
+### Manual Placeholder Generation
+
+Generate placeholders without running the full pipeline:
+
+```csharp
+// Only create placeholder files, don't run full pipeline
+await manager.CreateConceptualFilesAsync("MyAssembly.dll", "MyAssembly.xml");
+
+// For multiple assemblies
+await manager.CreateConceptualFilesAsync(new[]
+{
+    ("Core.dll", "Core.xml"),
+    ("Extensions.dll", "Extensions.xml")
+});
+```
+
+### Customizing Conceptual Content
+
+To customize a placeholder:
+
+1. Open the `.mdz` file in your preferred Markdown editor
+2. **Delete the TODO comment** from the first line
+3. Replace the placeholder content with your documentation
+4. Save the file
+
+The next time you process your assembly, DotNetDocs will load your customized content instead of the placeholder.
+
+## Workflow Example
+
+Here's a complete workflow for adding conceptual documentation to a project:
+
+<Steps>
+  <Step title="Generate Placeholders">
+    ```csharp
+    var context = new ProjectContext
+    {
+        ConceptualPath = "conceptual",
+        ShowPlaceholders = true
+    };
+
+    var manager = new DocumentationManager(context);
+    await manager.CreateConceptualFilesAsync("MyLib.dll", "MyLib.xml");
+    ```
+  </Step>
+
+  <Step title="Review Generated Structure">
+    ```bash
+    # Examine the generated folder structure
+    ls -R conceptual/
+
+    conceptual/MyNamespace/MyClass/
+    ├── usage.mdz
+    ├── examples.mdz
+    ├── best-practices.mdz
+    ├── patterns.mdz
+    ├── considerations.mdz
+    └── related-apis.mdz
+    ```
+  </Step>
+
+  <Step title="Customize Priority Sections">
+    Edit the most important conceptual files first (usually `usage.mdz` and `examples.mdz`), removing the TODO comments and adding your content.
+  </Step>
+
+  <Step title="Process and Preview">
+    ```csharp
+    // Process with placeholders visible to see progress
+    await manager.ProcessAsync("MyLib.dll", "MyLib.xml");
+    ```
+
+    Review the generated documentation to see which sections still need content.
+  </Step>
+
+  <Step title="Production Build">
+    ```csharp
+    // Hide placeholders for production
+    context.ShowPlaceholders = false;
+    await manager.ProcessAsync("MyLib.dll", "MyLib.xml");
+    ```
+
+    Only customized content appears in the final documentation.
+  </Step>
+</Steps>
+
+## Advanced Scenarios
+
+### Partial Documentation
+
+You don't need to fill in all seven sections for every API element. Only create the files that add value:
+
+```
+conceptual/
+└── MyNamespace/
+    └── MyClass/
+        ├── usage.mdz              # Comprehensive usage guide
+        └── examples.mdz           # Lots of examples
+        # No best-practices.mdz - not needed for this simple class
+```
+
+### Shared Content with Includes
+
+Some renderers (like MintlifyRenderer) support includes for reusing content across multiple files:
+
+```markdown
+<!-- usage.mdz -->
+<Snippet file="common/setup-instructions.mdx" />
+
+## Using MyClass
+
+Now that you've completed setup, you can use MyClass...
+```
+
+### Multi-Assembly Projects
+
+When documenting multiple assemblies, organize conceptual content by assembly:
+
+```
+conceptual/
+├── MyProject.Core/
+│   └── CoreNamespace/
+│       └── CoreClass/
+│           └── usage.mdz
+└── MyProject.Extensions/
+    └── ExtensionsNamespace/
+        └── ExtensionClass/
+            └── usage.mdz
+```
+
+Then process assemblies together:
+
+```csharp
+await manager.ProcessAsync(new[]
+{
+    ("MyProject.Core.dll", "MyProject.Core.xml"),
+    ("MyProject.Extensions.dll", "MyProject.Extensions.xml")
+});
+```
+
+## Integration with the Pipeline
+
+Conceptual content integrates seamlessly with DotNetDocs' transformation pipeline:
+
+```csharp
+var manager = new DocumentationManager(
+    context,
+    enrichers: new IDocEnricher[] { /* enrichers */ },
+    transformers: new IDocTransformer[] { /* transformers */ },
+    renderers: new IDocRenderer[] { new MintlifyRenderer(context) }
+);
+
+await manager.ProcessAsync("MyLib.dll", "MyLib.xml");
+```
+
+**Pipeline execution order**:
+
+1. **Extract XML**: Load API metadata from XML comments
+2. **Generate Placeholders**: Create missing conceptual files (if enabled)
+3. **Load Conceptual**: Load conceptual content from `.mdz` files
+4. **Merge Models**: Combine multiple assemblies if needed
+5. **Enrich**: Run enrichers to add external metadata
+6. **Transform**: Run transformers to modify the model
+7. **Render**: Generate final documentation output
+
+<Note>
+  Conceptual content is loaded **after** placeholder generation but **before** enrichers and transformers run, allowing the entire pipeline to work with the complete documentation model.
+</Note>
+
+## See Also
+
+<CardGroup cols={2}>
+  <Card title="Pipeline Overview" icon="diagram-project" href="/guides/pipeline">
+    Learn about the complete documentation pipeline
+  </Card>
+
+  <Card title="Mintlify Provider" icon="sparkles" href="/providers/mintlify">
+    See how conceptual content renders in Mintlify
+  </Card>
+
+  <Card title="Placeholder Handling Spec" icon="file-lines" href="https://github.com/CloudNimble/DotNetDocs/blob/main/specs/placeholder-handling.md">
+    Technical specification for placeholder handling
+  </Card>
+
+  <Card title="Core Documentation Spec" icon="book" href="https://github.com/CloudNimble/DotNetDocs/blob/main/specs/core-documentation-spec.md">
+    Complete XML and conceptual mapping reference
+  </Card>
+</CardGroup>

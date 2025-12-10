@@ -1,0 +1,74 @@
+---
+title: Getting Started with CloudNimble.DotNetDocs
+sidebarTitle: Quickstart
+description: Get up and running with CloudNimble.DotNetDocs in minutes
+icon: play
+---
+
+<Steps>
+  <Step title="Install" titleSize="h2">
+
+    ### Install CloudNimble.DotNetDocs
+
+    Install the NuGet package:
+
+    ```bash
+    dotnet add package CloudNimble.DotNetDocs
+    ```
+
+    Or use the Package Manager Console:
+
+    ```powershell
+    Install-Package CloudNimble.DotNetDocs
+    ```
+
+  </Step>
+
+  <Step title="Configure" titleSize="h2">
+
+    ### Configure your application
+
+    Add CloudNimble.DotNetDocs to your application's service collection:
+
+    ```csharp
+    using CloudNimble.DotNetDocs;
+
+    // In your Program.cs or Startup.cs
+    services.AddCloudNimbleDotNetDocs();
+    ```
+
+    <Note>
+      Customize the configuration based on your needs. See the [Configuration Guide](/guides/configuration) for more options.
+    </Note>
+
+  </Step>
+
+  <Step title="Use" titleSize="h2">
+
+    ### Start using CloudNimble.DotNetDocs
+
+    Basic usage example:
+
+    ```csharp
+    // Example code showing how to use CloudNimble.DotNetDocs
+    var service = serviceProvider.GetRequiredService<IMyService>();
+    var result = await service.DoSomethingAsync();
+    ```
+
+    <Check>
+      You're now ready to start using CloudNimble.DotNetDocs! Check out the [API Reference](/api-reference) for more details.
+    </Check>
+
+  </Step>
+</Steps>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="API Reference" icon="code" href="/api-reference">
+    Explore the complete API documentation
+  </Card>
+  <Card title="Guides" icon="book-open" href="/guides">
+    Learn more with detailed guides and tutorials
+  </Card>
+</CardGroup>

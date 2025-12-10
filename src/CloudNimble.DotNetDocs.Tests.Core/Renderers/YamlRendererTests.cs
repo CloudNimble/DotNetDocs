@@ -223,16 +223,21 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
         }
 
         [TestMethod]
-        public async Task RenderAsync_WithNullModel_ThrowsArgumentNullException()
+        public async Task RenderAsync_WithNullModel_ReturnsWithoutError()
         {
             // Arrange
             var renderer = GetYamlRenderer();
+            var context = GetService<ProjectContext>();
 
-            // Act
-            Func<Task> act = async () => await renderer.RenderAsync(null!);
+            // Act - Documentation-only mode passes null model to renderers
+            Func<Task> act = async () => await renderer.RenderAsync(null);
 
-            // Assert
-            await act.Should().ThrowAsync<ArgumentNullException>();
+            // Assert - Should not throw, should return gracefully
+            await act.Should().NotThrowAsync();
+
+            // Verify no documentation.yaml was created (nothing to render)
+            var docYamlPath = Path.Combine(_testOutputPath, context.ApiReferencePath, "documentation.yaml");
+            File.Exists(docYamlPath).Should().BeFalse("No documentation file should be created for null model");
         }
 
         #endregion

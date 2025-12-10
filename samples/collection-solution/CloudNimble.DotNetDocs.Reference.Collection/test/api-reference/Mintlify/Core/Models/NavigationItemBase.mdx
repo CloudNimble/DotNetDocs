@@ -1,0 +1,258 @@
+---
+title: NavigationItemBase
+description: "Base class for all navigation items in Mintlify."
+icon: shapes
+tag: "ABSTRACT"
+keywords: ['NavigationItemBase', 'Mintlify.Core.Models.NavigationItemBase', 'Mintlify.Core.Models', 'class', 'System.Object']
+---
+
+## Definition
+
+**Assembly:** Mintlify.Core.dll
+
+**Namespace:** Mintlify.Core.Models
+
+**Inheritance:** System.Object
+
+## Syntax
+
+```csharp
+Mintlify.Core.Models.NavigationItemBase
+```
+
+## Summary
+
+Base class for all navigation items in Mintlify.
+
+## Remarks
+
+Provides common properties shared across all navigation elements including
+            API specifications, icons, pages, and visibility settings.
+
+## Constructors
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public Object()
+```
+
+## Properties
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> AsyncApi
+
+Gets or sets the AsyncAPI configuration.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.ApiSpecConfig AsyncApi { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.ApiSpecConfig?`
+
+#### Remarks
+
+Can be a string URL, an array of URLs, or an object with source and directory properties
+            pointing to AsyncAPI specification files.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Hidden
+
+Gets or sets whether the current option is default hidden.
+
+#### Syntax
+
+```csharp
+public System.Nullable<bool> Hidden { get; set; }
+```
+
+#### Property Value
+
+Type: `System.Nullable<bool>?`
+
+#### Remarks
+
+When true, this navigation item will not be displayed in the navigation by default.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Icon
+
+Gets or sets the icon to be displayed in the section.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.IconConfig Icon { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.IconConfig?`
+
+#### Remarks
+
+Can be a Font Awesome icon name, Lucide icon name, JSX-compatible SVG code,
+            URL to an externally hosted icon, or path to an icon file in your project.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> OpenApi
+
+Gets or sets the OpenAPI configuration.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.ApiSpecConfig OpenApi { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.ApiSpecConfig?`
+
+#### Remarks
+
+Can be a string URL, an array of URLs, or an object with source and directory properties
+            pointing to OpenAPI specification files.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Pages
+
+Gets or sets the pages for this navigation item.
+
+#### Syntax
+
+```csharp
+public System.Collections.Generic.List<object> Pages { get; set; }
+```
+
+#### Property Value
+
+Type: `System.Collections.Generic.List<object>?`
+
+#### Remarks
+
+Pages can be strings (page paths) or nested GroupConfig objects for hierarchical navigation.
+
+## Methods
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Equals <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual bool Equals(object obj)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `obj` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Equals <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public static bool Equals(object objA, object objB)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `objA` | `object?` | - |
+| `objB` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetHashCode <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual int GetHashCode()
+```
+
+#### Returns
+
+Type: `int`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetType <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public System.Type GetType()
+```
+
+#### Returns
+
+Type: `System.Type`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> MemberwiseClone <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+protected internal object MemberwiseClone()
+```
+
+#### Returns
+
+Type: `object`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ReferenceEquals <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public static bool ReferenceEquals(object objA, object objB)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `objA` | `object?` | - |
+| `objB` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ToString <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual string ToString()
+```
+
+#### Returns
+
+Type: `string?`
+

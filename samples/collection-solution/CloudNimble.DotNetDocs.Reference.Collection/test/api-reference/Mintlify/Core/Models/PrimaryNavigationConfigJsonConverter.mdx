@@ -1,0 +1,79 @@
+---
+title: PrimaryNavigationConfigJsonConverter
+description: "Custom JSON converter for PrimaryNavigationConfig that handles object format."
+icon: file-brackets-curly
+sidebarTitle: PrimaryNavigationConfigJsonConverter
+keywords: ['PrimaryNavigationConfigJsonConverter', 'Mintlify.Core.Models.PrimaryNavigationConfigJsonConverter', 'Mintlify.Core.Models', 'class', 'System.Text.Json.Serialization.JsonConverter<Mintlify.Core.Models.PrimaryNavigationConfig>']
+---
+
+## Definition
+
+**Assembly:** Mintlify.Core.dll
+
+**Namespace:** Mintlify.Core.Models
+
+**Inheritance:** System.Text.Json.Serialization.JsonConverter&lt;Mintlify.Core.Models.PrimaryNavigationConfig&gt;
+
+## Syntax
+
+```csharp
+Mintlify.Core.Models.PrimaryNavigationConfigJsonConverter
+```
+
+## Summary
+
+Custom JSON converter for PrimaryNavigationConfig that handles object format.
+
+## Constructors
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  .ctor
+
+#### Syntax
+
+```csharp
+public PrimaryNavigationConfigJsonConverter()
+```
+
+## Methods
+
+### <Icon icon="code-merge" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Read
+
+Reads and converts the JSON to a PrimaryNavigationConfig object.
+
+#### Syntax
+
+```csharp
+public override Mintlify.Core.Models.PrimaryNavigationConfig Read(ref System.Text.Json.Utf8JsonReader reader, System.Type typeToConvert, System.Text.Json.JsonSerializerOptions options)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `reader` | `System.Text.Json.Utf8JsonReader` | The JSON reader. |
+| `typeToConvert` | `System.Type` | The type to convert to. |
+| `options` | `System.Text.Json.JsonSerializerOptions` | The serializer options. |
+
+#### Returns
+
+Type: `Mintlify.Core.Models.PrimaryNavigationConfig?`
+A PrimaryNavigationConfig object.
+
+### <Icon icon="code-merge" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Write
+
+Writes a PrimaryNavigationConfig object as JSON.
+
+#### Syntax
+
+```csharp
+public override void Write(System.Text.Json.Utf8JsonWriter writer, Mintlify.Core.Models.PrimaryNavigationConfig value, System.Text.Json.JsonSerializerOptions options)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `writer` | `System.Text.Json.Utf8JsonWriter` | The JSON writer. |
+| `value` | `Mintlify.Core.Models.PrimaryNavigationConfig` | The PrimaryNavigationConfig object to write. |
+| `options` | `System.Text.Json.JsonSerializerOptions` | The serializer options. |
+

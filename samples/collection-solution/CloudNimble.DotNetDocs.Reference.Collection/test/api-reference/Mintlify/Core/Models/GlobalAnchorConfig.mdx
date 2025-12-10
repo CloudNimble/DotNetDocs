@@ -1,0 +1,272 @@
+---
+title: GlobalAnchorConfig
+description: "Represents an anchor configuration for global navigation in the Mintlify documentation site."
+icon: file-brackets-curly
+keywords: ['GlobalAnchorConfig', 'Mintlify.Core.Models.GlobalAnchorConfig', 'Mintlify.Core.Models', 'class', 'System.Object']
+---
+
+## Definition
+
+**Assembly:** Mintlify.Core.dll
+
+**Namespace:** Mintlify.Core.Models
+
+**Inheritance:** System.Object
+
+## Syntax
+
+```csharp
+Mintlify.Core.Models.GlobalAnchorConfig
+```
+
+## Summary
+
+Represents an anchor configuration for global navigation in the Mintlify documentation site.
+
+## Remarks
+
+This configuration defines an anchor link that appears globally across all sections
+            and pages, providing users with quick access to important external resources or key pages.
+
+## Constructors
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor
+
+#### Syntax
+
+```csharp
+public GlobalAnchorConfig()
+```
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public Object()
+```
+
+## Properties
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Anchor
+
+Gets or sets the display name for the anchor link.
+
+#### Syntax
+
+```csharp
+public string Anchor { get; set; }
+```
+
+#### Property Value
+
+Type: `string`
+
+#### Remarks
+
+Specifies the text that will be shown for the anchor link. Should be concise
+            and descriptive of the link's destination, such as "GitHub", "API Status",
+            "Support", etc. This is a required field.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Color
+
+Gets or sets the color configuration for the anchor.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.ColorPairConfig Color { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.ColorPairConfig?`
+
+#### Remarks
+
+Defines custom colors for the anchor link in light and dark modes.
+            This allows the anchor to have distinctive styling that matches
+            your brand or indicates different types of external resources.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Hidden
+
+Gets or sets whether this anchor is hidden by default.
+
+#### Syntax
+
+```csharp
+public System.Nullable<bool> Hidden { get; set; }
+```
+
+#### Property Value
+
+Type: `System.Nullable<bool>?`
+
+#### Remarks
+
+When true, this anchor will not be visible in the global navigation unless
+            specifically shown. This can be useful for anchors that are temporary
+            or not ready for public access.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Href
+
+Gets or sets the URL or path for this anchor link.
+
+#### Syntax
+
+```csharp
+public string Href { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+
+#### Remarks
+
+Specifies where users should be directed when they click on this anchor.
+            Can be a relative path within the documentation or an absolute URL for
+            external resources such as GitHub repositories, status pages, or support portals.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Icon
+
+Gets or sets the icon to display alongside the anchor name.
+
+#### Syntax
+
+```csharp
+public object Icon { get; set; }
+```
+
+#### Property Value
+
+Type: `object?`
+
+#### Remarks
+
+Can be a string icon name from the configured icon library, or an object
+            with detailed icon configuration including style and library properties.
+            The icon appears before the anchor text to provide visual context.
+
+## Methods
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Equals <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual bool Equals(object obj)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `obj` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Equals <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public static bool Equals(object objA, object objB)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `objA` | `object?` | - |
+| `objB` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetHashCode <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual int GetHashCode()
+```
+
+#### Returns
+
+Type: `int`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetType <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public System.Type GetType()
+```
+
+#### Returns
+
+Type: `System.Type`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> MemberwiseClone <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+protected internal object MemberwiseClone()
+```
+
+#### Returns
+
+Type: `object`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ReferenceEquals <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public static bool ReferenceEquals(object objA, object objB)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `objA` | `object?` | - |
+| `objB` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ToString <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual string ToString()
+```
+
+#### Returns
+
+Type: `string?`
+

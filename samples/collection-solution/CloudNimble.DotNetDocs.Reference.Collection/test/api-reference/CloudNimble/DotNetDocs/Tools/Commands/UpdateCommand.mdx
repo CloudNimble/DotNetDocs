@@ -1,0 +1,311 @@
+---
+title: UpdateCommand
+description: "Command-line tool for updating existing .docsproj files to use the latest DotNetDocs.Sdk version from NuGet."
+icon: file-brackets-curly
+keywords: ['UpdateCommand', 'CloudNimble.DotNetDocs.Tools.Commands.UpdateCommand', 'CloudNimble.DotNetDocs.Tools.Commands', 'class', 'CloudNimble.DotNetDocs.Tools.Commands.Base.DocsCommandBase']
+---
+
+## Definition
+
+**Assembly:** CloudNimble.DotNetDocs.Tools.dll
+
+**Namespace:** CloudNimble.DotNetDocs.Tools.Commands
+
+**Inheritance:** CloudNimble.DotNetDocs.Tools.Commands.Base.DocsCommandBase
+
+## Syntax
+
+```csharp
+CloudNimble.DotNetDocs.Tools.Commands.UpdateCommand
+```
+
+## Summary
+
+Command-line tool for updating existing .docsproj files to use the latest DotNetDocs.Sdk version from NuGet.
+
+## Remarks
+
+This command searches for all .docsproj files in the current directory (and optionally subdirectories),
+            queries NuGet.org for the latest SDK version, and updates the SDK reference in each file.
+
+## Constructors
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor
+
+#### Syntax
+
+```csharp
+public UpdateCommand()
+```
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Tools.Commands.Base.DocsCommandBase`</Note>
+
+#### Syntax
+
+```csharp
+public DocsCommandBase()
+```
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public Object()
+```
+
+## Properties
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ProjectPath
+
+Gets or sets the project name or path to a specific .docsproj file to update.
+
+#### Syntax
+
+```csharp
+public string ProjectPath { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Recursive
+
+Gets or sets whether to search recursively in subdirectories.
+
+#### Syntax
+
+```csharp
+public bool Recursive { get; set; }
+```
+
+#### Property Value
+
+Type: `bool`
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> UsePrerelease
+
+Gets or sets whether to use the latest prerelease version of the DotNetDocs.Sdk.
+
+#### Syntax
+
+```csharp
+public bool UsePrerelease { get; set; }
+```
+
+#### Property Value
+
+Type: `bool`
+
+## Methods
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Equals <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual bool Equals(object obj)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `obj` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Equals <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public static bool Equals(object objA, object objB)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `objA` | `object?` | - |
+| `objB` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetHashCode <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual int GetHashCode()
+```
+
+#### Returns
+
+Type: `int`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetLatestSdkVersionAsync <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Tools.Commands.Base.DocsCommandBase`</Note>
+
+Queries NuGet.org for the latest version of the DotNetDocs.Sdk package.
+
+#### Syntax
+
+```csharp
+protected static System.Threading.Tasks.Task<string> GetLatestSdkVersionAsync(bool includePrerelease)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `includePrerelease` | `bool` | Whether to include prerelease versions in the search. |
+
+#### Returns
+
+Type: `System.Threading.Tasks.Task<string?>`
+The latest version string, or null if the query fails.
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetType <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public System.Type GetType()
+```
+
+#### Returns
+
+Type: `System.Type`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetVersion <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Tools.Commands.Base.DocsCommandBase`</Note>
+
+Gets the version string for the tool.
+
+#### Syntax
+
+```csharp
+internal static string GetVersion()
+```
+
+#### Returns
+
+Type: `string`
+The version string.
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> MemberwiseClone <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+protected internal object MemberwiseClone()
+```
+
+#### Returns
+
+Type: `object`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> OnExecute
+
+Executes the command to update .docsproj SDK references to the latest version from NuGet.
+
+#### Syntax
+
+```csharp
+public System.Threading.Tasks.Task<int> OnExecute(McMaster.Extensions.CommandLineUtils.CommandLineApplication app)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `app` | `McMaster.Extensions.CommandLineUtils.CommandLineApplication` | The command-line application context used to access command-line arguments and configuration. |
+
+#### Returns
+
+Type: `System.Threading.Tasks.Task<int>`
+A task that represents the asynchronous operation. The task result is 0 if the update is
+            successful; otherwise, 1.
+
+#### Remarks
+
+If a specific project is not specified, the method searches for all .docsproj files in the current directory
+            (and subdirectories if --recursive is specified). The --project option accepts either a project name
+            (e.g., "MyProject.Docs") or a file path (e.g., "MyProject.Docs.docsproj" or "path/to/MyProject.Docs.docsproj").
+            Any errors encountered during execution are reported to the console, and a nonzero exit code is returned.
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ReferenceEquals <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public static bool ReferenceEquals(object objA, object objB)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `objA` | `object?` | - |
+| `objB` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ToString <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual string ToString()
+```
+
+#### Returns
+
+Type: `string?`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> WriteHeader <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Tools.Commands.Base.DocsCommandBase`</Note>
+
+Writes the DotNetDocs CLI header to the console with colorful ASCII art and version information.
+
+#### Syntax
+
+```csharp
+public static void WriteHeader()
+```
+
+#### Remarks
+
+This method displays a multi-line ASCII art logo combining the DotNetDocs branding with
+            version and attribution information. The output uses console colors to create an eye-catching
+            header for CLI operations.
+

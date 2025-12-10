@@ -1,0 +1,723 @@
+---
+title: DocsJsonManager
+description: "Loads and manages Mintlify docs.json configuration files with navigation manipulation capabilities."
+icon: file-brackets-curly
+keywords: ['DocsJsonManager', 'Mintlify.Core.DocsJsonManager', 'Mintlify.Core', 'class', 'System.Object']
+---
+
+## Definition
+
+**Assembly:** Mintlify.Core.dll
+
+**Namespace:** Mintlify.Core
+
+**Inheritance:** System.Object
+
+## Syntax
+
+```csharp
+Mintlify.Core.DocsJsonManager
+```
+
+## Summary
+
+Loads and manages Mintlify docs.json configuration files with navigation manipulation capabilities.
+
+## Remarks
+
+This class provides comprehensive support for loading, validating, and modifying Mintlify
+            documentation configuration files. It handles serialization using the standard Mintlify
+            JSON options and provides APIs for navigation manipulation.
+
+## Constructors
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor
+
+Initializes a new instance of the [DocsJsonManager](/api-reference/Mintlify/Core/DocsJsonManager) class.
+
+#### Syntax
+
+```csharp
+public DocsJsonManager(Mintlify.Core.DocsJsonValidator validator = null)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `validator` | `Mintlify.Core.DocsJsonValidator?` | The validator to use for validating configurations. If null, a new instance will be created. |
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor
+
+Initializes a new instance of the [DocsJsonManager](/api-reference/Mintlify/Core/DocsJsonManager) class with the specified file path.
+
+#### Syntax
+
+```csharp
+public DocsJsonManager(string filePath, Mintlify.Core.DocsJsonValidator validator = null)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `filePath` | `string` | The path to the docs.json file to load. |
+| `validator` | `Mintlify.Core.DocsJsonValidator?` | The validator to use for validating configurations. If null, a new instance will be created. |
+
+#### Exceptions
+
+| Exception | Description |
+|-----------|-------------|
+| `ArgumentException` | Thrown when the file path does not exist or is not a JSON file. |
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public Object()
+```
+
+## Properties
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Configuration
+
+Gets the loaded Mintlify documentation configuration.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.DocsJsonConfig Configuration { get; internal set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.DocsJsonConfig?`
+The [DocsJsonConfig](/api-reference/Mintlify/Core/Models/DocsJsonConfig) instance loaded from the file system or string content.
+            Returns null if no configuration has been loaded or if loading failed.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ConfigurationErrors
+
+Gets the collection of configuration loading errors encountered during processing.
+
+#### Syntax
+
+```csharp
+public System.Collections.Generic.List<System.CodeDom.Compiler.CompilerError> ConfigurationErrors { get; private set; }
+```
+
+#### Property Value
+
+Type: `System.Collections.Generic.List<System.CodeDom.Compiler.CompilerError>`
+A collection of [CompilerError](https://learn.microsoft.com/dotnet/api/system.codedom.compiler.compilererror) instances representing validation errors,
+            parsing failures, or other issues encountered during configuration loading.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> FilePath
+
+Gets the file path of the loaded docs.json configuration file.
+
+#### Syntax
+
+```csharp
+public string FilePath { get; private set; }
+```
+
+#### Property Value
+
+Type: `string?`
+The full path to the docs.json file that was loaded. Returns null if the configuration
+            was loaded from string content rather than a file.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> IsLoaded
+
+Gets a value indicating whether the configuration has been successfully loaded.
+
+#### Syntax
+
+```csharp
+public bool IsLoaded { get; }
+```
+
+#### Property Value
+
+Type: `bool`
+True if the configuration was loaded without errors; otherwise, false.
+
+## Methods
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> AddNavigationItem
+
+Adds a navigation item (page or group) to the specified collection, tracking paths appropriately.
+
+#### Syntax
+
+```csharp
+public bool AddNavigationItem(System.Collections.Generic.List<object> pages, object item)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `pages` | `System.Collections.Generic.List<object>` | The pages collection to add to. |
+| `item` | `object` | The item to add (string page path or GroupConfig). |
+
+#### Returns
+
+Type: `bool`
+True if the item was added; false if it was skipped (duplicate).
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> AddPage
+
+Adds a page to the navigation structure if it doesn't already exist.
+
+#### Syntax
+
+```csharp
+public bool AddPage(System.Collections.Generic.List<object> pages, string pagePath, bool allowDuplicatePaths = false, bool updateKnownPaths = true)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `pages` | `System.Collections.Generic.List<object>` | The pages collection to add to. |
+| `pagePath` | `string` | The page path to add. |
+| `allowDuplicatePaths` | `bool` | If true, allows adding duplicate paths; otherwise, skips if the path already exists. |
+| `updateKnownPaths` | `bool` | If true, updates the known page paths tracking; otherwise, only adds to the pages collection. |
+
+#### Returns
+
+Type: `bool`
+True if the page was added; false if it already existed and duplicates are not allowed.
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> AddPage
+
+Adds a page to a hierarchical group path (slash-separated) in the navigation structure.
+
+#### Syntax
+
+```csharp
+public bool AddPage(string groupPath, string pagePath, bool allowDuplicatePaths = false)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `groupPath` | `string` | The hierarchical group path (e.g., "Getting Started/API Reference"). |
+| `pagePath` | `string` | The page path to add. |
+| `allowDuplicatePaths` | `bool` | If true, allows adding duplicate paths; otherwise, skips if the path already exists. |
+
+#### Returns
+
+Type: `bool`
+True if the page was added; false if it already existed and duplicates are not allowed.
+
+#### Exceptions
+
+| Exception | Description |
+|-----------|-------------|
+| `InvalidOperationException` | Thrown when no configuration is loaded. |
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> AddPageToGroup
+
+Adds a page to a group if it doesn't already exist.
+
+#### Syntax
+
+```csharp
+public bool AddPageToGroup(Mintlify.Core.Models.GroupConfig group, string pagePath, bool allowDuplicatePaths = false, bool updateKnownPaths = true)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `group` | `Mintlify.Core.Models.GroupConfig` | The group to add the page to. |
+| `pagePath` | `string` | The page path to add. |
+| `allowDuplicatePaths` | `bool` | If true, allows adding duplicate paths; otherwise, skips if the path already exists. |
+| `updateKnownPaths` | `bool` | If true, updates the known page paths tracking; otherwise, only adds to the pages collection. |
+
+#### Returns
+
+Type: `bool`
+True if the page was added; false if it already existed and duplicates are not allowed.
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ApplyDefaults
+
+Applies default values to missing configuration properties.
+
+#### Syntax
+
+```csharp
+public void ApplyDefaults(string name = null, string theme = "mint")
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | `string?` | The name to use for the documentation site if not already set. |
+| `theme` | `string` | The theme to use if not already set (defaults to "mint"). |
+
+#### Exceptions
+
+| Exception | Description |
+|-----------|-------------|
+| `InvalidOperationException` | Thrown when no configuration is loaded. |
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ApplyUrlPrefix
+
+Applies a URL prefix to all page references in the navigation structure.
+
+#### Syntax
+
+```csharp
+public void ApplyUrlPrefix(string prefix)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `prefix` | `string` | The prefix to apply to all URLs. |
+
+#### Exceptions
+
+| Exception | Description |
+|-----------|-------------|
+| `ArgumentException` | Thrown when prefix is null or whitespace. |
+| `InvalidOperationException` | Thrown when no configuration is loaded. |
+
+#### Remarks
+
+This method recursively traverses the entire navigation structure and prepends the
+            specified prefix to all page URLs, href attributes, and root paths. The prefix is
+            normalized to ensure proper URL formatting (e.g., trailing slashes are handled).
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> CreateDefault
+
+Creates a default Mintlify documentation configuration with basic structure.
+
+#### Syntax
+
+```csharp
+public static Mintlify.Core.Models.DocsJsonConfig CreateDefault(string name, string theme = "mint")
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | `string` | The name of the documentation site. |
+| `theme` | `string` | The theme to use for the documentation site. |
+
+#### Returns
+
+Type: `Mintlify.Core.Models.DocsJsonConfig`
+A new [DocsJsonConfig](/api-reference/Mintlify/Core/Models/DocsJsonConfig) instance with default values.
+
+#### Exceptions
+
+| Exception | Description |
+|-----------|-------------|
+| `ArgumentException` | Thrown when name is null or whitespace. |
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Equals <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual bool Equals(object obj)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `obj` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Equals <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public static bool Equals(object objA, object objB)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `objA` | `object?` | - |
+| `objB` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> FindOrCreateGroup
+
+Finds or creates a group with the specified name in the pages collection.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.GroupConfig FindOrCreateGroup(System.Collections.Generic.List<object> pages, string groupName)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `pages` | `System.Collections.Generic.List<object>` | The pages collection to search/add to. |
+| `groupName` | `string` | The name of the group to find or create. |
+
+#### Returns
+
+Type: `Mintlify.Core.Models.GroupConfig`
+The existing or newly created group.
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetHashCode <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual int GetHashCode()
+```
+
+#### Returns
+
+Type: `int`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetType <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public System.Type GetType()
+```
+
+#### Returns
+
+Type: `System.Type`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> IsPathKnown
+
+Checks if a page path is already known (tracked for duplicate prevention).
+
+#### Syntax
+
+```csharp
+public bool IsPathKnown(string pagePath)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `pagePath` | `string` | The page path to check. |
+
+#### Returns
+
+Type: `bool`
+True if the path is already known; otherwise, false.
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Load
+
+Loads and parses the docs.json file from the file path specified in the constructor.
+
+#### Syntax
+
+```csharp
+public void Load()
+```
+
+#### Exceptions
+
+| Exception | Description |
+|-----------|-------------|
+| `InvalidOperationException` | Thrown when no file path has been specified. |
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Load
+
+Loads and parses the docs.json configuration from the specified string content.
+
+#### Syntax
+
+```csharp
+public void Load(string content)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `content` | `string` | The JSON content to parse as a docs.json configuration. |
+
+#### Exceptions
+
+| Exception | Description |
+|-----------|-------------|
+| `ArgumentException` | Thrown when content is null or whitespace. |
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Load
+
+Loads the specified configuration and applies validation and cleaning steps.
+
+#### Syntax
+
+```csharp
+public void Load(Mintlify.Core.Models.DocsJsonConfig config)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `config` | `Mintlify.Core.Models.DocsJsonConfig` | The configuration object to load. Cannot be null. |
+
+#### Remarks
+
+This method replaces any existing configuration and clears previous configuration
+            errors. After loading, the configuration is validated and navigation groups are cleaned to ensure
+            consistency.
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> MemberwiseClone <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+protected internal object MemberwiseClone()
+```
+
+#### Returns
+
+Type: `object`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Merge
+
+Merges another docs.json configuration into the current configuration.
+
+#### Syntax
+
+```csharp
+public void Merge(Mintlify.Core.Models.DocsJsonConfig other, bool combineBaseProperties = true, Mintlify.Core.Models.MergeOptions options = null)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `other` | `Mintlify.Core.Models.DocsJsonConfig` | The configuration to merge into the current one. |
+| `combineBaseProperties` | `bool` | If true, merges base properties; if false, only merges navigation. |
+| `options` | `Mintlify.Core.Models.MergeOptions?` | Optional merge options to control merge behavior. When null, default behavior is used. |
+
+#### Exceptions
+
+| Exception | Description |
+|-----------|-------------|
+| `ArgumentNullException` | Thrown when other is null. |
+| `InvalidOperationException` | Thrown when no configuration is loaded. |
+
+#### Remarks
+
+This method performs a shallow merge, with the other configuration taking precedence
+            for non-null values. Navigation structures are combined intelligently.
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> MergeNavigation
+
+Merges navigation from another NavigationConfig into the current configuration's navigation.
+
+#### Syntax
+
+```csharp
+public void MergeNavigation(Mintlify.Core.Models.NavigationConfig sourceNavigation, Mintlify.Core.Models.MergeOptions options = null)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `sourceNavigation` | `Mintlify.Core.Models.NavigationConfig` | The navigation configuration to merge from. |
+| `options` | `Mintlify.Core.Models.MergeOptions?` | Optional merge options to control merge behavior. |
+
+#### Exceptions
+
+| Exception | Description |
+|-----------|-------------|
+| `ArgumentNullException` | Thrown when sourceNavigation is null. |
+| `InvalidOperationException` | Thrown when no configuration is loaded. |
+
+#### Remarks
+
+This method intelligently merges navigation structures, combining groups with the same name
+            and deduplicating page references. Use the MergeOptions parameter to control specific
+            behaviors like how empty groups are handled.
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> MergeNavigation
+
+Merges navigation from an existing docs.json file into the current configuration.
+
+#### Syntax
+
+```csharp
+public void MergeNavigation(string filePath, Mintlify.Core.Models.MergeOptions options = null)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `filePath` | `string` | The path to the docs.json file containing navigation to merge. |
+| `options` | `Mintlify.Core.Models.MergeOptions?` | Optional merge options to control merge behavior. |
+
+#### Exceptions
+
+| Exception | Description |
+|-----------|-------------|
+| `ArgumentException` | Thrown when filePath is null or whitespace. |
+| `InvalidOperationException` | Thrown when no configuration is loaded. |
+| `FileNotFoundException` | Thrown when the specified file does not exist. |
+
+#### Remarks
+
+This method loads navigation from an external docs.json file and merges it into the
+            current configuration. Only the navigation structure is merged; other configuration
+            properties are not affected.
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> PopulateNavigationFromPath
+
+Populates the navigation structure from a directory path by scanning for MDX files.
+
+#### Syntax
+
+```csharp
+public void PopulateNavigationFromPath(string path, string[] fileExtensions = null, bool includeApiReference = false, bool preserveExisting = true, bool allowDuplicatePaths = false, string[] excludeDirectories = null)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `path` | `string` | The directory path to scan for documentation files. |
+| `fileExtensions` | `string[]?` | The file extensions to include (defaults to .mdx only). |
+| `includeApiReference` | `bool` | Whether to include the 'api-reference' directory in discovery (defaults to false). |
+| `preserveExisting` | `bool` | Whether to preserve existing navigation structure and merge discovered content (defaults to true). |
+| `allowDuplicatePaths` | `bool` | If true, allows adding duplicate paths; otherwise, skips duplicates. |
+| `excludeDirectories` | `string[]?` | Optional array of directory names to exclude from navigation discovery (e.g., DocumentationReference output directories). |
+
+#### Exceptions
+
+| Exception | Description |
+|-----------|-------------|
+| `ArgumentException` | Thrown when path is null or whitespace. |
+| `InvalidOperationException` | Thrown when no configuration is loaded. |
+| `DirectoryNotFoundException` | Thrown when the specified path does not exist. |
+
+#### Remarks
+
+
+
+This method scans the specified directory recursively and builds a navigation structure
+            based on the folder hierarchy and MDX files found. The method includes several advanced features:
+
+
+
+
+The method preserves the directory structure in the navigation while applying these intelligent
+            processing rules to create clean, organized documentation.
+
+
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ReferenceEquals <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public static bool ReferenceEquals(object objA, object objB)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `objA` | `object?` | - |
+| `objB` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Save
+
+Saves the current configuration to the file system using the original file path.
+
+#### Syntax
+
+```csharp
+public void Save()
+```
+
+#### Exceptions
+
+| Exception | Description |
+|-----------|-------------|
+| `InvalidOperationException` | Thrown when no configuration is loaded or no file path is specified. |
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Save
+
+Saves the current configuration to the specified file path.
+
+#### Syntax
+
+```csharp
+public void Save(string filePath)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `filePath` | `string` | The file path where the configuration should be saved. |
+
+#### Exceptions
+
+| Exception | Description |
+|-----------|-------------|
+| `ArgumentException` | Thrown when filePath is null or whitespace. |
+| `InvalidOperationException` | Thrown when no configuration is loaded. |
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ToString <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual string ToString()
+```
+
+#### Returns
+
+Type: `string?`
+

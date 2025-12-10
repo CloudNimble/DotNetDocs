@@ -109,9 +109,30 @@ namespace CloudNimble.DotNetDocs.Core
         /// <returns>A task representing the asynchronous processing operation.</returns>
         public async Task ProcessAsync(IEnumerable<(string assemblyPath, string xmlPath)> assemblies)
         {
+            var assemblyList = assemblies.ToList();
+            var hasReferences = projectContext.DocumentationReferences.Any();
+
+            // Documentation-only mode: only process references, no assemblies
+            if (assemblyList.Count == 0)
+            {
+                if (hasReferences)
+                {
+                    // Copy referenced documentation
+                    await CopyReferencedDocumentationAsync();
+
+                    // Renderers still need to run for navigation file processing (pass null model)
+                    foreach (var renderer in renderers)
+                    {
+                        await renderer.RenderAsync(null);
+                    }
+                }
+
+                return;
+            }
+
             // STEP 1: Collect all DocAssembly models
             var docAssemblies = new List<DocAssembly>();
-            foreach (var (assemblyPath, xmlPath) in assemblies)
+            foreach (var (assemblyPath, xmlPath) in assemblyList)
             {
                 var manager = GetOrCreateAssemblyManager(assemblyPath, xmlPath);
                 var model = await manager.DocumentAsync(projectContext);
@@ -123,7 +144,7 @@ namespace CloudNimble.DotNetDocs.Core
             // when multiple assemblies extend the same external type (e.g., IServiceCollection)
             var mergedModel = await MergeDocAssembliesAsync(docAssemblies);
 
-            if (projectContext.ConceptualDocsEnabled)
+            if (mergedModel is not null && projectContext.ConceptualDocsEnabled)
             {
                 // STEP 3: Generate placeholder files for merged model with all renderers
                 // No longer per-assembly, so shadow classes are deduplicated
@@ -135,14 +156,17 @@ namespace CloudNimble.DotNetDocs.Core
             }
 
             // STEP 5: Apply enrichers, transformers, and renderers
-            foreach (var enricher in enrichers)
+            if (mergedModel is not null)
             {
-                await enricher.EnrichAsync(mergedModel);
-            }
+                foreach (var enricher in enrichers)
+                {
+                    await enricher.EnrichAsync(mergedModel);
+                }
 
-            foreach (var transformer in transformers)
-            {
-                await transformer.TransformAsync(mergedModel);
+                foreach (var transformer in transformers)
+                {
+                    await transformer.TransformAsync(mergedModel);
+                }
             }
 
             foreach (var renderer in renderers)
@@ -152,7 +176,7 @@ namespace CloudNimble.DotNetDocs.Core
 
             // STEP 6: Copy referenced documentation files if any references exist
             // Note: Navigation combining happens inside each renderer's RenderAsync() before saving
-            if (projectContext.DocumentationReferences.Any())
+            if (hasReferences)
             {
                 await CopyReferencedDocumentationAsync();
             }
@@ -167,14 +191,15 @@ namespace CloudNimble.DotNetDocs.Core
         /// Merges multiple DocAssembly models into a single unified model.
         /// </summary>
         /// <param name="assemblies">The collection of DocAssembly models to merge.</param>
-        /// <returns>A task representing the asynchronous merge operation.</returns>
-        internal async Task<DocAssembly> MergeDocAssembliesAsync(List<DocAssembly> assemblies)
+        /// <returns>A task representing the asynchronous merge operation, or null if no assemblies are provided.</returns>
+        internal async Task<DocAssembly?> MergeDocAssembliesAsync(List<DocAssembly> assemblies)
         {
             ArgumentNullException.ThrowIfNull(assemblies);
 
             if (assemblies.Count == 0)
             {
-                throw new ArgumentException("At least one assembly must be provided", nameof(assemblies));
+                // Return null for documentation-only scenarios (no assemblies to document)
+                return null;
             }
 
             if (assemblies.Count == 1)
