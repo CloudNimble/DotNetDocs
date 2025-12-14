@@ -44,7 +44,7 @@ var model = await manager.DocumentAsync("MyLib.dll", "MyLib.xml", context);
 
 ### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor
 
-Initializes a new instance of [ProjectContext](/api-reference/CloudNimble/DotNetDocs/Core/ProjectContext) with default settings.
+Initializes a new instance of [ProjectContext](/test/api-reference/CloudNimble/DotNetDocs/Core/ProjectContext) with default settings.
 
 #### Syntax
 
@@ -54,7 +54,7 @@ public ProjectContext()
 
 ### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor
 
-Initializes a new instance of [ProjectContext](/api-reference/CloudNimble/DotNetDocs/Core/ProjectContext) with optional included members and referenced assemblies.
+Initializes a new instance of [ProjectContext](/test/api-reference/CloudNimble/DotNetDocs/Core/ProjectContext) with optional included members and referenced assemblies.
 
 #### Syntax
 
@@ -140,7 +140,7 @@ public bool CreateExternalTypeReferences { get; set; }
 #### Property Value
 
 Type: `bool`
-`true` to create minimal [DocType](/api-reference/CloudNimble/DotNetDocs/Core/DocType) entries for types outside the assembly
+`true` to create minimal [DocType](/test/api-reference/CloudNimble/DotNetDocs/Core/DocType) entries for types outside the assembly
             that are extended by extension methods; `false` to only relocate extensions for types
             within the assembly. Default is `true`.
 
@@ -163,7 +163,7 @@ public System.Collections.Generic.List<CloudNimble.DotNetDocs.Core.Documentation
 #### Property Value
 
 Type: `System.Collections.Generic.List<CloudNimble.DotNetDocs.Core.DocumentationReference>`
-A list of [DocumentationReference](/api-reference/CloudNimble/DotNetDocs/Core/DocumentationReference) objects representing external documentation to be combined.
+A list of [DocumentationReference](/test/api-reference/CloudNimble/DotNetDocs/Core/DocumentationReference) objects representing external documentation to be combined.
 
 #### Examples
 
@@ -415,8 +415,8 @@ public string GetFullConceptualPath()
 #### Returns
 
 Type: `string`
-The absolute path to the conceptual documentation folder if [ProjectContext.ConceptualPath](/api-reference/CloudNimble/DotNetDocs/Core/ProjectContext#conceptualpath) is absolute,
-             or the path combined with [ProjectContext.DocumentationRootPath](/api-reference/CloudNimble/DotNetDocs/Core/ProjectContext#documentationrootpath) if [ProjectContext.ConceptualPath](/api-reference/CloudNimble/DotNetDocs/Core/ProjectContext#conceptualpath) is relative.
+The absolute path to the conceptual documentation folder if [ProjectContext.ConceptualPath](/test/api-reference/CloudNimble/DotNetDocs/Core/ProjectContext#conceptualpath) is absolute,
+             or the path combined with [ProjectContext.DocumentationRootPath](/test/api-reference/CloudNimble/DotNetDocs/Core/ProjectContext#documentationrootpath) if [ProjectContext.ConceptualPath](/test/api-reference/CloudNimble/DotNetDocs/Core/ProjectContext#conceptualpath) is relative.
 
 #### Examples
 
@@ -474,9 +474,9 @@ The folder path representation of the namespace.
 
 #### Remarks
 
-When [FileNamingOptions.NamespaceMode](/api-reference/CloudNimble/DotNetDocs/Core/Configuration/FileNamingOptions#namespacemode) is [NamespaceMode.Folder](/api-reference/CloudNimble/DotNetDocs/Core/Configuration/NamespaceMode#folder),
+When [FileNamingOptions.NamespaceMode](/test/api-reference/CloudNimble/DotNetDocs/Core/Configuration/FileNamingOptions#namespacemode) is [NamespaceMode.Folder](/test/api-reference/CloudNimble/DotNetDocs/Core/Configuration/NamespaceMode#folder),
             this returns a path with folders for each namespace part (e.g., "System/Collections/Generic").
-            When using [NamespaceMode.File](/api-reference/CloudNimble/DotNetDocs/Core/Configuration/NamespaceMode#file), this returns an empty string as no folder
+            When using [NamespaceMode.File](/test/api-reference/CloudNimble/DotNetDocs/Core/Configuration/NamespaceMode#file), this returns an empty string as no folder
             structure is created.
 
 ### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetSafeNamespaceName

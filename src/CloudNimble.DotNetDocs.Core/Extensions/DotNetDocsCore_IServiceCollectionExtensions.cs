@@ -51,6 +51,9 @@ namespace Microsoft.Extensions.DependencyInjection
             // Register the MarkdownXmlTransformer for processing XML documentation tags
             services.TryAddEnumerable(ServiceDescriptor.Scoped<IDocTransformer, MarkdownXmlTransformer>());
 
+            // Register the MarkdownDocReferenceHandler for processing DocumentationReferences
+            services.TryAddEnumerable(ServiceDescriptor.Scoped<IDocReferenceHandler, MarkdownDocReferenceHandler>());
+
             return services;
         }
 
@@ -126,13 +129,19 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="services">The service collection.</param>
         /// <returns>The service collection for chaining.</returns>
         /// <remarks>
-        /// Registers MarkdownRenderer as Scoped implementation of IDocRenderer.
-        /// Also registers MarkdownXmlTransformer to process XML documentation tags.
+        /// <para>Registers the following services:</para>
+        /// <list type="bullet">
+        /// <item><description>MarkdownRenderer as Scoped implementation of IDocRenderer</description></item>
+        /// <item><description>MarkdownXmlTransformer for processing XML documentation tags</description></item>
+        /// <item><description>MarkdownDocReferenceHandler for processing DocumentationReferences</description></item>
+        /// </list>
         /// </remarks>
         public static IServiceCollection AddMarkdownRenderer(this IServiceCollection services)
         {
             services.TryAddEnumerable(ServiceDescriptor.Scoped<IDocRenderer, MarkdownRenderer>());
             services.TryAddEnumerable(ServiceDescriptor.Scoped<IDocTransformer, MarkdownXmlTransformer>());
+            services.TryAddEnumerable(ServiceDescriptor.Scoped<IDocReferenceHandler, MarkdownDocReferenceHandler>());
+
             return services;
         }
 

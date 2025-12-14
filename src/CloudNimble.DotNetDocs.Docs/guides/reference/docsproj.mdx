@@ -22,8 +22,8 @@ Every `.docsproj` file must reference the DotNetDocs.Sdk:
 </Project>
 ```
 
-```xml Preview (1.2.0-preview.1)
-<Project Sdk="DotNetDocs.Sdk/1.2.0-preview.1">
+```xml Preview (1.2.0-preview.5)
+<Project Sdk="DotNetDocs.Sdk/1.2.0-preview.5">
   <!-- Your configuration here -->
 </Project>
 ```
@@ -233,6 +233,82 @@ Every `.docsproj` file must reference the DotNetDocs.Sdk:
   </Info>
 </ParamField>
 
+## Documentation References
+
+The `<DocumentationReference>` item allows you to combine multiple documentation projects into a single unified site. This is useful for organizations with multiple libraries or products that should share a common documentation portal.
+
+<ParamField path="DocumentationReference" type="MSBuild Item">
+  References another `.docsproj` file to include in your documentation output.
+
+  **Attributes:**
+
+  | Attribute | Required | Description |
+  |-----------|----------|-------------|
+  | `Include` | Yes | Path to the referenced `.docsproj` file |
+  | `DestinationPath` | Yes | URL-friendly subfolder name for the copied content |
+  | `IntegrationType` | No | How to integrate navigation: `Tabs` or `Products` (default: `Tabs`) |
+  | `Name` | No | Display name for the navigation tab/product (defaults to project name) |
+
+  ```xml
+  <ItemGroup>
+    <DocumentationReference
+      Include="..\MyLib\MyLib.Docs.docsproj"
+      DestinationPath="my-lib"
+      IntegrationType="Tabs"
+      Name="My Library" />
+  </ItemGroup>
+  ```
+</ParamField>
+
+### How References Are Processed
+
+When you include a `DocumentationReference`, the SDK:
+
+1. **Copies content files** to `/{DestinationPath}/` in your output
+2. **Relocates shared resources** (`images/`, `snippets/`) to central locations with namespacing
+3. **Rewrites internal paths** in MDX files to reference the relocated resources
+4. **Merges navigation** into your `docs.json` as a Tab or Product
+
+<Info>
+  For Mintlify documentation, see [Collections](/providers/mintlify/collections) for detailed information about how path rewriting and resource relocation work.
+</Info>
+
+### Multiple References Example
+
+```xml
+<Project Sdk="DotNetDocs.Sdk/1.2.0-preview.5">
+  <PropertyGroup>
+    <DocumentationType>Mintlify</DocumentationType>
+    <MintlifyTemplate>
+      <Name>My Platform</Name>
+      <Navigation Mode="Unified" Type="Tabs" Name="Platform">
+        <Pages>
+          <Groups>
+            <Group Name="Overview" Icon="house">
+              <Pages>index;quickstart</Pages>
+            </Group>
+          </Groups>
+        </Pages>
+      </Navigation>
+    </MintlifyTemplate>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <DocumentationReference
+      Include="..\LibraryA\LibraryA.Docs.docsproj"
+      DestinationPath="library-a"
+      IntegrationType="Tabs"
+      Name="Library A" />
+
+    <DocumentationReference
+      Include="..\LibraryB\LibraryB.Docs.docsproj"
+      DestinationPath="library-b"
+      IntegrationType="Tabs"
+      Name="Library B" />
+  </ItemGroup>
+</Project>
+```
+
 ## Advanced Configuration
 
 ### Build Behavior
@@ -308,8 +384,8 @@ Here's a complete `.docsproj` file demonstrating common configuration:
 </Project>
 ```
 
-```xml Preview (1.2.0-preview.1)
-<Project Sdk="DotNetDocs.Sdk/1.2.0-preview.1">
+```xml Preview (1.2.0-preview.5)
+<Project Sdk="DotNetDocs.Sdk/1.2.0-preview.5">
 
   <PropertyGroup>
     <!-- Documentation Type -->

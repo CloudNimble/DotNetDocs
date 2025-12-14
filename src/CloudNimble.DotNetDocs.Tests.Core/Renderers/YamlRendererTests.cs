@@ -852,8 +852,8 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
         /// these are unit test baselines for the renderer itself, not integration test baselines.
         /// The renderer should be tested in isolation without transformers applied.
         /// </remarks>
-        //[TestMethod]
-        //[DataRow(projectPath)]
+        [TestMethod]
+        [DataRow(projectPath)]
         [BreakdanceManifestGenerator]
         public async Task GenerateYamlBaselines(string projectPath)
         {

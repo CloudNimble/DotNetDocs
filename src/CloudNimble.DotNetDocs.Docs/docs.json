@@ -42,7 +42,8 @@
           "guides/deployment",
           "guides/cli-reference",
           "guides/collections",
-          "guides/docsproj"
+          "guides/docsproj",
+          "guides/path-rewriting-test"
         ]
       },
       {
@@ -107,13 +108,16 @@
                       "api-reference/CloudNimble/DotNetDocs/Core/DocNamespace",
                       "api-reference/CloudNimble/DotNetDocs/Core/DocParameter",
                       "api-reference/CloudNimble/DotNetDocs/Core/DocReference",
+                      "api-reference/CloudNimble/DotNetDocs/Core/DocReferenceHandlerBase",
                       "api-reference/CloudNimble/DotNetDocs/Core/DocType",
                       "api-reference/CloudNimble/DotNetDocs/Core/DocTypeParameter",
                       "api-reference/CloudNimble/DotNetDocs/Core/DocumentationManager",
                       "api-reference/CloudNimble/DotNetDocs/Core/DocumentationReference",
                       "api-reference/CloudNimble/DotNetDocs/Core/IDocEnricher",
+                      "api-reference/CloudNimble/DotNetDocs/Core/IDocReferenceHandler",
                       "api-reference/CloudNimble/DotNetDocs/Core/IDocRenderer",
                       "api-reference/CloudNimble/DotNetDocs/Core/IDocTransformer",
+                      "api-reference/CloudNimble/DotNetDocs/Core/MarkdownDocReferenceHandler",
                       "api-reference/CloudNimble/DotNetDocs/Core/ProjectContext",
                       "api-reference/CloudNimble/DotNetDocs/Core/ReferenceType",
                       {
@@ -169,6 +173,7 @@
                     "pages": [
                       "api-reference/CloudNimble/DotNetDocs/Mintlify/index",
                       "api-reference/CloudNimble/DotNetDocs/Mintlify/DocsNavigationConfig",
+                      "api-reference/CloudNimble/DotNetDocs/Mintlify/MintlifyDocReferenceHandler",
                       "api-reference/CloudNimble/DotNetDocs/Mintlify/MintlifyIcons",
                       "api-reference/CloudNimble/DotNetDocs/Mintlify/MintlifyRenderer",
                       "api-reference/CloudNimble/DotNetDocs/Mintlify/MintlifyRendererOptions",

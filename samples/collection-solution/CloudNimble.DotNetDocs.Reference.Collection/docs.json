@@ -49,7 +49,8 @@
               "test/guides/deployment",
               "test/guides/cli-reference",
               "test/guides/collections",
-              "test/guides/docsproj"
+              "test/guides/docsproj",
+              "test/guides/path-rewriting-test"
             ]
           },
           {
@@ -114,13 +115,16 @@
                           "test/api-reference/CloudNimble/DotNetDocs/Core/DocNamespace",
                           "test/api-reference/CloudNimble/DotNetDocs/Core/DocParameter",
                           "test/api-reference/CloudNimble/DotNetDocs/Core/DocReference",
+                          "test/api-reference/CloudNimble/DotNetDocs/Core/DocReferenceHandlerBase",
                           "test/api-reference/CloudNimble/DotNetDocs/Core/DocType",
                           "test/api-reference/CloudNimble/DotNetDocs/Core/DocTypeParameter",
                           "test/api-reference/CloudNimble/DotNetDocs/Core/DocumentationManager",
                           "test/api-reference/CloudNimble/DotNetDocs/Core/DocumentationReference",
                           "test/api-reference/CloudNimble/DotNetDocs/Core/IDocEnricher",
+                          "test/api-reference/CloudNimble/DotNetDocs/Core/IDocReferenceHandler",
                           "test/api-reference/CloudNimble/DotNetDocs/Core/IDocRenderer",
                           "test/api-reference/CloudNimble/DotNetDocs/Core/IDocTransformer",
+                          "test/api-reference/CloudNimble/DotNetDocs/Core/MarkdownDocReferenceHandler",
                           "test/api-reference/CloudNimble/DotNetDocs/Core/ProjectContext",
                           "test/api-reference/CloudNimble/DotNetDocs/Core/ReferenceType",
                           {
@@ -176,6 +180,7 @@
                         "pages": [
                           "test/api-reference/CloudNimble/DotNetDocs/Mintlify/index",
                           "test/api-reference/CloudNimble/DotNetDocs/Mintlify/DocsNavigationConfig",
+                          "test/api-reference/CloudNimble/DotNetDocs/Mintlify/MintlifyDocReferenceHandler",
                           "test/api-reference/CloudNimble/DotNetDocs/Mintlify/MintlifyIcons",
                           "test/api-reference/CloudNimble/DotNetDocs/Mintlify/MintlifyRenderer",
                           "test/api-reference/CloudNimble/DotNetDocs/Mintlify/MintlifyRendererOptions",
@@ -187,41 +192,6 @@
                             "pages": [
                               "test/api-reference/CloudNimble/DotNetDocs/Mintlify/Transformers/index",
                               "test/api-reference/CloudNimble/DotNetDocs/Mintlify/Transformers/MintlifyMarkdownTransformer"
-                            ]
-                          }
-                        ]
-                      },
-                      {
-                        "group": "Tools",
-                        "icon": "folder-tree",
-                        "pages": [
-                          "test/api-reference/CloudNimble/DotNetDocs/Tools/index",
-                          "test/api-reference/CloudNimble/DotNetDocs/Tools/Program",
-                          {
-                            "group": "Commands",
-                            "icon": "folder-tree",
-                            "pages": [
-                              "test/api-reference/CloudNimble/DotNetDocs/Tools/Commands/index",
-                              "test/api-reference/CloudNimble/DotNetDocs/Tools/Commands/AddCommand",
-                              "test/api-reference/CloudNimble/DotNetDocs/Tools/Commands/BuildCommand",
-                              "test/api-reference/CloudNimble/DotNetDocs/Tools/Commands/DocsRootCommand",
-                              "test/api-reference/CloudNimble/DotNetDocs/Tools/Commands/UpdateCommand",
-                              {
-                                "group": "Base",
-                                "icon": "folder-tree",
-                                "pages": [
-                                  "test/api-reference/CloudNimble/DotNetDocs/Tools/Commands/Base/index",
-                                  "test/api-reference/CloudNimble/DotNetDocs/Tools/Commands/Base/DocsCommandBase"
-                                ]
-                              }
-                            ]
-                          },
-                          {
-                            "group": "Models",
-                            "icon": "folder-tree",
-                            "pages": [
-                              "test/api-reference/CloudNimble/DotNetDocs/Tools/Models/index",
-                              "test/api-reference/CloudNimble/DotNetDocs/Tools/Models/NuGetVersion"
                             ]
                           }
                         ]

@@ -1,0 +1,95 @@
+---
+title: IDocReferenceHandler
+description: "Defines a handler for processing documentation references from other projects."
+icon: plug
+keywords: ['IDocReferenceHandler', 'CloudNimble.DotNetDocs.Core.IDocReferenceHandler', 'CloudNimble.DotNetDocs.Core', 'interface']
+---
+
+## Definition
+
+**Assembly:** CloudNimble.DotNetDocs.Core.dll
+
+**Namespace:** CloudNimble.DotNetDocs.Core
+
+## Syntax
+
+```csharp
+CloudNimble.DotNetDocs.Core.IDocReferenceHandler
+```
+
+## Summary
+
+Defines a handler for processing documentation references from other projects.
+
+## Remarks
+
+
+
+
+            Implementations of this interface are responsible for copying files from referenced documentation
+            projects, rewriting internal paths in content files, and relocating resources to appropriate
+            locations in the collection project.
+            
+
+
+
+
+            This interface follows the same pattern as [IDocEnricher](/test/api-reference/CloudNimble/DotNetDocs/Core/IDocEnricher), [IDocTransformer](/test/api-reference/CloudNimble/DotNetDocs/Core/IDocTransformer),
+            and [IDocRenderer](/test/api-reference/CloudNimble/DotNetDocs/Core/IDocRenderer) for format-specific documentation processing.
+            
+
+
+
+## Properties
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> DocumentationType <Badge color="orange">Abstract</Badge>
+
+Gets the documentation type this handler supports.
+
+#### Syntax
+
+```csharp
+CloudNimble.DotNetDocs.Core.Configuration.SupportedDocumentationType DocumentationType { get; }
+```
+
+#### Property Value
+
+Type: `CloudNimble.DotNetDocs.Core.Configuration.SupportedDocumentationType`
+The [SupportedDocumentationType](/test/api-reference/CloudNimble/DotNetDocs/Core/Configuration/SupportedDocumentationType) that this handler can process.
+
+## Methods
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ProcessAsync <Badge color="orange">Abstract</Badge>
+
+Processes a documentation reference by copying files, rewriting content paths,
+            and relocating resources as appropriate for this documentation format.
+
+#### Syntax
+
+```csharp
+System.Threading.Tasks.Task ProcessAsync(CloudNimble.DotNetDocs.Core.DocumentationReference reference, string documentationRootPath)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `reference` | `CloudNimble.DotNetDocs.Core.DocumentationReference` | The documentation reference to process. |
+| `documentationRootPath` | `string` | The root path of the collection documentation output. |
+
+#### Returns
+
+Type: `System.Threading.Tasks.Task`
+A task representing the asynchronous processing operation.
+
+#### Remarks
+
+
+
+
+            Implementations should handle the following responsibilities:
+            
+
+
+
+

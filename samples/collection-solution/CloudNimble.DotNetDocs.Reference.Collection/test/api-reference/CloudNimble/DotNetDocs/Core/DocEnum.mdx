@@ -26,14 +26,14 @@ Represents documentation for a .NET enum type.
 ## Remarks
 
 Contains metadata about an enum type and its values, extracted from Roslyn symbols
-            and enhanced with conceptual documentation. Inherits from [DocType](/api-reference/CloudNimble/DotNetDocs/Core/DocType) but
+            and enhanced with conceptual documentation. Inherits from [DocType](/test/api-reference/CloudNimble/DotNetDocs/Core/DocType) but
             uses a specialized structure for enum values instead of the Members collection.
 
 ## Constructors
 
 ### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor
 
-Initializes a new instance of the [DocEnum](/api-reference/CloudNimble/DotNetDocs/Core/DocEnum) class.
+Initializes a new instance of the [DocEnum](/test/api-reference/CloudNimble/DotNetDocs/Core/DocEnum) class.
 
 #### Syntax
 
@@ -57,7 +57,7 @@ public DocEnum(Microsoft.CodeAnalysis.ITypeSymbol symbol)
 
 <Note>Inherited from `CloudNimble.DotNetDocs.Core.DocType`</Note>
 
-Initializes a new instance of the [DocType](/api-reference/CloudNimble/DotNetDocs/Core/DocType) class.
+Initializes a new instance of the [DocType](/test/api-reference/CloudNimble/DotNetDocs/Core/DocType) class.
 
 #### Syntax
 
@@ -74,7 +74,7 @@ This parameterless constructor is provided for deserialization purposes only.
 
 <Note>Inherited from `CloudNimble.DotNetDocs.Core.DocType`</Note>
 
-Initializes a new instance of the [DocType](/api-reference/CloudNimble/DotNetDocs/Core/DocType) class.
+Initializes a new instance of the [DocType](/test/api-reference/CloudNimble/DotNetDocs/Core/DocType) class.
 
 #### Syntax
 
@@ -98,7 +98,7 @@ public DocType(Microsoft.CodeAnalysis.ITypeSymbol symbol)
 
 <Note>Inherited from `CloudNimble.DotNetDocs.Core.DocEntity`</Note>
 
-Initializes a new instance of the [DocEntity](/api-reference/CloudNimble/DotNetDocs/Core/DocEntity) class.
+Initializes a new instance of the [DocEntity](/test/api-reference/CloudNimble/DotNetDocs/Core/DocEntity) class.
 
 #### Syntax
 
@@ -110,7 +110,7 @@ protected DocEntity()
 
 <Note>Inherited from `CloudNimble.DotNetDocs.Core.DocEntity`</Note>
 
-Initializes a new instance of the [DocEntity](/api-reference/CloudNimble/DotNetDocs/Core/DocEntity) class with an ISymbol.
+Initializes a new instance of the [DocEntity](/test/api-reference/CloudNimble/DotNetDocs/Core/DocEntity) class with an ISymbol.
 
 #### Syntax
 
@@ -309,7 +309,7 @@ Type: `bool`
 
 #### Remarks
 
-External references are minimal [DocType](/api-reference/CloudNimble/DotNetDocs/Core/DocType) instances created when
+External references are minimal [DocType](/test/api-reference/CloudNimble/DotNetDocs/Core/DocType) instances created when
             extension methods target types outside the current assembly. These types link to
             official documentation rather than duplicating external API documentation.
 
@@ -551,7 +551,7 @@ Collection of type parameter documentation from XML &lt;typeparam&gt; tags.
 
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> UnderlyingType
 
-Gets or sets the underlying type of the enum as a [DocReference](/api-reference/CloudNimble/DotNetDocs/Core/DocReference).
+Gets or sets the underlying type of the enum as a [DocReference](/test/api-reference/CloudNimble/DotNetDocs/Core/DocReference).
 
 #### Syntax
 

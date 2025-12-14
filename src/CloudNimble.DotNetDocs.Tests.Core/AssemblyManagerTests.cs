@@ -315,7 +315,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             var json = SerializeToJson(result);
 
             // Compare against baseline
-            var baselinePath = Path.Combine("..", "..", "..", "Baselines", "AssemblyManager", "BasicAssembly.json");
+            var baselinePath = Path.Combine(projectPath, "Baselines", framework, "AssemblyManager", "BasicAssembly.json");
             var fullPath = Path.GetFullPath(baselinePath);
 
             if (File.Exists(baselinePath))
@@ -345,8 +345,8 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
             
             var manager = new AssemblyManager(assemblyPath, xmlPath);
-            var directory = Path.Combine(projectPath, "Baselines", "AssemblyManager");
-            
+            var directory = Path.Combine(projectPath, "Baselines", framework, "AssemblyManager");
+
             if (!Directory.Exists(directory))
             {
                 Directory.CreateDirectory(directory);

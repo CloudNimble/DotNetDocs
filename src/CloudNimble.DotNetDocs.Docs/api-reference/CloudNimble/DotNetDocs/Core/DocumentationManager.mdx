@@ -38,7 +38,7 @@ Initializes a new instance of the [DocumentationManager](/api-reference/CloudNim
 #### Syntax
 
 ```csharp
-public DocumentationManager(CloudNimble.DotNetDocs.Core.ProjectContext projectContext, System.Collections.Generic.IEnumerable<CloudNimble.DotNetDocs.Core.IDocEnricher> enrichers = null, System.Collections.Generic.IEnumerable<CloudNimble.DotNetDocs.Core.IDocTransformer> transformers = null, System.Collections.Generic.IEnumerable<CloudNimble.DotNetDocs.Core.IDocRenderer> renderers = null)
+public DocumentationManager(CloudNimble.DotNetDocs.Core.ProjectContext projectContext, System.Collections.Generic.IEnumerable<CloudNimble.DotNetDocs.Core.IDocEnricher> enrichers = null, System.Collections.Generic.IEnumerable<CloudNimble.DotNetDocs.Core.IDocTransformer> transformers = null, System.Collections.Generic.IEnumerable<CloudNimble.DotNetDocs.Core.IDocRenderer> renderers = null, System.Collections.Generic.IEnumerable<CloudNimble.DotNetDocs.Core.IDocReferenceHandler> referenceHandlers = null)
 ```
 
 #### Parameters
@@ -49,6 +49,7 @@ public DocumentationManager(CloudNimble.DotNetDocs.Core.ProjectContext projectCo
 | `enrichers` | `System.Collections.Generic.IEnumerable<CloudNimble.DotNetDocs.Core.IDocEnricher>?` | The enrichers to apply to documentation entities. |
 | `transformers` | `System.Collections.Generic.IEnumerable<CloudNimble.DotNetDocs.Core.IDocTransformer>?` | The transformers to apply to the documentation model. |
 | `renderers` | `System.Collections.Generic.IEnumerable<CloudNimble.DotNetDocs.Core.IDocRenderer>?` | The renderers to generate output formats. |
+| `referenceHandlers` | `System.Collections.Generic.IEnumerable<CloudNimble.DotNetDocs.Core.IDocReferenceHandler>?` | The handlers for processing documentation references. |
 
 #### Remarks
 

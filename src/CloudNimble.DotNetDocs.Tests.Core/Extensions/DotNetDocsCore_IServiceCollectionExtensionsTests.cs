@@ -69,6 +69,19 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Extensions
         }
 
         [TestMethod]
+        public void AddDotNetDocs_RegistersMarkdownDocReferenceHandler()
+        {
+            // Arrange & Act
+            TestHostBuilder.ConfigureServices(services => services.AddDotNetDocs());
+            TestSetup();
+
+            // Assert
+            var handlers = TestHost.Services.GetServices<IDocReferenceHandler>().ToList();
+            handlers.Should().ContainSingle();
+            handlers.Should().Contain(h => h is MarkdownDocReferenceHandler);
+        }
+
+        [TestMethod]
         public void AddDotNetDocs_ConfiguresProjectContext()
         {
             // Arrange
@@ -172,7 +185,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Extensions
         public void AddMarkdownRenderer_RegistersOnlyMarkdownRenderer()
         {
             // Arrange & Act
-            TestHostBuilder.ConfigureServices(services => 
+            TestHostBuilder.ConfigureServices(services =>
             {
                 services.AddDotNetDocsCore();
                 services.AddMarkdownRenderer();
@@ -183,6 +196,23 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Extensions
             var renderers = TestHost.Services.GetServices<IDocRenderer>().ToList();
             renderers.Should().ContainSingle();
             renderers.Should().AllBeOfType<MarkdownRenderer>();
+        }
+
+        [TestMethod]
+        public void AddMarkdownRenderer_RegistersMarkdownDocReferenceHandler()
+        {
+            // Arrange & Act
+            TestHostBuilder.ConfigureServices(services =>
+            {
+                services.AddDotNetDocsCore();
+                services.AddMarkdownRenderer();
+            });
+            TestSetup();
+
+            // Assert
+            var handlers = TestHost.Services.GetServices<IDocReferenceHandler>().ToList();
+            handlers.Should().ContainSingle();
+            handlers.Should().AllBeOfType<MarkdownDocReferenceHandler>();
         }
 
         [TestMethod]

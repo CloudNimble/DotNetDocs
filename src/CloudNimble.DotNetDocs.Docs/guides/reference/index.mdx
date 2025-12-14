@@ -1,0 +1,70 @@
+---
+title: Reference
+sidebarTitle: Overview
+description: Complete technical reference for DotNetDocs SDK, CLI, and configuration
+icon: book-bookmark
+---
+
+Detailed technical documentation for all DotNetDocs components, including the command-line interface and MSBuild SDK configuration.
+
+## Reference Documentation
+
+<CardGroup cols={2}>
+  <Card
+    title="CLI Reference"
+    icon="terminal"
+    href="/guides/reference/cli"
+  >
+    Complete command-line reference for the `dotnet easyaf` tool, including all commands, options, and usage examples.
+  </Card>
+
+  <Card
+    title=".docsproj Reference"
+    icon="gear-complex-code"
+    href="/guides/reference/docsproj"
+  >
+    Comprehensive guide to MSBuild properties, items, and targets available in DotNetDocs.Sdk documentation projects.
+  </Card>
+</CardGroup>
+
+## Quick Reference
+
+### Common CLI Commands
+
+```bash
+# Initialize a new documentation project
+dotnet easyaf init -o ./docs -t mintlify
+
+# Generate documentation from XML comments
+dotnet easyaf mintlify generate -x MyProject.xml -o ./api-reference
+
+# Build documentation project
+dotnet build ./docs/MyProject.docsproj --configuration Release
+```
+
+### Essential .docsproj Properties
+
+| Property | Purpose |
+|----------|---------|
+| `DocumentationType` | Target format (Mintlify, DocFX, MkDocs, etc.) |
+| `GenerateDocumentation` | Enable automatic API doc generation |
+| `NamespaceMode` | Organize by Folder, File, or Flat structure |
+| `ApiReferencePath` | Output directory for API documentation |
+
+### MSBuild Items
+
+| Item | Purpose |
+|------|---------|
+| `DocumentationReference` | Reference another documentation project for collections |
+| `ProjectReference` | Reference a .NET project for API documentation |
+
+## See Also
+
+<CardGroup cols={2}>
+  <Card title="Guides" icon="compass" href="/guides">
+    Return to the main Guides section
+  </Card>
+  <Card title="Getting Started" icon="rocket" href="/getting-started">
+    New to DotNetDocs? Start here
+  </Card>
+</CardGroup>

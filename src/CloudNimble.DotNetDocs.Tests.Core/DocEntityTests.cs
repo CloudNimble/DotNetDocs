@@ -3,7 +3,6 @@ using CloudNimble.DotNetDocs.Tests.Shared;
 using FluentAssertions;
 using Microsoft.CodeAnalysis;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace CloudNimble.DotNetDocs.Tests.Core

@@ -1,0 +1,349 @@
+---
+title: MarkdownDocReferenceHandler
+description: "Base class for Markdown-based documentation reference handlers providing content path rewriting."
+icon: shapes
+tag: "ABSTRACT"
+keywords: ['MarkdownDocReferenceHandler', 'CloudNimble.DotNetDocs.Core.MarkdownDocReferenceHandler', 'CloudNimble.DotNetDocs.Core', 'class', 'CloudNimble.DotNetDocs.Core.DocReferenceHandlerBase', 'CloudNimble.DotNetDocs.Core.IDocReferenceHandler']
+---
+
+## Definition
+
+**Assembly:** CloudNimble.DotNetDocs.Core.dll
+
+**Namespace:** CloudNimble.DotNetDocs.Core
+
+**Inheritance:** CloudNimble.DotNetDocs.Core.DocReferenceHandlerBase
+
+## Syntax
+
+```csharp
+CloudNimble.DotNetDocs.Core.MarkdownDocReferenceHandler
+```
+
+## Summary
+
+Base class for Markdown-based documentation reference handlers providing content path rewriting.
+
+## Remarks
+
+
+
+
+            This abstract class extends [DocReferenceHandlerBase](/test/api-reference/CloudNimble/DotNetDocs/Core/DocReferenceHandlerBase) to add Markdown-specific
+            content rewriting functionality. It handles standard Markdown image and link syntax,
+            rewriting absolute paths to include the destination path prefix.
+            
+
+
+
+
+            Derived classes can extend this behavior to handle format-specific patterns such as
+            JSX imports, component props, or other content-specific path references.
+            
+
+
+
+## Constructors
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Core.DocReferenceHandlerBase`</Note>
+
+#### Syntax
+
+```csharp
+protected DocReferenceHandlerBase()
+```
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public Object()
+```
+
+## Properties
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> DocumentationType <Badge color="gray">Inherited</Badge> <Badge color="orange">Abstract</Badge>
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Core.DocReferenceHandlerBase`</Note>
+
+#### Syntax
+
+```csharp
+public abstract CloudNimble.DotNetDocs.Core.Configuration.SupportedDocumentationType DocumentationType { get; }
+```
+
+#### Property Value
+
+Type: `CloudNimble.DotNetDocs.Core.Configuration.SupportedDocumentationType`
+
+## Methods
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> CopyDirectoryWithExclusionsAsync <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Core.DocReferenceHandlerBase`</Note>
+
+Recursively copies a directory and its contents, excluding files that match exclusion patterns.
+
+#### Syntax
+
+```csharp
+protected System.Threading.Tasks.Task CopyDirectoryWithExclusionsAsync(string sourceDir, string destDir, System.Collections.Generic.List<string> exclusionPatterns, bool skipExisting = true)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `sourceDir` | `string` | The source directory to copy from. |
+| `destDir` | `string` | The destination directory to copy to. |
+| `exclusionPatterns` | `System.Collections.Generic.List<string>` | List of glob patterns for files to exclude. |
+| `skipExisting` | `bool` | Whether to skip files that already exist in the destination. |
+
+#### Returns
+
+Type: `System.Threading.Tasks.Task`
+A task representing the asynchronous copy operation.
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Equals <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual bool Equals(object obj)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `obj` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Equals <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public static bool Equals(object objA, object objB)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `objA` | `object?` | - |
+| `objB` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetExclusionPatternsForDocumentationType <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Core.DocReferenceHandlerBase`</Note>
+
+Gets file exclusion patterns for a given documentation type when copying DocumentationReferences.
+
+#### Syntax
+
+```csharp
+protected System.Collections.Generic.List<string> GetExclusionPatternsForDocumentationType(CloudNimble.DotNetDocs.Core.Configuration.SupportedDocumentationType documentationType)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `documentationType` | `CloudNimble.DotNetDocs.Core.Configuration.SupportedDocumentationType` | The documentation type (Mintlify, DocFX, MkDocs, etc.). |
+
+#### Returns
+
+Type: `System.Collections.Generic.List<string>`
+A list of glob patterns for files that should be excluded from copying.
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetHashCode <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual int GetHashCode()
+```
+
+#### Returns
+
+Type: `int`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetType <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public System.Type GetType()
+```
+
+#### Returns
+
+Type: `System.Type`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> MatchesGlobPattern <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Core.DocReferenceHandlerBase`</Note>
+
+Matches a file path against a glob pattern.
+
+#### Syntax
+
+```csharp
+protected bool MatchesGlobPattern(string path, string pattern)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `path` | `string` | The file path to match. |
+| `pattern` | `string` | The glob pattern. |
+
+#### Returns
+
+Type: `bool`
+True if the path matches the pattern, false otherwise.
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> MemberwiseClone <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+protected internal object MemberwiseClone()
+```
+
+#### Returns
+
+Type: `object`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ProcessAsync <Badge color="gray">Inherited</Badge> <Badge color="orange">Abstract</Badge>
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Core.DocReferenceHandlerBase`</Note>
+
+#### Syntax
+
+```csharp
+public abstract System.Threading.Tasks.Task ProcessAsync(CloudNimble.DotNetDocs.Core.DocumentationReference reference, string documentationRootPath)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `reference` | `CloudNimble.DotNetDocs.Core.DocumentationReference` | - |
+| `documentationRootPath` | `string` | - |
+
+#### Returns
+
+Type: `System.Threading.Tasks.Task`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ReferenceEquals <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public static bool ReferenceEquals(object objA, object objB)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `objA` | `object?` | - |
+| `objB` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ShouldExcludeDirectory <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Core.DocReferenceHandlerBase`</Note>
+
+Determines if a directory should be excluded based on exclusion patterns.
+
+#### Syntax
+
+```csharp
+protected bool ShouldExcludeDirectory(string relativePath, System.Collections.Generic.List<string> exclusionPatterns)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `relativePath` | `string` | The relative path of the directory. |
+| `exclusionPatterns` | `System.Collections.Generic.List<string>` | List of glob patterns for exclusion. |
+
+#### Returns
+
+Type: `bool`
+True if the directory should be excluded, false otherwise.
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ShouldExcludeFile <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Core.DocReferenceHandlerBase`</Note>
+
+Determines if a file should be excluded based on exclusion patterns.
+
+#### Syntax
+
+```csharp
+protected bool ShouldExcludeFile(string relativePath, System.Collections.Generic.List<string> exclusionPatterns)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `relativePath` | `string` | The relative path of the file. |
+| `exclusionPatterns` | `System.Collections.Generic.List<string>` | List of glob patterns for exclusion. |
+
+#### Returns
+
+Type: `bool`
+True if the file should be excluded, false otherwise.
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ToString <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual string ToString()
+```
+
+#### Returns
+
+Type: `string?`
+
+## Related APIs
+
+- CloudNimble.DotNetDocs.Core.IDocReferenceHandler
+

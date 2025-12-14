@@ -2,7 +2,7 @@
 title: Documentation Collections
 sidebarTitle: Collections
 description: Combine multiple documentation projects into unified portals
-icon: layer-group
+icon: rectangle-vertical-history
 ---
 
 ## Overview
@@ -37,8 +37,103 @@ After the collection completes its normal documentation generation, DotNetDocs:
 5. **Saves** the final `docs.json` once with everything integrated
 
 <Tip>
-  No complex merging logic or priorities neededjust copy files and combine navigation. This "Easy As Fuck"" design keeps collections simple and predictable.
+  No complex merging logic or priorities neededjust copy files and combine navigation. This "Easy AF" design keeps collections simple and predictable.
 </Tip>
+
+## Collection Root Content
+
+Most documentation collections have their own landing pages, guides, and conceptual content that serve as the "home" for the unified portal. This root content provides:
+
+- **Landing pages** that introduce the overall platform or product suite
+- **Getting started guides** that span multiple referenced projects
+- **Architecture documentation** that explains how components fit together
+- **Shared resources** like images and snippets used across the collection
+
+### Controlling Root Navigation with MintlifyTemplate
+
+The `<Navigation>` element inside `<MintlifyTemplate>` controls how the collection's own content appears alongside referenced documentation:
+
+<ParamField path="Navigation" type="XML element">
+  Configures how the collection's root content integrates with referenced documentation.
+
+  **Attributes:**
+
+  | Attribute | Description | Values |
+  |-----------|-------------|--------|
+  | `Mode` | How navigation groups are organized | `Unified` (single tree) or `Separated` (per-assembly) |
+  | `Type` | Where root content appears in navigation | `Pages` (main nav), `Tabs` (as a tab), or `Products` (as a product) |
+  | `Name` | Display name when using Tabs or Products | Custom string (e.g., "Platform Overview") |
+</ParamField>
+
+### Navigation Type Examples
+
+<Tabs>
+  <Tab title="Pages (Default)">
+    Root content appears in the main navigation alongside groups. Referenced docs appear as tabs.
+
+    ```xml
+    <MintlifyTemplate>
+      <Name>My Platform</Name>
+      <Navigation Mode="Unified" Type="Pages">
+        <Pages>
+          <Groups>
+            <Group Name="Getting Started" Icon="rocket">
+              <Pages>index;quickstart;architecture</Pages>
+            </Group>
+          </Groups>
+        </Pages>
+      </Navigation>
+    </MintlifyTemplate>
+    ```
+  </Tab>
+
+  <Tab title="Tabs">
+    Root content appears as its own tab, giving it equal prominence with referenced documentation.
+
+    ```xml
+    <MintlifyTemplate>
+      <Name>My Platform</Name>
+      <Navigation Mode="Unified" Type="Tabs" Name="Platform Overview">
+        <Pages>
+          <Groups>
+            <Group Name="Getting Started" Icon="rocket">
+              <Pages>index;quickstart</Pages>
+            </Group>
+            <Group Name="Architecture" Icon="sitemap">
+              <Pages>architecture;deployment</Pages>
+            </Group>
+          </Groups>
+        </Pages>
+      </Navigation>
+    </MintlifyTemplate>
+    ```
+
+    This creates a "Platform Overview" tab alongside tabs for each `DocumentationReference`.
+  </Tab>
+
+  <Tab title="Products">
+    For multi-product portals where the collection itself is a product.
+
+    ```xml
+    <MintlifyTemplate>
+      <Name>EasyAF Suite</Name>
+      <Navigation Mode="Unified" Type="Products" Name="Suite Overview">
+        <Pages>
+          <Groups>
+            <Group Name="Introduction" Icon="house">
+              <Pages>index;overview</Pages>
+            </Group>
+          </Groups>
+        </Pages>
+      </Navigation>
+    </MintlifyTemplate>
+    ```
+  </Tab>
+</Tabs>
+
+<Info>
+  When `Type` is `Tabs` or `Products`, the `Name` attribute determines the display label. If omitted, the collection's `<Name>` value is used.
+</Info>
 
 ## Configuration
 
@@ -47,8 +142,8 @@ After the collection completes its normal documentation generation, DotNetDocs:
 Add `<DocumentationReference>` items to your collection's `.docsproj` file, similar to how you use `<ProjectReference>`:
 
 <CodeGroup>
-```xml Current (1.0.2)
-<Project Sdk="DotNetDocs.Sdk/1.0.2">
+```xml Current (1.1.0)
+<Project Sdk="DotNetDocs.Sdk/1.1.0">
   <PropertyGroup>
     <DocumentationType>Mintlify</DocumentationType>
     <GenerateDocumentation>true</GenerateDocumentation>
@@ -68,8 +163,8 @@ Add `<DocumentationReference>` items to your collection's `.docsproj` file, simi
 </Project>
 ```
 
-```xml Preview (1.1.0-preview.1)
-<Project Sdk="DotNetDocs.Sdk/1.1.0-preview.1">
+```xml Preview (1.2.0-preview.5)
+<Project Sdk="DotNetDocs.Sdk/1.2.0-preview.5">
   <PropertyGroup>
     <DocumentationType>Mintlify</DocumentationType>
     <GenerateDocumentation>true</GenerateDocumentation>
@@ -246,8 +341,8 @@ Create a unified documentation portal for a microservices architecture:
 **File**: `docs/MicroservicesPlatform.docsproj`
 
 <CodeGroup>
-```xml Current (1.0.2)
-<Project Sdk="DotNetDocs.Sdk/1.0.2">
+```xml Current (1.1.0)
+<Project Sdk="DotNetDocs.Sdk/1.1.0">
   <PropertyGroup>
     <!-- Collection configuration -->
     <DocumentationType>Mintlify</DocumentationType>
@@ -281,20 +376,33 @@ Create a unified documentation portal for a microservices architecture:
 </Project>
 ```
 
-```xml Preview (1.1.0-preview.1)
-<Project Sdk="DotNetDocs.Sdk/1.1.0-preview.1">
+```xml Preview (1.2.0-preview.5)
+<Project Sdk="DotNetDocs.Sdk/1.2.0-preview.5">
   <PropertyGroup>
     <!-- Collection configuration -->
     <DocumentationType>Mintlify</DocumentationType>
     <GenerateDocumentation>false</GenerateDocumentation>
 
-    <!-- Optional: Collection can have its own branding -->
+    <!-- Collection branding with Navigation configuration -->
     <MintlifyTemplate>
       <Name>Microservices Platform</Name>
       <Theme>quill</Theme>
       <Colors>
         <Primary>#0066CC</Primary>
       </Colors>
+      <!-- Root content appears as "Platform" tab alongside service tabs -->
+      <Navigation Mode="Unified" Type="Tabs" Name="Platform">
+        <Pages>
+          <Groups>
+            <Group Name="Overview" Icon="house">
+              <Pages>index;architecture</Pages>
+            </Group>
+            <Group Name="Getting Started" Icon="rocket">
+              <Pages>quickstart;deployment</Pages>
+            </Group>
+          </Groups>
+        </Pages>
+      </Navigation>
     </MintlifyTemplate>
   </PropertyGroup>
 
@@ -324,18 +432,18 @@ Create a unified documentation portal for a microservices architecture:
 **Resulting Structure**:
 ```
 docs/
-   introduction.md          # Collection's own introduction
-   architecture.md          # Collection's own architecture guide
-   services/
-      users/              # UserService documentation
-         introduction.md
-         api-reference/
-      orders/             # OrderService documentation
-         introduction.md
-         api-reference/
-      payments/           # PaymentService documentation
-      notifications/      # NotificationService documentation
-   docs.json               # Combined navigation
+   introduction.md          # Collection's own introduction
+   architecture.md          # Collection's own architecture guide
+   services/
+      users/              # UserService documentation
+         introduction.md
+         api-reference/
+      orders/             # OrderService documentation
+         introduction.md
+         api-reference/
+      payments/           # PaymentService documentation
+      notifications/      # NotificationService documentation
+   docs.json               # Combined navigation
 ```
 
 ### Example 2: Multi-Product Suite
@@ -345,8 +453,8 @@ Create a unified portal for related open-source products:
 **File**: `docs/EasyAF.Portal.docsproj`
 
 <CodeGroup>
-```xml Current (1.0.2)
-<Project Sdk="DotNetDocs.Sdk/1.0.2">
+```xml Current (1.1.0)
+<Project Sdk="DotNetDocs.Sdk/1.1.0">
   <PropertyGroup>
     <DocumentationType>Mintlify</DocumentationType>
     <MintlifyTemplate>
@@ -370,13 +478,26 @@ Create a unified portal for related open-source products:
 </Project>
 ```
 
-```xml Preview (1.1.0-preview.1)
-<Project Sdk="DotNetDocs.Sdk/1.1.0-preview.1">
+```xml Preview (1.2.0-preview.5)
+<Project Sdk="DotNetDocs.Sdk/1.2.0-preview.5">
   <PropertyGroup>
     <DocumentationType>Mintlify</DocumentationType>
     <MintlifyTemplate>
       <Name>EasyAF Product Suite</Name>
       <Theme>maple</Theme>
+      <!-- Root content appears as "Suite Overview" product -->
+      <Navigation Mode="Unified" Type="Products" Name="Suite Overview">
+        <Pages>
+          <Groups>
+            <Group Name="Welcome" Icon="hand-wave">
+              <Pages>index;getting-started</Pages>
+            </Group>
+            <Group Name="Concepts" Icon="lightbulb">
+              <Pages>architecture;best-practices</Pages>
+            </Group>
+          </Groups>
+        </Pages>
+      </Navigation>
     </MintlifyTemplate>
   </PropertyGroup>
 
@@ -404,8 +525,8 @@ Create a unified portal for related open-source products:
 A collection that documents its own assemblies AND references external documentation:
 
 <CodeGroup>
-```xml Current (1.0.2)
-<Project Sdk="DotNetDocs.Sdk/1.0.2">
+```xml Current (1.1.0)
+<Project Sdk="DotNetDocs.Sdk/1.1.0">
   <PropertyGroup>
     <!-- This collection also generates its own API docs -->
     <DocumentationType>Mintlify</DocumentationType>
@@ -425,23 +546,39 @@ A collection that documents its own assemblies AND references external documenta
 </Project>
 ```
 
-```xml Preview (1.1.0-preview.1)
-<Project Sdk="DotNetDocs.Sdk/1.1.0-preview.1">
+```xml Preview (1.2.0-preview.5)
+<Project Sdk="DotNetDocs.Sdk/1.2.0-preview.5">
   <PropertyGroup>
     <!-- This collection also generates its own API docs -->
     <DocumentationType>Mintlify</DocumentationType>
     <GenerateDocumentation>true</GenerateDocumentation>
     <NamespaceMode>Folder</NamespaceMode>
+
+    <MintlifyTemplate>
+      <Name>My Platform</Name>
+      <!-- Root content (including generated API docs) appears as "Core" tab -->
+      <Navigation Mode="Unified" Type="Tabs" Name="Core">
+        <Pages>
+          <Groups>
+            <Group Name="Overview" Icon="house">
+              <Pages>index;quickstart</Pages>
+            </Group>
+          </Groups>
+        </Pages>
+      </Navigation>
+    </MintlifyTemplate>
   </PropertyGroup>
 
   <ItemGroup>
     <!-- Reference external plugin documentation -->
     <DocumentationReference Include="../Plugins/AI/PluginAI.docsproj"
                            DestinationPath="plugins/ai"
-                           IntegrationType="Tabs" />
+                           IntegrationType="Tabs"
+                           Name="AI Plugin" />
     <DocumentationReference Include="../Plugins/GitHub/PluginGitHub.docsproj"
                            DestinationPath="plugins/github"
-                           IntegrationType="Tabs" />
+                           IntegrationType="Tabs"
+                           Name="GitHub Plugin" />
   </ItemGroup>
 </Project>
 ```
@@ -465,7 +602,7 @@ The `DocumentationReferenceResolverTask` checks:
 If you try to reference a project with a different `DocumentationType`, you'll see a warning:
 
 ```
-�  Skipping documentation reference 'ServiceA.docsproj' because it uses 'DocFX' format.
+   Skipping documentation reference 'ServiceA.docsproj' because it uses 'DocFX' format.
 Only 'Mintlify' documentation can be combined with Mintlify collections.
 Cross-format documentation combination is not currently supported.
 ```

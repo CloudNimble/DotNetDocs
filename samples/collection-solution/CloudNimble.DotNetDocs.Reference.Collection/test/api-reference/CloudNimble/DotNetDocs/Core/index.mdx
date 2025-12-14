@@ -12,36 +12,39 @@ keywords: ['CloudNimble.DotNetDocs.Core', 'namespace', 'AssemblyManager', 'Cross
 
 | Name | Summary |
 | ---- | ------- |
-| [AssemblyManager](/api-reference/CloudNimble/DotNetDocs/Core/AssemblyManager) | Manages assembly metadata extraction using Roslyn for API documentation generation. |
-| [CrossReferenceResolver](/api-reference/CloudNimble/DotNetDocs/Core/CrossReferenceResolver) | Resolves cross-references in documentation to their target entities and generates appropriate links. |
-| [DocAssembly](/api-reference/CloudNimble/DotNetDocs/Core/DocAssembly) | Represents documentation for a .NET assembly. |
-| [DocConstants](/api-reference/CloudNimble/DotNetDocs/Core/DocConstants) | Defines constants used throughout the DotNetDocs library. |
-| [DocEntity](/api-reference/CloudNimble/DotNetDocs/Core/DocEntity) | Base class for documentation entities, providing common contextual metadata. |
-| [DocEnum](/api-reference/CloudNimble/DotNetDocs/Core/DocEnum) | Represents documentation for a .NET enum type. |
-| [DocEnumValue](/api-reference/CloudNimble/DotNetDocs/Core/DocEnumValue) | Represents a single value within an enum type. |
-| [DocException](/api-reference/CloudNimble/DotNetDocs/Core/DocException) | Represents exception documentation extracted from XML documentation comments. |
-| [DocMember](/api-reference/CloudNimble/DotNetDocs/Core/DocMember) | Represents documentation for a .NET member (method, property, field, event, etc.). |
-| [DocNamespace](/api-reference/CloudNimble/DotNetDocs/Core/DocNamespace) | Represents documentation for a .NET namespace. |
-| [DocParameter](/api-reference/CloudNimble/DotNetDocs/Core/DocParameter) | Represents documentation for a method or constructor parameter. |
-| [DocReference](/api-reference/CloudNimble/DotNetDocs/Core/DocReference) | Represents a cross-reference in documentation, such as a see or seealso tag. |
-| [DocType](/api-reference/CloudNimble/DotNetDocs/Core/DocType) | Represents documentation for a .NET type. |
-| [DocTypeParameter](/api-reference/CloudNimble/DotNetDocs/Core/DocTypeParameter) | Represents type parameter documentation extracted from XML documentation comments. |
-| [DocumentationManager](/api-reference/CloudNimble/DotNetDocs/Core/DocumentationManager) | Orchestrates the documentation pipeline for one or more assemblies. |
-| [DocumentationReference](/api-reference/CloudNimble/DotNetDocs/Core/DocumentationReference) | Represents a reference to external documentation to be combined into a documentation collection. |
-| [ProjectContext](/api-reference/CloudNimble/DotNetDocs/Core/ProjectContext) | Represents MSBuild project context for source intent in documentation generation. |
-| [ReferenceType](/api-reference/CloudNimble/DotNetDocs/Core/ReferenceType) | Specifies the type of documentation reference. |
+| [AssemblyManager](/test/api-reference/CloudNimble/DotNetDocs/Core/AssemblyManager) | Manages assembly metadata extraction using Roslyn for API documentation generation. |
+| [CrossReferenceResolver](/test/api-reference/CloudNimble/DotNetDocs/Core/CrossReferenceResolver) | Resolves cross-references in documentation to their target entities and generates appropriate links. |
+| [DocAssembly](/test/api-reference/CloudNimble/DotNetDocs/Core/DocAssembly) | Represents documentation for a .NET assembly. |
+| [DocConstants](/test/api-reference/CloudNimble/DotNetDocs/Core/DocConstants) | Defines constants used throughout the DotNetDocs library. |
+| [DocEntity](/test/api-reference/CloudNimble/DotNetDocs/Core/DocEntity) | Base class for documentation entities, providing common contextual metadata. |
+| [DocEnum](/test/api-reference/CloudNimble/DotNetDocs/Core/DocEnum) | Represents documentation for a .NET enum type. |
+| [DocEnumValue](/test/api-reference/CloudNimble/DotNetDocs/Core/DocEnumValue) | Represents a single value within an enum type. |
+| [DocException](/test/api-reference/CloudNimble/DotNetDocs/Core/DocException) | Represents exception documentation extracted from XML documentation comments. |
+| [DocMember](/test/api-reference/CloudNimble/DotNetDocs/Core/DocMember) | Represents documentation for a .NET member (method, property, field, event, etc.). |
+| [DocNamespace](/test/api-reference/CloudNimble/DotNetDocs/Core/DocNamespace) | Represents documentation for a .NET namespace. |
+| [DocParameter](/test/api-reference/CloudNimble/DotNetDocs/Core/DocParameter) | Represents documentation for a method or constructor parameter. |
+| [DocReference](/test/api-reference/CloudNimble/DotNetDocs/Core/DocReference) | Represents a cross-reference in documentation, such as a see or seealso tag. |
+| [DocReferenceHandlerBase](/test/api-reference/CloudNimble/DotNetDocs/Core/DocReferenceHandlerBase) | Base class for documentation reference handlers providing common file copying functionality. |
+| [DocType](/test/api-reference/CloudNimble/DotNetDocs/Core/DocType) | Represents documentation for a .NET type. |
+| [DocTypeParameter](/test/api-reference/CloudNimble/DotNetDocs/Core/DocTypeParameter) | Represents type parameter documentation extracted from XML documentation comments. |
+| [DocumentationManager](/test/api-reference/CloudNimble/DotNetDocs/Core/DocumentationManager) | Orchestrates the documentation pipeline for one or more assemblies. |
+| [DocumentationReference](/test/api-reference/CloudNimble/DotNetDocs/Core/DocumentationReference) | Represents a reference to external documentation to be combined into a documentation collection. |
+| [MarkdownDocReferenceHandler](/test/api-reference/CloudNimble/DotNetDocs/Core/MarkdownDocReferenceHandler) | Base class for Markdown-based documentation reference handlers providing content path rewriting. |
+| [ProjectContext](/test/api-reference/CloudNimble/DotNetDocs/Core/ProjectContext) | Represents MSBuild project context for source intent in documentation generation. |
+| [ReferenceType](/test/api-reference/CloudNimble/DotNetDocs/Core/ReferenceType) | Specifies the type of documentation reference. |
 
 ### <Icon icon="plug" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Interfaces
 
 | Name | Summary |
 | ---- | ------- |
-| [IDocEnricher](/api-reference/CloudNimble/DotNetDocs/Core/IDocEnricher) | Defines an enricher for conceptual documentation augmentation. |
-| [IDocRenderer](/api-reference/CloudNimble/DotNetDocs/Core/IDocRenderer) | Defines a renderer for documentation output generation. |
-| [IDocTransformer](/api-reference/CloudNimble/DotNetDocs/Core/IDocTransformer) | Defines a transformation step in the documentation processing pipeline. |
+| [IDocEnricher](/test/api-reference/CloudNimble/DotNetDocs/Core/IDocEnricher) | Defines an enricher for conceptual documentation augmentation. |
+| [IDocReferenceHandler](/test/api-reference/CloudNimble/DotNetDocs/Core/IDocReferenceHandler) | Defines a handler for processing documentation references from other projects. |
+| [IDocRenderer](/test/api-reference/CloudNimble/DotNetDocs/Core/IDocRenderer) | Defines a renderer for documentation output generation. |
+| [IDocTransformer](/test/api-reference/CloudNimble/DotNetDocs/Core/IDocTransformer) | Defines a transformation step in the documentation processing pipeline. |
 
 ### <Icon icon="list-ol" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Enums
 
 | Name | Summary |
 | ---- | ------- |
-| [ReferenceType](/api-reference/CloudNimble/DotNetDocs/Core/ReferenceType) | Specifies the type of documentation reference. |
+| [ReferenceType](/test/api-reference/CloudNimble/DotNetDocs/Core/ReferenceType) | Specifies the type of documentation reference. |
 
