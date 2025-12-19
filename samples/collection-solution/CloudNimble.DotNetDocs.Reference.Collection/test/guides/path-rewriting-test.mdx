@@ -1,0 +1,88 @@
+---
+title: Path Rewriting Test
+sidebarTitle: Path Test
+description: A test page to verify path rewriting works correctly in documentation collections.
+icon: flask-vial
+---
+
+import { ValueProposition } from '/snippets/test/ValueProposition.jsx';
+
+# Path Rewriting Test Guide
+
+This guide tests various path patterns to ensure they are correctly rewritten when
+documentation is included in a collection.
+
+## ES Import Test
+
+The component below is imported from `/snippets/ValueProposition.jsx`:
+
+<ValueProposition />
+
+## Markdown Image Tests
+
+### Basic Image
+
+Here's an image using standard Markdown syntax:
+
+![Hero Banner](/images/test/hero-banner.png)
+
+### Nested Image Path
+
+And an image in a subdirectory:
+
+![Pipeline Output](/images/test/screenshots/pipeline-output.png)
+
+## Markdown Link Tests
+
+### Internal Page Links
+
+- [Back to Home](/test/index)
+- [Quickstart Guide](/test/quickstart)
+- [API Reference](/test/api-reference/index)
+
+### Links with Anchors
+
+- [Pipeline Configuration](/test/guides/pipeline#configuration)
+- [Deployment Options](/test/guides/deployment#docker)
+
+### Links with Query Strings
+
+- [API with Version](/test/api-reference/index?version=2)
+
+## JSX Attribute Tests
+
+<Card title="Getting Started" icon="rocket" href="/test/quickstart">
+  Learn how to get started with DotNetDocs in minutes.
+</Card>
+
+<img src="/images/test/hero-banner.png" alt="Hero" style={{maxWidth: '200px'}} />
+
+## Code Block Preservation Test
+
+Paths inside code blocks should NOT be rewritten:
+
+```javascript
+// This import path should remain unchanged
+import { Component } from '/snippets/Component.jsx';
+
+// This image path should remain unchanged
+const logo = '/images/logo.png';
+```
+
+```bash
+# These paths should also remain unchanged
+curl https://api.example.com/images/test.png
+cat /snippets/example.jsx
+```
+
+## CSS URL Test
+
+<div style={{backgroundImage: 'url(/images/test/hero-banner.png)', height: '50px', width: '100%'}} />
+
+## Summary
+
+If this page renders correctly in a collection:
+- Imports should work (component above should render)
+- Images should display
+- Links should navigate correctly (to `/test/...` paths)
+- Code blocks should show original paths unchanged

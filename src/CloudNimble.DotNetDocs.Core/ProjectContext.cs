@@ -211,11 +211,11 @@ namespace CloudNimble.DotNetDocs.Core
             }
             
             // Default exclusions for common test framework injected types
-            ExcludedTypes = new HashSet<string>
-            {
+            ExcludedTypes =
+            [
                 "*.MicrosoftTestingPlatformEntryPoint",
                 "*.SelfRegisteredExtensions"
-            };
+            ];
         }
 
         #endregion

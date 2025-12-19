@@ -120,6 +120,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <item><description>DocsJsonManager for manipulating docs.json files</description></item>
         /// <item><description>DocsJsonValidator to ensure correct structures</description></item>
         /// <item><description>MarkdownXmlTransformer for processing XML documentation tags</description></item>
+        /// <item><description>MintlifyDocReferenceHandler for processing DocumentationReferences</description></item>
         /// </list>
         /// </remarks>
         /// <example>
@@ -138,6 +139,9 @@ namespace Microsoft.Extensions.DependencyInjection
 
             // Register the MintlifyMarkdownTransformer for converting HTML comments to JSX comments (MDX compatibility)
             services.TryAddEnumerable(ServiceDescriptor.Scoped<IDocTransformer, MintlifyMarkdownTransformer>());
+
+            // Register the MintlifyDocReferenceHandler for processing DocumentationReferences
+            services.TryAddEnumerable(ServiceDescriptor.Scoped<IDocReferenceHandler, MintlifyDocReferenceHandler>());
 
             // Register DocsJsonManager for manipulating docs.json files
             services.TryAddScoped<DocsJsonManager>();

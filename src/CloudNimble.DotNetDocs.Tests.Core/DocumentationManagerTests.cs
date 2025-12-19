@@ -27,184 +27,20 @@ namespace CloudNimble.DotNetDocs.Tests.Core
         private string? _testAssemblyPath;
         private string? _testXmlPath;
 
-        [TestMethod]
-        public void GetFilePatternsForDocumentationType_Mintlify_ReturnsCorrectPatterns()
-        {
-            // Arrange
-            var manager = GetDocumentationManager();
-
-            // Act
-            var patterns = manager.GetFilePatternsForDocumentationType(SupportedDocumentationType.Mintlify);
-
-            // Assert
-            patterns.Should().NotBeNull();
-            patterns.Should().Contain("*.md");
-            patterns.Should().Contain("*.mdx");
-            patterns.Should().Contain("*.mdz");
-            patterns.Should().Contain("docs.json");
-            patterns.Should().Contain("images/**/*");
-            patterns.Should().Contain("favicon.*");
-            patterns.Should().Contain("snippets/**/*");
-        }
-
-        [TestMethod]
-        public void GetFilePatternsForDocumentationType_DocFX_ReturnsCorrectPatterns()
-        {
-            // Arrange
-            var manager = GetDocumentationManager();
-
-            // Act
-            var patterns = manager.GetFilePatternsForDocumentationType(SupportedDocumentationType.DocFX);
-
-            // Assert
-            patterns.Should().NotBeNull();
-            patterns.Should().Contain("*.md");
-            patterns.Should().Contain("*.yml");
-            patterns.Should().Contain("toc.yml");
-            patterns.Should().Contain("docfx.json");
-            patterns.Should().Contain("images/**/*");
-        }
-
-        [TestMethod]
-        public void GetFilePatternsForDocumentationType_MkDocs_ReturnsCorrectPatterns()
-        {
-            // Arrange
-            var manager = GetDocumentationManager();
-
-            // Act
-            var patterns = manager.GetFilePatternsForDocumentationType(SupportedDocumentationType.MkDocs);
-
-            // Assert
-            patterns.Should().NotBeNull();
-            patterns.Should().Contain("*.md");
-            patterns.Should().Contain("mkdocs.yml");
-            patterns.Should().Contain("docs/**/*");
-        }
-
-        [TestMethod]
-        public void GetFilePatternsForDocumentationType_Unknown_ReturnsDefaultPatterns()
-        {
-            // Arrange
-            var manager = GetDocumentationManager();
-
-            // Act
-            var patterns = manager.GetFilePatternsForDocumentationType(SupportedDocumentationType.Generic);
-
-            // Assert
-            patterns.Should().NotBeNull();
-            patterns.Should().Contain("*.md");
-            patterns.Should().Contain("*.html");
-            patterns.Should().Contain("images/**/*");
-            patterns.Should().Contain("assets/**/*");
-        }
-
-        [TestMethod]
-        public async Task CopyFilesAsync_SimplePattern_CopiesMatchingFiles()
-        {
-            // Arrange
-            var manager = GetDocumentationManager();
-            var sourceDir = Path.Combine(_tempDirectory!, "source");
-            var destDir = Path.Combine(_tempDirectory!, "dest");
-
-            Directory.CreateDirectory(sourceDir);
-            await File.WriteAllTextAsync(Path.Combine(sourceDir, "test1.md"), "Test content 1");
-            await File.WriteAllTextAsync(Path.Combine(sourceDir, "test2.md"), "Test content 2");
-            await File.WriteAllTextAsync(Path.Combine(sourceDir, "test.txt"), "Not copied");
-
-            // Act
-            await manager.CopyFilesAsync(sourceDir, destDir, "*.md", skipExisting: true);
-
-            // Assert
-            File.Exists(Path.Combine(destDir, "test1.md")).Should().BeTrue();
-            File.Exists(Path.Combine(destDir, "test2.md")).Should().BeTrue();
-            File.Exists(Path.Combine(destDir, "test.txt")).Should().BeFalse();
-        }
-
-        [TestMethod]
-        public async Task CopyFilesAsync_SkipExisting_PreservesExistingFiles()
-        {
-            // Arrange
-            var manager = GetDocumentationManager();
-            var sourceDir = Path.Combine(_tempDirectory!, "source");
-            var destDir = Path.Combine(_tempDirectory!, "dest");
-
-            Directory.CreateDirectory(sourceDir);
-            Directory.CreateDirectory(destDir);
-
-            await File.WriteAllTextAsync(Path.Combine(sourceDir, "test.md"), "New content");
-            await File.WriteAllTextAsync(Path.Combine(destDir, "test.md"), "Original content");
-
-            // Act
-            await manager.CopyFilesAsync(sourceDir, destDir, "*.md", skipExisting: true);
-
-            // Assert
-            var content = await File.ReadAllTextAsync(Path.Combine(destDir, "test.md"));
-            content.Should().Be("Original content", "existing files should not be overwritten when skipExisting is true");
-        }
-
-        [TestMethod]
-        public async Task CopyDirectoryRecursiveAsync_PreservesStructure()
-        {
-            // Arrange
-            var manager = GetDocumentationManager();
-            var sourceDir = Path.Combine(_tempDirectory!, "source");
-            var destDir = Path.Combine(_tempDirectory!, "dest");
-
-            Directory.CreateDirectory(Path.Combine(sourceDir, "subdir1"));
-            Directory.CreateDirectory(Path.Combine(sourceDir, "subdir2"));
-            await File.WriteAllTextAsync(Path.Combine(sourceDir, "root.md"), "Root file");
-            await File.WriteAllTextAsync(Path.Combine(sourceDir, "subdir1", "file1.md"), "File 1");
-            await File.WriteAllTextAsync(Path.Combine(sourceDir, "subdir2", "file2.md"), "File 2");
-
-            // Act
-            await manager.CopyDirectoryRecursiveAsync(sourceDir, destDir, "*", skipExisting: true);
-
-            // Assert
-            File.Exists(Path.Combine(destDir, "root.md")).Should().BeTrue();
-            File.Exists(Path.Combine(destDir, "subdir1", "file1.md")).Should().BeTrue();
-            File.Exists(Path.Combine(destDir, "subdir2", "file2.md")).Should().BeTrue();
-        }
-
-        [TestMethod]
-        public async Task CopyReferencedDocumentationAsync_ProcessesAllReferences()
-        {
-            // Arrange
-            var manager = GetDocumentationManager();
-            var context = GetService<ProjectContext>();
-
-            var sourceDir1 = Path.Combine(_tempDirectory!, "ref1");
-            var sourceDir2 = Path.Combine(_tempDirectory!, "ref2");
-            Directory.CreateDirectory(sourceDir1);
-            Directory.CreateDirectory(sourceDir2);
-
-            await File.WriteAllTextAsync(Path.Combine(sourceDir1, "test1.md"), "Content 1");
-            await File.WriteAllTextAsync(Path.Combine(sourceDir2, "test2.md"), "Content 2");
-
-            context.DocumentationReferences.Add(new DocumentationReference
-            {
-                DocumentationRoot = sourceDir1,
-                DestinationPath = "ref1",
-                DocumentationType = SupportedDocumentationType.Mintlify
-            });
-
-            context.DocumentationReferences.Add(new DocumentationReference
-            {
-                DocumentationRoot = sourceDir2,
-                DestinationPath = "ref2",
-                DocumentationType = SupportedDocumentationType.Mintlify
-            });
-
-            // Act
-            await manager.CopyReferencedDocumentationAsync();
-
-            // Assert
-            File.Exists(Path.Combine(context.DocumentationRootPath, "ref1", "test1.md")).Should().BeTrue();
-            File.Exists(Path.Combine(context.DocumentationRootPath, "ref2", "test2.md")).Should().BeTrue();
-        }
-
         #endregion
 
         #region IsTodoPlaceholderFile Tests
+
+        // NOTE: The following tests for deleted/moved methods have been removed:
+        // - GetFilePatternsForDocumentationType_* tests (method deleted - dead code)
+        // - CopyFilesAsync_* tests (method deleted - dead code)
+        // - CopyDirectoryRecursiveAsync_* tests (method deleted - dead code)
+        // - CopyReferencedDocumentationAsync_* tests (method replaced with ProcessDocumentationReferencesAsync)
+        // - GetExclusionPatternsForDocumentationType_* tests (moved to DocReferenceHandlerBaseTests)
+        // - ShouldExcludeFile_* tests (moved to DocReferenceHandlerBaseTests)
+        // - ShouldExcludeDirectory_* tests (moved to DocReferenceHandlerBaseTests)
+        // - CopyDirectoryWithExclusionsAsync_* tests (moved to DocReferenceHandlerBaseTests)
+        // - MatchesGlobPattern_* tests (moved to DocReferenceHandlerBaseTests)
 
         [TestMethod]
         public void IsTodoPlaceholderFile_ValidTodoComment_ReturnsTrue()
@@ -391,14 +227,17 @@ namespace CloudNimble.DotNetDocs.Tests.Core
         #region Merge Tests - MergeDocAssembliesAsync
 
         [TestMethod]
-        public async Task MergeDocAssembliesAsync_EmptyList_ThrowsArgumentException()
+        public async Task MergeDocAssembliesAsync_EmptyList_ReturnsNull()
         {
+            // Arrange
             var manager = GetDocumentationManager();
             var emptyList = new List<DocAssembly>();
 
-            Func<Task> act = async () => await manager.MergeDocAssembliesAsync(emptyList);
+            // Act - In documentation-only mode, an empty list is valid and returns null
+            var result = await manager.MergeDocAssembliesAsync(emptyList);
 
-            await act.Should().ThrowAsync<ArgumentException>();
+            // Assert - Empty lists now return null to support documentation-only scenarios
+            result.Should().BeNull();
         }
 
         [TestMethod]
@@ -430,7 +269,8 @@ namespace CloudNimble.DotNetDocs.Tests.Core
 
             var result = await manager.MergeDocAssembliesAsync([assembly1, assembly2]);
 
-            result.Namespaces.Should().HaveCount(2);
+            result.Should().NotBeNull();
+            result!.Namespaces.Should().HaveCount(2);
             result.Namespaces.Should().Contain(ns => ns.Symbol.ToDisplayString() == ns1.Symbol.ToDisplayString());
             result.Namespaces.Should().Contain(ns => ns.Symbol.ToDisplayString() == ns2.Symbol.ToDisplayString());
         }
@@ -457,8 +297,9 @@ namespace CloudNimble.DotNetDocs.Tests.Core
 
             var result = await manager.MergeDocAssembliesAsync([assembly1, assembly2]);
 
+            result.Should().NotBeNull();
             result.Should().BeSameAs(assembly1);
-            result.Namespaces.Should().BeEmpty();
+            result!.Namespaces.Should().BeEmpty();
         }
 
         #endregion
@@ -591,7 +432,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core
 
             await manager.MergeTypeAsync(ns, typeToAdd);
 
-            ns.Types.Should().HaveCount(1);
+            ns.Types.Should().ContainSingle();
             ns.Types.Should().Contain(t => t.Symbol.ToDisplayString() == typeToAdd.Symbol.ToDisplayString());
         }
 
@@ -723,7 +564,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core
 
             await manager.MergeMemberAsync(type, memberToAdd);
 
-            type.Members.Should().HaveCount(1);
+            type.Members.Should().ContainSingle();
             type.Members.Should().Contain(m => m.Symbol.ToDisplayString() == memberToAdd.Symbol.ToDisplayString());
         }
 
@@ -742,7 +583,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core
 
             await manager.MergeMemberAsync(type, member);
 
-            type.Members.Should().HaveCount(1, "duplicate member should not be added");
+            type.Members.Should().ContainSingle("duplicate member should not be added");
         }
 
         [TestMethod]
@@ -842,7 +683,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core
 
             var sourceDir = Path.Combine(_tempDirectory!, "refSource");
             Directory.CreateDirectory(sourceDir);
-            await File.WriteAllTextAsync(Path.Combine(sourceDir, "test.md"), "Reference content");
+            await File.WriteAllTextAsync(Path.Combine(sourceDir, "test.md"), "Reference content", TestContext.CancellationToken);
 
             context.DocumentationReferences.Add(new DocumentationReference
             {
@@ -853,7 +694,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core
 
             await manager.ProcessAsync(_testAssemblyPath!, _testXmlPath!);
 
-            context.DocumentationReferences.Should().HaveCount(1);
+            context.DocumentationReferences.Should().ContainSingle();
         }
 
         [TestMethod]
@@ -903,7 +744,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core
 
             Func<Task> act = async () => await manager.ProcessAsync(emptyAssemblies);
 
-            await act.Should().ThrowAsync<ArgumentException>("empty assembly list should throw");
+            await act.Should().NotThrowAsync<ArgumentException>("empty assembly list should not throw");
         }
 
         #endregion
@@ -932,7 +773,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             context.ConceptualPath = Path.Combine(_tempDirectory!, "conceptual");
 
             Directory.CreateDirectory(context.ConceptualPath);
-            await File.WriteAllTextAsync(Path.Combine(context.ConceptualPath, "summary.mdz"), "Global namespace summary");
+            await File.WriteAllTextAsync(Path.Combine(context.ConceptualPath, "summary.mdz"), "Global namespace summary", TestContext.CancellationToken);
 
             var assembly = await GetSingleTestAssembly();
 
@@ -959,7 +800,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core
 System.Linq.Enumerable
 <!-- This is a comment -->
 System.String";
-            await File.WriteAllTextAsync(Path.Combine(nsPath, "related-apis.mdz"), relatedApisContent);
+            await File.WriteAllTextAsync(Path.Combine(nsPath, "related-apis.mdz"), relatedApisContent, TestContext.CancellationToken);
 
             var assembly = await GetSingleTestAssembly();
 
@@ -987,7 +828,7 @@ System.String";
 
             var relatedApisContent = @"CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.BaseClass
 CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
-            await File.WriteAllTextAsync(Path.Combine(typePath, "related-apis.mdz"), relatedApisContent);
+            await File.WriteAllTextAsync(Path.Combine(typePath, "related-apis.mdz"), relatedApisContent, TestContext.CancellationToken);
 
             var assembly = await GetSingleTestAssembly();
 
@@ -1023,7 +864,7 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
                 Directory.CreateDirectory(memberDir);
 
                 var relatedApisContent = "System.String.Empty\nSystem.String.IsNullOrWhiteSpace";
-                await File.WriteAllTextAsync(Path.Combine(memberDir, "related-apis.mdz"), relatedApisContent);
+                await File.WriteAllTextAsync(Path.Combine(memberDir, "related-apis.mdz"), relatedApisContent, TestContext.CancellationToken);
 
                 await manager.LoadConceptualAsync(assembly);
 
@@ -1044,7 +885,7 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
             Directory.CreateDirectory(nsPath);
 
             var placeholderContent = "<!-- TODO: REMOVE THIS COMMENT AFTER YOU CUSTOMIZE THIS CONTENT -->";
-            await File.WriteAllTextAsync(Path.Combine(nsPath, "related-apis.mdz"), placeholderContent);
+            await File.WriteAllTextAsync(Path.Combine(nsPath, "related-apis.mdz"), placeholderContent, TestContext.CancellationToken);
 
             var assembly = await GetSingleTestAssembly();
 
@@ -1065,12 +906,12 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
             var nsPath = Path.Combine(context.ConceptualPath, "CloudNimble", "DotNetDocs", "Tests", "Shared", "BasicScenarios");
             Directory.CreateDirectory(nsPath);
 
-            await File.WriteAllTextAsync(Path.Combine(nsPath, "summary.mdz"), "Summary content");
-            await File.WriteAllTextAsync(Path.Combine(nsPath, "usage.mdz"), "Usage content");
-            await File.WriteAllTextAsync(Path.Combine(nsPath, "examples.mdz"), "Examples content");
-            await File.WriteAllTextAsync(Path.Combine(nsPath, "best-practices.mdz"), "Best practices content");
-            await File.WriteAllTextAsync(Path.Combine(nsPath, "patterns.mdz"), "Patterns content");
-            await File.WriteAllTextAsync(Path.Combine(nsPath, "considerations.mdz"), "Considerations content");
+            await File.WriteAllTextAsync(Path.Combine(nsPath, "summary.mdz"), "Summary content", TestContext.CancellationToken);
+            await File.WriteAllTextAsync(Path.Combine(nsPath, "usage.mdz"), "Usage content", TestContext.CancellationToken);
+            await File.WriteAllTextAsync(Path.Combine(nsPath, "examples.mdz"), "Examples content", TestContext.CancellationToken);
+            await File.WriteAllTextAsync(Path.Combine(nsPath, "best-practices.mdz"), "Best practices content", TestContext.CancellationToken);
+            await File.WriteAllTextAsync(Path.Combine(nsPath, "patterns.mdz"), "Patterns content", TestContext.CancellationToken);
+            await File.WriteAllTextAsync(Path.Combine(nsPath, "considerations.mdz"), "Considerations content", TestContext.CancellationToken);
 
             var assembly = await GetSingleTestAssembly();
 
@@ -1096,11 +937,11 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
             var typePath = Path.Combine(context.ConceptualPath, "CloudNimble", "DotNetDocs", "Tests", "Shared", "BasicScenarios", "SimpleClass");
             Directory.CreateDirectory(typePath);
 
-            await File.WriteAllTextAsync(Path.Combine(typePath, "usage.mdz"), "Type usage");
-            await File.WriteAllTextAsync(Path.Combine(typePath, "examples.mdz"), "Type examples");
-            await File.WriteAllTextAsync(Path.Combine(typePath, "best-practices.mdz"), "Type best practices");
-            await File.WriteAllTextAsync(Path.Combine(typePath, "patterns.mdz"), "Type patterns");
-            await File.WriteAllTextAsync(Path.Combine(typePath, "considerations.mdz"), "Type considerations");
+            await File.WriteAllTextAsync(Path.Combine(typePath, "usage.mdz"), "Type usage", TestContext.CancellationToken);
+            await File.WriteAllTextAsync(Path.Combine(typePath, "examples.mdz"), "Type examples", TestContext.CancellationToken);
+            await File.WriteAllTextAsync(Path.Combine(typePath, "best-practices.mdz"), "Type best practices", TestContext.CancellationToken);
+            await File.WriteAllTextAsync(Path.Combine(typePath, "patterns.mdz"), "Type patterns", TestContext.CancellationToken);
+            await File.WriteAllTextAsync(Path.Combine(typePath, "considerations.mdz"), "Type considerations", TestContext.CancellationToken);
 
             var assembly = await GetSingleTestAssembly();
 
@@ -1131,7 +972,7 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
             Directory.CreateDirectory(testDir);
 
             var contentWithBom = "\uFEFFTest content with BOM";
-            await File.WriteAllTextAsync(Path.Combine(testDir, "test.md"), contentWithBom);
+            await File.WriteAllTextAsync(Path.Combine(testDir, "test.md"), contentWithBom, TestContext.CancellationToken);
 
             string? loadedContent = null;
             await manager.LoadConceptualFileAsync(testDir, "test.md", content => loadedContent = content);
@@ -1148,7 +989,7 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
             Directory.CreateDirectory(testDir);
 
             var placeholderContent = "<!-- TODO: REMOVE THIS COMMENT AFTER YOU CUSTOMIZE THIS CONTENT -->";
-            await File.WriteAllTextAsync(Path.Combine(testDir, "test.md"), placeholderContent);
+            await File.WriteAllTextAsync(Path.Combine(testDir, "test.md"), placeholderContent, TestContext.CancellationToken);
 
             string? loadedContent = null;
             await manager.LoadConceptualFileAsync(testDir, "test.md", content => loadedContent = content, showPlaceholders: false);
@@ -1164,7 +1005,7 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
             Directory.CreateDirectory(testDir);
 
             var placeholderContent = "<!-- TODO: REMOVE THIS COMMENT AFTER YOU CUSTOMIZE THIS CONTENT -->";
-            await File.WriteAllTextAsync(Path.Combine(testDir, "test.md"), placeholderContent);
+            await File.WriteAllTextAsync(Path.Combine(testDir, "test.md"), placeholderContent, TestContext.CancellationToken);
 
             string? loadedContent = null;
             await manager.LoadConceptualFileAsync(testDir, "test.md", content => loadedContent = content, showPlaceholders: true);
@@ -1179,7 +1020,7 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
             var testDir = Path.Combine(_tempDirectory!, "emptyTest");
             Directory.CreateDirectory(testDir);
 
-            await File.WriteAllTextAsync(Path.Combine(testDir, "empty.md"), "");
+            await File.WriteAllTextAsync(Path.Combine(testDir, "empty.md"), "", TestContext.CancellationToken);
 
             bool setterCalled = false;
             await manager.LoadConceptualFileAsync(testDir, "empty.md", content => setterCalled = true);
@@ -1194,7 +1035,7 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
             var testDir = Path.Combine(_tempDirectory!, "whitespaceTest");
             Directory.CreateDirectory(testDir);
 
-            await File.WriteAllTextAsync(Path.Combine(testDir, "whitespace.md"), "   \n\t\r\n   ");
+            await File.WriteAllTextAsync(Path.Combine(testDir, "whitespace.md"), "   \n\t\r\n   ", TestContext.CancellationToken);
 
             bool setterCalled = false;
             await manager.LoadConceptualFileAsync(testDir, "whitespace.md", content => setterCalled = true);
@@ -1223,7 +1064,7 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
             Directory.CreateDirectory(testDir);
 
             var contentWithWhitespace = "\n\n  Content with whitespace  \n\n";
-            await File.WriteAllTextAsync(Path.Combine(testDir, "trim.md"), contentWithWhitespace);
+            await File.WriteAllTextAsync(Path.Combine(testDir, "trim.md"), contentWithWhitespace, TestContext.CancellationToken);
 
             string? loadedContent = null;
             await manager.LoadConceptualFileAsync(testDir, "trim.md", content => loadedContent = content);
@@ -1239,7 +1080,7 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
             Directory.CreateDirectory(testDir);
 
             var contentWithBomAndWhitespace = "\uFEFF  \n\nActual content\n\n  ";
-            await File.WriteAllTextAsync(Path.Combine(testDir, "combined.md"), contentWithBomAndWhitespace);
+            await File.WriteAllTextAsync(Path.Combine(testDir, "combined.md"), contentWithBomAndWhitespace, TestContext.CancellationToken);
 
             string? loadedContent = null;
             await manager.LoadConceptualFileAsync(testDir, "combined.md", content => loadedContent = content);
@@ -1258,7 +1099,7 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
             Directory.CreateDirectory(testDir);
 
             var placeholderWithWhitespace = "  \n  <!-- TODO: REMOVE THIS COMMENT AFTER YOU CUSTOMIZE THIS CONTENT -->  \n";
-            await File.WriteAllTextAsync(Path.Combine(testDir, "placeholder.md"), placeholderWithWhitespace);
+            await File.WriteAllTextAsync(Path.Combine(testDir, "placeholder.md"), placeholderWithWhitespace, TestContext.CancellationToken);
 
             string? loadedContent = null;
             await manager.LoadConceptualFileAsync(testDir, "placeholder.md", content => loadedContent = content, showPlaceholders: false);
@@ -1274,7 +1115,7 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
             Directory.CreateDirectory(testDir);
 
             var normalContent = "This is normal content\nWith multiple lines\nAnd no placeholder";
-            await File.WriteAllTextAsync(Path.Combine(testDir, "normal.md"), normalContent);
+            await File.WriteAllTextAsync(Path.Combine(testDir, "normal.md"), normalContent, TestContext.CancellationToken);
 
             string? loadedContent = null;
             await manager.LoadConceptualFileAsync(testDir, "normal.md", content => loadedContent = content, showPlaceholders: false);
@@ -1501,494 +1342,11 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
 
         #endregion
 
-        #region CopyFilesAsync Additional Tests
-
-        [TestMethod]
-        public async Task CopyFilesAsync_RecursivePattern_CopiesNestedFiles()
-        {
-            var manager = GetDocumentationManager();
-            var sourceDir = Path.Combine(_tempDirectory!, "source");
-            var destDir = Path.Combine(_tempDirectory!, "dest");
-
-            Directory.CreateDirectory(Path.Combine(sourceDir, "images", "icons"));
-            await File.WriteAllTextAsync(Path.Combine(sourceDir, "images", "logo.png"), "logo");
-            await File.WriteAllTextAsync(Path.Combine(sourceDir, "images", "icons", "check.png"), "check");
-
-            await manager.CopyFilesAsync(sourceDir, destDir, "images/**/*", skipExisting: true);
-
-            File.Exists(Path.Combine(destDir, "images", "logo.png")).Should().BeTrue();
-            File.Exists(Path.Combine(destDir, "images", "icons", "check.png")).Should().BeTrue();
-        }
-
-        [TestMethod]
-        public async Task CopyFilesAsync_SourceDirectoryMissing_ReturnsWithoutError()
-        {
-            var manager = GetDocumentationManager();
-            var sourceDir = Path.Combine(_tempDirectory!, "nonexistent");
-            var destDir = Path.Combine(_tempDirectory!, "dest");
-
-            await manager.CopyFilesAsync(sourceDir, destDir, "*.md", skipExisting: true);
-
-            Directory.Exists(destDir).Should().BeFalse("destination should not be created when source doesn't exist");
-        }
-
-        [TestMethod]
-        public async Task CopyFilesAsync_SkipExistingFalse_OverwritesFiles()
-        {
-            var manager = GetDocumentationManager();
-            var sourceDir = Path.Combine(_tempDirectory!, "source");
-            var destDir = Path.Combine(_tempDirectory!, "dest");
-
-            Directory.CreateDirectory(sourceDir);
-            Directory.CreateDirectory(destDir);
-
-            await File.WriteAllTextAsync(Path.Combine(sourceDir, "test.md"), "New content");
-            await File.WriteAllTextAsync(Path.Combine(destDir, "test.md"), "Original content");
-
-            await manager.CopyFilesAsync(sourceDir, destDir, "*.md", skipExisting: false);
-
-            var content = await File.ReadAllTextAsync(Path.Combine(destDir, "test.md"));
-            content.Should().Be("New content", "file should be overwritten when skipExisting is false");
-        }
-
-        [TestMethod]
-        public async Task CopyFilesAsync_MultiplePatternMatches_CopiesAll()
-        {
-            var manager = GetDocumentationManager();
-            var sourceDir = Path.Combine(_tempDirectory!, "source");
-            var destDir = Path.Combine(_tempDirectory!, "dest");
-
-            Directory.CreateDirectory(sourceDir);
-            await File.WriteAllTextAsync(Path.Combine(sourceDir, "file1.md"), "content1");
-            await File.WriteAllTextAsync(Path.Combine(sourceDir, "file2.md"), "content2");
-            await File.WriteAllTextAsync(Path.Combine(sourceDir, "file3.md"), "content3");
-
-            await manager.CopyFilesAsync(sourceDir, destDir, "*.md", skipExisting: true);
-
-            Directory.GetFiles(destDir, "*.md").Should().HaveCount(3);
-        }
-
-        [TestMethod]
-        public async Task CopyFilesAsync_SpecificFileName_CopiesSingleFile()
-        {
-            var manager = GetDocumentationManager();
-            var sourceDir = Path.Combine(_tempDirectory!, "source");
-            var destDir = Path.Combine(_tempDirectory!, "dest");
-
-            Directory.CreateDirectory(sourceDir);
-            await File.WriteAllTextAsync(Path.Combine(sourceDir, "docs.json"), "{}");
-            await File.WriteAllTextAsync(Path.Combine(sourceDir, "other.json"), "{}");
-
-            await manager.CopyFilesAsync(sourceDir, destDir, "docs.json", skipExisting: true);
-
-            File.Exists(Path.Combine(destDir, "docs.json")).Should().BeTrue();
-            File.Exists(Path.Combine(destDir, "other.json")).Should().BeFalse();
-        }
-
-        [TestMethod]
-        public async Task CopyFilesAsync_NoMatchingFiles_CreatesEmptyDestination()
-        {
-            var manager = GetDocumentationManager();
-            var sourceDir = Path.Combine(_tempDirectory!, "source");
-            var destDir = Path.Combine(_tempDirectory!, "dest");
-
-            Directory.CreateDirectory(sourceDir);
-            await File.WriteAllTextAsync(Path.Combine(sourceDir, "test.txt"), "content");
-
-            await manager.CopyFilesAsync(sourceDir, destDir, "*.md", skipExisting: true);
-
-            Directory.Exists(destDir).Should().BeTrue("destination directory should be created");
-            Directory.GetFiles(destDir).Should().BeEmpty("no files should match the pattern");
-        }
-
-        [TestMethod]
-        public async Task CopyFilesAsync_RecursivePatternWithSubdirectory_CopiesCorrectStructure()
-        {
-            var manager = GetDocumentationManager();
-            var sourceDir = Path.Combine(_tempDirectory!, "source");
-            var destDir = Path.Combine(_tempDirectory!, "dest");
-
-            var imagesDir = Path.Combine(sourceDir, "images");
-            var iconsDir = Path.Combine(imagesDir, "icons");
-            var badgesDir = Path.Combine(imagesDir, "badges");
-
-            Directory.CreateDirectory(iconsDir);
-            Directory.CreateDirectory(badgesDir);
-
-            await File.WriteAllTextAsync(Path.Combine(iconsDir, "icon1.png"), "icon1");
-            await File.WriteAllTextAsync(Path.Combine(iconsDir, "icon2.svg"), "icon2");
-            await File.WriteAllTextAsync(Path.Combine(badgesDir, "badge.png"), "badge");
-
-            await manager.CopyFilesAsync(sourceDir, destDir, "images/**/*", skipExisting: true);
-
-            File.Exists(Path.Combine(destDir, "images", "icons", "icon1.png")).Should().BeTrue();
-            File.Exists(Path.Combine(destDir, "images", "icons", "icon2.svg")).Should().BeTrue();
-            File.Exists(Path.Combine(destDir, "images", "badges", "badge.png")).Should().BeTrue();
-        }
-
-        [TestMethod]
-        public async Task CopyFilesAsync_InvalidRecursivePattern_HandlesGracefully()
-        {
-            var manager = GetDocumentationManager();
-            var sourceDir = Path.Combine(_tempDirectory!, "source");
-            var destDir = Path.Combine(_tempDirectory!, "dest");
-
-            Directory.CreateDirectory(sourceDir);
-
-            await manager.CopyFilesAsync(sourceDir, destDir, "**/**/**/*", skipExisting: true);
-
-            Directory.Exists(destDir).Should().BeTrue();
-        }
-
-        [TestMethod]
-        public async Task CopyFilesAsync_LargeNumberOfFiles_CopiesAll()
-        {
-            var manager = GetDocumentationManager();
-            var sourceDir = Path.Combine(_tempDirectory!, "source");
-            var destDir = Path.Combine(_tempDirectory!, "dest");
-
-            Directory.CreateDirectory(sourceDir);
-
-            for (int i = 0; i < 50; i++)
-            {
-                await File.WriteAllTextAsync(Path.Combine(sourceDir, $"file{i}.md"), $"content{i}");
-            }
-
-            await manager.CopyFilesAsync(sourceDir, destDir, "*.md", skipExisting: true);
-
-            Directory.GetFiles(destDir, "*.md").Should().HaveCount(50);
-        }
-
-        [TestMethod]
-        public async Task CopyFilesAsync_MixedExtensions_CopiesOnlyMatching()
-        {
-            var manager = GetDocumentationManager();
-            var sourceDir = Path.Combine(_tempDirectory!, "source");
-            var destDir = Path.Combine(_tempDirectory!, "dest");
-
-            Directory.CreateDirectory(sourceDir);
-            await File.WriteAllTextAsync(Path.Combine(sourceDir, "file.md"), "md");
-            await File.WriteAllTextAsync(Path.Combine(sourceDir, "file.mdx"), "mdx");
-            await File.WriteAllTextAsync(Path.Combine(sourceDir, "file.txt"), "txt");
-
-            await manager.CopyFilesAsync(sourceDir, destDir, "*.md", skipExisting: true);
-
-            File.Exists(Path.Combine(destDir, "file.md")).Should().BeTrue();
-            File.Exists(Path.Combine(destDir, "file.mdx")).Should().BeFalse();
-            File.Exists(Path.Combine(destDir, "file.txt")).Should().BeFalse();
-        }
-
-        #endregion
-
-        #region CopyDirectoryRecursiveAsync Additional Tests
-
-        [TestMethod]
-        public async Task CopyDirectoryRecursiveAsync_SourceDirectoryMissing_ReturnsWithoutError()
-        {
-            var manager = GetDocumentationManager();
-            var sourceDir = Path.Combine(_tempDirectory!, "nonexistent");
-            var destDir = Path.Combine(_tempDirectory!, "dest");
-
-            await manager.CopyDirectoryRecursiveAsync(sourceDir, destDir, "*", skipExisting: true);
-
-            Directory.Exists(destDir).Should().BeFalse();
-        }
-
-        [TestMethod]
-        public async Task CopyDirectoryRecursiveAsync_SkipExistingFalse_OverwritesFiles()
-        {
-            var manager = GetDocumentationManager();
-            var sourceDir = Path.Combine(_tempDirectory!, "source");
-            var destDir = Path.Combine(_tempDirectory!, "dest");
-
-            Directory.CreateDirectory(Path.Combine(sourceDir, "sub"));
-            Directory.CreateDirectory(Path.Combine(destDir, "sub"));
-
-            await File.WriteAllTextAsync(Path.Combine(sourceDir, "sub", "file.md"), "New content");
-            await File.WriteAllTextAsync(Path.Combine(destDir, "sub", "file.md"), "Original content");
-
-            await manager.CopyDirectoryRecursiveAsync(sourceDir, destDir, "*", skipExisting: false);
-
-            var content = await File.ReadAllTextAsync(Path.Combine(destDir, "sub", "file.md"));
-            content.Should().Be("New content");
-        }
-
-        [TestMethod]
-        public async Task CopyDirectoryRecursiveAsync_EmptyDirectory_CreatesStructure()
-        {
-            var manager = GetDocumentationManager();
-            var sourceDir = Path.Combine(_tempDirectory!, "source");
-            var destDir = Path.Combine(_tempDirectory!, "dest");
-
-            Directory.CreateDirectory(Path.Combine(sourceDir, "empty1"));
-            Directory.CreateDirectory(Path.Combine(sourceDir, "empty2", "nested"));
-
-            await manager.CopyDirectoryRecursiveAsync(sourceDir, destDir, "*", skipExisting: true);
-
-            Directory.Exists(Path.Combine(destDir, "empty1")).Should().BeTrue();
-            Directory.Exists(Path.Combine(destDir, "empty2", "nested")).Should().BeTrue();
-        }
-
-        [TestMethod]
-        public async Task CopyDirectoryRecursiveAsync_PatternFilter_CopiesOnlyMatchingFiles()
-        {
-            var manager = GetDocumentationManager();
-            var sourceDir = Path.Combine(_tempDirectory!, "source");
-            var destDir = Path.Combine(_tempDirectory!, "dest");
-
-            Directory.CreateDirectory(Path.Combine(sourceDir, "sub"));
-            await File.WriteAllTextAsync(Path.Combine(sourceDir, "test.md"), "md");
-            await File.WriteAllTextAsync(Path.Combine(sourceDir, "test.txt"), "txt");
-            await File.WriteAllTextAsync(Path.Combine(sourceDir, "sub", "nested.md"), "nested md");
-            await File.WriteAllTextAsync(Path.Combine(sourceDir, "sub", "nested.txt"), "nested txt");
-
-            await manager.CopyDirectoryRecursiveAsync(sourceDir, destDir, "*.md", skipExisting: true);
-
-            File.Exists(Path.Combine(destDir, "test.md")).Should().BeTrue();
-            File.Exists(Path.Combine(destDir, "test.txt")).Should().BeFalse();
-            File.Exists(Path.Combine(destDir, "sub", "nested.md")).Should().BeTrue();
-            File.Exists(Path.Combine(destDir, "sub", "nested.txt")).Should().BeFalse();
-        }
-
-        [TestMethod]
-        public async Task CopyDirectoryRecursiveAsync_DeepNesting_PreservesStructure()
-        {
-            var manager = GetDocumentationManager();
-            var sourceDir = Path.Combine(_tempDirectory!, "source");
-            var destDir = Path.Combine(_tempDirectory!, "dest");
-
-            var deepPath = Path.Combine(sourceDir, "level1", "level2", "level3", "level4");
-            Directory.CreateDirectory(deepPath);
-            await File.WriteAllTextAsync(Path.Combine(deepPath, "deep.md"), "deep content");
-
-            await manager.CopyDirectoryRecursiveAsync(sourceDir, destDir, "*", skipExisting: true);
-
-            File.Exists(Path.Combine(destDir, "level1", "level2", "level3", "level4", "deep.md")).Should().BeTrue();
-        }
-
-        [TestMethod]
-        public async Task CopyDirectoryRecursiveAsync_MixedContentTypes_CopiesAll()
-        {
-            var manager = GetDocumentationManager();
-            var sourceDir = Path.Combine(_tempDirectory!, "source");
-            var destDir = Path.Combine(_tempDirectory!, "dest");
-
-            Directory.CreateDirectory(Path.Combine(sourceDir, "docs"));
-            Directory.CreateDirectory(Path.Combine(sourceDir, "images"));
-            Directory.CreateDirectory(Path.Combine(sourceDir, "scripts"));
-
-            await File.WriteAllTextAsync(Path.Combine(sourceDir, "docs", "readme.md"), "readme");
-            await File.WriteAllTextAsync(Path.Combine(sourceDir, "images", "logo.png"), "logo");
-            await File.WriteAllTextAsync(Path.Combine(sourceDir, "scripts", "build.js"), "build");
-
-            await manager.CopyDirectoryRecursiveAsync(sourceDir, destDir, "*", skipExisting: true);
-
-            File.Exists(Path.Combine(destDir, "docs", "readme.md")).Should().BeTrue();
-            File.Exists(Path.Combine(destDir, "images", "logo.png")).Should().BeTrue();
-            File.Exists(Path.Combine(destDir, "scripts", "build.js")).Should().BeTrue();
-        }
-
-        [TestMethod]
-        public async Task CopyDirectoryRecursiveAsync_OnlyRootFiles_CopiesWithoutSubdirectories()
-        {
-            var manager = GetDocumentationManager();
-            var sourceDir = Path.Combine(_tempDirectory!, "source");
-            var destDir = Path.Combine(_tempDirectory!, "dest");
-
-            Directory.CreateDirectory(sourceDir);
-            await File.WriteAllTextAsync(Path.Combine(sourceDir, "file1.md"), "content1");
-            await File.WriteAllTextAsync(Path.Combine(sourceDir, "file2.md"), "content2");
-
-            await manager.CopyDirectoryRecursiveAsync(sourceDir, destDir, "*", skipExisting: true);
-
-            File.Exists(Path.Combine(destDir, "file1.md")).Should().BeTrue();
-            File.Exists(Path.Combine(destDir, "file2.md")).Should().BeTrue();
-            Directory.GetDirectories(destDir).Should().BeEmpty();
-        }
-
-        [TestMethod]
-        public async Task CopyDirectoryRecursiveAsync_SkipExistingTrue_PreservesExistingSubdirectoryFiles()
-        {
-            var manager = GetDocumentationManager();
-            var sourceDir = Path.Combine(_tempDirectory!, "source");
-            var destDir = Path.Combine(_tempDirectory!, "dest");
-
-            Directory.CreateDirectory(Path.Combine(sourceDir, "sub"));
-            Directory.CreateDirectory(Path.Combine(destDir, "sub"));
-
-            await File.WriteAllTextAsync(Path.Combine(sourceDir, "sub", "new.md"), "new");
-            await File.WriteAllTextAsync(Path.Combine(sourceDir, "sub", "existing.md"), "source version");
-            await File.WriteAllTextAsync(Path.Combine(destDir, "sub", "existing.md"), "dest version");
-
-            await manager.CopyDirectoryRecursiveAsync(sourceDir, destDir, "*", skipExisting: true);
-
-            var newContent = await File.ReadAllTextAsync(Path.Combine(destDir, "sub", "new.md"));
-            var existingContent = await File.ReadAllTextAsync(Path.Combine(destDir, "sub", "existing.md"));
-
-            newContent.Should().Be("new");
-            existingContent.Should().Be("dest version", "existing file should not be overwritten");
-        }
-
-        #endregion
-
-        #region CopyReferencedDocumentationAsync Additional Tests
-
-        [TestMethod]
-        public async Task CopyReferencedDocumentationAsync_NoReferences_CompletesWithoutError()
-        {
-            var manager = GetDocumentationManager();
-            var context = GetService<ProjectContext>();
-            context.DocumentationReferences.Clear();
-
-            await manager.CopyReferencedDocumentationAsync();
-
-            context.DocumentationReferences.Should().BeEmpty();
-        }
-
-        [TestMethod]
-        public async Task CopyReferencedDocumentationAsync_MultipleReferences_CopiesAll()
-        {
-            var manager = GetDocumentationManager();
-            var context = GetService<ProjectContext>();
-            context.DocumentationReferences.Clear();
-
-            var source1 = Path.Combine(_tempDirectory!, "ref1");
-            var source2 = Path.Combine(_tempDirectory!, "ref2");
-            Directory.CreateDirectory(source1);
-            Directory.CreateDirectory(source2);
-
-            await File.WriteAllTextAsync(Path.Combine(source1, "test1.md"), "ref1");
-            await File.WriteAllTextAsync(Path.Combine(source2, "test2.md"), "ref2");
-
-            context.DocumentationReferences.Add(new DocumentationReference
-            {
-                DocumentationRoot = source1,
-                DestinationPath = "dest1",
-                DocumentationType = SupportedDocumentationType.Mintlify
-            });
-
-            context.DocumentationReferences.Add(new DocumentationReference
-            {
-                DocumentationRoot = source2,
-                DestinationPath = "dest2",
-                DocumentationType = SupportedDocumentationType.Mintlify
-            });
-
-            await manager.CopyReferencedDocumentationAsync();
-
-            File.Exists(Path.Combine(context.DocumentationRootPath, "dest1", "test1.md")).Should().BeTrue();
-            File.Exists(Path.Combine(context.DocumentationRootPath, "dest2", "test2.md")).Should().BeTrue();
-        }
-
-        [TestMethod]
-        public async Task CopyReferencedDocumentationAsync_DifferentDocumentationTypes_UsesCorrectPatterns()
-        {
-            var manager = GetDocumentationManager();
-            var context = GetService<ProjectContext>();
-            context.DocumentationReferences.Clear();
-
-            var mintlifySource = Path.Combine(_tempDirectory!, "mintlify");
-            var docfxSource = Path.Combine(_tempDirectory!, "docfx");
-
-            Directory.CreateDirectory(mintlifySource);
-            Directory.CreateDirectory(docfxSource);
-
-            await File.WriteAllTextAsync(Path.Combine(mintlifySource, "test.mdx"), "mintlify");
-            await File.WriteAllTextAsync(Path.Combine(docfxSource, "test.yml"), "docfx");
-
-            context.DocumentationReferences.Add(new DocumentationReference
-            {
-                DocumentationRoot = mintlifySource,
-                DestinationPath = "mintlify",
-                DocumentationType = SupportedDocumentationType.Mintlify
-            });
-
-            context.DocumentationReferences.Add(new DocumentationReference
-            {
-                DocumentationRoot = docfxSource,
-                DestinationPath = "docfx",
-                DocumentationType = SupportedDocumentationType.DocFX
-            });
-
-            await manager.CopyReferencedDocumentationAsync();
-
-            context.DocumentationReferences.Should().HaveCount(2);
-        }
-
-        [TestMethod]
-        public async Task CopyReferencedDocumentationAsync_MissingSourceDirectory_ContinuesProcessing()
-        {
-            var manager = GetDocumentationManager();
-            var context = GetService<ProjectContext>();
-            context.DocumentationReferences.Clear();
-
-            var validSource = Path.Combine(_tempDirectory!, "valid");
-            Directory.CreateDirectory(validSource);
-            await File.WriteAllTextAsync(Path.Combine(validSource, "test.md"), "content");
-
-            context.DocumentationReferences.Add(new DocumentationReference
-            {
-                DocumentationRoot = Path.Combine(_tempDirectory!, "nonexistent"),
-                DestinationPath = "missing",
-                DocumentationType = SupportedDocumentationType.Mintlify
-            });
-
-            context.DocumentationReferences.Add(new DocumentationReference
-            {
-                DocumentationRoot = validSource,
-                DestinationPath = "valid",
-                DocumentationType = SupportedDocumentationType.Mintlify
-            });
-
-            await manager.CopyReferencedDocumentationAsync();
-
-            File.Exists(Path.Combine(context.DocumentationRootPath, "valid", "test.md")).Should().BeTrue();
-        }
-
-        #endregion
-
-        #region GetFilePatternsForDocumentationType Additional Tests
-
-        [TestMethod]
-        public void GetFilePatternsForDocumentationType_CaseSensitive_ReturnsCorrectPatterns()
-        {
-            var manager = GetDocumentationManager();
-
-            var lowerCase = manager.GetFilePatternsForDocumentationType(SupportedDocumentationType.Mintlify);
-            var mixedCase = manager.GetFilePatternsForDocumentationType(SupportedDocumentationType.Mintlify);
-
-            lowerCase.Should().NotBeNull();
-            mixedCase.Should().NotBeNull();
-        }
-
-        [TestMethod]
-        public void GetFilePatternsForDocumentationType_Generic_ReturnsDefaultPatterns()
-        {
-            var manager = GetDocumentationManager();
-
-            var result = manager.GetFilePatternsForDocumentationType(SupportedDocumentationType.Generic);
-
-            result.Should().NotBeNull();
-        }
-
-        [TestMethod]
-        public void GetFilePatternsForDocumentationType_AllKnownTypes_ReturnDistinctPatterns()
-        {
-            var manager = GetDocumentationManager();
-
-            var mintlify = manager.GetFilePatternsForDocumentationType(SupportedDocumentationType.Mintlify);
-            var docfx = manager.GetFilePatternsForDocumentationType(SupportedDocumentationType.DocFX);
-            var mkdocs = manager.GetFilePatternsForDocumentationType(SupportedDocumentationType.MkDocs);
-
-            mintlify.Should().Contain("*.mdx");
-            docfx.Should().Contain("*.yml");
-            mkdocs.Should().Contain("mkdocs.yml");
-
-            mintlify.Should().NotEqual(docfx);
-            docfx.Should().NotEqual(mkdocs);
-        }
-
-        #endregion
+        // NOTE: The following test regions were removed because the methods they tested were deleted:
+        // - CopyFilesAsync Additional Tests (tests for deleted CopyFilesAsync method)
+        // - CopyDirectoryRecursiveAsync Additional Tests (tests for deleted CopyDirectoryRecursiveAsync method)
+        // - CopyReferencedDocumentationAsync Additional Tests (tests for deleted CopyReferencedDocumentationAsync method)
+        // - GetFilePatternsForDocumentationType Additional Tests (tests for deleted GetFilePatternsForDocumentationType method)
 
         #region Dispose Tests
 
@@ -2090,14 +1448,15 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
         }
 
         [TestMethod]
-        public async Task ProcessAsync_WithDocumentationReferences_CopiesFiles()
+        public async Task ProcessAsync_WithDocumentationReferences_NoHandlerRegistered_CompletesGracefully()
         {
+            // Arrange
             var manager = GetDocumentationManager();
             var context = GetService<ProjectContext>();
 
             var sourceDir = Path.Combine(_tempDirectory!, "reference-source");
             Directory.CreateDirectory(sourceDir);
-            await File.WriteAllTextAsync(Path.Combine(sourceDir, "test.mdx"), "# Test");
+            await File.WriteAllTextAsync(Path.Combine(sourceDir, "test.mdx"), "# Test", TestContext.CancellationToken);
 
             context.DocumentationReferences.Add(new DocumentationReference
             {
@@ -2106,10 +1465,14 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
                 DocumentationType = SupportedDocumentationType.Mintlify
             });
 
-            await manager.ProcessAsync(_testAssemblyPath!, _testXmlPath!);
+            // Act - should complete without throwing even when no handler is registered
+            var act = async () => await manager.ProcessAsync(_testAssemblyPath!, _testXmlPath!);
 
-            var destFile = Path.Combine(context.DocumentationRootPath, "references", "test.mdx");
-            File.Exists(destFile).Should().BeTrue("referenced documentation should be copied");
+            // Assert
+            await act.Should().NotThrowAsync("ProcessAsync should handle references gracefully when no handler is registered");
+
+            // NOTE: Actual file copying behavior is tested in MintlifyDocReferenceHandlerTests.ProcessAsync_CopiesAndRewritesContent
+            // When no handler is registered, files are not copied - this is expected behavior
         }
 
         [TestMethod]
@@ -2150,40 +1513,14 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
             var assembly1 = await GetSingleTestAssembly();
             var assembly2 = await GetSingleTestAssembly();
 
-            var merged = await manager.MergeDocAssembliesAsync(new List<DocAssembly> { assembly1, assembly2 });
+            var merged = await manager.MergeDocAssembliesAsync([assembly1, assembly2]);
 
             merged.Should().NotBeNull();
-            merged.Namespaces.Should().NotBeEmpty();
-            merged.Namespaces.Count.Should().Be(assembly1.Namespaces.Count, "identical assemblies should not duplicate namespaces");
+            merged!.Namespaces.Should().NotBeEmpty();
+            merged.Namespaces.Should().HaveCount(assembly1.Namespaces.Count, "identical assemblies should not duplicate namespaces");
         }
 
-        [TestMethod]
-        public async Task CopyFilesAsync_WithSymlinksInSource_HandlesCorrectly()
-        {
-            var manager = GetDocumentationManager();
-            var sourceDir = Path.Combine(_tempDirectory!, "symlink-source");
-            var destDir = Path.Combine(_tempDirectory!, "symlink-dest");
-            Directory.CreateDirectory(sourceDir);
-            await File.WriteAllTextAsync(Path.Combine(sourceDir, "test.md"), "content");
-
-            await manager.CopyFilesAsync(sourceDir, destDir, "*.md", skipExisting: true);
-
-            File.Exists(Path.Combine(destDir, "test.md")).Should().BeTrue();
-        }
-
-        [TestMethod]
-        public async Task CopyDirectoryRecursiveAsync_WithCircularReferences_DoesNotInfiniteLoop()
-        {
-            var manager = GetDocumentationManager();
-            var sourceDir = Path.Combine(_tempDirectory!, "circular-source");
-            var destDir = Path.Combine(_tempDirectory!, "circular-dest");
-            Directory.CreateDirectory(sourceDir);
-            await File.WriteAllTextAsync(Path.Combine(sourceDir, "test.md"), "content");
-
-            await manager.CopyDirectoryRecursiveAsync(sourceDir, destDir, "*.md", skipExisting: true);
-
-            File.Exists(Path.Combine(destDir, "test.md")).Should().BeTrue();
-        }
+        // NOTE: Tests for deleted methods removed: CopyFilesAsync_WithSymlinksInSource_HandlesCorrectly, CopyDirectoryRecursiveAsync_WithCircularReferences_DoesNotInfiniteLoop
 
         [TestMethod]
         public async Task LoadConceptualFileAsync_WithBOMAndWhitespace_ParsesCorrectly()
@@ -2193,7 +1530,7 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
             Directory.CreateDirectory(directory);
 
             var content = "\uFEFF   \r\n  Test Content  \r\n   ";
-            await File.WriteAllTextAsync(Path.Combine(directory, "test.md"), content, new System.Text.UTF8Encoding(true));
+            await File.WriteAllTextAsync(Path.Combine(directory, "test.md"), content, new System.Text.UTF8Encoding(true), TestContext.CancellationToken);
 
             string? result = null;
             await manager.LoadConceptualFileAsync(directory, "test.md", s => result = s, showPlaceholders: false);
@@ -2202,91 +1539,13 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
             result.Should().Be("Test Content", "BOM and surrounding whitespace should be trimmed");
         }
 
-        [TestMethod]
-        public void GetFilePatternsForDocumentationType_WithUnknownType_ReturnsDefaultPatterns()
-        {
-            var manager = GetDocumentationManager();
-
-            var patterns = manager.GetFilePatternsForDocumentationType(SupportedDocumentationType.Generic);
-
-            patterns.Should().NotBeEmpty();
-            patterns.Should().Contain("*.md", "default patterns should include markdown");
-            patterns.Should().Contain("*.html", "default patterns should include html");
-        }
-
-        [TestMethod]
-        public async Task CopyReferencedDocumentationAsync_WithOverlappingDestinations_HandlesCorrectly()
-        {
-            var manager = GetDocumentationManager();
-            var context = GetService<ProjectContext>();
-
-            var source1 = Path.Combine(_tempDirectory!, "ref1");
-            var source2 = Path.Combine(_tempDirectory!, "ref2");
-            Directory.CreateDirectory(source1);
-            Directory.CreateDirectory(source2);
-            await File.WriteAllTextAsync(Path.Combine(source1, "file1.md"), "content1");
-            await File.WriteAllTextAsync(Path.Combine(source2, "file2.md"), "content2");
-
-            context.DocumentationReferences.Add(new DocumentationReference
-            {
-                DocumentationRoot = source1,
-                DestinationPath = "shared",
-                DocumentationType = SupportedDocumentationType.Mintlify
-            });
-            context.DocumentationReferences.Add(new DocumentationReference
-            {
-                DocumentationRoot = source2,
-                DestinationPath = "shared",
-                DocumentationType = SupportedDocumentationType.Mintlify
-            });
-
-            await manager.CopyReferencedDocumentationAsync();
-
-            File.Exists(Path.Combine(context.DocumentationRootPath, "shared", "file1.md")).Should().BeTrue();
-            File.Exists(Path.Combine(context.DocumentationRootPath, "shared", "file2.md")).Should().BeTrue();
-        }
+        // NOTE: Tests for deleted methods removed: GetFilePatternsForDocumentationType_WithUnknownType_ReturnsDefaultPatterns, CopyReferencedDocumentationAsync_WithOverlappingDestinations_HandlesCorrectly
 
         #endregion
 
         #region Error Handling Tests
 
-        [TestMethod]
-        public async Task CopyFilesAsync_WithReadOnlyDestinationFile_OverwritesFails()
-        {
-            var manager = GetDocumentationManager();
-            var sourceDir = Path.Combine(_tempDirectory!, "readonly-source");
-            var destDir = Path.Combine(_tempDirectory!, "readonly-dest");
-            Directory.CreateDirectory(sourceDir);
-            Directory.CreateDirectory(destDir);
-
-            await File.WriteAllTextAsync(Path.Combine(sourceDir, "test.md"), "new content");
-            var destFile = Path.Combine(destDir, "test.md");
-            await File.WriteAllTextAsync(destFile, "old content");
-            File.SetAttributes(destFile, FileAttributes.ReadOnly);
-
-            var act = async () => await manager.CopyFilesAsync(sourceDir, destDir, "*.md", skipExisting: false);
-
-            await act.Should().ThrowAsync<UnauthorizedAccessException>("cannot overwrite read-only file");
-
-            File.SetAttributes(destFile, FileAttributes.Normal);
-        }
-
-        [TestMethod]
-        public async Task CopyDirectoryRecursiveAsync_WithLockedFile_ContinuesWithOtherFiles()
-        {
-            var manager = GetDocumentationManager();
-            var sourceDir = Path.Combine(_tempDirectory!, "locked-source");
-            var destDir = Path.Combine(_tempDirectory!, "locked-dest");
-            Directory.CreateDirectory(sourceDir);
-
-            await File.WriteAllTextAsync(Path.Combine(sourceDir, "file1.md"), "content1");
-            await File.WriteAllTextAsync(Path.Combine(sourceDir, "file2.md"), "content2");
-
-            await manager.CopyDirectoryRecursiveAsync(sourceDir, destDir, "*.md", skipExisting: true);
-
-            File.Exists(Path.Combine(destDir, "file1.md")).Should().BeTrue();
-            File.Exists(Path.Combine(destDir, "file2.md")).Should().BeTrue();
-        }
+        // NOTE: Tests for deleted methods removed: CopyFilesAsync_WithReadOnlyDestinationFile_OverwritesFails, CopyDirectoryRecursiveAsync_WithLockedFile_ContinuesWithOtherFiles
 
         [TestMethod]
         public async Task ProcessAsync_WithMissingXmlFile_ContinuesWithoutXmlDocs()
@@ -2302,23 +1561,7 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
             Directory.Exists(context.DocumentationRootPath).Should().BeTrue("ProcessAsync should complete even without XML docs");
         }
 
-        [TestMethod]
-        public async Task CopyReferencedDocumentationAsync_WithMissingSource_SkipsGracefully()
-        {
-            var manager = GetDocumentationManager();
-            var context = GetService<ProjectContext>();
-
-            context.DocumentationReferences.Add(new DocumentationReference
-            {
-                DocumentationRoot = Path.Combine(_tempDirectory!, "does-not-exist"),
-                DestinationPath = "missing",
-                DocumentationType = SupportedDocumentationType.Mintlify
-            });
-
-            var act = async () => await manager.CopyReferencedDocumentationAsync();
-
-            await act.Should().NotThrowAsync("missing source should be handled gracefully");
-        }
+        // NOTE: Test for deleted method removed: CopyReferencedDocumentationAsync_WithMissingSource_SkipsGracefully
 
         [TestMethod]
         public async Task LoadConceptualFileAsync_WithCorruptedFile_SetsEmptyContent()
@@ -2348,9 +1591,10 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
             var assembly1 = await GetSingleTestAssembly();
             var assembly2 = await GetSingleTestAssembly();
 
-            var merged = await manager.MergeDocAssembliesAsync(new List<DocAssembly> { assembly1, assembly2 });
+            var merged = await manager.MergeDocAssembliesAsync([assembly1, assembly2]);
 
-            merged.Namespaces.Should().NotBeEmpty();
+            merged.Should().NotBeNull();
+            merged!.Namespaces.Should().NotBeEmpty();
             foreach (var ns in merged.Namespaces)
             {
                 var typeNames = ns.Types.Select(t => t.Name).ToList();
@@ -2402,29 +1646,7 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
             await act.Should().NotThrowAsync("concurrent ProcessAsync calls should complete successfully");
         }
 
-        [TestMethod]
-        public async Task CopyFilesAsync_ConcurrentCalls_AllComplete()
-        {
-            var manager = GetDocumentationManager();
-
-            var tasks = Enumerable.Range(0, 10).Select(async i =>
-            {
-                var sourceDir = Path.Combine(_tempDirectory!, $"concurrent-source-{i}");
-                var destDir = Path.Combine(_tempDirectory!, $"concurrent-dest-{i}");
-                Directory.CreateDirectory(sourceDir);
-                await File.WriteAllTextAsync(Path.Combine(sourceDir, "test.md"), $"content-{i}");
-
-                await manager.CopyFilesAsync(sourceDir, destDir, "*.md", skipExisting: true);
-            });
-
-            await Task.WhenAll(tasks);
-
-            for (int i = 0; i < 10; i++)
-            {
-                var destFile = Path.Combine(_tempDirectory!, $"concurrent-dest-{i}", "test.md");
-                File.Exists(destFile).Should().BeTrue($"file {i} should be copied");
-            }
-        }
+        // NOTE: Test for deleted method removed: CopyFilesAsync_ConcurrentCalls_AllComplete
 
         [TestMethod]
         public async Task CreateConceptualFilesAsync_ConcurrentCallsSameAssembly_HandlesCorrectly()
@@ -2451,13 +1673,13 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
             {
                 var assembly1 = await GetSingleTestAssembly();
                 var assembly2 = await GetSingleTestAssembly();
-                return await manager.MergeDocAssembliesAsync(new List<DocAssembly> { assembly1, assembly2 });
+                return await manager.MergeDocAssembliesAsync([assembly1, assembly2]);
             });
 
             var results = await Task.WhenAll(tasks);
 
             results.Should().AllSatisfy(r => r.Should().NotBeNull());
-            results.Should().AllSatisfy(r => r.Namespaces.Should().NotBeEmpty());
+            results.Should().AllSatisfy(r => r!.Namespaces.Should().NotBeEmpty());
         }
 
         [TestMethod]
@@ -2816,234 +2038,12 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
             parameter!.Usage.Should().Be("The first number.");
         }
 
-        [TestMethod]
-        public void GetExclusionPatternsForDocumentationType_Mintlify_ReturnsCorrectPatterns()
-        {
-            // Arrange
-            var manager = GetDocumentationManager();
-
-            // Act
-            var patterns = manager.GetExclusionPatternsForDocumentationType(SupportedDocumentationType.Mintlify);
-
-            // Assert
-            patterns.Should().NotBeNull();
-            patterns.Should().Contain("**/*.mdz");
-            patterns.Should().Contain("conceptual/**/*");
-            patterns.Should().Contain("**/*.css");
-            patterns.Should().Contain("docs.json");
-            patterns.Should().Contain("assembly-list.txt");
-            patterns.Should().Contain("*.docsproj");
-        }
-
-        [TestMethod]
-        public void GetExclusionPatternsForDocumentationType_UnknownType_ReturnsEmptyList()
-        {
-            // Arrange
-            var manager = GetDocumentationManager();
-
-            // Act
-            var patterns = manager.GetExclusionPatternsForDocumentationType(SupportedDocumentationType.Generic);
-
-            // Assert
-            patterns.Should().NotBeNull();
-            patterns.Should().BeEmpty();
-        }
-
-        [TestMethod]
-        public void ShouldExcludeFile_WithMdzPattern_ExcludesMdzFiles()
-        {
-            // Arrange
-            var manager = GetDocumentationManager();
-            var exclusionPatterns = new List<string> { "**/*.mdz" };
-
-            // Act & Assert
-            manager.ShouldExcludeFile("file.mdz", exclusionPatterns).Should().BeTrue();
-            manager.ShouldExcludeFile("api-reference/test.mdz", exclusionPatterns).Should().BeTrue();
-            manager.ShouldExcludeFile("deeply/nested/path/file.mdz", exclusionPatterns).Should().BeTrue();
-            manager.ShouldExcludeFile("file.md", exclusionPatterns).Should().BeFalse();
-            manager.ShouldExcludeFile("file.mdx", exclusionPatterns).Should().BeFalse();
-        }
-
-        [TestMethod]
-        public void ShouldExcludeFile_WithConceptualPattern_ExcludesConceptualFolder()
-        {
-            // Arrange
-            var manager = GetDocumentationManager();
-            var exclusionPatterns = new List<string> { "conceptual/**/*" };
-
-            // Act & Assert
-            manager.ShouldExcludeFile("conceptual/guide.md", exclusionPatterns).Should().BeTrue();
-            manager.ShouldExcludeFile("conceptual/nested/file.mdx", exclusionPatterns).Should().BeTrue();
-            manager.ShouldExcludeFile("api-reference/file.md", exclusionPatterns).Should().BeFalse();
-            manager.ShouldExcludeFile("guide.md", exclusionPatterns).Should().BeFalse();
-        }
-
-        [TestMethod]
-        public void ShouldExcludeFile_WithCssPattern_ExcludesCssFiles()
-        {
-            // Arrange
-            var manager = GetDocumentationManager();
-            var exclusionPatterns = new List<string> { "**/*.css" };
-
-            // Act & Assert
-            manager.ShouldExcludeFile("style.css", exclusionPatterns).Should().BeTrue();
-            manager.ShouldExcludeFile("assets/main.css", exclusionPatterns).Should().BeTrue();
-            manager.ShouldExcludeFile("deeply/nested/theme.css", exclusionPatterns).Should().BeTrue();
-            manager.ShouldExcludeFile("style.scss", exclusionPatterns).Should().BeFalse();
-            manager.ShouldExcludeFile("file.css.map", exclusionPatterns).Should().BeFalse();
-        }
-
-        [TestMethod]
-        public void ShouldExcludeFile_WithDocsJsonPattern_ExcludesDocsJson()
-        {
-            // Arrange
-            var manager = GetDocumentationManager();
-            var exclusionPatterns = new List<string> { "docs.json" };
-
-            // Act & Assert
-            manager.ShouldExcludeFile("docs.json", exclusionPatterns).Should().BeTrue();
-            manager.ShouldExcludeFile("nested/docs.json", exclusionPatterns).Should().BeFalse(); // Exact match only
-            manager.ShouldExcludeFile("docs-template.json", exclusionPatterns).Should().BeFalse();
-        }
-
-        [TestMethod]
-        public void ShouldExcludeFile_WithAssemblyListPattern_ExcludesAssemblyList()
-        {
-            // Arrange
-            var manager = GetDocumentationManager();
-            var exclusionPatterns = new List<string> { "assembly-list.txt" };
-
-            // Act & Assert
-            manager.ShouldExcludeFile("assembly-list.txt", exclusionPatterns).Should().BeTrue();
-            manager.ShouldExcludeFile("nested/assembly-list.txt", exclusionPatterns).Should().BeFalse(); // Exact match only
-            manager.ShouldExcludeFile("assembly-list-backup.txt", exclusionPatterns).Should().BeFalse();
-        }
-
-        [TestMethod]
-        public void ShouldExcludeFile_WithDocsprojPattern_ExcludesDocsprojFiles()
-        {
-            // Arrange
-            var manager = GetDocumentationManager();
-            var exclusionPatterns = new List<string> { "*.docsproj" };
-
-            // Act & Assert
-            manager.ShouldExcludeFile("MyProject.docsproj", exclusionPatterns).Should().BeTrue();
-            manager.ShouldExcludeFile("Documentation.docsproj", exclusionPatterns).Should().BeTrue();
-            manager.ShouldExcludeFile("nested/Project.docsproj", exclusionPatterns).Should().BeTrue();
-            manager.ShouldExcludeFile("MyProject.csproj", exclusionPatterns).Should().BeFalse();
-        }
-
-        [TestMethod]
-        public void ShouldExcludeDirectory_WithConceptualPattern_ExcludesConceptualDirectory()
-        {
-            // Arrange
-            var manager = GetDocumentationManager();
-            var exclusionPatterns = new List<string> { "conceptual/**/*" };
-
-            // Act & Assert
-            manager.ShouldExcludeDirectory("conceptual", exclusionPatterns).Should().BeTrue();
-            manager.ShouldExcludeDirectory("conceptual/guides", exclusionPatterns).Should().BeTrue();
-            manager.ShouldExcludeDirectory("conceptual/guides/nested", exclusionPatterns).Should().BeTrue();
-            manager.ShouldExcludeDirectory("api-reference", exclusionPatterns).Should().BeFalse();
-            manager.ShouldExcludeDirectory("guides", exclusionPatterns).Should().BeFalse();
-        }
-
-        [TestMethod]
-        public void ShouldExcludeFile_NonMatchingFile_DoesNotExclude()
-        {
-            // Arrange
-            var manager = GetDocumentationManager();
-            var exclusionPatterns = new List<string> { "**/*.mdz", "conceptual/**/*", "**/*.css", "docs.json", "assembly-list.txt", "*.docsproj" };
-
-            // Act & Assert - These should NOT be excluded
-            manager.ShouldExcludeFile("index.mdx", exclusionPatterns).Should().BeFalse();
-            manager.ShouldExcludeFile("api-reference/class.md", exclusionPatterns).Should().BeFalse();
-            manager.ShouldExcludeFile("snippets/example.jsx", exclusionPatterns).Should().BeFalse();
-            manager.ShouldExcludeFile("images/logo.png", exclusionPatterns).Should().BeFalse();
-        }
-
-        [TestMethod]
-        public async Task CopyDirectoryWithExclusionsAsync_SkipsExcludedFiles()
-        {
-            // Arrange
-            var sourceDir = Path.Combine(_tempDirectory!, "source");
-            var destDir = Path.Combine(_tempDirectory!, "dest");
-            Directory.CreateDirectory(sourceDir);
-
-            // Create test files
-            File.WriteAllText(Path.Combine(sourceDir, "index.mdx"), "content");
-            File.WriteAllText(Path.Combine(sourceDir, "test.mdz"), "content");
-            File.WriteAllText(Path.Combine(sourceDir, "style.css"), "content");
-            File.WriteAllText(Path.Combine(sourceDir, "docs.json"), "content");
-
-            var manager = GetDocumentationManager();
-            var exclusionPatterns = new List<string> { "**/*.mdz", "**/*.css", "docs.json" };
-
-            // Act
-            await manager.CopyDirectoryWithExclusionsAsync(sourceDir, destDir, exclusionPatterns);
-
-            // Assert
-            File.Exists(Path.Combine(destDir, "index.mdx")).Should().BeTrue("index.mdx should be copied");
-            File.Exists(Path.Combine(destDir, "test.mdz")).Should().BeFalse("test.mdz should be excluded");
-            File.Exists(Path.Combine(destDir, "style.css")).Should().BeFalse("style.css should be excluded");
-            File.Exists(Path.Combine(destDir, "docs.json")).Should().BeFalse("docs.json should be excluded");
-        }
-
-        [TestMethod]
-        public async Task CopyDirectoryWithExclusionsAsync_CopiesNestedDirectories()
-        {
-            // Arrange
-            var sourceDir = Path.Combine(_tempDirectory!, "source2");
-            var destDir = Path.Combine(_tempDirectory!, "dest2");
-            Directory.CreateDirectory(sourceDir);
-            Directory.CreateDirectory(Path.Combine(sourceDir, "api-reference"));
-            Directory.CreateDirectory(Path.Combine(sourceDir, "conceptual"));
-
-            // Create test files
-            File.WriteAllText(Path.Combine(sourceDir, "index.mdx"), "content");
-            File.WriteAllText(Path.Combine(sourceDir, "api-reference", "class.md"), "content");
-            File.WriteAllText(Path.Combine(sourceDir, "conceptual", "guide.md"), "content");
-
-            var manager = GetDocumentationManager();
-            var exclusionPatterns = new List<string> { "conceptual/**/*" };
-
-            // Act
-            await manager.CopyDirectoryWithExclusionsAsync(sourceDir, destDir, exclusionPatterns);
-
-            // Assert
-            File.Exists(Path.Combine(destDir, "index.mdx")).Should().BeTrue("index.mdx should be copied");
-            File.Exists(Path.Combine(destDir, "api-reference", "class.md")).Should().BeTrue("api-reference/class.md should be copied");
-            Directory.Exists(Path.Combine(destDir, "conceptual")).Should().BeFalse("conceptual directory should not be copied");
-            File.Exists(Path.Combine(destDir, "conceptual", "guide.md")).Should().BeFalse("conceptual/guide.md should be excluded");
-        }
-
-        [TestMethod]
-        public void MatchesGlobPattern_WithVariousPatterns_MatchesCorrectly()
-        {
-            // Arrange
-            var manager = GetDocumentationManager();
-
-            // Act & Assert
-            // Test **/*.ext pattern
-            manager.MatchesGlobPattern("file.mdz", "**/*.mdz").Should().BeTrue();
-            manager.MatchesGlobPattern("path/file.mdz", "**/*.mdz").Should().BeTrue();
-            manager.MatchesGlobPattern("deep/nested/file.mdz", "**/*.mdz").Should().BeTrue();
-            manager.MatchesGlobPattern("file.md", "**/*.mdz").Should().BeFalse();
-
-            // Test directory/**/* pattern
-            manager.MatchesGlobPattern("conceptual/file.md", "conceptual/**/*").Should().BeTrue();
-            manager.MatchesGlobPattern("conceptual/nested/file.md", "conceptual/**/*").Should().BeTrue();
-            manager.MatchesGlobPattern("api-reference/file.md", "conceptual/**/*").Should().BeFalse();
-
-            // Test exact match
-            manager.MatchesGlobPattern("docs.json", "docs.json").Should().BeTrue();
-            manager.MatchesGlobPattern("nested/docs.json", "docs.json").Should().BeFalse();
-
-            // Test *.ext pattern
-            manager.MatchesGlobPattern("file.css", "*.css").Should().BeTrue();
-            manager.MatchesGlobPattern("path/file.css", "*.css").Should().BeTrue();
-            manager.MatchesGlobPattern("file.scss", "*.css").Should().BeFalse();
-        }
+        // NOTE: The following tests were moved to DocReferenceHandlerBaseTests:
+        // - GetExclusionPatternsForDocumentationType_* tests
+        // - ShouldExcludeFile_* tests
+        // - ShouldExcludeDirectory_* tests
+        // - CopyDirectoryWithExclusionsAsync_* tests
+        // - MatchesGlobPattern_* tests
 
         #endregion
 
@@ -3262,7 +2262,7 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
                 this.projectContext = projectContext;
             }
 
-            public Task RenderAsync(DocAssembly model)
+            public Task RenderAsync(DocAssembly? model)
             {
                 Executed = true;
 

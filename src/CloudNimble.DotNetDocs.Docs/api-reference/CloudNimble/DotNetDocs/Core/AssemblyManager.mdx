@@ -5,8 +5,6 @@ icon: file-brackets-curly
 keywords: ['AssemblyManager', 'CloudNimble.DotNetDocs.Core.AssemblyManager', 'CloudNimble.DotNetDocs.Core', 'class', 'System.Object', 'System.IDisposable']
 ---
 
-import { DocsBadge } from '/snippets/DocsBadge.jsx';
-
 ## Definition
 
 **Assembly:** CloudNimble.DotNetDocs.Core.dll
@@ -43,7 +41,7 @@ var model = await manager.DocumentAsync(context);
 
 ## Constructors
 
-### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> .ctor
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor
 
 Initializes a new instance of [AssemblyManager](/api-reference/CloudNimble/DotNetDocs/Core/AssemblyManager) for a specific assembly.
 
@@ -73,7 +71,7 @@ public AssemblyManager(string assemblyPath, string xmlPath)
 If the XML documentation file does not exist, processing will continue without XML documentation.
             A warning will be added to the Errors collection.
 
-### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> .ctor <DocsBadge text="Inherited" variant="neutral" />
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor <Badge color="gray">Inherited</Badge>
 
 <Note>Inherited from `object`</Note>
 
@@ -85,7 +83,7 @@ public Object()
 
 ## Properties
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> AssemblyName
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> AssemblyName
 
 Gets the name of the assembly (without extension).
 
@@ -99,7 +97,7 @@ public string AssemblyName { get; init; }
 
 Type: `string`
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> AssemblyPath
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> AssemblyPath
 
 Gets the path to the assembly DLL file.
 
@@ -113,7 +111,7 @@ public string AssemblyPath { get; init; }
 
 Type: `string`
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Document
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Document
 
 Gets the current documentation model for the processed assembly.
 
@@ -127,7 +125,7 @@ public CloudNimble.DotNetDocs.Core.DocAssembly Document { get; private set; }
 
 Type: `CloudNimble.DotNetDocs.Core.DocAssembly?`
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Errors
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Errors
 
 Gets the collection of errors that occurred during Since  processing.
 
@@ -145,7 +143,7 @@ Type: `System.Collections.Generic.List<System.CodeDom.Compiler.CompilerError>`
 
 Includes warnings about inaccessible internal members when requested but not available.
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> LastModified
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> LastModified
 
 Gets the last modified timestamp of the assembly file for incremental builds.
 
@@ -159,7 +157,7 @@ public System.DateTime LastModified { get; private set; }
 
 Type: `System.DateTime`
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> XmlPath
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> XmlPath
 
 Gets the path to the XML documentation file.
 
@@ -179,7 +177,7 @@ May be null if no XML documentation file is available.
 
 ## Methods
 
-### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Dispose
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Dispose
 
 Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
 
@@ -189,7 +187,7 @@ Performs application-defined tasks associated with freeing, releasing, or resett
 public void Dispose()
 ```
 
-### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> DocumentAsync
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> DocumentAsync
 
 Documents the assembly asynchronously, building or rebuilding an in-memory model with metadata and documentation if necessary.
 
@@ -210,7 +208,7 @@ public System.Threading.Tasks.Task<CloudNimble.DotNetDocs.Core.DocAssembly> Docu
 Type: `System.Threading.Tasks.Task<CloudNimble.DotNetDocs.Core.DocAssembly>`
 A task representing the asynchronous operation, containing the [DocAssembly](/api-reference/CloudNimble/DotNetDocs/Core/DocAssembly) model.
 
-### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Equals <DocsBadge text="Inherited" variant="neutral" /> <DocsBadge text="Virtual" variant="warning" />
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Equals <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
 
 <Note>Inherited from `object`</Note>
 
@@ -230,7 +228,7 @@ public virtual bool Equals(object obj)
 
 Type: `bool`
 
-### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Equals <DocsBadge text="Inherited" variant="neutral" />
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Equals <Badge color="gray">Inherited</Badge>
 
 <Note>Inherited from `object`</Note>
 
@@ -251,7 +249,7 @@ public static bool Equals(object objA, object objB)
 
 Type: `bool`
 
-### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> GetHashCode <DocsBadge text="Inherited" variant="neutral" /> <DocsBadge text="Virtual" variant="warning" />
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetHashCode <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
 
 <Note>Inherited from `object`</Note>
 
@@ -265,7 +263,7 @@ public virtual int GetHashCode()
 
 Type: `int`
 
-### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> GetType <DocsBadge text="Inherited" variant="neutral" />
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetType <Badge color="gray">Inherited</Badge>
 
 <Note>Inherited from `object`</Note>
 
@@ -279,7 +277,7 @@ public System.Type GetType()
 
 Type: `System.Type`
 
-### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> MemberwiseClone <DocsBadge text="Inherited" variant="neutral" />
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> MemberwiseClone <Badge color="gray">Inherited</Badge>
 
 <Note>Inherited from `object`</Note>
 
@@ -293,7 +291,7 @@ protected internal object MemberwiseClone()
 
 Type: `object`
 
-### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> ReferenceEquals <DocsBadge text="Inherited" variant="neutral" />
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ReferenceEquals <Badge color="gray">Inherited</Badge>
 
 <Note>Inherited from `object`</Note>
 
@@ -314,7 +312,7 @@ public static bool ReferenceEquals(object objA, object objB)
 
 Type: `bool`
 
-### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> ToString <DocsBadge text="Inherited" variant="neutral" /> <DocsBadge text="Virtual" variant="warning" />
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ToString <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
 
 <Note>Inherited from `object`</Note>
 

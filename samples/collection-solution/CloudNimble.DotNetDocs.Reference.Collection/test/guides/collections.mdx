@@ -1,0 +1,754 @@
+---
+title: Documentation Collections
+sidebarTitle: Collections
+description: Combine multiple documentation projects into unified portals
+icon: layer-group
+---
+
+## Overview
+
+Documentation Collections allow you to combine multiple independent `.docsproj` projects into a single unified documentation portal. This feature is perfect for:
+
+- **Microservices**: Create a single portal for all services in your architecture
+- **Multi-Product Suites**: Unify documentation across separate open-source products
+- **Modular Systems**: Combine documentation from independently maintained modules
+
+Collections work by **copying documentation files** from referenced projects and **combining their navigation structures** into a single cohesive experience.
+
+<Note>
+  Collections are currently supported for Mintlify documentation only. Support for other documentation formats may be added in future releases.
+</Note>
+
+## How Collections Work
+
+The collection `.docsproj` is a **normal, first-class documentation project** that:
+
+1. Has its own assemblies to document (or none at all)
+2. Has its own conceptual content and guides
+3. Has its own branding and theme configuration
+4. Generates its own documentation using the standard pipeline
+
+After the collection completes its normal documentation generation, DotNetDocs:
+
+1. **Copies** markdown files from referenced projects into the collection's folder structure
+2. **Loads** each referenced project's `docs.json` navigation file
+3. **Applies** URL prefixes to navigation paths
+4. **Combines** navigation into the collection's Tabs or Products arrays
+5. **Saves** the final `docs.json` once with everything integrated
+
+<Tip>
+  No complex merging logic or priorities neededjust copy files and combine navigation. This "Easy As Fuck"" design keeps collections simple and predictable.
+</Tip>
+
+## Configuration
+
+### Using DocumentationReference
+
+Add `<DocumentationReference>` items to your collection's `.docsproj` file, similar to how you use `<ProjectReference>`:
+
+<CodeGroup>
+```xml Current (1.0.2)
+<Project Sdk="DotNetDocs.Sdk/1.0.2">
+  <PropertyGroup>
+    <DocumentationType>Mintlify</DocumentationType>
+    <GenerateDocumentation>true</GenerateDocumentation>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <DocumentationReference Include="../ServiceA/ServiceA.docsproj"
+                           DestinationPath="services/service-a"
+                           IntegrationType="Tabs" />
+    <DocumentationReference Include="../ServiceB/ServiceB.docsproj"
+                           DestinationPath="services/service-b"
+                           IntegrationType="Tabs" />
+    <DocumentationReference Include="../ServiceC/ServiceC.docsproj"
+                           DestinationPath="services/service-c"
+                           IntegrationType="Tabs" />
+  </ItemGroup>
+</Project>
+```
+
+```xml Preview (1.1.0-preview.1)
+<Project Sdk="DotNetDocs.Sdk/1.1.0-preview.1">
+  <PropertyGroup>
+    <DocumentationType>Mintlify</DocumentationType>
+    <GenerateDocumentation>true</GenerateDocumentation>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <DocumentationReference Include="../ServiceA/ServiceA.docsproj"
+                           DestinationPath="services/service-a"
+                           IntegrationType="Tabs" />
+    <DocumentationReference Include="../ServiceB/ServiceB.docsproj"
+                           DestinationPath="services/service-b"
+                           IntegrationType="Tabs" />
+    <DocumentationReference Include="../ServiceC/ServiceC.docsproj"
+                           DestinationPath="services/service-c"
+                           IntegrationType="Tabs" />
+  </ItemGroup>
+</Project>
+```
+</CodeGroup>
+
+### Required Attributes
+
+<ParamField path="Include" type="string" required>
+  Relative or absolute path to the referenced `.docsproj` file.
+
+  ```xml
+  <DocumentationReference Include="../MyService/MyService.docsproj" ... />
+  ```
+</ParamField>
+
+<ParamField path="DestinationPath" type="string" required>
+  URL path where the referenced documentation will be accessible. This becomes the URL prefix for all documentation from this reference.
+
+  ```xml
+  DestinationPath="services/user-service"
+  ```
+
+  Files from the referenced project appear at URLs like:
+  - `services/user-service/api-reference/...`
+  - `services/user-service/guides/...`
+</ParamField>
+
+### Optional Attributes
+
+<ParamField path="IntegrationType" type="string" default="Tabs">
+  How the reference's navigation is integrated into the collection. Supported values:
+
+  - `Tabs` - Adds as a top-level tab in Mintlify navigation
+  - `Products` - Adds as a product in Mintlify's multi-product navigation
+
+  ```xml
+  IntegrationType="Tabs"
+  ```
+</ParamField>
+
+<ParamField path="Name" type="string">
+  Custom display name for this documentation in navigation. If not specified, the project file name (without extension) will be used.
+
+  ```xml
+  Name="User Management Service"
+  ```
+
+  This is especially useful when project file names aren't user-friendly (e.g., `ServiceA.docsproj` can display as "Authentication Service").
+</ParamField>
+
+## Integration Types
+
+Mintlify supports two ways to integrate referenced documentation into your navigation structure.
+
+### Tabs Integration
+
+Tabs appear as top-level navigation items in your documentation site. This is the default integration type.
+
+```xml
+<ItemGroup>
+  <DocumentationReference Include="../UserService/UserService.docsproj"
+                         DestinationPath="services/users"
+                         IntegrationType="Tabs"
+                         Name="User Management" />
+  <DocumentationReference Include="../OrderService/OrderService.docsproj"
+                         DestinationPath="services/orders"
+                         IntegrationType="Tabs"
+                         Name="Order Processing" />
+</ItemGroup>
+```
+
+**Result in `docs.json`**:
+```json
+{
+  "name": "Microservices Platform",
+  "tabs": [
+    {
+      "tab": "User Management",
+      "href": "services/users",
+      "pages": [
+        "services/users/introduction",
+        "services/users/api-reference/overview",
+        ...
+      ]
+    },
+    {
+      "tab": "Order Processing",
+      "href": "services/orders",
+      "pages": [
+        "services/orders/introduction",
+        "services/orders/api-reference/overview",
+        ...
+      ]
+    }
+  ]
+}
+```
+
+<Note>
+  If you omit the `Name` attribute, the project file name is used (e.g., "UserService" and "OrderService").
+</Note>
+
+### Products Integration
+
+Products are designed for multi-product documentation portals where each product has its own complete documentation set.
+
+```xml
+<ItemGroup>
+  <DocumentationReference Include="../Core/Core.docsproj"
+                         DestinationPath="core"
+                         IntegrationType="Products"
+                         Name="EasyAF Core" />
+  <DocumentationReference Include="../Http/Http.docsproj"
+                         DestinationPath="http"
+                         IntegrationType="Products"
+                         Name="HTTP Client" />
+  <DocumentationReference Include="../Validation/Validation.docsproj"
+                         DestinationPath="validation"
+                         IntegrationType="Products"
+                         Name="Validation Framework" />
+</ItemGroup>
+```
+
+**Result in `docs.json`**:
+```json
+{
+  "name": "EasyAF Product Suite",
+  "navigation": {
+    "products": [
+      {
+        "product": "EasyAF Core",
+        "href": "core",
+        "pages": [...],
+        "groups": [...]
+      },
+      {
+        "product": "HTTP Client",
+        "href": "http",
+        "pages": [...],
+        "groups": [...]
+      },
+      {
+        "product": "Validation Framework",
+        "href": "validation",
+        "pages": [...],
+        "groups": [...]
+      }
+    ]
+  }
+}
+```
+
+## Complete Examples
+
+### Example 1: Microservices Portal
+
+Create a unified documentation portal for a microservices architecture:
+
+**File**: `docs/MicroservicesPlatform.docsproj`
+
+<CodeGroup>
+```xml Current (1.0.2)
+<Project Sdk="DotNetDocs.Sdk/1.0.2">
+  <PropertyGroup>
+    <!-- Collection configuration -->
+    <DocumentationType>Mintlify</DocumentationType>
+    <GenerateDocumentation>false</GenerateDocumentation>
+
+    <!-- Optional: Collection can have its own branding -->
+    <MintlifyTemplate>
+      <Name>Microservices Platform</Name>
+      <Theme>quill</Theme>
+      <Colors>
+        <Primary>#0066CC</Primary>
+      </Colors>
+    </MintlifyTemplate>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Reference individual service documentation -->
+    <DocumentationReference Include="../services/UserService/UserService.docsproj"
+                           DestinationPath="services/users"
+                           IntegrationType="Tabs" />
+    <DocumentationReference Include="../services/OrderService/OrderService.docsproj"
+                           DestinationPath="services/orders"
+                           IntegrationType="Tabs" />
+    <DocumentationReference Include="../services/PaymentService/PaymentService.docsproj"
+                           DestinationPath="services/payments"
+                           IntegrationType="Tabs" />
+    <DocumentationReference Include="../services/NotificationService/NotificationService.docsproj"
+                           DestinationPath="services/notifications"
+                           IntegrationType="Tabs" />
+  </ItemGroup>
+</Project>
+```
+
+```xml Preview (1.1.0-preview.1)
+<Project Sdk="DotNetDocs.Sdk/1.1.0-preview.1">
+  <PropertyGroup>
+    <!-- Collection configuration -->
+    <DocumentationType>Mintlify</DocumentationType>
+    <GenerateDocumentation>false</GenerateDocumentation>
+
+    <!-- Optional: Collection can have its own branding -->
+    <MintlifyTemplate>
+      <Name>Microservices Platform</Name>
+      <Theme>quill</Theme>
+      <Colors>
+        <Primary>#0066CC</Primary>
+      </Colors>
+    </MintlifyTemplate>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Reference individual service documentation with custom names -->
+    <DocumentationReference Include="../services/UserService/UserService.docsproj"
+                           DestinationPath="services/users"
+                           IntegrationType="Tabs"
+                           Name="User Management" />
+    <DocumentationReference Include="../services/OrderService/OrderService.docsproj"
+                           DestinationPath="services/orders"
+                           IntegrationType="Tabs"
+                           Name="Order Processing" />
+    <DocumentationReference Include="../services/PaymentService/PaymentService.docsproj"
+                           DestinationPath="services/payments"
+                           IntegrationType="Tabs"
+                           Name="Payments" />
+    <DocumentationReference Include="../services/NotificationService/NotificationService.docsproj"
+                           DestinationPath="services/notifications"
+                           IntegrationType="Tabs"
+                           Name="Notifications" />
+  </ItemGroup>
+</Project>
+```
+</CodeGroup>
+
+**Resulting Structure**:
+```
+docs/
+   introduction.md          # Collection's own introduction
+   architecture.md          # Collection's own architecture guide
+   services/
+      users/              # UserService documentation
+         introduction.md
+         api-reference/
+      orders/             # OrderService documentation
+         introduction.md
+         api-reference/
+      payments/           # PaymentService documentation
+      notifications/      # NotificationService documentation
+   docs.json               # Combined navigation
+```
+
+### Example 2: Multi-Product Suite
+
+Create a unified portal for related open-source products:
+
+**File**: `docs/EasyAF.Portal.docsproj`
+
+<CodeGroup>
+```xml Current (1.0.2)
+<Project Sdk="DotNetDocs.Sdk/1.0.2">
+  <PropertyGroup>
+    <DocumentationType>Mintlify</DocumentationType>
+    <MintlifyTemplate>
+      <Name>EasyAF Product Suite</Name>
+      <Theme>maple</Theme>
+    </MintlifyTemplate>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Reference separate product repositories -->
+    <DocumentationReference Include="../../EasyAF.Core/docs/EasyAF.Core.docsproj"
+                           DestinationPath="core"
+                           IntegrationType="Products" />
+    <DocumentationReference Include="../../EasyAF.Http/docs/EasyAF.Http.docsproj"
+                           DestinationPath="http"
+                           IntegrationType="Products" />
+    <DocumentationReference Include="../../EasyAF.Validation/docs/EasyAF.Validation.docsproj"
+                           DestinationPath="validation"
+                           IntegrationType="Products" />
+  </ItemGroup>
+</Project>
+```
+
+```xml Preview (1.1.0-preview.1)
+<Project Sdk="DotNetDocs.Sdk/1.1.0-preview.1">
+  <PropertyGroup>
+    <DocumentationType>Mintlify</DocumentationType>
+    <MintlifyTemplate>
+      <Name>EasyAF Product Suite</Name>
+      <Theme>maple</Theme>
+    </MintlifyTemplate>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Reference separate product repositories with custom names -->
+    <DocumentationReference Include="../../EasyAF.Core/docs/EasyAF.Core.docsproj"
+                           DestinationPath="core"
+                           IntegrationType="Products"
+                           Name="Core Framework" />
+    <DocumentationReference Include="../../EasyAF.Http/docs/EasyAF.Http.docsproj"
+                           DestinationPath="http"
+                           IntegrationType="Products"
+                           Name="HTTP Client" />
+    <DocumentationReference Include="../../EasyAF.Validation/docs/EasyAF.Validation.docsproj"
+                           DestinationPath="validation"
+                           IntegrationType="Products"
+                           Name="Validation" />
+  </ItemGroup>
+</Project>
+```
+</CodeGroup>
+
+### Example 3: Hybrid Collection
+
+A collection that documents its own assemblies AND references external documentation:
+
+<CodeGroup>
+```xml Current (1.0.2)
+<Project Sdk="DotNetDocs.Sdk/1.0.2">
+  <PropertyGroup>
+    <!-- This collection also generates its own API docs -->
+    <DocumentationType>Mintlify</DocumentationType>
+    <GenerateDocumentation>true</GenerateDocumentation>
+    <NamespaceMode>Folder</NamespaceMode>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Reference external plugin documentation -->
+    <DocumentationReference Include="../Plugins/AI/PluginAI.docsproj"
+                           DestinationPath="plugins/ai"
+                           IntegrationType="Tabs" />
+    <DocumentationReference Include="../Plugins/GitHub/PluginGitHub.docsproj"
+                           DestinationPath="plugins/github"
+                           IntegrationType="Tabs" />
+  </ItemGroup>
+</Project>
+```
+
+```xml Preview (1.1.0-preview.1)
+<Project Sdk="DotNetDocs.Sdk/1.1.0-preview.1">
+  <PropertyGroup>
+    <!-- This collection also generates its own API docs -->
+    <DocumentationType>Mintlify</DocumentationType>
+    <GenerateDocumentation>true</GenerateDocumentation>
+    <NamespaceMode>Folder</NamespaceMode>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Reference external plugin documentation -->
+    <DocumentationReference Include="../Plugins/AI/PluginAI.docsproj"
+                           DestinationPath="plugins/ai"
+                           IntegrationType="Tabs" />
+    <DocumentationReference Include="../Plugins/GitHub/PluginGitHub.docsproj"
+                           DestinationPath="plugins/github"
+                           IntegrationType="Tabs" />
+  </ItemGroup>
+</Project>
+```
+</CodeGroup>
+
+## Validation and Safety
+
+DotNetDocs validates references during the build process to ensure everything works correctly.
+
+### Build-Time Validation
+
+The `DocumentationReferenceResolverTask` checks:
+
+1. **Project Exists**: The referenced `.docsproj` file must exist
+2. **Documentation Type Match**: Referenced projects must use the same `DocumentationType` as the collection
+3. **Outputs Exist**: The referenced project must have generated documentation
+4. **Navigation File Exists**: For Mintlify projects, `docs.json` must exist
+
+### Type Mismatch Warnings
+
+If you try to reference a project with a different `DocumentationType`, you'll see a warning:
+
+```
+�  Skipping documentation reference 'ServiceA.docsproj' because it uses 'DocFX' format.
+Only 'Mintlify' documentation can be combined with Mintlify collections.
+Cross-format documentation combination is not currently supported.
+```
+
+The reference will be skipped, but the build continues successfully.
+
+<Warning>
+  Build the referenced projects **before** building the collection. The collection copies existing documentation outputsit doesn't build referenced projects automatically.
+</Warning>
+
+## URL Prefixes and Navigation
+
+DotNetDocs automatically applies URL prefixes to all navigation paths when combining referenced documentation.
+
+### How Prefixes Work
+
+Given this reference:
+```xml
+<DocumentationReference Include="../ServiceA/ServiceA.docsproj"
+                       DestinationPath="services/service-a" />
+```
+
+**Original navigation** in `ServiceA/docs.json`:
+```json
+{
+  "pages": [
+    "introduction",
+    "api-reference/overview",
+    {
+      "group": "API Reference",
+      "pages": [
+        "api-reference/classes/user",
+        "api-reference/classes/order"
+      ]
+    }
+  ]
+}
+```
+
+**After prefix application** in collection:
+```json
+{
+  "pages": [
+    "services/service-a/introduction",
+    "services/service-a/api-reference/overview",
+    {
+      "group": "API Reference",
+      "pages": [
+        "services/service-a/api-reference/classes/user",
+        "services/service-a/api-reference/classes/order"
+      ]
+    }
+  ]
+}
+```
+
+### Deep Prefix Application
+
+URL prefixes are applied **recursively** at all nesting levels:
+
+- **String pages**: Direct path strings
+- **Groups**: Pages inside navigation groups
+- **Tabs**: Pages inside nested tabs
+- **Dropdowns**: Pages inside dropdown menus
+
+This ensures all links work correctly regardless of navigation structure complexity.
+
+## File Copying Behavior
+
+DotNetDocs copies documentation files based on the referenced project's `DocumentationType`.
+
+### Mintlify File Patterns
+
+For Mintlify references, these patterns are copied:
+- `*.md`, `*.mdx`, `*.mdz` - All markdown files
+- `images/**/*` - All images
+- `logo/**/*` - Logo assets
+
+### Conflict Resolution
+
+If the same file exists in both the collection and a reference:
+
+<Info>
+  **Collection wins**: The collection's file is kept, and the referenced file is skipped. This allows the collection to override content from references.
+</Info>
+
+This is intentionalcollections can provide their own versions of files to customize the experience.
+
+## Build Process
+
+Understanding the build order helps troubleshoot issues:
+
+<Steps>
+  <Step title="Build Referenced Projects">
+    Build each referenced `.docsproj` first. This generates their documentation outputs.
+
+    ```bash
+    dotnet build ServiceA/ServiceA.docsproj --configuration Release
+    dotnet build ServiceB/ServiceB.docsproj --configuration Release
+    ```
+  </Step>
+
+  <Step title="Build Collection">
+    Build the collection `.docsproj`. It validates references, copies files, and combines navigation.
+
+    ```bash
+    dotnet build MicroservicesPlatform.docsproj --configuration Release
+    ```
+  </Step>
+
+  <Step title="Validation">
+    The SDK validates that:
+    - Referenced projects exist
+    - Documentation types match
+    - Documentation outputs are available
+  </Step>
+
+  <Step title="Collection Generation">
+    The collection generates its own documentation (if `GenerateDocumentation=true`).
+  </Step>
+
+  <Step title="File Copying">
+    Files from referenced projects are copied to `DestinationPath` locations.
+  </Step>
+
+  <Step title="Navigation Combining">
+    The `MintlifyRenderer` combines navigation from all references into the collection's `docs.json`.
+  </Step>
+
+  <Step title="Save">
+    The final `docs.json` is saved once with everything combined.
+  </Step>
+</Steps>
+
+## Troubleshooting
+
+### "Referenced project not found"
+
+**Problem**: The `.docsproj` path is incorrect or the file doesn't exist.
+
+**Solution**: Verify the path in your `DocumentationReference` is correct. Use relative paths from the collection `.docsproj` location.
+
+### "Documentation root does not exist"
+
+**Problem**: The referenced project hasn't been built yet, so its documentation outputs don't exist.
+
+**Solution**: Build referenced projects before building the collection:
+
+```bash
+# Build dependencies first
+dotnet build ServiceA/ServiceA.docsproj
+dotnet build ServiceB/ServiceB.docsproj
+
+# Then build collection
+dotnet build MicroservicesPlatform.docsproj
+```
+
+### "Skipping documentation reference... uses different format"
+
+**Problem**: The referenced project uses a different `DocumentationType` than the collection.
+
+**Solution**: Ensure all referenced projects use the same documentation type. Collections can only combine documentation of the same format (currently Mintlify only).
+
+### Missing navigation or broken links
+
+**Problem**: URL prefixes aren't being applied correctly, or files aren't being copied.
+
+**Solution**:
+1. Check that `DestinationPath` matches where files are actually copied
+2. Verify the referenced project's `docs.json` exists and is valid JSON
+3. Rebuild both the references and collection from scratch
+
+## Best Practices
+
+```noescape
+<CardGroup cols={2}>
+  <Card title="Build Order Matters" icon="arrows-turn-right">
+    Always build referenced projects before building the collection. Use solution build order or explicit build scripts.
+  </Card>
+
+  <Card title="Use Consistent Paths" icon="folder-tree">
+    Organize `DestinationPath` consistently (e.g., all services under `services/`, all plugins under `plugins/`).
+  </Card>
+
+  <Card title="Keep References Simple" icon="minimize">
+    Avoid circular references or overly complex reference chains. Keep your dependency graph flat and straightforward.
+  </Card>
+
+  <Card title="Version Together" icon="code-branch">
+    When releasing, ensure referenced projects and collections use compatible versions of DotNetDocs.Sdk.
+  </Card>
+
+  <Card title="Test Independently" icon="vial">
+    Each referenced project should work standalone before being added to a collection. Test them independently first.
+  </Card>
+
+  <Card title="Document the Collection" icon="book">
+    Add a `README.md` or introduction page explaining the collection structure and how projects relate to each other.
+  </Card>
+</CardGroup>
+```
+
+## Limitations
+
+Current limitations of Documentation Collections:
+
+1. **Mintlify Only**: Collections currently only work with Mintlify documentation. Support for DocFX, MkDocs, etc. may be added later.
+
+2. **No Cross-Format**: You cannot combine Mintlify and DocFX documentation in the same collection. All references must use the same format.
+
+3. **Build-Time Only**: Collections are resolved at build time. You cannot dynamically add references at runtime.
+
+4. **No Transitive References**: If ProjectA references ProjectB, and you reference ProjectA in your collection, you don't automatically get ProjectB. Each reference must be explicit.
+
+5. **Single SDK Version**: All referenced projects should use the same (or compatible) versions of DotNetDocs.Sdk to ensure consistent behavior.
+
+## Technical Details
+
+For those interested in how collections work under the hood:
+
+```noescape
+<AccordionGroup>
+  <Accordion title="MSBuild Integration" icon="gear">
+    The `DocumentationReferenceResolverTask` runs during build to:
+
+    1. Load each referenced `.docsproj` file
+    2. Extract `DocumentationRoot` and `DocumentationType` properties
+    3. Validate that documentation outputs exist
+    4. Populate `ResolvedDocumentationReference` items with metadata
+
+    These resolved items are passed to `GenerateDocumentationTask`, which populates `ProjectContext.DocumentationReferences`.
+  </Accordion>
+
+  <Accordion title="File Copying" icon="copy">
+    The `DocumentationManager.CopyReferencedDocumentationAsync()` method:
+
+    1. Iterates through each `DocumentationReference`
+    2. Determines file patterns based on `DocumentationType`
+    3. Copies files from `DocumentationRoot` to `DestinationPath`
+    4. Skips files that already exist in the collection (collection wins)
+
+    Copying happens **after** rendering completes.
+  </Accordion>
+
+  <Accordion title="Navigation Combining" icon="diagram-project">
+    The `MintlifyRenderer.CombineReferencedNavigation()` method:
+
+    1. Loads each reference's `docs.json` using `DocsJsonManager`
+    2. Applies URL prefix using `ApplyUrlPrefix(DestinationPath)`
+    3. Adds navigation to `Tabs` or `Products` array based on `IntegrationType`
+    4. Saves the combined `docs.json` once at the end
+
+    This happens **inside** `RenderAsync()` before saving, not as a separate step.
+  </Accordion>
+
+  <Accordion title="URL Prefix Application" icon="link">
+    The `DocsJsonManager.ApplyUrlPrefix()` method recursively processes:
+
+    - **String pages**: Prepends the prefix
+    - **GroupConfig.Pages**: Recursively processes nested pages
+    - **TabConfig.Pages**: Recursively processes nested pages
+    - **DropdownConfig.Pages**: Recursively processes nested pages
+
+    This ensures URL prefixes are applied at **all** nesting levels for correct navigation.
+  </Accordion>
+</AccordionGroup>
+```
+
+## Next Steps
+
+```noescape
+<CardGroup cols={2}>
+  <Card title=".docsproj Reference" icon="gear-complex-code" href="/guides/docsproj">
+    Learn about all available MSBuild properties for documentation projects
+  </Card>
+  <Card title="Deployment" icon="conveyor-belt-boxes" href="/guides/deployment">
+    Deploy your collection to Mintlify, GitHub Pages, or other hosting platforms
+  </Card>
+  <Card title="Pipeline Overview" icon="faucet-drip" href="/guides/pipeline">
+    Understand how the documentation pipeline processes assemblies and content
+  </Card>
+  <Card title="Mintlify Provider" icon="sparkles" href="/providers/mintlify">
+    Deep dive into Mintlify-specific features and configuration
+  </Card>
+</CardGroup>
+```

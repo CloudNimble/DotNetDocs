@@ -5,8 +5,6 @@ icon: file-brackets-curly
 keywords: ['DocAssembly', 'CloudNimble.DotNetDocs.Core.DocAssembly', 'CloudNimble.DotNetDocs.Core', 'class', 'CloudNimble.DotNetDocs.Core.DocEntity']
 ---
 
-import { DocsBadge } from '/snippets/DocsBadge.jsx';
-
 ## Definition
 
 **Assembly:** CloudNimble.DotNetDocs.Core.dll
@@ -32,7 +30,7 @@ Contains metadata about an assembly and its namespaces, extracted from Roslyn sy
 
 ## Constructors
 
-### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> .ctor
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor
 
 Initializes a new instance of the [DocAssembly](/api-reference/CloudNimble/DotNetDocs/Core/DocAssembly) class.
 
@@ -54,7 +52,7 @@ public DocAssembly(Microsoft.CodeAnalysis.IAssemblySymbol symbol)
 |-----------|-------------|
 | `ArgumentNullException` | Thrown when *symbol* is null. |
 
-### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> .ctor <DocsBadge text="Inherited" variant="neutral" />
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor <Badge color="gray">Inherited</Badge>
 
 <Note>Inherited from `CloudNimble.DotNetDocs.Core.DocEntity`</Note>
 
@@ -66,7 +64,7 @@ Initializes a new instance of the [DocEntity](/api-reference/CloudNimble/DotNetD
 protected DocEntity()
 ```
 
-### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> .ctor <DocsBadge text="Inherited" variant="neutral" />
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor <Badge color="gray">Inherited</Badge>
 
 <Note>Inherited from `CloudNimble.DotNetDocs.Core.DocEntity`</Note>
 
@@ -84,7 +82,7 @@ protected DocEntity(Microsoft.CodeAnalysis.ISymbol symbol)
 |------|------|-------------|
 | `symbol` | `Microsoft.CodeAnalysis.ISymbol?` | The symbol to store as the original reference. |
 
-### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> .ctor <DocsBadge text="Inherited" variant="neutral" />
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor <Badge color="gray">Inherited</Badge>
 
 <Note>Inherited from `object`</Note>
 
@@ -96,7 +94,7 @@ public Object()
 
 ## Properties
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> AssemblyName
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> AssemblyName
 
 Gets or sets the name of the assembly.
 
@@ -111,7 +109,7 @@ public string AssemblyName { get; set; }
 Type: `string`
 The assembly name.
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> BestPractices <DocsBadge text="Inherited" variant="neutral" />
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> BestPractices <Badge color="gray">Inherited</Badge>
 
 <Note>Inherited from `CloudNimble.DotNetDocs.Core.DocEntity`</Note>
 
@@ -128,7 +126,7 @@ public string BestPractices { get; set; }
 Type: `string?`
 Markdown content with best practices, recommendations, and guidelines from conceptual documentation.
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Considerations <DocsBadge text="Inherited" variant="neutral" />
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Considerations <Badge color="gray">Inherited</Badge>
 
 <Note>Inherited from `CloudNimble.DotNetDocs.Core.DocEntity`</Note>
 
@@ -145,7 +143,7 @@ public string Considerations { get; set; }
 Type: `string?`
 Markdown content with gotchas, performance, or security notes from conceptual documentation.
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> DisplayName <DocsBadge text="Inherited" variant="neutral" />
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> DisplayName <Badge color="gray">Inherited</Badge>
 
 <Note>Inherited from `CloudNimble.DotNetDocs.Core.DocEntity`</Note>
 
@@ -162,7 +160,7 @@ public string DisplayName { get; set; }
 Type: `string?`
 The fully qualified display name extracted from the Symbol.
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Examples <DocsBadge text="Inherited" variant="neutral" />
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Examples <Badge color="gray">Inherited</Badge>
 
 <Note>Inherited from `CloudNimble.DotNetDocs.Core.DocEntity`</Note>
 
@@ -179,7 +177,7 @@ public string Examples { get; set; }
 Type: `string?`
 Markdown content containing code examples from XML &lt;example&gt; tags.
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Exceptions <DocsBadge text="Inherited" variant="neutral" />
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Exceptions <Badge color="gray">Inherited</Badge>
 
 <Note>Inherited from `CloudNimble.DotNetDocs.Core.DocEntity`</Note>
 
@@ -196,7 +194,7 @@ public System.Collections.Generic.ICollection<CloudNimble.DotNetDocs.Core.DocExc
 Type: `System.Collections.Generic.ICollection<CloudNimble.DotNetDocs.Core.DocException>?`
 Collection of exception documentation from XML &lt;exception&gt; tags.
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> IncludedMembers <DocsBadge text="Inherited" variant="neutral" />
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> IncludedMembers <Badge color="gray">Inherited</Badge>
 
 <Note>Inherited from `CloudNimble.DotNetDocs.Core.DocEntity`</Note>
 
@@ -213,7 +211,7 @@ public System.Collections.Generic.List<Microsoft.CodeAnalysis.Accessibility> Inc
 Type: `System.Collections.Generic.List<Microsoft.CodeAnalysis.Accessibility>`
 List of accessibility levels to include when processing child members.
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Namespaces
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Namespaces
 
 Gets the collection of namespaces in the assembly.
 
@@ -228,7 +226,7 @@ public System.Collections.Generic.List<CloudNimble.DotNetDocs.Core.DocNamespace>
 Type: `System.Collections.Generic.List<CloudNimble.DotNetDocs.Core.DocNamespace>`
 List of documented namespaces within this assembly.
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> OriginalSymbol <DocsBadge text="Inherited" variant="neutral" />
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> OriginalSymbol <Badge color="gray">Inherited</Badge>
 
 <Note>Inherited from `CloudNimble.DotNetDocs.Core.DocEntity`</Note>
 
@@ -245,7 +243,7 @@ public Microsoft.CodeAnalysis.ISymbol OriginalSymbol { get; protected set; }
 Type: `Microsoft.CodeAnalysis.ISymbol?`
 The Roslyn ISymbol that was used to create this entity, preserved for reference.
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Patterns <DocsBadge text="Inherited" variant="neutral" />
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Patterns <Badge color="gray">Inherited</Badge>
 
 <Note>Inherited from `CloudNimble.DotNetDocs.Core.DocEntity`</Note>
 
@@ -262,7 +260,7 @@ public string Patterns { get; set; }
 Type: `string?`
 Markdown content explaining common usage patterns and architectural guidance from conceptual documentation.
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> RelatedApis <DocsBadge text="Inherited" variant="neutral" />
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> RelatedApis <Badge color="gray">Inherited</Badge>
 
 <Note>Inherited from `CloudNimble.DotNetDocs.Core.DocEntity`</Note>
 
@@ -279,7 +277,7 @@ public System.Collections.Generic.ICollection<string> RelatedApis { get; set; }
 Type: `System.Collections.Generic.ICollection<string>?`
 List of fully qualified names or URLs for related APIs from conceptual documentation.
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Remarks <DocsBadge text="Inherited" variant="neutral" />
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Remarks <Badge color="gray">Inherited</Badge>
 
 <Note>Inherited from `CloudNimble.DotNetDocs.Core.DocEntity`</Note>
 
@@ -296,7 +294,7 @@ public string Remarks { get; set; }
 Type: `string?`
 Content from the XML documentation's &lt;remarks&gt; element.
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Returns <DocsBadge text="Inherited" variant="neutral" />
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Returns <Badge color="gray">Inherited</Badge>
 
 <Note>Inherited from `CloudNimble.DotNetDocs.Core.DocEntity`</Note>
 
@@ -313,7 +311,7 @@ public string Returns { get; set; }
 Type: `string?`
 Description of the return value from XML &lt;returns&gt; tag.
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> SeeAlso <DocsBadge text="Inherited" variant="neutral" />
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> SeeAlso <Badge color="gray">Inherited</Badge>
 
 <Note>Inherited from `CloudNimble.DotNetDocs.Core.DocEntity`</Note>
 
@@ -330,7 +328,7 @@ public System.Collections.Generic.ICollection<CloudNimble.DotNetDocs.Core.DocRef
 Type: `System.Collections.Generic.ICollection<CloudNimble.DotNetDocs.Core.DocReference>?`
 Collection of related items from XML &lt;seealso&gt; tags.
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Summary <DocsBadge text="Inherited" variant="neutral" />
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Summary <Badge color="gray">Inherited</Badge>
 
 <Note>Inherited from `CloudNimble.DotNetDocs.Core.DocEntity`</Note>
 
@@ -347,7 +345,7 @@ public string Summary { get; set; }
 Type: `string?`
 Brief description of what the API element IS, from XML &lt;summary&gt; tag.
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Symbol
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Symbol
 
 Gets the Roslyn symbol for the assembly.
 
@@ -362,7 +360,7 @@ public Microsoft.CodeAnalysis.IAssemblySymbol Symbol { get; }
 Type: `Microsoft.CodeAnalysis.IAssemblySymbol`
 The underlying Roslyn assembly symbol containing metadata.
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> TypeParameters <DocsBadge text="Inherited" variant="neutral" />
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> TypeParameters <Badge color="gray">Inherited</Badge>
 
 <Note>Inherited from `CloudNimble.DotNetDocs.Core.DocEntity`</Note>
 
@@ -379,7 +377,7 @@ public System.Collections.Generic.ICollection<CloudNimble.DotNetDocs.Core.DocTyp
 Type: `System.Collections.Generic.ICollection<CloudNimble.DotNetDocs.Core.DocTypeParameter>?`
 Collection of type parameter documentation from XML &lt;typeparam&gt; tags.
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Usage <DocsBadge text="Inherited" variant="neutral" />
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Usage <Badge color="gray">Inherited</Badge>
 
 <Note>Inherited from `CloudNimble.DotNetDocs.Core.DocEntity`</Note>
 
@@ -396,7 +394,7 @@ public string Usage { get; set; }
 Type: `string?`
 Markdown content explaining HOW to use the API element, from conceptual documentation.
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Value <DocsBadge text="Inherited" variant="neutral" />
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Value <Badge color="gray">Inherited</Badge>
 
 <Note>Inherited from `CloudNimble.DotNetDocs.Core.DocEntity`</Note>
 
@@ -413,7 +411,7 @@ public string Value { get; set; }
 Type: `string?`
 Description of what the property represents from XML &lt;value&gt; tag.
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Version
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Version
 
 Gets or sets the version of the assembly.
 
@@ -430,7 +428,7 @@ The assembly version string.
 
 ## Methods
 
-### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Equals <DocsBadge text="Inherited" variant="neutral" /> <DocsBadge text="Virtual" variant="warning" />
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Equals <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
 
 <Note>Inherited from `object`</Note>
 
@@ -450,7 +448,7 @@ public virtual bool Equals(object obj)
 
 Type: `bool`
 
-### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Equals <DocsBadge text="Inherited" variant="neutral" />
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Equals <Badge color="gray">Inherited</Badge>
 
 <Note>Inherited from `object`</Note>
 
@@ -471,7 +469,7 @@ public static bool Equals(object objA, object objB)
 
 Type: `bool`
 
-### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> GetHashCode <DocsBadge text="Inherited" variant="neutral" /> <DocsBadge text="Virtual" variant="warning" />
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetHashCode <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
 
 <Note>Inherited from `object`</Note>
 
@@ -485,7 +483,7 @@ public virtual int GetHashCode()
 
 Type: `int`
 
-### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> GetType <DocsBadge text="Inherited" variant="neutral" />
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetType <Badge color="gray">Inherited</Badge>
 
 <Note>Inherited from `object`</Note>
 
@@ -499,7 +497,7 @@ public System.Type GetType()
 
 Type: `System.Type`
 
-### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> MemberwiseClone <DocsBadge text="Inherited" variant="neutral" />
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> MemberwiseClone <Badge color="gray">Inherited</Badge>
 
 <Note>Inherited from `object`</Note>
 
@@ -513,7 +511,7 @@ protected internal object MemberwiseClone()
 
 Type: `object`
 
-### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> ReferenceEquals <DocsBadge text="Inherited" variant="neutral" />
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ReferenceEquals <Badge color="gray">Inherited</Badge>
 
 <Note>Inherited from `object`</Note>
 
@@ -534,7 +532,7 @@ public static bool ReferenceEquals(object objA, object objB)
 
 Type: `bool`
 
-### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> ToJson <DocsBadge text="Inherited" variant="neutral" />
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ToJson <Badge color="gray">Inherited</Badge>
 
 <Note>Inherited from `CloudNimble.DotNetDocs.Core.DocEntity`</Note>
 
@@ -551,7 +549,7 @@ public string ToJson()
 Type: `string`
 The JSON string representation of this entity.
 
-### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> ToString <DocsBadge text="Inherited" variant="neutral" /> <DocsBadge text="Virtual" variant="warning" />
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ToString <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
 
 <Note>Inherited from `object`</Note>
 

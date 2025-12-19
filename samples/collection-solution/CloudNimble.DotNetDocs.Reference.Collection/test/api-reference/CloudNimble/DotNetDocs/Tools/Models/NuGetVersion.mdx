@@ -1,0 +1,339 @@
+---
+title: NuGetVersion
+description: "Represents a simplified NuGet version for comparison purposes."
+icon: file-brackets-curly
+keywords: ['NuGetVersion', 'CloudNimble.DotNetDocs.Tools.Models.NuGetVersion', 'CloudNimble.DotNetDocs.Tools.Models', 'class', 'System.Object', 'System.IComparable<CloudNimble.DotNetDocs.Tools.Models.NuGetVersion>']
+---
+
+## Definition
+
+**Assembly:** CloudNimble.DotNetDocs.Tools.dll
+
+**Namespace:** CloudNimble.DotNetDocs.Tools.Models
+
+**Inheritance:** System.Object
+
+## Syntax
+
+```csharp
+CloudNimble.DotNetDocs.Tools.Models.NuGetVersion
+```
+
+## Summary
+
+Represents a simplified NuGet version for comparison purposes.
+
+## Remarks
+
+This class provides basic semantic versioning support with major, minor, patch, and prerelease components.
+            It implements [IComparable`1](https://learn.microsoft.com/dotnet/api/system.icomparable-1) to allow version comparisons, where stable versions are considered
+            greater than prerelease versions with the same major.minor.patch numbers.
+
+## Constructors
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor
+
+Initializes a new instance of the [NuGetVersion](/test/api-reference/CloudNimble/DotNetDocs/Tools/Models/NuGetVersion) class from a version string.
+
+#### Syntax
+
+```csharp
+public NuGetVersion(string version)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `version` | `string` | The version string to parse (e.g., "1.0.0" or "1.0.0-preview.1"). |
+
+#### Remarks
+
+The version string should be in the format "major.minor.patch" or "major.minor.patch-prerelease".
+            If any component cannot be parsed, it defaults to 0.
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public Object()
+```
+
+## Properties
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> IsPrerelease
+
+Gets a value indicating whether this version is a prerelease version.
+
+#### Syntax
+
+```csharp
+public bool IsPrerelease { get; }
+```
+
+#### Property Value
+
+Type: `bool`
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Major
+
+Gets the major version component.
+
+#### Syntax
+
+```csharp
+public int Major { get; }
+```
+
+#### Property Value
+
+Type: `int`
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Minor
+
+Gets the minor version component.
+
+#### Syntax
+
+```csharp
+public int Minor { get; }
+```
+
+#### Property Value
+
+Type: `int`
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Patch
+
+Gets the patch version component.
+
+#### Syntax
+
+```csharp
+public int Patch { get; }
+```
+
+#### Property Value
+
+Type: `int`
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Prerelease
+
+Gets the prerelease label, if any.
+
+#### Syntax
+
+```csharp
+public string Prerelease { get; }
+```
+
+#### Property Value
+
+Type: `string?`
+
+## Methods
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> CompareTo
+
+Compares the current version to another version.
+
+#### Syntax
+
+```csharp
+public int CompareTo(CloudNimble.DotNetDocs.Tools.Models.NuGetVersion other)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `other` | `CloudNimble.DotNetDocs.Tools.Models.NuGetVersion?` | The version to compare to. |
+
+#### Returns
+
+Type: `int`
+A negative value if this version is less than *other*, zero if they are equal,
+            or a positive value if this version is greater than *other*.
+
+#### Remarks
+
+Version comparison follows semantic versioning rules. Stable versions are considered greater than
+            prerelease versions with the same major.minor.patch numbers. Prerelease versions are compared
+            lexicographically by their prerelease labels.
+
+### <Icon icon="code-merge" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Equals <Badge color="blue">Override</Badge>
+
+Determines whether the specified object is equal to the current version.
+
+#### Syntax
+
+```csharp
+public override bool Equals(object obj)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `obj` | `object?` | The object to compare with the current version. |
+
+#### Returns
+
+Type: `bool`
+`true` if the specified object is equal to the current version; otherwise, `false`.
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Equals <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual bool Equals(object obj)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `obj` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Equals <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public static bool Equals(object objA, object objB)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `objA` | `object?` | - |
+| `objB` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="code-merge" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetHashCode <Badge color="blue">Override</Badge>
+
+Returns a hash code for the current version.
+
+#### Syntax
+
+```csharp
+public override int GetHashCode()
+```
+
+#### Returns
+
+Type: `int`
+A hash code for the current version.
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetHashCode <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual int GetHashCode()
+```
+
+#### Returns
+
+Type: `int`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetType <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public System.Type GetType()
+```
+
+#### Returns
+
+Type: `System.Type`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> MemberwiseClone <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+protected internal object MemberwiseClone()
+```
+
+#### Returns
+
+Type: `object`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ReferenceEquals <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public static bool ReferenceEquals(object objA, object objB)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `objA` | `object?` | - |
+| `objB` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="code-merge" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ToString <Badge color="blue">Override</Badge>
+
+Returns a string representation of the version.
+
+#### Syntax
+
+```csharp
+public override string ToString()
+```
+
+#### Returns
+
+Type: `string`
+A string in the format "major.minor.patch" or "major.minor.patch-prerelease".
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ToString <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual string ToString()
+```
+
+#### Returns
+
+Type: `string?`
+
+## Related APIs
+
+- System.IComparable&lt;CloudNimble.DotNetDocs.Tools.Models.NuGetVersion&gt;
+

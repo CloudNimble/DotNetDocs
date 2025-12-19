@@ -282,7 +282,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core
 
             // Should only have ONE List type even though multiple extensions target it
             var listTypes = systemNamespace!.Types.Where(t => t.Name == "List").ToList();
-            listTypes.Should().HaveCount(1, "Should reuse same external type for multiple extensions");
+            listTypes.Should().ContainSingle("Should reuse same external type for multiple extensions");
 
             // But it should have all three extension methods
             var listType = listTypes.First();

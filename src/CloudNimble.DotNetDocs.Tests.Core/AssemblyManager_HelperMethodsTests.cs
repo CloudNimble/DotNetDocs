@@ -33,10 +33,11 @@ namespace CloudNimble.DotNetDocs.Tests.Core
 
         private System.Collections.Generic.IEnumerable<MetadataReference> GetMetadataReferences()
         {
-            var refs = new System.Collections.Generic.List<MetadataReference>();
-
-            // Add reference to mscorlib/System.Private.CoreLib
-            refs.Add(MetadataReference.CreateFromFile(typeof(object).Assembly.Location));
+            var refs = new System.Collections.Generic.List<MetadataReference>
+            {
+                // Add reference to mscorlib/System.Private.CoreLib
+                MetadataReference.CreateFromFile(typeof(object).Assembly.Location)
+            };
 
             // Add reference to System.Runtime
             var systemRuntimePath = System.IO.Path.Combine(
@@ -185,7 +186,7 @@ namespace Test
             var baseReference = baseCompilation.ToMetadataReference();
             var derivedCompilation = CSharpCompilation.Create(
                 "DerivedAssembly",
-                new[] { CSharpSyntaxTree.ParseText(derivedSource) },
+                new[] { CSharpSyntaxTree.ParseText(derivedSource, cancellationToken: TestContext.CancellationToken) },
                 new[] { baseReference }.Concat(GetMetadataReferences()),
                 new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
 
@@ -272,7 +273,7 @@ namespace Test
             var baseReference = baseCompilation.ToMetadataReference();
             var derivedCompilation = CSharpCompilation.Create(
                 "DerivedAssembly",
-                new[] { CSharpSyntaxTree.ParseText(derivedSource) },
+                new[] { CSharpSyntaxTree.ParseText(derivedSource, cancellationToken: TestContext.CancellationToken) },
                 new[] { baseReference }.Concat(GetMetadataReferences()),
                 new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
 

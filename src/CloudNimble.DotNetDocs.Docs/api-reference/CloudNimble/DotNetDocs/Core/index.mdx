@@ -24,10 +24,12 @@ keywords: ['CloudNimble.DotNetDocs.Core', 'namespace', 'AssemblyManager', 'Cross
 | [DocNamespace](/api-reference/CloudNimble/DotNetDocs/Core/DocNamespace) | Represents documentation for a .NET namespace. |
 | [DocParameter](/api-reference/CloudNimble/DotNetDocs/Core/DocParameter) | Represents documentation for a method or constructor parameter. |
 | [DocReference](/api-reference/CloudNimble/DotNetDocs/Core/DocReference) | Represents a cross-reference in documentation, such as a see or seealso tag. |
+| [DocReferenceHandlerBase](/api-reference/CloudNimble/DotNetDocs/Core/DocReferenceHandlerBase) | Base class for documentation reference handlers providing common file copying functionality. |
 | [DocType](/api-reference/CloudNimble/DotNetDocs/Core/DocType) | Represents documentation for a .NET type. |
 | [DocTypeParameter](/api-reference/CloudNimble/DotNetDocs/Core/DocTypeParameter) | Represents type parameter documentation extracted from XML documentation comments. |
 | [DocumentationManager](/api-reference/CloudNimble/DotNetDocs/Core/DocumentationManager) | Orchestrates the documentation pipeline for one or more assemblies. |
 | [DocumentationReference](/api-reference/CloudNimble/DotNetDocs/Core/DocumentationReference) | Represents a reference to external documentation to be combined into a documentation collection. |
+| [MarkdownDocReferenceHandler](/api-reference/CloudNimble/DotNetDocs/Core/MarkdownDocReferenceHandler) | Handler for Markdown-based documentation references providing content path rewriting. |
 | [ProjectContext](/api-reference/CloudNimble/DotNetDocs/Core/ProjectContext) | Represents MSBuild project context for source intent in documentation generation. |
 | [ReferenceType](/api-reference/CloudNimble/DotNetDocs/Core/ReferenceType) | Specifies the type of documentation reference. |
 
@@ -36,6 +38,7 @@ keywords: ['CloudNimble.DotNetDocs.Core', 'namespace', 'AssemblyManager', 'Cross
 | Name | Summary |
 | ---- | ------- |
 | [IDocEnricher](/api-reference/CloudNimble/DotNetDocs/Core/IDocEnricher) | Defines an enricher for conceptual documentation augmentation. |
+| [IDocReferenceHandler](/api-reference/CloudNimble/DotNetDocs/Core/IDocReferenceHandler) | Defines a handler for processing documentation references from other projects. |
 | [IDocRenderer](/api-reference/CloudNimble/DotNetDocs/Core/IDocRenderer) | Defines a renderer for documentation output generation. |
 | [IDocTransformer](/api-reference/CloudNimble/DotNetDocs/Core/IDocTransformer) | Defines a transformation step in the documentation processing pipeline. |
 

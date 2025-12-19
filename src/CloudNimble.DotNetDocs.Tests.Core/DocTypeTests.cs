@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using CloudNimble.DotNetDocs.Core;
 using CloudNimble.DotNetDocs.Tests.Shared;
@@ -67,7 +66,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core
                 Considerations = "Important considerations"
             };
 
-            docType.RelatedApis ??= new List<string>();
+            docType.RelatedApis ??= [];
             docType.RelatedApis.Add("System.String");
             docType.RelatedApis.Add("System.Object");
 

@@ -6,23 +6,9 @@
         Includes validation, generation, and integration targets.
         ============================================================================ -->
 
-    <!-- Import the NoTargets SDK targets for no-compile behavior -->
-    <!-- NoTargets SDK files are bundled in the Sdk/NoTargets folder -->
-    <!-- First try the local NoTargets folder (for packaged SDK) -->
-    <Import Project="$(MSBuildThisFileDirectory)NoTargets\Sdk.targets" 
-            Condition="Exists('$(MSBuildThisFileDirectory)NoTargets\Sdk.targets')" />
-    
-    <!-- Fallback: Try common NuGet package locations if local doesn't exist -->
-    <PropertyGroup Condition="!Exists('$(MSBuildThisFileDirectory)NoTargets\Sdk.targets')">
-        <!-- Try standard NuGet cache location -->
-        <_NoTargetsTargetsFallbackPath>$(UserProfile)\.nuget\packages\microsoft.build.notargets\3.7.0\Sdk\Sdk.targets</_NoTargetsTargetsFallbackPath>
-        <!-- For CI environments that might use different cache -->
-        <_NoTargetsTargetsFallbackPath Condition="!Exists('$(_NoTargetsTargetsFallbackPath)')">$(NuGetPackageRoot)microsoft.build.notargets\3.7.0\Sdk\Sdk.targets</_NoTargetsTargetsFallbackPath>
-    </PropertyGroup>
-    
-    <!-- Import from NuGet cache if found -->
-    <Import Project="$(_NoTargetsTargetsFallbackPath)" 
-            Condition="!Exists('$(MSBuildThisFileDirectory)NoTargets\Sdk.targets') and Exists('$(_NoTargetsTargetsFallbackPath)')" />
+    <!-- Import the bundled NoTargets SDK for no-compile behavior -->
+    <!-- Using direct import to avoid SDK resolution issues -->
+    <Import Project="$(MSBuildThisFileDirectory)NoTargets\Sdk.targets" />
     
     <!-- Determine which task assembly to load based on MSBuild runtime -->
     <PropertyGroup>
@@ -107,7 +93,8 @@
         <Message Text="🚀 Generating documentation from existing assemblies..." Importance="high" />
 
         <!-- Extract assembly paths from built projects (only main project assemblies) -->
-        <ItemGroup>
+        <!-- Only create AssemblyPaths if DocumentedProjects has items to prevent malformed paths from empty batching -->
+        <ItemGroup Condition="'@(DocumentedProjects->Count())' > '0'">
             <!-- Get assembly paths using the actual target framework and AssemblyName from each project -->
             <AssemblyPaths Include="%(DocumentedProjects.RootDir)%(DocumentedProjects.Directory)bin\$(Configuration)\%(DocumentedProjects.TargetFramework)\%(DocumentedProjects.AssemblyName).dll" />
             <XmlDocPaths Include="%(DocumentedProjects.RootDir)%(DocumentedProjects.Directory)bin\$(Configuration)\%(DocumentedProjects.TargetFramework)\%(DocumentedProjects.AssemblyName).xml" />

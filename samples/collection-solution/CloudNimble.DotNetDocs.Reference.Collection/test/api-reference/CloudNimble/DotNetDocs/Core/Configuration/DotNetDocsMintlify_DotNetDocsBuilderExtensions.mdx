@@ -1,0 +1,218 @@
+---
+title: DotNetDocsMintlify_DotNetDocsBuilderExtensions
+description: "Extension methods for adding Mintlify support to the DotNetDocs pipeline builder."
+icon: bolt
+sidebarTitle: DotNetDocsMintlify_DotNetDocsBuilderExtensions
+tag: "STATIC"
+keywords: ['DotNetDocsMintlify_DotNetDocsBuilderExtensions', 'CloudNimble.DotNetDocs.Core.Configuration.DotNetDocsMintlify_DotNetDocsBuilderExtensions', 'CloudNimble.DotNetDocs.Core.Configuration', 'class', 'System.Object']
+---
+
+## Definition
+
+**Assembly:** CloudNimble.DotNetDocs.Mintlify.dll
+
+**Namespace:** CloudNimble.DotNetDocs.Core.Configuration
+
+**Inheritance:** System.Object
+
+## Syntax
+
+```csharp
+CloudNimble.DotNetDocs.Core.Configuration.DotNetDocsMintlify_DotNetDocsBuilderExtensions
+```
+
+## Summary
+
+Extension methods for adding Mintlify support to the DotNetDocs pipeline builder.
+
+## Methods
+
+### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  UseMintlifyRenderer
+
+Adds the Mintlify renderer to the documentation pipeline.
+
+#### Syntax
+
+```csharp
+public static CloudNimble.DotNetDocs.Core.Configuration.DotNetDocsBuilder UseMintlifyRenderer(CloudNimble.DotNetDocs.Core.Configuration.DotNetDocsBuilder builder)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `builder` | `CloudNimble.DotNetDocs.Core.Configuration.DotNetDocsBuilder` | The DotNetDocs pipeline builder. |
+
+#### Returns
+
+Type: `CloudNimble.DotNetDocs.Core.Configuration.DotNetDocsBuilder`
+The builder for chaining.
+
+#### Examples
+
+```csharp
+services.AddDotNetDocsPipeline(pipeline =&gt;
+{
+    pipeline
+        .UseMintlifyRenderer()
+        .ConfigureContext(ctx =&gt; ctx.OutputPath = "docs/api");
+});
+```
+
+#### Remarks
+
+
+
+This method registers:
+
+
+
+
+### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  UseMintlifyRenderer
+
+Adds the Mintlify renderer to the documentation pipeline with configuration options.
+
+#### Syntax
+
+```csharp
+public static CloudNimble.DotNetDocs.Core.Configuration.DotNetDocsBuilder UseMintlifyRenderer(CloudNimble.DotNetDocs.Core.Configuration.DotNetDocsBuilder builder, System.Action<CloudNimble.DotNetDocs.Mintlify.MintlifyRendererOptions> configureMintlify)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `builder` | `CloudNimble.DotNetDocs.Core.Configuration.DotNetDocsBuilder` | The DotNetDocs pipeline builder. |
+| `configureMintlify` | `System.Action<CloudNimble.DotNetDocs.Mintlify.MintlifyRendererOptions>` | Action to configure Mintlify options. |
+
+#### Returns
+
+Type: `CloudNimble.DotNetDocs.Core.Configuration.DotNetDocsBuilder`
+The builder for chaining.
+
+#### Examples
+
+```csharp
+services.AddDotNetDocsPipeline(pipeline =&gt;
+{
+    pipeline
+        .UseMintlifyRenderer(options =&gt;
+        {
+            options.GenerateDocsJson = true;
+            options.IncludeIcons = true;
+        })
+        .ConfigureContext(ctx =&gt; ctx.OutputPath = "docs/api");
+});
+```
+
+#### Remarks
+
+
+
+This method registers:
+
+
+
+
+### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  UseMintlifyRenderer
+
+Adds a custom Mintlify renderer implementation to the documentation pipeline.
+
+#### Syntax
+
+```csharp
+public static CloudNimble.DotNetDocs.Core.Configuration.DotNetDocsBuilder UseMintlifyRenderer<TRenderer>(CloudNimble.DotNetDocs.Core.Configuration.DotNetDocsBuilder builder) where TRenderer : CloudNimble.DotNetDocs.Mintlify.MintlifyRenderer
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `builder` | `CloudNimble.DotNetDocs.Core.Configuration.DotNetDocsBuilder` | The DotNetDocs pipeline builder. |
+
+#### Returns
+
+Type: `CloudNimble.DotNetDocs.Core.Configuration.DotNetDocsBuilder`
+The builder for chaining.
+
+#### Type Parameters
+
+- `TRenderer` - The type of Mintlify renderer to add.
+
+#### Examples
+
+```csharp
+services.AddDotNetDocsPipeline(pipeline =&gt;
+{
+    pipeline
+        .UseMintlifyRenderer&lt;CustomMintlifyRenderer&gt;()
+        .ConfigureContext(ctx =&gt; ctx.OutputPath = "docs");
+});
+```
+
+#### Remarks
+
+
+
+The renderer must inherit from MintlifyRenderer.
+
+
+
+This method also registers:
+
+
+
+
+### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  UseMintlifyRenderer
+
+Adds a custom Mintlify renderer implementation to the documentation pipeline with configuration options.
+
+#### Syntax
+
+```csharp
+public static CloudNimble.DotNetDocs.Core.Configuration.DotNetDocsBuilder UseMintlifyRenderer<TRenderer>(CloudNimble.DotNetDocs.Core.Configuration.DotNetDocsBuilder builder, System.Action<CloudNimble.DotNetDocs.Mintlify.MintlifyRendererOptions> configureMintlify) where TRenderer : CloudNimble.DotNetDocs.Mintlify.MintlifyRenderer
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `builder` | `CloudNimble.DotNetDocs.Core.Configuration.DotNetDocsBuilder` | The DotNetDocs pipeline builder. |
+| `configureMintlify` | `System.Action<CloudNimble.DotNetDocs.Mintlify.MintlifyRendererOptions>` | Action to configure Mintlify options. |
+
+#### Returns
+
+Type: `CloudNimble.DotNetDocs.Core.Configuration.DotNetDocsBuilder`
+The builder for chaining.
+
+#### Type Parameters
+
+- `TRenderer` - The type of Mintlify renderer to add.
+
+#### Examples
+
+```csharp
+services.AddDotNetDocsPipeline(pipeline =&gt;
+{
+    pipeline
+        .UseMintlifyRenderer&lt;CustomMintlifyRenderer&gt;(options =&gt;
+        {
+            options.GenerateDocsJson = true;
+        })
+        .ConfigureContext(ctx =&gt; ctx.OutputPath = "docs");
+});
+```
+
+#### Remarks
+
+
+
+The renderer must inherit from MintlifyRenderer.
+
+
+
+This method also registers:
+
+
+
+

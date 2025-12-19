@@ -55,6 +55,12 @@ namespace CloudNimble.DotNetDocs.Tools.Commands
         [Option("--prerelease", Description = "Optional. Use the latest prerelease version of DotNetDocs.Sdk instead of the latest stable version.")]
         public bool UsePrerelease { get; set; }
 
+        /// <summary>
+        /// Gets or sets whether to skip adding the project to the solution file.
+        /// </summary>
+        [Option("--skip-solution", Description = "Optional. Skip adding the project to the solution file. Useful for CI/CD or standalone documentation projects.")]
+        public bool SkipSolution { get; set; }
+
         #endregion
 
         #region Public Methods
@@ -76,22 +82,42 @@ namespace CloudNimble.DotNetDocs.Tools.Commands
             WriteHeader();
             try
             {
-                // Find solution file if not specified
-                string? solutionFile = SolutionPath ?? FindSolutionFile();
-                if (string.IsNullOrEmpty(solutionFile))
+                // Validate mutually exclusive options
+                if (SkipSolution && !string.IsNullOrEmpty(SolutionPath))
                 {
-                    Console.WriteLine("❌ No solution file (.sln or .slnx) found in current directory");
+                    Console.WriteLine("❌ Cannot use --skip-solution with --solution");
                     return 1;
                 }
 
-                Console.WriteLine($"📁 Found solution: {solutionFile}");
+                // Find solution file if not skipping
+                string? solutionFile = null;
+                if (!SkipSolution)
+                {
+                    solutionFile = SolutionPath ?? FindSolutionFile();
+                    if (string.IsNullOrEmpty(solutionFile))
+                    {
+                        Console.WriteLine("❌ No solution file (.sln or .slnx) found in current directory");
+                        Console.WriteLine("   Use --skip-solution to create a standalone documentation project");
+                        return 1;
+                    }
+                    Console.WriteLine($"📁 Found solution: {solutionFile}");
+                }
 
-                // Determine project name
-                string solutionName = Path.GetFileNameWithoutExtension(solutionFile);
-                string docsProjectName = ProjectName ?? $"{solutionName}.Docs";
+                // Determine project name (use solution name if available, otherwise require --name)
+                string? solutionName = solutionFile is not null ? Path.GetFileNameWithoutExtension(solutionFile) : null;
+                string? docsProjectName = ProjectName ?? (solutionName is not null ? $"{solutionName}.Docs" : null);
+
+                if (string.IsNullOrEmpty(docsProjectName))
+                {
+                    Console.WriteLine("❌ Project name is required when using --skip-solution without a solution file");
+                    Console.WriteLine("   Use --name to specify the documentation project name");
+                    return 1;
+                }
 
                 // Determine output directory
-                string outputDir = OutputDirectory ?? Path.Combine(Path.GetDirectoryName(solutionFile)!, docsProjectName);
+                string outputDir = OutputDirectory ?? (solutionFile is not null
+                    ? Path.Combine(Path.GetDirectoryName(solutionFile)!, docsProjectName)
+                    : Path.Combine(Directory.GetCurrentDirectory(), docsProjectName));
 
                 // Determine documentation type (default to Mintlify)
                 string docType = DocumentationType ?? "Mintlify";
@@ -117,23 +143,31 @@ namespace CloudNimble.DotNetDocs.Tools.Commands
                 // Create the docs project directory
                 Directory.CreateDirectory(outputDir);
 
-                // Create the .docsproj file
+                // Create the .docsproj file (use docsProjectName as fallback for display name)
+                string displayName = solutionName ?? docsProjectName;
                 string docsProjPath = Path.Combine(outputDir, $"{docsProjectName}.docsproj");
-                await CreateDocsProjectFile(docsProjPath, solutionName, docType, sdkVersion);
+                await CreateDocsProjectFile(docsProjPath, displayName, docType, sdkVersion);
 
                 Console.WriteLine($"✅ Created {docsProjPath}");
 
                 // Create default .mdx files for Mintlify projects
                 if (docType.Equals("Mintlify", StringComparison.OrdinalIgnoreCase))
                 {
-                    await CreateDefaultMintlifyFilesAsync(outputDir, solutionName);
+                    await CreateDefaultMintlifyFilesAsync(outputDir, displayName);
                     Console.WriteLine($"✅ Created default documentation files");
                 }
 
-                // Add to solution
-                await AddProjectToSolution(solutionFile, docsProjPath, docsProjectName);
+                // Add to solution (unless --skip-solution was specified)
+                if (!SkipSolution && solutionFile is not null)
+                {
+                    await AddProjectToSolution(solutionFile, docsProjPath, docsProjectName);
+                    Console.WriteLine($"✅ Added {docsProjectName} to solution");
+                }
+                else if (SkipSolution)
+                {
+                    Console.WriteLine($"⏭️ Skipped adding to solution (--skip-solution)");
+                }
 
-                Console.WriteLine($"✅ Added {docsProjectName} to solution");
                 Console.WriteLine($"🎉 Documentation project setup complete!");
 
                 return 0;

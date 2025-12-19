@@ -30,6 +30,7 @@ updates:
       prefix: "chore"
       include: "scope"
     ignore:
-      # Don't update Microsoft.Build.NoTargets as it's pinned for SDK compatibility
-      - dependency-name: "Microsoft.Build.NoTargets"
-        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      # Don't update FluentAssertions
+      - dependency-name: "FluentAssertions"
+      # Don't update Microsoft.Build.* packages as they're pinned for SDK compatibility
+      - dependency-name: "Microsoft.Build.*"

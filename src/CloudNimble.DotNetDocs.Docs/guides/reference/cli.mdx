@@ -1,0 +1,586 @@
+---
+title: CLI Reference
+sidebarTitle: CLI Reference
+description: Complete command-line reference for the DotNetDocs CLI tool
+icon: terminal
+---
+
+The DotNetDocs CLI provides commands to manage documentation projects and generate documentation from .NET assemblies.
+
+
+## Commands
+
+### dotnet docs add
+
+Create and add a documentation project (`.docsproj`) to your solution.
+
+**Usage:**
+```bash
+dotnet docs add [options]
+```
+
+**Options:**
+
+| Option | Alias | Description | Default |
+|--------|-------|-------------|---------|
+| `--solution <PATH>` | `-s` | Path to solution file (.sln or .slnx) | Current directory search |
+| `--name <NAME>` | | Name for the docs project | `{SolutionName}.Docs` |
+| `--output <PATH>` | `-o` | Output directory for docs project | Project folder |
+| `--type <TYPE>` | `-t` | Documentation type | `Mintlify` |
+| `--prerelease` | | Use latest prerelease SDK version | Latest stable version |
+
+**Documentation Types:**
+- `Mintlify` - Mintlify documentation with MDX support (default)
+- `DocFX` - DocFX documentation
+- `MkDocs` - MkDocs documentation
+- `Jekyll` - Jekyll documentation
+- `Hugo` - Hugo documentation
+- `Generic` - Generic markdown documentation
+
+**SDK Versioning:**
+
+By default, `dotnet docs add` queries NuGet.org to find the latest stable version of `DotNetDocs.Sdk` and uses it in the generated `.docsproj` file. Use `--prerelease` to get the latest preview version instead.
+
+```bash
+# Use latest stable version (e.g., 1.0.0)
+dotnet docs add
+
+# Use latest prerelease version (e.g., 1.0.0-preview.31)
+dotnet docs add --prerelease
+```
+
+**Behavior:**
+
+<Steps>
+  <Step title="Locates Solution">
+    Searches current directory for `.slnx` (preferred) or `.sln` file if not specified
+  </Step>
+  <Step title="Creates Project">
+    Generates `.docsproj` file with Mintlify configuration and default theme
+  </Step>
+  <Step title="Adds to Solution">
+    Adds project to solution in "Docs" solution folder
+  </Step>
+  <Step title="Post-Processing">
+    For `.slnx` files, adds `Type="C#"` attribute for proper Visual Studio support
+  </Step>
+</Steps>
+
+**Examples:**
+
+<CodeGroup>
+```bash Basic Usage
+# Create Mintlify docs project with latest stable SDK
+dotnet docs add
+```
+
+```bash Prerelease Version
+# Use latest prerelease SDK version
+dotnet docs add --prerelease
+```
+
+```bash Specify Solution
+# Target specific solution file
+dotnet docs add --solution ../MyApp.sln
+```
+
+```bash Custom Type
+# Create DocFX documentation project
+dotnet docs add --type DocFX
+```
+
+```bash Custom Name
+# Use custom project name
+dotnet docs add --name MyCustomDocs --type MkDocs
+```
+
+```bash Custom Output
+# Specify output directory
+dotnet docs add --output ./documentation --type Hugo
+```
+</CodeGroup>
+
+**Generated Project Template:**
+
+<Tabs>
+  <Tab title="Mintlify (Default)">
+    <CodeGroup>
+    ```xml Current (1.2.0)
+    <Project Sdk="DotNetDocs.Sdk/1.2.0">
+      <PropertyGroup>
+        <DocumentationType>Mintlify</DocumentationType>
+        <GenerateDocumentation>true</GenerateDocumentation>
+        <NamespaceMode>Folder</NamespaceMode>
+        <ShowDocumentationStats>true</ShowDocumentationStats>
+
+        <ConceptualDocsEnabled>false</ConceptualDocsEnabled>
+        <ShowPlaceholders>false</ShowPlaceholders>
+
+        <MintlifyNavigationMode>Unified</MintlifyNavigationMode>
+        <MintlifyTemplate>
+          <Name>YourSolution</Name>
+          <Theme>maple</Theme>
+          <Colors>
+            <Primary>#419AC5</Primary>
+            <Light>#419AC5</Light>
+            <Dark>#3CD0E2</Dark>
+          </Colors>
+        </MintlifyTemplate>
+      </PropertyGroup>
+    </Project>
+    ```
+    </CodeGroup>
+  </Tab>
+
+  <Tab title="Other Types">
+    <CodeGroup>
+    ```xml Current (1.2.0)
+    <Project Sdk="DotNetDocs.Sdk/1.2.0">
+      <PropertyGroup>
+        <DocumentationType>DocFX</DocumentationType>
+        <GenerateDocumentation>true</GenerateDocumentation>
+        <NamespaceMode>Folder</NamespaceMode>
+        <ShowDocumentationStats>true</ShowDocumentationStats>
+
+        <ConceptualDocsEnabled>false</ConceptualDocsEnabled>
+        <ShowPlaceholders>false</ShowPlaceholders>
+      </PropertyGroup>
+    </Project>
+    ```
+    </CodeGroup>
+
+    <Note>Replace `DocFX` with your chosen documentation type (`MkDocs`, `Jekyll`, `Hugo`, or `Generic`).</Note>
+  </Tab>
+</Tabs>
+
+### dotnet docs update
+
+Update existing `.docsproj` files to use the latest DotNetDocs.Sdk version from NuGet.
+
+**Usage:**
+```bash
+dotnet docs update [options]
+```
+
+**Options:**
+
+| Option | Alias | Description | Default |
+|--------|-------|-------------|---------|
+| `--project <NAME\|PATH>` | `-p` | Project name or path to .docsproj file to update | All .docsproj files in current directory |
+| `--recursive` | `-r` | Search recursively in subdirectories | Current directory only |
+| `--prerelease` | | Update to latest prerelease SDK version | Latest stable version |
+
+<Note>
+The `--project` option accepts either a project name (e.g., `MyProject.Docs`) or a file path (e.g., `MyProject.Docs.docsproj` or `path/to/MyProject.Docs.docsproj`). If you provide just the project name, the tool will automatically append `.docsproj` to find the file.
+</Note>
+
+**Behavior:**
+
+<Steps>
+  <Step title="Query NuGet">
+    Queries NuGet.org for the latest version of DotNetDocs.Sdk (stable or prerelease)
+  </Step>
+  <Step title="Find .docsproj Files">
+    Locates all .docsproj files (or a specific file if --file is specified)
+  </Step>
+  <Step title="Update SDK References">
+    Updates `Sdk="DotNetDocs.Sdk/X.X.X"` to the latest version in each file
+  </Step>
+  <Step title="Report Results">
+    Shows which files were updated and which were skipped
+  </Step>
+</Steps>
+
+**Examples:**
+
+<CodeGroup>
+```bash Update Current Directory
+# Update all .docsproj files in current directory
+dotnet docs update
+```
+
+```bash Update Recursively
+# Update all .docsproj files in current directory and subdirectories
+dotnet docs update --recursive
+```
+
+```bash Update Specific Project
+# Update a specific project by name
+dotnet docs update --project MyProject.Docs
+
+# Or by file path
+dotnet docs update --project MyProject.Docs.docsproj
+```
+
+```bash Update to Prerelease
+# Update to latest prerelease version
+dotnet docs update --prerelease --recursive
+```
+</CodeGroup>
+
+<Note>
+This command is useful when a new version of DotNetDocs.Sdk is released and you want to upgrade your documentation projects without manually editing each file.
+</Note>
+
+### dotnet docs build
+
+Build documentation from .NET assemblies and XML documentation files.
+
+**Usage:**
+```bash
+dotnet docs build [options]
+```
+
+**Options:**
+
+| Option | Alias | Description | Default | Required |
+|--------|-------|-------------|---------|----------|
+| `--assembly-list <PATH>` | `-a` | Path to file containing assembly list | | ✅ |
+| `--output <PATH>` | `-o` | Output path for documentation | | ✅ |
+| `--type <TYPE>` | `-t` | Documentation type | `Mintlify` | |
+| `--namespace-mode <MODE>` | `-n` | Namespace organization | `File` | |
+| `--api-reference-path <PATH>` | | API reference subfolder | `api-reference` | |
+
+**Documentation Types:**
+
+| Type | Description |
+|------|-------------|
+| `Mintlify` | Mintlify-enhanced MDX with icons, navigation, and frontmatter (default) |
+| `DocFX` | DocFX-compatible documentation format |
+| `MkDocs` | MkDocs-compatible documentation format |
+| `Jekyll` | Jekyll-compatible documentation format |
+| `Hugo` | Hugo-compatible documentation format |
+| `Generic` | Generic Markdown documentation |
+
+**Namespace Modes:**
+
+<Tabs>
+  <Tab title="File Mode (Default)">
+    Each namespace gets a single file.
+
+    **Structure:**
+    ```
+    docs/
+    ├── MyNamespace.md
+    ├── MyNamespace.SubNamespace.md
+    └── MyNamespace.OtherNamespace.md
+    ```
+
+    **Best for:** Smaller projects, simpler file organization
+  </Tab>
+
+  <Tab title="Folder Mode">
+    Each namespace becomes a folder with separate files per type.
+
+    **Structure:**
+    ```
+    docs/
+    ├── MyNamespace/
+    │   ├── index.md
+    │   ├── MyClass.md
+    │   ├── SubNamespace/
+    │   │   ├── index.md
+    │   │   └── AnotherClass.md
+    ```
+
+    **Best for:** Large projects, hierarchical navigation
+  </Tab>
+</Tabs>
+
+**Assembly List File:**
+
+Create a text file with one assembly path per line:
+
+```text assemblies.txt
+bin/Release/net8.0/MyProject.Core.dll
+bin/Release/net8.0/MyProject.Extensions.dll
+bin/Release/net8.0/MyProject.Utilities.dll
+```
+
+<Note>
+Only assemblies with corresponding XML documentation files (`.xml`) will be processed. Assemblies without XML docs are skipped.
+</Note>
+
+**Examples:**
+
+<CodeGroup>
+```bash Basic Markdown
+# Generate Markdown documentation
+dotnet docs build \
+  --assembly-list assemblies.txt \
+  --output ./docs
+```
+
+```bash Mintlify Documentation
+# Generate Mintlify MDX with docs.json
+dotnet docs build \
+  -a assemblies.txt \
+  -o ./docs \
+  --type Mintlify
+```
+
+```bash Folder Organization
+# Use folder mode for namespaces
+dotnet docs build \
+  -a assemblies.txt \
+  -o ./docs \
+  --namespace-mode Folder
+```
+
+```bash DocFX Documentation
+# Generate DocFX-compatible documentation
+dotnet docs build \
+  -a assemblies.txt \
+  -o ./docs \
+  --type DocFX
+```
+
+```bash Custom Paths
+# Customize API reference path
+dotnet docs build \
+  -a assemblies.txt \
+  -o ./docs \
+  --api-reference-path reference
+```
+</CodeGroup>
+
+## Complete Workflows
+
+### Quick Start Workflow
+
+<Steps>
+  <Step title="Add Documentation Project">
+    ```bash
+    dotnet docs add
+    ```
+    Creates `.docsproj` in your solution
+  </Step>
+
+  <Step title="Build Your Projects">
+    ```bash
+    dotnet build --configuration Release
+    ```
+    Generates assemblies and XML docs
+  </Step>
+
+  <Step title="Create Assembly List">
+    ```bash
+    echo "bin/Release/net8.0/MyProject.dll" > assemblies.txt
+    ```
+    List assemblies to document
+  </Step>
+
+  <Step title="Generate Documentation">
+    ```bash
+    dotnet docs build -a assemblies.txt -o ./docs --type Mintlify
+    ```
+    Creates documentation files
+  </Step>
+
+  <Step title="Preview Documentation">
+    ```bash
+    npm i mint -g
+    cd docs
+    mint dev
+    ```
+    View at http://localhost:3000
+  </Step>
+</Steps>
+
+### Multi-Project Workflow
+
+For solutions with multiple projects:
+
+<Steps>
+  <Step title="Build All Projects">
+    ```bash
+    dotnet build --configuration Release
+    ```
+  </Step>
+
+  <Step title="Create Assembly List">
+    ```text assemblies.txt
+    ProjectA/bin/Release/net8.0/ProjectA.dll
+    ProjectB/bin/Release/net8.0/ProjectB.dll
+    ProjectC/bin/Release/net8.0/ProjectC.dll
+    ```
+  </Step>
+
+  <Step title="Generate Unified Documentation">
+    ```bash
+    dotnet docs build -a assemblies.txt -o ./docs --type Mintlify
+    ```
+    All assemblies merged into single documentation site
+  </Step>
+</Steps>
+
+### CI/CD Integration
+
+<Tabs>
+  <Tab title="GitHub Actions">
+    ```yaml .github/workflows/docs.yml
+    name: Build Documentation
+
+    on:
+      push:
+        branches: [main]
+
+    jobs:
+      docs:
+        runs-on: ubuntu-latest
+        steps:
+          - uses: actions/checkout@v4
+
+          - name: Setup .NET
+            uses: actions/setup-dotnet@v4
+            with:
+              dotnet-version: '8.0.x'
+
+          - name: Install DotNetDocs CLI
+            run: dotnet tool install --global DotNetDocs
+
+          - name: Build Projects
+            run: dotnet build --configuration Release
+
+          - name: Generate Documentation
+            run: dotnet docs build -a assemblies.txt -o ./docs --type Mintlify
+
+          - name: Deploy to Mintlify
+            run: |
+              cd docs
+              npx mintlify deploy
+    ```
+  </Tab>
+
+  <Tab title="Azure Pipelines">
+    ```yaml azure-pipelines.yml
+    trigger:
+      - main
+
+    pool:
+      vmImage: 'ubuntu-latest'
+
+    steps:
+      - task: UseDotNet@2
+        inputs:
+          version: '8.0.x'
+
+      - script: dotnet tool install --global DotNetDocs
+        displayName: 'Install DotNetDocs CLI'
+
+      - script: dotnet build --configuration Release
+        displayName: 'Build Projects'
+
+      - script: dotnet docs build -a assemblies.txt -o ./docs --type Mintlify
+        displayName: 'Generate Documentation'
+
+      - task: PublishBuildArtifacts@1
+        inputs:
+          pathToPublish: './docs'
+          artifactName: 'documentation'
+    ```
+  </Tab>
+</Tabs>
+
+## Tips and Best Practices
+
+<AccordionGroup>
+  <Accordion title="Ensure XML Documentation" icon="file-code">
+    Enable XML documentation in your `.csproj` files:
+
+    ```xml
+    <PropertyGroup>
+      <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    </PropertyGroup>
+    ```
+
+    Without XML files, assemblies are skipped during documentation generation.
+  </Accordion>
+
+  <Accordion title="Use Relative Paths" icon="folder">
+    Use relative paths in your assembly list file for portability across environments:
+
+    ```text
+    # Good - relative paths
+    bin/Release/net8.0/MyProject.dll
+
+    # Avoid - absolute paths
+    C:\Projects\MyApp\bin\Release\net8.0\MyProject.dll
+    ```
+  </Accordion>
+
+  <Accordion title="Organize Output" icon="sitemap">
+    Choose namespace mode based on project size:
+
+    - **File Mode**: Better for small-to-medium projects (< 50 types)
+    - **Folder Mode**: Better for large projects (> 50 types)
+  </Accordion>
+
+  <Accordion title="Automate Assembly Lists" icon="gears">
+    Generate assembly lists dynamically in CI/CD:
+
+    ```bash
+    # Find all assemblies with XML docs
+    find bin/Release -name "*.xml" | sed 's/.xml/.dll/' > assemblies.txt
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="No assemblies found to process" icon="triangle-exclamation">
+    **Problem:** Assembly list file is empty or paths are incorrect
+
+    **Solution:**
+    - Verify assembly paths in the list file
+    - Ensure you've built projects in Release mode
+    - Check that paths are relative to where you're running the command
+  </Accordion>
+
+  <Accordion title="Assemblies skipped (no XML docs)" icon="file-slash">
+    **Problem:** Assemblies don't have corresponding XML documentation files
+
+    **Solution:**
+    - Add `<GenerateDocumentationFile>true</GenerateDocumentationFile>` to `.csproj`
+    - Rebuild projects
+    - Verify `.xml` files exist next to `.dll` files
+  </Accordion>
+
+  <Accordion title="Solution file not found" icon="folder-open">
+    **Problem:** `dotnet docs add` can't find a solution file
+
+    **Solution:**
+    - Run from directory containing `.sln` or `.slnx` file
+    - Or specify solution path: `dotnet docs add --solution path/to/solution.sln`
+  </Accordion>
+
+  <Accordion title="Documentation generation fails" icon="circle-xmark">
+    **Problem:** Errors during documentation build
+
+    **Solution:**
+    - Check that assemblies are valid .NET assemblies
+    - Ensure XML files match assembly structure
+    - Review console output for specific error messages
+  </Accordion>
+</AccordionGroup>
+
+## See Also
+
+<CardGroup cols={2}>
+  <Card title="DotNetDocs.Sdk" icon="cube" href="/api-reference/CloudNimble/DotNetDocs/Core">
+    Use MSBuild SDK for integrated documentation builds
+  </Card>
+
+  <Card title="Pipeline Guide" icon="diagram-project" href="/guides/pipeline">
+    Understand how documentation generation works
+  </Card>
+
+  <Card title="Mintlify Provider" icon="sparkles" href="/providers/mintlify">
+    Learn about Mintlify-enhanced documentation
+  </Card>
+
+  <Card title="GitHub Repository" icon="github" href="https://github.com/CloudNimble/DotNetDocs">
+    View source code and report issues
+  </Card>
+</CardGroup>

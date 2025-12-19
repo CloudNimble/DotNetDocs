@@ -1,0 +1,219 @@
+---
+title: Documentation Collections
+sidebarTitle: Collections
+description: Learn how the Mintlify provider intelligently restructures combined documentation for seamless multi-project experiences
+icon: rectangle-vertical-history
+---
+
+When combining multiple documentation projects into a unified site, the Mintlify provider goes beyond simple file copying. It automatically restructures 
+content, relocates shared resources, and rewrites internal paths to ensure everything works seamlessly together.
+
+## The Challenge
+
+Documentation projects (especially Mintlify-targeted ones) are typically designed as standalone sites. They reference images, snippets, and internal pages 
+using absolute paths like `/images/logo.png` or `/guides/quickstart`. When you combine multiple projects, these paths collide:
+
+```plaintext Without intelligent handling
+/images/logo.png      <- Which project's logo?
+/snippets/Hero.jsx    <- Which project's component?
+/guides/quickstart    <- Which project's guide?
+```
+
+## How Mintlify Collections Work
+
+The `MintlifyDocReferenceHandler` solves this by performing three key operations during the build process:
+
+<Steps>
+  <Step title="Resource Relocation">
+    Shared resource directories (`images/`, `snippets/`) are moved to central locations with project-specific namespacing:
+
+    ```plaintext
+    /images/{DestinationPath}/logo.png
+    /snippets/{DestinationPath}/Hero.jsx
+    ```
+  </Step>
+
+  <Step title="Content Path Rewriting">
+    All absolute paths in MDX files are automatically rewritten to reference the relocated resources and prefixed pages:
+
+    | Original Path | Rewritten Path |
+    |---------------|----------------|
+    | `/images/logo.png` | `/images/product-1/logo.png` |
+    | `/snippets/Hero.jsx` | `/snippets/product-1/Hero.jsx` |
+    | `/guides/quickstart` | `/product-1/guides/quickstart` |
+  </Step>
+
+  <Step title="Navigation Integration">
+    The referenced project's navigation is merged into the parent's `docs.json`, appearing as a Tab or Product based on your configuration.
+  </Step>
+</Steps>
+
+## Supported Path Patterns
+
+The handler rewrites paths in all common MDX patterns:
+
+<Tabs>
+  <Tab title="ES Imports">
+    ```jsx
+    // Before
+    import { Hero } from '/snippets/Hero.jsx';
+
+    // After
+    import { Hero } from '/snippets/product-1/Hero.jsx';
+    ```
+  </Tab>
+
+  <Tab title="Markdown Links & Images">
+    ```markdown
+    // Before
+    ![Logo](/images/logo.png)
+    [Getting Started](/guides/quickstart)
+
+    // After
+    ![Logo](/images/product-1/logo.png)
+    [Getting Started](/product-1/guides/quickstart)
+    ```
+  </Tab>
+
+  <Tab title="JSX Attributes">
+    ```jsx
+    // Before
+    <Card href="/guides/intro" />
+    <img src="/images/banner.png" />
+
+    // After
+    <Card href="/product-1/guides/intro" />
+    <img src="/images/product-1/banner.png" />
+    ```
+  </Tab>
+
+  <Tab title="CSS url()">
+    ```jsx
+    // Before
+    <div style={{backgroundImage: 'url(/images/bg.svg)'}} />
+
+    // After
+    <div style={{backgroundImage: 'url(/images/product-1/bg.svg)'}} />
+    ```
+  </Tab>
+</Tabs>
+
+<Info>
+Paths inside fenced code blocks are **not** rewritten, ensuring your documentation examples remain accurate.
+</Info>
+
+## Output Structure
+
+After processing, your collection has a clean, conflict-free structure:
+
+```plaintext
+docs/
+├── docs.json                    # Unified navigation
+├── index.mdx                    # Collection landing page
+├── images/
+│   ├── collection-logo.png      # Collection's own images
+│   ├── product-1/               # Product 1's images
+│   │   ├── logo.png
+│   │   └── screenshots/
+│   │       └── demo.png
+│   └── product-2/               # Product 2's images
+│       └── banner.png
+├── snippets/
+│   ├── SharedComponent.jsx      # Collection's components
+│   ├── product-1/               # Product 1's snippets
+│   │   └── Hero.jsx
+│   └── product-2/               # Product 2's snippets
+│       └── Features.jsx
+├── product-1/                   # Product 1's content
+│   ├── index.mdx
+│   └── guides/
+│       └── quickstart.mdx
+└── product-2/                   # Product 2's content
+    ├── index.mdx
+    └── api/
+        └── overview.mdx
+```
+
+## Configuration Example
+
+```xml MyPlatform.docsproj
+<Project Sdk="DotNetDocs.Sdk/1.2.0">
+  <PropertyGroup>
+    <DocumentationType>Mintlify</DocumentationType>
+    <MintlifyTemplate>
+      <Name>My Platform</Name>
+      <Theme>maple</Theme>
+      <Navigation Mode="Unified" Type="Tabs" Name="Platform">
+        <Pages>
+          <Groups>
+            <Group Name="Getting Started" Icon="rocket">
+              <Pages>index;quickstart</Pages>
+            </Group>
+          </Groups>
+        </Pages>
+      </Navigation>
+    </MintlifyTemplate>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <DocumentationReference
+      Include="..\Product1\Product1.Docs.docsproj"
+      DestinationPath="product-1"
+      IntegrationType="Tabs"
+      Name="Product 1" />
+
+    <DocumentationReference
+      Include="..\Product2\Product2.Docs.docsproj"
+      DestinationPath="product-2"
+      IntegrationType="Tabs"
+      Name="Product 2" />
+  </ItemGroup>
+</Project>
+```
+
+## Best Practices
+
+<CardGroup cols={2}>
+  <Card title="Use Descriptive Destination Paths" icon="folder">
+    Choose short, URL-friendly names like `product-1` rather than full project names. These become part of every URL in the referenced content.
+  </Card>
+
+  <Card title="Organize Shared Resources" icon="images">
+    Keep images and snippets in their respective directories. The handler specifically looks for `images/` and `snippets/` folders to relocate.
+  </Card>
+
+  <Card title="Test Path References" icon="vial">
+    After building, verify that imports, images, and links resolve correctly. Check the browser console for 404 errors.
+  </Card>
+
+  <Card title="Keep Code Examples Accurate" icon="code">
+    Since code blocks aren't rewritten, your documentation examples will show the original paths - which is usually what you want for copy-paste accuracy.
+  </Card>
+</CardGroup>
+
+## Comparison with Base Markdown
+
+The Mintlify handler extends the base `MarkdownDocReferenceHandler` with additional patterns:
+
+| Feature | Markdown Handler | Mintlify Handler |
+|---------|-----------------|------------------|
+| Markdown images | Yes | Yes |
+| Markdown links | Yes | Yes |
+| ES imports | No | Yes |
+| JSX src/href | No | Yes |
+| CSS url() | No | Yes |
+| .mdx files | No | Yes |
+
+## See Also
+
+<CardGroup cols={2}>
+  <Card title="Collections Guide" icon="rectangle-vertical-history" href="/guides/collections">
+    Complete guide to Documentation Collections including configuration, integration types, and troubleshooting
+  </Card>
+  <Card title="DocumentationReference" icon="link" href="/guides/reference/docsproj#documentation-references">
+    Complete reference for the DocumentationReference tag and its properties
+  </Card>
+  <Card title="Navigation Generation" icon="sitemap" href="/providers/mintlify/navigation">
+    Learn how navigation from multiple projects is merged
+  </Card>
+</CardGroup>

@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
@@ -132,7 +131,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             // Assert
             var context = GetService<ProjectContext>();
             var jsonPath = Path.Combine(_testOutputPath, "documentation.json");
-            var json = await File.ReadAllTextAsync(jsonPath);
+            var json = await File.ReadAllTextAsync(jsonPath, TestContext.CancellationToken);
             
             Action act = () => JsonDocument.Parse(json);
             act.Should().NotThrow();
@@ -154,7 +153,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             await GetJsonRenderer().RenderAsync(model);
 
             // Assert
-            var json = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, "documentation.json"), TestContext.CancellationTokenSource.Token);
+            var json = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, "documentation.json"), TestContext.CancellationToken);
             using var document = JsonDocument.Parse(json);
 
             // DocAssembly is serialized directly, so root element is the assembly
@@ -186,23 +185,27 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
                 var nsPath = Path.Combine(_testOutputPath, fileName);
                 File.Exists(nsPath).Should().BeTrue($"Namespace file {fileName} should exist");
 
-                var json = await File.ReadAllTextAsync(nsPath, TestContext.CancellationTokenSource.Token);
+                var json = await File.ReadAllTextAsync(nsPath, TestContext.CancellationToken);
                 Action act = () => JsonDocument.Parse(json);
                 act.Should().NotThrow();
             }
         }
 
         [TestMethod]
-        public async Task RenderAsync_WithNullModel_ThrowsArgumentNullException()
+        public async Task RenderAsync_WithNullModel_ReturnsWithoutError()
         {
             // Arrange
             var renderer = GetJsonRenderer();
 
-            // Act
-            Func<Task> act = async () => await renderer.RenderAsync(null!);
+            // Act - Documentation-only mode passes null model to renderers
+            Func<Task> act = async () => await renderer.RenderAsync(null);
 
-            // Assert
-            await act.Should().ThrowAsync<ArgumentNullException>();
+            // Assert - Should not throw, should return gracefully
+            await act.Should().NotThrowAsync();
+
+            // Verify no documentation.json was created (nothing to render)
+            var docJsonPath = Path.Combine(_testOutputPath, "documentation.json");
+            File.Exists(docJsonPath).Should().BeFalse("No documentation file should be created for null model");
         }
 
         #endregion
@@ -221,7 +224,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             await documentationManager.ProcessAsync(assemblyPath, xmlPath);
 
             // Assert
-            var json = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, "documentation.json"));
+            var json = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, "documentation.json"), TestContext.CancellationToken);
             using var document = JsonDocument.Parse(json);
 
             var namespaces = document.RootElement.GetProperty("namespaces");
@@ -246,7 +249,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             await documentationManager.ProcessAsync(assemblyPath, xmlPath);
 
             // Assert
-            var json = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, "documentation.json"), TestContext.CancellationTokenSource.Token);
+            var json = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, "documentation.json"), TestContext.CancellationToken);
             using var document = JsonDocument.Parse(json);
 
             var namespaces = document.RootElement.GetProperty("namespaces");
@@ -281,7 +284,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             await documentationManager.ProcessAsync(assemblyPath, xmlPath);
 
             // Assert
-            var json = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, "documentation.json"), TestContext.CancellationTokenSource.Token);
+            var json = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, "documentation.json"), TestContext.CancellationToken);
             using var document = JsonDocument.Parse(json);
 
             var namespaces = document.RootElement.GetProperty("namespaces");
@@ -326,7 +329,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             await documentationManager.ProcessAsync(assemblyPath, xmlPath);
 
             // Assert
-            var json = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, "documentation.json"));
+            var json = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, "documentation.json"), TestContext.CancellationToken);
             using var document = JsonDocument.Parse(json);
 
             var namespaces = document.RootElement.GetProperty("namespaces");
@@ -374,13 +377,13 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             using var manager = new AssemblyManager(assemblyPath, xmlPath);
             var model = await manager.DocumentAsync(context);
             model.BestPractices = "Test best practices";
-            model.RelatedApis = new List<string> { "System.Object" };
+            model.RelatedApis = ["System.Object"];
 
             // Act
             await GetJsonRenderer().RenderAsync(model);
 
             // Assert
-            var json = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, "documentation.json"), TestContext.CancellationTokenSource.Token);
+            var json = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, "documentation.json"), TestContext.CancellationToken);
             using var document = JsonDocument.Parse(json);
 
             // DocAssembly is serialized directly at root level
@@ -442,7 +445,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             await renderer.RenderAsync(assembly);
         }
 
-#endregion
+        #endregion
 
     }
 

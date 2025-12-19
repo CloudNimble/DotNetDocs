@@ -52,7 +52,7 @@ namespace TestNamespace
 
             var compilation = CSharpCompilation.Create("TestAssembly")
                 .AddReferences(MetadataReference.CreateFromFile(typeof(object).Assembly.Location))
-                .AddSyntaxTrees(CSharpSyntaxTree.ParseText(source));
+                .AddSyntaxTrees(CSharpSyntaxTree.ParseText(source, cancellationToken: TestContext.CancellationToken));
 
             var manager = new AssemblyManager("", "");
             
@@ -118,7 +118,7 @@ namespace TestNamespace
 
             var compilation = CSharpCompilation.Create("TestAssembly")
                 .AddReferences(MetadataReference.CreateFromFile(typeof(object).Assembly.Location))
-                .AddSyntaxTrees(CSharpSyntaxTree.ParseText(source));
+                .AddSyntaxTrees(CSharpSyntaxTree.ParseText(source, cancellationToken: TestContext.CancellationToken));
 
             var manager = new AssemblyManager("", "");
             

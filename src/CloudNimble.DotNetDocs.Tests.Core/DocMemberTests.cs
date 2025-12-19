@@ -97,7 +97,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core
 
             newDocMember.Parameters.Add(docParam);
 
-            newDocMember.Parameters.Should().HaveCount(1);
+            newDocMember.Parameters.Should().ContainSingle();
             newDocMember.Parameters.Should().Contain(docParam);
         }
 

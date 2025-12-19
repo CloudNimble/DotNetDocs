@@ -167,6 +167,7 @@ namespace CloudNimble.DotNetDocs.Tools.Commands.Base
         }
 
         #endregion
+
         #region Helper Classes
 
         #endregion

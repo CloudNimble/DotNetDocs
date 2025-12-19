@@ -1,0 +1,99 @@
+---
+title: MintlifyRenderer
+description: "Renders documentation as MDX files with Mintlify frontmatter and navigation."
+icon: file-brackets-curly
+keywords: ['MintlifyRenderer', 'CloudNimble.DotNetDocs.Mintlify.MintlifyRenderer', 'CloudNimble.DotNetDocs.Mintlify', 'class', 'CloudNimble.DotNetDocs.Core.Renderers.MarkdownRendererBase', 'CloudNimble.DotNetDocs.Core.IDocRenderer']
+---
+
+## Definition
+
+**Assembly:** CloudNimble.DotNetDocs.Mintlify.dll
+
+**Namespace:** CloudNimble.DotNetDocs.Mintlify
+
+**Inheritance:** CloudNimble.DotNetDocs.Core.Renderers.MarkdownRendererBase
+
+## Syntax
+
+```csharp
+CloudNimble.DotNetDocs.Mintlify.MintlifyRenderer
+```
+
+## Summary
+
+Renders documentation as MDX files with Mintlify frontmatter and navigation.
+
+## Remarks
+
+Generates structured MDX documentation with Mintlify-specific features including
+            frontmatter with icons, tags, and SEO metadata. Optionally generates docs.json
+            navigation configuration for Mintlify documentation sites.
+
+## Constructors
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor
+
+Initializes a new instance of the [MintlifyRenderer](/test/api-reference/CloudNimble/DotNetDocs/Mintlify/MintlifyRenderer) class.
+
+#### Syntax
+
+```csharp
+public MintlifyRenderer(CloudNimble.DotNetDocs.Core.ProjectContext context, Microsoft.Extensions.Options.IOptions<CloudNimble.DotNetDocs.Mintlify.MintlifyRendererOptions> options, Mintlify.Core.DocsJsonManager docsJsonManager)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `context` | `CloudNimble.DotNetDocs.Core.ProjectContext` | The project context. |
+| `options` | `Microsoft.Extensions.Options.IOptions<CloudNimble.DotNetDocs.Mintlify.MintlifyRendererOptions>` | The Mintlify renderer options. |
+| `docsJsonManager` | `Mintlify.Core.DocsJsonManager` | The DocsJsonManager for navigation generation. |
+
+## Methods
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> RenderAsync
+
+Renders the documentation assembly to MDX files with optional docs.json generation.
+
+#### Syntax
+
+```csharp
+public System.Threading.Tasks.Task RenderAsync(CloudNimble.DotNetDocs.Core.DocAssembly model)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `model` | `CloudNimble.DotNetDocs.Core.DocAssembly?` | The documentation assembly to render, or null for documentation-only mode. |
+
+#### Returns
+
+Type: `System.Threading.Tasks.Task`
+A task representing the asynchronous rendering operation.
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> RenderPlaceholdersAsync
+
+Renders placeholder conceptual content files for the documentation assembly.
+
+#### Syntax
+
+```csharp
+public System.Threading.Tasks.Task RenderPlaceholdersAsync(CloudNimble.DotNetDocs.Core.DocAssembly model)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `model` | `CloudNimble.DotNetDocs.Core.DocAssembly` | The documentation assembly to generate placeholders for. |
+
+#### Returns
+
+Type: `System.Threading.Tasks.Task`
+A task representing the asynchronous placeholder rendering operation.
+
+## Related APIs
+
+- CloudNimble.DotNetDocs.Core.IDocRenderer
+

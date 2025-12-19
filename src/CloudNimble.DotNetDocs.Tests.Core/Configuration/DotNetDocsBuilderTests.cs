@@ -54,7 +54,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Configuration
 
             // Assert
             var renderers = TestHost.Services.GetServices<IDocRenderer>().ToList();
-            renderers.Should().HaveCount(1);
+            renderers.Should().ContainSingle();
             renderers.Should().AllBeOfType<MarkdownRenderer>();
 
             var manager = TestHost.Services.GetService<DocumentationManager>();
@@ -152,15 +152,15 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Configuration
 
             // Assert
             var renderers = TestHost.Services.GetServices<IDocRenderer>().ToList();
-            renderers.Should().HaveCount(1);
+            renderers.Should().ContainSingle();
             renderers.Should().AllBeOfType<TestRenderer>();
 
             var enrichers = TestHost.Services.GetServices<IDocEnricher>().ToList();
-            enrichers.Should().HaveCount(1);
+            enrichers.Should().ContainSingle();
             enrichers.Should().AllBeOfType<TestEnricher>();
 
             var transformers = TestHost.Services.GetServices<IDocTransformer>().ToList();
-            transformers.Should().HaveCount(1);
+            transformers.Should().ContainSingle();
             transformers.Should().AllBeOfType<TestTransformer>();
         }
 
@@ -189,7 +189,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Configuration
             renderers.Should().HaveCount(2);
 
             var enrichers = TestHost.Services.GetServices<IDocEnricher>().ToList();
-            enrichers.Should().HaveCount(1);
+            enrichers.Should().ContainSingle();
 
             var transformers = TestHost.Services.GetServices<IDocTransformer>().ToList();
             transformers.Should().HaveCount(2, "UseMarkdownRenderer now adds MarkdownXmlTransformer plus our TestTransformer");
@@ -233,9 +233,9 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Configuration
             // Assert
             var renderers = TestHost.Services.GetServices<IDocRenderer>().ToList();
             renderers.Should().HaveCount(3, "each renderer should only be registered once");
-            renderers.OfType<MarkdownRenderer>().Should().HaveCount(1);
-            renderers.OfType<JsonRenderer>().Should().HaveCount(1);
-            renderers.OfType<YamlRenderer>().Should().HaveCount(1);
+            renderers.OfType<MarkdownRenderer>().Should().ContainSingle();
+            renderers.OfType<JsonRenderer>().Should().ContainSingle();
+            renderers.OfType<YamlRenderer>().Should().ContainSingle();
         }
 
         [TestMethod]
@@ -257,15 +257,15 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Configuration
 
             // Assert
             var renderers = TestHost.Services.GetServices<IDocRenderer>().ToList();
-            renderers.Should().HaveCount(1);
+            renderers.Should().ContainSingle();
             renderers.Should().AllBeOfType<TestRenderer>();
 
             var enrichers = TestHost.Services.GetServices<IDocEnricher>().ToList();
-            enrichers.Should().HaveCount(1);
+            enrichers.Should().ContainSingle();
             enrichers.Should().AllBeOfType<TestEnricher>();
 
             var transformers = TestHost.Services.GetServices<IDocTransformer>().ToList();
-            transformers.Should().HaveCount(1);
+            transformers.Should().ContainSingle();
             transformers.Should().AllBeOfType<TestTransformer>();
         }
 
@@ -365,7 +365,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Configuration
         private class TestRenderer : IDocRenderer
         {
             public string OutputFormat => "Test";
-            public Task RenderAsync(DocAssembly model) => Task.CompletedTask;
+            public Task RenderAsync(DocAssembly? model) => Task.CompletedTask;
             public Task RenderPlaceholdersAsync(DocAssembly model) => Task.CompletedTask;
         }
 

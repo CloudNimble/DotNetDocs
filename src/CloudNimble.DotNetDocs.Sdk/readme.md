@@ -16,7 +16,7 @@ The MSBuild SDK for documentation projects (`.docsproj`) that provides a clean w
 - 📁 **Clean Folders** - No `bin/obj` folders cluttering your documentation directories
 - 🔍 **Auto-Detection** - Automatically detects documentation type (Mintlify, DocFX, MkDocs, Jekyll, Hugo)
 - 📝 **Smart Includes** - Automatically includes relevant files based on documentation type
-- 🛠️ **Integration** - Optional build targets for linting, preview, and deployment
+- 🛠️ **API Generation** - Generate API documentation from XML comments on build
 - 🎯 **Visual Studio** - Full IntelliSense and editing support in Visual Studio
 
 ## Quick Start
@@ -34,7 +34,7 @@ The MSBuild SDK for documentation projects (`.docsproj`) that provides a clean w
 ### 1. Create a .docsproj file
 
 ```xml
-<Project Sdk="DotNetDocs.Sdk/1.0.1">
+<Project Sdk="DotNetDocs.Sdk/1.2.0">
   <!-- That's it! Everything is configured automatically -->
 </Project>
 ```
@@ -70,31 +70,42 @@ The SDK automatically detects your documentation type based on configuration fil
 ### Basic Options
 
 ```xml
-<Project Sdk="DotNetDocs.Sdk/1.0.1">
+<Project Sdk="DotNetDocs.Sdk/1.2.0">
   <PropertyGroup>
     <!-- Override auto-detected documentation type -->
     <DocumentationType>Mintlify</DocumentationType>
 
-    <!-- Enable build-time features -->
-    <GenerateMintlifyDocs>true</GenerateMintlifyDocs>
-    <LintMarkdown>true</LintMarkdown>
+    <!-- Enable API documentation generation from assemblies -->
+    <GenerateDocumentation>true</GenerateDocumentation>
+
+    <!-- Show documentation statistics during build -->
     <ShowDocumentationStats>true</ShowDocumentationStats>
+
+    <!-- Configure namespace organization (File or Folder) -->
+    <NamespaceMode>Folder</NamespaceMode>
   </PropertyGroup>
 </Project>
 ```
 
-### Advanced Options
+### Mintlify Options
 
 ```xml
-<Project Sdk="DotNetDocs.Sdk/1.0.1">
+<Project Sdk="DotNetDocs.Sdk/1.2.0">
   <PropertyGroup>
-    <!-- Preview and deployment -->
-    <PreviewDocumentation>true</PreviewDocumentation>
-    <DeployDocumentation>true</DeployDocumentation>
-    
-    <!-- Quality assurance -->
-    <ValidateLinks>true</ValidateLinks>
-    <GeneratePdf>true</GeneratePdf>
+    <!-- Navigation organization mode -->
+    <MintlifyNavigationMode>Unified</MintlifyNavigationMode>
+
+    <!-- Exclude patterns for project discovery -->
+    <ExcludePatterns>**/*.Tests.csproj;**/*Benchmark*.csproj</ExcludePatterns>
+
+    <!-- Mintlify template configuration -->
+    <MintlifyTemplate>
+      <Name>My Project</Name>
+      <Theme>maple</Theme>
+      <Colors>
+        <Primary>#419AC5</Primary>
+      </Colors>
+    </MintlifyTemplate>
   </PropertyGroup>
 </Project>
 ```
@@ -104,13 +115,13 @@ The SDK automatically detects your documentation type based on configuration fil
 If your `.docsproj` file is in a different location than your documentation files (e.g., project in `src/` but docs in `docs/`), use the `DocumentationRoot` property:
 
 ```xml
-<Project Sdk="DotNetDocs.Sdk/1.0.1">
+<Project Sdk="DotNetDocs.Sdk/1.2.0">
   <PropertyGroup>
     <!-- Point to where your documentation files actually live -->
     <DocumentationRoot>$(MSBuildThisFileDirectory)..\..\docs\</DocumentationRoot>
-    
+
     <!-- All features work with the specified root -->
-    <GenerateMintlifyDocs>true</GenerateMintlifyDocs>
+    <GenerateDocumentation>true</GenerateDocumentation>
     <ShowDocumentationStats>true</ShowDocumentationStats>
   </PropertyGroup>
 </Project>
@@ -127,16 +138,11 @@ This is particularly useful when you want to:
 |--------|-------------|
 | `DocumentationHelp` | Show available options and current configuration |
 | `DocumentationStats` | Display statistics about your documentation |
-| `GenerateMintlifyDocs` | Generate Mintlify documentation (requires EasyAF.Tools) |
-| `LintMarkdown` | Lint markdown files for issues |
-| `PreviewDocumentation` | Start local preview server |
-| `ValidateLinks` | Check for broken links |
-| `GeneratePdf` | Generate PDF output |
-| `DeployDocumentation` | Deploy to hosting platform |
+| `GenerateDocumentation` | Generate API documentation from assemblies |
 
 ### DotNetDocs Integration
 
-The SDK automatically generates documentation when `GenerateMintlifyDocs` is enabled. Documentation is built from your project's assemblies and XML documentation files.
+The SDK automatically generates documentation when `GenerateDocumentation` is enabled. Documentation is built from your project's assemblies and XML documentation files.
 
 ### Usage Examples
 
@@ -144,14 +150,11 @@ The SDK automatically generates documentation when `GenerateMintlifyDocs` is ena
 # Show help and current configuration
 dotnet build -t:DocumentationHelp
 
-# Show documentation statistics  
+# Show documentation statistics
 dotnet build -t:DocumentationStats
 
-# Generate Mintlify docs manually
-dotnet build -t:GenerateMintlifyDocs
-
-# Start preview server
-dotnet build -t:PreviewDocumentation
+# Generate documentation (runs automatically on build when enabled)
+dotnet build -t:GenerateDocumentation
 ```
 
 ## Integration Examples
@@ -159,14 +162,16 @@ dotnet build -t:PreviewDocumentation
 ### Mintlify Project
 
 ```xml
-<Project Sdk="DotNetDocs.Sdk/1.0.1">
+<Project Sdk="DotNetDocs.Sdk/1.2.0">
   <PropertyGroup>
-    <!-- Auto-generate on build -->
-    <GenerateMintlifyDocs>true</GenerateMintlifyDocs>
-    
-    <!-- Quality checks -->
-    <LintMarkdown>true</LintMarkdown>
+    <!-- Auto-generate API documentation on build -->
+    <GenerateDocumentation>true</GenerateDocumentation>
+
+    <!-- Show file statistics during build -->
     <ShowDocumentationStats>true</ShowDocumentationStats>
+
+    <!-- Configure namespace organization -->
+    <NamespaceMode>Folder</NamespaceMode>
   </PropertyGroup>
 </Project>
 ```
@@ -174,7 +179,7 @@ dotnet build -t:PreviewDocumentation
 ### Multi-Format Project
 
 ```xml
-<Project Sdk="DotNetDocs.Sdk/1.0.1">
+<Project Sdk="DotNetDocs.Sdk/1.2.0">
   <PropertyGroup>
     <!-- Override detection -->
     <DocumentationType>Generic</DocumentationType>
@@ -193,7 +198,7 @@ dotnet build -t:PreviewDocumentation
 ```yaml
 # GitHub Actions example
 - name: Build Documentation
-  run: dotnet build docs/MyProject.Docs.docsproj -p:DeployDocumentation=true
+  run: dotnet build docs/MyProject.Docs.docsproj --configuration Release
 ```
 
 ## Benefits Over Manual Configuration

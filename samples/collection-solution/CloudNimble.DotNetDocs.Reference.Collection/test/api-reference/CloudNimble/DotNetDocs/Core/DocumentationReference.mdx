@@ -1,0 +1,326 @@
+---
+title: DocumentationReference
+description: "Represents a reference to external documentation to be combined into a documentation collection."
+icon: file-brackets-curly
+keywords: ['DocumentationReference', 'CloudNimble.DotNetDocs.Core.DocumentationReference', 'CloudNimble.DotNetDocs.Core', 'class', 'System.Object']
+---
+
+## Definition
+
+**Assembly:** CloudNimble.DotNetDocs.Core.dll
+
+**Namespace:** CloudNimble.DotNetDocs.Core
+
+**Inheritance:** System.Object
+
+## Syntax
+
+```csharp
+CloudNimble.DotNetDocs.Core.DocumentationReference
+```
+
+## Summary
+
+Represents a reference to external documentation to be combined into a documentation collection.
+
+## Remarks
+
+This class encapsulates information needed to copy documentation files from a referenced project
+            and integrate its navigation structure into a collection portal. Similar to MSBuild's ProjectReference,
+            but for documentation outputs.
+
+## Constructors
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor
+
+Initializes a new instance of the [DocumentationReference](/test/api-reference/CloudNimble/DotNetDocs/Core/DocumentationReference) class.
+
+#### Syntax
+
+```csharp
+public DocumentationReference()
+```
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor
+
+Initializes a new instance of the [DocumentationReference](/test/api-reference/CloudNimble/DotNetDocs/Core/DocumentationReference) class with a project path.
+
+#### Syntax
+
+```csharp
+public DocumentationReference(string projectPath)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `projectPath` | `string` | The path to the .docsproj file being referenced. |
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public Object()
+```
+
+## Properties
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> DestinationPath
+
+Gets or sets the path to the destination folder within the collection's documentation root.
+
+#### Syntax
+
+```csharp
+public string DestinationPath { get; set; }
+```
+
+#### Property Value
+
+Type: `string`
+The relative path where referenced documentation will be copied.
+
+#### Examples
+
+For a microservice named "auth-service", this might be "services/auth".
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> DocumentationRoot
+
+Gets or sets the root directory containing the referenced documentation outputs.
+
+#### Syntax
+
+```csharp
+public string DocumentationRoot { get; set; }
+```
+
+#### Property Value
+
+Type: `string`
+The absolute path to the documentation root of the referenced project.
+
+#### Examples
+
+C:\repos\auth-service\docs
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> DocumentationType
+
+Gets or sets the documentation type of the referenced project.
+
+#### Syntax
+
+```csharp
+public CloudNimble.DotNetDocs.Core.Configuration.SupportedDocumentationType DocumentationType { get; set; }
+```
+
+#### Property Value
+
+Type: `CloudNimble.DotNetDocs.Core.Configuration.SupportedDocumentationType`
+The documentation format (Mintlify, DocFX, MkDocs, Jekyll, Hugo, or Generic).
+
+#### Remarks
+
+This determines which file patterns to copy and whether navigation combining is supported.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> IntegrationType
+
+Gets or sets the integration type for Mintlify navigation.
+
+#### Syntax
+
+```csharp
+public string IntegrationType { get; set; }
+```
+
+#### Property Value
+
+Type: `string`
+Either "Tabs" or "Products" for Mintlify navigation structure.
+
+#### Remarks
+
+Only applicable when DocumentationType is "Mintlify". Determines whether the referenced
+            documentation appears in the top-level tabs or in the products section.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Name
+
+Gets or sets the display name for this documentation reference in navigation.
+
+#### Syntax
+
+```csharp
+public string Name { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+The name to display for this documentation in tabs, products, or other navigation structures.
+
+#### Remarks
+
+When specified, this name is used instead of deriving the name from the project or other metadata.
+            Useful for providing user-friendly names in navigation elements.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> NavigationFilePath
+
+Gets or sets the path to the navigation configuration file for the referenced documentation.
+
+#### Syntax
+
+```csharp
+public string NavigationFilePath { get; set; }
+```
+
+#### Property Value
+
+Type: `string`
+The absolute path to the navigation file (e.g., docs.json for Mintlify).
+
+#### Examples
+
+C:\repos\auth-service\docs\docs.json
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ProjectPath
+
+Gets or sets the path to the .docsproj file being referenced.
+
+#### Syntax
+
+```csharp
+public string ProjectPath { get; set; }
+```
+
+#### Property Value
+
+Type: `string`
+The absolute path to the documentation project file.
+
+#### Examples
+
+C:\repos\auth-service\docs\AuthService.docsproj
+
+## Methods
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Equals <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual bool Equals(object obj)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `obj` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Equals <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public static bool Equals(object objA, object objB)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `objA` | `object?` | - |
+| `objB` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetHashCode <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual int GetHashCode()
+```
+
+#### Returns
+
+Type: `int`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetType <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public System.Type GetType()
+```
+
+#### Returns
+
+Type: `System.Type`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> MemberwiseClone <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+protected internal object MemberwiseClone()
+```
+
+#### Returns
+
+Type: `object`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ReferenceEquals <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public static bool ReferenceEquals(object objA, object objB)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `objA` | `object?` | - |
+| `objB` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ToString <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual string ToString()
+```
+
+#### Returns
+
+Type: `string?`
+

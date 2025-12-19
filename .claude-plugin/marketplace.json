@@ -1,0 +1,58 @@
+{
+  "name": "dotnetdocs-plugins",
+  "owner": {
+    "name": "CloudNimble",
+    "url": "https://github.com/CloudNimble",
+    "email": "support@cloudnimble.com"
+  },
+  "metadata": {
+    "description": "Official Claude plugins for DotNetDocs - expert guidance for .NET documentation",
+    "version": "1.0.0",
+    "homepage": "https://github.com/CloudNimble/DotNetDocs",
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/CloudNimble/DotNetDocs.git"
+    },
+    "pluginRoot": ".claude/plugins"
+  },
+  "plugins": [
+    {
+      "name": "dotnet-documentation-expert",
+      "source": {
+        "type": "relative",
+        "path": ".claude/plugins/dotnet-documentation-expert"
+      },
+      "displayName": ".NET Documentation Expert",
+      "description": "Expert guidance for writing high-quality .NET API documentation and conceptual content. Provides comprehensive templates, best practices, and standards for XML documentation comments, conceptual .mdz files, and integration with DotNetDocs.",
+      "version": "1.0.0",
+      "author": {
+        "name": "CloudNimble",
+        "url": "https://github.com/CloudNimble"
+      },
+      "license": "MIT",
+      "categories": [
+        "documentation",
+        "dotnet",
+        "development",
+        "code-quality"
+      ],
+      "tags": [
+        ".NET",
+        "C#",
+        "documentation",
+        "XML comments",
+        "API docs",
+        "DotNetDocs",
+        "Mintlify",
+        "technical writing"
+      ],
+      "icon": "📚",
+      "homepage": "https://github.com/CloudNimble/DotNetDocs/tree/main/.claude/plugins/dotnet-documentation-expert",
+      "documentation": {
+        "readme": "README.md",
+        "examples": "EXAMPLES.md",
+        "changelog": "CHANGELOG.md"
+      }
+    }
+  ]
+}

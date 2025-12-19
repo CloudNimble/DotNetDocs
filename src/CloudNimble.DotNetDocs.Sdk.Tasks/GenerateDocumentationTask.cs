@@ -302,11 +302,24 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
                 var serviceProvider = services.BuildServiceProvider();
                 var manager = serviceProvider.GetRequiredService<DocumentationManager>();
 
-                // Collect all valid assembly paths
+                // Check if we have DocumentationReferences
+                var hasReferences = documentationReferences.Count > 0;
+
+                // Collect all valid assembly paths, skipping malformed paths from empty MSBuild batching
                 var assemblyPairs = new List<(string assemblyPath, string xmlPath)>();
                 foreach (var assembly in Assemblies)
                 {
                     var assemblyPath = assembly.ItemSpec;
+
+                    // Skip malformed paths from empty ItemGroup batching (e.g., "bin\Debug\\.dll")
+                    if (string.IsNullOrWhiteSpace(assemblyPath) ||
+                        assemblyPath.EndsWith("\\.dll", StringComparison.OrdinalIgnoreCase) ||
+                        assemblyPath.EndsWith("/.dll", StringComparison.OrdinalIgnoreCase))
+                    {
+                        Log.LogMessage(MessageImportance.Low, $"Skipping malformed assembly path: {assemblyPath}");
+                        continue;
+                    }
+
                     var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
 
                     if (!File.Exists(assemblyPath))
@@ -319,10 +332,16 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
                     assemblyPairs.Add((assemblyPath, xmlPath));
                 }
 
-                if (assemblyPairs.Count == 0)
+                // Handle different scenarios based on what we have
+                if (assemblyPairs.Count == 0 && !hasReferences)
                 {
-                    Log.LogWarning("No valid assemblies found to process");
+                    Log.LogMessage(MessageImportance.High, "No assemblies or documentation references found. Nothing to process.");
                     return true;
+                }
+
+                if (assemblyPairs.Count == 0 && hasReferences)
+                {
+                    Log.LogMessage(MessageImportance.High, "📚 Documentation-only mode: Processing DocumentationReferences without local assemblies");
                 }
 
                 // Process all assemblies together to properly merge navigation

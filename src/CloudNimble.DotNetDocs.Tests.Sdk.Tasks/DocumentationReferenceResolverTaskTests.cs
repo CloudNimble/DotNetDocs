@@ -153,7 +153,7 @@ namespace CloudNimble.DotNetDocs.Tests.Sdk.Tasks
 
                 // Assert
                 result.Should().BeTrue();
-                _task.ResolvedDocumentationReferences.Should().HaveCount(1);
+                _task.ResolvedDocumentationReferences.Should().ContainSingle();
 
                 var resolved = _task.ResolvedDocumentationReferences[0];
                 resolved.GetMetadata("ProjectPath").Should().EndWith("ServiceA.docsproj");
@@ -189,7 +189,7 @@ namespace CloudNimble.DotNetDocs.Tests.Sdk.Tasks
 
                 // Assert
                 result.Should().BeTrue();
-                _task.ResolvedDocumentationReferences.Should().HaveCount(1);
+                _task.ResolvedDocumentationReferences.Should().ContainSingle();
                 _task.ResolvedDocumentationReferences[0].GetMetadata("DestinationPath").Should().Be("MyService");
             }
             finally
@@ -219,7 +219,7 @@ namespace CloudNimble.DotNetDocs.Tests.Sdk.Tasks
 
                 // Assert
                 result.Should().BeTrue();
-                _task.ResolvedDocumentationReferences.Should().HaveCount(1);
+                _task.ResolvedDocumentationReferences.Should().ContainSingle();
                 _task.ResolvedDocumentationReferences[0].GetMetadata("IntegrationType").Should().Be("Tabs");
             }
             finally
@@ -482,7 +482,7 @@ namespace CloudNimble.DotNetDocs.Tests.Sdk.Tasks
 
                 // Assert
                 result.Should().BeTrue();
-                _task.ResolvedDocumentationReferences.Should().HaveCount(1);
+                _task.ResolvedDocumentationReferences.Should().ContainSingle();
                 _buildEngine.LoggedWarnings.Where(w => w.Message != null).Should().NotContain(w => w.Message!.Contains("Skipping"));
             }
             finally
@@ -511,7 +511,7 @@ namespace CloudNimble.DotNetDocs.Tests.Sdk.Tasks
 
                 // Assert
                 result.Should().BeTrue();
-                _task.ResolvedDocumentationReferences.Should().HaveCount(1);
+                _task.ResolvedDocumentationReferences.Should().ContainSingle();
                 _buildEngine.LoggedWarnings.Should().BeEmpty();
             }
             finally
@@ -540,7 +540,7 @@ namespace CloudNimble.DotNetDocs.Tests.Sdk.Tasks
 
                 // Assert
                 result.Should().BeTrue();
-                _task.ResolvedDocumentationReferences.Should().HaveCount(1);
+                _task.ResolvedDocumentationReferences.Should().ContainSingle();
                 _buildEngine.LoggedWarnings.Where(w => w.Message != null).Should().NotContain(w => w.Message!.Contains("Skipping"));
             }
             finally
@@ -629,7 +629,7 @@ namespace CloudNimble.DotNetDocs.Tests.Sdk.Tasks
 
                 // Assert
                 result.Should().BeTrue();
-                _task.ResolvedDocumentationReferences.Should().HaveCount(1);
+                _task.ResolvedDocumentationReferences.Should().ContainSingle();
                 _task.ResolvedDocumentationReferences[0]!.GetMetadata("NavigationFilePath").Should().BeEmpty();
                 _buildEngine.LoggedWarnings.Where(w => w.Message != null).Should().Contain(w => w.Message!.Contains("Navigation file not found"));
             }
@@ -692,7 +692,7 @@ namespace CloudNimble.DotNetDocs.Tests.Sdk.Tasks
 
                 // Assert
                 result.Should().BeTrue();
-                _task.ResolvedDocumentationReferences.Should().HaveCount(1);
+                _task.ResolvedDocumentationReferences.Should().ContainSingle();
                 Path.IsPathRooted(_task.ResolvedDocumentationReferences[0].GetMetadata("ProjectPath")).Should().BeTrue();
             }
             finally
@@ -721,7 +721,7 @@ namespace CloudNimble.DotNetDocs.Tests.Sdk.Tasks
 
                 // Assert
                 result.Should().BeTrue();
-                _task.ResolvedDocumentationReferences.Should().HaveCount(1);
+                _task.ResolvedDocumentationReferences.Should().ContainSingle();
                 _task.ResolvedDocumentationReferences[0].GetMetadata("ProjectPath").Should().Be(projectPath);
             }
             finally
@@ -818,7 +818,7 @@ namespace CloudNimble.DotNetDocs.Tests.Sdk.Tasks
 
                 // Assert
                 result.Should().BeTrue();
-                _task.ResolvedDocumentationReferences.Should().HaveCount(1);
+                _task.ResolvedDocumentationReferences.Should().ContainSingle();
                 _task.ResolvedDocumentationReferences[0].GetMetadata("Name").Should().Be("My Custom Service Name");
                 _buildEngine.LoggedMessages.Where(m => m.Message != null).Should().Contain(m => m.Message!.Contains("Name: My Custom Service Name"));
             }
@@ -850,7 +850,7 @@ namespace CloudNimble.DotNetDocs.Tests.Sdk.Tasks
 
                 // Assert
                 result.Should().BeTrue();
-                _task.ResolvedDocumentationReferences.Should().HaveCount(1);
+                _task.ResolvedDocumentationReferences.Should().ContainSingle();
                 _task.ResolvedDocumentationReferences[0].GetMetadata("Name").Should().BeEmpty();
                 _buildEngine.LoggedMessages.Where(m => m.Message != null).Should().NotContain(m => m.Message!.Contains("Name:"));
             }
@@ -882,7 +882,7 @@ namespace CloudNimble.DotNetDocs.Tests.Sdk.Tasks
 
                 // Assert
                 result.Should().BeTrue();
-                _task.ResolvedDocumentationReferences.Should().HaveCount(1);
+                _task.ResolvedDocumentationReferences.Should().ContainSingle();
                 _task.ResolvedDocumentationReferences[0].GetMetadata("Name").Should().BeEmpty();
             }
             finally

@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CloudNimble.DotNetDocs.Core;
@@ -2636,11 +2635,11 @@ instance.DoWork();
 
             namespaceMode.Should().NotBeNull("NamespaceMode type should exist in the assembly");
 
-            namespaceMode!.SeeAlso = new List<DocReference>
-            {
+            namespaceMode!.SeeAlso =
+            [
                 new DocReference("T:CloudNimble.DotNetDocs.Core.Configuration.NamespaceMode"),
                 new DocReference("T:System.String")
-            };
+            ];
 
             await _transformer.TransformAsync(assembly);
 

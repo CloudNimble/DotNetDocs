@@ -1,0 +1,36 @@
+﻿<Project Sdk="DotNetDocs.Sdk/1.2.0-preview.5">
+
+    <PropertyGroup>
+        <DocumentationType>Mintlify</DocumentationType>
+        <GenerateDocumentation>true</GenerateDocumentation>
+        <NamespaceMode>Folder</NamespaceMode>
+        <ShowDocumentationStats>true</ShowDocumentationStats>
+
+        <ConceptualDocsEnabled>false</ConceptualDocsEnabled>
+        <ShowPlaceholders>false</ShowPlaceholders>
+
+        <MintlifyTemplate>
+            <Name>Collection Test</Name>
+            <Theme>maple</Theme>
+            <Colors>
+                <Primary>#419AC5</Primary>
+                <Light>#419AC5</Light>
+                <Dark>#3CD0E2</Dark>
+            </Colors>
+            <Navigation Mode="Unified" Type="Tabs" Name="Home">
+                <Pages>
+                    <Groups>
+                        <Group Name="Getting Started" Icon="stars">
+                            <Pages>index;quickstart</Pages>
+                        </Group>
+                    </Groups>
+                </Pages>
+            </Navigation>
+        </MintlifyTemplate>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <DocumentationReference Include="..\..\..\src\CloudNimble.DotNetDocs.Docs\CloudNimble.DotNetDocs.Docs.docsproj" DestinationPath="test" IntegrationType="Tabs" Name="Test Collection" />
+    </ItemGroup>
+
+</Project>

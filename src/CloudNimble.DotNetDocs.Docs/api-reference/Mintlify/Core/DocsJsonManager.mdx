@@ -5,8 +5,6 @@ icon: file-brackets-curly
 keywords: ['DocsJsonManager', 'Mintlify.Core.DocsJsonManager', 'Mintlify.Core', 'class', 'System.Object']
 ---
 
-import { DocsBadge } from '/snippets/DocsBadge.jsx';
-
 ## Definition
 
 **Assembly:** Mintlify.Core.dll
@@ -33,7 +31,7 @@ This class provides comprehensive support for loading, validating, and modifying
 
 ## Constructors
 
-### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> .ctor
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor
 
 Initializes a new instance of the [DocsJsonManager](/api-reference/Mintlify/Core/DocsJsonManager) class.
 
@@ -49,7 +47,7 @@ public DocsJsonManager(Mintlify.Core.DocsJsonValidator validator = null)
 |------|------|-------------|
 | `validator` | `Mintlify.Core.DocsJsonValidator?` | The validator to use for validating configurations. If null, a new instance will be created. |
 
-### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> .ctor
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor
 
 Initializes a new instance of the [DocsJsonManager](/api-reference/Mintlify/Core/DocsJsonManager) class with the specified file path.
 
@@ -72,7 +70,7 @@ public DocsJsonManager(string filePath, Mintlify.Core.DocsJsonValidator validato
 |-----------|-------------|
 | `ArgumentException` | Thrown when the file path does not exist or is not a JSON file. |
 
-### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> .ctor <DocsBadge text="Inherited" variant="neutral" />
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor <Badge color="gray">Inherited</Badge>
 
 <Note>Inherited from `object`</Note>
 
@@ -84,7 +82,7 @@ public Object()
 
 ## Properties
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Configuration
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Configuration
 
 Gets the loaded Mintlify documentation configuration.
 
@@ -100,7 +98,7 @@ Type: `Mintlify.Core.Models.DocsJsonConfig?`
 The [DocsJsonConfig](/api-reference/Mintlify/Core/Models/DocsJsonConfig) instance loaded from the file system or string content.
             Returns null if no configuration has been loaded or if loading failed.
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> ConfigurationErrors
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ConfigurationErrors
 
 Gets the collection of configuration loading errors encountered during processing.
 
@@ -116,7 +114,7 @@ Type: `System.Collections.Generic.List<System.CodeDom.Compiler.CompilerError>`
 A collection of [CompilerError](https://learn.microsoft.com/dotnet/api/system.codedom.compiler.compilererror) instances representing validation errors,
             parsing failures, or other issues encountered during configuration loading.
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> FilePath
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> FilePath
 
 Gets the file path of the loaded docs.json configuration file.
 
@@ -132,7 +130,7 @@ Type: `string?`
 The full path to the docs.json file that was loaded. Returns null if the configuration
             was loaded from string content rather than a file.
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> IsLoaded
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> IsLoaded
 
 Gets a value indicating whether the configuration has been successfully loaded.
 
@@ -149,7 +147,7 @@ True if the configuration was loaded without errors; otherwise, false.
 
 ## Methods
 
-### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> AddNavigationItem
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> AddNavigationItem
 
 Adds a navigation item (page or group) to the specified collection, tracking paths appropriately.
 
@@ -171,7 +169,7 @@ public bool AddNavigationItem(System.Collections.Generic.List<object> pages, obj
 Type: `bool`
 True if the item was added; false if it was skipped (duplicate).
 
-### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> AddPage
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> AddPage
 
 Adds a page to the navigation structure if it doesn't already exist.
 
@@ -195,7 +193,7 @@ public bool AddPage(System.Collections.Generic.List<object> pages, string pagePa
 Type: `bool`
 True if the page was added; false if it already existed and duplicates are not allowed.
 
-### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> AddPage
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> AddPage
 
 Adds a page to a hierarchical group path (slash-separated) in the navigation structure.
 
@@ -224,7 +222,7 @@ True if the page was added; false if it already existed and duplicates are not a
 |-----------|-------------|
 | `InvalidOperationException` | Thrown when no configuration is loaded. |
 
-### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> AddPageToGroup
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> AddPageToGroup
 
 Adds a page to a group if it doesn't already exist.
 
@@ -248,7 +246,7 @@ public bool AddPageToGroup(Mintlify.Core.Models.GroupConfig group, string pagePa
 Type: `bool`
 True if the page was added; false if it already existed and duplicates are not allowed.
 
-### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> ApplyDefaults
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ApplyDefaults
 
 Applies default values to missing configuration properties.
 
@@ -271,7 +269,7 @@ public void ApplyDefaults(string name = null, string theme = "mint")
 |-----------|-------------|
 | `InvalidOperationException` | Thrown when no configuration is loaded. |
 
-### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> ApplyUrlPrefix
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ApplyUrlPrefix
 
 Applies a URL prefix to all page references in the navigation structure.
 
@@ -300,7 +298,7 @@ This method recursively traverses the entire navigation structure and prepends t
             specified prefix to all page URLs, href attributes, and root paths. The prefix is
             normalized to ensure proper URL formatting (e.g., trailing slashes are handled).
 
-### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> CreateDefault
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> CreateDefault
 
 Creates a default Mintlify documentation configuration with basic structure.
 
@@ -328,7 +326,7 @@ A new [DocsJsonConfig](/api-reference/Mintlify/Core/Models/DocsJsonConfig) insta
 |-----------|-------------|
 | `ArgumentException` | Thrown when name is null or whitespace. |
 
-### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Equals <DocsBadge text="Inherited" variant="neutral" /> <DocsBadge text="Virtual" variant="warning" />
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Equals <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
 
 <Note>Inherited from `object`</Note>
 
@@ -348,7 +346,7 @@ public virtual bool Equals(object obj)
 
 Type: `bool`
 
-### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Equals <DocsBadge text="Inherited" variant="neutral" />
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Equals <Badge color="gray">Inherited</Badge>
 
 <Note>Inherited from `object`</Note>
 
@@ -369,7 +367,7 @@ public static bool Equals(object objA, object objB)
 
 Type: `bool`
 
-### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> FindOrCreateGroup
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> FindOrCreateGroup
 
 Finds or creates a group with the specified name in the pages collection.
 
@@ -391,7 +389,7 @@ public Mintlify.Core.Models.GroupConfig FindOrCreateGroup(System.Collections.Gen
 Type: `Mintlify.Core.Models.GroupConfig`
 The existing or newly created group.
 
-### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> GetHashCode <DocsBadge text="Inherited" variant="neutral" /> <DocsBadge text="Virtual" variant="warning" />
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetHashCode <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
 
 <Note>Inherited from `object`</Note>
 
@@ -405,7 +403,7 @@ public virtual int GetHashCode()
 
 Type: `int`
 
-### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> GetType <DocsBadge text="Inherited" variant="neutral" />
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetType <Badge color="gray">Inherited</Badge>
 
 <Note>Inherited from `object`</Note>
 
@@ -419,7 +417,7 @@ public System.Type GetType()
 
 Type: `System.Type`
 
-### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> IsPathKnown
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> IsPathKnown
 
 Checks if a page path is already known (tracked for duplicate prevention).
 
@@ -440,7 +438,7 @@ public bool IsPathKnown(string pagePath)
 Type: `bool`
 True if the path is already known; otherwise, false.
 
-### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Load
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Load
 
 Loads and parses the docs.json file from the file path specified in the constructor.
 
@@ -456,7 +454,7 @@ public void Load()
 |-----------|-------------|
 | `InvalidOperationException` | Thrown when no file path has been specified. |
 
-### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Load
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Load
 
 Loads and parses the docs.json configuration from the specified string content.
 
@@ -478,7 +476,7 @@ public void Load(string content)
 |-----------|-------------|
 | `ArgumentException` | Thrown when content is null or whitespace. |
 
-### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Load
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Load
 
 Loads the specified configuration and applies validation and cleaning steps.
 
@@ -500,7 +498,7 @@ This method replaces any existing configuration and clears previous configuratio
             errors. After loading, the configuration is validated and navigation groups are cleaned to ensure
             consistency.
 
-### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> MemberwiseClone <DocsBadge text="Inherited" variant="neutral" />
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> MemberwiseClone <Badge color="gray">Inherited</Badge>
 
 <Note>Inherited from `object`</Note>
 
@@ -514,7 +512,7 @@ protected internal object MemberwiseClone()
 
 Type: `object`
 
-### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Merge
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Merge
 
 Merges another docs.json configuration into the current configuration.
 
@@ -544,7 +542,7 @@ public void Merge(Mintlify.Core.Models.DocsJsonConfig other, bool combineBasePro
 This method performs a shallow merge, with the other configuration taking precedence
             for non-null values. Navigation structures are combined intelligently.
 
-### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> MergeNavigation
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> MergeNavigation
 
 Merges navigation from another NavigationConfig into the current configuration's navigation.
 
@@ -574,7 +572,7 @@ This method intelligently merges navigation structures, combining groups with th
             and deduplicating page references. Use the MergeOptions parameter to control specific
             behaviors like how empty groups are handled.
 
-### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> MergeNavigation
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> MergeNavigation
 
 Merges navigation from an existing docs.json file into the current configuration.
 
@@ -605,7 +603,7 @@ This method loads navigation from an external docs.json file and merges it into 
             current configuration. Only the navigation structure is merged; other configuration
             properties are not affected.
 
-### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> PopulateNavigationFromPath
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> PopulateNavigationFromPath
 
 Populates the navigation structure from a directory path by scanning for MDX files.
 
@@ -649,7 +647,7 @@ The method preserves the directory structure in the navigation while applying th
 
 
 
-### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> ReferenceEquals <DocsBadge text="Inherited" variant="neutral" />
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ReferenceEquals <Badge color="gray">Inherited</Badge>
 
 <Note>Inherited from `object`</Note>
 
@@ -670,7 +668,7 @@ public static bool ReferenceEquals(object objA, object objB)
 
 Type: `bool`
 
-### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Save
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Save
 
 Saves the current configuration to the file system using the original file path.
 
@@ -686,7 +684,7 @@ public void Save()
 |-----------|-------------|
 | `InvalidOperationException` | Thrown when no configuration is loaded or no file path is specified. |
 
-### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> Save
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Save
 
 Saves the current configuration to the specified file path.
 
@@ -709,7 +707,7 @@ public void Save(string filePath)
 | `ArgumentException` | Thrown when filePath is null or whitespace. |
 | `InvalidOperationException` | Thrown when no configuration is loaded. |
 
-### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} /> ToString <DocsBadge text="Inherited" variant="neutral" /> <DocsBadge text="Virtual" variant="warning" />
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ToString <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
 
 <Note>Inherited from `object`</Note>
 

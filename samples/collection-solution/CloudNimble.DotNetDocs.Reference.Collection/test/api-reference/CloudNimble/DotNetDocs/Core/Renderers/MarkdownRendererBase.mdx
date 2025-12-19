@@ -1,0 +1,613 @@
+---
+title: MarkdownRendererBase
+description: "Base class for Markdown-based renderers providing common formatting utilities."
+icon: shapes
+tag: "ABSTRACT"
+keywords: ['MarkdownRendererBase', 'CloudNimble.DotNetDocs.Core.Renderers.MarkdownRendererBase', 'CloudNimble.DotNetDocs.Core.Renderers', 'class', 'CloudNimble.DotNetDocs.Core.Renderers.RendererBase']
+---
+
+## Definition
+
+**Assembly:** CloudNimble.DotNetDocs.Core.dll
+
+**Namespace:** CloudNimble.DotNetDocs.Core.Renderers
+
+**Inheritance:** CloudNimble.DotNetDocs.Core.Renderers.RendererBase
+
+## Syntax
+
+```csharp
+CloudNimble.DotNetDocs.Core.Renderers.MarkdownRendererBase
+```
+
+## Summary
+
+Base class for Markdown-based renderers providing common formatting utilities.
+
+## Constructors
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor
+
+Initializes a new instance of the [MarkdownRendererBase](/test/api-reference/CloudNimble/DotNetDocs/Core/Renderers/MarkdownRendererBase) class.
+
+#### Syntax
+
+```csharp
+public MarkdownRendererBase(CloudNimble.DotNetDocs.Core.ProjectContext context = null)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `context` | `CloudNimble.DotNetDocs.Core.ProjectContext?` | The project context. If null, a default context is created. |
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Core.Renderers.RendererBase`</Note>
+
+Initializes a new instance of the [RendererBase](/test/api-reference/CloudNimble/DotNetDocs/Core/Renderers/RendererBase) class.
+
+#### Syntax
+
+```csharp
+protected RendererBase(CloudNimble.DotNetDocs.Core.ProjectContext context = null, bool enabled = true)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `context` | `CloudNimble.DotNetDocs.Core.ProjectContext?` | The project context. If null, a default context is created. |
+| `enabled` | `bool` | - |
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public Object()
+```
+
+## Properties
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Context <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Core.Renderers.RendererBase`</Note>
+
+Gets the project context for this renderer.
+
+#### Syntax
+
+```csharp
+protected CloudNimble.DotNetDocs.Core.ProjectContext Context { get; }
+```
+
+#### Property Value
+
+Type: `CloudNimble.DotNetDocs.Core.ProjectContext`
+The project context containing configuration and settings.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Enabled <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Core.Renderers.RendererBase`</Note>
+
+When more than one Renderer is registered, allows a renderer to be turned off.
+
+#### Syntax
+
+```csharp
+public bool Enabled { get; set; }
+```
+
+#### Property Value
+
+Type: `bool`
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> FileNamingOptions <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Core.Renderers.RendererBase`</Note>
+
+Gets the file naming options for this renderer.
+
+#### Syntax
+
+```csharp
+protected CloudNimble.DotNetDocs.Core.Configuration.FileNamingOptions FileNamingOptions { get; }
+```
+
+#### Property Value
+
+Type: `CloudNimble.DotNetDocs.Core.Configuration.FileNamingOptions`
+The file naming configuration.
+
+## Methods
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Equals <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual bool Equals(object obj)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `obj` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Equals <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public static bool Equals(object objA, object objB)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `objA` | `object?` | - |
+| `objB` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> EscapeXmlTagsInString <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Core.Renderers.RendererBase`</Note>
+
+Escapes XML/HTML tag syntax for safe rendering in Markdown/MDX.
+
+#### Syntax
+
+```csharp
+protected static string EscapeXmlTagsInString(string stringToEscape)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `stringToEscape` | `string?` | The string potentially containing XML/HTML tag syntax or generic type brackets. |
+
+#### Returns
+
+Type: `string`
+The escaped string safe for MDX rendering.
+
+#### Remarks
+
+Converts angle brackets to HTML entities to prevent MDX parser interpretation as JSX/HTML tags.
+            This handles both generic type syntax (e.g., JsonConverter&lt;object&gt;) and XML documentation tags
+            (e.g., &lt;see cref="..."&gt;) by converting them to JsonConverter&amp;lt;object&amp;gt; and
+            &amp;lt;see cref="..."&amp;gt; respectively.
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetAccessModifier <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Core.Renderers.RendererBase`</Note>
+
+Gets the access modifier string for the given accessibility.
+
+#### Syntax
+
+```csharp
+protected string GetAccessModifier(Microsoft.CodeAnalysis.Accessibility accessibility)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `accessibility` | `Microsoft.CodeAnalysis.Accessibility` | The accessibility to convert. |
+
+#### Returns
+
+Type: `string`
+The access modifier string.
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetEventSignature <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Core.Renderers.RendererBase`</Note>
+
+Gets the event signature string.
+
+#### Syntax
+
+```csharp
+protected string GetEventSignature(Microsoft.CodeAnalysis.IEventSymbol evt)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `evt` | `Microsoft.CodeAnalysis.IEventSymbol` | The event symbol. |
+
+#### Returns
+
+Type: `string`
+The event signature.
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetFieldSignature <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Core.Renderers.RendererBase`</Note>
+
+Gets the field signature string.
+
+#### Syntax
+
+```csharp
+protected string GetFieldSignature(Microsoft.CodeAnalysis.IFieldSymbol field)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `field` | `Microsoft.CodeAnalysis.IFieldSymbol` | The field symbol. |
+
+#### Returns
+
+Type: `string`
+The field signature.
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetHashCode <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual int GetHashCode()
+```
+
+#### Returns
+
+Type: `int`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetMemberSignature <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Core.Renderers.RendererBase`</Note>
+
+Gets the member signature for a member symbol.
+
+#### Syntax
+
+```csharp
+protected string GetMemberSignature(CloudNimble.DotNetDocs.Core.DocMember member)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `member` | `CloudNimble.DotNetDocs.Core.DocMember` | The member to get the signature for. |
+
+#### Returns
+
+Type: `string`
+The member signature string.
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetMethodSignature <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Core.Renderers.RendererBase`</Note>
+
+Gets the method signature string.
+
+#### Syntax
+
+```csharp
+protected string GetMethodSignature(Microsoft.CodeAnalysis.IMethodSymbol method)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `method` | `Microsoft.CodeAnalysis.IMethodSymbol` | The method symbol. |
+
+#### Returns
+
+Type: `string`
+The method signature.
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetNamespaceFileName <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Core.Renderers.RendererBase`</Note>
+
+Gets a safe file name for a namespace, suitable for use in file systems.
+
+#### Syntax
+
+```csharp
+public string GetNamespaceFileName(CloudNimble.DotNetDocs.Core.DocNamespace ns, string extension)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `ns` | `CloudNimble.DotNetDocs.Core.DocNamespace` | The namespace to get the file name for. |
+| `extension` | `string` | The file extension (without the dot). |
+
+#### Returns
+
+Type: `string`
+A safe file name for the namespace.
+
+#### Remarks
+
+This method is deprecated. Use GetNamespaceFilePath instead.
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetNamespaceFilePath <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Core.Renderers.RendererBase`</Note>
+
+Gets the file path for a namespace documentation file.
+
+#### Syntax
+
+```csharp
+protected string GetNamespaceFilePath(CloudNimble.DotNetDocs.Core.DocNamespace ns, string outputPath, string extension)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `ns` | `CloudNimble.DotNetDocs.Core.DocNamespace` | The namespace to get the file path for. |
+| `outputPath` | `string` | The base output path. |
+| `extension` | `string` | The file extension (without the dot). |
+
+#### Returns
+
+Type: `string`
+The full file path for the namespace documentation.
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetPropertySignature <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Core.Renderers.RendererBase`</Note>
+
+Gets the property signature string.
+
+#### Syntax
+
+```csharp
+protected string GetPropertySignature(Microsoft.CodeAnalysis.IPropertySymbol property)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `property` | `Microsoft.CodeAnalysis.IPropertySymbol` | The property symbol. |
+
+#### Returns
+
+Type: `string`
+The property signature.
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetSafeNamespaceName <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Core.Renderers.RendererBase`</Note>
+
+Gets a safe namespace name for use in file names and display.
+
+#### Syntax
+
+```csharp
+public string GetSafeNamespaceName(CloudNimble.DotNetDocs.Core.DocNamespace ns)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `ns` | `CloudNimble.DotNetDocs.Core.DocNamespace` | The namespace to get the name for. |
+
+#### Returns
+
+Type: `string`
+A safe namespace name, using "global" for the global namespace.
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetSafeTypeName <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Core.Renderers.RendererBase`</Note>
+
+Gets a safe type name for use in file names, removing invalid characters.
+
+#### Syntax
+
+```csharp
+protected string GetSafeTypeName(CloudNimble.DotNetDocs.Core.DocType type)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `type` | `CloudNimble.DotNetDocs.Core.DocType` | The type to get the name for. |
+
+#### Returns
+
+Type: `string`
+A safe type name with invalid characters replaced.
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetType <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public System.Type GetType()
+```
+
+#### Returns
+
+Type: `System.Type`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetTypeFileName <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Core.Renderers.RendererBase`</Note>
+
+Gets a safe file name for a type, suitable for use in file systems.
+
+#### Syntax
+
+```csharp
+public string GetTypeFileName(CloudNimble.DotNetDocs.Core.DocType type, CloudNimble.DotNetDocs.Core.DocNamespace ns, string extension)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `type` | `CloudNimble.DotNetDocs.Core.DocType` | The type to get the file name for. |
+| `ns` | `CloudNimble.DotNetDocs.Core.DocNamespace` | The namespace containing the type. |
+| `extension` | `string` | The file extension (without the dot). |
+
+#### Returns
+
+Type: `string`
+A safe file name for the type.
+
+#### Remarks
+
+This method is deprecated. Use GetTypeFilePath instead.
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetTypeFilePath <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Core.Renderers.RendererBase`</Note>
+
+Gets the file path for a type documentation file.
+
+#### Syntax
+
+```csharp
+protected string GetTypeFilePath(CloudNimble.DotNetDocs.Core.DocType type, CloudNimble.DotNetDocs.Core.DocNamespace ns, string outputPath, string extension)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `type` | `CloudNimble.DotNetDocs.Core.DocType` | The type to get the file path for. |
+| `ns` | `CloudNimble.DotNetDocs.Core.DocNamespace` | The namespace containing the type. |
+| `outputPath` | `string` | The base output path. |
+| `extension` | `string` | The file extension (without the dot). |
+
+#### Returns
+
+Type: `string`
+The full file path for the type documentation.
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetTypeSignature <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Core.Renderers.RendererBase`</Note>
+
+Gets the type signature string.
+
+#### Syntax
+
+```csharp
+protected string GetTypeSignature(CloudNimble.DotNetDocs.Core.DocType type)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `type` | `CloudNimble.DotNetDocs.Core.DocType` | The type to get the signature for. |
+
+#### Returns
+
+Type: `string`
+The type signature.
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> MemberwiseClone <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+protected internal object MemberwiseClone()
+```
+
+#### Returns
+
+Type: `object`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ReferenceEquals <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public static bool ReferenceEquals(object objA, object objB)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `objA` | `object?` | - |
+| `objB` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> RemoveIndentation <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Core.Renderers.RendererBase`</Note>
+
+Removes common leading indentation from multi-line text content.
+
+#### Syntax
+
+```csharp
+internal static string RemoveIndentation(string text)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `text` | `string` | The text to remove indentation from. |
+
+#### Returns
+
+Type: `string`
+The text with common indentation removed.
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ToString <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual string ToString()
+```
+
+#### Returns
+
+Type: `string?`
+

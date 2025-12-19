@@ -52,14 +52,14 @@ import { ValueProposition } from '/snippets/ValueProposition.jsx';
     - creates a new `{SolutionName}.Docs\{SolutionName}.Docs.docsproj` file that centralizes your documentation
     - adds the new project to your solution
 
-    The new project is pre-configured with sensible defaults. For Mintlify projects, it looks like this:
-
-    <CodeGroup>
+    The new project is pre-configured with sensible defaults:
 
     <Tabs>
-      <Tab title="Current (1.1.0)">
-        ```xml
-        <Project Sdk="DotNetDocs.Sdk/1.1.0">
+      <Tab title="Mintlify">
+        <CodeGroup>
+
+        ```xml Current (1.2.0)
+        <Project Sdk="DotNetDocs.Sdk/1.2.0">
 
 	        <PropertyGroup>
 		        <DocumentationType>Mintlify</DocumentationType>
@@ -85,43 +85,15 @@ import { ValueProposition } from '/snippets/ValueProposition.jsx';
 
         </Project>
         ```
+
+        </CodeGroup>
       </Tab>
 
-      <Tab title="Preview (1.2.0-preview.1)">
-        ```xml
-        <Project Sdk="DotNetDocs.Sdk/1.2.0-preview.1">
+      <Tab title="DocFX">
+        <CodeGroup>
 
-	        <PropertyGroup>
-		        <DocumentationType>Mintlify</DocumentationType>
-		        <GenerateDocumentation>true</GenerateDocumentation>
-		        <NamespaceMode>Folder</NamespaceMode>
-		        <ShowDocumentationStats>true</ShowDocumentationStats>
-
-		        <ConceptualDocsEnabled>false</ConceptualDocsEnabled>
-		        <ShowPlaceholders>false</ShowPlaceholders>
-
-		        <MintlifyTemplate>
-			        <Name>{solutionName}</Name>
-			        <Theme>maple</Theme>
-			        <Colors>
-				        <Primary>#419AC5</Primary>
-				        <Light>#419AC5</Light>
-				        <Dark>#3CD0E2</Dark>
-			        </Colors>
-                    <Navigation Mode="Unified">
-                    </Navigation>
-		        </MintlifyTemplate>
-	        </PropertyGroup>
-
-        </Project>
-        ```
-      </Tab>
-    </Tabs>
-
-    <Tabs>
-      <Tab title="Current (1.1.0)">
-        ```xml
-        <Project Sdk="DotNetDocs.Sdk/1.1.0">
+        ```xml Current (1.2.0)
+        <Project Sdk="DotNetDocs.Sdk/1.2.0">
 
 	        <PropertyGroup>
 		        <DocumentationType>DocFX</DocumentationType>
@@ -135,31 +107,15 @@ import { ValueProposition } from '/snippets/ValueProposition.jsx';
 
         </Project>
         ```
+
+        </CodeGroup>
       </Tab>
 
-      <Tab title="Preview (1.2.0-preview.1)">
-        ```xml
-        <Project Sdk="DotNetDocs.Sdk/1.2.0-preview.1">
+      <Tab title="MkDocs">
+        <CodeGroup>
 
-	        <PropertyGroup>
-		        <DocumentationType>DocFX</DocumentationType>
-		        <GenerateDocumentation>true</GenerateDocumentation>
-		        <NamespaceMode>Folder</NamespaceMode>
-		        <ShowDocumentationStats>true</ShowDocumentationStats>
-
-		        <ConceptualDocsEnabled>false</ConceptualDocsEnabled>
-		        <ShowPlaceholders>false</ShowPlaceholders>
-	        </PropertyGroup>
-
-        </Project>
-        ```
-      </Tab>
-    </Tabs>
-
-    <Tabs>
-      <Tab title="Current (1.1.0)">
-        ```xml
-        <Project Sdk="DotNetDocs.Sdk/1.1.0">
+        ```xml Current (1.2.0)
+        <Project Sdk="DotNetDocs.Sdk/1.2.0">
 
 	        <PropertyGroup>
 		        <DocumentationType>MkDocs</DocumentationType>
@@ -173,31 +129,15 @@ import { ValueProposition } from '/snippets/ValueProposition.jsx';
 
         </Project>
         ```
+
+        </CodeGroup>
       </Tab>
 
-      <Tab title="Preview (1.2.0-preview.1)">
-        ```xml
-        <Project Sdk="DotNetDocs.Sdk/1.2.0-preview.1">
+      <Tab title="Jekyll">
+        <CodeGroup>
 
-	        <PropertyGroup>
-		        <DocumentationType>MkDocs</DocumentationType>
-		        <GenerateDocumentation>true</GenerateDocumentation>
-		        <NamespaceMode>Folder</NamespaceMode>
-		        <ShowDocumentationStats>true</ShowDocumentationStats>
-
-		        <ConceptualDocsEnabled>false</ConceptualDocsEnabled>
-		        <ShowPlaceholders>false</ShowPlaceholders>
-	        </PropertyGroup>
-
-        </Project>
-        ```
-      </Tab>
-    </Tabs>
-
-    <Tabs>
-      <Tab title="Current (1.1.0)">
-        ```xml
-        <Project Sdk="DotNetDocs.Sdk/1.1.0">
+        ```xml Current (1.2.0)
+        <Project Sdk="DotNetDocs.Sdk/1.2.0">
 
 	        <PropertyGroup>
 		        <DocumentationType>Jekyll</DocumentationType>
@@ -211,31 +151,15 @@ import { ValueProposition } from '/snippets/ValueProposition.jsx';
 
         </Project>
         ```
+
+        </CodeGroup>
       </Tab>
 
-      <Tab title="Preview (1.2.0-preview.1)">
-        ```xml
-        <Project Sdk="DotNetDocs.Sdk/1.2.0-preview.1">
+      <Tab title="Hugo">
+        <CodeGroup>
 
-	        <PropertyGroup>
-		        <DocumentationType>Jekyll</DocumentationType>
-		        <GenerateDocumentation>true</GenerateDocumentation>
-		        <NamespaceMode>Folder</NamespaceMode>
-		        <ShowDocumentationStats>true</ShowDocumentationStats>
-
-		        <ConceptualDocsEnabled>false</ConceptualDocsEnabled>
-		        <ShowPlaceholders>false</ShowPlaceholders>
-	        </PropertyGroup>
-
-        </Project>
-        ```
-      </Tab>
-    </Tabs>
-
-    <Tabs>
-      <Tab title="Current (1.1.0)">
-        ```xml
-        <Project Sdk="DotNetDocs.Sdk/1.1.0">
+        ```xml Current (1.2.0)
+        <Project Sdk="DotNetDocs.Sdk/1.2.0">
 
 	        <PropertyGroup>
 		        <DocumentationType>Hugo</DocumentationType>
@@ -249,31 +173,15 @@ import { ValueProposition } from '/snippets/ValueProposition.jsx';
 
         </Project>
         ```
+
+        </CodeGroup>
       </Tab>
 
-      <Tab title="Preview (1.2.0-preview.1)">
-        ```xml
-        <Project Sdk="DotNetDocs.Sdk/1.2.0-preview.1">
+      <Tab title="Generic">
+        <CodeGroup>
 
-	        <PropertyGroup>
-		        <DocumentationType>Hugo</DocumentationType>
-		        <GenerateDocumentation>true</GenerateDocumentation>
-		        <NamespaceMode>Folder</NamespaceMode>
-		        <ShowDocumentationStats>true</ShowDocumentationStats>
-
-		        <ConceptualDocsEnabled>false</ConceptualDocsEnabled>
-		        <ShowPlaceholders>false</ShowPlaceholders>
-	        </PropertyGroup>
-
-        </Project>
-        ```
-      </Tab>
-    </Tabs>
-
-    <Tabs>
-      <Tab title="Current (1.1.0)">
-        ```xml
-        <Project Sdk="DotNetDocs.Sdk/1.1.0">
+        ```xml Current (1.2.0)
+        <Project Sdk="DotNetDocs.Sdk/1.2.0">
 
 	        <PropertyGroup>
 		        <DocumentationType>Generic</DocumentationType>
@@ -287,28 +195,10 @@ import { ValueProposition } from '/snippets/ValueProposition.jsx';
 
         </Project>
         ```
-      </Tab>
 
-      <Tab title="Preview (1.2.0-preview.1)">
-        ```xml
-        <Project Sdk="DotNetDocs.Sdk/1.2.0-preview.1">
-
-	        <PropertyGroup>
-		        <DocumentationType>Generic</DocumentationType>
-		        <GenerateDocumentation>true</GenerateDocumentation>
-		        <NamespaceMode>Folder</NamespaceMode>
-		        <ShowDocumentationStats>true</ShowDocumentationStats>
-
-		        <ConceptualDocsEnabled>false</ConceptualDocsEnabled>
-		        <ShowPlaceholders>false</ShowPlaceholders>
-	        </PropertyGroup>
-
-        </Project>
-        ```
+        </CodeGroup>
       </Tab>
     </Tabs>
-
-    </CodeGroup>
 
     <Note>You can see more of how to configure your .docsproj file in the [.docsproj Reference](/guides/docsproj) docs.</Note>
 

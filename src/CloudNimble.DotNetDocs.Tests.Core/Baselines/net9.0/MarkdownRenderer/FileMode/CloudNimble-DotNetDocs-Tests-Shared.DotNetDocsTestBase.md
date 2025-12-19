@@ -24,6 +24,20 @@ CloudNimble.DotNetDocs.Tests.Shared.DotNetDocsTestBase
 public DotNetDocsTestBase()
 ```
 
+## Properties
+
+### TestContext
+
+#### Syntax
+
+```csharp
+public required Microsoft.VisualStudio.TestTools.UnitTesting.TestContext TestContext { get; set; }
+```
+
+#### Property Value
+
+Type: `Microsoft.VisualStudio.TestTools.UnitTesting.TestContext`
+
 ## Methods
 
 ### GetTestsDotSharedAssembly

@@ -56,11 +56,15 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
         /// <summary>
         /// Renders the documentation assembly to YAML files.
         /// </summary>
-        /// <param name="model">The documentation assembly to render.</param>
+        /// <param name="model">The documentation assembly to render, or null for documentation-only mode.</param>
         /// <returns>A task representing the asynchronous rendering operation.</returns>
-        public async Task RenderAsync(DocAssembly model)
+        public async Task RenderAsync(DocAssembly? model)
         {
-            ArgumentNullException.ThrowIfNull(model);
+            // Nothing to render without a model - just return
+            if (model is null)
+            {
+                return;
+            }
 
             var outputPath = Path.Combine(Context.DocumentationRootPath, Context.ApiReferencePath);
 

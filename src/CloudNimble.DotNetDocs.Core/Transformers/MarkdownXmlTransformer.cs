@@ -228,41 +228,17 @@ namespace CloudNimble.DotNetDocs.Core.Transformers
                 }
             }
 
-            // Handle specific entity types
-            if (entity is DocAssembly assembly)
-            {
-                foreach (var ns in assembly.Namespaces)
-                {
-                    await TransformEntityRecursive(ns, references);
-                }
-            }
-            else if (entity is DocNamespace ns)
-            {
-                foreach (var type in ns.Types)
-                {
-                    await TransformEntityRecursive(type, references);
-                }
-            }
-            else if (entity is DocType type)
-            {
-                foreach (var member in type.Members)
-                {
-                    await TransformEntityRecursive(member, references);
-                }
-            }
-            else if (entity is DocMember member)
-            {
-                foreach (var parameter in member.Parameters)
-                {
-                    await TransformEntityRecursive(parameter, references);
-                }
-            }
-            else if (entity is DocParameter parameter)
+            // Handle DocParameter special case (no children, but has Usage to transform)
+            if (entity is DocParameter parameter)
             {
                 parameter.Usage = ConvertXmlToMarkdown(parameter.Usage, references);
             }
 
-            await Task.CompletedTask;
+            // Recursively transform child entities
+            foreach (var child in GetChildren(entity))
+            {
+                await TransformEntityRecursive(child, references);
+            }
         }
 
         /// <summary>
@@ -691,21 +667,34 @@ namespace CloudNimble.DotNetDocs.Core.Transformers
         /// </summary>
         protected virtual string GetSimpleTypeName(string typeRef)
         {
-            // Remove type prefix if present
-            if (typeRef.Contains(':'))
-            {
-                typeRef = typeRef.Substring(typeRef.IndexOf(':') + 1);
-            }
+            var colonIndex = typeRef.IndexOf(':');
+            var workingRef = colonIndex >= 0 ? typeRef[(colonIndex + 1)..] : typeRef;
+            var lastDot = workingRef.LastIndexOf('.');
 
-            // Get last part of qualified name
-            var lastDot = typeRef.LastIndexOf('.');
-            if (lastDot >= 0)
-            {
-                return typeRef.Substring(lastDot + 1);
-            }
-
-            return typeRef;
+            return lastDot >= 0 ? workingRef[(lastDot + 1)..] : workingRef;
         }
+
+        /// <summary>
+        /// Gets the child entities for recursive transformation.
+        /// </summary>
+        /// <param name="entity">The parent entity.</param>
+        /// <returns>An enumerable of child entities to process.</returns>
+        private static IEnumerable<DocEntity> GetChildren(DocEntity entity) => entity switch
+        {
+            DocAssembly assembly => assembly.Namespaces,
+            DocNamespace ns => ns.Types,
+            DocType type => type.Members,
+            DocMember member => member.Parameters,
+            _ => []
+        };
+
+        /// <summary>
+        /// Escapes XML special characters for display outside of code blocks.
+        /// </summary>
+        /// <param name="text">The text to escape.</param>
+        /// <returns>The text with &lt; and &gt; escaped as HTML entities.</returns>
+        private static string EscapeXmlTags(string text)
+            => text.Replace("<", "&lt;").Replace(">", "&gt;");
 
         /// <summary>
         /// Escapes any remaining XML tags that weren't processed.
@@ -728,15 +717,14 @@ namespace CloudNimble.DotNetDocs.Core.Transformers
                 if (nextBacktick == -1)
                 {
                     // No more backticks, escape remaining text
-                    result.Append(text.Substring(position).Replace("<", "&lt;").Replace(">", "&gt;"));
+                    result.Append(EscapeXmlTags(text[position..]));
                     break;
                 }
 
                 // Escape content before backtick
                 if (nextBacktick > position)
                 {
-                    var beforeBacktick = text.Substring(position, nextBacktick - position);
-                    result.Append(beforeBacktick.Replace("<", "&lt;").Replace(">", "&gt;"));
+                    result.Append(EscapeXmlTags(text[position..nextBacktick]));
                 }
 
                 // Check if it's a triple backtick
@@ -756,7 +744,7 @@ namespace CloudNimble.DotNetDocs.Core.Transformers
                     if (closingPos == -1)
                     {
                         // No closing fence, escape the rest
-                        result.Append(text.Substring(nextBacktick).Replace("<", "&lt;").Replace(">", "&gt;"));
+                        result.Append(EscapeXmlTags(text[nextBacktick..]));
                         break;
                     }
 
@@ -768,13 +756,12 @@ namespace CloudNimble.DotNetDocs.Core.Transformers
                         if (contentStart < text.Length && text[contentStart] == '\r') contentStart++;
                         if (contentStart < text.Length && text[contentStart] == '\n') contentStart++;
 
-                        var content = text.Substring(contentStart, closingPos - contentStart);
-                        result.Append(content);
+                        result.Append(text[contentStart..closingPos]);
                     }
                     else
                     {
                         // Preserve entire code fence including delimiters
-                        result.Append(text.Substring(nextBacktick, closingPos + 3 - nextBacktick));
+                        result.Append(text[nextBacktick..(closingPos + 3)]);
                     }
 
                     position = closingPos + 3;
@@ -787,12 +774,12 @@ namespace CloudNimble.DotNetDocs.Core.Transformers
                     if (closingPos == -1)
                     {
                         // No closing backtick, escape the rest
-                        result.Append(text.Substring(nextBacktick).Replace("<", "&lt;").Replace(">", "&gt;"));
+                        result.Append(EscapeXmlTags(text[nextBacktick..]));
                         break;
                     }
 
                     // Preserve inline code with backticks
-                    result.Append(text.Substring(nextBacktick, closingPos + 1 - nextBacktick));
+                    result.Append(text[nextBacktick..(closingPos + 1)]);
                     position = closingPos + 1;
                 }
             }

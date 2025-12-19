@@ -32,4 +32,5 @@ namespace CloudNimble.DotNetDocs.Tools
                 .RunCommandLineApplicationAsync<DocsRootCommand>(args);
 
     }
+
 }

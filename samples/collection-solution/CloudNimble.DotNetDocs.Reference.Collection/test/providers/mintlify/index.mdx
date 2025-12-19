@@ -1,0 +1,558 @@
+---
+title: Mintlify-Enhanced Docs
+sidebarTitle: Overview
+description: Transform your .NET XML documentation into beautiful, AI-ready Mintlify documentation sites with smart navigation, context-aware icons, and rich MDX features
+icon: sparkles
+---
+
+<CardGroup cols={4}>
+  <Card title="MDX with Frontmatter" icon="file-code" href="#mdx-generation">
+    Auto-generated frontmatter with icons, tags, SEO metadata, and keywords for every API page
+  </Card>
+  <Card title="Smart Navigation" icon="sitemap" href="#navigation-generation">
+    Automatic docs.json generation with hierarchical namespace organization and flexible navigation modes
+  </Card>
+  <Card title="Context-Aware Icons" icon="icons" href="#icon-system">
+    50+ FontAwesome icons automatically assigned based on type characteristics and naming patterns
+  </Card>
+  <Card title="React Components" icon="react" href="#react-components">
+    Embed custom React components directly in your MDX files for interactive documentation
+  </Card>
+</CardGroup>
+
+## Overview
+
+The DotNetDocs Mintlify provider transforms your .NET XML documentation comments into production-ready Mintlify documentation sites. Built specifically for .NET developers, it generates MDX files with comprehensive frontmatter, organizes your API into intuitive navigation structures, and applies context-aware icons to make your documentation visually scannable.
+
+<Tip>
+The Mintlify provider is the most feature-rich renderer in DotNetDocs, with built-in support for AI discoverability, SEO optimization, and rich interactive components.
+</Tip>
+
+## Key Features
+
+### MDX Generation with Rich Frontmatter
+
+Every generated MDX file includes comprehensive frontmatter:
+
+- **Title & Description**: SEO-optimized 160-character descriptions for every API member
+- **Icons**: Context-aware FontAwesome icons based on type characteristics
+- **Tags**: Automatic categorization (class, interface, method, property, etc.)
+- **Keywords**: Extracted from XML documentation for enhanced searchability
+- **Mode**: Wide layout for types, standard for members
+- **OpenGraph Metadata**: Ready for social media sharing
+
+<CodeGroup>
+```mdx Example Class Frontmatter
+---
+title: PaymentProcessor
+description: Processes payment transactions with support for multiple payment gateways, automatic retry logic, and comprehensive audit logging
+icon: credit-card
+tags: [class, public]
+mode: wide
+keywords: payment, transaction, gateway, processing
+---
+```
+
+```mdx Example Method Frontmatter
+---
+title: ProcessPaymentAsync
+description: Asynchronously processes a payment transaction through the configured gateway with automatic retry on transient failures
+icon: bolt
+tags: [method, public, async]
+keywords: payment, async, transaction, process
+---
+```
+</CodeGroup>
+
+### Hierarchical Navigation Generation
+
+The Mintlify provider generates `docs.json` navigation files that organize your API documentation into logical hierarchies. Choose between two navigation modes:
+
+<Tabs>
+  <Tab title="Unified Mode (Default)">
+    Creates a single navigation tree with all namespaces organized hierarchically under one group.
+
+    ```json
+    {
+      "group": "API Reference",
+      "pages": [
+        {
+          "group": "CloudNimble.DotNetDocs",
+          "pages": [
+            {
+              "group": "Core",
+              "pages": ["api-reference/CloudNimble/DotNetDocs/Core/DocumentationManager"]
+            }
+          ]
+        }
+      ]
+    }
+    ```
+  </Tab>
+
+  <Tab title="ByAssembly Mode">
+    Creates separate navigation groups for each assembly, ideal for multi-project solutions.
+
+    ```json
+    [
+      {
+        "group": "MyProject.Core",
+        "pages": ["api-reference/MyProject/Core/..."]
+      },
+      {
+        "group": "MyProject.Extensions",
+        "pages": ["api-reference/MyProject/Extensions/..."]
+      }
+    ]
+    ```
+  </Tab>
+</Tabs>
+
+### 50+ Context-Aware Icons
+
+Icons are automatically assigned based on type characteristics, member types, and naming patterns:
+
+- **Type-based**: Classes get `cube`, interfaces get `layer-group`, enums get `list-ol`
+- **Pattern-based**: Managers get `gears`, services get `server`, repositories get `database`
+- **Member-based**: Methods get `function`, properties get `sliders`, events get `bolt`
+- **Modifier-based**: Static members get `s`, abstract types get `shapes`
+
+See the [complete icon reference](#icon-reference) below for all available icons.
+
+### Flexible Output Modes
+
+Control how namespaces are organized in the file system:
+
+- **File Mode (Default)**: Each namespace gets a single MDX file with all members
+- **Folder Mode**: Each namespace becomes a folder with separate files per type
+
+<CodeGroup>
+```plaintext File Mode Structure
+api-reference/
+  MyNamespace.mdx
+  MyNamespace.SubNamespace.mdx
+```
+
+```plaintext Folder Mode Structure
+api-reference/
+  MyNamespace/
+    index.mdx
+    MyClass.mdx
+    MyInterface.mdx
+    SubNamespace/
+      index.mdx
+      AnotherClass.mdx
+```
+</CodeGroup>
+
+### DocsJson Template Customization
+
+Customize the generated `docs.json` configuration by providing a template with pre-configured settings:
+
+- Set global appearance, colors, and theme
+- Configure integrations (Google Analytics, etc.)
+- Define custom logos and favicons
+- Pre-populate navigation structure
+- Control navigation type (Pages, Tabs, or Products)
+
+```csharp
+services.AddDotNetDocsMintlify(options =>
+{
+    options.Template = new DocsJsonConfig
+    {
+        Name = "My API",
+        Theme = "quill",
+        NavigationType = "Tabs",           // NEW: Control root nav placement
+        NavigationName = "My API Reference", // NEW: Custom name for tab/product
+        Colors = new ColorsConfig
+        {
+            Primary = "#007ACC",
+            Light = "#50A3D0",
+            Dark = "#004B87"
+        },
+        Integrations = new IntegrationsConfig
+        {
+            Ga4 = new GoogleAnalytics4Config { MeasurementId = "G-XXXXXXXXXX" }
+        }
+    };
+    options.IncludeIcons = true;
+    options.GenerateDocsJson = true;
+});
+```
+
+<Info>
+Set `NavigationType` to control whether the root project appears in main navigation (`Pages`), as a top-level tab (`Tabs`), or in the products section (`Products`). This is particularly useful for multi-project documentation collections.
+</Info>
+
+### React Component Support
+
+Mintlify MDX supports embedding custom React components directly in your documentation:
+
+- Import components from the `snippets` folder
+- Use React hooks (useState, useEffect, etc.)
+- Create interactive demos, calculators, and visualizations
+- Build reusable component libraries
+
+```jsx snippets/ColorPicker.jsx
+export const ColorPicker = () => {
+  const [color, setColor] = React.useState('#3CD0E2');
+
+  return (
+    <div>
+      <input
+        type="color"
+        value={color}
+        onChange={(e) => setColor(e.target.value)}
+      />
+      <p>Selected: {color}</p>
+    </div>
+  );
+};
+```
+
+```mdx Using the Component
+import { ColorPicker } from '/snippets/ColorPicker';
+
+## Try It Out
+
+<ColorPicker />
+```
+
+<Info>
+React components must be placed in the `snippets` folder and exported as named exports. You cannot import components from arbitrary MDX files.
+</Info>
+
+## Getting Started
+
+<Steps>
+  <Step title="Add the Mintlify Provider">
+    Install the `CloudNimble.DotNetDocs.Mintlify` package:
+
+    ```bash
+    dotnet add package CloudNimble.DotNetDocs.Mintlify
+    ```
+  </Step>
+
+  <Step title="Configure Your Pipeline">
+    Register the Mintlify renderer in your documentation pipeline:
+
+    <CodeGroup>
+    ```csharp Default Configuration
+    var builder = new DotNetDocsBuilder()
+        .AddDefaultPipeline()
+        .AddMintlifyRenderer();
+
+    var result = await builder.BuildAsync();
+    ```
+
+    ```csharp Custom Configuration
+    var builder = new DotNetDocsBuilder()
+        .AddDefaultPipeline()
+        .AddMintlifyRenderer(options =>
+        {
+            options.NavigationMode = NavigationMode.ByAssembly;
+            options.NamespaceMode = NamespaceMode.Folder;
+            options.GenerateDocsJson = true;
+            options.IncludeIcons = true;
+            options.UnifiedGroupName = "API Reference";
+        });
+
+    var result = await builder.BuildAsync();
+    ```
+
+    ```xml With MSBuild Integration (.docsproj)
+    <Project Sdk="DotNetDocs.Sdk/1.1.0-preview.3">
+      <PropertyGroup>
+        <DocumentationType>Mintlify</DocumentationType>
+        <MintlifyNavigationMode>Unified</MintlifyNavigationMode>
+        <MintlifyTemplate>
+          <Name>My Project</Name>
+          <NavigationType>Tabs</NavigationType>
+          <NavigationName>My API</NavigationName>
+          <Theme>maple</Theme>
+          <Colors>
+            <Primary>#419AC5</Primary>
+          </Colors>
+        </MintlifyTemplate>
+      </PropertyGroup>
+    </Project>
+    ```
+    </CodeGroup>
+  </Step>
+
+  <Step title="Generate Documentation">
+    Build your project to automatically generate Mintlify documentation:
+
+    ```bash
+    dotnet build --configuration Release
+    ```
+
+    Your MDX files and `docs.json` will be generated in the output directory.
+  </Step>
+
+  <Step title="Preview with Mintlify CLI">
+    Install the Mintlify CLI and preview your docs locally:
+
+    ```bash
+    npm install -g mintlify
+    cd docs
+    mintlify dev
+    ```
+
+    Your documentation will be available at `http://localhost:3000`.
+  </Step>
+</Steps>
+
+## Configuration Reference
+
+<Tabs>
+  <Tab title="NavigationMode">
+    Controls how navigation is organized in `docs.json`:
+
+    | Mode | Description | Best For |
+    |------|-------------|----------|
+    | `Unified` | Single navigation tree with all namespaces | Single-project solutions |
+    | `ByAssembly` | Separate groups per assembly | Multi-project solutions |
+
+    ```csharp
+    options.NavigationMode = NavigationMode.ByAssembly;
+    ```
+  </Tab>
+
+  <Tab title="NamespaceMode">
+    Controls file system organization:
+
+    | Mode | Description | Output Structure |
+    |------|-------------|------------------|
+    | `File` | One MDX file per namespace | `MyNamespace.mdx` |
+    | `Folder` | Folder per namespace with separate type files | `MyNamespace/MyClass.mdx` |
+
+    ```csharp
+    options.NamespaceMode = NamespaceMode.Folder;
+    ```
+  </Tab>
+
+  <Tab title="Other Options">
+    Additional configuration options:
+
+    ```csharp
+    public class MintlifyRendererOptions
+    {
+        // Whether to generate docs.json navigation file
+        public bool GenerateDocsJson { get; set; } = true;
+
+        // Whether to include namespace index pages
+        public bool GenerateNamespaceIndex { get; set; } = true;
+
+        // Whether to include FontAwesome icons
+        public bool IncludeIcons { get; set; } = true;
+
+        // Order of namespaces in navigation (default: alphabetical)
+        public List<string> NamespaceOrder { get; set; }
+
+        // Template for docs.json configuration (merged with generated navigation)
+        public DocsJsonConfig Template { get; set; }
+
+        // Group name for Unified navigation mode
+        public string UnifiedGroupName { get; set; } = "API Reference";
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Rich Mintlify Components
+
+The Mintlify provider generates standard MDX, allowing you to enhance generated docs with Mintlify's rich component library. Below are examples of the most commonly used components.
+
+### Tabs & CodeGroup
+
+Display multiple code examples or content variants. The Tabs component works with any content, while CodeGroup is specifically optimized for code blocks.
+
+<Tabs>
+  <Tab title="C#">
+    ```csharp
+    var result = await processor.ProcessAsync();
+    ```
+  </Tab>
+  <Tab title="F#">
+    ```fsharp
+    let! result = processor.ProcessAsync()
+    ```
+  </Tab>
+</Tabs>
+
+### Callouts
+
+Highlight important information with colored callout boxes:
+
+<Note>This method is thread-safe and can be called concurrently.</Note>
+
+<Warning>This operation cannot be undone.</Warning>
+
+<Tip>Use caching to improve performance.</Tip>
+
+<Info>Available since version 2.0</Info>
+
+<Check>Best practice: Always dispose of resources</Check>
+
+### Cards & CardGroup
+
+Create visually appealing content grids. Perfect for navigation and feature showcases.
+
+### Steps
+
+The Steps component guides users through sequential processes with automatic numbering and visual flow.
+
+### Accordions
+
+Accordions organize collapsible content sections for progressive disclosure. They work great for FAQs, detailed explanations, and organizing large amounts of related content.
+
+## Icon Reference
+
+The Mintlify provider includes 50+ context-aware FontAwesome icons. Icons are automatically assigned based on type characteristics, but you can override them in XML documentation using custom tags.
+
+<AccordionGroup>
+  <Accordion title="Type Icons" icon="shapes">
+    Icons assigned based on type classification:
+
+    | Type | Icon | Symbol |
+    |------|------|--------|
+    | Class | `cube` | 🧊 |
+    | Interface | `layer-group` | 📚 |
+    | Struct | `cube-alt` | 🔷 |
+    | Enum | `list-ol` | 📋 |
+    | Delegate | `arrow-right` | ➡️ |
+    | Namespace | `folder` | 📁 |
+  </Accordion>
+
+  <Accordion title="Member Icons" icon="list">
+    Icons for class members:
+
+    | Member | Icon | Symbol |
+    |--------|------|--------|
+    | Method | `function` | ƒ |
+    | Property | `sliders` | 🎚️ |
+    | Field | `input-text` | 📝 |
+    | Event | `bolt` | ⚡ |
+    | Constructor | `hammer` | 🔨 |
+    | Operator | `calculator` | 🔢 |
+  </Accordion>
+
+  <Accordion title="Pattern-Based Icons" icon="wand-magic">
+    Icons assigned based on naming patterns:
+
+    | Pattern | Icon | Example |
+    |---------|------|---------|
+    | *Manager | `gears` | DocumentationManager |
+    | *Service | `server` | PaymentService |
+    | *Repository | `database` | UserRepository |
+    | *Controller | `gamepad` | ApiController |
+    | *Factory | `industry` | ConnectionFactory |
+    | *Builder | `hammer` | StringBuilder |
+    | *Provider | `plug` | ConfigurationProvider |
+    | *Handler | `hand` | EventHandler |
+    | *Helper | `circle-question` | StringHelper |
+    | *Validator | `check-circle` | InputValidator |
+  </Accordion>
+
+  <Accordion title="Modifier Icons" icon="toggle-on">
+    Additional icons for access modifiers and type characteristics:
+
+    | Modifier | Icon | Symbol |
+    |----------|------|--------|
+    | Static | `s` | S |
+    | Abstract | `shapes` | 🔺 |
+    | Sealed | `lock` | 🔒 |
+    | Generic | `brackets-curly` | { } |
+    | Async | `arrows-spin` | 🔄 |
+  </Accordion>
+
+  <Accordion title="Namespace Segment Icons" icon="folder-tree">
+    Icons based on namespace segments:
+
+    | Segment | Icon | Example |
+    |---------|------|---------|
+    | Core | `circle-dot` | MyApp.Core |
+    | Extensions | `puzzle-piece` | MyApp.Extensions |
+    | Models | `diagram-project` | MyApp.Models |
+    | Services | `server` | MyApp.Services |
+    | Data | `database` | MyApp.Data |
+    | Security | `shield` | MyApp.Security |
+    | Web | `globe` | MyApp.Web |
+    | Api | `cloud` | MyApp.Api |
+    | Testing | `vial` | MyApp.Testing |
+  </Accordion>
+</AccordionGroup>
+
+## Output Structure
+
+The Mintlify provider generates the following file structure:
+
+<CodeGroup>
+```plaintext File Mode (Default)
+docs/
+├── docs.json
+├── api-reference/
+│   ├── MyProject/
+│   │   ├── Core.mdx
+│   │   ├── Core/Services.mdx
+│   │   ├── Extensions.mdx
+│   │   └── Models.mdx
+│   └── ...
+└── ...
+```
+
+```plaintext Folder Mode
+docs/
+├── docs.json
+├── api-reference/
+│   ├── MyProject/
+│   │   ├── Core/
+│   │   │   ├── index.mdx
+│   │   │   ├── DocumentationManager.mdx
+│   │   │   ├── Services/
+│   │   │   │   ├── index.mdx
+│   │   │   │   └── PaymentService.mdx
+│   │   │   └── ...
+│   │   └── ...
+│   └── ...
+└── ...
+```
+</CodeGroup>
+
+## Best Practices
+
+<CardGroup cols={2}>
+  <Card title="Write Detailed XML Comments" icon="comment">
+    The quality of your generated documentation depends on your XML comments. Include detailed `<summary>`, `<remarks>`, `<example>`, and `<code>` sections.
+  </Card>
+
+  <Card title="Use Consistent Naming" icon="signature">
+    Follow .NET naming conventions. The icon system works best with standard patterns like *Manager, *Service, *Repository.
+  </Card>
+
+  <Card title="Organize Namespaces Logically" icon="sitemap">
+    Structure your namespaces hierarchically. Use segments like Core, Extensions, Models, Services for better automatic icon selection.
+  </Card>
+
+  <Card title="Customize DocsJson Configuration" icon="file-code">
+    Use the Template property to provide custom docs.json configuration settings like themes, colors, and integrations.
+  </Card>
+</CardGroup>
+
+## See Also
+
+<CardGroup cols={2}>
+  <Card title="API Reference" icon="book" href="/test/api-reference/CloudNimble/DotNetDocs/Mintlify/MintlifyRenderer">
+    Complete MintlifyRenderer API documentation
+  </Card>
+  <Card title="Mintlify Documentation" icon="sparkles" href="https://mintlify.com/docs">
+    Official Mintlify documentation and component reference
+  </Card>
+  <Card title="Mintlify Schema" icon="code" href="https://mintlify.com/docs/settings/global">
+    DocsJsonConfig schema and available settings
+  </Card>
+  <Card title="Pipeline Guide" icon="diagram-project" href="/test/guides/pipeline">
+    Understand the DotNetDocs documentation pipeline
+  </Card>
+</CardGroup>

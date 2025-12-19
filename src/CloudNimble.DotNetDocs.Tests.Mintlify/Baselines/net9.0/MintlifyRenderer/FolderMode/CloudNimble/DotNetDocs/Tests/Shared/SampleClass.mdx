@@ -5,8 +5,6 @@ icon: file-brackets-curly
 keywords: ['SampleClass', 'CloudNimble.DotNetDocs.Tests.Shared.SampleClass', 'CloudNimble.DotNetDocs.Tests.Shared', 'class', 'System.Object']
 ---
 
-import { DocsBadge } from '/snippets/DocsBadge.jsx';
-
 ## Definition
 
 **Assembly:** CloudNimble.DotNetDocs.Tests.Shared.dll
@@ -27,7 +25,7 @@ A sample class for testing documentation generation.
 
 ## Constructors
 
-### <Icon icon="hammer" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} /> .ctor
+### <Icon icon="hammer" iconType="duotone" color="#0D9373" size={24} className="mr-2" /> .ctor
 
 #### Syntax
 
@@ -35,7 +33,7 @@ A sample class for testing documentation generation.
 public SampleClass()
 ```
 
-### <Icon icon="hammer" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} /> .ctor <DocsBadge text="Inherited" variant="neutral" />
+### <Icon icon="hammer" iconType="duotone" color="#0D9373" size={24} className="mr-2" /> .ctor <Badge color="gray">Inherited</Badge>
 
 <Note>Inherited from `object`</Note>
 
@@ -47,7 +45,7 @@ public Object()
 
 ## Properties
 
-### <Icon icon="tag" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} /> Name
+### <Icon icon="tag" iconType="duotone" color="#0D9373" size={24} className="mr-2" /> Name
 
 Gets or sets the name.
 
@@ -61,7 +59,7 @@ public string Name { get; set; }
 
 Type: `string`
 
-### <Icon icon="tag" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} /> Value
+### <Icon icon="tag" iconType="duotone" color="#0D9373" size={24} className="mr-2" /> Value
 
 Gets or sets the value.
 
@@ -77,7 +75,7 @@ Type: `int`
 
 ## Methods
 
-### <Icon icon="function" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} /> DoSomething
+### <Icon icon="function" iconType="duotone" color="#0D9373" size={24} className="mr-2" /> DoSomething
 
 Performs a sample operation.
 
@@ -98,7 +96,7 @@ public string DoSomething(string input)
 Type: `string`
 The result of the operation.
 
-### <Icon icon="code-fork" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} /> Equals <DocsBadge text="Inherited" variant="neutral" /> <DocsBadge text="Virtual" variant="warning" />
+### <Icon icon="code-fork" iconType="duotone" color="#0D9373" size={24} className="mr-2" /> Equals <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
 
 <Note>Inherited from `object`</Note>
 
@@ -118,7 +116,7 @@ public virtual bool Equals(object obj)
 
 Type: `bool`
 
-### <Icon icon="thumbtack" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} /> Equals <DocsBadge text="Inherited" variant="neutral" />
+### <Icon icon="thumbtack" iconType="duotone" color="#0D9373" size={24} className="mr-2" /> Equals <Badge color="gray">Inherited</Badge>
 
 <Note>Inherited from `object`</Note>
 
@@ -139,7 +137,7 @@ public static bool Equals(object objA, object objB)
 
 Type: `bool`
 
-### <Icon icon="function" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} /> GetDisplay
+### <Icon icon="function" iconType="duotone" color="#0D9373" size={24} className="mr-2" /> GetDisplay
 
 Gets the display value.
 
@@ -154,7 +152,7 @@ public string GetDisplay()
 Type: `string`
 A formatted string containing the name and value.
 
-### <Icon icon="code-fork" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} /> GetHashCode <DocsBadge text="Inherited" variant="neutral" /> <DocsBadge text="Virtual" variant="warning" />
+### <Icon icon="code-fork" iconType="duotone" color="#0D9373" size={24} className="mr-2" /> GetHashCode <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
 
 <Note>Inherited from `object`</Note>
 
@@ -168,7 +166,7 @@ public virtual int GetHashCode()
 
 Type: `int`
 
-### <Icon icon="function" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} /> GetType <DocsBadge text="Inherited" variant="neutral" />
+### <Icon icon="function" iconType="duotone" color="#0D9373" size={24} className="mr-2" /> GetType <Badge color="gray">Inherited</Badge>
 
 <Note>Inherited from `object`</Note>
 
@@ -182,7 +180,7 @@ public System.Type GetType()
 
 Type: `System.Type`
 
-### <Icon icon="function" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} /> MemberwiseClone <DocsBadge text="Inherited" variant="neutral" />
+### <Icon icon="function" iconType="duotone" color="#0D9373" size={24} className="mr-2" /> MemberwiseClone <Badge color="gray">Inherited</Badge>
 
 <Note>Inherited from `object`</Note>
 
@@ -196,7 +194,7 @@ protected internal object MemberwiseClone()
 
 Type: `object`
 
-### <Icon icon="function" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} /> MethodWithOptional
+### <Icon icon="function" iconType="duotone" color="#0D9373" size={24} className="mr-2" /> MethodWithOptional
 
 Method with optional parameter.
 
@@ -218,7 +216,7 @@ public string MethodWithOptional(string required, int optional = 42)
 Type: `string`
 Combined result.
 
-### <Icon icon="function" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} /> MethodWithParams
+### <Icon icon="function" iconType="duotone" color="#0D9373" size={24} className="mr-2" /> MethodWithParams
 
 Method with params array.
 
@@ -239,7 +237,7 @@ public int MethodWithParams(params int[] values)
 Type: `int`
 Sum of values.
 
-### <Icon icon="thumbtack" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} /> ReferenceEquals <DocsBadge text="Inherited" variant="neutral" />
+### <Icon icon="thumbtack" iconType="duotone" color="#0D9373" size={24} className="mr-2" /> ReferenceEquals <Badge color="gray">Inherited</Badge>
 
 <Note>Inherited from `object`</Note>
 
@@ -260,7 +258,7 @@ public static bool ReferenceEquals(object objA, object objB)
 
 Type: `bool`
 
-### <Icon icon="code-fork" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} /> ToString <DocsBadge text="Inherited" variant="neutral" /> <DocsBadge text="Virtual" variant="warning" />
+### <Icon icon="code-fork" iconType="duotone" color="#0D9373" size={24} className="mr-2" /> ToString <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
 
 <Note>Inherited from `object`</Note>
 

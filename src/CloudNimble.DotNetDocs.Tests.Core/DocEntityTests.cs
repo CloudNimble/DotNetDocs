@@ -3,7 +3,6 @@ using CloudNimble.DotNetDocs.Tests.Shared;
 using FluentAssertions;
 using Microsoft.CodeAnalysis;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace CloudNimble.DotNetDocs.Tests.Core
@@ -49,7 +48,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core
                 Considerations = "Important notes"
             };
 
-            entity.RelatedApis ??= new List<string>();
+            entity.RelatedApis ??= [];
             entity.RelatedApis.Add("System.String");
             entity.RelatedApis.Add("System.Object");
 
@@ -67,7 +66,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core
         {
             var entity = new TestDocEntity();
 
-            entity.RelatedApis ??= new List<string>();
+            entity.RelatedApis ??= [];
             entity.RelatedApis.Add("https://docs.microsoft.com/api1");
             entity.RelatedApis.Add("System.Collections.Generic.List");
             entity.RelatedApis.Add("MyNamespace.MyClass.MyMethod");
@@ -85,7 +84,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             var entity = new TestDocEntity();
 
             entity.IncludedMembers.Should().NotBeNull();
-            entity.IncludedMembers.Should().HaveCount(1);
+            entity.IncludedMembers.Should().ContainSingle();
             entity.IncludedMembers.Should().Contain(Accessibility.Public);
         }
 
@@ -114,29 +113,29 @@ namespace CloudNimble.DotNetDocs.Tests.Core
                 DisplayName = "Full.Display.Name"
             };
 
-            entity.Exceptions = new List<DocException>
-            {
+            entity.Exceptions =
+            [
                 new() { Type = "ArgumentException", Description = "Invalid argument" }
-            };
+            ];
 
-            entity.TypeParameters = new List<DocTypeParameter>
-            {
+            entity.TypeParameters =
+            [
                 new() { Name = "T", Description = "Type parameter" }
-            };
+            ];
 
-            entity.SeeAlso = new List<DocReference>
-            {
+            entity.SeeAlso =
+            [
                 new DocReference("T:RelatedType"),
                 new DocReference("T:AnotherType")
-            };
+            ];
 
             entity.Summary.Should().Be("Brief description");
             entity.Remarks.Should().Be("Additional remarks");
             entity.Returns.Should().Be("Return value description");
             entity.Value.Should().Be("Property value description");
             entity.DisplayName.Should().Be("Full.Display.Name");
-            entity.Exceptions.Should().HaveCount(1);
-            entity.TypeParameters.Should().HaveCount(1);
+            entity.Exceptions.Should().ContainSingle();
+            entity.TypeParameters.Should().ContainSingle();
             entity.SeeAlso.Should().HaveCount(2);
         }
 

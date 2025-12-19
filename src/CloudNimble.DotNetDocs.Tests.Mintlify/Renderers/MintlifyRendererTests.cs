@@ -177,13 +177,19 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
         }
 
         [TestMethod]
-        public async Task RenderAsync_WithNullModel_ThrowsArgumentNullException()
+        public async Task RenderAsync_WithNullModel_ReturnsWithoutError()
         {
-            // Act
-            Func<Task> act = async () => await GetMintlifyRenderer().RenderAsync(null!);
+            // Arrange
+            var renderer = GetMintlifyRenderer();
 
-            // Assert
-            await act.Should().ThrowAsync<ArgumentNullException>();
+            // Act - Documentation-only mode passes null model to renderers
+            Func<Task> act = async () => await renderer.RenderAsync(null);
+
+            // Assert - Should not throw, should return gracefully
+            await act.Should().NotThrowAsync();
+
+            // For MintlifyRenderer, docs.json may still be generated even without API docs
+            // because it handles navigation merging for DocumentationReferences
         }
 
         [TestMethod]
@@ -277,7 +283,7 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             var sampleClassFile = Directory.GetFiles(_testOutputPath, "*SampleClass.mdx").FirstOrDefault();
             sampleClassFile.Should().NotBeNull();
 
-            var content = await File.ReadAllTextAsync(sampleClassFile!, TestContext.CancellationTokenSource.Token);
+            var content = await File.ReadAllTextAsync(sampleClassFile!, TestContext.CancellationToken);
             content.Should().Contain("icon: file-brackets-curly", "Class should use file-code icon");
         }
 
@@ -300,7 +306,7 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             await GetMintlifyRenderer().RenderAsync(model);
 
             // Assert
-            var content = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, "index.mdx"), TestContext.CancellationTokenSource.Token);
+            var content = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, "index.mdx"), TestContext.CancellationToken);
             content.Should().Contain("## Usage");
             content.Should().Contain("This is assembly usage documentation");
         }
@@ -320,7 +326,7 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             await GetMintlifyRenderer().RenderAsync(model);
 
             // Assert
-            var content = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, "index.mdx"), TestContext.CancellationTokenSource.Token);
+            var content = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, "index.mdx"), TestContext.CancellationToken);
             content.Should().Contain("## Examples");
             content.Should().Contain("Example code here");
         }
@@ -334,13 +340,13 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             var context = GetService<ProjectContext>();
             using var manager = new AssemblyManager(assemblyPath, xmlPath);
             var model = await manager.DocumentAsync(context);
-            model.RelatedApis = new List<string> { "System.Object", "System.String" };
+            model.RelatedApis = ["System.Object", "System.String"];
 
             // Act
             await GetMintlifyRenderer().RenderAsync(model);
 
             // Assert
-            var content = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, "index.mdx"), TestContext.CancellationTokenSource.Token);
+            var content = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, "index.mdx"), TestContext.CancellationToken);
             content.Should().Contain("## Related APIs");
             content.Should().Contain("- System.Object");
             content.Should().Contain("- System.String");
@@ -361,13 +367,13 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             model.BestPractices = string.Empty;
             model.Patterns = string.Empty;
             model.Considerations = string.Empty;
-            model.RelatedApis = new List<string>();
+            model.RelatedApis = [];
 
             // Act
             await GetMintlifyRenderer().RenderAsync(model);
 
             // Assert
-            var content = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, "index.mdx"), TestContext.CancellationTokenSource.Token);
+            var content = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, "index.mdx"), TestContext.CancellationToken);
             content.Should().Contain("title: Overview");
             content.Should().Contain("## Namespaces");
             content.Should().NotContain("## Overview");
@@ -397,7 +403,7 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             var ns = model.Namespaces.First(n => n.Types.Any(t => t.Symbol.Name == "ClassWithMethods"));
             var namespaceName = string.IsNullOrEmpty(ns.Name) ? "global" : ns.Name;
             var typeFileName = $"{namespaceName.Replace('.', '-')}.ClassWithMethods.mdx";
-            var content = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, typeFileName), TestContext.CancellationTokenSource.Token);
+            var content = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, typeFileName), TestContext.CancellationToken);
 
             content.Should().Contain("```csharp");
             content.Should().Contain("public");
@@ -675,7 +681,7 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
         private async Task CompareWithFolderBaseline(string actualFilePath, string baselineRelativePath)
         {
             // Read actual file
-            var actualContent = await File.ReadAllTextAsync(actualFilePath, TestContext.CancellationTokenSource.Token);
+            var actualContent = await File.ReadAllTextAsync(actualFilePath, TestContext.CancellationToken);
             
             // Construct baseline path
             var baselineDir = Path.Combine(
@@ -694,12 +700,12 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
                 {
                     Directory.CreateDirectory(directory);
                 }
-                await File.WriteAllTextAsync(baselinePath, actualContent, TestContext.CancellationTokenSource.Token);
+                await File.WriteAllTextAsync(baselinePath, actualContent, TestContext.CancellationToken);
                 Assert.Inconclusive($"Baseline created at: {baselinePath}. Re-run test to verify.");
             }
             
             // Compare with baseline - normalize line endings for cross-platform compatibility
-            var baselineContent = await File.ReadAllTextAsync(baselinePath, TestContext.CancellationTokenSource.Token);
+            var baselineContent = await File.ReadAllTextAsync(baselinePath, TestContext.CancellationToken);
             
             // Normalize both to Environment.NewLine to handle any line ending differences
             var normalizedActual = actualContent.ReplaceLineEndings(Environment.NewLine);
@@ -725,7 +731,7 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             File.Exists(indexPath).Should().BeTrue();
             
             // Check frontmatter
-            var content = await File.ReadAllTextAsync(indexPath, TestContext.CancellationTokenSource.Token);
+            var content = await File.ReadAllTextAsync(indexPath, TestContext.CancellationToken);
             content.Should().StartWith("---");
             content.Should().Contain("title:");
             content.Should().Contain("icon: cube");
@@ -739,7 +745,7 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             await GetMintlifyRenderer().RenderAssemblyAsync(assembly, _testOutputPath);
 
             var indexPath = Path.Combine(_testOutputPath, "index.mdx");
-            var content = await File.ReadAllTextAsync(indexPath, TestContext.CancellationTokenSource.Token);
+            var content = await File.ReadAllTextAsync(indexPath, TestContext.CancellationToken);
             content.Should().Contain("title: Overview");
             content.Should().Contain("## Namespaces");
         }
@@ -752,7 +758,7 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
 
             await GetMintlifyRenderer().RenderAssemblyAsync(assembly, _testOutputPath);
 
-            var content = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, "index.mdx"), TestContext.CancellationTokenSource.Token);
+            var content = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, "index.mdx"), TestContext.CancellationToken);
             content.Should().Contain("## Usage");
             content.Should().Contain(assembly.Usage);
         }
@@ -764,7 +770,7 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
 
             await GetMintlifyRenderer().RenderAssemblyAsync(assembly, _testOutputPath);
 
-            var content = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, "index.mdx"), TestContext.CancellationTokenSource.Token);
+            var content = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, "index.mdx"), TestContext.CancellationToken);
             content.Should().Contain("## Namespaces");
             foreach (var ns in assembly.Namespaces)
             {
@@ -796,7 +802,7 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             File.Exists(nsPath).Should().BeTrue();
             
             // Check frontmatter
-            var content = await File.ReadAllTextAsync(nsPath, TestContext.CancellationTokenSource.Token);
+            var content = await File.ReadAllTextAsync(nsPath, TestContext.CancellationToken);
             content.Should().StartWith("---");
             content.Should().Contain("title:");
             content.Should().Contain("icon:");
@@ -815,7 +821,7 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
 
             var namespaceName = string.IsNullOrEmpty(ns.Name) ? "global" : ns.Name;
             var nsPath = Path.Combine(_testOutputPath, $"{namespaceName.Replace('.', GetService<ProjectContext>().FileNamingOptions.NamespaceSeparator)}.mdx");
-            var content = await File.ReadAllTextAsync(nsPath, TestContext.CancellationTokenSource.Token);
+            var content = await File.ReadAllTextAsync(nsPath, TestContext.CancellationToken);
 
             content.Should().Contain("## Types");
             if (ns.Types.Any(t => t.Symbol.TypeKind == TypeKind.Class))
@@ -836,7 +842,7 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
         public async Task RenderTypeAsync_Should_Create_Type_File_With_Frontmatter()
         {
             var assembly = GetTestsDotSharedAssembly();
-            var ns = assembly.Namespaces.FirstOrDefault(n => n.Types.Any());
+            var ns = assembly.Namespaces.FirstOrDefault(n => n.Types.Count is not 0);
             
             ns.Should().NotBeNull("Test assembly should contain a namespace with types");
             
@@ -855,7 +861,7 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             File.Exists(typePath).Should().BeTrue();
             
             // Check frontmatter
-            var content = await File.ReadAllTextAsync(typePath, TestContext.CancellationTokenSource.Token);
+            var content = await File.ReadAllTextAsync(typePath, TestContext.CancellationToken);
             content.Should().StartWith("---");
             content.Should().Contain("title:");
             content.Should().Contain("icon:");
@@ -881,7 +887,7 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             var separator = GetService<ProjectContext>().FileNamingOptions.NamespaceSeparator;
             var fileName = $"{safeNamespace.Replace('.', separator)}.{safeTypeName}.mdx";
             var typePath = Path.Combine(_testOutputPath, fileName);
-            var content = await File.ReadAllTextAsync(typePath, TestContext.CancellationTokenSource.Token);
+            var content = await File.ReadAllTextAsync(typePath, TestContext.CancellationToken);
 
             //content.Should().Contain($"# {type.Symbol.Name}");
             content.Should().Contain("## Definition");
@@ -910,7 +916,7 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             var separator = GetService<ProjectContext>().FileNamingOptions.NamespaceSeparator;
             var fileName = $"{safeNamespace.Replace('.', separator)}.{safeTypeName}.mdx";
             var typePath = Path.Combine(_testOutputPath, fileName);
-            var content = await File.ReadAllTextAsync(typePath, TestContext.CancellationTokenSource.Token);
+            var content = await File.ReadAllTextAsync(typePath, TestContext.CancellationToken);
 
             content.Should().Contain("## Syntax");
             content.Should().Contain("```csharp");
@@ -938,7 +944,7 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             var separator = GetService<ProjectContext>().FileNamingOptions.NamespaceSeparator;
             var fileName = $"{safeNamespace.Replace('.', separator)}.{safeTypeName}.mdx";
             var typePath = Path.Combine(_testOutputPath, fileName);
-            var content = await File.ReadAllTextAsync(typePath, TestContext.CancellationTokenSource.Token);
+            var content = await File.ReadAllTextAsync(typePath, TestContext.CancellationToken);
 
             content.Should().Contain("## Constructors");
             content.Should().Contain("## Methods");
@@ -965,7 +971,7 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             GetMintlifyRenderer().RenderMember(sb, member!);
 
             var result = sb.ToString();
-            result.Should().Contain($$$"""### <Icon icon="function" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} /> {{{member!.Symbol.Name}}}""");
+            result.Should().Contain($$$"""### <Icon icon="function" iconType="duotone" color="#0D9373" size={24} className="mr-2" /> {{{member!.Symbol.Name}}}""");
         }
 
         [TestMethod]
@@ -1131,12 +1137,12 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
         {
             // Arrange - Create additional MDX files in the documentation root
             var testMdxFile = Path.Combine(_testOutputPath, "getting-started.mdx");
-            await File.WriteAllTextAsync(testMdxFile, "---\ntitle: Getting Started\n---\n# Getting Started\n\nThis is additional content.", TestContext.CancellationTokenSource.Token);
+            await File.WriteAllTextAsync(testMdxFile, "---\ntitle: Getting Started\n---\n# Getting Started\n\nThis is additional content.", TestContext.CancellationToken);
 
             var subDir = Path.Combine(_testOutputPath, "guides");
             Directory.CreateDirectory(subDir);
             var guideMdxFile = Path.Combine(subDir, "tutorial.mdx");
-            await File.WriteAllTextAsync(guideMdxFile, "---\ntitle: Tutorial\n---\n# Tutorial\n\nThis is a tutorial.", TestContext.CancellationTokenSource.Token);
+            await File.WriteAllTextAsync(guideMdxFile, "---\ntitle: Tutorial\n---\n# Tutorial\n\nThis is a tutorial.", TestContext.CancellationToken);
 
             var assemblyPath = typeof(SampleClass).Assembly.Location;
             var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
@@ -1152,7 +1158,7 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             var docsJsonPath = Path.Combine(_testOutputPath, "docs.json");
             File.Exists(docsJsonPath).Should().BeTrue("docs.json should be created");
             
-            var docsJsonContent = await File.ReadAllTextAsync(docsJsonPath, TestContext.CancellationTokenSource.Token);
+            var docsJsonContent = await File.ReadAllTextAsync(docsJsonPath, TestContext.CancellationToken);
             docsJsonContent.Should().Contain("getting-started", "Additional MDX file should be included in navigation");
             docsJsonContent.Should().Contain("guides", "Subdirectory with MDX files should be included in navigation");
             docsJsonContent.Should().Contain("tutorial", "Tutorial file should be included in navigation");
@@ -1163,7 +1169,7 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
         {
             // Arrange - Create an existing index.mdx file in the root
             var existingIndexFile = Path.Combine(_testOutputPath, "index.mdx");
-            await File.WriteAllTextAsync(existingIndexFile, "---\ntitle: Custom Index\n---\n# Custom Index\n\nThis is a custom index page.", TestContext.CancellationTokenSource.Token);
+            await File.WriteAllTextAsync(existingIndexFile, "---\ntitle: Custom Index\n---\n# Custom Index\n\nThis is a custom index page.", TestContext.CancellationToken);
 
             var assemblyPath = typeof(SampleClass).Assembly.Location;
             var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
@@ -1179,7 +1185,7 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             var docsJsonPath = Path.Combine(_testOutputPath, "docs.json");
             File.Exists(docsJsonPath).Should().BeTrue("docs.json should be created");
             
-            var docsJsonContent = await File.ReadAllTextAsync(docsJsonPath, TestContext.CancellationTokenSource.Token);
+            var docsJsonContent = await File.ReadAllTextAsync(docsJsonPath, TestContext.CancellationToken);
 
             // Count occurrences of "index" in the navigation
             var indexCount = docsJsonContent.Split("\"index\"").Length - 1;
@@ -1193,13 +1199,13 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             var apiReferenceDir = Path.Combine(_testOutputPath, "api-reference");
             Directory.CreateDirectory(apiReferenceDir);
             var apiFile = Path.Combine(apiReferenceDir, "some-api.mdx");
-            await File.WriteAllTextAsync(apiFile, "---\ntitle: Some API\n---\n# Some API\n\nThis should be excluded.", TestContext.CancellationTokenSource.Token);
+            await File.WriteAllTextAsync(apiFile, "---\ntitle: Some API\n---\n# Some API\n\nThis should be excluded.", TestContext.CancellationToken);
 
             // Also add a legitimate additional file
             var guidesDir = Path.Combine(_testOutputPath, "guides");
             Directory.CreateDirectory(guidesDir);
             var guideFile = Path.Combine(guidesDir, "tutorial.mdx");
-            await File.WriteAllTextAsync(guideFile, "---\ntitle: Tutorial\n---\n# Tutorial\n\nThis should be included.", TestContext.CancellationTokenSource.Token);
+            await File.WriteAllTextAsync(guideFile, "---\ntitle: Tutorial\n---\n# Tutorial\n\nThis should be included.", TestContext.CancellationToken);
 
             var assemblyPath = typeof(SampleClass).Assembly.Location;
             var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
@@ -1215,7 +1221,7 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             var docsJsonPath = Path.Combine(_testOutputPath, "docs.json");
             File.Exists(docsJsonPath).Should().BeTrue("docs.json should be created");
             
-            var docsJsonContent = await File.ReadAllTextAsync(docsJsonPath, TestContext.CancellationTokenSource.Token);
+            var docsJsonContent = await File.ReadAllTextAsync(docsJsonPath, TestContext.CancellationToken);
             
             // Should contain the guides content but NOT the api-reference content from discovery
             docsJsonContent.Should().Contain("guides", "Guides folder should be discovered");
@@ -1249,7 +1255,7 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             var docsJsonPath = Path.Combine(_testOutputPath, "docs.json");
             File.Exists(docsJsonPath).Should().BeTrue("docs.json should be created");
             
-            var docsJsonContent = await File.ReadAllTextAsync(docsJsonPath, TestContext.CancellationTokenSource.Token);
+            var docsJsonContent = await File.ReadAllTextAsync(docsJsonPath, TestContext.CancellationToken);
             
             // Should contain the generated index and API reference content, but no additional content
             docsJsonContent.Should().Contain("\"index\"", "Generated index should be present");
@@ -1276,49 +1282,49 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
                 Colors = new ColorsConfig { Primary = "#0D9373" },
                 Navigation = new NavigationConfig
                 {
-                    Pages = new List<object>
-                    {
+                    Pages =
+                    [
                         new GroupConfig
                         {
                             Group = "Getting Started",
                             Icon = "stars",
-                            Pages = new List<object> { "index", "quickstart" }
+                            Pages = ["index", "quickstart"]
                         },
                         new GroupConfig
                         {
                             Group = "Guides",
                             Icon = "dog-leashed",
-                            Pages = new List<object> { "guides/index", "guides/conceptual-docs" }
+                            Pages = ["guides/index", "guides/conceptual-docs"]
                         },
                         new GroupConfig
                         {
                             Group = "Providers",
                             Icon = "books",
-                            Pages = new List<object>
-                            {
+                            Pages =
+                            [
                                 "providers/index",
                                 new GroupConfig
                                 {
                                     Group = "Mintlify",
                                     Icon = "/mintlify.svg",
                                     Tag = "PARTNER",
-                                    Pages = new List<object> { "providers/mintlify/index" }
+                                    Pages = ["providers/mintlify/index"]
                                 }
-                            }
+                            ]
                         },
                         new GroupConfig
                         {
                             Group = "Plugins",
                             Icon = "outlet",
-                            Pages = new List<object> { "plugins/index" }
+                            Pages = ["plugins/index"]
                         },
                         new GroupConfig
                         {
                             Group = "Learnings",
                             Icon = "", // Empty icon should be preserved
-                            Pages = new List<object> { "learnings/bridge-assemblies" }
+                            Pages = ["learnings/bridge-assemblies"]
                         }
-                    }
+                    ]
                 }
             };
 
@@ -1405,7 +1411,7 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             var collectionConfig = new DocsJsonConfig
             {
                 Name = "Collection",
-                Navigation = new NavigationConfig { Pages = new List<object> { "introduction" } }
+                Navigation = new NavigationConfig { Pages = ["introduction"] }
             };
             var collectionJson = JsonSerializer.Serialize(collectionConfig, MintlifyConstants.JsonSerializerOptions);
             docsJsonManager.Load(collectionJson);
@@ -1462,7 +1468,7 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
                 Name = "Collection",
                 Navigation = new NavigationConfig
                 {
-                    Pages = new List<object> { "introduction" }
+                    Pages = ["introduction"]
                 }
             };
             var collectionJson = JsonSerializer.Serialize(collectionConfig, MintlifyConstants.JsonSerializerOptions);
@@ -1476,7 +1482,7 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
                 Name = "Service A",
                 Navigation = new NavigationConfig
                 {
-                    Pages = new List<object> { "overview", "getting-started" }
+                    Pages = ["overview", "getting-started"]
                 }
             };
             var refJson = JsonSerializer.Serialize(refConfig, MintlifyConstants.JsonSerializerOptions);
@@ -1495,13 +1501,13 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             renderer.CombineReferencedNavigation();
 
             renderer._docsJsonManager!.Configuration!.Navigation!.Tabs.Should().NotBeNull();
-            renderer._docsJsonManager!.Configuration!.Navigation!.Tabs!.Count.Should().Be(1);
+            renderer._docsJsonManager!.Configuration!.Navigation!.Tabs!.Should().ContainSingle();
 
             var tab = renderer._docsJsonManager!.Configuration!.Navigation!.Tabs![0];
             tab.Tab.Should().Be("ServiceA");
             tab.Href.Should().Be("services/service-a");
             tab.Pages.Should().NotBeNull();
-            tab.Pages!.Count.Should().Be(2);
+            tab.Pages!.Should().HaveCount(2);
 
             VerifyPagePrefixes(tab.Pages, "services/service-a/");
         }
@@ -1518,7 +1524,7 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
                 Name = "Collection",
                 Navigation = new NavigationConfig
                 {
-                    Pages = new List<object> { "introduction" }
+                    Pages = ["introduction"]
                 }
             };
             var collectionJson = JsonSerializer.Serialize(collectionConfig, MintlifyConstants.JsonSerializerOptions);
@@ -1532,7 +1538,7 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
                 Name = "Product A",
                 Navigation = new NavigationConfig
                 {
-                    Pages = new List<object> { "overview", "getting-started" }
+                    Pages = ["overview", "getting-started"]
                 }
             };
             var refJson = JsonSerializer.Serialize(refConfig, MintlifyConstants.JsonSerializerOptions);
@@ -1551,13 +1557,13 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             renderer.CombineReferencedNavigation();
 
             renderer._docsJsonManager!.Configuration!.Navigation!.Products.Should().NotBeNull();
-            renderer._docsJsonManager!.Configuration!.Navigation!.Products!.Count.Should().Be(1);
+            renderer._docsJsonManager!.Configuration!.Navigation!.Products!.Should().ContainSingle();
 
             var product = renderer._docsJsonManager!.Configuration!.Navigation!.Products![0];
             product.Product.Should().Be("ProductA");
             product.Href.Should().Be("products/product-a");
             product.Pages.Should().NotBeNull();
-            product.Pages!.Count.Should().Be(2);
+            product.Pages!.Should().HaveCount(2);
 
             VerifyPagePrefixes(product.Pages, "products/product-a/");
         }
@@ -1574,7 +1580,7 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
                 Name = "Collection",
                 Navigation = new NavigationConfig
                 {
-                    Pages = new List<object> { "introduction" }
+                    Pages = ["introduction"]
                 }
             };
             var collectionJson = JsonSerializer.Serialize(collectionConfig, MintlifyConstants.JsonSerializerOptions);
@@ -1586,7 +1592,7 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             var ref1Config = new DocsJsonConfig
             {
                 Name = "Service A",
-                Navigation = new NavigationConfig { Pages = new List<object> { "overview" } }
+                Navigation = new NavigationConfig { Pages = ["overview"] }
             };
             var ref1Json = JsonSerializer.Serialize(ref1Config, MintlifyConstants.JsonSerializerOptions);
             File.WriteAllText(ref1DocsPath, ref1Json);
@@ -1595,7 +1601,7 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             var ref2Config = new DocsJsonConfig
             {
                 Name = "Service B",
-                Navigation = new NavigationConfig { Pages = new List<object> { "getting-started" } }
+                Navigation = new NavigationConfig { Pages = ["getting-started"] }
             };
             var ref2Json = JsonSerializer.Serialize(ref2Config, MintlifyConstants.JsonSerializerOptions);
             File.WriteAllText(ref2DocsPath, ref2Json);
@@ -1621,7 +1627,7 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             renderer.CombineReferencedNavigation();
 
             renderer._docsJsonManager!.Configuration!.Navigation!.Tabs.Should().NotBeNull();
-            renderer._docsJsonManager!.Configuration!.Navigation!.Tabs!.Count.Should().Be(2);
+            renderer._docsJsonManager!.Configuration!.Navigation!.Tabs!.Should().HaveCount(2);
 
             var tab1 = renderer._docsJsonManager!.Configuration!.Navigation!.Tabs![0];
             tab1.Tab.Should().Be("ServiceA");
@@ -1675,7 +1681,7 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             var collectionConfig = new DocsJsonConfig
             {
                 Name = "Collection",
-                Navigation = new NavigationConfig { Pages = new List<object> { "introduction" } }
+                Navigation = new NavigationConfig { Pages = ["introduction"] }
             };
             var collectionJson = JsonSerializer.Serialize(collectionConfig, MintlifyConstants.JsonSerializerOptions);
             docsJsonManager.Load(collectionJson);
@@ -1688,23 +1694,23 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
                 Name = "Service A",
                 Navigation = new NavigationConfig
                 {
-                    Pages = new List<object>
-                    {
+                    Pages =
+                    [
                         "overview",
                         new GroupConfig
                         {
                             Group = "API",
-                            Pages = new List<object>
-                            {
+                            Pages =
+                            [
                                 "api/getting-started",
                                 new GroupConfig
                                 {
                                     Group = "Endpoints",
-                                    Pages = new List<object> { "api/endpoints/users", "api/endpoints/products" }
+                                    Pages = ["api/endpoints/users", "api/endpoints/products"]
                                 }
-                            }
+                            ]
                         }
-                    }
+                    ]
                 }
             };
             var refJson = JsonSerializer.Serialize(refConfig, MintlifyConstants.JsonSerializerOptions);
@@ -1723,7 +1729,7 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             renderer.CombineReferencedNavigation();
 
             renderer._docsJsonManager!.Configuration!.Navigation!.Tabs.Should().NotBeNull();
-            renderer._docsJsonManager!.Configuration!.Navigation!.Tabs!.Count.Should().Be(1);
+            renderer._docsJsonManager!.Configuration!.Navigation!.Tabs!.Should().ContainSingle();
 
             var tab = renderer._docsJsonManager!.Configuration!.Navigation!.Tabs![0];
             tab.Tab.Should().Be("ServiceA");

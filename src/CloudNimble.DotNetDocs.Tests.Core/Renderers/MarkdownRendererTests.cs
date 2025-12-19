@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -98,8 +97,8 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             
             if (File.Exists(baselinePath))
             {
-                var baseline = await File.ReadAllTextAsync(baselinePath, TestContext.CancellationTokenSource.Token);
-                var actual = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, "index.md"), TestContext.CancellationTokenSource.Token);
+                var baseline = await File.ReadAllTextAsync(baselinePath, TestContext.CancellationToken);
+                var actual = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, "index.md"), TestContext.CancellationToken);
                 
                 // Normalize line endings for cross-platform compatibility
                 var normalizedActual = actual.ReplaceLineEndings(Environment.NewLine);
@@ -170,13 +169,20 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
         }
 
         [TestMethod]
-        public async Task RenderAsync_WithNullModel_ThrowsArgumentNullException()
+        public async Task RenderAsync_WithNullModel_ReturnsWithoutError()
         {
+            // Arrange
             var renderer = GetMarkdownRenderer();
 
-            Func<Task> act = async () => await renderer.RenderAsync(null!);
+            // Act - Documentation-only mode passes null model to renderers
+            Func<Task> act = async () => await renderer.RenderAsync(null);
 
-            await act.Should().ThrowAsync<ArgumentNullException>();
+            // Assert - Should not throw, should return gracefully
+            await act.Should().NotThrowAsync();
+
+            // Verify no index.md was created (nothing to render)
+            var indexPath = Path.Combine(_testOutputPath, "index.md");
+            File.Exists(indexPath).Should().BeFalse("No index file should be created for null model");
         }
 
         [TestMethod]
@@ -231,7 +237,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             var renderer = GetMarkdownRenderer();
             await renderer.RenderAsync(model);
 
-            var content = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, "index.md"), TestContext.CancellationTokenSource.Token);
+            var content = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, "index.md"), TestContext.CancellationToken);
             content.Should().Contain("## Usage");
             content.Should().Contain("This is assembly usage documentation");
         }
@@ -250,7 +256,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             var renderer = GetMarkdownRenderer();
             await renderer.RenderAsync(model);
 
-            var content = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, "index.md"), TestContext.CancellationTokenSource.Token);
+            var content = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, "index.md"), TestContext.CancellationToken);
             content.Should().Contain("## Examples");
             content.Should().Contain("Example code here");
         }
@@ -264,12 +270,12 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             // Get the model and modify it
             using var manager = new AssemblyManager(assemblyPath, xmlPath);
             var model = await manager.DocumentAsync();
-            model.RelatedApis = new List<string> { "System.Object", "System.String" };
+            model.RelatedApis = ["System.Object", "System.String"];
 
             var renderer = GetMarkdownRenderer();
             await renderer.RenderAsync(model);
 
-            var content = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, "index.md"), TestContext.CancellationTokenSource.Token);
+            var content = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, "index.md"), TestContext.CancellationToken);
             content.Should().Contain("## Related APIs");
             content.Should().Contain("- System.Object");
             content.Should().Contain("- System.String");
@@ -291,12 +297,12 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             model.BestPractices = string.Empty;
             model.Patterns = string.Empty;
             model.Considerations = string.Empty;
-            model.RelatedApis = new List<string>();
+            model.RelatedApis = [];
 
             var renderer = GetMarkdownRenderer();
             await renderer.RenderAsync(model);
 
-            var content = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, "index.md"), TestContext.CancellationTokenSource.Token);
+            var content = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, "index.md"), TestContext.CancellationToken);
             content.Should().Contain($"# {model.AssemblyName}");
             content.Should().NotContain("## Overview");
             content.Should().NotContain("## Examples");
@@ -324,7 +330,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             var ns = model.Namespaces.First(n => n.Types.Any(t => t.Symbol.Name == "ClassWithMethods"));
             var namespaceName = string.IsNullOrEmpty(ns.Name) ? "global" : ns.Name;
             var typeFileName = $"{namespaceName.Replace('.', context.FileNamingOptions.NamespaceSeparator)}.ClassWithMethods.md";
-            var content = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, typeFileName), TestContext.CancellationTokenSource.Token);
+            var content = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, typeFileName), TestContext.CancellationToken);
 
             content.Should().Contain("```csharp");
             content.Should().Contain("public");
@@ -659,7 +665,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             await renderer.RenderAssemblyAsync(assembly, _testOutputPath);
 
             var indexPath = Path.Combine(_testOutputPath, "index.md");
-            var content = await File.ReadAllTextAsync(indexPath);
+            var content = await File.ReadAllTextAsync(indexPath, TestContext.CancellationToken);
             content.Should().Contain($"# {assembly.AssemblyName}");
         }
 
@@ -672,7 +678,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
 
             await renderer.RenderAssemblyAsync(assembly, _testOutputPath);
 
-            var content = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, "index.md"));
+            var content = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, "index.md"), TestContext.CancellationToken);
             content.Should().Contain("## Usage");
             content.Should().Contain(assembly.Usage);
         }
@@ -685,7 +691,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
 
             await renderer.RenderAssemblyAsync(assembly, _testOutputPath);
 
-            var content = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, "index.md"));
+            var content = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, "index.md"), TestContext.CancellationToken);
             content.Should().Contain("## Namespaces");
             foreach (var ns in assembly.Namespaces)
             {
@@ -734,7 +740,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
 
             var namespaceName = string.IsNullOrEmpty(ns.Name) ? "global" : ns.Name;
             var nsPath = Path.Combine(_testOutputPath, $"{namespaceName.Replace('.', context.FileNamingOptions.NamespaceSeparator)}.md");
-            var content = await File.ReadAllTextAsync(nsPath);
+            var content = await File.ReadAllTextAsync(nsPath, TestContext.CancellationToken);
 
             content.Should().Contain("## Types");
             if (ns.Types.Any(t => t.Symbol.TypeKind == TypeKind.Class))
@@ -798,7 +804,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             var separator = context.FileNamingOptions.NamespaceSeparator;
             var fileName = $"{safeNamespace.Replace('.', separator)}.{safeTypeName}.md";
             var typePath = Path.Combine(_testOutputPath, fileName);
-            var content = await File.ReadAllTextAsync(typePath);
+            var content = await File.ReadAllTextAsync(typePath, TestContext.CancellationToken);
 
             content.Should().Contain($"# {type.Symbol.Name}");
             content.Should().Contain("## Definition");
@@ -829,7 +835,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             var separator = context.FileNamingOptions.NamespaceSeparator;
             var fileName = $"{safeNamespace.Replace('.', separator)}.{safeTypeName}.md";
             var typePath = Path.Combine(_testOutputPath, fileName);
-            var content = await File.ReadAllTextAsync(typePath);
+            var content = await File.ReadAllTextAsync(typePath, TestContext.CancellationToken);
 
             content.Should().Contain("## Syntax");
             content.Should().Contain("```csharp");
@@ -859,7 +865,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             var separator = context.FileNamingOptions.NamespaceSeparator;
             var fileName = $"{safeNamespace.Replace('.', separator)}.{safeTypeName}.md";
             var typePath = Path.Combine(_testOutputPath, fileName);
-            var content = await File.ReadAllTextAsync(typePath);
+            var content = await File.ReadAllTextAsync(typePath, TestContext.CancellationToken);
 
             content.Should().Contain("## Constructors");
             content.Should().Contain("## Methods");
@@ -1061,7 +1067,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             var outputFile = Path.Combine(_testOutputPath, "CloudNimble-DotNetDocs-Tests-Shared-Enums.SimpleEnum.md");
             File.Exists(outputFile).Should().BeTrue("Output file should exist");
 
-            var content = await File.ReadAllTextAsync(outputFile);
+            var content = await File.ReadAllTextAsync(outputFile, TestContext.CancellationToken);
 
             // Check that enum values section is present
             content.Should().Contain("## Values", "Should have Values section");
@@ -1094,7 +1100,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             await renderer.RenderTypeAsync(flagsEnum!, assembly.Namespaces.First(n => n.Types.Contains(flagsEnum!)), _testOutputPath);
 
             var outputFile = Path.Combine(_testOutputPath, "CloudNimble-DotNetDocs-Tests-Shared-Enums.FlagsEnum.md");
-            var content = await File.ReadAllTextAsync(outputFile);
+            var content = await File.ReadAllTextAsync(outputFile, TestContext.CancellationToken);
 
             // Check that Flags attribute is mentioned
             content.Should().Contain("[Flags]", "Should indicate Flags attribute");
@@ -1123,7 +1129,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             await renderer.RenderTypeAsync(byteEnum!, assembly.Namespaces.First(n => n.Types.Contains(byteEnum!)), _testOutputPath);
 
             var outputFile = Path.Combine(_testOutputPath, "CloudNimble-DotNetDocs-Tests-Shared-Enums.ByteEnum.md");
-            var content = await File.ReadAllTextAsync(outputFile);
+            var content = await File.ReadAllTextAsync(outputFile, TestContext.CancellationToken);
 
             // Check that underlying type is shown
             content.Should().Contain("**Underlying Type:** byte", "Should show byte as underlying type");

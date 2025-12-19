@@ -69,59 +69,67 @@ namespace CloudNimble.DotNetDocs.Mintlify
         /// <summary>
         /// Renders the documentation assembly to MDX files with optional docs.json generation.
         /// </summary>
-        /// <param name="model">The documentation assembly to render.</param>
+        /// <param name="model">The documentation assembly to render, or null for documentation-only mode.</param>
         /// <returns>A task representing the asynchronous rendering operation.</returns>
-        public async Task RenderAsync(DocAssembly model)
+        public async Task RenderAsync(DocAssembly? model)
         {
-            ArgumentNullException.ThrowIfNull(model);
+            // If model is not null, generate API reference files
+            if (model is not null)
+            {
+                var apiOutputPath = Path.Combine(Context.DocumentationRootPath, Context.ApiReferencePath);
+                Console.WriteLine($"📝 Rendering documentation to: {apiOutputPath}");
 
-            var apiOutputPath = Path.Combine(Context.DocumentationRootPath, Context.ApiReferencePath);
-            Console.WriteLine($"📝 Rendering documentation to: {apiOutputPath}");
+                // Initialize DocsJsonManager if enabled (only on first call)
+                if (_options.GenerateDocsJson && _docsJsonManager is not null)
+                {
+                    // Only initialize if not already configured
+                    if (_docsJsonManager.Configuration is null)
+                    {
+                        var docsConfig = _options.Template ?? DocsJsonManager.CreateDefault(
+                            model.AssemblyName ?? "API Documentation",
+                            "mint"
+                        );
+                        // Load configuration directly without JSON round-trip
+                        _docsJsonManager.Load(docsConfig);
+                    }
+                }
 
-            // Initialize DocsJsonManager if enabled (only on first call)
-            DocsJsonConfig? docsConfig = null;
+                // Ensure all necessary directories exist based on the file naming mode
+                Context.EnsureOutputDirectoryStructure(model, apiOutputPath);
+
+                // Create DocsBadge component snippet for Mintlify (used by inherited/extension member badges)
+                // RWM: This returns a no-op for now but the code is commented out in case we want to do other snippets.
+                await CreateDocsBadgeSnippetAsync();
+
+                // Render assembly overview
+                await RenderAssemblyAsync(model, apiOutputPath);
+
+                // Render each namespace
+                foreach (var ns in model.Namespaces)
+                {
+                    await RenderNamespaceAsync(ns, apiOutputPath);
+
+                    // Render each type in the namespace
+                    foreach (var type in ns.Types)
+                    {
+                        await RenderTypeAsync(type, ns, apiOutputPath);
+                    }
+                }
+            }
+
+            // Generate docs.json if enabled - runs even without a model for documentation-only mode
             if (_options.GenerateDocsJson && _docsJsonManager is not null)
             {
-                // Only initialize if not already configured
+                // Initialize from template if not already configured
                 if (_docsJsonManager.Configuration is null)
                 {
-                    docsConfig = _options.Template ?? DocsJsonManager.CreateDefault(
-                        model.AssemblyName ?? "API Documentation",
+                    var docsConfig = _options.Template ?? DocsJsonManager.CreateDefault(
+                        model?.AssemblyName ?? "Documentation",
                         "mint"
                     );
-                    // Load configuration directly without JSON round-trip
                     _docsJsonManager.Load(docsConfig);
                 }
-                else
-                {
-                    docsConfig = _docsJsonManager.Configuration;
-                }
-            }
 
-            // Ensure all necessary directories exist based on the file naming mode
-            Context.EnsureOutputDirectoryStructure(model, apiOutputPath);
-
-            // Create DocsBadge component snippet for Mintlify (used by inherited/extension member badges)
-            await CreateDocsBadgeSnippetAsync();
-
-            // Render assembly overview
-            await RenderAssemblyAsync(model, apiOutputPath);
-
-            // Render each namespace
-            foreach (var ns in model.Namespaces)
-            {
-                await RenderNamespaceAsync(ns, apiOutputPath);
-
-                // Render each type in the namespace
-                foreach (var type in ns.Types)
-                {
-                    await RenderTypeAsync(type, ns, apiOutputPath);
-                }
-            }
-
-            // Generate docs.json if enabled
-            if (_options.GenerateDocsJson && _docsJsonManager is not null && _docsJsonManager.Configuration is not null)
-            {
                 // Build exclusion list from DocumentationReference DestinationPaths to prevent scanning output directories
                 var excludeDirectories = Context.DocumentationReferences
                     .Select(r => Path.GetFileName(r.DestinationPath))
@@ -132,8 +140,11 @@ namespace CloudNimble.DotNetDocs.Mintlify
                 // Exclude DocumentationReference output directories to prevent them from being treated as conceptual docs
                 _docsJsonManager.PopulateNavigationFromPath(Context.DocumentationRootPath, new[] { ".mdx" }, includeApiReference: false, preserveExisting: true, excludeDirectories: excludeDirectories);
 
-                // Second: Add API reference content to existing navigation
-                BuildNavigationStructure(_docsJsonManager.Configuration, model);
+                // Second: Add API reference content to existing navigation ONLY if model exists
+                if (model is not null)
+                {
+                    BuildNavigationStructure(_docsJsonManager.Configuration!, model);
+                }
 
                 // Third: Apply NavigationType from template to move root content to Tabs/Products if configured
                 ApplyNavigationType();
@@ -635,11 +646,12 @@ namespace CloudNimble.DotNetDocs.Mintlify
             sb.AppendLine();
 
             // Add snippet import for DocType pages to support DocsBadge component
-            if (entity is DocType)
-            {
-                sb.AppendLine("import { DocsBadge } from '/snippets/DocsBadge.jsx';");
-                sb.AppendLine();
-            }
+            // RWM: Commenting this out for now but leaving it in case we want to use other snippets
+            //if (entity is DocType)
+            //{
+            //    sb.AppendLine("import { DocsBadge } from '/snippets/DocsBadge.jsx';");
+            //    sb.AppendLine();
+            //}
 
             return sb.ToString();
         }
@@ -1271,33 +1283,33 @@ namespace CloudNimble.DotNetDocs.Mintlify
 
             if (member.IsExtensionMethod)
             {
-                badges.Add("<DocsBadge text=\"Extension\" variant=\"success\" />");
+                badges.Add("<Badge color=\"green\">Extension</Badge>");
             }
 
             if (member.IsInherited && !member.IsOverride)
             {
-                badges.Add("<DocsBadge text=\"Inherited\" variant=\"neutral\" />");
+                badges.Add("<Badge color=\"gray\">Inherited</Badge>");
             }
 
             if (member.IsOverride)
             {
-                badges.Add("<DocsBadge text=\"Override\" variant=\"info\" />");
+                badges.Add("<Badge color=\"blue\">Override</Badge>");
             }
 
             if (member.IsVirtual && !member.IsOverride)
             {
-                badges.Add("<DocsBadge text=\"Virtual\" variant=\"warning\" />");
+                badges.Add("<Badge color=\"orange\">Virtual</Badge>");
             }
 
             if (member.IsAbstract)
             {
-                badges.Add("<DocsBadge text=\"Abstract\" variant=\"warning\" />");
+                badges.Add("<Badge color=\"orange\">Abstract</Badge>");
             }
 
             var badgeString = badges.Any() ? " " + string.Join(" ", badges) : "";
 
             // Add the member header with icon including iconType, color, size, and margin
-            sb.AppendLine($"### <Icon icon=\"{MintlifyIcons.GetIconForMember(member)}\" iconType=\"{MemberIconType}\" color=\"{primaryColor}\" size={{{MemberIconSize}}} style={{{{ paddingRight: '8px' }}}} /> {member.Name}{badgeString}");
+            sb.AppendLine($"### <Icon icon=\"{MintlifyIcons.GetIconForMember(member)}\" iconType=\"{MemberIconType}\" color=\"{primaryColor}\" size={{{MemberIconSize}}} className=\"mr-2\" /> {member.Name}{badgeString}");
             sb.AppendLine();
 
             // Add provenance note if inherited or extension
@@ -1548,50 +1560,51 @@ namespace CloudNimble.DotNetDocs.Mintlify
         /// <returns>A task representing the asynchronous file write operation.</returns>
         internal async Task CreateDocsBadgeSnippetAsync()
         {
-            var snippetsPath = Path.Combine(Context.DocumentationRootPath, "snippets");
-            Directory.CreateDirectory(snippetsPath);
+            //            var snippetsPath = Path.Combine(Context.DocumentationRootPath, "snippets");
+            //            Directory.CreateDirectory(snippetsPath);
 
-            var badgeFilePath = Path.Combine(snippetsPath, "DocsBadge.jsx");
+            //            var badgeFilePath = Path.Combine(snippetsPath, "DocsBadge.jsx");
 
-            var badgeComponent = """
-/**
- * DocsBadge Component for Mintlify Documentation
- *
- * A customizable badge component that matches Mintlify's design system.
- * Used to display member provenance (Extension, Inherited, Override, Virtual, Abstract).
- *
- * Usage:
- *   <DocsBadge text="Extension" variant="success" />
- *   <DocsBadge text="Inherited" variant="neutral" />
- *   <DocsBadge text="Override" variant="info" />
- *   <DocsBadge text="Virtual" variant="warning" />
- *   <DocsBadge text="Abstract" variant="warning" />
- */
+            //            var badgeComponent = """
+            //**
+            // * DocsBadge Component for Mintlify Documentation
+            // *
+            // * A customizable badge component that matches Mintlify's design system.
+            // * Used to display member provenance (Extension, Inherited, Override, Virtual, Abstract).
+            // *
+            // * Usage:
+            // *   <DocsBadge text="Extension" variant="success" />
+            // *   <DocsBadge text="Inherited" variant="neutral" />
+            // *   <DocsBadge text="Override" variant="info" />
+            // *   <DocsBadge text="Virtual" variant="warning" />
+            // *   <DocsBadge text="Abstract" variant="warning" />
+            // */
 
-export function DocsBadge({ text, variant = 'neutral' }) {
-  // Tailwind color classes for consistent theming
-  // Using standard Tailwind colors that work in both light and dark modes
-  const variantClasses = {
-    success: 'mint-bg-green-500/10 mint-text-green-600 dark:mint-text-green-400 mint-border-green-500/20',
-    neutral: 'mint-bg-slate-500/10 mint-text-slate-600 dark:mint-text-slate-400 mint-border-slate-500/20',
-    info: 'mint-bg-blue-500/10 mint-text-blue-600 dark:mint-text-blue-400 mint-border-blue-500/20',
-    warning: 'mint-bg-amber-500/10 mint-text-amber-600 dark:mint-text-amber-400 mint-border-amber-500/20',
-    danger: 'mint-bg-red-500/10 mint-text-red-600 dark:mint-text-red-400 mint-border-red-500/20'
-  };
+            //export function DocsBadge({ text, variant = 'neutral' }) {
+            //  // Tailwind color classes for consistent theming
+            //  // Using standard Tailwind colors that work in both light and dark modes
+            //  const variantClasses = {
+            //    success: 'mint-bg-green-500/10 mint-text-green-600 dark:mint-text-green-400 mint-border-green-500/20',
+            //    neutral: 'mint-bg-slate-500/10 mint-text-slate-600 dark:mint-text-slate-400 mint-border-slate-500/20',
+            //    info: 'mint-bg-blue-500/10 mint-text-blue-600 dark:mint-text-blue-400 mint-border-blue-500/20',
+            //    warning: 'mint-bg-amber-500/10 mint-text-amber-600 dark:mint-text-amber-400 mint-border-amber-500/20',
+            //    danger: 'mint-bg-red-500/10 mint-text-red-600 dark:mint-text-red-400 mint-border-red-500/20'
+            //  };
 
-  const classes = variantClasses[variant] || variantClasses.neutral;
+            //  const classes = variantClasses[variant] || variantClasses.neutral;
 
-  return (
-    <span
-      className={`mint-inline-flex mint-items-center mint-px-2 mint-py-0.5 mint-rounded-full mint-text-xs mint-font-medium mint-tracking-wide mint-border mint-ml-1.5 mint-align-middle mint-whitespace-nowrap ${classes}`}
-    >
-      {text}
-    </span>
-  );
-}
-""";
+            //  return (
+            //    <span
+            //      className={`mint-inline-flex mint-items-center mint-px-2 mint-py-0.5 mint-rounded-full mint-text-xs mint-font-medium mint-tracking-wide mint-border mint-ml-1.5 mint-align-middle mint-whitespace-nowrap ${classes}`}
+            //    >
+            //      {text}
+            //    </span>
+            //  );
+            //}
+            //""";
 
-            await File.WriteAllTextAsync(badgeFilePath, badgeComponent);
+            //            await File.WriteAllTextAsync(badgeFilePath, badgeComponent
+            await Task.CompletedTask;
         }
 
         #endregion

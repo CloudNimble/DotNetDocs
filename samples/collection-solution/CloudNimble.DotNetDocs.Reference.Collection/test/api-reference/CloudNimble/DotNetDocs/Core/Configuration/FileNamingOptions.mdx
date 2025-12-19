@@ -1,0 +1,249 @@
+---
+title: FileNamingOptions
+description: "Provides configuration options for how documentation files are named and organized."
+icon: file-brackets-curly
+keywords: ['FileNamingOptions', 'CloudNimble.DotNetDocs.Core.Configuration.FileNamingOptions', 'CloudNimble.DotNetDocs.Core.Configuration', 'class', 'System.Object']
+---
+
+## Definition
+
+**Assembly:** CloudNimble.DotNetDocs.Core.dll
+
+**Namespace:** CloudNimble.DotNetDocs.Core.Configuration
+
+**Inheritance:** System.Object
+
+## Syntax
+
+```csharp
+CloudNimble.DotNetDocs.Core.Configuration.FileNamingOptions
+```
+
+## Summary
+
+Provides configuration options for how documentation files are named and organized.
+
+## Remarks
+
+This class controls the file naming strategy for rendered documentation, including
+            how namespaces are represented in the file system and what characters are used
+            as separators in file names.
+
+## Constructors
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor
+
+Initializes a new instance of the [FileNamingOptions](/test/api-reference/CloudNimble/DotNetDocs/Core/Configuration/FileNamingOptions) class with default settings.
+
+#### Syntax
+
+```csharp
+public FileNamingOptions()
+```
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor
+
+Initializes a new instance of the [FileNamingOptions](/test/api-reference/CloudNimble/DotNetDocs/Core/Configuration/FileNamingOptions) class with the specified settings.
+
+#### Syntax
+
+```csharp
+public FileNamingOptions(CloudNimble.DotNetDocs.Core.Configuration.NamespaceMode namespaceMode, char namespaceSeparator = '-')
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `namespaceMode` | `CloudNimble.DotNetDocs.Core.Configuration.NamespaceMode` | The namespace organization mode. |
+| `namespaceSeparator` | `char` | The character to use as a namespace separator in file names. |
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public Object()
+```
+
+## Properties
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> NamespaceMode
+
+Gets or sets the mode for organizing namespace documentation.
+
+#### Syntax
+
+```csharp
+public CloudNimble.DotNetDocs.Core.Configuration.NamespaceMode NamespaceMode { get; set; }
+```
+
+#### Property Value
+
+Type: `CloudNimble.DotNetDocs.Core.Configuration.NamespaceMode`
+The namespace organization mode. Default is [NamespaceMode.File](/test/api-reference/CloudNimble/DotNetDocs/Core/Configuration/NamespaceMode#file).
+
+#### Remarks
+
+This property determines whether namespaces are rendered as individual files
+            or organized into a folder hierarchy.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> NamespaceSeparator
+
+Gets or sets the character used to separate namespace parts in file names.
+
+#### Syntax
+
+```csharp
+public char NamespaceSeparator { get; set; }
+```
+
+#### Property Value
+
+Type: `char`
+The separator character. Default is '-'.
+
+#### Remarks
+
+This setting is only used when [FileNamingOptions.NamespaceMode](/test/api-reference/CloudNimble/DotNetDocs/Core/Configuration/FileNamingOptions#namespacemode) is set to [NamespaceMode.File](/test/api-reference/CloudNimble/DotNetDocs/Core/Configuration/NamespaceMode#file).
+            When using [NamespaceMode.Folder](/test/api-reference/CloudNimble/DotNetDocs/Core/Configuration/NamespaceMode#folder), this setting is ignored as namespaces
+            are organized into actual folder hierarchies.
+            Common values include '-' (hyphen), '_' (underscore), or '.' (period).
+
+## Methods
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Clone
+
+Creates a copy of the current [FileNamingOptions](/test/api-reference/CloudNimble/DotNetDocs/Core/Configuration/FileNamingOptions) instance.
+
+#### Syntax
+
+```csharp
+public CloudNimble.DotNetDocs.Core.Configuration.FileNamingOptions Clone()
+```
+
+#### Returns
+
+Type: `CloudNimble.DotNetDocs.Core.Configuration.FileNamingOptions`
+A new instance with the same settings.
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Equals <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual bool Equals(object obj)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `obj` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Equals <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public static bool Equals(object objA, object objB)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `objA` | `object?` | - |
+| `objB` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetHashCode <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual int GetHashCode()
+```
+
+#### Returns
+
+Type: `int`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetType <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public System.Type GetType()
+```
+
+#### Returns
+
+Type: `System.Type`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> MemberwiseClone <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+protected internal object MemberwiseClone()
+```
+
+#### Returns
+
+Type: `object`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ReferenceEquals <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public static bool ReferenceEquals(object objA, object objB)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `objA` | `object?` | - |
+| `objB` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ToString <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual string ToString()
+```
+
+#### Returns
+
+Type: `string?`
+

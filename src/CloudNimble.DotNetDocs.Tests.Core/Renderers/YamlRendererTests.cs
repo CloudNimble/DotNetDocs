@@ -112,8 +112,8 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
 
             if (File.Exists(baselinePath))
             {
-                var baseline = await File.ReadAllTextAsync(baselinePath);
-                var actual = await File.ReadAllTextAsync(actualPath);
+                var baseline = await File.ReadAllTextAsync(baselinePath, TestContext.CancellationToken);
+                var actual = await File.ReadAllTextAsync(actualPath, TestContext.CancellationToken);
 
                 // Normalize line endings for cross-platform compatibility
                 var normalizedActual = actual.ReplaceLineEndings(Environment.NewLine);
@@ -159,7 +159,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             // Assert
             var context = GetService<ProjectContext>();
             var yamlPath = Path.Combine(_testOutputPath, context.ApiReferencePath, "documentation.yaml");
-            var yaml = await File.ReadAllTextAsync(yamlPath);
+            var yaml = await File.ReadAllTextAsync(yamlPath, TestContext.CancellationToken);
 
             Action act = () => _yamlDeserializer.Deserialize<Dictionary<string, object>>(yaml);
             act.Should().NotThrow();
@@ -182,7 +182,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             await GetYamlRenderer().RenderAsync(model);
 
             // Assert
-            var yaml = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, context.ApiReferencePath, "documentation.yaml"));
+            var yaml = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, context.ApiReferencePath, "documentation.yaml"), TestContext.CancellationToken);
             var document = _yamlDeserializer.Deserialize<Dictionary<string, object>>(yaml);
 
             // DocAssembly is serialized directly at root level
@@ -216,23 +216,28 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
                 var nsPath = Path.Combine(_testOutputPath, context.ApiReferencePath, nsFileName);
                 File.Exists(nsPath).Should().BeTrue($"Namespace file {nsFileName} should exist");
 
-                var yaml = await File.ReadAllTextAsync(nsPath);
+                var yaml = await File.ReadAllTextAsync(nsPath, TestContext.CancellationToken);
                 Action act = () => _yamlDeserializer.Deserialize<Dictionary<string, object>>(yaml);
                 act.Should().NotThrow();
             }
         }
 
         [TestMethod]
-        public async Task RenderAsync_WithNullModel_ThrowsArgumentNullException()
+        public async Task RenderAsync_WithNullModel_ReturnsWithoutError()
         {
             // Arrange
             var renderer = GetYamlRenderer();
+            var context = GetService<ProjectContext>();
 
-            // Act
-            Func<Task> act = async () => await renderer.RenderAsync(null!);
+            // Act - Documentation-only mode passes null model to renderers
+            Func<Task> act = async () => await renderer.RenderAsync(null);
 
-            // Assert
-            await act.Should().ThrowAsync<ArgumentNullException>();
+            // Assert - Should not throw, should return gracefully
+            await act.Should().NotThrowAsync();
+
+            // Verify no documentation.yaml was created (nothing to render)
+            var docYamlPath = Path.Combine(_testOutputPath, context.ApiReferencePath, "documentation.yaml");
+            File.Exists(docYamlPath).Should().BeFalse("No documentation file should be created for null model");
         }
 
         #endregion
@@ -283,7 +288,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
 
             // Assert
             var context = GetService<ProjectContext>();
-            var yaml = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, context.ApiReferencePath, "documentation.yaml"));
+            var yaml = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, context.ApiReferencePath, "documentation.yaml"), TestContext.CancellationToken);
             var document = _yamlDeserializer.Deserialize<Dictionary<string, object>>(yaml);
 
             // DocAssembly is serialized directly at root level
@@ -325,7 +330,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
 
             // Assert
             var context = GetService<ProjectContext>();
-            var yaml = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, context.ApiReferencePath, "documentation.yaml"));
+            var yaml = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, context.ApiReferencePath, "documentation.yaml"), TestContext.CancellationToken);
             var document = _yamlDeserializer.Deserialize<Dictionary<string, object>>(yaml);
 
             // DocAssembly is serialized directly at root level
@@ -377,7 +382,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
 
             // Assert
             var context = GetService<ProjectContext>();
-            var yaml = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, context.ApiReferencePath, "documentation.yaml"));
+            var yaml = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, context.ApiReferencePath, "documentation.yaml"), TestContext.CancellationToken);
             var document = _yamlDeserializer.Deserialize<Dictionary<string, object>>(yaml);
 
             // DocAssembly is serialized directly at root level
@@ -406,7 +411,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
                                         {
                                             param.Should().ContainKey("name");
                                             // parameterType or typeName should exist
-                                            (param.ContainsKey("parameterType") || param.ContainsKey("typeName")).Should().BeTrue();
+                                            (param.ContainsKey("parameterType") || param.ContainsKey("typeName")).Should().BeTrue("parameterType or typeName should exist");
 
                                             // These properties are only present when true or when hasDefaultValue is true
                                             // We just need to verify the structure is correct when they exist
@@ -450,13 +455,13 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             using var manager = new AssemblyManager(assemblyPath, xmlPath);
             var model = await manager.DocumentAsync(context);
             model.BestPractices = "Test best practices";
-            model.RelatedApis = new List<string> { "System.Object" };
+            model.RelatedApis = ["System.Object"];
 
             // Act
             await GetYamlRenderer().RenderAsync(model);
 
             // Assert
-            var yaml = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, context.ApiReferencePath, "documentation.yaml"));
+            var yaml = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, context.ApiReferencePath, "documentation.yaml"), TestContext.CancellationToken);
             var document = _yamlDeserializer.Deserialize<Dictionary<string, object>>(yaml);
 
             // DocAssembly is serialized directly at root level
@@ -605,7 +610,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
 
                 // YAML renderer includes types within namespace files, not as separate files
                 // So we just check that the namespace file exists
-                var content = await File.ReadAllTextAsync(indexFile);
+                var content = await File.ReadAllTextAsync(indexFile, TestContext.CancellationToken);
                 content.Should().NotBeNullOrWhiteSpace();
                 content.Should().Contain("types", "Namespace file should include types");
             }
@@ -694,7 +699,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
                     {
                         var fileName = Path.GetFileNameWithoutExtension(file);
                         // Check that file names don't contain invalid web characters
-                        fileName.Should().NotContainAny(new[] { "<", ">", ":", "\"", "|", "?", "*", "\\" },
+                        fileName.Should().NotContainAny(["<", ">", ":", "\"", "|", "?", "*", "\\"],
                             $"File names with separator '{separator}' should be web-safe");
                     }
                 }
@@ -795,7 +800,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
         private async Task CompareYamlWithFolderBaseline(string actualFilePath, string baselineRelativePath)
         {
             // Read actual file
-            var actualContent = await File.ReadAllTextAsync(actualFilePath);
+            var actualContent = await File.ReadAllTextAsync(actualFilePath, TestContext.CancellationToken);
             
             // Construct baseline path
             var baselineDir = Path.Combine(
@@ -814,13 +819,13 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
                 {
                     Directory.CreateDirectory(directory);
                 }
-                await File.WriteAllTextAsync(baselinePath, actualContent);
+                await File.WriteAllTextAsync(baselinePath, actualContent, TestContext.CancellationToken);
                 Assert.Inconclusive($"Baseline created at: {baselinePath}. Re-run test to verify.");
             }
             
             // Parse YAML for comparison
             var actualYaml = _yamlDeserializer.Deserialize<DocNamespace>(actualContent);
-            var baselineContent = await File.ReadAllTextAsync(baselinePath);
+            var baselineContent = await File.ReadAllTextAsync(baselinePath, TestContext.CancellationToken);
             var baselineYaml = _yamlDeserializer.Deserialize<DocNamespace>(baselineContent);
 
             // Compare YAML structures
@@ -847,8 +852,8 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
         /// these are unit test baselines for the renderer itself, not integration test baselines.
         /// The renderer should be tested in isolation without transformers applied.
         /// </remarks>
-        //[TestMethod]
-        //[DataRow(projectPath)]
+        [TestMethod]
+        [DataRow(projectPath)]
         [BreakdanceManifestGenerator]
         public async Task GenerateYamlBaselines(string projectPath)
         {
@@ -937,7 +942,6 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
 
             await renderer.RenderAsync(assembly);
         }
-
 
         #endregion
 

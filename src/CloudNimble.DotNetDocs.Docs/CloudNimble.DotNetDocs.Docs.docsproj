@@ -1,4 +1,4 @@
-﻿<Project Sdk="DotNetDocs.Sdk/1.1.0-preview.14">
+﻿<Project Sdk="DotNetDocs.Sdk/1.2.0">
 
     <PropertyGroup>
         <DocumentationType>Mintlify</DocumentationType>
@@ -48,8 +48,18 @@
                                 guides/index;
                                 guides/pipeline;
                                 guides/conceptual-docs;
+                                guides/collections;
                                 guides/deployment
                             </Pages>
+                            <Groups>
+                                <Group Name="References" Icon="book-spine">
+                                    <Pages>
+                                        guides/reference/index;
+                                        guides/reference/docsproj;
+                                        guides/reference/cli;
+                                    </Pages>
+                                </Group>
+                            </Groups>
                         </Group>
                         <Group Name="Providers" Icon="books">
                             <Pages>providers/index</Pages>
@@ -58,6 +68,7 @@
                                     <Pages>
                                         providers/mintlify/index;
                                         providers/mintlify/navigation;
+                                        providers/mintlify/collections;
                                         providers/mintlify/dotnet-library
                                     </Pages>
                                 </Group>
@@ -69,7 +80,8 @@
                         <Group Name="Learnings" Icon="chalkboard-user">
                             <Pages>
                                 learnings/bridge-assemblies;
-                                learnings/sdk-packaging
+                                learnings/sdk-packaging;
+                                learnings/converter-infinite-recursion;
                             </Pages>
                         </Group>
                     </Groups>

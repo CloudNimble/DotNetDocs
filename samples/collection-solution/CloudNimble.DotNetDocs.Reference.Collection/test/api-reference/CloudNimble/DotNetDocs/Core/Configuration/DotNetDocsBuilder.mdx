@@ -1,0 +1,576 @@
+---
+title: DotNetDocsBuilder
+description: "Builder for configuring the DotNetDocs documentation pipeline."
+icon: file-brackets-curly
+keywords: ['DotNetDocsBuilder', 'CloudNimble.DotNetDocs.Core.Configuration.DotNetDocsBuilder', 'CloudNimble.DotNetDocs.Core.Configuration', 'class', 'System.Object']
+---
+
+## Definition
+
+**Assembly:** CloudNimble.DotNetDocs.Core.dll
+
+**Namespace:** CloudNimble.DotNetDocs.Core.Configuration
+
+**Inheritance:** System.Object
+
+## Syntax
+
+```csharp
+CloudNimble.DotNetDocs.Core.Configuration.DotNetDocsBuilder
+```
+
+## Summary
+
+Builder for configuring the DotNetDocs documentation pipeline.
+
+## Remarks
+
+Provides a fluent API for registering renderers, enrichers, transformers,
+            and configuring the documentation pipeline context.
+
+## Constructors
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor
+
+Initializes a new instance of the [DotNetDocsBuilder](/test/api-reference/CloudNimble/DotNetDocs/Core/Configuration/DotNetDocsBuilder) class.
+
+#### Syntax
+
+```csharp
+public DotNetDocsBuilder(Microsoft.Extensions.DependencyInjection.IServiceCollection services)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `services` | `Microsoft.Extensions.DependencyInjection.IServiceCollection` | The service collection to configure. |
+
+#### Exceptions
+
+| Exception | Description |
+|-----------|-------------|
+| `ArgumentNullException` | Thrown when services is null. |
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public Object()
+```
+
+## Methods
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> AddEnricher
+
+Adds a custom enricher to the pipeline.
+
+#### Syntax
+
+```csharp
+public CloudNimble.DotNetDocs.Core.Configuration.DotNetDocsBuilder AddEnricher<TEnricher>() where TEnricher : class, CloudNimble.DotNetDocs.Core.IDocEnricher
+```
+
+#### Returns
+
+Type: `CloudNimble.DotNetDocs.Core.Configuration.DotNetDocsBuilder`
+The builder for chaining.
+
+#### Type Parameters
+
+- `TEnricher` - The type of enricher to add.
+
+#### Examples
+
+```csharp
+pipeline.AddEnricher&lt;ConceptualContentEnricher&gt;();
+```
+
+#### Remarks
+
+Enrichers add conceptual content to documentation entities.
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> AddRenderer
+
+Adds a custom renderer to the pipeline.
+
+#### Syntax
+
+```csharp
+public CloudNimble.DotNetDocs.Core.Configuration.DotNetDocsBuilder AddRenderer<TRenderer>() where TRenderer : class, CloudNimble.DotNetDocs.Core.IDocRenderer
+```
+
+#### Returns
+
+Type: `CloudNimble.DotNetDocs.Core.Configuration.DotNetDocsBuilder`
+The builder for chaining.
+
+#### Type Parameters
+
+- `TRenderer` - The type of renderer to add.
+
+#### Examples
+
+```csharp
+pipeline.AddRenderer&lt;MyCustomRenderer&gt;();
+```
+
+#### Remarks
+
+Renderers generate output in specific formats (e.g., Markdown, JSON, YAML).
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> AddTransformer
+
+Adds a custom transformer to the pipeline.
+
+#### Syntax
+
+```csharp
+public CloudNimble.DotNetDocs.Core.Configuration.DotNetDocsBuilder AddTransformer<TTransformer>() where TTransformer : class, CloudNimble.DotNetDocs.Core.IDocTransformer
+```
+
+#### Returns
+
+Type: `CloudNimble.DotNetDocs.Core.Configuration.DotNetDocsBuilder`
+The builder for chaining.
+
+#### Type Parameters
+
+- `TTransformer` - The type of transformer to add.
+
+#### Examples
+
+```csharp
+pipeline.AddTransformer&lt;InheritDocTransformer&gt;();
+```
+
+#### Remarks
+
+Transformers modify the documentation model before rendering.
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ConfigureContext
+
+Configures the ProjectContext for the pipeline.
+
+#### Syntax
+
+```csharp
+public CloudNimble.DotNetDocs.Core.Configuration.DotNetDocsBuilder ConfigureContext(System.Action<CloudNimble.DotNetDocs.Core.ProjectContext> configure)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `configure` | `System.Action<CloudNimble.DotNetDocs.Core.ProjectContext>` | Action to configure the ProjectContext. |
+
+#### Returns
+
+Type: `CloudNimble.DotNetDocs.Core.Configuration.DotNetDocsBuilder`
+The builder for chaining.
+
+#### Examples
+
+```csharp
+pipeline.ConfigureContext(ctx =&gt;
+{
+    ctx.OutputPath = "docs/api";
+    ctx.ShowPlaceholders = false;
+});
+```
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Equals <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual bool Equals(object obj)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `obj` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Equals <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public static bool Equals(object objA, object objB)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `objA` | `object?` | - |
+| `objB` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetHashCode <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual int GetHashCode()
+```
+
+#### Returns
+
+Type: `int`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetType <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public System.Type GetType()
+```
+
+#### Returns
+
+Type: `System.Type`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> MemberwiseClone <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+protected internal object MemberwiseClone()
+```
+
+#### Returns
+
+Type: `object`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ReferenceEquals <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public static bool ReferenceEquals(object objA, object objB)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `objA` | `object?` | - |
+| `objB` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ToString <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual string ToString()
+```
+
+#### Returns
+
+Type: `string?`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> UseJsonRenderer
+
+Adds the JSON renderer to the pipeline.
+
+#### Syntax
+
+```csharp
+public CloudNimble.DotNetDocs.Core.Configuration.DotNetDocsBuilder UseJsonRenderer(System.Action<CloudNimble.DotNetDocs.Core.Renderers.JsonRendererOptions> configure = null)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `configure` | `System.Action<CloudNimble.DotNetDocs.Core.Renderers.JsonRendererOptions>?` | Optional action to configure JsonRendererOptions. |
+
+#### Returns
+
+Type: `CloudNimble.DotNetDocs.Core.Configuration.DotNetDocsBuilder`
+The builder for chaining.
+
+#### Examples
+
+```csharp
+pipeline.UseJsonRenderer(options =&gt;
+{
+    options.WriteIndented = true;
+    options.IncludeNullValues = false;
+});
+```
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> UseMarkdownRenderer
+
+Adds the Markdown renderer to the pipeline.
+
+#### Syntax
+
+```csharp
+public CloudNimble.DotNetDocs.Core.Configuration.DotNetDocsBuilder UseMarkdownRenderer()
+```
+
+#### Returns
+
+Type: `CloudNimble.DotNetDocs.Core.Configuration.DotNetDocsBuilder`
+The builder for chaining.
+
+#### Examples
+
+```csharp
+pipeline.UseMarkdownRenderer();
+```
+
+#### Remarks
+
+Also registers MarkdownXmlTransformer to process XML documentation tags.
+
+### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> UseMintlifyRenderer <Badge color="green">Extension</Badge>
+
+<Note>Extension method from `CloudNimble.DotNetDocs.Core.Configuration.DotNetDocsMintlify_DotNetDocsBuilderExtensions`</Note>
+
+Adds the Mintlify renderer to the documentation pipeline.
+
+#### Syntax
+
+```csharp
+public static CloudNimble.DotNetDocs.Core.Configuration.DotNetDocsBuilder UseMintlifyRenderer(CloudNimble.DotNetDocs.Core.Configuration.DotNetDocsBuilder builder)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `builder` | `CloudNimble.DotNetDocs.Core.Configuration.DotNetDocsBuilder` | The DotNetDocs pipeline builder. |
+
+#### Returns
+
+Type: `CloudNimble.DotNetDocs.Core.Configuration.DotNetDocsBuilder`
+The builder for chaining.
+
+#### Examples
+
+```csharp
+services.AddDotNetDocsPipeline(pipeline =&gt;
+{
+    pipeline
+        .UseMintlifyRenderer()
+        .ConfigureContext(ctx =&gt; ctx.OutputPath = "docs/api");
+});
+```
+
+#### Remarks
+
+
+
+This method registers:
+
+
+
+
+### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> UseMintlifyRenderer <Badge color="green">Extension</Badge>
+
+<Note>Extension method from `CloudNimble.DotNetDocs.Core.Configuration.DotNetDocsMintlify_DotNetDocsBuilderExtensions`</Note>
+
+Adds the Mintlify renderer to the documentation pipeline with configuration options.
+
+#### Syntax
+
+```csharp
+public static CloudNimble.DotNetDocs.Core.Configuration.DotNetDocsBuilder UseMintlifyRenderer(CloudNimble.DotNetDocs.Core.Configuration.DotNetDocsBuilder builder, System.Action<CloudNimble.DotNetDocs.Mintlify.MintlifyRendererOptions> configureMintlify)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `builder` | `CloudNimble.DotNetDocs.Core.Configuration.DotNetDocsBuilder` | The DotNetDocs pipeline builder. |
+| `configureMintlify` | `System.Action<CloudNimble.DotNetDocs.Mintlify.MintlifyRendererOptions>` | Action to configure Mintlify options. |
+
+#### Returns
+
+Type: `CloudNimble.DotNetDocs.Core.Configuration.DotNetDocsBuilder`
+The builder for chaining.
+
+#### Examples
+
+```csharp
+services.AddDotNetDocsPipeline(pipeline =&gt;
+{
+    pipeline
+        .UseMintlifyRenderer(options =&gt;
+        {
+            options.GenerateDocsJson = true;
+            options.IncludeIcons = true;
+        })
+        .ConfigureContext(ctx =&gt; ctx.OutputPath = "docs/api");
+});
+```
+
+#### Remarks
+
+
+
+This method registers:
+
+
+
+
+### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> UseMintlifyRenderer <Badge color="green">Extension</Badge>
+
+<Note>Extension method from `CloudNimble.DotNetDocs.Core.Configuration.DotNetDocsMintlify_DotNetDocsBuilderExtensions`</Note>
+
+Adds a custom Mintlify renderer implementation to the documentation pipeline.
+
+#### Syntax
+
+```csharp
+public static CloudNimble.DotNetDocs.Core.Configuration.DotNetDocsBuilder UseMintlifyRenderer<TRenderer>(CloudNimble.DotNetDocs.Core.Configuration.DotNetDocsBuilder builder) where TRenderer : CloudNimble.DotNetDocs.Mintlify.MintlifyRenderer
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `builder` | `CloudNimble.DotNetDocs.Core.Configuration.DotNetDocsBuilder` | The DotNetDocs pipeline builder. |
+
+#### Returns
+
+Type: `CloudNimble.DotNetDocs.Core.Configuration.DotNetDocsBuilder`
+The builder for chaining.
+
+#### Type Parameters
+
+- `TRenderer` - The type of Mintlify renderer to add.
+
+#### Examples
+
+```csharp
+services.AddDotNetDocsPipeline(pipeline =&gt;
+{
+    pipeline
+        .UseMintlifyRenderer&lt;CustomMintlifyRenderer&gt;()
+        .ConfigureContext(ctx =&gt; ctx.OutputPath = "docs");
+});
+```
+
+#### Remarks
+
+
+
+The renderer must inherit from MintlifyRenderer.
+
+
+
+This method also registers:
+
+
+
+
+### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> UseMintlifyRenderer <Badge color="green">Extension</Badge>
+
+<Note>Extension method from `CloudNimble.DotNetDocs.Core.Configuration.DotNetDocsMintlify_DotNetDocsBuilderExtensions`</Note>
+
+Adds a custom Mintlify renderer implementation to the documentation pipeline with configuration options.
+
+#### Syntax
+
+```csharp
+public static CloudNimble.DotNetDocs.Core.Configuration.DotNetDocsBuilder UseMintlifyRenderer<TRenderer>(CloudNimble.DotNetDocs.Core.Configuration.DotNetDocsBuilder builder, System.Action<CloudNimble.DotNetDocs.Mintlify.MintlifyRendererOptions> configureMintlify) where TRenderer : CloudNimble.DotNetDocs.Mintlify.MintlifyRenderer
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `builder` | `CloudNimble.DotNetDocs.Core.Configuration.DotNetDocsBuilder` | The DotNetDocs pipeline builder. |
+| `configureMintlify` | `System.Action<CloudNimble.DotNetDocs.Mintlify.MintlifyRendererOptions>` | Action to configure Mintlify options. |
+
+#### Returns
+
+Type: `CloudNimble.DotNetDocs.Core.Configuration.DotNetDocsBuilder`
+The builder for chaining.
+
+#### Type Parameters
+
+- `TRenderer` - The type of Mintlify renderer to add.
+
+#### Examples
+
+```csharp
+services.AddDotNetDocsPipeline(pipeline =&gt;
+{
+    pipeline
+        .UseMintlifyRenderer&lt;CustomMintlifyRenderer&gt;(options =&gt;
+        {
+            options.GenerateDocsJson = true;
+        })
+        .ConfigureContext(ctx =&gt; ctx.OutputPath = "docs");
+});
+```
+
+#### Remarks
+
+
+
+The renderer must inherit from MintlifyRenderer.
+
+
+
+This method also registers:
+
+
+
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> UseYamlRenderer
+
+Adds the YAML renderer to the pipeline.
+
+#### Syntax
+
+```csharp
+public CloudNimble.DotNetDocs.Core.Configuration.DotNetDocsBuilder UseYamlRenderer()
+```
+
+#### Returns
+
+Type: `CloudNimble.DotNetDocs.Core.Configuration.DotNetDocsBuilder`
+The builder for chaining.
+
+#### Examples
+
+```csharp
+pipeline.UseYamlRenderer();
+```
+

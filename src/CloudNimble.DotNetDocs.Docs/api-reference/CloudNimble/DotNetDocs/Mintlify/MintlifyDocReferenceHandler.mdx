@@ -1,0 +1,88 @@
+---
+title: MintlifyDocReferenceHandler
+description: "Handles documentation references for Mintlify documentation format."
+icon: file-brackets-curly
+keywords: ['MintlifyDocReferenceHandler', 'CloudNimble.DotNetDocs.Mintlify.MintlifyDocReferenceHandler', 'CloudNimble.DotNetDocs.Mintlify', 'class', 'CloudNimble.DotNetDocs.Core.MarkdownDocReferenceHandler']
+---
+
+## Definition
+
+**Assembly:** CloudNimble.DotNetDocs.Mintlify.dll
+
+**Namespace:** CloudNimble.DotNetDocs.Mintlify
+
+**Inheritance:** CloudNimble.DotNetDocs.Core.MarkdownDocReferenceHandler
+
+## Syntax
+
+```csharp
+CloudNimble.DotNetDocs.Mintlify.MintlifyDocReferenceHandler
+```
+
+## Summary
+
+Handles documentation references for Mintlify documentation format.
+
+## Remarks
+
+
+
+
+            This handler extends [MarkdownDocReferenceHandler](/api-reference/CloudNimble/DotNetDocs/Core/MarkdownDocReferenceHandler) to add Mintlify-specific
+            content rewriting patterns including ES imports, JSX attributes, and CSS url() references.
+            
+
+
+
+
+            It processes referenced documentation by:
+            
+
+
+
+
+## Constructors
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor
+
+#### Syntax
+
+```csharp
+public MintlifyDocReferenceHandler()
+```
+
+## Properties
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> DocumentationType <Badge color="blue">Override</Badge>
+
+#### Syntax
+
+```csharp
+public override CloudNimble.DotNetDocs.Core.Configuration.SupportedDocumentationType DocumentationType { get; }
+```
+
+#### Property Value
+
+Type: `CloudNimble.DotNetDocs.Core.Configuration.SupportedDocumentationType`
+
+## Methods
+
+### <Icon icon="code-merge" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ProcessAsync <Badge color="blue">Override</Badge>
+
+#### Syntax
+
+```csharp
+public override System.Threading.Tasks.Task ProcessAsync(CloudNimble.DotNetDocs.Core.DocumentationReference reference, string documentationRootPath)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `reference` | `CloudNimble.DotNetDocs.Core.DocumentationReference` | - |
+| `documentationRootPath` | `string` | - |
+
+#### Returns
+
+Type: `System.Threading.Tasks.Task`
+

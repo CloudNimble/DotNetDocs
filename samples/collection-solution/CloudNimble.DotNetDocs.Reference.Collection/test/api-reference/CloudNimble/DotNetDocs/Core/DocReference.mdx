@@ -1,0 +1,327 @@
+---
+title: DocReference
+description: "Represents a cross-reference in documentation, such as a see or seealso tag."
+icon: file-brackets-curly
+keywords: ['DocReference', 'CloudNimble.DotNetDocs.Core.DocReference', 'CloudNimble.DotNetDocs.Core', 'class', 'System.Object']
+---
+
+## Definition
+
+**Assembly:** CloudNimble.DotNetDocs.Core.dll
+
+**Namespace:** CloudNimble.DotNetDocs.Core
+
+**Inheritance:** System.Object
+
+## Syntax
+
+```csharp
+CloudNimble.DotNetDocs.Core.DocReference
+```
+
+## Summary
+
+Represents a cross-reference in documentation, such as a see or seealso tag.
+
+## Remarks
+
+This class encapsulates all information needed to resolve and render a documentation reference,
+            including the original reference string, resolved display name, relative path, and anchor for
+            member-level references.
+
+## Constructors
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor
+
+Initializes a new instance of the [DocReference](/test/api-reference/CloudNimble/DotNetDocs/Core/DocReference) class.
+
+#### Syntax
+
+```csharp
+public DocReference()
+```
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor
+
+Initializes a new instance of the [DocReference](/test/api-reference/CloudNimble/DotNetDocs/Core/DocReference) class with a raw reference.
+
+#### Syntax
+
+```csharp
+public DocReference(string rawReference)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `rawReference` | `string` | The raw reference string from XML documentation. |
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public Object()
+```
+
+## Properties
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Anchor
+
+Gets or sets the anchor for member-level references.
+
+#### Syntax
+
+```csharp
+public string Anchor { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+The anchor name for linking to specific members within a type, or null for type-level references.
+
+#### Examples
+
+For a reference to an enum value, this would be "file" for NamespaceMode.File.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> DisplayName
+
+Gets or sets the display name for the reference.
+
+#### Syntax
+
+```csharp
+public string DisplayName { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+The human-readable name to display for this reference.
+
+#### Examples
+
+For a member reference, this might be "NamespaceMode.File" or just "File" depending on context.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> IsResolved
+
+Gets or sets a value indicating whether this reference has been successfully resolved.
+
+#### Syntax
+
+```csharp
+public bool IsResolved { get; set; }
+```
+
+#### Property Value
+
+Type: `bool`
+True if the reference was found and resolved; otherwise, false.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> RawReference
+
+Gets or sets the original reference string from the XML documentation.
+
+#### Syntax
+
+```csharp
+public string RawReference { get; set; }
+```
+
+#### Property Value
+
+Type: `string`
+The raw cref value including any prefix (T:, F:, P:, M:, E:).
+
+#### Examples
+
+F:CloudNimble.DotNetDocs.Core.Configuration.NamespaceMode.File
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ReferenceType
+
+Gets or sets the type of reference.
+
+#### Syntax
+
+```csharp
+public CloudNimble.DotNetDocs.Core.ReferenceType ReferenceType { get; set; }
+```
+
+#### Property Value
+
+Type: `CloudNimble.DotNetDocs.Core.ReferenceType?`
+The classification of this reference.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> RelativePath
+
+Gets or sets the resolved root-relative path to the target documentation.
+
+#### Syntax
+
+```csharp
+public string RelativePath { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+The root-relative path to the target document (starting with /), or null if unresolved.
+
+#### Examples
+
+/Configuration/NamespaceMode.md
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> TargetEntity
+
+Gets or sets the target entity that this reference points to.
+
+#### Syntax
+
+```csharp
+public CloudNimble.DotNetDocs.Core.DocEntity TargetEntity { get; set; }
+```
+
+#### Property Value
+
+Type: `CloudNimble.DotNetDocs.Core.DocEntity?`
+The resolved DocEntity, or null if the reference couldn't be resolved.
+
+## Methods
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Equals <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual bool Equals(object obj)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `obj` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Equals <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public static bool Equals(object objA, object objB)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `objA` | `object?` | - |
+| `objB` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetHashCode <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual int GetHashCode()
+```
+
+#### Returns
+
+Type: `int`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetType <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public System.Type GetType()
+```
+
+#### Returns
+
+Type: `System.Type`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> MemberwiseClone <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+protected internal object MemberwiseClone()
+```
+
+#### Returns
+
+Type: `object`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ReferenceEquals <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public static bool ReferenceEquals(object objA, object objB)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `objA` | `object?` | - |
+| `objB` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ToMarkdownLink
+
+Generates a Markdown link for this reference.
+
+#### Syntax
+
+```csharp
+public string ToMarkdownLink()
+```
+
+#### Returns
+
+Type: `string`
+A Markdown-formatted link, or inline code if the reference is unresolved.
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ToString <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual string ToString()
+```
+
+#### Returns
+
+Type: `string?`
+

@@ -5,8 +5,6 @@ icon: file-brackets-curly
 keywords: ['ParameterVariations', 'CloudNimble.DotNetDocs.Tests.Shared.Parameters.ParameterVariations', 'CloudNimble.DotNetDocs.Tests.Shared.Parameters', 'class', 'System.Object']
 ---
 
-import { DocsBadge } from '/snippets/DocsBadge.jsx';
-
 ## Definition
 
 **Assembly:** CloudNimble.DotNetDocs.Tests.Shared.dll
@@ -31,7 +29,7 @@ This class contains methods with different parameter modifiers and types.
 
 ## Constructors
 
-### <Icon icon="hammer" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} /> .ctor
+### <Icon icon="hammer" iconType="duotone" color="#0D9373" size={24} className="mr-2" /> .ctor
 
 #### Syntax
 
@@ -39,7 +37,7 @@ This class contains methods with different parameter modifiers and types.
 public ParameterVariations()
 ```
 
-### <Icon icon="hammer" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} /> .ctor <DocsBadge text="Inherited" variant="neutral" />
+### <Icon icon="hammer" iconType="duotone" color="#0D9373" size={24} className="mr-2" /> .ctor <Badge color="gray">Inherited</Badge>
 
 <Note>Inherited from `object`</Note>
 
@@ -51,7 +49,7 @@ public Object()
 
 ## Methods
 
-### <Icon icon="code-fork" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} /> Equals <DocsBadge text="Inherited" variant="neutral" /> <DocsBadge text="Virtual" variant="warning" />
+### <Icon icon="code-fork" iconType="duotone" color="#0D9373" size={24} className="mr-2" /> Equals <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
 
 <Note>Inherited from `object`</Note>
 
@@ -71,7 +69,7 @@ public virtual bool Equals(object obj)
 
 Type: `bool`
 
-### <Icon icon="thumbtack" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} /> Equals <DocsBadge text="Inherited" variant="neutral" />
+### <Icon icon="thumbtack" iconType="duotone" color="#0D9373" size={24} className="mr-2" /> Equals <Badge color="gray">Inherited</Badge>
 
 <Note>Inherited from `object`</Note>
 
@@ -92,7 +90,7 @@ public static bool Equals(object objA, object objB)
 
 Type: `bool`
 
-### <Icon icon="function" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} /> GenericMethod
+### <Icon icon="function" iconType="duotone" color="#0D9373" size={24} className="mr-2" /> GenericMethod
 
 A generic method with a type parameter.
 
@@ -124,7 +122,7 @@ var result1 = GenericMethod&lt;int&gt;(42);
 var result2 = GenericMethod("hello");
 </code>
 
-### <Icon icon="function" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} /> GenericMethodWithMultipleTypes
+### <Icon icon="function" iconType="duotone" color="#0D9373" size={24} className="mr-2" /> GenericMethodWithMultipleTypes
 
 A method with multiple generic type parameters.
 
@@ -151,7 +149,7 @@ A key-value pair.
 - `TKey` - The type of the key.
 - `TValue` - The type of the value.
 
-### <Icon icon="code-fork" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} /> GetHashCode <DocsBadge text="Inherited" variant="neutral" /> <DocsBadge text="Virtual" variant="warning" />
+### <Icon icon="code-fork" iconType="duotone" color="#0D9373" size={24} className="mr-2" /> GetHashCode <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
 
 <Note>Inherited from `object`</Note>
 
@@ -165,7 +163,7 @@ public virtual int GetHashCode()
 
 Type: `int`
 
-### <Icon icon="function" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} /> GetType <DocsBadge text="Inherited" variant="neutral" />
+### <Icon icon="function" iconType="duotone" color="#0D9373" size={24} className="mr-2" /> GetType <Badge color="gray">Inherited</Badge>
 
 <Note>Inherited from `object`</Note>
 
@@ -179,7 +177,7 @@ public System.Type GetType()
 
 Type: `System.Type`
 
-### <Icon icon="function" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} /> MemberwiseClone <DocsBadge text="Inherited" variant="neutral" />
+### <Icon icon="function" iconType="duotone" color="#0D9373" size={24} className="mr-2" /> MemberwiseClone <Badge color="gray">Inherited</Badge>
 
 <Note>Inherited from `object`</Note>
 
@@ -193,7 +191,7 @@ protected object MemberwiseClone()
 
 Type: `object`
 
-### <Icon icon="function" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} /> MethodWithConstraints
+### <Icon icon="function" iconType="duotone" color="#0D9373" size={24} className="mr-2" /> MethodWithConstraints
 
 A method demonstrating parameter constraints.
 
@@ -218,7 +216,7 @@ The type name of the item.
 
 - `T` - The type parameter constrained to class types.
 
-### <Icon icon="function" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} /> MethodWithNullables
+### <Icon icon="function" iconType="duotone" color="#0D9373" size={24} className="mr-2" /> MethodWithNullables
 
 A method with nullable parameters.
 
@@ -240,7 +238,7 @@ public string MethodWithNullables(System.Nullable<int> nullableInt, string nulla
 Type: `string`
 A description of the provided values.
 
-### <Icon icon="function" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} /> MethodWithOptionalParam
+### <Icon icon="function" iconType="duotone" color="#0D9373" size={24} className="mr-2" /> MethodWithOptionalParam
 
 A method with an optional parameter.
 
@@ -269,7 +267,7 @@ var result1 = MethodWithOptionalParam("test");      // Uses default value 42
 var result2 = MethodWithOptionalParam("test", 100); // Uses provided value
 </code>
 
-### <Icon icon="function" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} /> MethodWithOut
+### <Icon icon="function" iconType="duotone" color="#0D9373" size={24} className="mr-2" /> MethodWithOut
 
 A method with an out parameter.
 
@@ -291,7 +289,7 @@ public bool MethodWithOut(string input, out int value)
 Type: `bool`
 true if the parsing was successful; otherwise, false.
 
-### <Icon icon="function" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} /> MethodWithParams
+### <Icon icon="function" iconType="duotone" color="#0D9373" size={24} className="mr-2" /> MethodWithParams
 
 A method with a params array.
 
@@ -319,7 +317,7 @@ var sum1 = MethodWithParams(1, 2, 3);        // Returns 6
 var sum2 = MethodWithParams(new[] { 1, 2 }); // Returns 3
 </code>
 
-### <Icon icon="function" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} /> MethodWithRef
+### <Icon icon="function" iconType="duotone" color="#0D9373" size={24} className="mr-2" /> MethodWithRef
 
 A method with a ref parameter.
 
@@ -339,7 +337,7 @@ public void MethodWithRef(ref int value)
 
 This method doubles the input value.
 
-### <Icon icon="thumbtack" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} /> ReferenceEquals <DocsBadge text="Inherited" variant="neutral" />
+### <Icon icon="thumbtack" iconType="duotone" color="#0D9373" size={24} className="mr-2" /> ReferenceEquals <Badge color="gray">Inherited</Badge>
 
 <Note>Inherited from `object`</Note>
 
@@ -360,7 +358,7 @@ public static bool ReferenceEquals(object objA, object objB)
 
 Type: `bool`
 
-### <Icon icon="code-fork" iconType="duotone" color="#0D9373" size={24} style={{ paddingRight: '8px' }} /> ToString <DocsBadge text="Inherited" variant="neutral" /> <DocsBadge text="Virtual" variant="warning" />
+### <Icon icon="code-fork" iconType="duotone" color="#0D9373" size={24} className="mr-2" /> ToString <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
 
 <Note>Inherited from `object`</Note>
 

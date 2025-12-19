@@ -1,0 +1,145 @@
+---
+title: Why DotNetDocs?
+sidebarTitle: Why DotNetDocs?
+description: by Robert McLaws - Former Microsoft MVP and CEO of CloudNimble
+icon: square-question
+---
+
+## Introduction
+
+I've been a .NET developer for 25 years now, since the very early previews of the .NET Framework. In that time, I've seen technologies like the Web Forms, 
+WCF Data Services, and Silverlight come and go. I've also seen the rise of open source, the growth of the cloud, and the pervasiveness of C#.
+
+A .NET influencer once tweeted "When I ask myself 'What would have the most impact today?' I sit down and write documentation."
+
+That has always stuck with me.
+
+.NET has never had a truly fantastic documentation story. For a while, I had hoped DocFX would be the answer, but Microsoft kept all the best plugins for themselves and never
+really contributed back to the platform in any meaningful way. I'm honestly not even sure what learn.microsoft.com is built on these days.
+
+Meanwhile, DocFX has languished in open source, with few contributors and even fewer updates. It's clunky, hard to customize, and frankly, a pain to use. So many hours wasted... 
+so much unrealized potential.
+
+### The Rise of AI
+
+In the last 18 months, documentation has gone from a "nice to have" to a requirement for AI coding tools. If the tool doesn't understand the code, it will generate shit.
+Every. Single. Time.
+
+It happened with my own code. It happened with other libraries. Babysitting the AI so it doesn't take a wrong turn. Explaining concepts to the AI when it crashed out. Over and over 
+and over again. My ample forehead flatened against my desk and my hair grayer from the experience.
+
+Which brought me back to that quote again.
+
+A full decade since that tweet, how are .NET developers to follow that advice? GitHub Copilot can fill in your XML doc comments, but there's been
+no place for them to go.
+
+### It's Time for a Change
+
+With Claude at my fingertips, it was time to finally build the solution the .NET Ecosystem always deserved, so every .NET developer can be a better Context Engineer.
+
+Six weekends later, the first release is finally ready.
+
+Now *every* .NET developer can write better documentation.
+
+So try it out. Let us know what still needs work. Open up some issues and help us make this ecosystem we love that much better.
+
+And write some great documentation.
+
+-Robert, 13 October 2025
+
+---
+
+## Design Tenets
+
+- It must be the simplest, most intuitive documenation system ever made
+- It must make Documentation a first-class citizen in Visual Studio and VSCode
+  - This means it should be able to edit content targeting any documentation platform
+- It must be built for .NET 10 first and designed for the next 25 years of .NET development
+- It must support standard formats but allow for premium experiences
+- It MUST support weaving long-lived and dynamically-generated content together
+
+##  What Makes DotNetDocs Special
+
+<CardGroup cols={4}>
+  <Card title="Multiple Output Formats" icon="palette">
+    Generate beautiful Mintlify sites, clean Markdown, structured JSON, or YAML - all from your existing XML documentation
+  </Card>
+  <Card title="MSBuild Integration" icon="gear">
+    Seamlessly integrate into your build process with MSBuild tasks and .NET CLI tools
+  </Card>
+  <Card title="Flexible Architecture" icon="cubes">
+    Modular design supports custom renderers, transformers, and extensibility patterns
+  </Card>
+  <Card title="Developer-First" icon="code">
+    Zero configuration required - works out of the box with sensible defaults and powerful customization
+  </Card>
+</CardGroup>
+
+## Supported Output Formats
+
+### Traditional Formats
+- **Markdown** - Clean, readable documentation for GitHub, GitLab, or any markdown processor
+- **JSON** - Structured data for custom integrations and tooling
+- **YAML** - Configuration-friendly format for documentation pipelines
+
+### Mintlify Integration
+Create stunning documentation sites with Mintlify's modern design system:
+- **Interactive Navigation** - Automatically generated from your namespace structure
+- **Code Syntax Highlighting** - Beautiful rendering of your C# signatures and examples
+- **Search Integration** - Built-in search across all your API documentation
+- **Responsive Design** - Perfect on desktop, tablet, and mobile devices
+
+## Customization Options
+
+### File Organization Modes
+<Tabs>
+  <Tab title="Folder Mode">
+    ```
+    📁 docs/
+    ├── 📁 MyNamespace/
+    │   ├── 📄 index.mdx
+    │   ├── 📄 MyClass.mdx
+    │   └── 📁 SubNamespace/
+    │       └── 📄 AnotherClass.mdx
+    └── 📄 index.mdx
+    ```
+    Mirrors your namespace structure as folders
+  </Tab>
+
+  <Tab title="File Mode">
+    ```
+    📁 docs/
+    ├── 📄 index.mdx
+    ├── 📄 MyNamespace.MyClass.mdx
+    ├── 📄 MyNamespace.SubNamespace.AnotherClass.mdx
+    └── 📄 MyNamespace.SubNamespace.mdx
+    ```
+    Flat structure with namespace prefixes
+  </Tab>
+</Tabs>
+
+### Mintlify Themes & Branding
+- **Custom Colors** - Match your brand identity
+- **Logo Integration** - Light and dark mode logo support
+- **Icon Customization** - Rich icon library for types and members
+- **Navigation Control** - Unified or assembly-grouped organization
+
+## Advanced Features
+
+### Smart Content Discovery
+DotNetDocs automatically discovers and integrates:
+- Existing MDX files in your documentation folder
+- Custom navigation structures via `navigation.json`
+- Conceptual documentation alongside API references
+- Asset files and resources
+
+### Extensible Architecture
+```csharp
+// Custom renderer example
+services.AddDotNetDocsPipeline(pipeline =>
+{
+    pipeline.UseCustomRenderer<MyRenderer>()
+           .AddTransformer<MyTransformer>()
+           .ConfigureContext(ctx => { /* ... */ });
+});
+```
