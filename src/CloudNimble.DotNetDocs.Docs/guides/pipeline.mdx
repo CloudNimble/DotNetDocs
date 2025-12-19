@@ -563,8 +563,8 @@ The `ProjectContext` class configures the entire pipeline. You can configure it 
 
   <Tab title="In .docsproj File">
     <CodeGroup>
-    ```xml Current (1.1.0)
-    <Project Sdk="DotNetDocs.Sdk/1.1.0">
+    ```xml Current (1.2.0)
+    <Project Sdk="DotNetDocs.Sdk/1.2.0">
 
       <PropertyGroup>
         <!-- Documentation Type -->
@@ -598,46 +598,6 @@ The `ProjectContext` class configures the entire pipeline. You can configure it 
           </Navigation>
         </MintlifyTemplate>
       </PropertyGroup>
-
-    </Project>
-    ```
-
-    ```xml Preview (1.2.0-preview.5)
-    <Project Sdk="DotNetDocs.Sdk/1.2.0-preview.5">
-
-      <PropertyGroup>
-        <!-- Documentation Type -->
-        <DocumentationType>Mintlify</DocumentationType>
-        <GenerateDocumentation>true</GenerateDocumentation>
-
-        <!-- File Organization -->
-        <NamespaceMode>Folder</NamespaceMode>
-
-        <!-- Features -->
-        <ConceptualDocsEnabled>true</ConceptualDocsEnabled>
-        <ShowPlaceholders>false</ShowPlaceholders>
-
-        <!-- Type Filtering -->
-        <ExcludePatterns>Tests.Shared;*.Sdk</ExcludePatterns>
-
-        <!-- Mintlify Template (optional) -->
-        <MintlifyTemplate>
-          <Name>My API Documentation</Name>
-          <Theme>maple</Theme>
-          <Colors>
-            <Primary>#419AC5</Primary>
-            <Light>#419AC5</Light>
-            <Dark>#3CD0E2</Dark>
-          </Colors>
-          <Logo>
-            <Light>/images/logo-light.svg</Light>
-            <Dark>/images/logo-dark.svg</Dark>
-          </Logo>
-          <Navigation Mode="Unified">
-          </Navigation>
-        </MintlifyTemplate>
-      </PropertyGroup>
-
 
     </Project>
     ```

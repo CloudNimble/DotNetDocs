@@ -16,14 +16,8 @@ The `.docsproj` file is the heart of your DotNetDocs project. It uses the DotNet
 Every `.docsproj` file must reference the DotNetDocs.Sdk:
 
 <CodeGroup>
-```xml Current (1.1.0)
-<Project Sdk="DotNetDocs.Sdk/1.1.0">
-  <!-- Your configuration here -->
-</Project>
-```
-
-```xml Preview (1.2.0-preview.5)
-<Project Sdk="DotNetDocs.Sdk/1.2.0-preview.5">
+```xml Current (1.2.0)
+<Project Sdk="DotNetDocs.Sdk/1.2.0">
   <!-- Your configuration here -->
 </Project>
 ```
@@ -276,7 +270,7 @@ When you include a `DocumentationReference`, the SDK:
 ### Multiple References Example
 
 ```xml
-<Project Sdk="DotNetDocs.Sdk/1.2.0-preview.5">
+<Project Sdk="DotNetDocs.Sdk/1.2.0">
   <PropertyGroup>
     <DocumentationType>Mintlify</DocumentationType>
     <MintlifyTemplate>
@@ -352,40 +346,8 @@ When you include a `DocumentationReference`, the SDK:
 Here's a complete `.docsproj` file demonstrating common configuration:
 
 <CodeGroup>
-```xml Current (1.1.0)
-<Project Sdk="DotNetDocs.Sdk/1.1.0">
-
-  <PropertyGroup>
-    <!-- Documentation Type -->
-    <DocumentationType>Mintlify</DocumentationType>
-
-    <!-- Generation Settings -->
-    <GenerateDocumentation>true</GenerateDocumentation>
-    <NamespaceMode>Folder</NamespaceMode>
-    <ShowDocumentationStats>true</ShowDocumentationStats>
-
-    <!-- Content Options -->
-    <ConceptualDocsEnabled>true</ConceptualDocsEnabled>
-    <ShowPlaceholders>false</ShowPlaceholders>
-
-    <!-- Mintlify Configuration -->
-    <MintlifyNavigationMode>Unified</MintlifyNavigationMode>
-    <MintlifyTemplate>
-      <Name>My Amazing Library</Name>
-      <Theme>maple</Theme>
-      <Colors>
-        <Primary>#419AC5</Primary>
-        <Light>#419AC5</Light>
-        <Dark>#3CD0E2</Dark>
-      </Colors>
-    </MintlifyTemplate>
-  </PropertyGroup>
-
-</Project>
-```
-
-```xml Preview (1.2.0-preview.5)
-<Project Sdk="DotNetDocs.Sdk/1.2.0-preview.5">
+```xml Current (1.2.0)
+<Project Sdk="DotNetDocs.Sdk/1.2.0">
 
   <PropertyGroup>
     <!-- Documentation Type -->
@@ -409,7 +371,6 @@ Here's a complete `.docsproj` file demonstrating common configuration:
         <Light>#419AC5</Light>
         <Dark>#3CD0E2</Dark>
       </Colors>
-      <!-- Navigation configuration (1.1.0+) -->
       <Navigation Mode="Unified" Type="Tabs" Name="API Reference">
         <Pages>
           <!-- Your navigation structure here -->

@@ -142,29 +142,8 @@ The `<Navigation>` element inside `<MintlifyTemplate>` controls how the collecti
 Add `<DocumentationReference>` items to your collection's `.docsproj` file, similar to how you use `<ProjectReference>`:
 
 <CodeGroup>
-```xml Current (1.1.0)
-<Project Sdk="DotNetDocs.Sdk/1.1.0">
-  <PropertyGroup>
-    <DocumentationType>Mintlify</DocumentationType>
-    <GenerateDocumentation>true</GenerateDocumentation>
-  </PropertyGroup>
-
-  <ItemGroup>
-    <DocumentationReference Include="../ServiceA/ServiceA.docsproj"
-                           DestinationPath="services/service-a"
-                           IntegrationType="Tabs" />
-    <DocumentationReference Include="../ServiceB/ServiceB.docsproj"
-                           DestinationPath="services/service-b"
-                           IntegrationType="Tabs" />
-    <DocumentationReference Include="../ServiceC/ServiceC.docsproj"
-                           DestinationPath="services/service-c"
-                           IntegrationType="Tabs" />
-  </ItemGroup>
-</Project>
-```
-
-```xml Preview (1.2.0-preview.5)
-<Project Sdk="DotNetDocs.Sdk/1.2.0-preview.5">
+```xml Current (1.2.0)
+<Project Sdk="DotNetDocs.Sdk/1.2.0">
   <PropertyGroup>
     <DocumentationType>Mintlify</DocumentationType>
     <GenerateDocumentation>true</GenerateDocumentation>
@@ -341,43 +320,8 @@ Create a unified documentation portal for a microservices architecture:
 **File**: `docs/MicroservicesPlatform.docsproj`
 
 <CodeGroup>
-```xml Current (1.1.0)
-<Project Sdk="DotNetDocs.Sdk/1.1.0">
-  <PropertyGroup>
-    <!-- Collection configuration -->
-    <DocumentationType>Mintlify</DocumentationType>
-    <GenerateDocumentation>false</GenerateDocumentation>
-
-    <!-- Optional: Collection can have its own branding -->
-    <MintlifyTemplate>
-      <Name>Microservices Platform</Name>
-      <Theme>quill</Theme>
-      <Colors>
-        <Primary>#0066CC</Primary>
-      </Colors>
-    </MintlifyTemplate>
-  </PropertyGroup>
-
-  <ItemGroup>
-    <!-- Reference individual service documentation -->
-    <DocumentationReference Include="../services/UserService/UserService.docsproj"
-                           DestinationPath="services/users"
-                           IntegrationType="Tabs" />
-    <DocumentationReference Include="../services/OrderService/OrderService.docsproj"
-                           DestinationPath="services/orders"
-                           IntegrationType="Tabs" />
-    <DocumentationReference Include="../services/PaymentService/PaymentService.docsproj"
-                           DestinationPath="services/payments"
-                           IntegrationType="Tabs" />
-    <DocumentationReference Include="../services/NotificationService/NotificationService.docsproj"
-                           DestinationPath="services/notifications"
-                           IntegrationType="Tabs" />
-  </ItemGroup>
-</Project>
-```
-
-```xml Preview (1.2.0-preview.5)
-<Project Sdk="DotNetDocs.Sdk/1.2.0-preview.5">
+```xml Current (1.2.0)
+<Project Sdk="DotNetDocs.Sdk/1.2.0">
   <PropertyGroup>
     <!-- Collection configuration -->
     <DocumentationType>Mintlify</DocumentationType>
@@ -453,33 +397,8 @@ Create a unified portal for related open-source products:
 **File**: `docs/EasyAF.Portal.docsproj`
 
 <CodeGroup>
-```xml Current (1.1.0)
-<Project Sdk="DotNetDocs.Sdk/1.1.0">
-  <PropertyGroup>
-    <DocumentationType>Mintlify</DocumentationType>
-    <MintlifyTemplate>
-      <Name>EasyAF Product Suite</Name>
-      <Theme>maple</Theme>
-    </MintlifyTemplate>
-  </PropertyGroup>
-
-  <ItemGroup>
-    <!-- Reference separate product repositories -->
-    <DocumentationReference Include="../../EasyAF.Core/docs/EasyAF.Core.docsproj"
-                           DestinationPath="core"
-                           IntegrationType="Products" />
-    <DocumentationReference Include="../../EasyAF.Http/docs/EasyAF.Http.docsproj"
-                           DestinationPath="http"
-                           IntegrationType="Products" />
-    <DocumentationReference Include="../../EasyAF.Validation/docs/EasyAF.Validation.docsproj"
-                           DestinationPath="validation"
-                           IntegrationType="Products" />
-  </ItemGroup>
-</Project>
-```
-
-```xml Preview (1.2.0-preview.5)
-<Project Sdk="DotNetDocs.Sdk/1.2.0-preview.5">
+```xml Current (1.2.0)
+<Project Sdk="DotNetDocs.Sdk/1.2.0">
   <PropertyGroup>
     <DocumentationType>Mintlify</DocumentationType>
     <MintlifyTemplate>
@@ -525,29 +444,8 @@ Create a unified portal for related open-source products:
 A collection that documents its own assemblies AND references external documentation:
 
 <CodeGroup>
-```xml Current (1.1.0)
-<Project Sdk="DotNetDocs.Sdk/1.1.0">
-  <PropertyGroup>
-    <!-- This collection also generates its own API docs -->
-    <DocumentationType>Mintlify</DocumentationType>
-    <GenerateDocumentation>true</GenerateDocumentation>
-    <NamespaceMode>Folder</NamespaceMode>
-  </PropertyGroup>
-
-  <ItemGroup>
-    <!-- Reference external plugin documentation -->
-    <DocumentationReference Include="../Plugins/AI/PluginAI.docsproj"
-                           DestinationPath="plugins/ai"
-                           IntegrationType="Tabs" />
-    <DocumentationReference Include="../Plugins/GitHub/PluginGitHub.docsproj"
-                           DestinationPath="plugins/github"
-                           IntegrationType="Tabs" />
-  </ItemGroup>
-</Project>
-```
-
-```xml Preview (1.2.0-preview.5)
-<Project Sdk="DotNetDocs.Sdk/1.2.0-preview.5">
+```xml Current (1.2.0)
+<Project Sdk="DotNetDocs.Sdk/1.2.0">
   <PropertyGroup>
     <!-- This collection also generates its own API docs -->
     <DocumentationType>Mintlify</DocumentationType>
