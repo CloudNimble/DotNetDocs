@@ -39,11 +39,17 @@
           "guides/index",
           "guides/pipeline",
           "guides/conceptual-docs",
-          "guides/deployment",
-          "guides/cli-reference",
           "guides/collections",
-          "guides/docsproj",
-          "guides/path-rewriting-test"
+          "guides/deployment",
+          {
+            "group": "References",
+            "icon": "book-spine",
+            "pages": [
+              "guides/reference/index",
+              "guides/reference/docsproj",
+              "guides/reference/cli"
+            ]
+          }
         ]
       },
       {
@@ -58,6 +64,7 @@
             "pages": [
               "providers/mintlify/index",
               "providers/mintlify/navigation",
+              "providers/mintlify/collections",
               "providers/mintlify/dotnet-library"
             ]
           }
