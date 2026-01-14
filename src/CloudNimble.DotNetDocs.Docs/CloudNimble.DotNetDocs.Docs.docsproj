@@ -6,7 +6,7 @@
         <NamespaceMode>Folder</NamespaceMode>
         <ShowDocumentationStats>true</ShowDocumentationStats>
         <!-- Exclude test projects from documentation -->
-        <ExcludePatterns>Tests.Shared;*.Sdk</ExcludePatterns>
+        <ExcludePatterns>Tests.Shared;*.Sdk;test</ExcludePatterns>
 
         <ConceptualDocsEnabled>true</ConceptualDocsEnabled>
         <ShowPlaceholders>false</ShowPlaceholders>

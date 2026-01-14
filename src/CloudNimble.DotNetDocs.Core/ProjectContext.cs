@@ -156,6 +156,15 @@ namespace CloudNimble.DotNetDocs.Core
         public bool ConceptualDocsEnabled { get; set; } = true;
 
         /// <summary>
+        /// Gets or sets whether a MintlifyTemplate is defined.
+        /// </summary>
+        /// <value>
+        /// When true, docs.json will be generated even without assemblies to document.
+        /// The presence of a template is an explicit signal that the user wants documentation output.
+        /// </value>
+        public bool HasMintlifyTemplate { get; set; } = false;
+
+        /// <summary>
         /// Gets or sets the collection of external documentation references to combine into this documentation collection.
         /// </summary>
         /// <value>

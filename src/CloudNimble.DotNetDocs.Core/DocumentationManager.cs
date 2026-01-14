@@ -115,15 +115,20 @@ namespace CloudNimble.DotNetDocs.Core
             var assemblyList = assemblies.ToList();
             var hasReferences = projectContext.DocumentationReferences.Any();
 
-            // Documentation-only mode: only process references, no assemblies
+            // Documentation-only mode: process references and/or template without local assemblies
             if (assemblyList.Count == 0)
             {
-                if (hasReferences)
+                // Run pipeline if we have references OR a MintlifyTemplate
+                if (hasReferences || projectContext.HasMintlifyTemplate)
                 {
-                    // Process referenced documentation with format-specific handlers
-                    await ProcessDocumentationReferencesAsync();
+                    if (hasReferences)
+                    {
+                        // Process referenced documentation with format-specific handlers
+                        await ProcessDocumentationReferencesAsync();
+                    }
 
-                    // Renderers still need to run for navigation file processing (pass null model)
+                    // Renderers run for navigation file processing (pass null model)
+                    // For Mintlify: generates docs.json from template + discovers content files
                     foreach (var renderer in renderers)
                     {
                         await renderer.RenderAsync(null);

@@ -31,12 +31,6 @@
     <File Path="dotnet.config" />
     <File Path="global.json" />
   </Folder>
-  <Folder Name="/Solution Items/Build/">
-    <File Path="../.github/dependabot.yml" />
-    <File Path="../.github/workflows/build-and-deploy.yml" />
-    <File Path="../.github/workflows/pr-validation.yml" />
-    <File Path="../.github/workflows/README.md" />
-  </Folder>
   <Folder Name="/Solution Items/Specs/">
     <File Path="../specs/core-documentation-fixes.md" />
     <File Path="../specs/core-documentation-spec.md" />

@@ -421,3 +421,5 @@ FodyWeavers.xsd
 /merge-solution.txt
 /opencode-prompt.txt
 /test-home
+/reset-counter.ps1
+/update-counter.ps1

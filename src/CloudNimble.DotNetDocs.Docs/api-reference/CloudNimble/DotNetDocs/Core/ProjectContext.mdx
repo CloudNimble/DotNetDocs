@@ -252,6 +252,22 @@ public CloudNimble.DotNetDocs.Core.Configuration.FileNamingOptions FileNamingOpt
 Type: `CloudNimble.DotNetDocs.Core.Configuration.FileNamingOptions`
 Configuration for how documentation files are named and organized.
 
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> HasMintlifyTemplate
+
+Gets or sets whether a MintlifyTemplate is defined.
+
+#### Syntax
+
+```csharp
+public bool HasMintlifyTemplate { get; set; }
+```
+
+#### Property Value
+
+Type: `bool`
+When true, docs.json will be generated even without assemblies to document.
+            The presence of a template is an explicit signal that the user wants documentation output.
+
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> IncludedMembers
 
 Gets or sets the list of member accessibilities to include in documentation.

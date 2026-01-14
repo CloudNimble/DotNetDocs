@@ -78,7 +78,7 @@
         </CloudNimble.DotNetDocs.Sdk.Tasks.DiscoverDocumentedProjectsTask>
 
         <Message Text="📚 Found @(DocumentedProjects->Count()) documented projects for documentation" Importance="high" />
-        
+
         <!-- Show the list of projects that will be documented -->
         <ItemGroup>
             <_ProjectNames Include="@(DocumentedProjects->'%(Filename)')" />
@@ -86,10 +86,24 @@
         <Message Text="   Projects: @(_ProjectNames, ', ')" Importance="normal" />
     </Target>
 
+    <!-- Detect if MintlifyTemplate is present - if so, always run the pipeline -->
+    <Target Name="DetectMintlifyTemplateMode"
+            Condition="'$(GenerateDocumentation)' == 'true' AND '$(DocumentationType)' == 'Mintlify'"
+            AfterTargets="DiscoverDocumentedProjects">
+
+        <PropertyGroup>
+            <!-- If MintlifyTemplate (inline XML) or DocsJsonTemplatePath (external file) is defined -->
+            <HasMintlifyTemplate Condition="'$(MintlifyTemplate)' != '' OR '$(DocsJsonTemplatePath)' != ''">true</HasMintlifyTemplate>
+            <HasMintlifyTemplate Condition="'$(HasMintlifyTemplate)' == ''">false</HasMintlifyTemplate>
+        </PropertyGroup>
+
+        <Message Text="📄 MintlifyTemplate detected: $(HasMintlifyTemplate)" Importance="high" Condition="'$(HasMintlifyTemplate)' == 'true'" />
+    </Target>
+
     <!-- Generate documentation from existing assemblies -->
     <Target Name="GenerateDocumentation"
             Condition="'$(GenerateDocumentation)' == 'true'"
-            DependsOnTargets="DiscoverDocumentedProjects">
+            DependsOnTargets="DiscoverDocumentedProjects;DetectMintlifyTemplateMode">
         <Message Text="🚀 Generating documentation from existing assemblies..." Importance="high" />
 
         <!-- Extract assembly paths from built projects (only main project assemblies) -->
@@ -134,6 +148,7 @@
             SolutionName="$(_SolutionName)"
             ConceptualDocsEnabled="$(ConceptualDocsEnabled)"
             ShowPlaceholders="$(ShowPlaceholders)"
+            HasMintlifyTemplate="$(HasMintlifyTemplate)"
             ResolvedDocumentationReferences="@(ResolvedDocumentationReference)">
             <Output TaskParameter="GeneratedFiles" ItemName="GeneratedDocumentationFiles" />
         </CloudNimble.DotNetDocs.Sdk.Tasks.GenerateDocumentationTask>

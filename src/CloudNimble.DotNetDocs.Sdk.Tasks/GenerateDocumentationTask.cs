@@ -115,6 +115,15 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
         /// </summary>
         public ITaskItem[]? ResolvedDocumentationReferences { get; set; }
 
+        /// <summary>
+        /// Gets or sets whether a MintlifyTemplate is defined (inline or file-based).
+        /// </summary>
+        /// <value>
+        /// When true, always generate docs.json regardless of assemblies.
+        /// The presence of a template is an explicit signal that the user wants documentation output.
+        /// </value>
+        public bool HasMintlifyTemplate { get; set; } = false;
+
         #endregion
 
         #region Public Methods
@@ -186,6 +195,7 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
                     context.FileNamingOptions.NamespaceMode = Enum.TryParse<NamespaceMode>(NamespaceMode, true, out var mode) ? mode : Core.Configuration.NamespaceMode.Folder;
                     context.ConceptualDocsEnabled = ConceptualDocsEnabled;
                     context.ShowPlaceholders = ShowPlaceholders;
+                    context.HasMintlifyTemplate = HasMintlifyTemplate;
 
                     // Add the validated documentation references
                     foreach (var reference in documentationReferences)
@@ -333,15 +343,21 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
                 }
 
                 // Handle different scenarios based on what we have
-                if (assemblyPairs.Count == 0 && !hasReferences)
+                if (assemblyPairs.Count == 0)
                 {
-                    Log.LogMessage(MessageImportance.High, "No assemblies or documentation references found. Nothing to process.");
-                    return true;
-                }
-
-                if (assemblyPairs.Count == 0 && hasReferences)
-                {
-                    Log.LogMessage(MessageImportance.High, "📚 Documentation-only mode: Processing DocumentationReferences without local assemblies");
+                    if (hasReferences)
+                    {
+                        Log.LogMessage(MessageImportance.High, "📚 Documentation-only mode: Processing DocumentationReferences without local assemblies");
+                    }
+                    else if (HasMintlifyTemplate)
+                    {
+                        Log.LogMessage(MessageImportance.High, "📄 Template mode: Generating docs.json from MintlifyTemplate without assemblies");
+                    }
+                    else
+                    {
+                        Log.LogMessage(MessageImportance.High, "No assemblies, documentation references, or template found. Nothing to process.");
+                        return true;
+                    }
                 }
 
                 // Process all assemblies together to properly merge navigation
