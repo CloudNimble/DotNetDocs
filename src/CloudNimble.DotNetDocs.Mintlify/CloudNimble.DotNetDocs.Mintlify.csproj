@@ -7,12 +7,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\CloudNimble.DotNetDocs.Core\CloudNimble.DotNetDocs.Core.csproj" />
-      <ProjectReference Include="..\Mintlify.Core\Mintlify.Core.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Extensions\" />
+        <ProjectReference Include="..\CloudNimble.DotNetDocs.Core\CloudNimble.DotNetDocs.Core.csproj" />
+        <ProjectReference Include="..\Mintlify.Core\Mintlify.Core.csproj" />
     </ItemGroup>
 
 </Project>
