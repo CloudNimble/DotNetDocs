@@ -15,7 +15,7 @@
 
     <ItemGroup>
         <PackageReference Include="Pastel" Version="7.*" />
-        <PackageReference Include="McMaster.Extensions.Hosting.CommandLine" Version="4.*" />
+        <PackageReference Include="McMaster.Extensions.Hosting.CommandLine" Version="5.0.0" />
     </ItemGroup>
 
     <ItemGroup Condition="'$(TargetFramework)' == 'net10.0'">
