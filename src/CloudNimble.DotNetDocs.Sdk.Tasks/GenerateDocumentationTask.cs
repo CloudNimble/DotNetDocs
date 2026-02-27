@@ -639,14 +639,73 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
         /// <returns>A NavigationConfig instance.</returns>
         internal NavigationConfig ParseNavigationConfig(XElement navigationElement)
         {
-            var navConfig = new NavigationConfig
-            {
-                Pages = []
-            };
+            var navConfig = new NavigationConfig();
 
+            // Parse Tabs
+            var tabsElement = navigationElement.Element("Tabs");
+            if (tabsElement is not null)
+            {
+                navConfig.Tabs = [];
+                foreach (var tabElement in tabsElement.Elements("Tab"))
+                {
+                    var tab = ParseTabConfig(tabElement);
+                    if (tab is not null)
+                    {
+                        navConfig.Tabs.Add(tab);
+                    }
+                }
+            }
+
+            // Parse Anchors
+            var anchorsElement = navigationElement.Element("Anchors");
+            if (anchorsElement is not null)
+            {
+                navConfig.Anchors = [];
+                foreach (var anchorElement in anchorsElement.Elements("Anchor"))
+                {
+                    var anchor = ParseAnchorConfig(anchorElement);
+                    if (anchor is not null)
+                    {
+                        navConfig.Anchors.Add(anchor);
+                    }
+                }
+            }
+
+            // Parse Dropdowns
+            var dropdownsElement = navigationElement.Element("Dropdowns");
+            if (dropdownsElement is not null)
+            {
+                navConfig.Dropdowns = [];
+                foreach (var dropdownElement in dropdownsElement.Elements("Dropdown"))
+                {
+                    var dropdown = ParseDropdownConfig(dropdownElement);
+                    if (dropdown is not null)
+                    {
+                        navConfig.Dropdowns.Add(dropdown);
+                    }
+                }
+            }
+
+            // Parse Products
+            var productsElement = navigationElement.Element("Products");
+            if (productsElement is not null)
+            {
+                navConfig.Products = [];
+                foreach (var productElement in productsElement.Elements("Product"))
+                {
+                    var product = ParseProductConfig(productElement);
+                    if (product is not null)
+                    {
+                        navConfig.Products.Add(product);
+                    }
+                }
+            }
+
+            // Parse Pages (only if explicitly provided alongside or instead of structured section types)
             var pagesElement = navigationElement.Element(nameof(NavigationConfig.Pages));
             if (pagesElement is not null)
             {
+                navConfig.Pages = [];
                 var groupsElement = pagesElement.Element("Groups");
                 if (groupsElement is not null)
                 {
@@ -660,9 +719,7 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
                     }
                 }
 
-                // Also parse any direct page references
-                var directPages = pagesElement.Elements("Page");
-                foreach (var pageElement in directPages)
+                foreach (var pageElement in pagesElement.Elements("Page"))
                 {
                     var pageName = pageElement.Value?.Trim();
                     if (!string.IsNullOrWhiteSpace(pageName))
@@ -739,6 +796,263 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
             }
 
             return group;
+        }
+
+        /// <summary>
+        /// Parses an Anchor element from the navigation XML.
+        /// </summary>
+        /// <param name="anchorElement">The anchor XML element.</param>
+        /// <returns>An <see cref="AnchorConfig"/> instance, or <see langword="null"/> if parsing fails.</returns>
+        /// <remarks>
+        /// Expects a <c>Name</c> attribute on the element. Optional attributes include <c>Href</c> and <c>Icon</c>.
+        /// Child <c>&lt;Pages&gt;</c> and <c>&lt;Tabs&gt;</c> elements are also parsed if present.
+        /// </remarks>
+        /// <example>
+        /// <code>
+        /// &lt;Anchor Name="API Reference" Href="/api" Icon="code"&gt;
+        ///     &lt;Pages&gt;
+        ///         &lt;Groups&gt;
+        ///             &lt;Group Name="Endpoints" Icon="bolt"&gt;
+        ///                 &lt;Pages&gt;api/index;api/auth&lt;/Pages&gt;
+        ///             &lt;/Group&gt;
+        ///         &lt;/Groups&gt;
+        ///     &lt;/Pages&gt;
+        /// &lt;/Anchor&gt;
+        /// </code>
+        /// </example>
+        internal AnchorConfig? ParseAnchorConfig(XElement anchorElement)
+        {
+            var anchorName = anchorElement.Attribute("Name")?.Value;
+            if (string.IsNullOrWhiteSpace(anchorName))
+            {
+                Log.LogWarning("Anchor element missing Name attribute, skipping");
+                return null;
+            }
+
+            var anchor = new AnchorConfig
+            {
+                Anchor = anchorName,
+                Href = anchorElement.Attribute("Href")?.Value,
+                Icon = anchorElement.Attribute("Icon")?.Value,
+                Pages = []
+            };
+
+            ParseNavigationSectionPages(anchorElement, anchor.Pages);
+
+            // Parse nested Tabs within Anchor
+            var tabsElement = anchorElement.Element("Tabs");
+            if (tabsElement is not null)
+            {
+                anchor.Tabs = [];
+                foreach (var tabElement in tabsElement.Elements("Tab"))
+                {
+                    var tab = ParseTabConfig(tabElement);
+                    if (tab is not null)
+                    {
+                        anchor.Tabs.Add(tab);
+                    }
+                }
+            }
+
+            return anchor;
+        }
+
+        /// <summary>
+        /// Parses a Dropdown element from the navigation XML.
+        /// </summary>
+        /// <param name="dropdownElement">The dropdown XML element.</param>
+        /// <returns>A <see cref="DropdownConfig"/> instance, or <see langword="null"/> if parsing fails.</returns>
+        /// <remarks>
+        /// Expects a <c>Name</c> attribute on the element. Optional attributes include <c>Href</c> and <c>Icon</c>.
+        /// Child <c>&lt;Pages&gt;</c>, <c>&lt;Tabs&gt;</c>, and <c>&lt;Anchors&gt;</c> elements are also parsed if present.
+        /// </remarks>
+        /// <example>
+        /// <code>
+        /// &lt;Dropdown Name="Products" Icon="grid"&gt;
+        ///     &lt;Anchors&gt;
+        ///         &lt;Anchor Name="Core" Icon="star"&gt;
+        ///             &lt;Pages&gt;&lt;Groups&gt;&lt;Group Name="Basics"&gt;&lt;Pages&gt;core/index&lt;/Pages&gt;&lt;/Group&gt;&lt;/Groups&gt;&lt;/Pages&gt;
+        ///         &lt;/Anchor&gt;
+        ///     &lt;/Anchors&gt;
+        /// &lt;/Dropdown&gt;
+        /// </code>
+        /// </example>
+        internal DropdownConfig? ParseDropdownConfig(XElement dropdownElement)
+        {
+            var dropdownName = dropdownElement.Attribute("Name")?.Value;
+            if (string.IsNullOrWhiteSpace(dropdownName))
+            {
+                Log.LogWarning("Dropdown element missing Name attribute, skipping");
+                return null;
+            }
+
+            var dropdown = new DropdownConfig
+            {
+                Dropdown = dropdownName,
+                Href = dropdownElement.Attribute("Href")?.Value,
+                Icon = dropdownElement.Attribute("Icon")?.Value,
+                Pages = []
+            };
+
+            ParseNavigationSectionPages(dropdownElement, dropdown.Pages);
+
+            // Parse nested Tabs within Dropdown
+            var tabsElement = dropdownElement.Element("Tabs");
+            if (tabsElement is not null)
+            {
+                dropdown.Tabs = [];
+                foreach (var tabElement in tabsElement.Elements("Tab"))
+                {
+                    var tab = ParseTabConfig(tabElement);
+                    if (tab is not null)
+                    {
+                        dropdown.Tabs.Add(tab);
+                    }
+                }
+            }
+
+            // Parse nested Anchors within Dropdown
+            var anchorsElement = dropdownElement.Element("Anchors");
+            if (anchorsElement is not null)
+            {
+                dropdown.Anchors = [];
+                foreach (var anchorElement in anchorsElement.Elements("Anchor"))
+                {
+                    var anchor = ParseAnchorConfig(anchorElement);
+                    if (anchor is not null)
+                    {
+                        dropdown.Anchors.Add(anchor);
+                    }
+                }
+            }
+
+            return dropdown;
+        }
+
+        /// <summary>
+        /// Parses a Product element from the navigation XML.
+        /// </summary>
+        /// <param name="productElement">The product XML element.</param>
+        /// <returns>A <see cref="ProductConfig"/> instance, or <see langword="null"/> if parsing fails.</returns>
+        /// <remarks>
+        /// Expects a <c>Name</c> attribute on the element. Optional attributes include <c>Href</c>, <c>Icon</c>, and <c>Description</c>.
+        /// Child <c>&lt;Pages&gt;</c> elements are also parsed if present.
+        /// </remarks>
+        /// <example>
+        /// <code>
+        /// &lt;Product Name="CloudNimble Core" Href="/core" Icon="box" Description="Core platform features"&gt;
+        ///     &lt;Pages&gt;
+        ///         &lt;Groups&gt;
+        ///             &lt;Group Name="Getting Started" Icon="stars"&gt;
+        ///                 &lt;Pages&gt;core/index;core/quickstart&lt;/Pages&gt;
+        ///             &lt;/Group&gt;
+        ///         &lt;/Groups&gt;
+        ///     &lt;/Pages&gt;
+        /// &lt;/Product&gt;
+        /// </code>
+        /// </example>
+        internal ProductConfig? ParseProductConfig(XElement productElement)
+        {
+            var productName = productElement.Attribute("Name")?.Value;
+            if (string.IsNullOrWhiteSpace(productName))
+            {
+                Log.LogWarning("Product element missing Name attribute, skipping");
+                return null;
+            }
+
+            var product = new ProductConfig
+            {
+                Product = productName,
+                Href = productElement.Attribute("Href")?.Value,
+                Icon = productElement.Attribute("Icon")?.Value,
+                Description = productElement.Attribute("Description")?.Value,
+                Pages = []
+            };
+
+            ParseNavigationSectionPages(productElement, product.Pages);
+
+            return product;
+        }
+
+        /// <summary>
+        /// Parses a Tab element from the navigation XML.
+        /// </summary>
+        /// <param name="tabElement">The tab XML element.</param>
+        /// <returns>A <see cref="TabConfig"/> instance, or <see langword="null"/> if parsing fails.</returns>
+        /// <remarks>
+        /// Expects a <c>Name</c> attribute on the element. Optional attributes include <c>Href</c> and <c>Icon</c>.
+        /// Child <c>&lt;Pages&gt;</c> elements are also parsed if present.
+        /// </remarks>
+        /// <example>
+        /// <code>
+        /// &lt;Tab Name="Guides" Href="/guides" Icon="book"&gt;
+        ///     &lt;Pages&gt;
+        ///         &lt;Groups&gt;
+        ///             &lt;Group Name="Getting Started" Icon="stars"&gt;
+        ///                 &lt;Pages&gt;guides/index;guides/quickstart&lt;/Pages&gt;
+        ///             &lt;/Group&gt;
+        ///         &lt;/Groups&gt;
+        ///     &lt;/Pages&gt;
+        /// &lt;/Tab&gt;
+        /// </code>
+        /// </example>
+        internal TabConfig? ParseTabConfig(XElement tabElement)
+        {
+            var tabName = tabElement.Attribute("Name")?.Value;
+            if (string.IsNullOrWhiteSpace(tabName))
+            {
+                Log.LogWarning("Tab element missing Name attribute, skipping");
+                return null;
+            }
+
+            var tab = new TabConfig
+            {
+                Tab = tabName,
+                Href = tabElement.Attribute("Href")?.Value,
+                Icon = tabElement.Attribute("Icon")?.Value,
+                Pages = []
+            };
+
+            ParseNavigationSectionPages(tabElement, tab.Pages);
+
+            return tab;
+        }
+
+        /// <summary>
+        /// Parses the <c>&lt;Pages&gt;</c> child element of a navigation section element and populates the provided
+        /// <paramref name="pages"/> list with page strings and nested <see cref="GroupConfig"/> objects.
+        /// </summary>
+        /// <param name="parentElement">The parent XML element that may contain a <c>&lt;Pages&gt;</c> child.</param>
+        /// <param name="pages">The list to populate with parsed page entries.</param>
+        private void ParseNavigationSectionPages(XElement parentElement, List<object> pages)
+        {
+            var pagesElement = parentElement.Element("Pages");
+            if (pagesElement is null)
+            {
+                return;
+            }
+
+            var groupsElement = pagesElement.Element("Groups");
+            if (groupsElement is not null)
+            {
+                foreach (var groupElement in groupsElement.Elements("Group"))
+                {
+                    var group = ParseGroupConfig(groupElement);
+                    if (group is not null)
+                    {
+                        pages.Add(group);
+                    }
+                }
+            }
+
+            foreach (var pageElement in pagesElement.Elements("Page"))
+            {
+                var pageName = pageElement.Value?.Trim();
+                if (!string.IsNullOrWhiteSpace(pageName))
+                {
+                    pages.Add(pageName);
+                }
+            }
         }
 
         /// <summary>
