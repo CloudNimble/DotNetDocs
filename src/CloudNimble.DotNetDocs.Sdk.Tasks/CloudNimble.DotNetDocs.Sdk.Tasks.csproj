@@ -20,7 +20,7 @@
 
     <ItemGroup>
         <!-- MSBuild task dependencies -->
-        <PackageReference Include="EasyAF.MSBuild" Version="4.*-*" />
+        <PackageReference Include="EasyAF.MSBuild" Version="4.*" />
         <PackageReference Include="System.Collections.Immutable" Version="9.*" PrivateAssets="all" />
 
         <!-- Microsoft.CodeAnalysis.CSharp.Workspaces needs to be available for the task -->
