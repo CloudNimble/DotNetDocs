@@ -38,7 +38,14 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
         /// Configures test host with a specific template and navigation configuration.
         /// This must be called before TestSetup() to ensure the configuration is set before services are built.
         /// </summary>
-        private void ConfigureTestWithTemplate(DocsJsonConfig? template, DocsNavigationConfig? navConfig = null)
+        /// <param name="template">The DocsJsonConfig template to use, or null for no template.</param>
+        /// <param name="navConfig">Optional navigation configuration to override defaults.</param>
+        /// <param name="contentOnly">
+        /// When <see langword="true"/>, sets <c>HasMintlifyTemplate = true</c> on the project context so that
+        /// <see cref="DocumentationManager.ProcessAsync(System.Collections.Generic.IEnumerable{System.ValueTuple{string,string}})"/>
+        /// with an empty assembly list still runs the renderer pipeline (content-only mode).
+        /// </param>
+        private void ConfigureTestWithTemplate(DocsJsonConfig? template, DocsNavigationConfig? navConfig = null, bool contentOnly = false)
         {
             _testOutputPath = Path.Combine(Path.GetTempPath(), $"MintlifyNavigationTypeTest_{Guid.NewGuid()}");
             Directory.CreateDirectory(_testOutputPath);
@@ -59,6 +66,10 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
                     {
                         ctx.DocumentationRootPath = _testOutputPath;
                         ctx.ApiReferencePath = string.Empty;
+                        if (contentOnly)
+                        {
+                            ctx.HasMintlifyTemplate = true;
+                        }
                     });
                 });
             });
@@ -329,6 +340,176 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
 
             config.Should().NotBeNull();
             config!.Navigation.Pages.Should().NotBeNullOrEmpty("Invalid NavigationType should default to Pages behavior");
+        }
+
+        #endregion
+
+        #region Explicit Template Navigation Section Tests
+
+        /// <summary>
+        /// Regression test: when a template defines explicit Tabs in the Navigation config, the renderer
+        /// must not auto-generate a parallel pages block from disk discovery (content-only mode).
+        /// </summary>
+        [TestMethod]
+        public async Task ExplicitTemplateTabs_ContentOnly_HasTabsAndNoPages()
+        {
+            // Arrange
+            ConfigureTestWithTemplate(
+                new DocsJsonConfig
+                {
+                    Name = "Test Docs",
+                    Theme = "mint",
+                    Colors = new ColorsConfig { Primary = "#000000" },
+                    Navigation = new NavigationConfig
+                    {
+                        Tabs =
+                        [
+                            new TabConfig { Tab = "Guides", Href = "/guides", Pages = ["guides/index"] },
+                            new TabConfig { Tab = "API Reference", Href = "/api", Pages = ["api/index"] }
+                        ]
+                    }
+                },
+                contentOnly: true);
+
+            var documentationManager = GetService<DocumentationManager>();
+
+            // Act
+            await documentationManager.ProcessAsync([]);
+
+            // Assert
+            var docsJsonPath = Path.Combine(_testOutputPath, "docs.json");
+            File.Exists(docsJsonPath).Should().BeTrue();
+
+            var json = File.ReadAllText(docsJsonPath);
+            var config = JsonSerializer.Deserialize<DocsJsonConfig>(json, MintlifyConstants.JsonSerializerOptions);
+
+            config.Should().NotBeNull();
+            config!.Navigation.Tabs.Should().HaveCount(2, "both template-defined tabs should be present");
+            config.Navigation.Tabs![0].Tab.Should().Be("Guides");
+            config.Navigation.Tabs![1].Tab.Should().Be("API Reference");
+            config.Navigation.Pages.Should().BeNull("explicit tabs navigation must not produce a spurious pages block");
+        }
+
+        /// <summary>
+        /// Regression test: when a template defines explicit Tabs, auto-discovery must not inject a pages block
+        /// even when a real assembly is also being processed.
+        /// </summary>
+        [TestMethod]
+        public async Task ExplicitTemplateTabs_WithAssembly_HasOnlyTabsAndNoPages()
+        {
+            // Arrange
+            ConfigureTestWithTemplate(new DocsJsonConfig
+            {
+                Name = "Test API",
+                Theme = "mint",
+                Colors = new ColorsConfig { Primary = "#000000" },
+                Navigation = new NavigationConfig
+                {
+                    Tabs =
+                    [
+                        new TabConfig { Tab = "Getting Started", Href = "/start", Pages = ["index"] },
+                        new TabConfig { Tab = "API Reference", Href = "/api", Pages = ["api/index"] }
+                    ]
+                }
+            });
+
+            var assemblyPath = typeof(SimpleClass).Assembly.Location;
+            var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
+            var documentationManager = GetService<DocumentationManager>();
+
+            // Act
+            await documentationManager.ProcessAsync(assemblyPath, xmlPath);
+
+            // Assert
+            var docsJsonPath = Path.Combine(_testOutputPath, "docs.json");
+            var json = File.ReadAllText(docsJsonPath);
+            var config = JsonSerializer.Deserialize<DocsJsonConfig>(json, MintlifyConstants.JsonSerializerOptions);
+
+            config.Should().NotBeNull();
+            config!.Navigation.Tabs.Should().HaveCount(2, "template-defined tabs should be preserved");
+            config.Navigation.Pages.Should().BeNull("auto-discovery must not inject pages alongside explicit tabs even when an assembly is present");
+        }
+
+        /// <summary>
+        /// Verifies that a template with explicit Anchors produces anchors and no pages in content-only mode.
+        /// </summary>
+        [TestMethod]
+        public async Task ExplicitTemplateAnchors_ContentOnly_HasAnchorsAndNoPages()
+        {
+            // Arrange
+            ConfigureTestWithTemplate(
+                new DocsJsonConfig
+                {
+                    Name = "Test Docs",
+                    Theme = "mint",
+                    Colors = new ColorsConfig { Primary = "#000000" },
+                    Navigation = new NavigationConfig
+                    {
+                        Anchors =
+                        [
+                            new AnchorConfig { Anchor = "Documentation", Href = "/docs", Icon = "book", Pages = [] },
+                            new AnchorConfig { Anchor = "API", Href = "/api", Icon = "code", Pages = [] }
+                        ]
+                    }
+                },
+                contentOnly: true);
+
+            var documentationManager = GetService<DocumentationManager>();
+
+            // Act
+            await documentationManager.ProcessAsync([]);
+
+            // Assert
+            var docsJsonPath = Path.Combine(_testOutputPath, "docs.json");
+            var json = File.ReadAllText(docsJsonPath);
+            var config = JsonSerializer.Deserialize<DocsJsonConfig>(json, MintlifyConstants.JsonSerializerOptions);
+
+            config.Should().NotBeNull();
+            config!.Navigation.Anchors.Should().HaveCount(2, "both template-defined anchors should be present");
+            config.Navigation.Anchors![0].Anchor.Should().Be("Documentation");
+            config.Navigation.Anchors![1].Anchor.Should().Be("API");
+            config.Navigation.Pages.Should().BeNull("explicit anchors navigation must not produce a spurious pages block");
+        }
+
+        /// <summary>
+        /// Verifies that a template with explicit Products produces products and no pages in content-only mode.
+        /// </summary>
+        [TestMethod]
+        public async Task ExplicitTemplateProducts_ContentOnly_HasProductsAndNoPages()
+        {
+            // Arrange
+            ConfigureTestWithTemplate(
+                new DocsJsonConfig
+                {
+                    Name = "Test Platform",
+                    Theme = "mint",
+                    Colors = new ColorsConfig { Primary = "#000000" },
+                    Navigation = new NavigationConfig
+                    {
+                        Products =
+                        [
+                            new ProductConfig { Product = "Core SDK", Href = "/core", Pages = ["core/index"] },
+                            new ProductConfig { Product = "Extensions", Href = "/ext", Pages = ["ext/index"] }
+                        ]
+                    }
+                },
+                contentOnly: true);
+
+            var documentationManager = GetService<DocumentationManager>();
+
+            // Act
+            await documentationManager.ProcessAsync([]);
+
+            // Assert
+            var docsJsonPath = Path.Combine(_testOutputPath, "docs.json");
+            var json = File.ReadAllText(docsJsonPath);
+            var config = JsonSerializer.Deserialize<DocsJsonConfig>(json, MintlifyConstants.JsonSerializerOptions);
+
+            config.Should().NotBeNull();
+            config!.Navigation.Products.Should().HaveCount(2, "both template-defined products should be present");
+            config.Navigation.Products![0].Product.Should().Be("Core SDK");
+            config.Navigation.Products![1].Product.Should().Be("Extensions");
+            config.Navigation.Pages.Should().BeNull("explicit products navigation must not produce a spurious pages block");
         }
 
         #endregion
