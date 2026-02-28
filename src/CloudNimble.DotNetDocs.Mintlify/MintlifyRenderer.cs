@@ -136,14 +136,27 @@ namespace CloudNimble.DotNetDocs.Mintlify
                     .Where(d => !string.IsNullOrWhiteSpace(d))
                     .ToArray();
 
-                // First: Discover existing MDX files in documentation root, preserving template navigation
-                // Exclude DocumentationReference output directories to prevent them from being treated as conceptual docs
-                _docsJsonManager.PopulateNavigationFromPath(Context.DocumentationRootPath, new[] { ".mdx" }, includeApiReference: false, preserveExisting: true, excludeDirectories: excludeDirectories);
+                // Determine whether the template already defines explicit navigation sections.
+                // When Tabs, Anchors, Dropdowns, or Products are present, all navigation is
+                // managed by the template — auto-discovery into Pages would produce a spurious
+                // parallel "pages" block alongside the explicit sections.
+                var templateNav = _docsJsonManager.Configuration?.Navigation;
+                var hasExplicitSections = templateNav?.Tabs is not null
+                    || templateNav?.Anchors is not null
+                    || templateNav?.Dropdowns is not null
+                    || templateNav?.Products is not null;
 
-                // Second: Add API reference content to existing navigation ONLY if model exists
-                if (model is not null)
+                if (!hasExplicitSections)
                 {
-                    BuildNavigationStructure(_docsJsonManager.Configuration!, model);
+                    // First: Discover existing MDX files in documentation root, preserving template navigation
+                    // Exclude DocumentationReference output directories to prevent them from being treated as conceptual docs
+                    _docsJsonManager.PopulateNavigationFromPath(Context.DocumentationRootPath, new[] { ".mdx" }, includeApiReference: false, preserveExisting: true, excludeDirectories: excludeDirectories);
+
+                    // Second: Add API reference content to existing navigation ONLY if model exists
+                    if (model is not null)
+                    {
+                        BuildNavigationStructure(_docsJsonManager.Configuration!, model);
+                    }
                 }
 
                 // Third: Apply NavigationType from template to move root content to Tabs/Products if configured
