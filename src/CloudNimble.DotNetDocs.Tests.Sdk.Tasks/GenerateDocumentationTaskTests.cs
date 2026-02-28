@@ -835,6 +835,566 @@ namespace CloudNimble.DotNetDocs.Tests.Sdk.Tasks
 
         #endregion
 
+        #region Tab, Anchor, Dropdown, and Product Parsing Tests
+
+        /// <summary>
+        /// Tests that ParseTabConfig correctly extracts tab name, href, and pages from XML.
+        /// </summary>
+        [TestMethod]
+        public void ParseTabConfig_WithNameAndHref_ParsesCorrectly()
+        {
+            // Arrange
+            var xml = """
+                <Tab Name="Guides" Href="/guides">
+                    <Pages>
+                        <Page>guides/index</Page>
+                        <Page>guides/quickstart</Page>
+                    </Pages>
+                </Tab>
+                """;
+            var tabElement = XElement.Parse(xml);
+
+            // Act
+            var result = _task.ParseTabConfig(tabElement);
+
+            // Assert
+            result.Should().NotBeNull();
+            result!.Tab.Should().Be("Guides");
+            result.Href.Should().Be("/guides");
+            result.Pages.Should().HaveCount(2);
+            result.Pages![0].Should().Be("guides/index");
+            result.Pages![1].Should().Be("guides/quickstart");
+        }
+
+        /// <summary>
+        /// Tests that ParseTabConfig correctly decodes HTML-encoded characters in the Name attribute.
+        /// </summary>
+        [TestMethod]
+        public void ParseTabConfig_WithHtmlEncodedName_DecodesCorrectly()
+        {
+            // Arrange
+            var xml = "<Tab Name=\"S&amp;S Landscape Design\" Href=\"/s-and-s\" />";
+            var tabElement = XElement.Parse(xml);
+
+            // Act
+            var result = _task.ParseTabConfig(tabElement);
+
+            // Assert
+            result.Should().NotBeNull();
+            result!.Tab.Should().Be("S&S Landscape Design");
+        }
+
+        /// <summary>
+        /// Tests that ParseTabConfig returns null when the Name attribute is missing.
+        /// </summary>
+        [TestMethod]
+        public void ParseTabConfig_WithoutName_ReturnsNull()
+        {
+            // Arrange
+            var xml = "<Tab Href=\"/guides\" />";
+            var tabElement = XElement.Parse(xml);
+
+            // Act
+            var result = _task.ParseTabConfig(tabElement);
+
+            // Assert
+            result.Should().BeNull();
+        }
+
+        /// <summary>
+        /// Tests that ParseTabConfig correctly parses nested groups within a tab.
+        /// </summary>
+        [TestMethod]
+        public void ParseTabConfig_WithNestedGroups_ParsesHierarchy()
+        {
+            // Arrange
+            var xml = """
+                <Tab Name="API Reference" Href="/api">
+                    <Pages>
+                        <Groups>
+                            <Group Name="Endpoints" Icon="bolt">
+                                <Pages>api/index;api/auth</Pages>
+                            </Group>
+                        </Groups>
+                    </Pages>
+                </Tab>
+                """;
+            var tabElement = XElement.Parse(xml);
+
+            // Act
+            var result = _task.ParseTabConfig(tabElement);
+
+            // Assert
+            result.Should().NotBeNull();
+            result!.Tab.Should().Be("API Reference");
+            result.Pages.Should().HaveCount(1);
+            result.Pages![0].Should().BeOfType<GroupConfig>();
+            var group = result.Pages![0] as GroupConfig;
+            group!.Group.Should().Be("Endpoints");
+            group.Icon!.Name.Should().Be("bolt");
+            group.Pages.Should().HaveCount(2);
+        }
+
+        /// <summary>
+        /// Tests that ParseTabConfig sets Href to null when the attribute is absent.
+        /// </summary>
+        [TestMethod]
+        public void ParseTabConfig_WithoutHref_HasNullHref()
+        {
+            // Arrange
+            var xml = "<Tab Name=\"Guides\" />";
+            var tabElement = XElement.Parse(xml);
+
+            // Act
+            var result = _task.ParseTabConfig(tabElement);
+
+            // Assert
+            result.Should().NotBeNull();
+            result!.Href.Should().BeNull();
+        }
+
+        /// <summary>
+        /// Tests that ParseTabConfig correctly sets the Icon property from the attribute.
+        /// </summary>
+        [TestMethod]
+        public void ParseTabConfig_WithIcon_SetsIcon()
+        {
+            // Arrange
+            var xml = "<Tab Name=\"Guides\" Icon=\"book\" />";
+            var tabElement = XElement.Parse(xml);
+
+            // Act
+            var result = _task.ParseTabConfig(tabElement);
+
+            // Assert
+            result.Should().NotBeNull();
+            result!.Icon.Should().NotBeNull();
+            result.Icon!.Name.Should().Be("book");
+        }
+
+        /// <summary>
+        /// Tests that ParseAnchorConfig correctly extracts anchor name, href, and pages from XML.
+        /// </summary>
+        [TestMethod]
+        public void ParseAnchorConfig_WithNameAndHref_ParsesCorrectly()
+        {
+            // Arrange
+            var xml = """
+                <Anchor Name="API Reference" Href="/api" Icon="code">
+                    <Pages>
+                        <Page>api/index</Page>
+                    </Pages>
+                </Anchor>
+                """;
+            var anchorElement = XElement.Parse(xml);
+
+            // Act
+            var result = _task.ParseAnchorConfig(anchorElement);
+
+            // Assert
+            result.Should().NotBeNull();
+            result!.Anchor.Should().Be("API Reference");
+            result.Href.Should().Be("/api");
+            result.Icon!.Name.Should().Be("code");
+            result.Pages.Should().HaveCount(1);
+            result.Pages![0].Should().Be("api/index");
+        }
+
+        /// <summary>
+        /// Tests that ParseAnchorConfig returns null when the Name attribute is missing.
+        /// </summary>
+        [TestMethod]
+        public void ParseAnchorConfig_WithoutName_ReturnsNull()
+        {
+            // Arrange
+            var xml = "<Anchor Href=\"/api\" />";
+            var anchorElement = XElement.Parse(xml);
+
+            // Act
+            var result = _task.ParseAnchorConfig(anchorElement);
+
+            // Assert
+            result.Should().BeNull();
+        }
+
+        /// <summary>
+        /// Tests that ParseAnchorConfig correctly parses nested tabs within an anchor.
+        /// </summary>
+        [TestMethod]
+        public void ParseAnchorConfig_WithNestedTabs_ParsesTabs()
+        {
+            // Arrange
+            var xml = """
+                <Anchor Name="Platform" Icon="layers">
+                    <Tabs>
+                        <Tab Name="Core" Href="/core">
+                            <Pages>
+                                <Page>core/index</Page>
+                            </Pages>
+                        </Tab>
+                        <Tab Name="Extensions" Href="/extensions" />
+                    </Tabs>
+                </Anchor>
+                """;
+            var anchorElement = XElement.Parse(xml);
+
+            // Act
+            var result = _task.ParseAnchorConfig(anchorElement);
+
+            // Assert
+            result.Should().NotBeNull();
+            result!.Anchor.Should().Be("Platform");
+            result.Tabs.Should().HaveCount(2);
+            result.Tabs![0].Tab.Should().Be("Core");
+            result.Tabs![0].Href.Should().Be("/core");
+            result.Tabs![1].Tab.Should().Be("Extensions");
+        }
+
+        /// <summary>
+        /// Tests that ParseDropdownConfig correctly extracts dropdown name, href, and pages from XML.
+        /// </summary>
+        [TestMethod]
+        public void ParseDropdownConfig_WithNameAndHref_ParsesCorrectly()
+        {
+            // Arrange
+            var xml = """
+                <Dropdown Name="Products" Href="/products" Icon="grid">
+                    <Pages>
+                        <Page>products/index</Page>
+                    </Pages>
+                </Dropdown>
+                """;
+            var dropdownElement = XElement.Parse(xml);
+
+            // Act
+            var result = _task.ParseDropdownConfig(dropdownElement);
+
+            // Assert
+            result.Should().NotBeNull();
+            result!.Dropdown.Should().Be("Products");
+            result.Href.Should().Be("/products");
+            result.Icon!.Name.Should().Be("grid");
+            result.Pages.Should().HaveCount(1);
+            result.Pages![0].Should().Be("products/index");
+        }
+
+        /// <summary>
+        /// Tests that ParseDropdownConfig returns null when the Name attribute is missing.
+        /// </summary>
+        [TestMethod]
+        public void ParseDropdownConfig_WithoutName_ReturnsNull()
+        {
+            // Arrange
+            var xml = "<Dropdown Href=\"/products\" />";
+            var dropdownElement = XElement.Parse(xml);
+
+            // Act
+            var result = _task.ParseDropdownConfig(dropdownElement);
+
+            // Assert
+            result.Should().BeNull();
+        }
+
+        /// <summary>
+        /// Tests that ParseDropdownConfig correctly parses nested tabs and anchors within a dropdown.
+        /// </summary>
+        [TestMethod]
+        public void ParseDropdownConfig_WithNestedTabsAndAnchors_ParsesBoth()
+        {
+            // Arrange
+            var xml = """
+                <Dropdown Name="Platform" Icon="layers">
+                    <Tabs>
+                        <Tab Name="Core" Href="/core" />
+                    </Tabs>
+                    <Anchors>
+                        <Anchor Name="API Reference" Href="/api" Icon="code" />
+                    </Anchors>
+                </Dropdown>
+                """;
+            var dropdownElement = XElement.Parse(xml);
+
+            // Act
+            var result = _task.ParseDropdownConfig(dropdownElement);
+
+            // Assert
+            result.Should().NotBeNull();
+            result!.Dropdown.Should().Be("Platform");
+            result.Tabs.Should().HaveCount(1);
+            result.Tabs![0].Tab.Should().Be("Core");
+            result.Anchors.Should().HaveCount(1);
+            result.Anchors![0].Anchor.Should().Be("API Reference");
+        }
+
+        /// <summary>
+        /// Tests that ParseProductConfig correctly extracts product name, href, and pages from XML.
+        /// </summary>
+        [TestMethod]
+        public void ParseProductConfig_WithNameAndHref_ParsesCorrectly()
+        {
+            // Arrange
+            var xml = """
+                <Product Name="CloudNimble Core" Href="/core" Icon="box">
+                    <Pages>
+                        <Page>core/index</Page>
+                        <Page>core/quickstart</Page>
+                    </Pages>
+                </Product>
+                """;
+            var productElement = XElement.Parse(xml);
+
+            // Act
+            var result = _task.ParseProductConfig(productElement);
+
+            // Assert
+            result.Should().NotBeNull();
+            result!.Product.Should().Be("CloudNimble Core");
+            result.Href.Should().Be("/core");
+            result.Icon!.Name.Should().Be("box");
+            result.Pages.Should().HaveCount(2);
+            result.Pages![0].Should().Be("core/index");
+            result.Pages![1].Should().Be("core/quickstart");
+        }
+
+        /// <summary>
+        /// Tests that ParseProductConfig correctly parses the Description attribute.
+        /// </summary>
+        [TestMethod]
+        public void ParseProductConfig_WithDescription_ParsesDescription()
+        {
+            // Arrange
+            var xml = "<Product Name=\"Core\" Href=\"/core\" Description=\"Core platform features\" />";
+            var productElement = XElement.Parse(xml);
+
+            // Act
+            var result = _task.ParseProductConfig(productElement);
+
+            // Assert
+            result.Should().NotBeNull();
+            result!.Description.Should().Be("Core platform features");
+        }
+
+        /// <summary>
+        /// Tests that ParseProductConfig returns null when the Name attribute is missing.
+        /// </summary>
+        [TestMethod]
+        public void ParseProductConfig_WithoutName_ReturnsNull()
+        {
+            // Arrange
+            var xml = "<Product Href=\"/core\" />";
+            var productElement = XElement.Parse(xml);
+
+            // Act
+            var result = _task.ParseProductConfig(productElement);
+
+            // Assert
+            result.Should().BeNull();
+        }
+
+        /// <summary>
+        /// Tests that ParseNavigationConfig populates Tabs and leaves Pages null when only Tabs are defined.
+        /// </summary>
+        [TestMethod]
+        public void ParseNavigationConfig_WithTabsElement_PopulatesTabsNotPages()
+        {
+            // Arrange
+            var xml = """
+                <Navigation>
+                    <Tabs>
+                        <Tab Name="Guides" Href="/guides" />
+                        <Tab Name="API" Href="/api" />
+                    </Tabs>
+                </Navigation>
+                """;
+            var navigationElement = XElement.Parse(xml);
+
+            // Act
+            var result = _task.ParseNavigationConfig(navigationElement);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Tabs.Should().HaveCount(2);
+            result.Pages.Should().BeNull();
+        }
+
+        /// <summary>
+        /// Tests that ParseNavigationConfig preserves the order of tabs as defined in the template.
+        /// </summary>
+        [TestMethod]
+        public void ParseNavigationConfig_WithTabsElement_PreservesTabOrder()
+        {
+            // Arrange
+            var xml = """
+                <Navigation>
+                    <Tabs>
+                        <Tab Name="S&amp;S Landscape Design" Href="/s-and-s" />
+                        <Tab Name="Scott Leese Consulting" Href="/scott-leese" />
+                        <Tab Name="Surf &amp; Sales" Href="/surf-sales" />
+                        <Tab Name="Surf &amp; Sales Podcast" Href="/podcast" />
+                        <Tab Name="What&apos;s Your Story" Href="/story" />
+                    </Tabs>
+                </Navigation>
+                """;
+            var navigationElement = XElement.Parse(xml);
+
+            // Act
+            var result = _task.ParseNavigationConfig(navigationElement);
+
+            // Assert
+            result.Tabs.Should().HaveCount(5);
+            result.Tabs![0].Tab.Should().Be("S&S Landscape Design");
+            result.Tabs![1].Tab.Should().Be("Scott Leese Consulting");
+            result.Tabs![2].Tab.Should().Be("Surf & Sales");
+            result.Tabs![3].Tab.Should().Be("Surf & Sales Podcast");
+            result.Tabs![4].Tab.Should().Be("What's Your Story");
+        }
+
+        /// <summary>
+        /// Tests that ParseNavigationConfig populates Anchors when an Anchors element is present.
+        /// </summary>
+        [TestMethod]
+        public void ParseNavigationConfig_WithAnchorsElement_PopulatesAnchors()
+        {
+            // Arrange
+            var xml = """
+                <Navigation>
+                    <Anchors>
+                        <Anchor Name="Docs" Href="/docs" Icon="book" />
+                        <Anchor Name="API" Href="/api" Icon="code" />
+                    </Anchors>
+                </Navigation>
+                """;
+            var navigationElement = XElement.Parse(xml);
+
+            // Act
+            var result = _task.ParseNavigationConfig(navigationElement);
+
+            // Assert
+            result.Anchors.Should().HaveCount(2);
+            result.Anchors![0].Anchor.Should().Be("Docs");
+            result.Anchors![1].Anchor.Should().Be("API");
+            result.Pages.Should().BeNull();
+        }
+
+        /// <summary>
+        /// Tests that ParseNavigationConfig populates Dropdowns when a Dropdowns element is present.
+        /// </summary>
+        [TestMethod]
+        public void ParseNavigationConfig_WithDropdownsElement_PopulatesDropdowns()
+        {
+            // Arrange
+            var xml = """
+                <Navigation>
+                    <Dropdowns>
+                        <Dropdown Name="Platform" Href="/platform" Icon="layers" />
+                        <Dropdown Name="Tools" Href="/tools" Icon="wrench" />
+                    </Dropdowns>
+                </Navigation>
+                """;
+            var navigationElement = XElement.Parse(xml);
+
+            // Act
+            var result = _task.ParseNavigationConfig(navigationElement);
+
+            // Assert
+            result.Dropdowns.Should().HaveCount(2);
+            result.Dropdowns![0].Dropdown.Should().Be("Platform");
+            result.Dropdowns![1].Dropdown.Should().Be("Tools");
+            result.Pages.Should().BeNull();
+        }
+
+        /// <summary>
+        /// Tests that ParseNavigationConfig populates Products when a Products element is present.
+        /// </summary>
+        [TestMethod]
+        public void ParseNavigationConfig_WithProductsElement_PopulatesProducts()
+        {
+            // Arrange
+            var xml = """
+                <Navigation>
+                    <Products>
+                        <Product Name="Core SDK" Href="/core" Icon="box" Description="The core library" />
+                        <Product Name="Extensions" Href="/extensions" Icon="puzzle" />
+                    </Products>
+                </Navigation>
+                """;
+            var navigationElement = XElement.Parse(xml);
+
+            // Act
+            var result = _task.ParseNavigationConfig(navigationElement);
+
+            // Assert
+            result.Products.Should().HaveCount(2);
+            result.Products![0].Product.Should().Be("Core SDK");
+            result.Products![0].Description.Should().Be("The core library");
+            result.Products![1].Product.Should().Be("Extensions");
+            result.Pages.Should().BeNull();
+        }
+
+        /// <summary>
+        /// Tests that ParseNavigationConfig can populate both Tabs and Anchors simultaneously.
+        /// </summary>
+        [TestMethod]
+        public void ParseNavigationConfig_WithTabsAndAnchors_PopulatesBoth()
+        {
+            // Arrange
+            var xml = """
+                <Navigation>
+                    <Tabs>
+                        <Tab Name="Guides" Href="/guides" />
+                    </Tabs>
+                    <Anchors>
+                        <Anchor Name="API" Href="/api" Icon="code" />
+                    </Anchors>
+                </Navigation>
+                """;
+            var navigationElement = XElement.Parse(xml);
+
+            // Act
+            var result = _task.ParseNavigationConfig(navigationElement);
+
+            // Assert
+            result.Tabs.Should().HaveCount(1);
+            result.Tabs![0].Tab.Should().Be("Guides");
+            result.Anchors.Should().HaveCount(1);
+            result.Anchors![0].Anchor.Should().Be("API");
+            result.Pages.Should().BeNull();
+        }
+
+        /// <summary>
+        /// Tests that ParseNavigationConfig still correctly processes Pages-based navigation for backward compatibility.
+        /// </summary>
+        [TestMethod]
+        public void ParseNavigationConfig_WithPagesElement_StillWorks()
+        {
+            // Arrange
+            var xml = """
+                <Navigation>
+                    <Pages>
+                        <Groups>
+                            <Group Name="Getting Started" Icon="stars">
+                                <Pages>index;quickstart</Pages>
+                            </Group>
+                        </Groups>
+                    </Pages>
+                </Navigation>
+                """;
+            var navigationElement = XElement.Parse(xml);
+
+            // Act
+            var result = _task.ParseNavigationConfig(navigationElement);
+
+            // Assert
+            result.Pages.Should().HaveCount(1);
+            result.Pages![0].Should().BeOfType<GroupConfig>();
+            var group = result.Pages![0] as GroupConfig;
+            group!.Group.Should().Be("Getting Started");
+            result.Tabs.Should().BeNull();
+            result.Anchors.Should().BeNull();
+        }
+
+        #endregion
+
         #region DocumentationReference Integration Tests
 
         [TestMethod]
