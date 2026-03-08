@@ -50,6 +50,24 @@ public Object()
 
 ## Properties
 
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Description
+
+Gets or sets a custom description for the 404 error page.
+
+#### Syntax
+
+```csharp
+public string Description { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+
+#### Remarks
+
+When specified, this description appears below the title on the 404 page.
+
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Redirect
 
 Gets or sets whether to automatically redirect users to the home page when a 404 error occurs.
@@ -62,7 +80,7 @@ public System.Nullable<bool> Redirect { get; set; }
 
 #### Property Value
 
-Type: `System.Nullable<bool>`
+Type: `System.Nullable<bool>?`
 
 #### Remarks
 
@@ -70,6 +88,24 @@ When true (default), users who navigate to non-existent pages will be automatica
             redirected to the home page of the documentation site. When false, users will see
             a standard 404 error page instead. Automatic redirection can improve user experience
             by keeping users within the documentation rather than showing error pages.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Title
+
+Gets or sets a custom title for the 404 error page.
+
+#### Syntax
+
+```csharp
+public string Title { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+
+#### Remarks
+
+When specified, this title replaces the default "Page not found" heading on the 404 page.
 
 ## Methods
 

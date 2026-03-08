@@ -10,22 +10,8 @@ namespace Mintlify.Core.Models
     /// Can be a single file or separate files for light and dark mode.
     /// </summary>
     [JsonConverter(typeof(FaviconConfigJsonConverter))]
-    public class FaviconConfig
+    public class FaviconConfig : ThemePairConfig
     {
-
-        #region Properties
-
-        /// <summary>
-        /// Gets or sets the path to the dark favicon file, including the file extension.
-        /// </summary>
-        public string? Dark { get; set; }
-
-        /// <summary>
-        /// Gets or sets the path to the light favicon file, including the file extension.
-        /// </summary>
-        public string? Light { get; set; }
-
-        #endregion
 
         #region Constructors
 

@@ -37,6 +37,16 @@ namespace Mintlify.Core.Models
         /// </remarks>
         public string? Eyebrows { get; set; }
 
+        /// <summary>
+        /// Gets or sets whether to force loading the LaTeX stylesheet.
+        /// </summary>
+        /// <remarks>
+        /// When set to true, the LaTeX stylesheet is always loaded. When false, it is never loaded.
+        /// When not specified (null), Mintlify auto-detects LaTeX usage and loads the stylesheet
+        /// only when mathematical expressions are found in the content.
+        /// </remarks>
+        public bool? Latex { get; set; }
+
         #endregion
 
     }

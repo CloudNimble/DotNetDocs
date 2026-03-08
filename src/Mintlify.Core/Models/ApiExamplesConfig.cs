@@ -72,6 +72,18 @@ namespace Mintlify.Core.Models
         [JsonPropertyName("prefill")]
         public bool? Prefill { get; set; }
 
+        /// <summary>
+        /// Gets or sets whether to automatically generate code samples for API endpoints.
+        /// </summary>
+        /// <remarks>
+        /// When set to true (default), code samples are automatically generated for endpoints
+        /// from API specifications. When set to false, only manually-written code samples
+        /// (from x-codeSamples in OpenAPI specifications or RequestExample components in MDX)
+        /// appear in the API playground.
+        /// </remarks>
+        [JsonPropertyName("autogenerate")]
+        public bool? Autogenerate { get; set; }
+
         #endregion
 
     }

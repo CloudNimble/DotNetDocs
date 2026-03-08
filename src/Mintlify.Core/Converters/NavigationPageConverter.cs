@@ -1,8 +1,10 @@
 ﻿using System;
-using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Mintlify.Core.Models;
+
+#pragma warning disable IL2026 // Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access
+#pragma warning disable IL3050 // Members annotated with 'RequiresDynamicCodeAttribute' require dynamic access
 
 namespace Mintlify.Core.Converters
 {
@@ -67,19 +69,8 @@ namespace Mintlify.Core.Converters
                     break;
 
                 default:
-                    var valueType = value?.GetType();
-                    var message = $"Unsupported navigation page value type: {valueType}";
-                    if (value is not null)
-                    {
-                        message += $"\nValue: {JsonSerializer.Serialize(value)}";
-                        message += $"\nIs Anonymous: {valueType?.Name?.StartsWith("<>") ?? false}";
-                        if (valueType?.Name?.StartsWith("<>") == true)
-                        {
-                            var properties = valueType.GetProperties();
-                            message += $"\nAnonymous type properties: {string.Join(", ", properties.Select(p => $"{p.Name}:{p.PropertyType}"))}";
-                        }
-                    }
-                    throw new JsonException(message);
+                    throw new JsonException(
+                        $"Unsupported navigation page value type. Expected string or GroupConfig.");
             }
         }
 

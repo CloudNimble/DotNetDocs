@@ -50,6 +50,26 @@ public Object()
 
 ## Properties
 
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Body
+
+Gets or sets the body text font configuration.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.FontConfig Body { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.FontConfig?`
+
+#### Remarks
+
+Specifies a separate font for body text. When provided, the top-level font properties
+            (Family, Weight, Source, Format) are used as defaults, and this configuration overrides
+            them specifically for body text elements.
+
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Family
 
 Gets or sets the font family name.
@@ -87,6 +107,26 @@ Type: `string?`
 
 Specifies the format of the font file. Valid values are "woff" or "woff2".
             WOFF2 is preferred for modern browsers as it provides better compression.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Heading
+
+Gets or sets the heading font configuration.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.FontConfig Heading { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.FontConfig?`
+
+#### Remarks
+
+Specifies a separate font for headings. When provided, the top-level font properties
+            (Family, Weight, Source, Format) are used as defaults, and this configuration overrides
+            them specifically for heading elements (h1-h6).
 
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Source
 

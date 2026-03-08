@@ -35,6 +35,17 @@ namespace Mintlify.Core.Models.Integrations
         /// </remarks>
         public string? ApiHost { get; set; }
 
+        /// <summary>
+        /// Gets or sets whether to enable PostHog session recording.
+        /// </summary>
+        /// <remarks>
+        /// Session recordings are enabled by default when PostHog is configured. Set to false
+        /// to disable session recordings while keeping analytics enabled. You need to add
+        /// the URL for your docs website to PostHog's "Authorized domains for recordings"
+        /// before you can receive session recordings.
+        /// </remarks>
+        public bool? SessionRecording { get; set; }
+
         #endregion
 
     }

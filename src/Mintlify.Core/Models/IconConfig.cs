@@ -26,7 +26,7 @@ namespace Mintlify.Core.Models
         /// </summary>
         /// <remarks>
         /// Specifies which icon library to use. Defaults to "fontawesome" if not specified.
-        /// Supported libraries include "fontawesome" and "lucide".
+        /// Supported libraries include "fontawesome", "lucide", and "tabler".
         /// </remarks>
         public string? Library { get; set; }
 
@@ -35,7 +35,8 @@ namespace Mintlify.Core.Models
         /// </summary>
         /// <remarks>
         /// Specifies the style variant of the icon. Common styles include:
-        /// "brands", "duotone", "light", "regular", "solid".
+        /// "brands", "duotone", "light", "regular", "sharp-duotone-solid", "sharp-light",
+        /// "sharp-regular", "sharp-solid", "sharp-thin", "solid", "thin".
         /// </remarks>
         public string? Style { get; set; }
 
