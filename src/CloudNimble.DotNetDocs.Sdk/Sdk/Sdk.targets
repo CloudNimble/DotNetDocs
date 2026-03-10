@@ -12,14 +12,22 @@
     
     <!-- Determine which task assembly to load based on MSBuild runtime -->
     <PropertyGroup>
-        <!-- Determine the target framework for tasks based on MSBuild runtime -->
-        <_DotNetDocsTaskFramework Condition="'$(MSBuildRuntimeType)' == 'Core'">net8.0</_DotNetDocsTaskFramework>
         <_DotNetDocsTaskFramework Condition="'$(MSBuildRuntimeType)' == 'Full'">net472</_DotNetDocsTaskFramework>
+
+        <!-- For .NET Core MSBuild, match task TFM to the runtime major version -->
+        <_DotNetDocsRuntimeMajor Condition="'$(MSBuildRuntimeType)' == 'Core'">$([System.Environment]::Version.Major)</_DotNetDocsRuntimeMajor>
+        <_DotNetDocsTaskFramework Condition="'$(MSBuildRuntimeType)' == 'Core'">net$(_DotNetDocsRuntimeMajor).0</_DotNetDocsTaskFramework>
+
+        <!-- Fallback if runtime detection fails -->
         <_DotNetDocsTaskFramework Condition="'$(_DotNetDocsTaskFramework)' == ''">net8.0</_DotNetDocsTaskFramework>
-        
+
         <!-- Tasks are always loaded from the packaged location -->
         <_DotNetDocsTasksFolder>$(MSBuildThisFileDirectory)..\tasks\$(_DotNetDocsTaskFramework)</_DotNetDocsTasksFolder>
         <_DotNetDocsTasksAssembly>$(_DotNetDocsTasksFolder)\CloudNimble.DotNetDocs.Sdk.Tasks.dll</_DotNetDocsTasksAssembly>
+
+        <!-- If version-matched tasks don't exist, fall back to net8.0 -->
+        <_DotNetDocsTasksFolder Condition="!Exists('$(_DotNetDocsTasksAssembly)')">$(MSBuildThisFileDirectory)..\tasks\net8.0</_DotNetDocsTasksFolder>
+        <_DotNetDocsTasksAssembly Condition="!Exists('$(_DotNetDocsTasksAssembly)')">$(_DotNetDocsTasksFolder)\CloudNimble.DotNetDocs.Sdk.Tasks.dll</_DotNetDocsTasksAssembly>
     </PropertyGroup>
     
     <!-- Load compiled MSBuild tasks when they exist -->
@@ -43,6 +51,8 @@
 
     <!-- Documentation project validation and information -->
     <Target Name="ValidateDocumentationProject" BeforeTargets="Build">
+        <Message Text="🔧 DotNetDocs SDK task runtime: .NET $(_DotNetDocsRuntimeMajor) → $(_DotNetDocsTaskFramework)" Importance="high" Condition="'$(_DotNetDocsRuntimeMajor)' != ''" />
+        <Message Text="🔧 DotNetDocs SDK task runtime: .NET Framework → $(_DotNetDocsTaskFramework)" Importance="high" Condition="'$(_DotNetDocsRuntimeMajor)' == ''" />
         <Message Text="✅ Documentation project: $(MSBuildProjectName)" Importance="high" />
         <Message Text="📄 Documentation type: $(DocumentationType)" Importance="high" />
         <Message Text="📂 Documentation root: $(DocumentationRoot)" Importance="high" Condition="'$(DocumentationRoot)' != '$(MSBuildProjectDirectory)\'" />

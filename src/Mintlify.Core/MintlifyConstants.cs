@@ -1,3 +1,5 @@
+using System;
+using System.Diagnostics;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Mintlify.Core.Converters;
@@ -51,7 +53,20 @@ namespace Mintlify.Core
                 }
             };
 #if NET8_0_OR_GREATER
-            options.TypeInfoResolverChain.Insert(0, MintlifyJsonContext.Default);
+            try
+            {
+                options.TypeInfoResolverChain.Insert(0, MintlifyJsonContext.Default);
+            }
+            catch (Exception ex)
+            {
+                // Source-generated context may fail in constrained runtime environments
+                // (e.g., MSBuild task host with assembly version conflicts).
+                // Fall back to reflection-based serialization.
+                Trace.TraceError(
+                    "MintlifyJsonContext.Default failed to initialize. " +
+                    "Falling back to reflection-based serialization. " +
+                    "Error: {0}", ex);
+            }
 #endif
             return options;
         }
