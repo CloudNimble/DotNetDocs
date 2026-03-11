@@ -7,6 +7,11 @@
         <Description>Mintlify.Core is a comprehensive .NET library for working with Mintlify documentation configuration files (docs.json). This package provides robust loading, validation, manipulation, and generation capabilities for Mintlify documentation projects.</Description>
     </PropertyGroup>
 
+    <PropertyGroup Condition="'$(TargetFramework)' != 'netstandard2.0'">
+        <IsTrimmable>true</IsTrimmable>
+        <IsAotCompatible>true</IsAotCompatible>
+    </PropertyGroup>
+
     <ItemGroup>
         <PackageReference Include="EasyAF.Core" Version="4.*" />
     </ItemGroup>

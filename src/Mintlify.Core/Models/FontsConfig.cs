@@ -51,6 +51,26 @@ namespace Mintlify.Core.Models
         /// </remarks>
         public int? Weight { get; set; }
 
+        /// <summary>
+        /// Gets or sets the heading font configuration.
+        /// </summary>
+        /// <remarks>
+        /// Specifies a separate font for headings. When provided, the top-level font properties
+        /// (Family, Weight, Source, Format) are used as defaults, and this configuration overrides
+        /// them specifically for heading elements (h1-h6).
+        /// </remarks>
+        public FontConfig? Heading { get; set; }
+
+        /// <summary>
+        /// Gets or sets the body text font configuration.
+        /// </summary>
+        /// <remarks>
+        /// Specifies a separate font for body text. When provided, the top-level font properties
+        /// (Family, Weight, Source, Format) are used as defaults, and this configuration overrides
+        /// them specifically for body text elements.
+        /// </remarks>
+        public FontConfig? Body { get; set; }
+
         #endregion
 
     }

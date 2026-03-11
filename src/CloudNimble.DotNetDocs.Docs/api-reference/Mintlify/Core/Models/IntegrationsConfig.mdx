@@ -52,6 +52,25 @@ public Object()
 
 ## Properties
 
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Adobe
+
+Gets or sets the Adobe Analytics integration configuration.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.Integrations.AdobeConfig Adobe { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.Integrations.AdobeConfig?`
+
+#### Remarks
+
+Adobe Analytics provides enterprise-level analytics and reporting capabilities.
+            When configured, documentation events are tracked via your Adobe Analytics launch URL.
+
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Amplitude
 
 Gets or sets the Amplitude analytics integration configuration.
@@ -70,6 +89,25 @@ Type: `Mintlify.Core.Models.Integrations.AmplitudeConfig?`
 
 Amplitude provides product analytics to understand user behavior and engagement.
             When configured, all documentation events are automatically sent to your Amplitude project.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Clarity
+
+Gets or sets the Microsoft Clarity integration configuration.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.Integrations.ClarityConfig Clarity { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.Integrations.ClarityConfig?`
+
+#### Remarks
+
+Microsoft Clarity provides session recordings and heatmaps for understanding
+            user behavior on your documentation site.
 
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Clearbit
 
@@ -90,6 +128,24 @@ Type: `Mintlify.Core.Models.Integrations.ClearbitConfig?`
 Clearbit enriches your analytics data with company and demographic information.
             When configured, visitor data is enhanced with business intelligence.
 
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Cookies
+
+Gets or sets the cookie configuration for the documentation site.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.Integrations.CookiesConfig Cookies { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.Integrations.CookiesConfig?`
+
+#### Remarks
+
+Configures custom cookie settings for the documentation site.
+
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Fathom
 
 Gets or sets the Fathom analytics integration configuration.
@@ -109,6 +165,25 @@ Type: `Mintlify.Core.Models.Integrations.FathomConfig?`
 Fathom provides simple, privacy-focused analytics that is GDPR compliant
             and doesn't use cookies. When configured, page views and events are tracked
             in your Fathom dashboard.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> FrontChat
+
+Gets or sets the Front chat widget integration configuration.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.Integrations.FrontChatConfig FrontChat { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.Integrations.FrontChatConfig?`
+
+#### Remarks
+
+Front provides a chat widget for customer communication. When configured,
+            a chat widget appears on your documentation pages for real-time support.
 
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GoogleAnalytics4
 
@@ -205,6 +280,44 @@ Type: `Mintlify.Core.Models.Integrations.HotjarConfig?`
 
 Hotjar provides heatmaps, session recordings, and user feedback tools.
             When configured, you can visualize how users interact with your documentation.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Intercom
+
+Gets or sets the Intercom integration configuration.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.Integrations.IntercomConfig Intercom { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.Integrations.IntercomConfig?`
+
+#### Remarks
+
+Intercom provides customer messaging and support tools. When configured,
+            the Intercom widget is embedded in your documentation pages.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Koala
+
+Gets or sets the Koala analytics integration configuration.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.Integrations.KoalaConfig Koala { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.Integrations.KoalaConfig?`
+
+#### Remarks
+
+Koala provides product-led growth analytics. When configured,
+            documentation engagement data is sent to your Koala account.
 
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> LogRocket
 
@@ -320,6 +433,25 @@ Type: `Mintlify.Core.Models.Integrations.SegmentConfig?`
 Segment collects, transforms, and routes analytics data to various destinations.
             When configured, documentation events are sent to Segment and forwarded to your
             configured downstream tools.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Telemetry
+
+Gets or sets the telemetry and feedback configuration.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.Integrations.TelemetryConfig Telemetry { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.Integrations.TelemetryConfig?`
+
+#### Remarks
+
+Controls whether telemetry and feedback collection is enabled
+            on the documentation site.
 
 ## Methods
 

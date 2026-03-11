@@ -9,20 +9,10 @@ namespace Mintlify.Core.Models
     /// <remarks>
     /// The colors to use in your documentation. At the very least, you must define the primary color.
     /// </remarks>
-    public class ColorsConfig
+    public class ColorsConfig : ThemePairConfig
     {
 
         #region Properties
-
-        /// <summary>
-        /// Gets or sets the dark color of the theme in hex format. Used for light mode.
-        /// </summary>
-        public string? Dark { get; set; }
-
-        /// <summary>
-        /// Gets or sets the light color of the theme in hex format. Used for dark mode.
-        /// </summary>
-        public string? Light { get; set; }
 
         /// <summary>
         /// Gets or sets the primary color of the theme in hex format.

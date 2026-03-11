@@ -2,7 +2,7 @@
 title: ColorsConfig
 description: "Represents the color configuration for Mintlify themes."
 icon: file-brackets-curly
-keywords: ['ColorsConfig', 'Mintlify.Core.Models.ColorsConfig', 'Mintlify.Core.Models', 'class', 'System.Object']
+keywords: ['ColorsConfig', 'Mintlify.Core.Models.ColorsConfig', 'Mintlify.Core.Models', 'class', 'Mintlify.Core.Models.ThemePairConfig']
 ---
 
 ## Definition
@@ -11,7 +11,7 @@ keywords: ['ColorsConfig', 'Mintlify.Core.Models.ColorsConfig', 'Mintlify.Core.M
 
 **Namespace:** Mintlify.Core.Models
 
-**Inheritance:** System.Object
+**Inheritance:** Mintlify.Core.Models.ThemePairConfig
 
 ## Syntax
 
@@ -39,6 +39,16 @@ public ColorsConfig()
 
 ### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor <Badge color="gray">Inherited</Badge>
 
+<Note>Inherited from `Mintlify.Core.Models.ThemePairConfig`</Note>
+
+#### Syntax
+
+```csharp
+public ThemePairConfig()
+```
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor <Badge color="gray">Inherited</Badge>
+
 <Note>Inherited from `object`</Note>
 
 #### Syntax
@@ -49,28 +59,32 @@ public Object()
 
 ## Properties
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Dark
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Dark <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
 
-Gets or sets the dark color of the theme in hex format. Used for light mode.
+<Note>Inherited from `Mintlify.Core.Models.ThemePairConfig`</Note>
+
+Gets or sets the value for dark mode.
 
 #### Syntax
 
 ```csharp
-public string Dark { get; set; }
+public virtual string Dark { get; set; }
 ```
 
 #### Property Value
 
 Type: `string?`
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Light
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Light <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
 
-Gets or sets the light color of the theme in hex format. Used for dark mode.
+<Note>Inherited from `Mintlify.Core.Models.ThemePairConfig`</Note>
+
+Gets or sets the value for light mode.
 
 #### Syntax
 
 ```csharp
-public string Light { get; set; }
+public virtual string Light { get; set; }
 ```
 
 #### Property Value
@@ -200,6 +214,23 @@ public static bool ReferenceEquals(object objA, object objB)
 #### Returns
 
 Type: `bool`
+
+### <Icon icon="code-merge" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ToString <Badge color="blue">Override</Badge>
+
+<Note>Inherited from `Mintlify.Core.Models.ThemePairConfig`</Note>
+
+Returns the string representation of the theme pair configuration.
+
+#### Syntax
+
+```csharp
+public override string ToString()
+```
+
+#### Returns
+
+Type: `string`
+The light value, dark value, or empty string.
 
 ### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ToString <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
 

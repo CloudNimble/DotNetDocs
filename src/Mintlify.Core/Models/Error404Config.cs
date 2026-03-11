@@ -24,6 +24,22 @@ namespace Mintlify.Core.Models
         /// </remarks>
         public bool? Redirect { get; set; }
 
+        /// <summary>
+        /// Gets or sets a custom title for the 404 error page.
+        /// </summary>
+        /// <remarks>
+        /// When specified, this title replaces the default "Page not found" heading on the 404 page.
+        /// </remarks>
+        public string? Title { get; set; }
+
+        /// <summary>
+        /// Gets or sets a custom description for the 404 error page.
+        /// </summary>
+        /// <remarks>
+        /// When specified, this description appears below the title on the 404 page.
+        /// </remarks>
+        public string? Description { get; set; }
+
         #endregion
 
     }

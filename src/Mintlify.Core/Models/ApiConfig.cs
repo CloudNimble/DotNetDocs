@@ -90,6 +90,15 @@ namespace Mintlify.Core.Models
         [JsonPropertyName("proxy")]
         public bool? Proxy { get; set; }
 
+        /// <summary>
+        /// Gets or sets the base URL display mode for API endpoints.
+        /// </summary>
+        /// <remarks>
+        /// Controls how the base URL is displayed in API documentation.
+        /// </remarks>
+        [JsonPropertyName("url")]
+        public string? Url { get; set; }
+
         #endregion
 
     }

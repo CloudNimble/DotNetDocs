@@ -44,6 +44,16 @@ namespace Mintlify.Core.Models
         [NotNull]
         public string Label { get; set; } = string.Empty;
 
+        /// <summary>
+        /// Gets or sets the link type for special social/service links.
+        /// </summary>
+        /// <remarks>
+        /// When specified, displays a service-specific icon and styling. Common values
+        /// include "github" and "discord". When not specified, the link displays with
+        /// its label and optional icon.
+        /// </remarks>
+        public string? Type { get; set; }
+
         #endregion
 
     }

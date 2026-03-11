@@ -5,22 +5,8 @@ namespace Mintlify.Core.Models
     /// Represents a color configuration for Mintlify.
     /// Can be a simple hex color string or a complex color pair configuration with light and dark modes.
     /// </summary>
-    public class ColorConfig
+    public class ColorConfig : ThemePairConfig
     {
-
-        #region Properties
-
-        /// <summary>
-        /// Gets or sets the color in hex format to use in dark mode.
-        /// </summary>
-        public string? Dark { get; set; }
-
-        /// <summary>
-        /// Gets or sets the color in hex format to use in light mode.
-        /// </summary>
-        public string? Light { get; set; }
-
-        #endregion
 
         #region Constructors
 
@@ -94,19 +80,6 @@ namespace Mintlify.Core.Models
         public static implicit operator ColorPairConfig?(ColorConfig? colorConfig)
         {
             return colorConfig is null ? null : new ColorPairConfig { Light = colorConfig.Light, Dark = colorConfig.Dark };
-        }
-
-        #endregion
-
-        #region Public Methods
-
-        /// <summary>
-        /// Returns the string representation of the color configuration.
-        /// </summary>
-        /// <returns>The light color, dark color, or empty string.</returns>
-        public override string ToString()
-        {
-            return Light ?? Dark ?? string.Empty;
         }
 
         #endregion

@@ -32,6 +32,15 @@ namespace Mintlify.Core.Models
         /// </remarks>
         public List<string>? Options { get; set; }
 
+        /// <summary>
+        /// Gets or sets the display location of the contextual menu.
+        /// </summary>
+        /// <remarks>
+        /// Valid values are "header" or "toc". Controls where the contextual options
+        /// appear on the page. Defaults to "header".
+        /// </remarks>
+        public string? Display { get; set; }
+
         #endregion
 
     }

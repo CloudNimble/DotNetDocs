@@ -4,6 +4,9 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Mintlify.Core.Models;
 
+#pragma warning disable IL2026 // Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access
+#pragma warning disable IL3050 // Members annotated with 'RequiresDynamicCodeAttribute' require dynamic access
+
 namespace Mintlify.Core.Converters
 {
 

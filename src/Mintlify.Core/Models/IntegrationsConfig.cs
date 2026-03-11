@@ -150,6 +150,69 @@ namespace Mintlify.Core.Models
         /// </remarks>
         public SegmentConfig? Segment { get; set; }
 
+        /// <summary>
+        /// Gets or sets the Adobe Analytics integration configuration.
+        /// </summary>
+        /// <remarks>
+        /// Adobe Analytics provides enterprise-level analytics and reporting capabilities.
+        /// When configured, documentation events are tracked via your Adobe Analytics launch URL.
+        /// </remarks>
+        public AdobeConfig? Adobe { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Microsoft Clarity integration configuration.
+        /// </summary>
+        /// <remarks>
+        /// Microsoft Clarity provides session recordings and heatmaps for understanding
+        /// user behavior on your documentation site.
+        /// </remarks>
+        public ClarityConfig? Clarity { get; set; }
+
+        /// <summary>
+        /// Gets or sets the cookie configuration for the documentation site.
+        /// </summary>
+        /// <remarks>
+        /// Configures custom cookie settings for the documentation site.
+        /// </remarks>
+        public CookiesConfig? Cookies { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Front chat widget integration configuration.
+        /// </summary>
+        /// <remarks>
+        /// Front provides a chat widget for customer communication. When configured,
+        /// a chat widget appears on your documentation pages for real-time support.
+        /// </remarks>
+        [JsonPropertyName("frontchat")]
+        public FrontChatConfig? FrontChat { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Intercom integration configuration.
+        /// </summary>
+        /// <remarks>
+        /// Intercom provides customer messaging and support tools. When configured,
+        /// the Intercom widget is embedded in your documentation pages.
+        /// </remarks>
+        public IntercomConfig? Intercom { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Koala analytics integration configuration.
+        /// </summary>
+        /// <remarks>
+        /// Koala provides product-led growth analytics. When configured,
+        /// documentation engagement data is sent to your Koala account.
+        /// </remarks>
+        public KoalaConfig? Koala { get; set; }
+
+        /// <summary>
+        /// Gets or sets the telemetry and feedback configuration.
+        /// </summary>
+        /// <remarks>
+        /// Controls whether telemetry and feedback collection is enabled
+        /// on the documentation site.
+        /// </remarks>
+        public TelemetryConfig? Telemetry { get; set; }
+
         #endregion
 
     }

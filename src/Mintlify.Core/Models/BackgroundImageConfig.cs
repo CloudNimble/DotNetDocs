@@ -10,28 +10,10 @@ namespace Mintlify.Core.Models
     /// Background images can be simple URL/path references or theme-specific configurations
     /// with separate images for light and dark modes. This matches the official Mintlify schema.
     /// </remarks>
-    public class BackgroundImageConfig
+    public class BackgroundImageConfig : ThemePairConfig
     {
 
         #region Properties
-
-        /// <summary>
-        /// Gets or sets the background image for dark mode.
-        /// </summary>
-        /// <remarks>
-        /// Can be an absolute URL or relative path to an image file.
-        /// Used when the theme switches to dark mode.
-        /// </remarks>
-        public string? Dark { get; set; }
-
-        /// <summary>
-        /// Gets or sets the background image for light mode.
-        /// </summary>
-        /// <remarks>
-        /// Can be an absolute URL or relative path to an image file.
-        /// Used when the theme is in light mode.
-        /// </remarks>
-        public string? Light { get; set; }
 
         /// <summary>
         /// Gets or sets the single image URL when not using theme-specific images.

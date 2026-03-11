@@ -309,6 +309,7 @@
                       "api-reference/Mintlify/Core/Models/ErrorsConfig",
                       "api-reference/Mintlify/Core/Models/FaviconConfig",
                       "api-reference/Mintlify/Core/Models/FaviconConfigJsonConverter",
+                      "api-reference/Mintlify/Core/Models/FontConfig",
                       "api-reference/Mintlify/Core/Models/FontsConfig",
                       "api-reference/Mintlify/Core/Models/FooterConfig",
                       "api-reference/Mintlify/Core/Models/FooterLink",
@@ -331,6 +332,7 @@
                       "api-reference/Mintlify/Core/Models/MdxConfig",
                       "api-reference/Mintlify/Core/Models/MenuConfig",
                       "api-reference/Mintlify/Core/Models/MergeOptions",
+                      "api-reference/Mintlify/Core/Models/MetadataConfig",
                       "api-reference/Mintlify/Core/Models/NavbarConfig",
                       "api-reference/Mintlify/Core/Models/NavbarLink",
                       "api-reference/Mintlify/Core/Models/NavigationConfig",
@@ -345,26 +347,36 @@
                       "api-reference/Mintlify/Core/Models/ServerConfig",
                       "api-reference/Mintlify/Core/Models/StylingConfig",
                       "api-reference/Mintlify/Core/Models/TabConfig",
+                      "api-reference/Mintlify/Core/Models/ThemePairConfig",
+                      "api-reference/Mintlify/Core/Models/ThumbnailFontsConfig",
+                      "api-reference/Mintlify/Core/Models/ThumbnailsConfig",
                       "api-reference/Mintlify/Core/Models/VersionConfig",
                       {
                         "group": "Integrations",
                         "icon": "folder-tree",
                         "pages": [
                           "api-reference/Mintlify/Core/Models/Integrations/index",
+                          "api-reference/Mintlify/Core/Models/Integrations/AdobeConfig",
                           "api-reference/Mintlify/Core/Models/Integrations/AmplitudeConfig",
+                          "api-reference/Mintlify/Core/Models/Integrations/ClarityConfig",
                           "api-reference/Mintlify/Core/Models/Integrations/ClearbitConfig",
+                          "api-reference/Mintlify/Core/Models/Integrations/CookiesConfig",
                           "api-reference/Mintlify/Core/Models/Integrations/FathomConfig",
+                          "api-reference/Mintlify/Core/Models/Integrations/FrontChatConfig",
                           "api-reference/Mintlify/Core/Models/Integrations/GoogleAnalytics4Config",
                           "api-reference/Mintlify/Core/Models/Integrations/GtmConfig",
                           "api-reference/Mintlify/Core/Models/Integrations/HeapConfig",
                           "api-reference/Mintlify/Core/Models/Integrations/HightouchConfig",
                           "api-reference/Mintlify/Core/Models/Integrations/HotjarConfig",
+                          "api-reference/Mintlify/Core/Models/Integrations/IntercomConfig",
+                          "api-reference/Mintlify/Core/Models/Integrations/KoalaConfig",
                           "api-reference/Mintlify/Core/Models/Integrations/LogRocketConfig",
                           "api-reference/Mintlify/Core/Models/Integrations/MixpanelConfig",
                           "api-reference/Mintlify/Core/Models/Integrations/PirschConfig",
                           "api-reference/Mintlify/Core/Models/Integrations/PlausibleConfig",
                           "api-reference/Mintlify/Core/Models/Integrations/PostHogConfig",
-                          "api-reference/Mintlify/Core/Models/Integrations/SegmentConfig"
+                          "api-reference/Mintlify/Core/Models/Integrations/SegmentConfig",
+                          "api-reference/Mintlify/Core/Models/Integrations/TelemetryConfig"
                         ]
                       }
                     ]

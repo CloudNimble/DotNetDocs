@@ -269,6 +269,25 @@ public Mintlify.Core.Models.LogoConfig Logo { get; set; }
 
 Type: `Mintlify.Core.Models.LogoConfig?`
 
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Metadata
+
+Gets or sets the metadata configuration for documentation pages.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.MetadataConfig Metadata { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.MetadataConfig?`
+
+#### Remarks
+
+Controls page-level metadata features such as displaying the last
+            modified timestamp on documentation pages.
+
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Name
 
 Gets or sets the name of the project, organization, or product.
@@ -414,12 +433,12 @@ Gets or sets the thumbnails configuration.
 #### Syntax
 
 ```csharp
-public System.Collections.Generic.Dictionary<string, string> Thumbnails { get; set; }
+public Mintlify.Core.Models.ThumbnailsConfig Thumbnails { get; set; }
 ```
 
 #### Property Value
 
-Type: `System.Collections.Generic.Dictionary<string, string>?`
+Type: `Mintlify.Core.Models.ThumbnailsConfig?`
 
 #### Remarks
 

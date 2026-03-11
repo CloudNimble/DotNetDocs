@@ -189,7 +189,17 @@ namespace Mintlify.Core.Models
         /// Can include background images and other preview assets.
         /// </remarks>
         [JsonPropertyName("thumbnails")]
-        public Dictionary<string, string>? Thumbnails { get; set; }
+        public ThumbnailsConfig? Thumbnails { get; set; }
+
+        /// <summary>
+        /// Gets or sets the metadata configuration for documentation pages.
+        /// </summary>
+        /// <remarks>
+        /// Controls page-level metadata features such as displaying the last
+        /// modified timestamp on documentation pages.
+        /// </remarks>
+        [JsonPropertyName("metadata")]
+        public MetadataConfig? Metadata { get; set; }
 
         #endregion
 

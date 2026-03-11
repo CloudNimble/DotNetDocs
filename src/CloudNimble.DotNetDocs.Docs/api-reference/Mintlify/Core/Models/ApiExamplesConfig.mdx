@@ -50,6 +50,27 @@ public Object()
 
 ## Properties
 
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Autogenerate
+
+Gets or sets whether to automatically generate code samples for API endpoints.
+
+#### Syntax
+
+```csharp
+public System.Nullable<bool> Autogenerate { get; set; }
+```
+
+#### Property Value
+
+Type: `System.Nullable<bool>?`
+
+#### Remarks
+
+When set to true (default), code samples are automatically generated for endpoints
+            from API specifications. When set to false, only manually-written code samples
+            (from x-codeSamples in OpenAPI specifications or RequestExample components in MDX)
+            appear in the API playground.
+
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Defaults
 
 Gets or sets whether to show optional parameters in API examples.
