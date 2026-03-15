@@ -1,118 +1,90 @@
-# Try .NET and Client-Side C# Execution Analysis
+# Client-Side C# Execution in Mintlify Documentation
 
 ## Executive Summary
 
-This document analyzes approaches for embedding interactive C# code execution in documentation, specifically for integration with Mintlify React components. It explores Microsoft's Try .NET service and the revolutionary approach of using the .NET WASM runtime directly without Blazor's DOM manipulation layer.
+This document analyzes approaches for embedding interactive C# code execution in documentation, specifically for integration with Mintlify's React component system. It explores using the .NET WASM runtime directly (without Blazor's DOM manipulation layer) to enable true client-side C# compilation and execution, integrated with Mintlify's MDX-based documentation through React components in the `/snippets/` folder.
 
-**Key Finding**: Using the .NET WASM runtime directly (without Blazor's DOM layer) enables true client-side C# compilation and execution that can be seamlessly integrated into React-based documentation with CodeMirror editors, creating a zero-latency, zero-cost, fully interactive documentation experience.
+**Key Finding**: Using the .NET WASM runtime directly (without Blazor's DOM layer) enables client-side C# compilation and execution that can be integrated into Mintlify's React component system, creating a zero-latency, zero-cost, fully interactive documentation experience.
 
----
-
-## 1. Microsoft Try .NET
-
-### Overview
-
-**Try .NET** is Microsoft's official service for embedding interactive .NET code execution in documentation and educational content.
-
-- **Official Site**: https://dotnet.microsoft.com/en-us/platform/try-dotnet
-- **GitHub**: https://github.com/dotnet/interactive
-- **Status**: Private preview (as of 2025)
-- **Technology**: Uses Blazor WebAssembly for client-side execution
-
-### Key Features
-
-- **Client-side execution**: Code runs in the browser using Blazor WASM (switched from server-side ~2020)
-- **IntelliSense support**: Provides sophisticated code completion and diagnostics
-- **GitHub integration**: Can run code from GitHub Gists
-- **Embeddable**: Via iframe: `<iframe src="https://try.dot.net/?fromGist=..."></iframe>`
-- **Custom themes**: Supports visual customization
-- **JavaScript programmability**: API for programmatic control
-
-### Architecture
-
-```
-User Browser
-  ↓
-Try .NET (iframe)
-  ↓
-Blazor WASM Application
-  ↓
-.NET Runtime (WASM) + Roslyn Compiler + BCL
-  ↓
-C# Code Execution
-  ↓
-Console Output Capture
-```
-
-### Bundle Size Analysis
-
-**Total Download**: 5-30MB (uncompressed)
-
-Breakdown:
-- .NET Runtime (WASM): ~2-3MB
-- Roslyn Compiler: ~15-20MB
-- Base Class Libraries: ~10-20MB
-- Blazor Framework: ~2-3MB
-
-**With Compression** (Brotli):
-- Can be reduced to ~5-10MB
-- Still significant for documentation sites
-
-### Performance Characteristics
-
-| Metric | Value | Notes |
-|--------|-------|-------|
-| **Initial Load** | 1-5 seconds | First-time load, downloads full runtime |
-| **Cached Load** | 200-500ms | Subsequent loads with service worker caching |
-| **Compilation Time** | 100-500ms | Depends on code complexity |
-| **Execution Time** | Near-native | WASM performance is excellent |
-| **Memory Usage** | 50-200MB | Runtime + compiled assemblies |
-
-### Integration with React/Mintlify
-
-#### Current Approach (iframe)
-
-```jsx
-// snippets/try-dotnet-embed.jsx
-export const TryDotNetEmbed = ({ gistId, height = "400px" }) => {
-  return (
-    <iframe
-      src={`https://try.dot.net/?fromGist=${gistId}`}
-      style={{ width: '100%', height, border: 'none' }}
-      loading="lazy"
-      title="Try .NET Interactive Code Example"
-    />
-  );
-};
-```
-
-**Pros**:
-- ✅ Zero implementation effort
-- ✅ Microsoft handles infrastructure
-- ✅ Full C# feature set
-- ✅ IntelliSense works out of box
-- ✅ No backend needed
-- ✅ No maintenance burden
-
-**Cons**:
-- ❌ iframe performance overhead
-- ❌ Large bundle size (5-30MB)
-- ❌ Limited customization
-- ❌ Requires private preview access
-- ❌ Dependency on Microsoft's service availability
-- ❌ Less control over UX/styling
-- ❌ Cross-origin communication complexity
-
-### Try .NET in Microsoft Learn
-
-Microsoft uses Try .NET extensively in their own documentation:
-- Embedded in docs.microsoft.com
-- Powers interactive tutorials
-- Used in Microsoft Learn training modules
+> **Note**: Microsoft's hosted Try .NET service (try.dot.net) has been shut down. The underlying technology — running the .NET WASM runtime in the browser — remains fully viable and is the foundation of the approach described here. The open-source components from the `dotnet/interactive` repository can still be leveraged.
 
 ---
 
-## 2. Direct .NET WASM Runtime Approach (GAME CHANGER)
+## 1. Mintlify React Component Constraints
+
+Before diving into the architecture, it's critical to understand what Mintlify supports for custom React components, as these constraints shape every design decision.
+
+### What Mintlify Supports
+
+| Capability | Details |
+|-----------|---------|
+| **Component location** | `.jsx` files in the `/snippets/` (or `/components/`) folder |
+| **Syntax** | Arrow function exports only (`export const Foo = () => { ... }`). The `function` keyword is **not supported** in snippet files |
+| **React hooks** | `useState`, `useEffect`, `useMemo`, `useCallback` all work |
+| **Rendering** | Client-side only. Flash of loading content is expected |
+| **Imports in MDX** | `import { Foo } from "/snippets/foo.jsx"` |
+| **Nested imports** | **Not supported**. All component dependencies must be imported directly in the MDX file |
+| **Built-in components** | `<CodeBlock>` renders code with syntax highlighting and copy support from within React components |
+| **Custom scripts** | `docs.json` supports global JS/CSS injection (equivalent to `<script>` tags on every page) |
+| **npm packages** | **Not available**. Cannot import from `node_modules`. External libraries must be loaded via CDN through custom scripts |
+
+### What This Means for Our Architecture
+
+1. **No npm-based CodeMirror** — Must load a code editor from a CDN via custom scripts, or use a `<textarea>` with Mintlify's `<CodeBlock>` for output display
+2. **No npm-based WASM loader** — The .NET WASM runtime must be loaded from a self-hosted CDN via dynamic `<script>` injection or global custom scripts
+3. **Flat component structure** — The `<DotNetRunner>` component must be self-contained in a single `.jsx` file, or its sub-components must each be individually imported in every MDX page that uses them
+4. **Global state for the runtime** — Since we can't use npm modules, the WASM runtime instance should be attached to `window` and shared across all component instances on a page
+
+---
+
+## 2. Architecture
+
+### High-Level Flow
+
+```
+MDX Page
+  ↓
+import { DotNetRunner } from "/snippets/dotnet-runner.jsx"
+  ↓
+<DotNetRunner> React Component (client-side)
+  ↓
+Editable Code Area (textarea or CDN-loaded editor)
+  ↓
+User clicks "Run"
+  ↓
+Lazy-load .NET WASM Runtime from CDN (first run only)
+  ↓
+Roslyn Compilation API (in-browser)
+  ↓
+C# Code Execution (in-browser)
+  ↓
+Output Capture → React State → <CodeBlock> display
+```
+
+### Component Architecture
+
+```
+docs.json
+  └── custom scripts: load code editor CSS/JS from CDN (lazy)
+
+/snippets/
+  └── dotnet-runner.jsx      — Main interactive runner component
+  └── dotnet-runtime.jsx     — Runtime loader/singleton (imported in MDX alongside runner)
+
+MDX page:
+  import { DotNetRunner } from "/snippets/dotnet-runner.jsx"
+  import { DotNetRuntimeProvider } from "/snippets/dotnet-runtime.jsx"
+
+  <DotNetRuntimeProvider>
+    <DotNetRunner code={`Console.WriteLine("Hello");`} />
+  </DotNetRuntimeProvider>
+```
+
+> Because Mintlify doesn't support nested imports, both `dotnet-runner.jsx` and `dotnet-runtime.jsx` must be imported directly in the MDX file. The runtime provider manages the singleton WASM instance so multiple runners on the same page share one runtime.
+
+---
+
+## 3. The .NET WASM Runtime (Without Blazor)
 
 ### The Key Insight
 
@@ -121,27 +93,11 @@ Microsoft uses Try .NET extensively in their own documentation:
 This means we can:
 1. Use the .NET WASM runtime directly (the engine that powers Blazor)
 2. Compile and execute arbitrary C# code in the browser
-3. Capture Console.WriteLine() and other output
-4. Integrate with React components (CodeMirror for editing, React for UI)
+3. Capture `Console.WriteLine()` and other output
+4. Integrate with Mintlify React components for the UI
 5. Skip all of Blazor's framework overhead
 
-### Architecture
-
-```
-User Browser
-  ↓
-React Component (CodeMirror for editing)
-  ↓
-.NET WASM Runtime (no Blazor DOM layer)
-  ↓
-Roslyn Compilation API
-  ↓
-C# Code Execution
-  ↓
-Output Capture → React State → UI Update
-```
-
-### Bundle Size Optimization
+### Bundle Size
 
 Since we're not using Blazor's DOM/component system, we can trim significantly:
 
@@ -158,290 +114,270 @@ Since we're not using Blazor's DOM/component system, we can trim significantly:
 - **Optimized**: ~5-10MB (first load)
 
 **Caching Strategy**:
-- Service Worker caching
+- Browser caching with long-lived cache headers
+- Service Worker caching (if supported by Mintlify's hosting)
 - Shared across all documentation pages
 - Load once per browser session
-- **Subsequent**: <100KB (just code changes)
+- **Subsequent page navigations**: <100KB (just code changes)
 
-### Performance Advantages
+### Performance Characteristics
 
-| Metric | Try .NET (iframe) | Direct WASM Runtime |
-|--------|-------------------|---------------------|
-| **Initial Load** | 1-5 seconds | 1-3 seconds |
-| **Cached Load** | 200-500ms | 50-100ms (no iframe overhead) |
-| **Compilation** | 100-500ms | 100-500ms (same) |
-| **Execution** | Near-native | Near-native (same) |
-| **Memory** | 50-200MB | 30-100MB (no framework overhead) |
-| **Integration** | iframe postMessage | Direct JavaScript interop |
+| Metric | Direct WASM Runtime |
+|--------|---------------------|
+| **Initial Load** | 1-3 seconds (first page with a runner) |
+| **Cached Load** | 50-100ms |
+| **Compilation** | 100-500ms (depends on code complexity) |
+| **Execution** | Near-native WASM performance |
+| **Memory** | 30-100MB (runtime + compiled assemblies) |
+| **Integration** | Direct JavaScript interop with React state |
 
-### Implementation Approaches
+---
 
-#### Approach 1: Use Blazor's WASM Runtime (Recommended)
+## 4. Implementation
 
-```javascript
-// Load the .NET WASM runtime without Blazor framework
-import { dotnet } from '@microsoft/dotnet-runtime';
+### Step 1: Host the .NET WASM Runtime
 
-export async function createDotNetRuntime() {
-  const { MONO, Module, getAssemblyExports } = await dotnet
-    .withDiagnosticTracing(false)
-    .withApplicationArgumentsFromQuery()
-    .create();
+Build a minimal .NET WASM application that exposes Roslyn compilation and execution APIs via JavaScript interop. This is a standalone build artifact, not part of the Mintlify site itself.
 
-  return {
-    MONO,
-    Module,
-    compileAndRun: async (csharpCode) => {
-      // Use Roslyn to compile C# code
-      const assembly = await MONO.mono_wasm_compile_code(csharpCode);
-
-      // Capture console output
-      const output = [];
-      MONO.mono_wasm_set_out_callback((msg) => output.push(msg));
-
-      // Execute
-      MONO.mono_wasm_run_method(assembly, 'Program', 'Main', []);
-
-      return output.join('\n');
-    }
-  };
-}
+```
+dotnet-wasm-runner/
+  ├── Program.cs              — Entry point, JS interop exports
+  ├── CSharpCompiler.cs       — Roslyn compilation wrapper
+  ├── OutputCapture.cs        — Console.WriteLine interception
+  └── dotnet-wasm-runner.csproj
 ```
 
-#### Approach 2: Use Mono WASM Directly
+```xml
+<!-- dotnet-wasm-runner.csproj -->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <RuntimeIdentifier>browser-wasm</RuntimeIdentifier>
+    <OutputType>Exe</OutputType>
+    <PublishTrimmed>true</PublishTrimmed>
+    <TrimMode>link</TrimMode>
+    <InvariantGlobalization>true</InvariantGlobalization>
+  </PropertyGroup>
 
-```javascript
-// Lower-level access to Mono runtime
-import { mono_wasm_runtime_ready } from 'mono-wasm';
-
-export async function initMonoRuntime() {
-  await mono_wasm_runtime_ready();
-
-  return {
-    compile: (code) => BINDING.mono_method_resolve('Compile', code),
-    run: (assembly) => BINDING.mono_method_invoke(assembly, 'Main'),
-    captureOutput: () => { /* ... */ }
-  };
-}
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.*" />
+  </ItemGroup>
+</Project>
 ```
 
-#### Approach 3: Leverage dotnet/try Components
+**Publish and host the output** on Azure Blob Storage, GitHub Pages, or any CDN with proper CORS headers. The `_framework/` folder contains the WASM files, BCL assemblies, and boot configuration.
 
-Microsoft's Try .NET is open source. We can extract the WASM runtime components:
+### Step 2: Create the Runtime Loader Component
 
-```bash
-# Clone the repository
-git clone https://github.com/dotnet/try
-
-# Extract relevant parts:
-# - MLS.Agent (compilation service)
-# - MLS.WasmCodeRunner (WASM execution)
-# - Remove Blazor dependencies
-# - Package for npm
-```
-
-### React Component Architecture
+**File**: `/snippets/dotnet-runtime.jsx`
 
 ```jsx
-// snippets/dotnet-wasm-runner.jsx
-import { useState, useEffect } from 'react';
-import CodeMirror from '@uiw/react-codemirror';
-import { csharp } from '@codemirror/lang-csharp';
+// Arrow function syntax required by Mintlify
+export const useDotNetRuntime = () => {
+  const [runtimeReady, setRuntimeReady] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
+  const [error, setError] = React.useState(null);
 
-// Singleton runtime instance (load once, reuse everywhere)
-let globalDotNetRuntime = null;
-let runtimeLoadingPromise = null;
+  const loadRuntime = React.useCallback(async () => {
+    // Return existing runtime if already loaded
+    if (window.__dotnetRuntime) {
+      setRuntimeReady(true);
+      return window.__dotnetRuntime;
+    }
 
-async function getDotNetRuntime() {
-  if (globalDotNetRuntime) {
-    return globalDotNetRuntime;
-  }
-
-  if (!runtimeLoadingPromise) {
-    runtimeLoadingPromise = loadDotNetRuntime();
-  }
-
-  globalDotNetRuntime = await runtimeLoadingPromise;
-  return globalDotNetRuntime;
-}
-
-export const DotNetRunner = ({
-  initialCode,
-  height = "300px",
-  showIL = false,
-  showWasm = false,
-  enableProfiling = false,
-  targetFramework = "net9.0"
-}) => {
-  const [code, setCode] = useState(initialCode);
-  const [output, setOutput] = useState('');
-  const [errors, setErrors] = useState([]);
-  const [isRunning, setIsRunning] = useState(false);
-  const [runtimeReady, setRuntimeReady] = useState(false);
-  const [ilCode, setIlCode] = useState('');
-  const [wasmCode, setWasmCode] = useState('');
-  const [profiling, setProfiling] = useState(null);
-
-  useEffect(() => {
-    // Initialize runtime (shared across all instances)
-    const initRuntime = async () => {
-      try {
-        await getDotNetRuntime();
-        setRuntimeReady(true);
-      } catch (error) {
-        setErrors([`Failed to load .NET runtime: ${error.message}`]);
-      }
-    };
-    initRuntime();
-  }, []);
-
-  const runCode = async () => {
-    setIsRunning(true);
-    setOutput('');
-    setErrors([]);
+    if (loading) return null;
+    setLoading(true);
 
     try {
-      const runtime = await getDotNetRuntime();
+      // Dynamically load the .NET WASM boot script from CDN
+      const RUNTIME_BASE = "https://your-cdn.example.com/dotnet-wasm-runner";
 
-      // Start profiling if enabled
-      let startTime, startMemory;
-      if (enableProfiling) {
-        startTime = performance.now();
-        startMemory = performance.memory?.usedJSHeapSize || 0;
-      }
+      await new Promise((resolve, reject) => {
+        const script = document.createElement("script");
+        script.src = `${RUNTIME_BASE}/_framework/dotnet.js`;
+        script.onload = resolve;
+        script.onerror = reject;
+        document.head.appendChild(script);
+      });
 
-      // Compile
-      const compilation = await runtime.compile(code, targetFramework);
+      // Initialize the .NET runtime
+      const { getAssemblyExports, Module } = await window.dotnet
+        .withDiagnosticTracing(false)
+        .withResourceLoader((type, name, defaultUri) => {
+          return `${RUNTIME_BASE}/_framework/${name}`;
+        })
+        .create();
 
-      if (!compilation.success) {
-        setErrors(compilation.diagnostics);
-        return;
-      }
+      // Capture console output
+      let consoleBuffer = [];
+      Module.print = (text) => consoleBuffer.push(text);
+      Module.printErr = (text) => consoleBuffer.push(`ERROR: ${text}`);
 
-      // Get IL if requested
-      if (showIL) {
-        setIlCode(compilation.il);
-      }
+      const exports = await getAssemblyExports("dotnet-wasm-runner");
 
-      // Get WASM if requested
-      if (showWasm) {
-        setWasmCode(compilation.wasm);
-      }
+      window.__dotnetRuntime = {
+        compile: (code) => {
+          consoleBuffer = [];
+          return exports.CSharpCompiler.CompileAndRun(code);
+        },
+        getOutput: () => consoleBuffer.join("\n"),
+        clearOutput: () => { consoleBuffer = []; }
+      };
 
-      // Execute
-      const result = await runtime.execute(compilation.assembly);
-      setOutput(result.stdout);
+      setRuntimeReady(true);
+      return window.__dotnetRuntime;
+    } catch (err) {
+      setError(err.message);
+      return null;
+    } finally {
+      setLoading(false);
+    }
+  }, [loading]);
 
-      if (result.stderr) {
-        setErrors([result.stderr]);
-      }
+  return { runtimeReady, loading, error, loadRuntime };
+};
+```
 
-      // End profiling
-      if (enableProfiling) {
-        const endTime = performance.now();
-        const endMemory = performance.memory?.usedJSHeapSize || 0;
-        setProfiling({
-          executionTime: (endTime - startTime).toFixed(2),
-          memoryUsed: ((endMemory - startMemory) / 1024 / 1024).toFixed(2),
-          gcCollections: runtime.getGCCount()
+### Step 3: Create the Runner Component
+
+**File**: `/snippets/dotnet-runner.jsx`
+
+```jsx
+export const DotNetRunner = ({
+  initialCode = "",
+  height = "200px",
+  title = "C# Example"
+}) => {
+  const [code, setCode] = React.useState(initialCode);
+  const [output, setOutput] = React.useState("");
+  const [errors, setErrors] = React.useState("");
+  const [isRunning, setIsRunning] = React.useState(false);
+  const [runtimeReady, setRuntimeReady] = React.useState(false);
+  const [runtimeLoading, setRuntimeLoading] = React.useState(false);
+
+  const loadAndRun = async () => {
+    setIsRunning(true);
+    setOutput("");
+    setErrors("");
+
+    try {
+      // Lazy-load runtime on first run
+      if (!window.__dotnetRuntime) {
+        setRuntimeLoading(true);
+
+        const RUNTIME_BASE = "https://your-cdn.example.com/dotnet-wasm-runner";
+
+        await new Promise((resolve, reject) => {
+          if (window.dotnet) { resolve(); return; }
+          const script = document.createElement("script");
+          script.src = `${RUNTIME_BASE}/_framework/dotnet.js`;
+          script.onload = resolve;
+          script.onerror = reject;
+          document.head.appendChild(script);
         });
+
+        const { getAssemblyExports, Module } = await window.dotnet
+          .withDiagnosticTracing(false)
+          .withResourceLoader((type, name) =>
+            `${RUNTIME_BASE}/_framework/${name}`
+          )
+          .create();
+
+        let consoleBuffer = [];
+        Module.print = (text) => consoleBuffer.push(text);
+        Module.printErr = (text) => consoleBuffer.push(`ERROR: ${text}`);
+
+        const exports = await getAssemblyExports("dotnet-wasm-runner");
+
+        window.__dotnetRuntime = {
+          compile: (code) => {
+            consoleBuffer = [];
+            return exports.CSharpCompiler.CompileAndRun(code);
+          },
+          getOutput: () => consoleBuffer.join("\n"),
+          clearOutput: () => { consoleBuffer = []; }
+        };
+
+        setRuntimeLoading(false);
+        setRuntimeReady(true);
       }
 
-    } catch (error) {
-      setErrors([`Execution error: ${error.message}`]);
+      const runtime = window.__dotnetRuntime;
+      runtime.clearOutput();
+
+      const result = runtime.compile(code);
+
+      if (result.success) {
+        setOutput(runtime.getOutput());
+      } else {
+        setErrors(result.diagnostics);
+      }
+    } catch (err) {
+      setErrors(`Execution error: ${err.message}`);
     } finally {
       setIsRunning(false);
     }
   };
 
   return (
-    <div className="dotnet-runner">
-      {/* Editor */}
-      <div className="editor-container">
-        <CodeMirror
-          value={code}
-          height={height}
-          theme="dark"
-          extensions={[csharp()]}
-          onChange={setCode}
-          editable={runtimeReady}
-        />
+    <div style={{ border: "1px solid var(--border)", borderRadius: "8px", overflow: "hidden", marginBottom: "1rem" }}>
+      {/* Header */}
+      <div style={{
+        display: "flex", justifyContent: "space-between", alignItems: "center",
+        padding: "8px 12px", borderBottom: "1px solid var(--border)",
+        backgroundColor: "var(--background-secondary)"
+      }}>
+        <span style={{ fontSize: "0.85rem", fontWeight: 600 }}>{title}</span>
+        <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+          {runtimeLoading && (
+            <span style={{ fontSize: "0.8rem", opacity: 0.7 }}>Loading .NET runtime...</span>
+          )}
+          <span style={{ fontSize: "0.75rem", opacity: 0.5 }}>Client-side execution</span>
+        </div>
       </div>
 
-      {/* Controls */}
-      <div className="controls">
+      {/* Editor */}
+      <textarea
+        value={code}
+        onChange={(e) => setCode(e.target.value)}
+        style={{
+          width: "100%", height, fontFamily: "monospace", fontSize: "0.9rem",
+          padding: "12px", border: "none", resize: "vertical",
+          backgroundColor: "var(--background)", color: "var(--text)",
+          outline: "none", boxSizing: "border-box"
+        }}
+        spellCheck={false}
+      />
+
+      {/* Run button */}
+      <div style={{ padding: "8px 12px", borderTop: "1px solid var(--border)" }}>
         <button
-          onClick={runCode}
-          disabled={!runtimeReady || isRunning}
-          className="run-button"
+          onClick={loadAndRun}
+          disabled={isRunning}
+          style={{
+            padding: "6px 16px", borderRadius: "4px", border: "none",
+            backgroundColor: "var(--primary)", color: "white", cursor: "pointer",
+            fontSize: "0.85rem", fontWeight: 600,
+            opacity: isRunning ? 0.6 : 1
+          }}
         >
-          {isRunning ? '⏳ Running...' : '▶️ Run in Browser'}
+          {isRunning ? "Running..." : "Run"}
         </button>
-
-        {!runtimeReady && (
-          <span className="loading-indicator">
-            Loading .NET runtime...
-          </span>
-        )}
-
-        <span className="runtime-badge">
-          Client-side • {targetFramework}
-        </span>
       </div>
 
       {/* Output */}
       {output && (
-        <div className="output-panel">
-          <div className="output-header">Output:</div>
-          <pre className="output-content">{output}</pre>
+        <div style={{ borderTop: "1px solid var(--border)", padding: "12px", backgroundColor: "var(--background-secondary)" }}>
+          <div style={{ fontSize: "0.8rem", fontWeight: 600, marginBottom: "4px" }}>Output:</div>
+          <pre style={{ margin: 0, fontFamily: "monospace", fontSize: "0.85rem", whiteSpace: "pre-wrap" }}>{output}</pre>
         </div>
       )}
 
       {/* Errors */}
-      {errors.length > 0 && (
-        <div className="error-panel">
-          <div className="error-header">Errors:</div>
-          {errors.map((error, i) => (
-            <pre key={i} className="error-content">{error}</pre>
-          ))}
-        </div>
-      )}
-
-      {/* IL Output */}
-      {showIL && ilCode && (
-        <div className="il-panel">
-          <div className="il-header">IL Code:</div>
-          <CodeMirror
-            value={ilCode}
-            height="200px"
-            theme="dark"
-            editable={false}
-          />
-        </div>
-      )}
-
-      {/* WASM Output */}
-      {showWasm && wasmCode && (
-        <div className="wasm-panel">
-          <div className="wasm-header">WASM (disassembled):</div>
-          <CodeMirror
-            value={wasmCode}
-            height="200px"
-            theme="dark"
-            editable={false}
-          />
-        </div>
-      )}
-
-      {/* Profiling */}
-      {enableProfiling && profiling && (
-        <div className="profiling-panel">
-          <h4>Performance Metrics:</h4>
-          <ul>
-            <li>Execution Time: {profiling.executionTime}ms</li>
-            <li>Memory Used: {profiling.memoryUsed}MB</li>
-            <li>GC Collections: {profiling.gcCollections}</li>
-          </ul>
+      {errors && (
+        <div style={{ borderTop: "1px solid var(--border)", padding: "12px", backgroundColor: "#fef2f2" }}>
+          <div style={{ fontSize: "0.8rem", fontWeight: 600, marginBottom: "4px", color: "#dc2626" }}>Errors:</div>
+          <pre style={{ margin: 0, fontFamily: "monospace", fontSize: "0.85rem", whiteSpace: "pre-wrap", color: "#dc2626" }}>{errors}</pre>
         </div>
       )}
     </div>
@@ -449,450 +385,61 @@ export const DotNetRunner = ({
 };
 ```
 
-### Advanced Use Cases
+### Step 4: Use in MDX Pages
 
-#### 1. IL/WASM Visualizer
-
-```jsx
-export const CompilationVisualizer = ({ code }) => {
-  const [il, setIL] = useState('');
-  const [wasm, setWasm] = useState('');
-
-  useEffect(() => {
-    const compile = async () => {
-      const runtime = await getDotNetRuntime();
-      const result = await runtime.compile(code);
-      setIL(result.il);
-      setWasm(result.wasm);
-    };
-    compile();
-  }, [code]);
-
-  return (
-    <div className="three-column-view">
-      <div className="column">
-        <h3>C# Code</h3>
-        <CodeMirror value={code} extensions={[csharp()]} />
-      </div>
-
-      <div className="column">
-        <h3>IL (Intermediate Language)</h3>
-        <CodeMirror value={il} editable={false} />
-      </div>
-
-      <div className="column">
-        <h3>WASM (WebAssembly)</h3>
-        <CodeMirror value={wasm} editable={false} />
-      </div>
-    </div>
-  );
-};
-```
-
-#### 2. Multi-Version Comparator
-
-```jsx
-export const VersionComparator = ({ code }) => {
-  const [net6Result, setNet6Result] = useState('');
-  const [net8Result, setNet8Result] = useState('');
-  const [net9Result, setNet9Result] = useState('');
-
-  const runAll = async () => {
-    const runtime = await getDotNetRuntime();
-
-    // Run in parallel across different runtimes
-    const [r6, r8, r9] = await Promise.all([
-      runtime.execute(code, 'net6.0'),
-      runtime.execute(code, 'net8.0'),
-      runtime.execute(code, 'net9.0')
-    ]);
-
-    setNet6Result(r6);
-    setNet8Result(r8);
-    setNet9Result(r9);
-  };
-
-  return (
-    <div className="version-comparator">
-      <CodeMirror value={code} />
-      <button onClick={runAll}>Compare Across .NET Versions</button>
-
-      <div className="results-grid">
-        <ResultPanel version=".NET 6" result={net6Result} />
-        <ResultPanel version=".NET 8" result={net8Result} />
-        <ResultPanel version=".NET 9" result={net9Result} />
-      </div>
-    </div>
-  );
-};
-```
-
-#### 3. Performance Benchmark Playground
-
-```jsx
-export const BenchmarkPlayground = ({ code1, code2 }) => {
-  const [results, setResults] = useState(null);
-
-  const runBenchmark = async () => {
-    const runtime = await getDotNetRuntime();
-
-    // Run each snippet 1000 times
-    const iterations = 1000;
-    const times1 = [];
-    const times2 = [];
-
-    for (let i = 0; i < iterations; i++) {
-      const start1 = performance.now();
-      await runtime.execute(code1);
-      times1.push(performance.now() - start1);
-
-      const start2 = performance.now();
-      await runtime.execute(code2);
-      times2.push(performance.now() - start2);
-    }
-
-    setResults({
-      code1: {
-        avg: average(times1),
-        median: median(times1),
-        p95: percentile(times1, 95)
-      },
-      code2: {
-        avg: average(times2),
-        median: median(times2),
-        p95: percentile(times2, 95)
-      }
-    });
-  };
-
-  return (
-    <div className="benchmark-playground">
-      <div className="split-editor">
-        <CodeMirror value={code1} />
-        <CodeMirror value={code2} />
-      </div>
-
-      <button onClick={runBenchmark}>Run Benchmark (1000 iterations)</button>
-
-      {results && (
-        <BenchmarkResults
-          approach1={results.code1}
-          approach2={results.code2}
-        />
-      )}
-    </div>
-  );
-};
-```
-
-#### 4. Interactive Tutorial with State Persistence
-
-```jsx
-export const InteractiveTutorial = () => {
-  const [step, setStep] = useState(0);
-  const [runtimeState, setRuntimeState] = useState(null);
-
-  const steps = [
-    {
-      title: "Create a class",
-      initialCode: "public class Person { }",
-      instructions: "Define a Person class with Name and Age properties"
-    },
-    {
-      title: "Add a constructor",
-      initialCode: runtimeState?.code || "",
-      instructions: "Add a constructor that takes name and age"
-    },
-    {
-      title: "Add a method",
-      initialCode: runtimeState?.code || "",
-      instructions: "Add a Greet() method that returns a greeting"
-    }
-  ];
-
-  const onStepComplete = async (code) => {
-    const runtime = await getDotNetRuntime();
-
-    // Save the compiled state
-    const compiled = await runtime.compile(code);
-    setRuntimeState({ code, assembly: compiled.assembly });
-
-    setStep(step + 1);
-  };
-
-  return (
-    <div className="tutorial">
-      <h2>Step {step + 1}: {steps[step].title}</h2>
-      <p>{steps[step].instructions}</p>
-
-      <DotNetRunner
-        initialCode={steps[step].initialCode}
-        onSuccess={onStepComplete}
-      />
-    </div>
-  );
-};
-```
-
-#### 5. LINQ Query Visualizer
-
-```jsx
-export const LINQVisualizer = () => {
-  const [query, setQuery] = useState('');
-  const [data, setData] = useState([]);
-  const [steps, setSteps] = useState([]);
-
-  const visualizeQuery = async () => {
-    const runtime = await getDotNetRuntime();
-
-    // Inject instrumentation into LINQ query
-    const instrumented = await runtime.instrumentLINQ(query);
-
-    // Execute and capture each step
-    const result = await runtime.execute(instrumented);
-
-    setSteps(result.steps); // Each step of the query pipeline
-    setData(result.finalData);
-  };
-
-  return (
-    <div className="linq-visualizer">
-      <CodeMirror
-        value={query}
-        onChange={setQuery}
-        extensions={[csharp()]}
-      />
-
-      <button onClick={visualizeQuery}>Visualize Query</button>
-
-      <div className="pipeline-steps">
-        {steps.map((step, i) => (
-          <div key={i} className="step">
-            <h4>{step.operation}</h4>
-            <DataTable data={step.intermediateData} />
-            <p>Items: {step.count}</p>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
-```
-
+```mdx
+---
+title: "Getting Started"
 ---
 
-## 3. Comparison Matrix
+import { DotNetRunner } from "/snippets/dotnet-runner.jsx"
 
-| Feature | Try .NET (iframe) | Backend API | Direct WASM Runtime |
-|---------|-------------------|-------------|---------------------|
-| **Bundle Size** | 5-30MB | ~500KB | 5-15MB (first load) |
-| **Subsequent Loads** | 200-500ms | ~500KB | <100KB (cached) |
-| **Latency** | None (client-side) | 200-500ms | None (client-side) |
-| **Infrastructure Cost** | $0 | $5-10/month | $0 |
-| **Customization** | Low | High | Very High |
-| **Integration Effort** | Very Low | Medium | High (initial) |
-| **Feature Set** | Full C# | Full C# | Full C# |
-| **Offline Support** | Yes (cached) | No | Yes (cached) |
-| **Privacy** | Code sent to Microsoft | Code sent to your API | Code stays in browser |
-| **Mobile Support** | Medium (iframe) | Good | Excellent |
-| **Scalability** | Infinite (client) | Limited (server) | Infinite (client) |
-| **Maintenance** | None | Moderate | Low |
+# Getting Started
 
----
+Try editing and running this C# code directly in your browser:
 
-## 4. Recommended Approach
+<DotNetRunner
+  title="Hello World"
+  initialCode={`using System;
 
-### Phase 1: MVP (Immediate - 2 weeks)
-
-**Use Try .NET iframe embedding**
-
-```jsx
-// snippets/try-dotnet.jsx
-export const TryDotNet = ({ gistId }) => {
-  return <iframe src={`https://try.dot.net/?fromGist=${gistId}`} />;
-};
+Console.WriteLine("Hello from .NET in the browser!");
+Console.WriteLine($"Running on {Environment.Version}");`}
+/>
 ```
 
-**Rationale**:
-- Get interactive docs immediately
-- Zero implementation cost
-- Validate user engagement
-- Learn what features users want
+### Step 5: Upgrade to a Rich Code Editor (Optional)
 
-**Limitations**:
-- Requires Microsoft private preview access
-- Limited customization
-- Large bundle size
+For a better editing experience, load Monaco Editor or CodeMirror from a CDN via Mintlify's custom scripts in `docs.json`:
 
-### Phase 2: Hybrid (Q2 2025 - 4 weeks)
-
-**Implement direct WASM runtime + fallback to Try .NET**
-
-```jsx
-export const CSharpRunner = ({ code }) => {
-  const [useWasm, setUseWasm] = useState(true);
-
-  if (useWasm) {
-    return <DotNetWasmRunner code={code} />;
-  }
-
-  // Fallback to Try .NET if WASM fails
-  return <TryDotNetEmbed gistId={createGist(code)} />;
-};
-```
-
-**Deliverables**:
-1. Basic WASM runtime integration
-2. CodeMirror editor component
-3. Console output capture
-4. Error handling and diagnostics
-5. Loading states and caching
-
-### Phase 3: Advanced Features (Q3 2025 - 8 weeks)
-
-**Add advanced capabilities**:
-1. IL/WASM visualization
-2. Multi-version comparison (.NET 6/8/9)
-3. Performance profiling
-4. LINQ query visualizer
-5. Interactive tutorials with state
-6. Benchmark playground
-7. NuGet package support
-
----
-
-## 5. Technical Implementation Details
-
-### Loading the .NET WASM Runtime
-
-#### Option A: Using @microsoft/dotnet-runtime (Recommended)
-
-```bash
-npm install @microsoft/dotnet-runtime
-```
-
-```javascript
-// utils/dotnet-runtime.js
-import { dotnet } from '@microsoft/dotnet-runtime';
-
-let runtimeInstance = null;
-
-export async function loadDotNetRuntime() {
-  if (runtimeInstance) return runtimeInstance;
-
-  const { MONO, Module, getAssemblyExports, getConfig } = await dotnet
-    .withDiagnosticTracing(false)
-    .withApplicationArgumentsFromQuery()
-    .withElementOnExit()
-    .create();
-
-  // Intercept console output
-  let consoleBuffer = [];
-  Module.print = (text) => consoleBuffer.push(text);
-  Module.printErr = (text) => consoleBuffer.push(`ERROR: ${text}`);
-
-  runtimeInstance = {
-    MONO,
-    Module,
-    getAssemblyExports,
-
-    compile: async (code, targetFramework = 'net9.0') => {
-      consoleBuffer = [];
-
-      // Create compilation request
-      const compileMethod = getAssemblyExports('RoslynCompiler')
-        .RoslynCompiler.Compile;
-
-      const result = await compileMethod(code, targetFramework);
-
-      return {
-        success: result.Success,
-        assembly: result.Assembly,
-        diagnostics: result.Diagnostics,
-        il: result.IL,
-        output: consoleBuffer.join('\n')
-      };
-    },
-
-    execute: async (assembly) => {
-      consoleBuffer = [];
-
-      try {
-        // Execute the compiled assembly
-        MONO.mono_wasm_run_assembly(assembly);
-
-        return {
-          success: true,
-          stdout: consoleBuffer.filter(l => !l.startsWith('ERROR:')).join('\n'),
-          stderr: consoleBuffer.filter(l => l.startsWith('ERROR:')).join('\n')
-        };
-      } catch (error) {
-        return {
-          success: false,
-          stdout: '',
-          stderr: error.message
-        };
-      }
-    },
-
-    getGCCount: () => {
-      return MONO.mono_gc_get_count();
-    }
-  };
-
-  return runtimeInstance;
+```json
+{
+  "js": [
+    "https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs/loader.js"
+  ],
+  "css": [
+    "https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs/editor/editor.main.css"
+  ]
 }
 ```
 
-#### Option B: Extract from dotnet/try
+Then update the `DotNetRunner` component to use Monaco instead of a `<textarea>` when it's available on `window`, falling back to the textarea if not loaded.
 
-```bash
-# Clone and build
-git clone https://github.com/dotnet/try
-cd try
-dotnet build
+### Step 6: Build-Time Validation
 
-# Extract WASM artifacts
-cp -r src/MLS.WasmCodeRunner/bin/Release/net9.0/publish/wwwroot/_framework ./wasm-runtime
+Extend `dotnet easyaf mintlify` to:
 
-# Package for npm
-npm init
-npm publish
-```
+1. **Scan MDX files** for `<DotNetRunner>` component usage
+2. **Extract the `initialCode` props** from each instance
+3. **Compile each code snippet** using Roslyn during the build
+4. **Fail the build** if any example doesn't compile
+5. **Store expected output** in frontmatter for optional runtime comparison
 
-### Handling NuGet Packages
-
-```javascript
-// Add support for runtime package loading
-export async function loadNuGetPackage(runtime, packageName, version) {
-  const packageUrl = `https://api.nuget.org/v3-flatcontainer/${packageName}/${version}/${packageName}.${version}.nupkg`;
-
-  const response = await fetch(packageUrl);
-  const packageData = await response.arrayBuffer();
-
-  // Load into runtime
-  await runtime.Module.FS.writeFile(
-    `/packages/${packageName}.dll`,
-    new Uint8Array(packageData)
-  );
-
-  await runtime.MONO.mono_wasm_add_assembly(
-    `/packages/${packageName}.dll`
-  );
-}
-```
-
-### Integration with Mintlify Build Process
-
-Extend `dotnet easyaf mintlify` command to:
-
-1. **Pre-compile examples during build**:
 ```csharp
 public class MintlifyDocGenerator
 {
-    public async Task GenerateDocsAsync()
+    public async Task ValidateCodeExamplesAsync()
     {
-        // Find all <CSharpRunner> components in MDX
+        // Find all <DotNetRunner> components in MDX
         var examples = await FindCodeExamplesAsync();
 
         foreach (var example in examples)
@@ -906,73 +453,273 @@ public class MintlifyDocGenerator
                     $"Example in {example.File} failed to compile: {result.Errors}"
                 );
             }
-
-            // Store pre-compiled output in frontmatter
-            example.PrecompiledOutput = result.Output;
-            await UpdateMdxFileAsync(example);
         }
     }
 }
 ```
 
-2. **Generate test cases from examples**:
-```csharp
-public async Task GenerateTestsFromExamplesAsync()
-{
-    var examples = await FindCodeExamplesAsync();
+---
 
-    foreach (var example in examples)
-    {
-        var testCode = $@"
-[TestMethod]
-public void Example_{example.Id}_Compiles()
-{{
-    var code = @""{example.Code}"";
-    var result = CompileCSharp(code);
-    Assert.IsTrue(result.Success);
-    Assert.AreEqual(""{example.ExpectedOutput}"", result.Output);
-}}";
+## 5. Advanced Components
 
-        await File.WriteAllTextAsync($"Tests/Examples/{example.Id}.cs", testCode);
+### IL/WASM Visualizer
+
+A component that shows the C# source alongside its compiled IL, helping users understand what the compiler generates.
+
+```jsx
+export const CompilationVisualizer = ({ code }) => {
+  const [il, setIL] = React.useState("");
+  const [output, setOutput] = React.useState("");
+  const [isCompiling, setIsCompiling] = React.useState(false);
+
+  const compile = async () => {
+    setIsCompiling(true);
+    try {
+      const runtime = window.__dotnetRuntime;
+      if (!runtime) return;
+      const result = runtime.compile(code);
+      setIL(result.il || "");
+      setOutput(result.output || "");
+    } finally {
+      setIsCompiling(false);
     }
-}
+  };
+
+  return (
+    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+      <div>
+        <h4>C# Code</h4>
+        <pre><code>{code}</code></pre>
+      </div>
+      <div>
+        <h4>IL (Intermediate Language)</h4>
+        <button onClick={compile} disabled={isCompiling}>
+          {isCompiling ? "Compiling..." : "Show IL"}
+        </button>
+        {il && <pre><code>{il}</code></pre>}
+      </div>
+    </div>
+  );
+};
 ```
 
-### Service Worker Caching Strategy
+### Performance Benchmark Playground
 
-```javascript
-// sw.js - Service Worker for aggressive WASM runtime caching
-const CACHE_NAME = 'dotnet-runtime-v1';
-const RUNTIME_URLS = [
-  '/_framework/dotnet.wasm',
-  '/_framework/dotnet.js',
-  '/_framework/blazor.boot.json',
-  '/_framework/System.*.dll',
-  '/_framework/Microsoft.*.dll'
-];
+```jsx
+export const BenchmarkPlayground = ({ code1, code2, label1 = "Approach A", label2 = "Approach B" }) => {
+  const [results, setResults] = React.useState(null);
+  const [running, setRunning] = React.useState(false);
 
-self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(RUNTIME_URLS);
-    })
+  const runBenchmark = async () => {
+    setRunning(true);
+    const runtime = window.__dotnetRuntime;
+    if (!runtime) return;
+
+    const iterations = 1000;
+    const times1 = [];
+    const times2 = [];
+
+    for (let i = 0; i < iterations; i++) {
+      const start1 = performance.now();
+      runtime.compile(code1);
+      times1.push(performance.now() - start1);
+
+      const start2 = performance.now();
+      runtime.compile(code2);
+      times2.push(performance.now() - start2);
+    }
+
+    const avg = (arr) => arr.reduce((a, b) => a + b, 0) / arr.length;
+    const med = (arr) => { const s = [...arr].sort((a,b) => a-b); return s[Math.floor(s.length/2)]; };
+
+    setResults({
+      a: { avg: avg(times1).toFixed(2), median: med(times1).toFixed(2) },
+      b: { avg: avg(times2).toFixed(2), median: med(times2).toFixed(2) }
+    });
+    setRunning(false);
+  };
+
+  return (
+    <div>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+        <div><h4>{label1}</h4><pre><code>{code1}</code></pre></div>
+        <div><h4>{label2}</h4><pre><code>{code2}</code></pre></div>
+      </div>
+      <button onClick={runBenchmark} disabled={running}>
+        {running ? "Running..." : `Run Benchmark (${1000} iterations)`}
+      </button>
+      {results && (
+        <table>
+          <thead><tr><th>Metric</th><th>{label1}</th><th>{label2}</th></tr></thead>
+          <tbody>
+            <tr><td>Average</td><td>{results.a.avg}ms</td><td>{results.b.avg}ms</td></tr>
+            <tr><td>Median</td><td>{results.a.median}ms</td><td>{results.b.median}ms</td></tr>
+          </tbody>
+        </table>
+      )}
+    </div>
   );
-});
+};
+```
 
-self.addEventListener('fetch', (event) => {
-  if (event.request.url.includes('_framework')) {
-    event.respondWith(
-      caches.match(event.request).then((response) => {
-        return response || fetch(event.request);
-      })
-    );
-  }
-});
+### Interactive Tutorial with State Persistence
+
+```jsx
+export const InteractiveTutorial = ({ steps }) => {
+  const [currentStep, setCurrentStep] = React.useState(0);
+  const [completedCode, setCompletedCode] = React.useState({});
+
+  const step = steps[currentStep];
+  const initialCode = completedCode[currentStep] || step.initialCode;
+
+  const handleSuccess = (code) => {
+    setCompletedCode({ ...completedCode, [currentStep]: code });
+    if (currentStep < steps.length - 1) {
+      setCurrentStep(currentStep + 1);
+    }
+  };
+
+  return (
+    <div>
+      <div style={{ display: "flex", gap: "8px", marginBottom: "1rem" }}>
+        {steps.map((s, i) => (
+          <span key={i} style={{
+            padding: "4px 12px", borderRadius: "4px", fontSize: "0.85rem",
+            backgroundColor: i === currentStep ? "var(--primary)" : "var(--background-secondary)",
+            color: i === currentStep ? "white" : "inherit",
+            cursor: "pointer"
+          }} onClick={() => setCurrentStep(i)}>
+            Step {i + 1}
+          </span>
+        ))}
+      </div>
+      <h3>{step.title}</h3>
+      <p>{step.instructions}</p>
+      {/* DotNetRunner must be imported separately in the MDX file */}
+    </div>
+  );
+};
+```
+
+### LINQ Query Visualizer
+
+```jsx
+export const LINQVisualizer = ({ initialQuery }) => {
+  const [query, setQuery] = React.useState(initialQuery || "");
+  const [steps, setSteps] = React.useState([]);
+
+  const visualizeQuery = async () => {
+    const runtime = window.__dotnetRuntime;
+    if (!runtime) return;
+
+    // Wrap the query with instrumentation
+    const instrumented = `
+using System;
+using System.Linq;
+using System.Collections.Generic;
+
+var data = Enumerable.Range(1, 20).ToList();
+Console.WriteLine("Input: " + string.Join(", ", data));
+
+${query}
+`;
+
+    const result = runtime.compile(instrumented);
+    if (result.success) {
+      setSteps(runtime.getOutput().split("\n").filter(Boolean));
+    }
+  };
+
+  return (
+    <div>
+      <textarea
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        style={{ width: "100%", height: "150px", fontFamily: "monospace" }}
+        spellCheck={false}
+      />
+      <button onClick={visualizeQuery}>Visualize Query</button>
+      {steps.length > 0 && (
+        <div>
+          <h4>Pipeline Output:</h4>
+          {steps.map((step, i) => (
+            <pre key={i} style={{ margin: "4px 0", padding: "8px", backgroundColor: "var(--background-secondary)", borderRadius: "4px" }}>{step}</pre>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
 ```
 
 ---
 
-## 6. Bundle Size Optimization Strategies
+## 6. Comparison: Backend API vs. Direct WASM Runtime
+
+| Feature | Backend API | Direct WASM Runtime |
+|---------|-------------|---------------------|
+| **Bundle Size** | ~500KB | 5-15MB (first load) |
+| **Subsequent Loads** | ~500KB | <100KB (cached) |
+| **Latency** | 200-500ms per request | None (client-side) |
+| **Infrastructure Cost** | $5-10/month | $0 (static hosting for WASM) |
+| **Customization** | High | Very High |
+| **Feature Set** | Full C# | Full C# |
+| **Offline Support** | No | Yes (cached) |
+| **Privacy** | Code sent to server | Code stays in browser |
+| **Mobile Support** | Good | Excellent |
+| **Scalability** | Limited (server) | Infinite (client) |
+| **Maintenance** | Moderate (server upkeep) | Low (static files) |
+
+---
+
+## 7. Implementation Approach
+
+### Task 1: Build the WASM Runner Application
+
+Build a minimal .NET WASM application that:
+1. Exposes a `CompileAndRun(string code)` method via `[JSExport]`
+2. Uses Roslyn to compile C# code in-browser
+3. Captures `Console.WriteLine` output
+4. Returns structured results (success/failure, output, diagnostics)
+
+Apply aggressive trimming and IL linking to minimize bundle size.
+
+### Task 2: Host WASM Artifacts on CDN
+
+1. Publish the WASM application (`dotnet publish -c Release`)
+2. Upload the `_framework/` output to Azure Blob Storage or similar CDN
+3. Configure CORS headers to allow loading from the Mintlify docs domain
+4. Set long-lived cache headers on `.wasm` and `.dll` files
+
+### Task 3: Create Mintlify React Components
+
+1. Create `/snippets/dotnet-runner.jsx` with the interactive runner component
+2. Use a `<textarea>` for the initial implementation (no external editor dependency)
+3. Lazy-load the WASM runtime only when the user clicks "Run" (no impact on page load)
+4. Use inline styles (Mintlify components can't import CSS modules)
+
+### Task 4: Integrate with Build Pipeline
+
+1. Extend `dotnet easyaf mintlify` to scan for `<DotNetRunner>` usage in MDX files
+2. Extract `initialCode` props and compile them during the build
+3. Fail the build on compilation errors in examples
+4. Generate test cases from examples for CI validation
+
+### Task 5: Add Advanced Components
+
+1. Build the IL Visualizer, Benchmark Playground, LINQ Visualizer, and Tutorial components
+2. Each component is a separate `.jsx` file in `/snippets/`
+3. All share the same global `window.__dotnetRuntime` singleton
+
+### Task 6: Upgrade to Rich Editor (Optional)
+
+1. Add Monaco Editor or CodeMirror via CDN in `docs.json` custom scripts
+2. Update `DotNetRunner` to detect and use the editor when available
+3. Fall back to `<textarea>` if the CDN script hasn't loaded
+
+---
+
+## 8. Bundle Size Optimization
 
 ### Strategy 1: IL Linking (Aggressive Tree-Shaking)
 
@@ -996,61 +743,59 @@ const core = await loadDotNetCore();
 
 // Load additional assemblies on-demand
 if (needsLinq) {
-  await loadAssembly('System.Linq.dll');
+  await loadAssembly("System.Linq.dll");
 }
 
 if (needsHttp) {
-  await loadAssembly('System.Net.Http.dll');
+  await loadAssembly("System.Net.Http.dll");
 }
 ```
 
 ### Strategy 3: Compression
 
-```javascript
-// Use Brotli compression (better than gzip for WASM)
-// Reduces bundle by 70-80%
-
+```
+// Brotli compression reduces WASM bundles by 70-80%
 // Before: 15MB
 // After Brotli: 3-5MB
 ```
 
+Ensure the CDN serves `.br` compressed files with proper `Content-Encoding` headers.
+
 ### Strategy 4: Code Splitting
 
 ```javascript
-// Split runtime into chunks
 const chunks = {
-  core: 'dotnet.core.wasm',        // 2MB - always loaded
-  compiler: 'roslyn.wasm',          // 5MB - load on first edit
-  bcl: 'system.*.wasm',             // 5MB - load on demand
-  advanced: 'linq.reflection.wasm'  // 3MB - load if needed
+  core: "dotnet.core.wasm",        // 2MB - always loaded
+  compiler: "roslyn.wasm",          // 5MB - load on first "Run" click
+  bcl: "system.*.wasm",             // 5MB - load on demand
+  advanced: "linq.reflection.wasm"  // 3MB - load if needed
 };
 ```
 
 ---
 
-## 7. Security Considerations
+## 9. Security Considerations
 
 ### Sandboxing
 
 ```javascript
-// Limit what code can do
 const sandbox = {
   allowedNamespaces: [
-    'System',
-    'System.Collections.Generic',
-    'System.Linq',
-    'System.Text'
+    "System",
+    "System.Collections.Generic",
+    "System.Linq",
+    "System.Text"
   ],
 
   blockedNamespaces: [
-    'System.IO',           // No file system access
-    'System.Net',          // No network access
-    'System.Reflection',   // No reflection (prevents escape)
-    'System.Runtime.InteropServices' // No P/Invoke
+    "System.IO",                        // No file system access
+    "System.Net",                       // No network access
+    "System.Reflection",                // No reflection (prevents escape)
+    "System.Runtime.InteropServices"    // No P/Invoke
   ],
 
-  maxExecutionTime: 5000,  // 5 second timeout
-  maxMemory: 100 * 1024 * 1024 // 100MB limit
+  maxExecutionTime: 5000,   // 5 second timeout
+  maxMemory: 100 * 1024 * 1024  // 100MB limit
 };
 ```
 
@@ -1086,132 +831,41 @@ class SecuritySyntaxWalker : CSharpSyntaxWalker
 
 ---
 
-## 8. Cost Analysis
+## 10. Cost Analysis
 
-### Try .NET (iframe)
-
-| Item | Cost |
-|------|------|
-| Infrastructure | $0 (Microsoft hosts) |
-| Bandwidth | $0 (Microsoft serves) |
-| Maintenance | $0 |
-| **Total** | **$0/month** |
-
-### Backend API Approach
+### Direct WASM Runtime (Recommended)
 
 | Item | Cost |
 |------|------|
-| Azure Functions | $5-10/month |
+| Infrastructure | $0 (client-side execution) |
+| CDN hosting for WASM | $5-20/month (static files, drops with caching) |
+| Maintenance | Minimal (static files, update on new .NET releases) |
+| **Total** | **$5-20/month** |
+
+### Backend API (Alternative)
+
+| Item | Cost |
+|------|------|
+| Azure Functions / Container | $5-10/month |
 | Bandwidth | $1-5/month |
 | Storage | $1/month |
-| Maintenance | 2-4 hours/month |
+| Maintenance | Moderate (server upkeep, scaling, security patches) |
 | **Total** | **$7-16/month** |
-
-### Direct WASM Runtime
-
-| Item | Cost |
-|------|------|
-| Infrastructure | $0 (client-side) |
-| Bandwidth | $5-20/month (WASM downloads) |
-| CDN | $5-10/month (optional) |
-| Maintenance | 1-2 hours/month |
-| **Total** | **$10-30/month** |
-
-**Note**: With CDN caching, bandwidth costs drop significantly after initial rollout.
-
----
-
-## 9. User Experience Comparison
-
-### Loading Experience
-
-**Try .NET (iframe)**:
-```
-User visits page → iframe loads → 1-5 second delay → Ready
-```
-
-**Direct WASM**:
-```
-User visits page → Service worker check →
-  First time: 1-3 second runtime download → Ready
-  Subsequent: <100ms from cache → Ready
-```
-
-### Editing Experience
-
-**Both approaches**:
-- Type in editor → Instant feedback (CodeMirror)
-- Click "Run" → 100-500ms compilation → Results
-
-### Mobile Experience
-
-**Try .NET (iframe)**:
-- Usable but awkward scrolling
-- iframe viewport issues
-- Touch keyboard works
-
-**Direct WASM**:
-- Native-feeling experience
-- Responsive design
-- Better touch integration
-- Custom mobile layout possible
-
----
-
-## 10. Recommendations
-
-### Immediate Action (Week 1-2)
-
-1. **Request Try .NET private preview access** from Microsoft
-2. **Build basic Try .NET iframe component** for Mintlify
-3. **Add 2-3 interactive examples** to existing docs as proof-of-concept
-4. **Measure user engagement** (time on page, interactions)
-
-### Short-Term (Month 1-2)
-
-1. **Prototype direct WASM runtime approach**
-   - Create working CodeMirror + WASM integration
-   - Benchmark bundle sizes and performance
-   - Test on mobile devices
-
-2. **Extend `dotnet easyaf mintlify` command**
-   - Pre-compile all examples
-   - Validate examples during build
-   - Generate tests from examples
-
-### Medium-Term (Month 3-6)
-
-1. **Choose primary approach** based on prototype results
-2. **Implement advanced features**:
-   - IL/WASM visualization
-   - Performance profiling
-   - Multi-version comparison
-3. **Build component library** for common interactive patterns
-4. **Create documentation** for contributors
-
-### Long-Term (6+ months)
-
-1. **Package as open-source tool**: "mintlify-dotnet-interactive"
-2. **Contribute back to Try .NET** if using their runtime
-3. **Add support for F#, Razor, and other .NET languages**
-4. **Build collaborative features** (share snippets, fork examples)
 
 ---
 
 ## 11. Open Questions
 
-1. **Microsoft licensing**: What are the licensing terms for using the .NET WASM runtime in this way?
-2. **Try .NET availability**: When will Try .NET exit private preview?
-3. **Performance at scale**: How does runtime performance degrade with 50+ examples on one page?
-4. **Mobile data usage**: Is 5-15MB runtime download acceptable for mobile users?
-5. **Browser compatibility**: What's the minimum browser version needed?
-6. **NuGet package support**: Can we load arbitrary NuGet packages at runtime?
+1. **Mintlify CSP**: Will Mintlify's Content Security Policy allow loading WASM files from our CDN? May need to use their custom frontend/reverse proxy configuration to add CSP directives.
+2. **Performance at scale**: How does runtime performance degrade with 50+ `<DotNetRunner>` instances on one page? (Likely fine — they all share one runtime instance, and each is just a textarea until "Run" is clicked.)
+3. **Mobile data usage**: Is 5-15MB runtime download acceptable for mobile users? Consider showing a "Load interactive examples" opt-in button on mobile.
+4. **Browser compatibility**: The .NET WASM runtime requires WebAssembly support (all modern browsers since 2017). SharedArrayBuffer may be needed for threading.
+5. **NuGet package support**: Can we load arbitrary NuGet packages at runtime? This would require downloading and extracting `.nupkg` files into the WASM filesystem.
+6. **Mintlify custom scripts loading order**: Do custom scripts in `docs.json` load before or after React components hydrate? This affects whether we can rely on globally-loaded editors.
 
 ---
 
 ## 12. Success Metrics
-
-Track these metrics to evaluate success:
 
 | Metric | Target | Measurement |
 |--------|--------|-------------|
@@ -1220,49 +874,40 @@ Track these metrics to evaluate success:
 | **Code Modifications** | 30% users edit examples | Event tracking |
 | **Page Load Time** | <3 seconds (first load) | Real User Monitoring |
 | **Bounce Rate** | 20% decrease | Analytics |
-| **GitHub Stars** | 500+ if open-sourced | GitHub |
-| **Community Examples** | 50+ user-submitted snippets | Platform tracking |
+| **Runtime Load Time** | <2 seconds (cached) | Performance monitoring |
 
 ---
 
 ## 13. Resources
 
-### Microsoft Documentation
-- [Try .NET Platform](https://dotnet.microsoft.com/en-us/platform/try-dotnet)
-- [.NET Interactive GitHub](https://github.com/dotnet/interactive)
-- [Blazor WebAssembly](https://learn.microsoft.com/aspnet/core/blazor/)
-
-### Technical Articles
-- [Creating Interactive .NET Documentation](https://devblogs.microsoft.com/dotnet/creating-interactive-net-documentation/)
+### Technical References
+- [.NET Interactive GitHub](https://github.com/dotnet/interactive) — Open-source runtime components
+- [Blazor WebAssembly](https://learn.microsoft.com/aspnet/core/blazor/) — Underlying WASM technology
 - [Running .NET in the Browser without Blazor](https://andrewlock.net/running-dotnet-in-the-browser-without-blazor/)
+- [Mintlify React Components](https://www.mintlify.com/docs/customize/react-components) — Component constraints and patterns
+- [Mintlify Reusable Snippets](https://www.mintlify.com/docs/create/reusable-snippets) — Import patterns for JSX components
+- [Mintlify Custom Scripts](https://www.mintlify.com/docs/customize/custom-scripts) — Global JS/CSS injection
 
 ### Related Projects
-- [Codapi](https://codapi.org/) - Alternative interactive code playground
-- [repl.it](https://replit.com/) - Full-featured online IDE
-- [dotnetfiddle](https://dotnetfiddle.net/) - Online C# playground
+- [Codapi](https://codapi.org/) — Alternative interactive code playground
+- [dotnetfiddle](https://dotnetfiddle.net/) — Online C# playground
+- [SharpLab](https://sharplab.io/) — C# to IL/WASM visualization
 
 ---
 
 ## 14. Conclusion
 
-The ability to run C# code directly in the browser using the .NET WASM runtime, **without the Blazor DOM layer**, represents a revolutionary opportunity for .NET documentation. By integrating this runtime with React components and CodeMirror, we can create documentation that is:
+The ability to run C# code directly in the browser using the .NET WASM runtime, **without the Blazor DOM layer**, integrated with Mintlify's React component system, creates documentation that is:
 
 - **Interactive**: Users can edit and run code instantly
 - **Fast**: Zero server latency, runs entirely client-side
-- **Scalable**: No infrastructure costs, infinite scalability
-- **Advanced**: IL visualization, profiling, multi-version comparison
+- **Scalable**: No infrastructure costs beyond static CDN hosting
+- **Advanced**: IL visualization, profiling, benchmarking, LINQ visualization
 - **Engaging**: Significantly improved user experience
 
-The recommended approach is to:
-1. Start with Try .NET (iframe) for immediate results
-2. Prototype direct WASM integration to validate performance
-3. Choose the best approach based on real-world testing
-4. Build advanced features that differentiate your documentation
-
-This could make your .NET documentation the **best developer documentation platform** in the .NET ecosystem.
+The approach respects Mintlify's component constraints (arrow functions, `/snippets/` folder, no npm imports, no nested component imports) by using CDN-loaded dependencies and a global `window.__dotnetRuntime` singleton that's lazy-loaded on first use, ensuring zero impact on initial page load performance.
 
 ---
 
-**Last Updated**: 2025-10-12
-**Author**: Claude (Anthropic)
-**Status**: Analysis Complete - Ready for Implementation
+**Last Updated**: 2026-03-11
+**Status**: Ready for Implementation
