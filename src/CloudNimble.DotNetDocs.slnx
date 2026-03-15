@@ -20,6 +20,9 @@
     <Project Path="CloudNimble.DotNetDocs.Mintlify/CloudNimble.DotNetDocs.Mintlify.csproj" Id="f039a3eb-5b89-4170-b4bd-84d87223fc01" />
     <Project Path="Mintlify.Core/Mintlify.Core.csproj" />
   </Folder>
+  <Folder Name="/Providers/WASM/">
+    <Project Path="CloudNimble.DotNetDocs.WasmRunner/CloudNimble.DotNetDocs.WasmRunner.csproj" />
+  </Folder>
   <Folder Name="/Reference/">
     <Project Path="CloudNimble.DotNetDocs.Reference.Mintlify/CloudNimble.DotNetDocs.Reference.Mintlify.docsproj" Type="C#" />
   </Folder>
@@ -50,6 +53,7 @@
     <Project Path="CloudNimble.DotNetDocs.Tests.Sdk.Tasks/CloudNimble.DotNetDocs.Tests.Sdk.Tasks.csproj" />
     <Project Path="CloudNimble.DotNetDocs.Tests.Shared/CloudNimble.DotNetDocs.Tests.Shared.csproj" />
     <Project Path="Mintlify.Tests.Core/Mintlify.Tests.Core.csproj" />
+    <Project Path="CloudNimble.DotNetDocs.Tests.WasmRunner/CloudNimble.DotNetDocs.Tests.WasmRunner.csproj" />
   </Folder>
   <Folder Name="/Tools/">
     <Project Path="CloudNimble.DotNetDocs.Sdk.Tasks/CloudNimble.DotNetDocs.Sdk.Tasks.csproj" Id="d468d95e-2e4d-4013-bf30-17a458224e10" />
