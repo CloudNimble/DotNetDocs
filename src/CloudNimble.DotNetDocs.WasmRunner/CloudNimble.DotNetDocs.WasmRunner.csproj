@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFrameworks>net10.0;net9.0;net8.0</TargetFrameworks>
+        <DocumentationFile>$(DocumentationFile)\$(AssemblyName).xml</DocumentationFile>
+        <Description>A .NET library that compiles and executes C# code using Roslyn, designed for use in interactive Mintlify documentation via WASM.</Description>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.*" />
+    </ItemGroup>
+
+</Project>

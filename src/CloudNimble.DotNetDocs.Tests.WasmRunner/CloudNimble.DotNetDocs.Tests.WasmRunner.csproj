@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFrameworks>net10.0;net9.0;net8.0</TargetFrameworks>
+        <IsPackable>false</IsPackable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\CloudNimble.DotNetDocs.WasmRunner\CloudNimble.DotNetDocs.WasmRunner.csproj" />
+        <ProjectReference Include="..\CloudNimble.DotNetDocs.Tests.Shared\CloudNimble.DotNetDocs.Tests.Shared.csproj" />
+    </ItemGroup>
+
+</Project>
