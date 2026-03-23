@@ -556,6 +556,7 @@ namespace CloudNimble.DotNetDocs.Tests.Sdk.Tasks
                 <Styling>
                     <Codeblocks>dark</Codeblocks>
                     <Eyebrows>subtle</Eyebrows>
+                    <Latex>true</Latex>
                 </Styling>
                 """;
             var stylingElement = XElement.Parse(xml);
@@ -567,6 +568,29 @@ namespace CloudNimble.DotNetDocs.Tests.Sdk.Tasks
             result.Should().NotBeNull();
             result.Codeblocks.Should().Be("dark");
             result.Eyebrows.Should().Be("subtle");
+            result.Latex.Should().BeTrue();
+        }
+
+        /// <summary>
+        /// Tests that ParseStylingConfig correctly parses Latex property.
+        /// </summary>
+        [TestMethod]
+        public void ParseStylingConfig_WithLatex_ParsesCorrectly()
+        {
+            // Arrange
+            var xml = """
+                <Styling>
+                    <Latex>false</Latex>
+                </Styling>
+                """;
+            var stylingElement = XElement.Parse(xml);
+
+            // Act
+            var result = _task.ParseStylingConfig(stylingElement);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Latex.Should().BeFalse();
         }
 
         /// <summary>
@@ -586,6 +610,7 @@ namespace CloudNimble.DotNetDocs.Tests.Sdk.Tasks
             result.Should().NotBeNull();
             result.Codeblocks.Should().BeNull();
             result.Eyebrows.Should().BeNull();
+            result.Latex.Should().BeNull();
         }
 
         #endregion
@@ -831,6 +856,656 @@ namespace CloudNimble.DotNetDocs.Tests.Sdk.Tasks
             // Assert
             result.Should().NotBeNull();
             result.Drilldown.Should().BeTrue();
+        }
+
+        #endregion
+
+        #region Integrations Configuration Tests - New Integrations
+
+        /// <summary>
+        /// Tests that ParseIntegrationsConfig correctly parses PostHog SessionRecording.
+        /// </summary>
+        [TestMethod]
+        public void ParseIntegrationsConfig_WithPostHogSessionRecording_ParsesCorrectly()
+        {
+            // Arrange
+            var xml = """
+                <Integrations>
+                    <PostHog ApiKey="phc_123" ApiHost="https://app.posthog.com" SessionRecording="true" />
+                </Integrations>
+                """;
+            var integrationsElement = XElement.Parse(xml);
+
+            // Act
+            var result = _task.ParseIntegrationsConfig(integrationsElement);
+
+            // Assert
+            result.PostHog.Should().NotBeNull();
+            result.PostHog!.ApiKey.Should().Be("phc_123");
+            result.PostHog.ApiHost.Should().Be("https://app.posthog.com");
+            result.PostHog.SessionRecording.Should().BeTrue();
+        }
+
+        /// <summary>
+        /// Tests that ParseIntegrationsConfig correctly parses Adobe integration.
+        /// </summary>
+        [TestMethod]
+        public void ParseIntegrationsConfig_WithAdobe_ParsesCorrectly()
+        {
+            // Arrange
+            var xml = """
+                <Integrations>
+                    <Adobe LaunchUrl="https://assets.adobedtm.com/launch-abc123.min.js" />
+                </Integrations>
+                """;
+            var integrationsElement = XElement.Parse(xml);
+
+            // Act
+            var result = _task.ParseIntegrationsConfig(integrationsElement);
+
+            // Assert
+            result.Adobe.Should().NotBeNull();
+            result.Adobe!.LaunchUrl.Should().Be("https://assets.adobedtm.com/launch-abc123.min.js");
+        }
+
+        /// <summary>
+        /// Tests that ParseIntegrationsConfig correctly parses Clarity integration.
+        /// </summary>
+        [TestMethod]
+        public void ParseIntegrationsConfig_WithClarity_ParsesCorrectly()
+        {
+            // Arrange
+            var xml = """
+                <Integrations>
+                    <Clarity ProjectId="abc123" />
+                </Integrations>
+                """;
+            var integrationsElement = XElement.Parse(xml);
+
+            // Act
+            var result = _task.ParseIntegrationsConfig(integrationsElement);
+
+            // Assert
+            result.Clarity.Should().NotBeNull();
+            result.Clarity!.ProjectId.Should().Be("abc123");
+        }
+
+        /// <summary>
+        /// Tests that ParseIntegrationsConfig correctly parses Cookies integration.
+        /// </summary>
+        [TestMethod]
+        public void ParseIntegrationsConfig_WithCookies_ParsesCorrectly()
+        {
+            // Arrange
+            var xml = """
+                <Integrations>
+                    <Cookies Key="consent" Value="accepted" />
+                </Integrations>
+                """;
+            var integrationsElement = XElement.Parse(xml);
+
+            // Act
+            var result = _task.ParseIntegrationsConfig(integrationsElement);
+
+            // Assert
+            result.Cookies.Should().NotBeNull();
+            result.Cookies!.Key.Should().Be("consent");
+            result.Cookies!.Value.Should().Be("accepted");
+        }
+
+        /// <summary>
+        /// Tests that ParseIntegrationsConfig correctly parses FrontChat integration.
+        /// </summary>
+        [TestMethod]
+        public void ParseIntegrationsConfig_WithFrontChat_ParsesCorrectly()
+        {
+            // Arrange
+            var xml = """
+                <Integrations>
+                    <FrontChat SnippetId="snippet_abc123" />
+                </Integrations>
+                """;
+            var integrationsElement = XElement.Parse(xml);
+
+            // Act
+            var result = _task.ParseIntegrationsConfig(integrationsElement);
+
+            // Assert
+            result.FrontChat.Should().NotBeNull();
+            result.FrontChat!.SnippetId.Should().Be("snippet_abc123");
+        }
+
+        /// <summary>
+        /// Tests that ParseIntegrationsConfig correctly parses Intercom integration.
+        /// </summary>
+        [TestMethod]
+        public void ParseIntegrationsConfig_WithIntercom_ParsesCorrectly()
+        {
+            // Arrange
+            var xml = """
+                <Integrations>
+                    <Intercom AppId="app_abc123" />
+                </Integrations>
+                """;
+            var integrationsElement = XElement.Parse(xml);
+
+            // Act
+            var result = _task.ParseIntegrationsConfig(integrationsElement);
+
+            // Assert
+            result.Intercom.Should().NotBeNull();
+            result.Intercom!.AppId.Should().Be("app_abc123");
+        }
+
+        /// <summary>
+        /// Tests that ParseIntegrationsConfig correctly parses Koala integration.
+        /// </summary>
+        [TestMethod]
+        public void ParseIntegrationsConfig_WithKoala_ParsesCorrectly()
+        {
+            // Arrange
+            var xml = """
+                <Integrations>
+                    <Koala PublicApiKey="pk_abc123" />
+                </Integrations>
+                """;
+            var integrationsElement = XElement.Parse(xml);
+
+            // Act
+            var result = _task.ParseIntegrationsConfig(integrationsElement);
+
+            // Assert
+            result.Koala.Should().NotBeNull();
+            result.Koala!.PublicApiKey.Should().Be("pk_abc123");
+        }
+
+        /// <summary>
+        /// Tests that ParseIntegrationsConfig correctly parses Telemetry integration.
+        /// </summary>
+        [TestMethod]
+        public void ParseIntegrationsConfig_WithTelemetry_ParsesCorrectly()
+        {
+            // Arrange
+            var xml = """
+                <Integrations>
+                    <Telemetry Enabled="false" />
+                </Integrations>
+                """;
+            var integrationsElement = XElement.Parse(xml);
+
+            // Act
+            var result = _task.ParseIntegrationsConfig(integrationsElement);
+
+            // Assert
+            result.Telemetry.Should().NotBeNull();
+            result.Telemetry!.Enabled.Should().BeFalse();
+        }
+
+        #endregion
+
+        #region Api Configuration Tests
+
+        /// <summary>
+        /// Tests that ParseApiConfig correctly parses Url property.
+        /// </summary>
+        [TestMethod]
+        public void ParseApiConfig_WithUrl_ParsesCorrectly()
+        {
+            // Arrange
+            var xml = """
+                <Api>
+                    <Url>https://api.example.com</Url>
+                </Api>
+                """;
+            var apiElement = XElement.Parse(xml);
+
+            // Act
+            var result = _task.ParseApiConfig(apiElement);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Url.Should().Be("https://api.example.com");
+        }
+
+        /// <summary>
+        /// Tests that ParseApiConfig correctly parses Proxy property.
+        /// </summary>
+        [TestMethod]
+        public void ParseApiConfig_WithProxy_ParsesCorrectly()
+        {
+            // Arrange
+            var xml = """
+                <Api>
+                    <Proxy>false</Proxy>
+                </Api>
+                """;
+            var apiElement = XElement.Parse(xml);
+
+            // Act
+            var result = _task.ParseApiConfig(apiElement);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Proxy.Should().BeFalse();
+        }
+
+        /// <summary>
+        /// Tests that ParseApiConfig correctly parses OpenApi spec.
+        /// </summary>
+        [TestMethod]
+        public void ParseApiConfig_WithOpenApi_ParsesCorrectly()
+        {
+            // Arrange
+            var xml = """
+                <Api>
+                    <OpenApi>https://api.example.com/openapi.json</OpenApi>
+                </Api>
+                """;
+            var apiElement = XElement.Parse(xml);
+
+            // Act
+            var result = _task.ParseApiConfig(apiElement);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.OpenApi.Should().NotBeNull();
+            result.OpenApi!.Source.Should().Be("https://api.example.com/openapi.json");
+        }
+
+        /// <summary>
+        /// Tests that ParseApiConfig correctly parses Examples with Autogenerate.
+        /// </summary>
+        [TestMethod]
+        public void ParseApiConfig_WithExamplesAutogenerate_ParsesCorrectly()
+        {
+            // Arrange
+            var xml = """
+                <Api>
+                    <Examples>
+                        <Autogenerate>false</Autogenerate>
+                        <Defaults>required</Defaults>
+                        <Prefill>true</Prefill>
+                        <Languages>javascript;python;curl</Languages>
+                    </Examples>
+                </Api>
+                """;
+            var apiElement = XElement.Parse(xml);
+
+            // Act
+            var result = _task.ParseApiConfig(apiElement);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Examples.Should().NotBeNull();
+            result.Examples!.Autogenerate.Should().BeFalse();
+            result.Examples.Defaults.Should().Be("required");
+            result.Examples.Prefill.Should().BeTrue();
+            result.Examples.Languages.Should().ContainInOrder("javascript", "python", "curl");
+        }
+
+        /// <summary>
+        /// Tests that ParseApiConfig correctly parses Playground config.
+        /// </summary>
+        [TestMethod]
+        public void ParseApiConfig_WithPlayground_ParsesCorrectly()
+        {
+            // Arrange
+            var xml = """
+                <Api>
+                    <Playground>
+                        <Display>simple</Display>
+                        <Proxy>false</Proxy>
+                    </Playground>
+                </Api>
+                """;
+            var apiElement = XElement.Parse(xml);
+
+            // Act
+            var result = _task.ParseApiConfig(apiElement);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Playground.Should().NotBeNull();
+            result.Playground!.Display.Should().Be("simple");
+            result.Playground.Proxy.Should().BeFalse();
+        }
+
+        /// <summary>
+        /// Tests that ParseApiConfig correctly parses Params config.
+        /// </summary>
+        [TestMethod]
+        public void ParseApiConfig_WithParams_ParsesCorrectly()
+        {
+            // Arrange
+            var xml = """
+                <Api>
+                    <Params>
+                        <Expanded>true</Expanded>
+                    </Params>
+                </Api>
+                """;
+            var apiElement = XElement.Parse(xml);
+
+            // Act
+            var result = _task.ParseApiConfig(apiElement);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Params.Should().NotBeNull();
+            result.Params!.Expanded.Should().BeTrue();
+        }
+
+        /// <summary>
+        /// Tests that ParseApiConfig handles empty element.
+        /// </summary>
+        [TestMethod]
+        public void ParseApiConfig_WithEmptyElement_ReturnsEmptyConfig()
+        {
+            // Arrange
+            var xml = "<Api></Api>";
+            var apiElement = XElement.Parse(xml);
+
+            // Act
+            var result = _task.ParseApiConfig(apiElement);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Url.Should().BeNull();
+            result.Proxy.Should().BeNull();
+            result.OpenApi.Should().BeNull();
+            result.AsyncApi.Should().BeNull();
+            result.Playground.Should().BeNull();
+            result.Params.Should().BeNull();
+            result.Examples.Should().BeNull();
+            result.Mdx.Should().BeNull();
+        }
+
+        #endregion
+
+        #region Contextual Configuration Tests
+
+        /// <summary>
+        /// Tests that ParseContextualConfig correctly parses Options and Display.
+        /// </summary>
+        [TestMethod]
+        public void ParseContextualConfig_WithAllProperties_ParsesCorrectly()
+        {
+            // Arrange
+            var xml = """
+                <Contextual>
+                    <Options>copy;chatgpt;claude</Options>
+                    <Display>toc</Display>
+                </Contextual>
+                """;
+            var contextualElement = XElement.Parse(xml);
+
+            // Act
+            var result = _task.ParseContextualConfig(contextualElement);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Options.Should().ContainInOrder("copy", "chatgpt", "claude");
+            result.Display.Should().Be("toc");
+        }
+
+        /// <summary>
+        /// Tests that ParseContextualConfig handles empty element.
+        /// </summary>
+        [TestMethod]
+        public void ParseContextualConfig_WithEmptyElement_ReturnsEmptyConfig()
+        {
+            // Arrange
+            var xml = "<Contextual></Contextual>";
+            var contextualElement = XElement.Parse(xml);
+
+            // Act
+            var result = _task.ParseContextualConfig(contextualElement);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Options.Should().BeNull();
+            result.Display.Should().BeNull();
+        }
+
+        #endregion
+
+        #region Fonts Configuration Tests
+
+        /// <summary>
+        /// Tests that ParseFontsConfig correctly parses all top-level properties.
+        /// </summary>
+        [TestMethod]
+        public void ParseFontsConfig_WithTopLevelProperties_ParsesCorrectly()
+        {
+            // Arrange
+            var xml = """
+                <Fonts>
+                    <Family>Open Sans</Family>
+                    <Format>woff2</Format>
+                    <Source>https://example.com/font.woff2</Source>
+                    <Weight>400</Weight>
+                </Fonts>
+                """;
+            var fontsElement = XElement.Parse(xml);
+
+            // Act
+            var result = _task.ParseFontsConfig(fontsElement);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Family.Should().Be("Open Sans");
+            result.Format.Should().Be("woff2");
+            result.Source.Should().Be("https://example.com/font.woff2");
+            result.Weight.Should().Be(400);
+        }
+
+        /// <summary>
+        /// Tests that ParseFontsConfig correctly parses Heading and Body sub-configs.
+        /// </summary>
+        [TestMethod]
+        public void ParseFontsConfig_WithHeadingAndBody_ParsesCorrectly()
+        {
+            // Arrange
+            var xml = """
+                <Fonts>
+                    <Heading>
+                        <Family>Playfair Display</Family>
+                        <Weight>700</Weight>
+                        <Source>https://example.com/heading.woff2</Source>
+                        <Format>woff2</Format>
+                    </Heading>
+                    <Body>
+                        <Family>Inter</Family>
+                        <Weight>400</Weight>
+                    </Body>
+                </Fonts>
+                """;
+            var fontsElement = XElement.Parse(xml);
+
+            // Act
+            var result = _task.ParseFontsConfig(fontsElement);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Heading.Should().NotBeNull();
+            result.Heading!.Family.Should().Be("Playfair Display");
+            result.Heading.Weight.Should().Be(700);
+            result.Heading.Source.Should().Be("https://example.com/heading.woff2");
+            result.Heading.Format.Should().Be("woff2");
+            result.Body.Should().NotBeNull();
+            result.Body!.Family.Should().Be("Inter");
+            result.Body.Weight.Should().Be(400);
+        }
+
+        /// <summary>
+        /// Tests that ParseFontsConfig handles empty element.
+        /// </summary>
+        [TestMethod]
+        public void ParseFontsConfig_WithEmptyElement_ReturnsEmptyConfig()
+        {
+            // Arrange
+            var xml = "<Fonts></Fonts>";
+            var fontsElement = XElement.Parse(xml);
+
+            // Act
+            var result = _task.ParseFontsConfig(fontsElement);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Family.Should().BeNull();
+            result.Format.Should().BeNull();
+            result.Source.Should().BeNull();
+            result.Weight.Should().BeNull();
+            result.Heading.Should().BeNull();
+            result.Body.Should().BeNull();
+        }
+
+        #endregion
+
+        #region Thumbnails Configuration Tests
+
+        /// <summary>
+        /// Tests that ParseThumbnailsConfig correctly parses all properties.
+        /// </summary>
+        [TestMethod]
+        public void ParseThumbnailsConfig_WithAllProperties_ParsesCorrectly()
+        {
+            // Arrange
+            var xml = """
+                <Thumbnails>
+                    <Appearance>dark</Appearance>
+                    <Background>/images/bg.png</Background>
+                    <Fonts>
+                        <Family>Roboto</Family>
+                    </Fonts>
+                </Thumbnails>
+                """;
+            var thumbnailsElement = XElement.Parse(xml);
+
+            // Act
+            var result = _task.ParseThumbnailsConfig(thumbnailsElement);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Appearance.Should().Be("dark");
+            result.Background.Should().Be("/images/bg.png");
+            result.Fonts.Should().NotBeNull();
+            result.Fonts!.Family.Should().Be("Roboto");
+        }
+
+        /// <summary>
+        /// Tests that ParseThumbnailsConfig handles empty element.
+        /// </summary>
+        [TestMethod]
+        public void ParseThumbnailsConfig_WithEmptyElement_ReturnsEmptyConfig()
+        {
+            // Arrange
+            var xml = "<Thumbnails></Thumbnails>";
+            var thumbnailsElement = XElement.Parse(xml);
+
+            // Act
+            var result = _task.ParseThumbnailsConfig(thumbnailsElement);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Appearance.Should().BeNull();
+            result.Background.Should().BeNull();
+            result.Fonts.Should().BeNull();
+        }
+
+        #endregion
+
+        #region Metadata Configuration Tests
+
+        /// <summary>
+        /// Tests that ParseMetadataConfig correctly parses Timestamp property.
+        /// </summary>
+        [TestMethod]
+        public void ParseMetadataConfig_WithTimestamp_ParsesCorrectly()
+        {
+            // Arrange
+            var xml = """
+                <Metadata>
+                    <Timestamp>true</Timestamp>
+                </Metadata>
+                """;
+            var metadataElement = XElement.Parse(xml);
+
+            // Act
+            var result = _task.ParseMetadataConfig(metadataElement);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Timestamp.Should().BeTrue();
+        }
+
+        /// <summary>
+        /// Tests that ParseMetadataConfig handles empty element.
+        /// </summary>
+        [TestMethod]
+        public void ParseMetadataConfig_WithEmptyElement_ReturnsEmptyConfig()
+        {
+            // Arrange
+            var xml = "<Metadata></Metadata>";
+            var metadataElement = XElement.Parse(xml);
+
+            // Act
+            var result = _task.ParseMetadataConfig(metadataElement);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Timestamp.Should().BeNull();
+        }
+
+        #endregion
+
+        #region Errors Configuration Tests
+
+        /// <summary>
+        /// Tests that ParseErrorsConfig correctly parses NotFound with all properties.
+        /// </summary>
+        [TestMethod]
+        public void ParseErrorsConfig_WithAllProperties_ParsesCorrectly()
+        {
+            // Arrange
+            var xml = """
+                <Errors>
+                    <NotFound>
+                        <Redirect>false</Redirect>
+                        <Title>Oops!</Title>
+                        <Description>The page you were looking for doesn't exist.</Description>
+                    </NotFound>
+                </Errors>
+                """;
+            var errorsElement = XElement.Parse(xml);
+
+            // Act
+            var result = _task.ParseErrorsConfig(errorsElement);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.NotFound.Should().NotBeNull();
+            result.NotFound!.Redirect.Should().BeFalse();
+            result.NotFound.Title.Should().Be("Oops!");
+            result.NotFound.Description.Should().Be("The page you were looking for doesn't exist.");
+        }
+
+        /// <summary>
+        /// Tests that ParseErrorsConfig handles empty element.
+        /// </summary>
+        [TestMethod]
+        public void ParseErrorsConfig_WithEmptyElement_ReturnsEmptyConfig()
+        {
+            // Arrange
+            var xml = "<Errors></Errors>";
+            var errorsElement = XElement.Parse(xml);
+
+            // Act
+            var result = _task.ParseErrorsConfig(errorsElement);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.NotFound.Should().BeNull();
         }
 
         #endregion
