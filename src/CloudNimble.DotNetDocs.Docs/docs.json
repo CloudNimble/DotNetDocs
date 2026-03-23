@@ -63,9 +63,9 @@
             "icon": "/images/icons/mintlify.svg",
             "pages": [
               "providers/mintlify/index",
-              "providers/mintlify/tips-and-tricks",
               "providers/mintlify/navigation",
               "providers/mintlify/collections",
+              "providers/mintlify/tips-and-tricks",
               "providers/mintlify/dotnet-library"
             ]
           }

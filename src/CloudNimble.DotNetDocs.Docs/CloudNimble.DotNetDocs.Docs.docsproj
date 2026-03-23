@@ -67,9 +67,9 @@
                                 <Group Name="Mintlify" Icon="/images/icons/mintlify.svg" Tag="PARTNER">
                                     <Pages>
                                         providers/mintlify/index;
-                                        providers/mintlify/tips-and-tricks;
                                         providers/mintlify/navigation;
                                         providers/mintlify/collections;
+                                        providers/mintlify/tips-and-tricks;
                                         providers/mintlify/dotnet-library
                                     </Pages>
                                 </Group>
