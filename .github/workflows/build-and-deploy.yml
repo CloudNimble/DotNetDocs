@@ -29,7 +29,9 @@ env:
 jobs:
   build:
     runs-on: windows-latest
-    
+    outputs:
+      version: ${{ steps.version.outputs.VERSION }}
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v6
@@ -362,10 +364,12 @@ jobs:
   create-release:
     needs: [build, deploy]
     runs-on: windows-latest
+    permissions:
+      contents: write
     if: |
       (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
       (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && github.event.inputs.deploy_to_nuget == 'true')
-    
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v5
@@ -376,21 +380,12 @@ jobs:
         name: nuget-packages
         path: ./artifacts
 
-    - name: Get version from build
-      id: version
+    - name: Prepare Release Notes
       shell: pwsh
       run: |
-         # Extract version from package name (assuming all have same version)
-         $packageFile = Get-ChildItem ./artifacts/*.nupkg | Select-Object -First 1
-         $version = $packageFile.Name -replace '.*\.(.+?)\.nupkg', '$1'
-         echo "VERSION=$version" >> $env:GITHUB_OUTPUT
-         Write-Host "📦 Creating release for version: $version"
+         $version = "${{ needs.build.outputs.version }}"
+         Write-Host "Creating release for version: $version"
 
-    - name: Prepare Release Content
-      id: create_release
-      shell: pwsh
-      run: |
-         $version = "${{ steps.version.outputs.VERSION }}"
          $packages = Get-ChildItem ./artifacts/*.nupkg | ForEach-Object { $_.Name -replace '\.nupkg$', '' }
          $packageList = ""
          foreach ($package in $packages) {
@@ -399,34 +394,26 @@ jobs:
          }
 
          $body = @"
-         ## CloudNimble.DotNetDocs v$version
+## NuGet Packages
+$packageList
 
-         ### 📦 NuGet Packages
-         $packageList
+## Installation
+``````xml
+<Project Sdk="DotNetDocs.Sdk/$version">
+  <!-- That's it! -->
+</Project>
+``````
+"@
 
-         ### 🚀 What's Changed
-         See [full changelog](https://github.com/${{ github.repository }}/compare/v${{ steps.version.outputs.PREVIOUS_VERSION }}...v$version)
-
-         ### 📥 Installation
-         ``````xml
-         <Project Sdk="DotNetDocs.Sdk/$version">
-           <!-- That's it! -->
-         </Project>
-         ``````
-
-         ### 📦 Package Details
-         This release includes the following NuGet packages:
-         $packageList
-         "@
-
-         echo "RELEASE_BODY=$body" >> $env:GITHUB_OUTPUT
+         Set-Content -Path "./release-notes.md" -Value $body -Encoding utf8
 
     - name: Create GitHub Release
       uses: softprops/action-gh-release@v2
       with:
-         tag_name: v${{ steps.version.outputs.VERSION }}
-         name: Release v${{ steps.version.outputs.VERSION }}
-         body: ${{ steps.create_release.outputs.RELEASE_BODY }}
+         tag_name: v${{ needs.build.outputs.version }}
+         name: Release v${{ needs.build.outputs.version }}
+         body_path: ./release-notes.md
+         generate_release_notes: true
          files: ./artifacts/*.nupkg
          draft: false
          prerelease: false
