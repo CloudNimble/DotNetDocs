@@ -1,0 +1,67 @@
+---
+title: DotNetRunnerExtractor
+description: "Extracts `&lt;DotNetRunner&gt;` component `initialCode` prop values from MDX content."
+icon: bolt
+tag: "STATIC"
+keywords: ['DotNetRunnerExtractor', 'CloudNimble.DotNetDocs.Mintlify.Validation.DotNetRunnerExtractor', 'CloudNimble.DotNetDocs.Mintlify.Validation', 'class', 'System.Object']
+---
+
+## Definition
+
+**Assembly:** CloudNimble.DotNetDocs.Mintlify.dll
+
+**Namespace:** CloudNimble.DotNetDocs.Mintlify.Validation
+
+**Inheritance:** System.Object
+
+## Syntax
+
+```csharp
+CloudNimble.DotNetDocs.Mintlify.Validation.DotNetRunnerExtractor
+```
+
+## Summary
+
+Extracts `&lt;DotNetRunner&gt;` component `initialCode` prop values from MDX content.
+
+## Remarks
+
+This class scans MDX file content for occurrences of the `&lt;DotNetRunner&gt;` component
+            and extracts the embedded C# code from the `initialCode` prop, which uses JavaScript
+            template literal syntax (backtick-delimited strings). The extracted code can then be validated
+            at build time using Roslyn compilation to catch errors before deployment.
+
+## Methods
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Extract
+
+Extracts all `&lt;DotNetRunner&gt;` code examples from the specified MDX content.
+
+#### Syntax
+
+```csharp
+public static System.Collections.Generic.List<CloudNimble.DotNetDocs.Mintlify.Validation.CodeExample> Extract(string mdxContent, string sourceFile)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `mdxContent` | `string` | The raw MDX file content to scan for `&lt;DotNetRunner&gt;` components. |
+| `sourceFile` | `string` | The file path of the MDX file, used for diagnostic reporting. |
+
+#### Returns
+
+Type: `System.Collections.Generic.List<CloudNimble.DotNetDocs.Mintlify.Validation.CodeExample>`
+A list of [CodeExample](/api-reference/CloudNimble/DotNetDocs/Mintlify/Validation/CodeExample) instances, one for each `initialCode` prop found.
+            Returns an empty list if *mdxContent* is null or whitespace, or if no
+            `&lt;DotNetRunner&gt;` components are found.
+
+#### Examples
+
+```csharp
+var mdx = "&lt;DotNetRunner initialCode={`Console.WriteLine(\"Hello\");`} /&gt;";
+var examples = DotNetRunnerExtractor.Extract(mdx, "getting-started.mdx");
+// examples[0].Code == "Console.WriteLine(\"Hello\");"
+```
+

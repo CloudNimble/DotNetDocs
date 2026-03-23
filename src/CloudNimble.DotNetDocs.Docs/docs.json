@@ -193,6 +193,17 @@
                           "api-reference/CloudNimble/DotNetDocs/Mintlify/Transformers/index",
                           "api-reference/CloudNimble/DotNetDocs/Mintlify/Transformers/MintlifyMarkdownTransformer"
                         ]
+                      },
+                      {
+                        "group": "Validation",
+                        "icon": "folder-tree",
+                        "pages": [
+                          "api-reference/CloudNimble/DotNetDocs/Mintlify/Validation/index",
+                          "api-reference/CloudNimble/DotNetDocs/Mintlify/Validation/CodeExample",
+                          "api-reference/CloudNimble/DotNetDocs/Mintlify/Validation/DotNetRunnerExtractor",
+                          "api-reference/CloudNimble/DotNetDocs/Mintlify/Validation/MdxCodeExampleValidator",
+                          "api-reference/CloudNimble/DotNetDocs/Mintlify/Validation/ValidationError"
+                        ]
                       }
                     ]
                   },
@@ -229,6 +240,18 @@
                           "api-reference/CloudNimble/DotNetDocs/Tools/Models/NuGetVersion"
                         ]
                       }
+                    ]
+                  },
+                  {
+                    "group": "WasmRunner",
+                    "icon": "folder-tree",
+                    "pages": [
+                      "api-reference/CloudNimble/DotNetDocs/WasmRunner/index",
+                      "api-reference/CloudNimble/DotNetDocs/WasmRunner/CompilationResult",
+                      "api-reference/CloudNimble/DotNetDocs/WasmRunner/CSharpCompiler",
+                      "api-reference/CloudNimble/DotNetDocs/WasmRunner/OutputCapture",
+                      "api-reference/CloudNimble/DotNetDocs/WasmRunner/Program",
+                      "api-reference/CloudNimble/DotNetDocs/WasmRunner/SecuritySyntaxWalker"
                     ]
                   }
                 ]

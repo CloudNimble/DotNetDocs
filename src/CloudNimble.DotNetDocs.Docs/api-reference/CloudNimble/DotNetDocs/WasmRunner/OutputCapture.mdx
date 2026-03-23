@@ -1,0 +1,208 @@
+---
+title: OutputCapture
+description: "Captures console output by redirecting [Out](https://learn.microsoft.com/dotnet/api/system.console.out) to a [StringWriter](https://learn.microsoft.com/dotne..."
+icon: file-brackets-curly
+keywords: ['OutputCapture', 'CloudNimble.DotNetDocs.WasmRunner.OutputCapture', 'CloudNimble.DotNetDocs.WasmRunner', 'class', 'System.Object', 'System.IDisposable']
+---
+
+## Definition
+
+**Assembly:** CloudNimble.DotNetDocs.WasmRunner.dll
+
+**Namespace:** CloudNimble.DotNetDocs.WasmRunner
+
+**Inheritance:** System.Object
+
+## Syntax
+
+```csharp
+CloudNimble.DotNetDocs.WasmRunner.OutputCapture
+```
+
+## Summary
+
+Captures console output by redirecting [Out](https://learn.microsoft.com/dotnet/api/system.console.out) to a [StringWriter](https://learn.microsoft.com/dotnet/api/system.io.stringwriter).
+
+## Remarks
+
+This class is used to intercept `Console.WriteLine` calls during code execution
+            so their output can be returned to the caller. Call [OutputCapture.StartCapture](/api-reference/CloudNimble/DotNetDocs/WasmRunner/OutputCapture#startcapture) before
+            executing user code and [OutputCapture.StopCapture](/api-reference/CloudNimble/DotNetDocs/WasmRunner/OutputCapture#stopcapture) afterward to retrieve the output.
+
+## Constructors
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor
+
+#### Syntax
+
+```csharp
+public OutputCapture()
+```
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public Object()
+```
+
+## Methods
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Dispose
+
+#### Syntax
+
+```csharp
+public void Dispose()
+```
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Equals <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual bool Equals(object obj)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `obj` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Equals <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public static bool Equals(object objA, object objB)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `objA` | `object?` | - |
+| `objB` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetHashCode <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual int GetHashCode()
+```
+
+#### Returns
+
+Type: `int`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetType <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public System.Type GetType()
+```
+
+#### Returns
+
+Type: `System.Type`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> MemberwiseClone <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+protected internal object MemberwiseClone()
+```
+
+#### Returns
+
+Type: `object`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ReferenceEquals <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public static bool ReferenceEquals(object objA, object objB)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `objA` | `object?` | - |
+| `objB` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> StartCapture
+
+Begins capturing console output by redirecting [Out](https://learn.microsoft.com/dotnet/api/system.console.out) to an internal buffer.
+
+#### Syntax
+
+```csharp
+public void StartCapture()
+```
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> StopCapture
+
+Stops capturing console output and returns the captured text.
+
+#### Syntax
+
+```csharp
+public string StopCapture()
+```
+
+#### Returns
+
+Type: `string`
+The captured console output as a string.
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ToString <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual string ToString()
+```
+
+#### Returns
+
+Type: `string?`
+
+## Related APIs
+
+- System.IDisposable
+

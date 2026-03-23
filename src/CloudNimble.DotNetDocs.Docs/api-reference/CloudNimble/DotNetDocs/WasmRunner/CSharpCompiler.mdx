@@ -1,0 +1,196 @@
+---
+title: CSharpCompiler
+description: "Compiles and executes C# code using the Roslyn compiler."
+icon: file-brackets-curly
+keywords: ['CSharpCompiler', 'CloudNimble.DotNetDocs.WasmRunner.CSharpCompiler', 'CloudNimble.DotNetDocs.WasmRunner', 'class', 'System.Object']
+---
+
+## Definition
+
+**Assembly:** CloudNimble.DotNetDocs.WasmRunner.dll
+
+**Namespace:** CloudNimble.DotNetDocs.WasmRunner
+
+**Inheritance:** System.Object
+
+## Syntax
+
+```csharp
+CloudNimble.DotNetDocs.WasmRunner.CSharpCompiler
+```
+
+## Summary
+
+Compiles and executes C# code using the Roslyn compiler.
+
+## Remarks
+
+This class accepts top-level C# statements (or full programs), compiles them in-memory
+            using Roslyn, performs security validation via [SecuritySyntaxWalker](/api-reference/CloudNimble/DotNetDocs/WasmRunner/SecuritySyntaxWalker),
+            captures console output via [OutputCapture](/api-reference/CloudNimble/DotNetDocs/WasmRunner/OutputCapture), and returns structured
+            [CompilationResult](/api-reference/CloudNimble/DotNetDocs/WasmRunner/CompilationResult) objects.
+
+## Constructors
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor
+
+Initializes a new instance of the [CSharpCompiler](/api-reference/CloudNimble/DotNetDocs/WasmRunner/CSharpCompiler) class.
+
+#### Syntax
+
+```csharp
+public CSharpCompiler()
+```
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public Object()
+```
+
+## Methods
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> CompileAndRun
+
+Compiles and executes the specified C# code, returning the result.
+
+#### Syntax
+
+```csharp
+public CloudNimble.DotNetDocs.WasmRunner.CompilationResult CompileAndRun(string code)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `code` | `string` | The C# code to compile and execute. Supports top-level statements. |
+
+#### Returns
+
+Type: `CloudNimble.DotNetDocs.WasmRunner.CompilationResult`
+A [CompilationResult](/api-reference/CloudNimble/DotNetDocs/WasmRunner/CompilationResult) containing either the captured console output
+            on success, or compiler diagnostics on failure.
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Equals <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual bool Equals(object obj)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `obj` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Equals <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public static bool Equals(object objA, object objB)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `objA` | `object?` | - |
+| `objB` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetHashCode <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual int GetHashCode()
+```
+
+#### Returns
+
+Type: `int`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetType <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public System.Type GetType()
+```
+
+#### Returns
+
+Type: `System.Type`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> MemberwiseClone <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+protected internal object MemberwiseClone()
+```
+
+#### Returns
+
+Type: `object`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ReferenceEquals <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public static bool ReferenceEquals(object objA, object objB)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `objA` | `object?` | - |
+| `objB` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ToString <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual string ToString()
+```
+
+#### Returns
+
+Type: `string?`
+

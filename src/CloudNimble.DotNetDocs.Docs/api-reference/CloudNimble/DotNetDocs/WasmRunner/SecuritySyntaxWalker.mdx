@@ -1,0 +1,89 @@
+---
+title: SecuritySyntaxWalker
+description: "A Roslyn syntax walker that detects usage of blocked namespaces in user-submitted C# code."
+icon: file-brackets-curly
+keywords: ['SecuritySyntaxWalker', 'CloudNimble.DotNetDocs.WasmRunner.SecuritySyntaxWalker', 'CloudNimble.DotNetDocs.WasmRunner', 'class', 'Microsoft.CodeAnalysis.CSharp.CSharpSyntaxWalker']
+---
+
+## Definition
+
+**Assembly:** CloudNimble.DotNetDocs.WasmRunner.dll
+
+**Namespace:** CloudNimble.DotNetDocs.WasmRunner
+
+**Inheritance:** Microsoft.CodeAnalysis.CSharp.CSharpSyntaxWalker
+
+## Syntax
+
+```csharp
+CloudNimble.DotNetDocs.WasmRunner.SecuritySyntaxWalker
+```
+
+## Summary
+
+A Roslyn syntax walker that detects usage of blocked namespaces in user-submitted C# code.
+
+## Remarks
+
+This walker scans `using` directives and flags namespaces that provide dangerous
+            capabilities such as file system access, network access, reflection, or process execution.
+            Code that references blocked namespaces should not be compiled or executed in the sandbox.
+
+## Constructors
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor
+
+#### Syntax
+
+```csharp
+public SecuritySyntaxWalker()
+```
+
+## Properties
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> BlockedUsings
+
+Gets the list of blocked `using` directives found during the walk.
+
+#### Syntax
+
+```csharp
+public System.Collections.Generic.List<string> BlockedUsings { get; }
+```
+
+#### Property Value
+
+Type: `System.Collections.Generic.List<string>`
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> HasSecurityIssues
+
+Gets a value indicating whether any security issues were found.
+
+#### Syntax
+
+```csharp
+public bool HasSecurityIssues { get; }
+```
+
+#### Property Value
+
+Type: `bool`
+
+## Methods
+
+### <Icon icon="code-merge" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> VisitUsingDirective <Badge color="blue">Override</Badge>
+
+Visits a `using` directive and checks whether it references a blocked namespace.
+
+#### Syntax
+
+```csharp
+public override void VisitUsingDirective(Microsoft.CodeAnalysis.CSharp.Syntax.UsingDirectiveSyntax node)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `node` | `Microsoft.CodeAnalysis.CSharp.Syntax.UsingDirectiveSyntax` | The using directive syntax node. |
+

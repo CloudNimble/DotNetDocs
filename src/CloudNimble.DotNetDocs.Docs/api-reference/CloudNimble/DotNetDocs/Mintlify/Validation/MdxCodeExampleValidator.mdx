@@ -1,0 +1,71 @@
+---
+title: MdxCodeExampleValidator
+description: "Validates extracted `&lt;DotNetRunner&gt;` code examples by compiling them with Roslyn             to detect compilation errors at build time."
+icon: bolt
+tag: "STATIC"
+keywords: ['MdxCodeExampleValidator', 'CloudNimble.DotNetDocs.Mintlify.Validation.MdxCodeExampleValidator', 'CloudNimble.DotNetDocs.Mintlify.Validation', 'class', 'System.Object']
+---
+
+## Definition
+
+**Assembly:** CloudNimble.DotNetDocs.Mintlify.dll
+
+**Namespace:** CloudNimble.DotNetDocs.Mintlify.Validation
+
+**Inheritance:** System.Object
+
+## Syntax
+
+```csharp
+CloudNimble.DotNetDocs.Mintlify.Validation.MdxCodeExampleValidator
+```
+
+## Summary
+
+Validates extracted `&lt;DotNetRunner&gt;` code examples by compiling them with Roslyn
+            to detect compilation errors at build time.
+
+## Remarks
+
+Each [CodeExample](/api-reference/CloudNimble/DotNetDocs/Mintlify/Validation/CodeExample) is compiled as a standalone console application with common
+            default usings (`System`, `System.Collections.Generic`, `System.Linq`, and
+            `System.Text`). Only diagnostics with [Error](https://learn.microsoft.com/dotnet/api/microsoft.codeanalysis.diagnosticseverity.error) severity
+            are reported. This enables build-time validation of embedded code examples to catch issues
+            such as typos, missing references, or syntax errors before documentation is published.
+
+## Methods
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Validate
+
+Validates a list of code examples by compiling each one with Roslyn and returning any errors.
+
+#### Syntax
+
+```csharp
+public static System.Collections.Generic.List<CloudNimble.DotNetDocs.Mintlify.Validation.ValidationError> Validate(System.Collections.Generic.List<CloudNimble.DotNetDocs.Mintlify.Validation.CodeExample> examples)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `examples` | `System.Collections.Generic.List<CloudNimble.DotNetDocs.Mintlify.Validation.CodeExample>` | The list of [CodeExample](/api-reference/CloudNimble/DotNetDocs/Mintlify/Validation/CodeExample) instances to validate. |
+
+#### Returns
+
+Type: `System.Collections.Generic.List<CloudNimble.DotNetDocs.Mintlify.Validation.ValidationError>`
+A list of [ValidationError](/api-reference/CloudNimble/DotNetDocs/Mintlify/Validation/ValidationError) instances, one for each code example that produced
+            compilation errors. Returns an empty list if all examples compile successfully or if
+            *examples* is null or empty.
+
+#### Examples
+
+```csharp
+var examples = new List&lt;CodeExample&gt;
+{
+    new() { Code = "Console.WriteLine(\"Hello\");", SourceFile = "intro.mdx" }
+};
+var errors = MdxCodeExampleValidator.Validate(examples);
+// errors.Count == 0 for valid code
+```
+

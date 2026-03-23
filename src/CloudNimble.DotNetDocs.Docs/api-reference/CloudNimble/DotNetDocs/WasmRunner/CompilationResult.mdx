@@ -1,0 +1,251 @@
+---
+title: CompilationResult
+description: "Represents the result of compiling and executing a C# code snippet."
+icon: file-brackets-curly
+keywords: ['CompilationResult', 'CloudNimble.DotNetDocs.WasmRunner.CompilationResult', 'CloudNimble.DotNetDocs.WasmRunner', 'class', 'System.Object']
+---
+
+## Definition
+
+**Assembly:** CloudNimble.DotNetDocs.WasmRunner.dll
+
+**Namespace:** CloudNimble.DotNetDocs.WasmRunner
+
+**Inheritance:** System.Object
+
+## Syntax
+
+```csharp
+CloudNimble.DotNetDocs.WasmRunner.CompilationResult
+```
+
+## Summary
+
+Represents the result of compiling and executing a C# code snippet.
+
+## Constructors
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor
+
+#### Syntax
+
+```csharp
+public CompilationResult()
+```
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public Object()
+```
+
+## Properties
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Diagnostics
+
+Gets the compiler diagnostic messages, if any.
+
+#### Syntax
+
+```csharp
+public string Diagnostics { get; init; }
+```
+
+#### Property Value
+
+Type: `string`
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> IsSuccess
+
+Gets a value indicating whether compilation and execution succeeded.
+
+#### Syntax
+
+```csharp
+public bool IsSuccess { get; init; }
+```
+
+#### Property Value
+
+Type: `bool`
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Output
+
+Gets the captured console output from execution.
+
+#### Syntax
+
+```csharp
+public string Output { get; init; }
+```
+
+#### Property Value
+
+Type: `string`
+
+## Methods
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Equals <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual bool Equals(object obj)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `obj` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Equals <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public static bool Equals(object objA, object objB)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `objA` | `object?` | - |
+| `objB` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Failure
+
+Creates a failed compilation result with the specified diagnostics.
+
+#### Syntax
+
+```csharp
+public static CloudNimble.DotNetDocs.WasmRunner.CompilationResult Failure(string diagnostics)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `diagnostics` | `string` | The compiler diagnostic messages. |
+
+#### Returns
+
+Type: `CloudNimble.DotNetDocs.WasmRunner.CompilationResult`
+A new [CompilationResult](/api-reference/CloudNimble/DotNetDocs/WasmRunner/CompilationResult) representing failure.
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetHashCode <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual int GetHashCode()
+```
+
+#### Returns
+
+Type: `int`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetType <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public System.Type GetType()
+```
+
+#### Returns
+
+Type: `System.Type`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> MemberwiseClone <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+protected internal object MemberwiseClone()
+```
+
+#### Returns
+
+Type: `object`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ReferenceEquals <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public static bool ReferenceEquals(object objA, object objB)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `objA` | `object?` | - |
+| `objB` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Success
+
+Creates a successful compilation result with the specified output.
+
+#### Syntax
+
+```csharp
+public static CloudNimble.DotNetDocs.WasmRunner.CompilationResult Success(string output)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `output` | `string` | The captured console output. |
+
+#### Returns
+
+Type: `CloudNimble.DotNetDocs.WasmRunner.CompilationResult`
+A new [CompilationResult](/api-reference/CloudNimble/DotNetDocs/WasmRunner/CompilationResult) representing success.
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ToString <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual string ToString()
+```
+
+#### Returns
+
+Type: `string?`
+

@@ -16,7 +16,7 @@
       "Bash(gh api:*)",
       "Bash(gh search:*)",
       "Bash(gh issue:*)",
-"mcp__Mintlify__*",
+      "mcp__Mintlify__*",
       "mcp__github__*",
       "mcp__playwright__*",
       "WebSearch",
@@ -27,7 +27,10 @@
       "WebFetch(domain:natemcmaster.github.io)",
       "WebFetch(domain:stackoverflow.com)",
       "WebFetch(domain:www.nuget.org)",
-      "WebFetch(domain:www.anthropic.com)"
+      "WebFetch(domain:www.anthropic.com)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3333/)",
+      "Bash(tasklist:*)",
+      "Bash(netstat:*)"
     ],
     "deny": [],
     "ask": [],

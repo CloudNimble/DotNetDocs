@@ -17,6 +17,25 @@ export const DotNetRunner = ({ initialCode = '', height = '200px', title = 'C# E
     }
     setLoading(true);
     try {
+      if (!window.dotnet) {
+        const baseUrl = window.__dotnetRuntimeBase || '/dotnet-wasm-runner';
+        const bootScript = document.createElement('script');
+        bootScript.src = `${baseUrl}/dotnet.js`;
+        const loadPromise = new Promise((resolve, reject) => {
+          bootScript.onload = resolve;
+          bootScript.onerror = () => reject(new Error(
+            '.NET WebAssembly runtime is not available. The WASM runtime must be published and hosted at ' +
+            baseUrl + '/dotnet.js before interactive code execution will work.'
+          ));
+        });
+        document.head.appendChild(bootScript);
+        await loadPromise;
+      }
+      if (!window.dotnet) {
+        throw new Error(
+          '.NET WebAssembly runtime is not available. The WASM runtime must be published and hosted before interactive code execution will work.'
+        );
+      }
       const baseUrl = window.__dotnetRuntimeBase || '/dotnet-wasm-runner';
       const runtime = await window.dotnet
         .withDiagnosticTracing(false)
@@ -28,7 +47,7 @@ export const DotNetRunner = ({ initialCode = '', height = '200px', title = 'C# E
 
       return runtime;
     } catch (err) {
-      throw new Error(`Failed to load .NET runtime: ${err.message}`);
+      throw new Error(err.message);
     } finally {
       setLoading(false);
     }
