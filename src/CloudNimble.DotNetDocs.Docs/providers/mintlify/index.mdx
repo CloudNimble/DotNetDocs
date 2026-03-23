@@ -383,72 +383,106 @@ The Mintlify provider includes 50+ context-aware FontAwesome icons. Icons are au
   <Accordion title="Type Icons" icon="shapes">
     Icons assigned based on type classification:
 
-    | Type | Icon | Symbol |
-    |------|------|--------|
-    | Class | `cube` | 🧊 |
-    | Interface | `layer-group` | 📚 |
-    | Struct | `cube-alt` | 🔷 |
-    | Enum | `list-ol` | 📋 |
-    | Delegate | `arrow-right` | ➡️ |
-    | Namespace | `folder` | 📁 |
+    | Type | Icon Class | Icon |
+    |------|------------|------|
+    | Class | `file-brackets-curly` | <Icon icon="file-brackets-curly" /> |
+    | Abstract Class | `shapes` | <Icon icon="shapes" /> |
+    | Static Class | `bolt` | <Icon icon="bolt" /> |
+    | Sealed Class | `lock` | <Icon icon="lock" /> |
+    | Generic Type | `code-branch` | <Icon icon="code-branch" /> |
+    | Interface | `plug` | <Icon icon="plug" /> |
+    | Struct | `cubes` | <Icon icon="cubes" /> |
+    | Enum | `list-ol` | <Icon icon="list-ol" /> |
+    | Record | `database` | <Icon icon="database" /> |
+    | Delegate | `arrow-right-arrow-left` | <Icon icon="arrow-right-arrow-left" /> |
+    | Assembly | `cubes` | <Icon icon="cubes" /> |
+    | Namespace (populated) | `folder-tree` | <Icon icon="folder-tree" /> |
+    | Namespace (empty) | `folder-open` | <Icon icon="folder-open" /> |
   </Accordion>
 
   <Accordion title="Member Icons" icon="list">
     Icons for class members:
 
-    | Member | Icon | Symbol |
-    |--------|------|--------|
-    | Method | `function` | ƒ |
-    | Property | `sliders` | 🎚️ |
-    | Field | `input-text` | 📝 |
-    | Event | `bolt` | ⚡ |
-    | Constructor | `hammer` | 🔨 |
-    | Operator | `calculator` | 🔢 |
+    | Member | Icon Class | Icon |
+    |--------|------------|------|
+    | Method | `function` | <Icon icon="function" /> |
+    | Extension Method | `puzzle-piece` | <Icon icon="puzzle-piece" /> |
+    | Override Method | `code-merge` | <Icon icon="code-merge" /> |
+    | Virtual Method | `code-fork` | <Icon icon="code-fork" /> |
+    | Async Method | `rotate` | <Icon icon="rotate" /> |
+    | Static Member | `thumbtack` | <Icon icon="thumbtack" /> |
+    | Property | `tag` | <Icon icon="tag" /> |
+    | Field | `box` | <Icon icon="box" /> |
+    | Constant Field | `anchor` | <Icon icon="anchor" /> |
+    | Event | `bell` | <Icon icon="bell" /> |
+    | Constructor | `hammer` | <Icon icon="hammer" /> |
+    | Operator | `calculator` | <Icon icon="calculator" /> |
+    | Indexer | `table-cells` | <Icon icon="table-cells" /> |
   </Accordion>
 
   <Accordion title="Pattern-Based Icons" icon="wand-magic">
-    Icons assigned based on naming patterns:
+    Icons assigned based on type naming patterns:
 
-    | Pattern | Icon | Example |
-    |---------|------|---------|
-    | *Manager | `gears` | DocumentationManager |
-    | *Service | `server` | PaymentService |
-    | *Repository | `database` | UserRepository |
-    | *Controller | `gamepad` | ApiController |
-    | *Factory | `industry` | ConnectionFactory |
-    | *Builder | `hammer` | StringBuilder |
-    | *Provider | `plug` | ConfigurationProvider |
-    | *Handler | `hand` | EventHandler |
-    | *Helper | `circle-question` | StringHelper |
-    | *Validator | `check-circle` | InputValidator |
+    | Pattern | Icon Class | Icon | Example |
+    |---------|------------|------|---------|
+    | *Manager | `briefcase` | <Icon icon="briefcase" /> | DocumentationManager |
+    | *Service | `server` | <Icon icon="server" /> | PaymentService |
+    | *Controller | `gamepad` | <Icon icon="gamepad" /> | ApiController |
+    | *Factory | `industry` | <Icon icon="industry" /> | ConnectionFactory |
+    | *Builder | `hammer` | <Icon icon="hammer" /> | StringBuilder |
+    | *Provider | `plug` | <Icon icon="plug" /> | ConfigurationProvider |
+    | *Handler | `hand` | <Icon icon="hand" /> | EventHandler |
+    | *Helper / *Utility | `wrench` | <Icon icon="wrench" /> | StringHelper |
+    | *Validator | `check-circle` | <Icon icon="check-circle" /> | InputValidator |
+    | *Model / *Entity | `database` | <Icon icon="database" /> | UserModel |
+    | *DTO | `exchange` | <Icon icon="exchange" /> | PaymentDto |
+    | *ViewModel | `layer-group` | <Icon icon="layer-group" /> | OrderViewModel |
+    | *Exception | `triangle-exclamation` | <Icon icon="triangle-exclamation" /> | NotFoundException |
+    | *Attribute | `tag` | <Icon icon="tag" /> | ObsoleteAttribute |
+    | I* (interface) | `plug` | <Icon icon="plug" /> | IDisposable |
   </Accordion>
 
   <Accordion title="Modifier Icons" icon="toggle-on">
-    Additional icons for access modifiers and type characteristics:
+    Icons for access modifiers and type characteristics:
 
-    | Modifier | Icon | Symbol |
-    |----------|------|--------|
-    | Static | `s` | S |
-    | Abstract | `shapes` | 🔺 |
-    | Sealed | `lock` | 🔒 |
-    | Generic | `brackets-curly` | { } |
-    | Async | `arrows-spin` | 🔄 |
+    | Modifier | Icon Class | Icon |
+    |----------|------------|------|
+    | Public | `globe` | <Icon icon="globe" /> |
+    | Protected | `shield` | <Icon icon="shield" /> |
+    | Protected Internal | `shield-halved` | <Icon icon="shield-halved" /> |
+    | Internal | `building` | <Icon icon="building" /> |
+    | Private | `lock` | <Icon icon="lock" /> |
   </Accordion>
 
   <Accordion title="Namespace Segment Icons" icon="folder-tree">
     Icons based on namespace segments:
 
-    | Segment | Icon | Example |
-    |---------|------|---------|
-    | Core | `circle-dot` | MyApp.Core |
-    | Extensions | `puzzle-piece` | MyApp.Extensions |
-    | Models | `diagram-project` | MyApp.Models |
-    | Services | `server` | MyApp.Services |
-    | Data | `database` | MyApp.Data |
-    | Security | `shield` | MyApp.Security |
-    | Web | `globe` | MyApp.Web |
-    | Api | `cloud` | MyApp.Api |
-    | Testing | `vial` | MyApp.Testing |
+    | Segment | Icon Class | Icon | Example |
+    |---------|------------|------|---------|
+    | Core | `circle` | <Icon icon="circle" /> | MyApp.Core |
+    | Extensions | `puzzle-piece` | <Icon icon="puzzle-piece" /> | MyApp.Extensions |
+    | Models | `database` | <Icon icon="database" /> | MyApp.Models |
+    | Services | `server` | <Icon icon="server" /> | MyApp.Services |
+    | Data | `database` | <Icon icon="database" /> | MyApp.Data |
+    | Controllers | `gamepad` | <Icon icon="gamepad" /> | MyApp.Controllers |
+    | Views | `eye` | <Icon icon="eye" /> | MyApp.Views |
+    | ViewModels | `layer-group` | <Icon icon="layer-group" /> | MyApp.ViewModels |
+    | Configuration | `gears` | <Icon icon="gears" /> | MyApp.Configuration |
+    | Handlers | `hand` | <Icon icon="hand" /> | MyApp.Handlers |
+    | Factories | `industry` | <Icon icon="industry" /> | MyApp.Factories |
+    | Builders | `hammer` | <Icon icon="hammer" /> | MyApp.Builders |
+    | Validators | `check-circle` | <Icon icon="check-circle" /> | MyApp.Validators |
+    | Exceptions | `triangle-exclamation` | <Icon icon="triangle-exclamation" /> | MyApp.Exceptions |
+    | Entities | `cubes` | <Icon icon="cubes" /> | MyApp.Entities |
+    | Enums | `list-ol` | <Icon icon="list-ol" /> | MyApp.Enums |
+    | Constants | `anchor` | <Icon icon="anchor" /> | MyApp.Constants |
+    | Tests | `flask` | <Icon icon="flask" /> | MyApp.Tests |
+    | Shared / Common | `share-nodes` | <Icon icon="share-nodes" /> | MyApp.Shared |
+    | Utilities / Helpers | `wrench` | <Icon icon="wrench" /> | MyApp.Utilities |
+    | Interfaces | `plug` | <Icon icon="plug" /> | MyApp.Interfaces |
+    | Api | `plug` | <Icon icon="plug" /> | MyApp.Api |
+    | Web | `globe` | <Icon icon="globe" /> | MyApp.Web |
+    | Infrastructure | `building` | <Icon icon="building" /> | MyApp.Infrastructure |
   </Accordion>
 </AccordionGroup>
 
