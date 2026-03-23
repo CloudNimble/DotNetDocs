@@ -1,0 +1,266 @@
+---
+title: Tips & Tricks
+sidebarTitle: Tips & Tricks
+description: Practical patterns for building advanced pages in Mintlify
+icon: lightbulb
+---
+
+## React Component Support
+
+Mintlify MDX supports embedding custom React components directly in your documentation:
+
+- Import components from the `snippets` folder
+- Use React hooks (useState, useEffect, etc.)
+- Create interactive demos, calculators, and visualizations
+- Build reusable component libraries
+
+```jsx snippets/ColorPicker.jsx
+export const ColorPicker = () => {
+  const [color, setColor] = React.useState('#3CD0E2');
+
+  return (
+    <div>
+      <input
+        type="color"
+        value={color}
+        onChange={(e) => setColor(e.target.value)}
+      />
+      <p>Selected: {color}</p>
+    </div>
+  );
+};
+```
+
+```mdx Using the Component
+import { ColorPicker } from '/snippets/ColorPicker';
+
+## Try It Out
+
+<ColorPicker />
+```
+
+<Info>
+React components must be placed in the `snippets` folder and exported as named exports. You cannot import components from arbitrary MDX files.
+</Info>
+
+### Preventing the Double Flash
+
+Mintlify pages render server-side first, then hydrate on the client. React components that modify layout or inject dynamic content cause a **double flash**: the server-rendered markup appears, disappears during hydration, then re-renders with client state. This creates a jarring flicker.
+
+The fix: render your component **invisible** on mount, then fade it in after hydration completes.
+
+<Tabs>
+  <Tab title="Pattern">
+    Every client-side React component should follow this three-part pattern:
+
+    1. **State gate**: `useState(false)` tracks whether the component has mounted
+    2. **Mount trigger**: `useEffect(() => set(true), [])` fires once after hydration
+    3. **Opacity transition**: the wrapper starts at `opacity: 0` and transitions to `1`
+
+    ```jsx snippets/MyComponent.jsx
+    export const MyComponent = () => {
+      const [ready, setReady] = React.useState(false);
+
+      React.useEffect(() => {
+        setReady(true);
+      }, []);
+
+      return (
+        <div style={{
+          opacity: ready ? 1 : 0,
+          transition: 'opacity 0.5s ease-out'
+        }}>
+          {/* your content */}
+        </div>
+      );
+    };
+    ```
+
+    <Warning>
+    Never use `display: none` or `visibility: hidden` for this purpose. Those properties trigger layout reflows when they change, causing the content to "jump" into place. The `opacity` + `transition` approach is GPU-accelerated and reflow-free.
+    </Warning>
+  </Tab>
+
+  <Tab title="With Slide Animation">
+    Combine the opacity gate with a CSS transform for a polished entrance. Use `backfaceVisibility: 'hidden'` and `translateZ(0)` to keep the animation on the GPU compositing layer.
+
+    ```jsx snippets/SlideInSection.jsx
+    export const SlideInSection = ({ children, direction = 'left' }) => {
+      const [ready, setReady] = React.useState(false);
+
+      React.useEffect(() => {
+        setReady(true);
+      }, []);
+
+      const offset = direction === 'left' ? '-50px' : '50px';
+
+      return (
+        <div style={{
+          opacity: ready ? 1 : 0,
+          transform: ready ? 'translateX(0) translateZ(0)' : `translateX(${offset}) translateZ(0)`,
+          transition: 'opacity 0.8s ease-out, transform 0.8s ease-out',
+          backfaceVisibility: 'hidden'
+        }}>
+          {children}
+        </div>
+      );
+    };
+    ```
+  </Tab>
+
+  <Tab title="Page Modes">
+    Mintlify has four page modes set via frontmatter. Choose based on how much chrome you need:
+
+    | Mode | Sidebar | Table of Contents | Footer | Top Navbar | Use Case |
+    |------|---------|-------------------|--------|------------|----------|
+    | *(default)* | Yes | Yes | Yes | Yes | Standard documentation pages |
+    | `wide` | Yes | Hidden | Yes | Yes | Pages with tables, diagrams, or wide content |
+    | `center` | Hidden | Hidden | Yes | Yes | Text-heavy pages like changelogs |
+    | `custom` | Hidden | Hidden | Hidden | **Yes** | Landing pages, branded layouts |
+
+    ```mdx
+    ---
+    title: "My Page"
+    mode: "wide"
+    ---
+    ```
+
+    <Note>
+    All modes preserve the **top navbar**. There is no built-in way to hide it. The `custom` mode is the most minimal — it gives you a blank canvas with only the top nav remaining.
+    </Note>
+  </Tab>
+
+  <Tab title="Custom Mode Landing Pages">
+    The DotNetDocs home page uses `mode: "custom"` — Mintlify hides the sidebar, table of contents, and footer automatically, leaving only the top navbar. Your React components fill the page.
+
+    However, Mintlify still applies content width constraints and renders auto-generated prose elements (the `h1` from `title` and `p` from `description` in frontmatter). A CSS wrapper class handles these:
+
+    ```mdx index.mdx
+    ---
+    title: My Docs - Landing Page
+    sidebarTitle: Home
+    mode: "custom"
+    icon: house
+    ---
+
+    import { Hero } from '/snippets/Hero.jsx'
+    import { Features } from '/snippets/Features.jsx'
+    import { CTA } from '/snippets/CTA.jsx'
+
+    <div className="custom-landing">
+      <Hero />
+      <Features />
+      <CTA />
+    </div>
+    ```
+
+    ```css style.css
+    /* Remove content width constraints so components go edge-to-edge */
+    .custom-landing main,
+    .custom-landing article {
+      max-width: 100% !important;
+      padding: 0 !important;
+    }
+
+    /* Suppress the auto-generated h1 and description from frontmatter */
+    .custom-landing .prose > h1:first-child,
+    .custom-landing .prose > p:first-child {
+      display: none;
+    }
+    ```
+
+    The result at runtime:
+
+    ```plaintext
+    ┌──────────────────────────────────────────┐
+    │  Mintlify Top Navbar                     │ ← Always visible (all modes)
+    ├──────────────────────────────────────────┤
+    │                                          │
+    │  <Hero />           ← Full-width canvas  │
+    │  <Features />       ← No sidebar or TOC  │
+    │  <CTA />            ← No footer          │
+    │                                          │
+    └──────────────────────────────────────────┘
+    ```
+
+    <Warning>
+    Mintlify warns that **inline `style` props on custom mode pages cause layout shift on page load**. Use Tailwind classes or a custom CSS file instead of `style={{...}}` for layout properties like width, padding, and margins. The `opacity`/`transform` pattern for flash prevention is fine because those properties don't affect layout.
+    </Warning>
+
+    <Note>
+    The `sidebarTitle` frontmatter field controls what label appears in the sidebar when users are on *other* pages. Even though the sidebar is hidden on the custom page itself, this title still matters for navigation elsewhere.
+    </Note>
+  </Tab>
+</Tabs>
+
+<Tip>
+**Rules of thumb:**
+- Only `opacity` and `transform` are safe for mount animations — they don't trigger reflows
+- Always use `ease-out` timing — it feels responsive because the fast phase happens first
+- Keep transitions under 0.8s — longer feels sluggish, shorter can still flash
+- Use `translateZ(0)` to force GPU compositing, even if you're not animating position
+</Tip>
+
+### Loading External Scripts
+
+Mintlify doesn't support `<script>` tags directly in MDX. Instead, use Mintlify's built-in `load()` function to fetch external libraries at runtime. Chain multiple `load()` calls with `.then()` to guarantee dependency order, and guard your initialization against Mintlify's hydration timing.
+
+```jsx snippets/AnimatedSection.jsx
+export const AnimatedSection = ({ children }) => {
+  const [ready, setReady] = React.useState(false);
+
+  React.useEffect(() => {
+    load('https://cdn.jsdelivr.net/npm/gsap@3.14.1/dist/gsap.min.js')
+      .then(function () {
+        return load('https://cdn.jsdelivr.net/npm/gsap@3.14.1/dist/ScrollTrigger.min.js');
+      })
+      .then(function () {
+        // Wait for DOM to be fully ready
+        if (document.readyState === 'complete') {
+          initAnimations();
+        } else {
+          window.addEventListener('load', initAnimations);
+        }
+        // Also try after a delay in case Mintlify hydration is still running
+        setTimeout(function () {
+          if (ScrollTrigger.getAll().length === 0) {
+            initAnimations();
+          }
+        }, 1500);
+      })
+      .catch(function (e) {
+        console.error('GSAP load failed:', e);
+      });
+
+    setReady(true);
+  }, []);
+
+  function initAnimations() {
+    gsap.registerPlugin(ScrollTrigger);
+    // Your GSAP animations here
+  }
+
+  return (
+    <div style={{
+      opacity: ready ? 1 : 0,
+      transition: 'opacity 0.5s ease-out'
+    }}>
+      {children}
+    </div>
+  );
+};
+```
+
+The pattern has three key parts:
+
+1. **Sequential loading**: Chain `.then()` calls so dependent libraries (like ScrollTrigger) load after their prerequisites (GSAP core)
+2. **Hydration-safe init**: Check `document.readyState` first, then also set a `setTimeout` fallback — Mintlify's hydration can delay DOM readiness beyond the browser's `load` event
+3. **Idempotency guard**: Before the timeout fires, check whether initialization already ran (e.g., `ScrollTrigger.getAll().length === 0`) to avoid double-initializing
+
+<Warning>
+The `load()` function is a Mintlify global — it is **not** a standard browser API and won't work outside of Mintlify. Don't confuse it with dynamic `import()` or other module loaders.
+</Warning>
+
+<Tip>
+Pin your CDN URLs to specific versions (e.g., `gsap@3.14.1`) rather than using `@latest`. Unpinned versions can break your docs without warning when the library ships a breaking change.
+</Tip>

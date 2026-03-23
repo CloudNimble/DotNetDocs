@@ -3,9 +3,9 @@
     "default": "dark"
   },
   "colors": {
+    "primary": "#419AC5",
     "dark": "#3CD0E2",
-    "light": "#419AC5",
-    "primary": "#419AC5"
+    "light": "#419AC5"
   },
   "favicon": "/images/icons/favicon-96x96.png",
   "integrations": {
@@ -63,6 +63,7 @@
             "icon": "/images/icons/mintlify.svg",
             "pages": [
               "providers/mintlify/index",
+              "providers/mintlify/tips-and-tricks",
               "providers/mintlify/navigation",
               "providers/mintlify/collections",
               "providers/mintlify/dotnet-library"

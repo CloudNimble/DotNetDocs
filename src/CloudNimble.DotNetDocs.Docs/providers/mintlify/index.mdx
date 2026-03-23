@@ -15,8 +15,8 @@ icon: sparkles
   <Card title="Context-Aware Icons" icon="icons" href="#icon-system">
     50+ FontAwesome icons automatically assigned based on type characteristics and naming patterns
   </Card>
-  <Card title="React Components" icon="react" href="#react-components">
-    Embed custom React components directly in your MDX files for interactive documentation
+  <Card title="Tips & Tricks" icon="lightbulb" href="/providers/mintlify/tips-and-tricks">
+    React components, hydration fixes, page modes, and custom landing page patterns
   </Card>
 </CardGroup>
 
@@ -182,44 +182,6 @@ services.AddDotNetDocsMintlify(options =>
 
 <Info>
 Set `NavigationType` to control whether the root project appears in main navigation (`Pages`), as a top-level tab (`Tabs`), or in the products section (`Products`). This is particularly useful for multi-project documentation collections.
-</Info>
-
-### React Component Support
-
-Mintlify MDX supports embedding custom React components directly in your documentation:
-
-- Import components from the `snippets` folder
-- Use React hooks (useState, useEffect, etc.)
-- Create interactive demos, calculators, and visualizations
-- Build reusable component libraries
-
-```jsx snippets/ColorPicker.jsx
-export const ColorPicker = () => {
-  const [color, setColor] = React.useState('#3CD0E2');
-
-  return (
-    <div>
-      <input
-        type="color"
-        value={color}
-        onChange={(e) => setColor(e.target.value)}
-      />
-      <p>Selected: {color}</p>
-    </div>
-  );
-};
-```
-
-```mdx Using the Component
-import { ColorPicker } from '/snippets/ColorPicker';
-
-## Try It Out
-
-<ColorPicker />
-```
-
-<Info>
-React components must be placed in the `snippets` folder and exported as named exports. You cannot import components from arbitrary MDX files.
 </Info>
 
 ## Getting Started
@@ -543,6 +505,9 @@ docs/
 ## See Also
 
 <CardGroup cols={2}>
+  <Card title="Tips & Tricks" icon="lightbulb" href="/providers/mintlify/tips-and-tricks">
+    React components, hydration fixes, page modes, and custom landing page patterns
+  </Card>
   <Card title="Collections" icon="layer-group" href="/providers/mintlify/collections">
     Learn how Mintlify handles multi-project documentation with path rewriting and resource relocation
   </Card>
