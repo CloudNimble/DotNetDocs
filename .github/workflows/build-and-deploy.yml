@@ -393,18 +393,18 @@ jobs:
            $packageList += "- [$packageName](https://www.nuget.org/packages/$packageName/$version)`n"
          }
 
-         $body = @"
-## NuGet Packages
-$packageList
-
-## Installation
-``````xml
-<Project Sdk="DotNetDocs.Sdk/$version">
-  <!-- That's it! -->
-</Project>
-``````
-"@
-
+         $lines = @(
+           "## NuGet Packages",
+           $packageList,
+           "",
+           "## Installation",
+           '```xml',
+           "<Project Sdk=""DotNetDocs.Sdk/$version"">",
+           "  <!-- That's it! -->",
+           "</Project>",
+           '```'
+         )
+         $body = $lines -join "`n"
          Set-Content -Path "./release-notes.md" -Value $body -Encoding utf8
 
     - name: Create GitHub Release
