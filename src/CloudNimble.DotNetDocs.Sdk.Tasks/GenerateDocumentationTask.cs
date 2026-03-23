@@ -552,6 +552,48 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
                     config.Interaction = ParseInteractionConfig(interactionElement);
                 }
 
+                // Parse Api
+                var apiElement = root.Element(nameof(DocsJsonConfig.Api));
+                if (apiElement is not null)
+                {
+                    config.Api = ParseApiConfig(apiElement);
+                }
+
+                // Parse Contextual
+                var contextualElement = root.Element(nameof(DocsJsonConfig.Contextual));
+                if (contextualElement is not null)
+                {
+                    config.Contextual = ParseContextualConfig(contextualElement);
+                }
+
+                // Parse Fonts
+                var fontsElement = root.Element(nameof(DocsJsonConfig.Fonts));
+                if (fontsElement is not null)
+                {
+                    config.Fonts = ParseFontsConfig(fontsElement);
+                }
+
+                // Parse Thumbnails
+                var thumbnailsElement = root.Element(nameof(DocsJsonConfig.Thumbnails));
+                if (thumbnailsElement is not null)
+                {
+                    config.Thumbnails = ParseThumbnailsConfig(thumbnailsElement);
+                }
+
+                // Parse Metadata
+                var metadataElement = root.Element(nameof(DocsJsonConfig.Metadata));
+                if (metadataElement is not null)
+                {
+                    config.Metadata = ParseMetadataConfig(metadataElement);
+                }
+
+                // Parse Errors
+                var errorsElement = root.Element(nameof(DocsJsonConfig.Errors));
+                if (errorsElement is not null)
+                {
+                    config.Errors = ParseErrorsConfig(errorsElement);
+                }
+
                 return (config, docsNavConfig);
             }
             catch (Exception ex)
@@ -1195,6 +1237,86 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
                     ApiKey = posthogElement.Attribute(nameof(PostHogConfig.ApiKey))?.Value,
                     ApiHost = posthogElement.Attribute(nameof(PostHogConfig.ApiHost))?.Value
                 };
+
+                var sessionRecordingAttr = posthogElement.Attribute(nameof(PostHogConfig.SessionRecording))?.Value;
+                if (!string.IsNullOrWhiteSpace(sessionRecordingAttr) && bool.TryParse(sessionRecordingAttr, out var sessionRecording))
+                {
+                    config.PostHog.SessionRecording = sessionRecording;
+                }
+            }
+
+            // Parse Adobe
+            var adobeElement = integrationsElement.Element(nameof(IntegrationsConfig.Adobe));
+            if (adobeElement is not null)
+            {
+                config.Adobe = new AdobeConfig
+                {
+                    LaunchUrl = adobeElement.Attribute(nameof(AdobeConfig.LaunchUrl))?.Value
+                };
+            }
+
+            // Parse Clarity
+            var clarityElement = integrationsElement.Element(nameof(IntegrationsConfig.Clarity));
+            if (clarityElement is not null)
+            {
+                config.Clarity = new ClarityConfig
+                {
+                    ProjectId = clarityElement.Attribute(nameof(ClarityConfig.ProjectId))?.Value
+                };
+            }
+
+            // Parse Cookies
+            var cookiesElement = integrationsElement.Element(nameof(IntegrationsConfig.Cookies));
+            if (cookiesElement is not null)
+            {
+                config.Cookies = new CookiesConfig
+                {
+                    Key = cookiesElement.Attribute(nameof(CookiesConfig.Key))?.Value,
+                    Value = cookiesElement.Attribute(nameof(CookiesConfig.Value))?.Value
+                };
+            }
+
+            // Parse FrontChat
+            var frontChatElement = integrationsElement.Element(nameof(IntegrationsConfig.FrontChat));
+            if (frontChatElement is not null)
+            {
+                config.FrontChat = new FrontChatConfig
+                {
+                    SnippetId = frontChatElement.Attribute(nameof(FrontChatConfig.SnippetId))?.Value
+                };
+            }
+
+            // Parse Intercom
+            var intercomElement = integrationsElement.Element(nameof(IntegrationsConfig.Intercom));
+            if (intercomElement is not null)
+            {
+                config.Intercom = new IntercomConfig
+                {
+                    AppId = intercomElement.Attribute(nameof(IntercomConfig.AppId))?.Value
+                };
+            }
+
+            // Parse Koala
+            var koalaElement = integrationsElement.Element(nameof(IntegrationsConfig.Koala));
+            if (koalaElement is not null)
+            {
+                config.Koala = new KoalaConfig
+                {
+                    PublicApiKey = koalaElement.Attribute(nameof(KoalaConfig.PublicApiKey))?.Value
+                };
+            }
+
+            // Parse Telemetry
+            var telemetryElement = integrationsElement.Element(nameof(IntegrationsConfig.Telemetry));
+            if (telemetryElement is not null)
+            {
+                config.Telemetry = new TelemetryConfig();
+
+                var enabledAttr = telemetryElement.Attribute(nameof(TelemetryConfig.Enabled))?.Value;
+                if (!string.IsNullOrWhiteSpace(enabledAttr) && bool.TryParse(enabledAttr, out var telemetryEnabled))
+                {
+                    config.Telemetry.Enabled = telemetryEnabled;
+                }
             }
 
             // Parse Segment
@@ -1231,6 +1353,16 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
             if (eyebrowsElement is not null && !string.IsNullOrWhiteSpace(eyebrowsElement.Value))
             {
                 config.Eyebrows = eyebrowsElement.Value.Trim();
+            }
+
+            // Parse Latex
+            var latexElement = stylingElement.Element(nameof(StylingConfig.Latex));
+            if (latexElement is not null && !string.IsNullOrWhiteSpace(latexElement.Value))
+            {
+                if (bool.TryParse(latexElement.Value.Trim(), out var latex))
+                {
+                    config.Latex = latex;
+                }
             }
 
             return config;
@@ -1281,6 +1413,379 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
                 if (bool.TryParse(drilldownElement.Value.Trim(), out var drilldown))
                 {
                     config.Drilldown = drilldown;
+                }
+            }
+
+            return config;
+        }
+
+        /// <summary>
+        /// Parses the Api element from the MintlifyTemplate XML.
+        /// </summary>
+        /// <param name="apiElement">The API XML element.</param>
+        /// <returns>An ApiConfig instance.</returns>
+        internal ApiConfig ParseApiConfig(XElement apiElement)
+        {
+            var config = new ApiConfig();
+
+            // Parse Url
+            var urlElement = apiElement.Element(nameof(ApiConfig.Url));
+            if (urlElement is not null && !string.IsNullOrWhiteSpace(urlElement.Value))
+            {
+                config.Url = urlElement.Value.Trim();
+            }
+
+            // Parse Proxy
+            var proxyElement = apiElement.Element(nameof(ApiConfig.Proxy));
+            if (proxyElement is not null && !string.IsNullOrWhiteSpace(proxyElement.Value))
+            {
+                if (bool.TryParse(proxyElement.Value.Trim(), out var proxy))
+                {
+                    config.Proxy = proxy;
+                }
+            }
+
+            // Parse OpenApi
+            var openApiElement = apiElement.Element(nameof(ApiConfig.OpenApi));
+            if (openApiElement is not null && !string.IsNullOrWhiteSpace(openApiElement.Value))
+            {
+                config.OpenApi = new ApiSpecConfig { Source = openApiElement.Value.Trim() };
+            }
+
+            // Parse AsyncApi
+            var asyncApiElement = apiElement.Element(nameof(ApiConfig.AsyncApi));
+            if (asyncApiElement is not null && !string.IsNullOrWhiteSpace(asyncApiElement.Value))
+            {
+                config.AsyncApi = new ApiSpecConfig { Source = asyncApiElement.Value.Trim() };
+            }
+
+            // Parse Playground
+            var playgroundElement = apiElement.Element(nameof(ApiConfig.Playground));
+            if (playgroundElement is not null)
+            {
+                config.Playground = new ApiPlaygroundConfig();
+
+                var displayElement = playgroundElement.Element(nameof(ApiPlaygroundConfig.Display));
+                if (displayElement is not null && !string.IsNullOrWhiteSpace(displayElement.Value))
+                {
+                    config.Playground.Display = displayElement.Value.Trim();
+                }
+
+                var playgroundProxyElement = playgroundElement.Element(nameof(ApiPlaygroundConfig.Proxy));
+                if (playgroundProxyElement is not null && !string.IsNullOrWhiteSpace(playgroundProxyElement.Value))
+                {
+                    if (bool.TryParse(playgroundProxyElement.Value.Trim(), out var playgroundProxy))
+                    {
+                        config.Playground.Proxy = playgroundProxy;
+                    }
+                }
+            }
+
+            // Parse Params
+            var paramsElement = apiElement.Element(nameof(ApiConfig.Params));
+            if (paramsElement is not null)
+            {
+                config.Params = new ApiParamsConfig();
+
+                var expandedElement = paramsElement.Element(nameof(ApiParamsConfig.Expanded));
+                if (expandedElement is not null && !string.IsNullOrWhiteSpace(expandedElement.Value))
+                {
+                    if (bool.TryParse(expandedElement.Value.Trim(), out var expanded))
+                    {
+                        config.Params.Expanded = expanded;
+                    }
+                }
+            }
+
+            // Parse Examples
+            var examplesElement = apiElement.Element(nameof(ApiConfig.Examples));
+            if (examplesElement is not null)
+            {
+                config.Examples = new ApiExamplesConfig();
+
+                var defaultsElement = examplesElement.Element(nameof(ApiExamplesConfig.Defaults));
+                if (defaultsElement is not null && !string.IsNullOrWhiteSpace(defaultsElement.Value))
+                {
+                    config.Examples.Defaults = defaultsElement.Value.Trim();
+                }
+
+                var prefillElement = examplesElement.Element(nameof(ApiExamplesConfig.Prefill));
+                if (prefillElement is not null && !string.IsNullOrWhiteSpace(prefillElement.Value))
+                {
+                    if (bool.TryParse(prefillElement.Value.Trim(), out var prefill))
+                    {
+                        config.Examples.Prefill = prefill;
+                    }
+                }
+
+                var autogenerateElement = examplesElement.Element(nameof(ApiExamplesConfig.Autogenerate));
+                if (autogenerateElement is not null && !string.IsNullOrWhiteSpace(autogenerateElement.Value))
+                {
+                    if (bool.TryParse(autogenerateElement.Value.Trim(), out var autogenerate))
+                    {
+                        config.Examples.Autogenerate = autogenerate;
+                    }
+                }
+
+                var languagesElement = examplesElement.Element(nameof(ApiExamplesConfig.Languages));
+                if (languagesElement is not null && !string.IsNullOrWhiteSpace(languagesElement.Value))
+                {
+                    config.Examples.Languages = languagesElement.Value
+                        .Split(new[] { ';', ',' }, StringSplitOptions.RemoveEmptyEntries)
+                        .Select(l => l.Trim())
+                        .Where(l => !string.IsNullOrWhiteSpace(l))
+                        .ToList();
+                }
+            }
+
+            // Parse Mdx
+            var mdxElement = apiElement.Element(nameof(ApiConfig.Mdx));
+            if (mdxElement is not null)
+            {
+                config.Mdx = new MdxConfig();
+
+                var serverElement = mdxElement.Element(nameof(MdxConfig.Server));
+                if (serverElement is not null && !string.IsNullOrWhiteSpace(serverElement.Value))
+                {
+                    config.Mdx.Server = new ServerConfig { Url = serverElement.Value.Trim() };
+                }
+
+                var authElement = mdxElement.Element(nameof(MdxConfig.Auth));
+                if (authElement is not null)
+                {
+                    config.Mdx.Auth = new MdxAuthConfig();
+
+                    var methodElement = authElement.Element(nameof(MdxAuthConfig.Method));
+                    if (methodElement is not null && !string.IsNullOrWhiteSpace(methodElement.Value))
+                    {
+                        config.Mdx.Auth.Method = methodElement.Value.Trim();
+                    }
+
+                    var nameElement = authElement.Element(nameof(MdxAuthConfig.Name));
+                    if (nameElement is not null && !string.IsNullOrWhiteSpace(nameElement.Value))
+                    {
+                        config.Mdx.Auth.Name = nameElement.Value.Trim();
+                    }
+                }
+            }
+
+            return config;
+        }
+
+        /// <summary>
+        /// Parses the Contextual element from the MintlifyTemplate XML.
+        /// </summary>
+        /// <param name="contextualElement">The contextual XML element.</param>
+        /// <returns>A ContextualConfig instance.</returns>
+        internal ContextualConfig ParseContextualConfig(XElement contextualElement)
+        {
+            var config = new ContextualConfig();
+
+            // Parse Options
+            var optionsElement = contextualElement.Element(nameof(ContextualConfig.Options));
+            if (optionsElement is not null && !string.IsNullOrWhiteSpace(optionsElement.Value))
+            {
+                config.Options = optionsElement.Value
+                    .Split(new[] { ';', ',' }, StringSplitOptions.RemoveEmptyEntries)
+                    .Select(o => o.Trim())
+                    .Where(o => !string.IsNullOrWhiteSpace(o))
+                    .ToList();
+            }
+
+            // Parse Display
+            var displayElement = contextualElement.Element(nameof(ContextualConfig.Display));
+            if (displayElement is not null && !string.IsNullOrWhiteSpace(displayElement.Value))
+            {
+                config.Display = displayElement.Value.Trim();
+            }
+
+            return config;
+        }
+
+        /// <summary>
+        /// Parses the Fonts element from the MintlifyTemplate XML.
+        /// </summary>
+        /// <param name="fontsElement">The fonts XML element.</param>
+        /// <returns>A FontsConfig instance.</returns>
+        internal FontsConfig ParseFontsConfig(XElement fontsElement)
+        {
+            var config = new FontsConfig();
+
+            // Parse top-level font properties
+            var familyElement = fontsElement.Element(nameof(FontsConfig.Family));
+            if (familyElement is not null && !string.IsNullOrWhiteSpace(familyElement.Value))
+            {
+                config.Family = familyElement.Value.Trim();
+            }
+
+            var formatElement = fontsElement.Element(nameof(FontsConfig.Format));
+            if (formatElement is not null && !string.IsNullOrWhiteSpace(formatElement.Value))
+            {
+                config.Format = formatElement.Value.Trim();
+            }
+
+            var sourceElement = fontsElement.Element(nameof(FontsConfig.Source));
+            if (sourceElement is not null && !string.IsNullOrWhiteSpace(sourceElement.Value))
+            {
+                config.Source = sourceElement.Value.Trim();
+            }
+
+            var weightElement = fontsElement.Element(nameof(FontsConfig.Weight));
+            if (weightElement is not null && !string.IsNullOrWhiteSpace(weightElement.Value))
+            {
+                if (int.TryParse(weightElement.Value.Trim(), out var weight))
+                {
+                    config.Weight = weight;
+                }
+            }
+
+            // Parse Heading
+            var headingElement = fontsElement.Element(nameof(FontsConfig.Heading));
+            if (headingElement is not null)
+            {
+                config.Heading = ParseFontConfig(headingElement);
+            }
+
+            // Parse Body
+            var bodyElement = fontsElement.Element(nameof(FontsConfig.Body));
+            if (bodyElement is not null)
+            {
+                config.Body = ParseFontConfig(bodyElement);
+            }
+
+            return config;
+        }
+
+        /// <summary>
+        /// Parses a FontConfig element from the MintlifyTemplate XML.
+        /// </summary>
+        /// <param name="fontElement">The font XML element.</param>
+        /// <returns>A FontConfig instance.</returns>
+        internal FontConfig ParseFontConfig(XElement fontElement)
+        {
+            var config = new FontConfig();
+
+            var familyElement = fontElement.Element(nameof(FontConfig.Family));
+            if (familyElement is not null && !string.IsNullOrWhiteSpace(familyElement.Value))
+            {
+                config.Family = familyElement.Value.Trim();
+            }
+
+            var weightElement = fontElement.Element(nameof(FontConfig.Weight));
+            if (weightElement is not null && !string.IsNullOrWhiteSpace(weightElement.Value))
+            {
+                if (int.TryParse(weightElement.Value.Trim(), out var weight))
+                {
+                    config.Weight = weight;
+                }
+            }
+
+            var sourceElement = fontElement.Element(nameof(FontConfig.Source));
+            if (sourceElement is not null && !string.IsNullOrWhiteSpace(sourceElement.Value))
+            {
+                config.Source = sourceElement.Value.Trim();
+            }
+
+            var formatElement = fontElement.Element(nameof(FontConfig.Format));
+            if (formatElement is not null && !string.IsNullOrWhiteSpace(formatElement.Value))
+            {
+                config.Format = formatElement.Value.Trim();
+            }
+
+            return config;
+        }
+
+        /// <summary>
+        /// Parses the Thumbnails element from the MintlifyTemplate XML.
+        /// </summary>
+        /// <param name="thumbnailsElement">The thumbnails XML element.</param>
+        /// <returns>A ThumbnailsConfig instance.</returns>
+        internal ThumbnailsConfig ParseThumbnailsConfig(XElement thumbnailsElement)
+        {
+            var config = new ThumbnailsConfig();
+
+            var appearanceElement = thumbnailsElement.Element(nameof(ThumbnailsConfig.Appearance));
+            if (appearanceElement is not null && !string.IsNullOrWhiteSpace(appearanceElement.Value))
+            {
+                config.Appearance = appearanceElement.Value.Trim();
+            }
+
+            var backgroundElement = thumbnailsElement.Element(nameof(ThumbnailsConfig.Background));
+            if (backgroundElement is not null && !string.IsNullOrWhiteSpace(backgroundElement.Value))
+            {
+                config.Background = backgroundElement.Value.Trim();
+            }
+
+            var fontsElement = thumbnailsElement.Element(nameof(ThumbnailsConfig.Fonts));
+            if (fontsElement is not null)
+            {
+                config.Fonts = new ThumbnailFontsConfig();
+
+                var familyElement = fontsElement.Element(nameof(ThumbnailFontsConfig.Family));
+                if (familyElement is not null && !string.IsNullOrWhiteSpace(familyElement.Value))
+                {
+                    config.Fonts.Family = familyElement.Value.Trim();
+                }
+            }
+
+            return config;
+        }
+
+        /// <summary>
+        /// Parses the Metadata element from the MintlifyTemplate XML.
+        /// </summary>
+        /// <param name="metadataElement">The metadata XML element.</param>
+        /// <returns>A MetadataConfig instance.</returns>
+        internal MetadataConfig ParseMetadataConfig(XElement metadataElement)
+        {
+            var config = new MetadataConfig();
+
+            var timestampElement = metadataElement.Element(nameof(MetadataConfig.Timestamp));
+            if (timestampElement is not null && !string.IsNullOrWhiteSpace(timestampElement.Value))
+            {
+                if (bool.TryParse(timestampElement.Value.Trim(), out var timestamp))
+                {
+                    config.Timestamp = timestamp;
+                }
+            }
+
+            return config;
+        }
+
+        /// <summary>
+        /// Parses the Errors element from the MintlifyTemplate XML.
+        /// </summary>
+        /// <param name="errorsElement">The errors XML element.</param>
+        /// <returns>An ErrorsConfig instance.</returns>
+        internal ErrorsConfig ParseErrorsConfig(XElement errorsElement)
+        {
+            var config = new ErrorsConfig();
+
+            // The XML element name is "NotFound" but serializes as "404"
+            var notFoundElement = errorsElement.Element(nameof(ErrorsConfig.NotFound));
+            if (notFoundElement is not null)
+            {
+                config.NotFound = new Error404Config();
+
+                var redirectElement = notFoundElement.Element(nameof(Error404Config.Redirect));
+                if (redirectElement is not null && !string.IsNullOrWhiteSpace(redirectElement.Value))
+                {
+                    if (bool.TryParse(redirectElement.Value.Trim(), out var redirect))
+                    {
+                        config.NotFound.Redirect = redirect;
+                    }
+                }
+
+                var titleElement = notFoundElement.Element(nameof(Error404Config.Title));
+                if (titleElement is not null && !string.IsNullOrWhiteSpace(titleElement.Value))
+                {
+                    config.NotFound.Title = titleElement.Value.Trim();
+                }
+
+                var descriptionElement = notFoundElement.Element(nameof(Error404Config.Description));
+                if (descriptionElement is not null && !string.IsNullOrWhiteSpace(descriptionElement.Value))
+                {
+                    config.NotFound.Description = descriptionElement.Value.Trim();
                 }
             }
 
