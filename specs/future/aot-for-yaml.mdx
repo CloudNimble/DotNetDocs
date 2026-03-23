@@ -1,0 +1,400 @@
+# AOT Support for YAML Serialization
+
+## Overview
+
+Add Ahead-of-Time (AOT) compilation support to the YAML serialization pipeline in `CloudNimble.DotNetDocs.Core`.
+YamlDotNet v12.3.0+ provides a source-generator-based static serialization context that eliminates reflection,
+making it compatible with Native AOT and trimmed deployments.
+
+Currently, `YamlRenderer` uses the reflection-based `SerializerBuilder`. This plan migrates it to use
+`StaticSerializerBuilder` with a source-generated `StaticContext`, following the same pattern already
+established in `Mintlify.Core` for System.Text.Json AOT support.
+
+---
+
+## Current State
+
+### Project
+- **Assembly**: `CloudNimble.DotNetDocs.Core`
+- **File**: `src/CloudNimble.DotNetDocs.Core/Renderers/YamlRenderer.cs`
+- **YamlDotNet Version**: `16.*` (already supports AOT)
+- **Target Frameworks**: `net10.0;net9.0;net8.0`
+
+### Serializer Configuration (lines 25-38)
+```csharp
+private static readonly ISerializer _yamlSerializer = new SerializerBuilder()
+    .WithNamingConvention(CamelCaseNamingConvention.Instance)
+    .ConfigureDefaultValuesHandling(DefaultValuesHandling.OmitNull
+        | DefaultValuesHandling.OmitDefaults
+        | DefaultValuesHandling.OmitEmptyCollections)
+    .DisableAliases()
+    .IgnoreFields()
+    .WithMaximumRecursion(50)
+    .WithTypeConverter(new SymbolTypeConverter())
+    .WithTypeConverter(new AccessibilityTypeConverter())
+    .WithTypeConverter(new SymbolKindTypeConverter())
+    .WithTypeConverter(new TypeKindTypeConverter())
+    .WithTypeConverter(new RefKindTypeConverter())
+    .Build();
+```
+
+### Deserializer (test-only, `YamlRendererTests.cs` lines 58-62)
+```csharp
+_yamlDeserializer = new DeserializerBuilder()
+    .EnablePrivateConstructors()
+    .WithNamingConvention(CamelCaseNamingConvention.Instance)
+    .IgnoreUnmatchedProperties()
+    .Build();
+```
+
+### Model Classes Requiring Registration
+
+**Core hierarchy (all inherit from `DocEntity`):**
+
+| Class | File | Notes |
+|-------|------|-------|
+| `DocEntity` | `DocEntity.cs` | Abstract base class. Has `[YamlIgnore]` on `IncludedMembers`, `OriginalSymbol` |
+| `DocAssembly` | `DocAssembly.cs` | Root serialization target. `[YamlIgnore]` on `Symbol` |
+| `DocNamespace` | `DocNamespace.cs` | `[YamlIgnore]` on `Symbol` |
+| `DocType` | `DocType.cs` | `[YamlIgnore]` on `Symbol`. Has protected parameterless ctor for deserialization |
+| `DocEnum` | `DocEnum.cs` | Extends `DocType`. Contains `DocEnumValue` inner class |
+| `DocEnumValue` | `DocEnum.cs` | `[YamlIgnore]` on `Symbol` |
+| `DocMember` | `DocMember.cs` | `[YamlIgnore]` on `Symbol`. Has protected parameterless ctor for deserialization |
+| `DocParameter` | `DocParameter.cs` | `[YamlIgnore]` on `Symbol` |
+
+**Supporting classes (no `DocEntity` base):**
+
+| Class | File | Notes |
+|-------|------|-------|
+| `DocException` | `DocException.cs` | Simple POCO with `Description`, `Type` |
+| `DocReference` | `DocReference.cs` | Has `TargetEntity` (DocEntity?) — potential circular ref concern |
+| `DocTypeParameter` | `DocTypeParameter.cs` | Simple POCO with `Name`, `Description` |
+
+**Roslyn enums serialized via custom converters:**
+
+| Enum | Converter | Behavior |
+|------|-----------|----------|
+| `Accessibility` | `AccessibilityTypeConverter` | Writes `.ToString()` |
+| `SymbolKind` | `SymbolKindTypeConverter` | Writes `.ToString()` |
+| `TypeKind` | `TypeKindTypeConverter` | Writes `.ToString()` |
+| `RefKind` | `RefKindTypeConverter` | Writes `.ToString()` |
+| `ISymbol` (interface) | `SymbolTypeConverter` | Writes `null` scalar |
+
+**Project enums used in models:**
+
+| Enum | File |
+|------|------|
+| `ReferenceType` | `ReferenceType.cs` |
+| `MethodKind` | From `Microsoft.CodeAnalysis` (used as `MethodKind?` on `DocMember`) |
+
+### Custom Type Converters
+All 5 converters in `Renderers/YamlConverters/` are **write-only** (serialization only). `ReadYaml` throws
+`NotImplementedException` on all of them. These converters handle Roslyn types that cannot be registered
+with `[YamlSerializable]` since they're interfaces/enums from an external assembly.
+
+---
+
+## Implementation Plan
+
+### Step 1: Add the Source Generator Package
+
+**File**: `src/CloudNimble.DotNetDocs.Core/CloudNimble.DotNetDocs.Core.csproj`
+
+Add a reference to the YamlDotNet source generator analyzer package:
+
+```xml
+<PackageReference Include="YamlDotNet.Analyzers.StaticGenerator" Version="16.*"
+                  PrivateAssets="all" />
+```
+
+The `PrivateAssets="all"` ensures the analyzer doesn't flow to consuming projects.
+
+### Step 2: Add `[YamlSerializable]` to All Model Classes
+
+Add the `[YamlSerializable]` attribute to every class that participates in YAML serialization.
+
+**Files to modify** (add `using YamlDotNet.Serialization;` if not already present, then add `[YamlSerializable]`):
+
+1. `DocEntity.cs` — Add `[YamlSerializable]` to `DocEntity`
+2. `DocAssembly.cs` — Add `[YamlSerializable]` to `DocAssembly`
+3. `DocNamespace.cs` — Add `[YamlSerializable]` to `DocNamespace`
+4. `DocType.cs` — Add `[YamlSerializable]` to `DocType`
+5. `DocEnum.cs` — Add `[YamlSerializable]` to both `DocEnum` and `DocEnumValue`
+6. `DocMember.cs` — Add `[YamlSerializable]` to `DocMember`
+7. `DocParameter.cs` — Add `[YamlSerializable]` to `DocParameter`
+8. `DocException.cs` — Add `[YamlSerializable]` to `DocException`
+9. `DocReference.cs` — Add `[YamlSerializable]` to `DocReference`
+10. `DocTypeParameter.cs` — Add `[YamlSerializable]` to `DocTypeParameter`
+
+Example:
+```csharp
+using YamlDotNet.Serialization;
+
+[YamlSerializable]
+public class DocAssembly : DocEntity
+{
+    // ...
+}
+```
+
+### Step 3: Create the Static Context Class
+
+**New file**: `src/CloudNimble.DotNetDocs.Core/Renderers/DotNetDocsYamlContext.cs`
+
+```csharp
+using YamlDotNet.Serialization;
+
+namespace CloudNimble.DotNetDocs.Core.Renderers
+{
+
+    /// <summary>
+    /// Source-generated static context for AOT-compatible YAML serialization
+    /// of DotNetDocs model types.
+    /// </summary>
+    /// <remarks>
+    /// This context enables the YamlDotNet source generator to produce reflection-free
+    /// serialization code for all registered types, supporting Native AOT and trimmed deployments.
+    /// Types from external assemblies (Microsoft.CodeAnalysis) are registered here since they
+    /// cannot be decorated with <c>[YamlSerializable]</c> directly.
+    /// </remarks>
+    [YamlStaticContext]
+    [YamlSerializable(typeof(Microsoft.CodeAnalysis.Accessibility))]
+    [YamlSerializable(typeof(Microsoft.CodeAnalysis.SymbolKind))]
+    [YamlSerializable(typeof(Microsoft.CodeAnalysis.TypeKind))]
+    [YamlSerializable(typeof(Microsoft.CodeAnalysis.RefKind))]
+    [YamlSerializable(typeof(Microsoft.CodeAnalysis.MethodKind))]
+    public partial class DotNetDocsYamlContext : StaticContext
+    {
+    }
+
+}
+```
+
+> **Note on Roslyn enums**: Even though these are handled by custom `IYamlTypeConverter` implementations,
+> they must still be registered so the source generator knows about them. The custom converters will take
+> precedence at runtime since they're registered on the builder.
+
+### Step 4: Update `YamlRenderer` to Use `StaticSerializerBuilder`
+
+**File**: `src/CloudNimble.DotNetDocs.Core/Renderers/YamlRenderer.cs`
+
+Replace the `SerializerBuilder` with `StaticSerializerBuilder`:
+
+```csharp
+using YamlDotNet.Serialization;
+using YamlDotNet.Serialization.NamingConventions;
+// ... existing usings ...
+
+public partial class YamlRenderer : RendererBase, IDocRenderer
+{
+    #region Fields
+
+    private static readonly DotNetDocsYamlContext _yamlContext = new();
+
+    private static readonly ISerializer _yamlSerializer = new StaticSerializerBuilder(_yamlContext)
+        .WithNamingConvention(CamelCaseNamingConvention.Instance)
+        .ConfigureDefaultValuesHandling(DefaultValuesHandling.OmitNull
+            | DefaultValuesHandling.OmitDefaults
+            | DefaultValuesHandling.OmitEmptyCollections)
+        .DisableAliases()
+        .IgnoreFields()
+        .WithMaximumRecursion(50)
+        .WithTypeConverter(new SymbolTypeConverter())
+        .WithTypeConverter(new AccessibilityTypeConverter())
+        .WithTypeConverter(new SymbolKindTypeConverter())
+        .WithTypeConverter(new TypeKindTypeConverter())
+        .WithTypeConverter(new RefKindTypeConverter())
+        .Build();
+
+    #endregion
+
+    // ... rest unchanged ...
+}
+```
+
+**Key changes**:
+- Add `DotNetDocsYamlContext` static field
+- Replace `new SerializerBuilder()` → `new StaticSerializerBuilder(_yamlContext)`
+- All builder fluent methods (naming conventions, type converters, etc.) remain the same —
+  `StaticSerializerBuilder` supports the same API
+
+### Step 5: Handle the Anonymous Type in `RenderTableOfContentsAsync`
+
+**File**: `src/CloudNimble.DotNetDocs.Core/Renderers/YamlRenderer.cs` (lines 104-117)
+
+The `RenderTableOfContentsAsync` method creates an anonymous type for the table of contents. Anonymous types
+**cannot** be registered with `[YamlSerializable]` and will fail in AOT mode.
+
+**Option A (Recommended)**: Create a dedicated TOC model class:
+
+**New file**: `src/CloudNimble.DotNetDocs.Core/Renderers/YamlTableOfContents.cs`
+
+```csharp
+using System.Collections.Generic;
+using YamlDotNet.Serialization;
+
+namespace CloudNimble.DotNetDocs.Core.Renderers
+{
+
+    /// <summary>
+    /// Represents a YAML table of contents for a documentation assembly.
+    /// </summary>
+    [YamlSerializable]
+    public class YamlTableOfContents
+    {
+        /// <summary>
+        /// Gets or sets the title of the documentation assembly.
+        /// </summary>
+        public string Title { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the items in the table of contents.
+        /// </summary>
+        public List<YamlTocItem> Items { get; set; } = [];
+    }
+
+    /// <summary>
+    /// Represents a single item in the YAML table of contents.
+    /// </summary>
+    [YamlSerializable]
+    public class YamlTocItem
+    {
+        /// <summary>
+        /// Gets or sets the display name of the namespace.
+        /// </summary>
+        public string Name { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the relative file path to the namespace YAML file.
+        /// </summary>
+        public string Href { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the types within this namespace.
+        /// </summary>
+        public List<YamlTocTypeEntry> Types { get; set; } = [];
+    }
+
+    /// <summary>
+    /// Represents a type entry within a table of contents item.
+    /// </summary>
+    [YamlSerializable]
+    public class YamlTocTypeEntry
+    {
+        /// <summary>
+        /// Gets or sets the type name.
+        /// </summary>
+        public string Name { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the kind of type.
+        /// </summary>
+        public string Kind { get; set; } = string.Empty;
+    }
+
+}
+```
+
+Then register these on the context class:
+```csharp
+[YamlStaticContext]
+[YamlSerializable(typeof(YamlTableOfContents))]
+[YamlSerializable(typeof(YamlTocItem))]
+[YamlSerializable(typeof(YamlTocTypeEntry))]
+// ... other registrations ...
+public partial class DotNetDocsYamlContext : StaticContext { }
+```
+
+And update `RenderTableOfContentsAsync` to use the new types instead of the anonymous type.
+
+**Option B**: Keep the anonymous type but serialize it with a separate reflection-based serializer.
+This is not recommended as it defeats the purpose of AOT support.
+
+### Step 6: Update the Test Deserializer (Optional)
+
+**File**: `src/CloudNimble.DotNetDocs.Tests.Core/Renderers/YamlRendererTests.cs`
+
+The test project uses `DeserializerBuilder` for roundtrip verification. Since tests don't run in AOT mode,
+this is **not strictly required**, but for consistency:
+
+```csharp
+private static readonly DotNetDocsYamlContext _yamlContext = new();
+
+_yamlDeserializer = new StaticDeserializerBuilder(_yamlContext)
+    .WithNamingConvention(CamelCaseNamingConvention.Instance)
+    .IgnoreUnmatchedProperties()
+    .Build();
+```
+
+> **Note**: `EnablePrivateConstructors()` may not be available on `StaticDeserializerBuilder`.
+> Verify this at implementation time. If not available, the source generator handles constructor
+> resolution automatically for registered types.
+
+### Step 7: Add AOT Compatibility Pragmas to Custom Converters
+
+**Files** (all in `src/CloudNimble.DotNetDocs.Core/Renderers/YamlConverters/`):
+- `AccessibilityTypeConverter.cs`
+- `RefKindTypeConverter.cs`
+- `SymbolKindTypeConverter.cs`
+- `SymbolTypeConverter.cs`
+- `TypeKindTypeConverter.cs`
+
+Add trimming/AOT suppression pragmas at the top of each file (matching the pattern used in `Mintlify.Core`):
+
+```csharp
+#pragma warning disable IL2026 // Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access
+#pragma warning disable IL3050 // Members annotated with 'RequiresDynamicCodeAttribute' require dynamic access
+```
+
+These converters use `Type` parameters which trigger AOT analyzer warnings, but they only do simple
+type comparisons and string conversions — no actual reflection.
+
+---
+
+## Verification Checklist
+
+1. **Build succeeds** on all three TFMs (`net10.0`, `net9.0`, `net8.0`) with no new warnings
+2. **Source generator runs** — verify `DotNetDocsYamlContext` partial class is populated
+   (check generated files in `obj/` folder)
+3. **All existing `YamlRendererTests` pass** with identical output (baseline comparison via Breakdance)
+4. **No AOT/trimming analyzer warnings** (`IL2026`, `IL3050`, `IL2046`, etc.)
+5. **Anonymous type elimination** — confirm `RenderTableOfContentsAsync` no longer uses anonymous types
+
+---
+
+## Risks and Mitigations
+
+| Risk | Likelihood | Mitigation |
+|------|-----------|------------|
+| Source generator doesn't handle abstract base class (`DocEntity`) | Low | YamlDotNet generates accessors for concrete types; abstract types are handled through inheritance. Test with a simple scenario first. |
+| Custom `IYamlTypeConverter` conflicts with static context | Low | Custom converters registered on the builder take precedence over generated code. Existing behavior should be preserved. |
+| `DocReference.TargetEntity` causes circular reference in generated code | Medium | Already handled by `DisableAliases()` and `WithMaximumRecursion(50)`. The `TargetEntity` property will serialize if populated, but in practice it's often null. If issues arise, add `[YamlIgnore]` to `TargetEntity`. |
+| Baseline test output changes | Low | The static serializer should produce identical YAML output. If property ordering changes, regenerate baselines with `dotnet breakdance generate`. |
+| `EnablePrivateConstructors()` unavailable on `StaticDeserializerBuilder` | Medium | Only affects tests. Either remove the call (source generator handles constructors) or keep the reflection-based deserializer in tests only. |
+
+---
+
+## Files Changed Summary
+
+| File | Action |
+|------|--------|
+| `CloudNimble.DotNetDocs.Core.csproj` | Add `YamlDotNet.Analyzers.StaticGenerator` package reference |
+| `DocEntity.cs` | Add `[YamlSerializable]` attribute |
+| `DocAssembly.cs` | Add `[YamlSerializable]` attribute |
+| `DocNamespace.cs` | Add `[YamlSerializable]` attribute |
+| `DocType.cs` | Add `[YamlSerializable]` attribute |
+| `DocEnum.cs` | Add `[YamlSerializable]` to `DocEnum` and `DocEnumValue` |
+| `DocMember.cs` | Add `[YamlSerializable]` attribute |
+| `DocParameter.cs` | Add `[YamlSerializable]` attribute |
+| `DocException.cs` | Add `[YamlSerializable]` attribute |
+| `DocReference.cs` | Add `[YamlSerializable]` attribute |
+| `DocTypeParameter.cs` | Add `[YamlSerializable]` attribute |
+| `Renderers/DotNetDocsYamlContext.cs` | **New** — Static context class |
+| `Renderers/YamlTableOfContents.cs` | **New** — TOC model classes (replaces anonymous type) |
+| `Renderers/YamlRenderer.cs` | Switch to `StaticSerializerBuilder`, replace anonymous TOC type |
+| `YamlConverters/AccessibilityTypeConverter.cs` | Add AOT pragma suppressions |
+| `YamlConverters/RefKindTypeConverter.cs` | Add AOT pragma suppressions |
+| `YamlConverters/SymbolKindTypeConverter.cs` | Add AOT pragma suppressions |
+| `YamlConverters/SymbolTypeConverter.cs` | Add AOT pragma suppressions |
+| `YamlConverters/TypeKindTypeConverter.cs` | Add AOT pragma suppressions |
+| `Tests.Core/Renderers/YamlRendererTests.cs` | Optionally switch to `StaticDeserializerBuilder` |
