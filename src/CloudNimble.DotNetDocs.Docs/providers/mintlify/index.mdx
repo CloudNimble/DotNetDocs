@@ -6,17 +6,23 @@ icon: sparkles
 ---
 
 <CardGroup cols={4}>
-  <Card title="MDX with Frontmatter" icon="file-code" href="#mdx-generation">
+  <Card title="MDX with Frontmatter" icon="file-code" href="#mdx-generation-with-rich-frontmatter">
     Auto-generated frontmatter with icons, tags, SEO metadata, and keywords for every API page
   </Card>
-  <Card title="Smart Navigation" icon="sitemap" href="#navigation-generation">
+  <Card title="Smart Navigation" icon="sitemap" href="/providers/mintlify/navigation">
     Automatic docs.json generation with hierarchical namespace organization and flexible navigation modes
   </Card>
-  <Card title="Context-Aware Icons" icon="icons" href="#icon-system">
+  <Card title="Context-Aware Icons" icon="icons" href="#50-context-aware-icons">
     50+ FontAwesome icons automatically assigned based on type characteristics and naming patterns
   </Card>
+  <Card title="Collections" icon="rectangle-vertical-history" href="/providers/mintlify/collections">
+    Multi-project documentation with intelligent path rewriting and resource relocation
+  </Card>
+  <Card title=".NET Library" icon="code" href="/providers/mintlify/dotnet-library">
+    Programmatically create, validate, and manage Mintlify docs.json configurations in C#
+  </Card>
   <Card title="Tips & Tricks" icon="lightbulb" href="/providers/mintlify/tips-and-tricks">
-    React components, hydration fixes, page modes, and custom landing page patterns
+    React components, external script loading, hydration fixes, and custom landing page patterns
   </Card>
 </CardGroup>
 
@@ -484,7 +490,7 @@ docs/
 
 ## Best Practices
 
-<CardGroup cols={2}>
+<CardGroup cols={4}>
   <Card title="Write Detailed XML Comments" icon="comment">
     The quality of your generated documentation depends on your XML comments. Include detailed `<summary>`, `<remarks>`, `<example>`, and `<code>` sections.
   </Card>
@@ -504,26 +510,29 @@ docs/
 
 ## See Also
 
-<CardGroup cols={2}>
+<CardGroup cols={4}>
   <Card title="Tips & Tricks" icon="lightbulb" href="/providers/mintlify/tips-and-tricks">
-    React components, hydration fixes, page modes, and custom landing page patterns
+    React components, external script loading, hydration fixes, and custom landing page patterns
   </Card>
-  <Card title="Collections" icon="layer-group" href="/providers/mintlify/collections">
-    Learn how Mintlify handles multi-project documentation with path rewriting and resource relocation
+  <Card title="Collections" icon="rectangle-vertical-history" href="/providers/mintlify/collections">
+    Multi-project documentation with intelligent path rewriting and resource relocation
   </Card>
   <Card title="Navigation Generation" icon="sitemap" href="/providers/mintlify/navigation">
     Deep dive into how Mintlify generates and merges navigation structures
   </Card>
+  <Card title=".NET Library" icon="code" href="/providers/mintlify/dotnet-library">
+    Programmatically create, validate, and manage Mintlify docs.json configurations in C#
+  </Card>
   <Card title="API Reference" icon="book" href="/api-reference/CloudNimble/DotNetDocs/Mintlify/MintlifyRenderer">
     Complete MintlifyRenderer API documentation
+  </Card>
+  <Card title="Pipeline Guide" icon="diagram-project" href="/guides/pipeline">
+    Understand the DotNetDocs documentation pipeline
   </Card>
   <Card title="Mintlify Documentation" icon="sparkles" href="https://mintlify.com/docs">
     Official Mintlify documentation and component reference
   </Card>
-  <Card title="Mintlify Schema" icon="code" href="https://mintlify.com/docs/settings/global">
+  <Card title="Mintlify Schema" icon="code" href="https://mintlify.com/docs/organize/settings-reference">
     DocsJsonConfig schema and available settings
-  </Card>
-  <Card title="Pipeline Guide" icon="diagram-project" href="/guides/pipeline">
-    Understand the DotNetDocs documentation pipeline
   </Card>
 </CardGroup>
