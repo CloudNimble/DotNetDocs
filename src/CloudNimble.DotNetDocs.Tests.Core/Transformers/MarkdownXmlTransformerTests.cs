@@ -1102,6 +1102,171 @@ instance.DoWork();
             testType.Summary.Should().Contain("**bold with *italic inside***");
         }
 
+        [TestMethod]
+        public async Task TransformAsync_ParaContent_StripsXmlDocCommentIndentation()
+        {
+            var assemblyPath = typeof(NamespaceMode).Assembly.Location;
+            var xmlPath = System.IO.Path.ChangeExtension(assemblyPath, ".xml");
+            using var manager = new AssemblyManager(assemblyPath, xmlPath);
+            var assembly = await manager.DocumentAsync();
+
+            var testType = assembly.Namespaces
+                .SelectMany(n => n.Types)
+                .First();
+
+            // Simulates what ExtractInnerXml produces from typical XML doc comments
+            // where <para> content is indented 12 spaces (3 levels of 4-space indent)
+            testType.Remarks = """
+                <para>
+                            Each question includes a prompt, a short header label, a set of options to choose from,
+                            and whether multiple selections are allowed. Questions should be clear, specific, and
+                            end with a question mark.
+                            </para>
+                """;
+
+            await _transformer.TransformAsync(testType);
+
+            testType.Remarks.Should().NotBeNull();
+            testType.Remarks.Should().NotContain("<para>");
+            // Indentation from C# source should be stripped
+            testType.Remarks.Should().NotStartWith(" ");
+            testType.Remarks.Should().NotContain("\n            Each");
+            testType.Remarks.Should().StartWith("Each question includes");
+        }
+
+        [TestMethod]
+        public async Task TransformAsync_MultipleParaTags_DoesNotProduceExcessiveBlankLines()
+        {
+            var assemblyPath = typeof(NamespaceMode).Assembly.Location;
+            var xmlPath = System.IO.Path.ChangeExtension(assemblyPath, ".xml");
+            using var manager = new AssemblyManager(assemblyPath, xmlPath);
+            var assembly = await manager.DocumentAsync();
+
+            var testType = assembly.Namespaces
+                .SelectMany(n => n.Types)
+                .First();
+
+            // Simulates ExtractInnerXml output from remarks with multiple <para> tags,
+            // including inter-tag whitespace nodes (newlines + indentation between </para> and <para>)
+            testType.Remarks =
+                "<para>\n            First paragraph content.\n            </para>\n            \n            <para>\n            Second paragraph content.\n            </para>";
+
+            await _transformer.TransformAsync(testType);
+
+            testType.Remarks.Should().NotBeNull();
+            testType.Remarks.Should().NotContain("<para>");
+            // There should be at most one blank line (two consecutive newlines) between paragraphs
+            testType.Remarks.Should().NotContain("\n\n\n");
+            testType.Remarks.Should().Contain("First paragraph content.");
+            testType.Remarks.Should().Contain("Second paragraph content.");
+        }
+
+        [TestMethod]
+        public async Task TransformAsync_ParaWithCodeBlock_PreservesCodeAndStripsParaIndentation()
+        {
+            var assemblyPath = typeof(NamespaceMode).Assembly.Location;
+            var xmlPath = System.IO.Path.ChangeExtension(assemblyPath, ".xml");
+            using var manager = new AssemblyManager(assemblyPath, xmlPath);
+            var assembly = await manager.DocumentAsync();
+
+            var testType = assembly.Namespaces
+                .SelectMany(n => n.Types)
+                .First();
+
+            // Simulates a remarks block with a para containing a code example,
+            // as seen in the AskUserQuestion class
+            testType.Remarks =
+                "<para>\n            Each question includes a prompt.\n            </para>\n            \n            <para>\n            Example JSON:\n            <code>\n{\n  \"question\": \"Which library?\"\n}\n</code>\n            </para>";
+
+            await _transformer.TransformAsync(testType);
+
+            testType.Remarks.Should().NotBeNull();
+            testType.Remarks.Should().NotContain("<para>");
+            testType.Remarks.Should().NotContain("\n\n\n");
+            testType.Remarks.Should().Contain("Each question includes a prompt.");
+            testType.Remarks.Should().Contain("Example JSON:");
+            testType.Remarks.Should().Contain("```csharp");
+            // Output should not have leading whitespace on content lines
+            testType.Remarks.Should().NotStartWith(" ");
+        }
+
+        [TestMethod]
+        public async Task TransformAsync_RealWorldRemarksPayload_ProducesCleanOutput()
+        {
+            var assemblyPath = typeof(NamespaceMode).Assembly.Location;
+            var xmlPath = System.IO.Path.ChangeExtension(assemblyPath, ".xml");
+            using var manager = new AssemblyManager(assemblyPath, xmlPath);
+            var assembly = await manager.DocumentAsync();
+
+            var testType = assembly.Namespaces
+                .SelectMany(n => n.Types)
+                .First();
+
+            // Exact payload that ExtractInnerXmlExcluding produces from AskUserQuestion.cs remarks
+            testType.Remarks = """
+                <para>
+                            Each question includes a prompt, a short header label, a set of options to choose from,
+                            and whether multiple selections are allowed. Questions should be clear, specific, and
+                            end with a question mark.
+                            </para>
+
+                            <para>
+                            Example JSON:
+                            <code>
+                {
+                  "question": "Which library should we use for date formatting?",
+                  "header": "Library",
+                  "options": [
+                    { "label": "date-fns", "description": "Lightweight, tree-shakeable date utility library" },
+                    { "label": "Day.js", "description": "2KB immutable date library, Moment.js alternative" }
+                  ],
+                  "multiSelect": false
+                }
+                </code>
+                            </para>
+                """;
+
+            await _transformer.TransformAsync(testType);
+
+            testType.Remarks.Should().NotBeNull();
+            testType.Remarks.Should().NotContain("<para>");
+            testType.Remarks.Should().NotContain("<code>");
+            // Must not have 3+ consecutive newlines anywhere
+            testType.Remarks.Should().NotContain("\n\n\n");
+            // Must not have leading whitespace
+            testType.Remarks.Should().NotStartWith(" ");
+            testType.Remarks.Should().NotStartWith("\n");
+            // Content should be present and clean
+            testType.Remarks.Should().Contain("Each question includes a prompt");
+            testType.Remarks.Should().Contain("Example JSON:");
+            testType.Remarks.Should().Contain("```csharp");
+        }
+
+        [TestMethod]
+        public async Task TransformAsync_MultiLineSummary_StripsXmlFileIndentation()
+        {
+            var assemblyPath = typeof(NamespaceMode).Assembly.Location;
+            var xmlPath = System.IO.Path.ChangeExtension(assemblyPath, ".xml");
+            using var manager = new AssemblyManager(assemblyPath, xmlPath);
+            var assembly = await manager.DocumentAsync();
+
+            var testType = assembly.Namespaces
+                .SelectMany(n => n.Types)
+                .First();
+
+            // Simulates what ExtractInnerXml produces from a multi-line <summary> with no XML tags.
+            // The 12-space indent on the second line is an artifact of the XML file formatting.
+            testType.Summary = "Represents the input parameters for the AskUserQuestion tool.\n            The AskUserQuestion tool presents structured multiple-choice questions to the user.";
+
+            await _transformer.TransformAsync(testType);
+
+            testType.Summary.Should().NotBeNull();
+            // The XML file indentation should be stripped
+            testType.Summary.Should().NotContain("\n            The");
+            testType.Summary.Should().Contain("Represents the input parameters");
+            testType.Summary.Should().Contain("The AskUserQuestion tool presents");
+        }
+
         #endregion
 
         #region Escape Remaining XML Tags Tests

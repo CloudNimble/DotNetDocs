@@ -97,6 +97,12 @@ namespace CloudNimble.DotNetDocs.Core.Transformers
         private static partial Regex LineBreakPattern();
 
         /// <summary>
+        /// Pattern for collapsing three or more consecutive newlines into exactly two.
+        /// </summary>
+        [GeneratedRegex(@"\n{3,}")]
+        private static partial Regex ConsecutiveBlankLinesPattern();
+
+        /// <summary>
         /// Pattern for list structures.
         /// </summary>
         [GeneratedRegex(@"<list\s+type=""(bullet|number|table)""[^>]*>(.*?)</list>", RegexOptions.IgnoreCase | RegexOptions.Singleline)]
@@ -291,6 +297,15 @@ namespace CloudNimble.DotNetDocs.Core.Transformers
                 return text;
             }
 
+            // Normalize indentation inherited from XML doc file formatting.
+            // This must run before the XML tag check because plain multi-line text
+            // (e.g., summaries without <para> tags) also carries this artifact.
+            // ExtractInnerXml trims the overall string, which strips the first line's
+            // indentation but leaves continuation lines with their XML file indentation.
+            // RemoveCommonIndentation handles blocks where ALL lines share indentation;
+            // NormalizeXmlDocIndentation handles the mixed case from extraction.
+            text = NormalizeXmlDocIndentation(text);
+
             // Quick check - skip processing if no XML tags or HTML tags present
             // We need to process content with HTML tags to apply noescape handling and escaping
             if (!HasXmlTags().IsMatch(text) && !text.Contains('<'))
@@ -447,6 +462,85 @@ namespace CloudNimble.DotNetDocs.Core.Transformers
         }
 
         /// <summary>
+        /// Normalizes indentation artifacts from XML documentation file formatting.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// <c>ExtractInnerXml</c> trims the overall string, which strips the first line's
+        /// leading whitespace but leaves continuation lines with their XML file indentation.
+        /// <c>RemoveCommonIndentation</c> handles the uniform case (all lines indented);
+        /// this method handles the mixed case where the first line has indent 0 but the
+        /// rest share a common indent from the XML file structure.
+        /// </para>
+        /// </remarks>
+        /// <param name="text">The text to normalize.</param>
+        /// <returns>The text with XML file indentation removed from all lines.</returns>
+        internal static string NormalizeXmlDocIndentation(string text)
+        {
+            if (string.IsNullOrWhiteSpace(text) || !text.Contains('\n'))
+                return text;
+
+            var lines = text.Split(["\r\n", "\r", "\n"], StringSplitOptions.None);
+
+            // Find the minimum indentation across non-empty lines that actually have indentation.
+            // Lines with zero indent (e.g., the first line after ExtractInnerXml.Trim()) are excluded
+            // from the calculation so they don't force the minimum to zero.
+            var minIndent = int.MaxValue;
+            foreach (var line in lines)
+            {
+                if (string.IsNullOrWhiteSpace(line))
+                    continue;
+
+                var indent = 0;
+                foreach (var ch in line)
+                {
+                    if (ch is ' ' or '\t')
+                        indent++;
+                    else
+                        break;
+                }
+
+                // Only consider lines that actually have indentation
+                if (indent > 0 && indent < minIndent)
+                    minIndent = indent;
+            }
+
+            // No indented lines found, nothing to normalize
+            if (minIndent == int.MaxValue)
+                return text.Trim();
+
+            // Remove common indentation from indented lines, leave others as-is
+            var result = new StringBuilder();
+            for (var i = 0; i < lines.Length; i++)
+            {
+                var line = lines[i];
+                if (!string.IsNullOrWhiteSpace(line) && line.Length >= minIndent)
+                {
+                    var indent = 0;
+                    foreach (var ch in line)
+                    {
+                        if (ch is ' ' or '\t')
+                            indent++;
+                        else
+                            break;
+                    }
+
+                    result.AppendLine(indent >= minIndent ? line[minIndent..] : line);
+                }
+                else if (string.IsNullOrWhiteSpace(line))
+                {
+                    result.AppendLine();
+                }
+                else
+                {
+                    result.AppendLine(line);
+                }
+            }
+
+            return result.ToString().Trim();
+        }
+
+        /// <summary>
         /// Converts parameter and type parameter reference tags.
         /// </summary>
         protected virtual string ConvertReferenceParams(string text)
@@ -473,10 +567,10 @@ namespace CloudNimble.DotNetDocs.Core.Transformers
         /// </summary>
         protected virtual string ConvertFormattingTags(string text)
         {
-            // Convert <para></para> tags
+            // Convert <para></para> tags, trimming indentation from XML doc comments
             text = ParaPattern().Replace(text, match =>
             {
-                var content = match.Groups[1].Value;
+                var content = RemoveCommonIndentation(match.Groups[1].Value);
                 return $"\n\n{content}\n\n";
             });
 
@@ -496,6 +590,10 @@ namespace CloudNimble.DotNetDocs.Core.Transformers
 
             // Convert <br/> line break tags
             text = LineBreakPattern().Replace(text, "  \n");
+
+            // Collapse runs of 3+ newlines (from para conversion + inter-tag whitespace) to at most one blank line,
+            // then trim leading/trailing whitespace left over from XML doc comment formatting
+            text = ConsecutiveBlankLinesPattern().Replace(text, "\n\n").Trim();
 
             return text;
         }
