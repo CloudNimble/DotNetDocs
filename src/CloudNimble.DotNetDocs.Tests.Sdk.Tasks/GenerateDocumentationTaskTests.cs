@@ -48,14 +48,14 @@ namespace CloudNimble.DotNetDocs.Tests.Sdk.Tasks
         #region MintlifyTemplate XML Parsing Tests
 
         /// <summary>
-        /// Tests that ParseGroupConfig correctly extracts group name, icon, and tag from XML.
+        /// Tests that ParseGroupConfig correctly extracts group name, icon, tag, root, and expanded from XML.
         /// </summary>
         [TestMethod]
         public void ParseGroupConfig_WithCompleteAttributes_ParsesAllProperties()
         {
             // Arrange
             var xml = """
-                <Group Name="Getting Started" Icon="stars" Tag="CORE">
+                <Group Name="Getting Started" Icon="stars" Tag="CORE" Root="getting-started/index" Expanded="false">
                     <Pages>index;quickstart</Pages>
                 </Group>
                 """;
@@ -69,9 +69,107 @@ namespace CloudNimble.DotNetDocs.Tests.Sdk.Tasks
             result!.Group.Should().Be("Getting Started");
             result.Icon!.Name.Should().Be("stars");
             result.Tag.Should().Be("CORE");
+            result.Root.Should().Be("getting-started/index");
+            result.Expanded.Should().BeFalse();
             result.Pages.Should().HaveCount(2);
             result.Pages![0].Should().Be("index");
             result.Pages![1].Should().Be("quickstart");
+        }
+
+        /// <summary>
+        /// Tests that ParseGroupConfig parses the Root attribute, used to disambiguate identically-named
+        /// groups across sections and to provide a landing page when the group is selected.
+        /// </summary>
+        [TestMethod]
+        public void ParseGroupConfig_WithRootAttribute_ParsesRoot()
+        {
+            // Arrange
+            var xml = """
+                <Group Name="Episodes" Icon="microphone" Root="Brands/WhatsYourStory/Episodes/index">
+                    <Pages>Brands/WhatsYourStory/Episodes/index</Pages>
+                </Group>
+                """;
+            var groupElement = XElement.Parse(xml);
+
+            // Act
+            var result = _task.ParseGroupConfig(groupElement);
+
+            // Assert
+            result.Should().NotBeNull();
+            result!.Root.Should().Be("Brands/WhatsYourStory/Episodes/index");
+        }
+
+        /// <summary>
+        /// Tests that ParseGroupConfig leaves Root null when the attribute is absent.
+        /// </summary>
+        [TestMethod]
+        public void ParseGroupConfig_WithoutRoot_HasNullRoot()
+        {
+            // Arrange
+            var xml = """
+                <Group Name="Episodes" Icon="microphone">
+                    <Pages>index</Pages>
+                </Group>
+                """;
+            var groupElement = XElement.Parse(xml);
+
+            // Act
+            var result = _task.ParseGroupConfig(groupElement);
+
+            // Assert
+            result.Should().NotBeNull();
+            result!.Root.Should().BeNull();
+        }
+
+        /// <summary>
+        /// Tests that ParseGroupConfig parses the Expanded attribute for both true and false values.
+        /// </summary>
+        [TestMethod]
+        [DataRow("true", true)]
+        [DataRow("false", false)]
+        [DataRow("True", true)]
+        public void ParseGroupConfig_WithExpandedAttribute_ParsesExpanded(string value, bool expected)
+        {
+            // Arrange
+            var xml = $"""
+                <Group Name="Episodes" Icon="microphone" Expanded="{value}">
+                    <Pages>index</Pages>
+                </Group>
+                """;
+            var groupElement = XElement.Parse(xml);
+
+            // Act
+            var result = _task.ParseGroupConfig(groupElement);
+
+            // Assert
+            result.Should().NotBeNull();
+            result!.Expanded.Should().Be(expected);
+        }
+
+        /// <summary>
+        /// Tests that ParseGroupConfig leaves Expanded null when the attribute is absent or not a valid boolean.
+        /// </summary>
+        [TestMethod]
+        [DataRow(null)]
+        [DataRow("")]
+        [DataRow("yes")]
+        public void ParseGroupConfig_WithMissingOrInvalidExpanded_LeavesExpandedNull(string? value)
+        {
+            // Arrange
+            var attr = value is null ? "" : $@" Expanded=""{value}""";
+            var xml = $"""
+                <Group Name="Episodes" Icon="microphone"{attr}>
+                    <Pages>index</Pages>
+                </Group>
+                """;
+            var groupElement = XElement.Parse(xml);
+
+            // Act
+            var result = _task.ParseGroupConfig(groupElement);
+
+            // Assert
+            result.Should().NotBeNull();
+            result!.Expanded.Should().BeNull();
         }
 
         /// <summary>

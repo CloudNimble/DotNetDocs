@@ -779,6 +779,20 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
         /// </summary>
         /// <param name="groupElement">The group XML element.</param>
         /// <returns>A GroupConfig instance, or null if parsing fails.</returns>
+        /// <remarks>
+        /// Requires a <c>Name</c> attribute. Optional attributes include <c>Icon</c>, <c>Tag</c>,
+        /// <c>Root</c> (the default page shown when the group is selected), and <c>Expanded</c>
+        /// (<c>true</c>/<c>false</c>, controlling the group's default expand/collapse state).
+        /// Child <c>&lt;Pages&gt;</c> and nested <c>&lt;Group&gt;</c> elements (optionally wrapped in
+        /// <c>&lt;Groups&gt;</c>) are also parsed.
+        /// </remarks>
+        /// <example>
+        /// <code>
+        /// &lt;Group Name="Episodes" Icon="microphone" Root="Brands/WhatsYourStory/Episodes/index" Expanded="false"&gt;
+        ///     &lt;Pages&gt;Brands/WhatsYourStory/Episodes/index;Brands/WhatsYourStory/Episodes/analysis&lt;/Pages&gt;
+        /// &lt;/Group&gt;
+        /// </code>
+        /// </example>
         internal GroupConfig? ParseGroupConfig(XElement groupElement)
         {
             var groupName = groupElement.Attribute("Name")?.Value;
@@ -793,8 +807,16 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
                 Group = groupName,
                 Icon = groupElement.Attribute("Icon")?.Value,
                 Tag = groupElement.Attribute("Tag")?.Value,
+                Root = groupElement.Attribute("Root")?.Value,
                 Pages = []
             };
+
+            // Parse the optional Expanded attribute, which controls the group's default expand/collapse state.
+            var expandedAttr = groupElement.Attribute("Expanded")?.Value;
+            if (!string.IsNullOrWhiteSpace(expandedAttr) && bool.TryParse(expandedAttr, out var expanded))
+            {
+                group.Expanded = expanded;
+            }
 
             // Parse direct pages (semicolon-separated list)
             var pagesElement = groupElement.Element(nameof(GroupConfig.Pages));
