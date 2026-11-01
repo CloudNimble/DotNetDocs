@@ -26,7 +26,7 @@ Configuration options for Mintlify documentation generation.
 ## Remarks
 
 This class contains all the configuration settings that control how the Mintlify
-            documentation is generated, including output paths, filtering options, and formatting preferences.
+documentation is generated, including output paths, filtering options, and formatting preferences.
 
 ## Constructors
 
@@ -165,8 +165,8 @@ Type: `bool`
 #### Remarks
 
 When false (default), DocFX will attempt to use existing compiled assemblies 
-            for faster documentation generation. When true, forces a complete rebuild 
-            which may be slower but ensures all dependencies are up to date.
+for faster documentation generation. When true, forces a complete rebuild 
+which may be slower but ensures all dependencies are up to date.
 
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GenerateConfig
 
@@ -199,8 +199,8 @@ Type: `bool`
 #### Remarks
 
 When true, the generator will create navigation.json files in directories that don't
-            already have them, preserving the auto-discovered navigation structure. This allows
-            users to customize navigation later without losing their changes during regeneration.
+already have them, preserving the auto-discovered navigation structure. This allows
+users to customize navigation later without losing their changes during regeneration.
 
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GitHubUrl
 
@@ -345,7 +345,7 @@ Type: `int`
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> NamespaceFilter
 
 Gets or sets the namespace filter regex pattern.
-            Only namespaces matching this pattern will be included.
+Only namespaces matching this pattern will be included.
 
 #### Syntax
 
@@ -388,9 +388,9 @@ Type: `bool`
 #### Remarks
 
 When true (default), the generator will read any existing docs.json file and merge
-            the generated API documentation with existing configuration, preserving custom
-            navigation, styling, integrations, and other settings. When false, the generator
-            will completely replace the docs.json file with new configuration.
+the generated API documentation with existing configuration, preserving custom
+navigation, styling, integrations, and other settings. When false, the generator
+will completely replace the docs.json file with new configuration.
 
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> PrimaryColor
 
@@ -493,8 +493,8 @@ Type: `string?`
 #### Remarks
 
 For example, if the solution is "CloudNimble.Breakdance" and projects are named
-            "CloudNimble.Breakdance.AspNetCore", the output path will be "/aspnetcore/" instead
-            of "/cloudnimble-breakdance-aspnetcore/".
+"CloudNimble.Breakdance.AspNetCore", the output path will be "/aspnetcore/" instead
+of "/cloudnimble-breakdance-aspnetcore/".
 
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> StripBackticksAroundLinks
 
@@ -513,8 +513,8 @@ Type: `bool`
 #### Remarks
 
 When true (default), removes backticks around markdown links in parameter descriptions
-            and return value documentation to ensure proper link rendering in Mintlify.
-            This fixes the issue where links inside code formatting don't render correctly.
+and return value documentation to ensure proper link rendering in Mintlify.
+This fixes the issue where links inside code formatting don't render correctly.
 
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Theme
 
@@ -533,7 +533,7 @@ Type: `string`
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> TypeFilter
 
 Gets or sets the type filter regex pattern.
-            Only types matching this pattern will be included.
+Only types matching this pattern will be included.
 
 #### Syntax
 

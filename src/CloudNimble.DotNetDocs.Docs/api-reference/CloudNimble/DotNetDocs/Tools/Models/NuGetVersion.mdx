@@ -26,8 +26,8 @@ Represents a simplified NuGet version for comparison purposes.
 ## Remarks
 
 This class provides basic semantic versioning support with major, minor, patch, and prerelease components.
-            It implements [IComparable`1](https://learn.microsoft.com/dotnet/api/system.icomparable-1) to allow version comparisons, where stable versions are considered
-            greater than prerelease versions with the same major.minor.patch numbers.
+It implements [IComparable`1](https://learn.microsoft.com/dotnet/api/system.icomparable-1) to allow version comparisons, where stable versions are considered
+greater than prerelease versions with the same major.minor.patch numbers.
 
 ## Constructors
 
@@ -50,7 +50,7 @@ public NuGetVersion(string version)
 #### Remarks
 
 The version string should be in the format "major.minor.patch" or "major.minor.patch-prerelease".
-            If any component cannot be parsed, it defaults to 0.
+If any component cannot be parsed, it defaults to 0.
 
 ### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor <Badge color="gray">Inherited</Badge>
 
@@ -156,13 +156,13 @@ public int CompareTo(CloudNimble.DotNetDocs.Tools.Models.NuGetVersion other)
 
 Type: `int`
 A negative value if this version is less than *other*, zero if they are equal,
-            or a positive value if this version is greater than *other*.
+or a positive value if this version is greater than *other*.
 
 #### Remarks
 
 Version comparison follows semantic versioning rules. Stable versions are considered greater than
-            prerelease versions with the same major.minor.patch numbers. Prerelease versions are compared
-            lexicographically by their prerelease labels.
+prerelease versions with the same major.minor.patch numbers. Prerelease versions are compared
+lexicographically by their prerelease labels.
 
 ### <Icon icon="code-merge" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Equals <Badge color="blue">Override</Badge>
 

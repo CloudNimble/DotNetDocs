@@ -23,22 +23,12 @@ Defines a handler for processing documentation references from other projects.
 
 ## Remarks
 
+Implementations of this interface are responsible for copying files from referenced documentation
+projects, rewriting internal paths in content files, and relocating resources to appropriate
+locations in the collection project.
 
-
-
-            Implementations of this interface are responsible for copying files from referenced documentation
-            projects, rewriting internal paths in content files, and relocating resources to appropriate
-            locations in the collection project.
-            
-
-
-
-
-            This interface follows the same pattern as [IDocEnricher](/api-reference/CloudNimble/DotNetDocs/Core/IDocEnricher), [IDocTransformer](/api-reference/CloudNimble/DotNetDocs/Core/IDocTransformer),
-            and [IDocRenderer](/api-reference/CloudNimble/DotNetDocs/Core/IDocRenderer) for format-specific documentation processing.
-            
-
-
+This interface follows the same pattern as [IDocEnricher](/api-reference/CloudNimble/DotNetDocs/Core/IDocEnricher), [IDocTransformer](/api-reference/CloudNimble/DotNetDocs/Core/IDocTransformer),
+and [IDocRenderer](/api-reference/CloudNimble/DotNetDocs/Core/IDocRenderer) for format-specific documentation processing.
 
 ## Properties
 
@@ -62,7 +52,7 @@ The [SupportedDocumentationType](/api-reference/CloudNimble/DotNetDocs/Core/Conf
 ### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ProcessAsync <Badge color="orange">Abstract</Badge>
 
 Processes a documentation reference by copying files, rewriting content paths,
-            and relocating resources as appropriate for this documentation format.
+and relocating resources as appropriate for this documentation format.
 
 #### Syntax
 
@@ -84,11 +74,7 @@ A task representing the asynchronous processing operation.
 
 #### Remarks
 
-
-
-
-            Implementations should handle the following responsibilities:
-            
+Implementations should handle the following responsibilities:
 
 
 

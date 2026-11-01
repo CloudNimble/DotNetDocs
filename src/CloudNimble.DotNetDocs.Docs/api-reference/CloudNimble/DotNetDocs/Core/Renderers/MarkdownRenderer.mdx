@@ -26,7 +26,7 @@ Renders documentation as Markdown files.
 ## Remarks
 
 Generates structured Markdown documentation with support for customizations including
-            insertions, overrides, exclusions, transformations, and conditions.
+insertions, overrides, exclusions, transformations, and conditions.
 
 ## Constructors
 
@@ -214,9 +214,9 @@ The escaped string safe for MDX rendering.
 #### Remarks
 
 Converts angle brackets to HTML entities to prevent MDX parser interpretation as JSX/HTML tags.
-            This handles both generic type syntax (e.g., JsonConverter&lt;object&gt;) and XML documentation tags
-            (e.g., &lt;see cref="..."&gt;) by converting them to JsonConverter&amp;lt;object&amp;gt; and
-            &amp;lt;see cref="..."&amp;gt; respectively.
+This handles both generic type syntax (e.g., JsonConverter&lt;object&gt;) and XML documentation tags
+(e.g., &lt;see cref="..."&gt;) by converting them to JsonConverter&amp;lt;object&amp;gt; and
+&amp;lt;see cref="..."&amp;gt; respectively.
 
 ### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetAccessModifier <Badge color="gray">Inherited</Badge>
 
@@ -375,7 +375,7 @@ Type: `int`
 <Note>Inherited from `CloudNimble.DotNetDocs.Core.Renderers.MarkdownRendererBase`</Note>
 
 Gets the header text to use for a content section, or null if no header should be added.
-            Returns null if the content already contains the specified header.
+Returns null if the content already contains the specified header.
 
 #### Syntax
 

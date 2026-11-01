@@ -24,7 +24,7 @@ permissions:
   actions: write
 
 env:
-   DOTNET_VERSION: '10.0.x'
+   DOTNET_VERSION: '11.0.x'
    SOLUTION_FILE: 'src/CloudNimble.DotNetDocs.slnx'
   
 jobs:
@@ -43,16 +43,16 @@ jobs:
       shell: pwsh
       run: |
          Write-Host "📥 Installing .NET versions..."
-         # Install .NET 8, 9, 10
-         $versions = @("8.0", "9.0", "10.0")
+         # Install .NET 8, 9, 10, 11
+         $versions = @("8.0", "9.0", "10.0", "11.0")
          foreach ($version in $versions) {
            Write-Host "Installing .NET $version..."
            Invoke-WebRequest -Uri "https://dot.net/v1/dotnet-install.ps1" -OutFile "dotnet-install.ps1"
-           # if ($version -eq "10.0") {
-           #   ./dotnet-install.ps1 -Channel $version -Quality preview -InstallDir "$env:ProgramFiles\dotnet"
-           # } else {
-           ./dotnet-install.ps1 -Channel $version -InstallDir "$env:ProgramFiles\dotnet"
-           # }
+           if ($version -eq "11.0") {
+             ./dotnet-install.ps1 -Channel $version -Quality preview -InstallDir "$env:ProgramFiles\dotnet"
+           } else {
+             ./dotnet-install.ps1 -Channel $version -InstallDir "$env:ProgramFiles\dotnet"
+           }
          }
          
          # Add to PATH for this job
@@ -261,12 +261,12 @@ jobs:
       shell: pwsh
       run: |
          Write-Host "📥 Installing .NET versions..."
-         # Install .NET 8, 9, 10
-         $versions = @("8.0", "9.0", "10.0")
+         # Install .NET 8, 9, 10, 11
+         $versions = @("8.0", "9.0", "10.0", "11.0")
          foreach ($version in $versions) {
            Write-Host "Installing .NET $version..."
            Invoke-WebRequest -Uri "https://dot.net/v1/dotnet-install.ps1" -OutFile "dotnet-install.ps1"
-           if ($version -eq "10.0") {
+           if ($version -eq "11.0") {
              ./dotnet-install.ps1 -Channel $version -Quality preview -InstallDir "$env:ProgramFiles\dotnet"
            } else {
              ./dotnet-install.ps1 -Channel $version -InstallDir "$env:ProgramFiles\dotnet"

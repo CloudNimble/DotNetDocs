@@ -63,7 +63,7 @@ services.AddDocEnricher&lt;ConceptualContentEnricher&gt;();
 #### Remarks
 
 Registers the enricher as Scoped implementation of IDocEnricher.
-            Enrichers add conceptual content to documentation entities.
+Enrichers add conceptual content to documentation entities.
 
 ### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> AddDocRenderer <Badge color="green">Extension</Badge>
 
@@ -138,7 +138,7 @@ services.AddDocTransformer&lt;InheritDocTransformer&gt;();
 #### Remarks
 
 Registers the transformer as Scoped implementation of IDocTransformer.
-            Transformers modify the documentation model before rendering.
+Transformers modify the documentation model before rendering.
 
 ### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> AddDotNetDocs <Badge color="green">Extension</Badge>
 
@@ -177,10 +177,10 @@ services.AddDotNetDocs(context =&gt;
 #### Remarks
 
 This method registers:
-            - ProjectContext as Singleton
-            - DocumentationManager as Scoped
-            - All built-in renderers (Markdown, JSON, YAML) as Scoped
-            - MarkdownXmlTransformer for processing XML documentation tags
+- ProjectContext as Singleton
+- DocumentationManager as Scoped
+- All built-in renderers (Markdown, JSON, YAML) as Scoped
+- MarkdownXmlTransformer for processing XML documentation tags
 
 ### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> AddDotNetDocsCore <Badge color="green">Extension</Badge>
 
@@ -219,9 +219,9 @@ services.AddMarkdownRenderer();
 #### Remarks
 
 Use this method when you want to manually register specific renderers.
-            This registers:
-            - ProjectContext as Singleton
-            - DocumentationManager as Scoped
+This registers:
+- ProjectContext as Singleton
+- DocumentationManager as Scoped
 
 ### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> AddDotNetDocsPipeline <Badge color="green">Extension</Badge>
 
@@ -323,8 +323,6 @@ The service collection for chaining.
 
 #### Remarks
 
-
-
 Registers the following services:
 
 
@@ -360,8 +358,6 @@ services.AddMintlifyRenderer();
 ```
 
 #### Remarks
-
-
 
 This method registers:
 
@@ -403,15 +399,9 @@ services.AddMintlifyRenderer&lt;CustomMintlifyRenderer&gt;();
 
 #### Remarks
 
-
-
 Registers the custom renderer as Scoped implementation of IDocRenderer.
 
-
-
 The renderer must inherit from MintlifyRenderer.
-
-
 
 This method also registers:
 
@@ -448,8 +438,6 @@ services.AddMintlifyServices();
 ```
 
 #### Remarks
-
-
 
 This method registers:
 
@@ -491,8 +479,6 @@ services.AddMintlifyServices(options =&gt;
 ```
 
 #### Remarks
-
-
 
 This method registers:
 

@@ -26,7 +26,7 @@ Represents documentation for a .NET member (method, property, field, event, etc.
 ## Remarks
 
 Contains metadata about a type member, extracted from Roslyn symbols and enhanced
-            with conceptual documentation.
+with conceptual documentation.
 
 ## Constructors
 
@@ -157,8 +157,8 @@ public string DeclaringTypeName { get; set; }
 
 Type: `string?`
 For inherited members, this is the base type or interface name.
-            For extension methods, this is the static class containing the method.
-            For declared members, this matches the containing type.
+For extension methods, this is the static class containing the method.
+For declared members, this matches the containing type.
 
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> DisplayName <Badge color="gray">Inherited</Badge>
 
@@ -272,7 +272,7 @@ public bool IsExtensionMethod { get; set; }
 
 Type: `bool`
 `true` if this is a static method with the `this` modifier on its first parameter;
-            otherwise `false`.
+otherwise `false`.
 
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> IsInherited
 
@@ -288,7 +288,7 @@ public bool IsInherited { get; set; }
 
 Type: `bool`
 `true` if the member is declared in a base type or interface;
-            `false` if declared in the containing type.
+`false` if declared in the containing type.
 
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> IsOverride
 

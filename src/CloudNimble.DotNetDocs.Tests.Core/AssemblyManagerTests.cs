@@ -108,6 +108,21 @@ namespace CloudNimble.DotNetDocs.Tests.Core
         }
 
         [TestMethod]
+        public async Task DocumentAsync_ExcludesCompilerGeneratedTypes()
+        {
+            var manager = new AssemblyManager(testAssemblyPath, testXmlPath);
+            var context = new ProjectContext([Accessibility.Public, Accessibility.Internal]);
+
+            var result = await manager.DocumentAsync(context);
+
+            var allTypeNames = result.Namespaces.SelectMany(ns => ns.Types).Select(t => t.Symbol.Name).ToList();
+            allTypeNames.Should().NotContain("CompilerGeneratedType");
+            allTypeNames.Should().NotContain("MicrosoftTestingPlatformApplication");
+            allTypeNames.Should().NotContain("MicrosoftTestingPlatformEntryPoint");
+            allTypeNames.Should().NotContain("SelfRegisteredExtensions");
+        }
+
+        [TestMethod]
         public async Task DocumentAsync_HandlesXmlDocumentationFile()
         {
             var manager = new AssemblyManager(testAssemblyPath, testXmlPath);

@@ -26,8 +26,8 @@ Represents documentation for a .NET enum type.
 ## Remarks
 
 Contains metadata about an enum type and its values, extracted from Roslyn symbols
-            and enhanced with conceptual documentation. Inherits from [DocType](/api-reference/CloudNimble/DotNetDocs/Core/DocType) but
-            uses a specialized structure for enum values instead of the Members collection.
+and enhanced with conceptual documentation. Inherits from [DocType](/api-reference/CloudNimble/DotNetDocs/Core/DocType) but
+uses a specialized structure for enum values instead of the Members collection.
 
 ## Constructors
 
@@ -68,7 +68,7 @@ protected DocType()
 #### Remarks
 
 This parameterless constructor is provided for deserialization purposes only.
-            Use `ITypeSymbol)` for normal instantiation.
+Use `ITypeSymbol)` for normal instantiation.
 
 ### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor <Badge color="gray">Inherited</Badge>
 
@@ -305,13 +305,13 @@ public bool IsExternalReference { get; set; }
 
 Type: `bool`
 `true` if this type is not part of the documented assembly but was created
-            to show extension methods that apply to it; otherwise `false`.
+to show extension methods that apply to it; otherwise `false`.
 
 #### Remarks
 
 External references are minimal [DocType](/api-reference/CloudNimble/DotNetDocs/Core/DocType) instances created when
-            extension methods target types outside the current assembly. These types link to
-            official documentation rather than duplicating external API documentation.
+extension methods target types outside the current assembly. These types link to
+official documentation rather than duplicating external API documentation.
 
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> IsFlags
 
@@ -563,7 +563,7 @@ public CloudNimble.DotNetDocs.Core.DocReference UnderlyingType { get; set; }
 
 Type: `CloudNimble.DotNetDocs.Core.DocReference`
 A reference to the underlying type (e.g., System.Int32, System.Byte) that can be
-            resolved and linked in documentation.
+resolved and linked in documentation.
 
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Usage <Badge color="gray">Inherited</Badge>
 
@@ -613,7 +613,7 @@ public System.Collections.Generic.List<CloudNimble.DotNetDocs.Core.DocEnumValue>
 
 Type: `System.Collections.Generic.List<CloudNimble.DotNetDocs.Core.DocEnumValue>`
 A list of documented enum values, each containing the name, numeric value,
-            and associated documentation.
+and associated documentation.
 
 ## Methods
 

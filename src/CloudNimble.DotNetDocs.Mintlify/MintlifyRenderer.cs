@@ -165,6 +165,9 @@ namespace CloudNimble.DotNetDocs.Mintlify
                 // Fourth: Combine referenced navigation
                 CombineReferencedNavigation();
 
+                // Fifth: Append template tabs marked Position="End"
+                ApplyTabPositions();
+
                 // Write docs.json to the DocumentationRootPath (only once, with everything combined)
                 var docsJsonPath = Path.Combine(Context.DocumentationRootPath, "docs.json");
                 _docsJsonManager.Save(docsJsonPath);
@@ -1719,6 +1722,33 @@ namespace CloudNimble.DotNetDocs.Mintlify
         internal string GetProjectName(string projectPath)
         {
             return Path.GetFileNameWithoutExtension(projectPath);
+        }
+
+        /// <summary>
+        /// Appends template tabs that were declared with <c>Position="End"</c> after
+        /// DocumentationReference tabs.
+        /// </summary>
+        /// <remarks>
+        /// Called after <see cref="ApplyNavigationType"/> and <see cref="CombineReferencedNavigation"/>
+        /// so trailing href tabs (for example a sibling product site) appear at the end of the tab bar.
+        /// </remarks>
+        internal void ApplyTabPositions()
+        {
+            if (_docsJsonManager is null ||
+                !_docsJsonManager.IsLoaded ||
+                _docsJsonManager.Configuration?.Navigation is null)
+            {
+                return;
+            }
+
+            var trailingTabs = _options.Navigation.TrailingTabs;
+            if (trailingTabs.Count == 0)
+            {
+                return;
+            }
+
+            _docsJsonManager.Configuration.Navigation.Tabs ??= [];
+            _docsJsonManager.Configuration.Navigation.Tabs.AddRange(trailingTabs);
         }
 
         /// <summary>

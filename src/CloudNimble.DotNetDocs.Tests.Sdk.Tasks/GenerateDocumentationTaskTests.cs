@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Xml.Linq;
+using CloudNimble.DotNetDocs.Mintlify;
 using CloudNimble.DotNetDocs.Sdk.Tasks;
 using CloudNimble.DotNetDocs.Tests.Shared;
 using FluentAssertions;
@@ -1746,6 +1748,23 @@ namespace CloudNimble.DotNetDocs.Tests.Sdk.Tasks
         }
 
         /// <summary>
+        /// Href-only tabs must leave Pages null so docs.json omits the empty pages array.
+        /// </summary>
+        [TestMethod]
+        public void ParseTabConfig_HrefOnly_LeavesPagesNull()
+        {
+            var xml = """<Tab Name="Core Framework" Href="https://easyaf.dev" />""";
+            var tabElement = XElement.Parse(xml);
+
+            var result = _task.ParseTabConfig(tabElement);
+
+            result.Should().NotBeNull();
+            result!.Tab.Should().Be("Core Framework");
+            result.Href.Should().Be("https://easyaf.dev");
+            result.Pages.Should().BeNull();
+        }
+
+        /// <summary>
         /// Tests that ParseAnchorConfig correctly extracts anchor name, href, and pages from XML.
         /// </summary>
         [TestMethod]
@@ -2020,6 +2039,120 @@ namespace CloudNimble.DotNetDocs.Tests.Sdk.Tasks
             result.Tabs![2].Tab.Should().Be("Surf & Sales");
             result.Tabs![3].Tab.Should().Be("Surf & Sales Podcast");
             result.Tabs![4].Tab.Should().Be("What's Your Story");
+        }
+
+        /// <summary>
+        /// Tabs with Position="End" are withheld from Navigation.Tabs and collected on DocsNavigationConfig.TrailingTabs.
+        /// </summary>
+        [TestMethod]
+        public void ParseNavigationConfig_WithPositionEnd_MovesTabToTrailingTabs()
+        {
+            var xml = """
+                <Navigation Type="Tabs" Name="Build for AI">
+                    <Tabs>
+                        <Tab Name="Home" Href="/" />
+                        <Tab Name="Core Framework" Href="https://easyaf.dev" Position="End" />
+                    </Tabs>
+                </Navigation>
+                """;
+            var navigationElement = XElement.Parse(xml);
+            var docsNavConfig = new DocsNavigationConfig();
+
+            var result = _task.ParseNavigationConfig(navigationElement, docsNavConfig);
+
+            result.Tabs.Should().ContainSingle();
+            result.Tabs![0].Tab.Should().Be("Home");
+            docsNavConfig.TrailingTabs.Should().ContainSingle();
+            docsNavConfig.TrailingTabs[0].Tab.Should().Be("Core Framework");
+            docsNavConfig.TrailingTabs[0].Href.Should().Be("https://easyaf.dev");
+            docsNavConfig.TrailingTabs[0].Pages.Should().BeNull();
+        }
+
+        /// <summary>
+        /// Multiple Position="End" tabs keep their declaration order in TrailingTabs.
+        /// </summary>
+        [TestMethod]
+        public void ParseNavigationConfig_WithMultiplePositionEndTabs_PreservesDeclarationOrder()
+        {
+            var xml = """
+                <Navigation>
+                    <Tabs>
+                        <Tab Name="First End" Href="https://first.example" Position="End" />
+                        <Tab Name="Start Tab" Href="/start" />
+                        <Tab Name="Second End" Href="https://second.example" Position="End" />
+                    </Tabs>
+                </Navigation>
+                """;
+            var navigationElement = XElement.Parse(xml);
+            var docsNavConfig = new DocsNavigationConfig();
+
+            var result = _task.ParseNavigationConfig(navigationElement, docsNavConfig);
+
+            result.Tabs.Should().ContainSingle();
+            result.Tabs![0].Tab.Should().Be("Start Tab");
+            docsNavConfig.TrailingTabs.Should().HaveCount(2);
+            docsNavConfig.TrailingTabs[0].Tab.Should().Be("First End");
+            docsNavConfig.TrailingTabs[1].Tab.Should().Be("Second End");
+        }
+
+        /// <summary>
+        /// An invalid Position value logs a warning and treats the tab as Start.
+        /// </summary>
+        [TestMethod]
+        public void ParseNavigationConfig_WithInvalidPosition_LogsWarningAndTreatsAsStart()
+        {
+            var xml = """
+                <Navigation>
+                    <Tabs>
+                        <Tab Name="Core Framework" Href="https://easyaf.dev" Position="Middle" />
+                    </Tabs>
+                </Navigation>
+                """;
+            var navigationElement = XElement.Parse(xml);
+            var docsNavConfig = new DocsNavigationConfig();
+
+            var result = _task.ParseNavigationConfig(navigationElement, docsNavConfig);
+
+            result.Tabs.Should().ContainSingle();
+            result.Tabs![0].Tab.Should().Be("Core Framework");
+            docsNavConfig.TrailingTabs.Should().BeEmpty();
+
+            var engine = (TestBuildEngine)_task.BuildEngine;
+            engine.LoggedWarnings.Select(w => w.Message).Should().Contain(m => m != null && m.Contains("Position") && m.Contains("Middle"));
+        }
+
+        /// <summary>
+        /// ParseMintlifyTemplate wires Position="End" tabs onto the returned DocsNavigationConfig.
+        /// </summary>
+        [TestMethod]
+        public void ParseMintlifyTemplate_WithPositionEnd_PutsTabInTrailingTabs()
+        {
+            var xml = """
+                <Name>EasyAF.AI</Name>
+                <Navigation Mode="Unified" Type="Tabs" Name="Build for AI">
+                    <Pages>
+                        <Groups>
+                            <Group Name="Getting Started" Icon="stars">
+                                <Pages>index;quickstart</Pages>
+                            </Group>
+                        </Groups>
+                    </Pages>
+                    <Tabs>
+                        <Tab Name="Core Framework" Href="https://easyaf.dev" Position="End" />
+                    </Tabs>
+                </Navigation>
+                """;
+
+            var (config, docsNavConfig) = _task.ParseMintlifyTemplate(xml);
+
+            config.Should().NotBeNull();
+            config!.Navigation.Should().NotBeNull();
+            config.Navigation!.Tabs.Should().BeEmpty();
+            docsNavConfig.Should().NotBeNull();
+            docsNavConfig!.TrailingTabs.Should().ContainSingle();
+            docsNavConfig.TrailingTabs[0].Tab.Should().Be("Core Framework");
+            docsNavConfig.TrailingTabs[0].Href.Should().Be("https://easyaf.dev");
+            docsNavConfig.TrailingTabs[0].Pages.Should().BeNull();
         }
 
         /// <summary>

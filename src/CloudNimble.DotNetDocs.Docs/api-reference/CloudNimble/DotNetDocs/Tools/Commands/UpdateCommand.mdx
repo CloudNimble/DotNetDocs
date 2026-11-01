@@ -26,7 +26,7 @@ Command-line tool for updating existing .docsproj files to use the latest DotNet
 ## Remarks
 
 This command searches for all .docsproj files in the current directory (and optionally subdirectories),
-            queries NuGet.org for the latest SDK version, and updates the SDK reference in each file.
+queries NuGet.org for the latest SDK version, and updates the SDK reference in each file.
 
 ## Constructors
 
@@ -247,14 +247,14 @@ public System.Threading.Tasks.Task<int> OnExecute(McMaster.Extensions.CommandLin
 
 Type: `System.Threading.Tasks.Task<int>`
 A task that represents the asynchronous operation. The task result is 0 if the update is
-            successful; otherwise, 1.
+successful; otherwise, 1.
 
 #### Remarks
 
 If a specific project is not specified, the method searches for all .docsproj files in the current directory
-            (and subdirectories if --recursive is specified). The --project option accepts either a project name
-            (e.g., "MyProject.Docs") or a file path (e.g., "MyProject.Docs.docsproj" or "path/to/MyProject.Docs.docsproj").
-            Any errors encountered during execution are reported to the console, and a nonzero exit code is returned.
+(and subdirectories if --recursive is specified). The --project option accepts either a project name
+(e.g., "MyProject.Docs") or a file path (e.g., "MyProject.Docs.docsproj" or "path/to/MyProject.Docs.docsproj").
+Any errors encountered during execution are reported to the console, and a nonzero exit code is returned.
 
 ### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ReferenceEquals <Badge color="gray">Inherited</Badge>
 
@@ -306,6 +306,6 @@ public static void WriteHeader()
 #### Remarks
 
 This method displays a multi-line ASCII art logo combining the DotNetDocs branding with
-            version and attribution information. The output uses console colors to create an eye-catching
-            header for CLI operations.
+version and attribution information. The output uses console colors to create an eye-catching
+header for CLI operations.
 

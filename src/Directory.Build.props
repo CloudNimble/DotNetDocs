@@ -83,7 +83,7 @@
     </PropertyGroup>
 
     <PropertyGroup>
-        <StandardTestTfms>net10.0;net9.0;net8.0</StandardTestTfms>
+        <StandardTestTfms>net11.0;net10.0;net9.0;net8.0</StandardTestTfms>
     </PropertyGroup>
 
     <PropertyGroup>
@@ -117,7 +117,7 @@
 
     <PropertyGroup Condition=" $(IsPrimaryProject) == 'true' and '$(IsTemplateProject)' != 'true' ">
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
-        <DocumentationFile>bin\$(Configuration)\$(TargetFramework)</DocumentationFile>
+        <!-- RWM: DocumentationFile is set in Directory.Build.targets, where AssemblyName is available. -->
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     </PropertyGroup>
 

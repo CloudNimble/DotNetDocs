@@ -521,7 +521,7 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
                 var navigationElement = root.Element(nameof(DocsJsonConfig.Navigation));
                 if (navigationElement is not null)
                 {
-                    config.Navigation = ParseNavigationConfig(navigationElement);
+                    config.Navigation = ParseNavigationConfig(navigationElement, docsNavConfig);
                 }
 
                 // Parse Styling
@@ -681,6 +681,21 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
         /// <returns>A NavigationConfig instance.</returns>
         internal NavigationConfig ParseNavigationConfig(XElement navigationElement)
         {
+            return ParseNavigationConfig(navigationElement, null);
+        }
+
+        /// <summary>
+        /// Parses the Navigation element from the MintlifyTemplate XML.
+        /// </summary>
+        /// <param name="navigationElement">The navigation XML element.</param>
+        /// <param name="docsNavConfig">
+        /// Optional DotNetDocs navigation metadata. When provided, tabs with
+        /// <c>Position="End"</c> are stored on <see cref="DocsNavigationConfig.TrailingTabs"/>
+        /// instead of <see cref="NavigationConfig.Tabs"/>.
+        /// </param>
+        /// <returns>A NavigationConfig instance.</returns>
+        internal NavigationConfig ParseNavigationConfig(XElement navigationElement, DocsNavigationConfig? docsNavConfig)
+        {
             var navConfig = new NavigationConfig();
 
             // Parse Tabs
@@ -691,7 +706,17 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
                 foreach (var tabElement in tabsElement.Elements("Tab"))
                 {
                     var tab = ParseTabConfig(tabElement);
-                    if (tab is not null)
+                    if (tab is null)
+                    {
+                        continue;
+                    }
+
+                    var position = ParseTabPosition(tabElement, tab.Tab);
+                    if (position == NavigationPosition.End && docsNavConfig is not null)
+                    {
+                        docsNavConfig.TrailingTabs.Add(tab);
+                    }
+                    else
                     {
                         navConfig.Tabs.Add(tab);
                     }
@@ -1044,8 +1069,10 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
         /// <param name="tabElement">The tab XML element.</param>
         /// <returns>A <see cref="TabConfig"/> instance, or <see langword="null"/> if parsing fails.</returns>
         /// <remarks>
-        /// Expects a <c>Name</c> attribute on the element. Optional attributes include <c>Href</c> and <c>Icon</c>.
-        /// Child <c>&lt;Pages&gt;</c> elements are also parsed if present.
+        /// Expects a <c>Name</c> attribute on the element. Optional attributes include <c>Href</c>, <c>Icon</c>,
+        /// and <c>Position</c> (handled by <see cref="ParseNavigationConfig(XElement, DocsNavigationConfig?)"/>).
+        /// Child <c>&lt;Pages&gt;</c> elements are also parsed if present. Href-only tabs leave
+        /// <see cref="NavigationItemBase.Pages"/> null so an empty pages array is not written to docs.json.
         /// </remarks>
         /// <example>
         /// <code>
@@ -1073,13 +1100,46 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
             {
                 Tab = tabName,
                 Href = tabElement.Attribute("Href")?.Value,
-                Icon = tabElement.Attribute("Icon")?.Value,
-                Pages = []
+                Icon = tabElement.Attribute("Icon")?.Value
             };
 
-            ParseNavigationSectionPages(tabElement, tab.Pages);
+            if (tabElement.Element("Pages") is not null)
+            {
+                tab.Pages = [];
+                ParseNavigationSectionPages(tabElement, tab.Pages);
+                if (tab.Pages.Count == 0)
+                {
+                    tab.Pages = null;
+                }
+            }
 
             return tab;
+        }
+
+        /// <summary>
+        /// Parses the optional <c>Position</c> attribute on a Tab element.
+        /// </summary>
+        /// <param name="tabElement">The tab XML element.</param>
+        /// <param name="tabName">The tab name, used in warning messages.</param>
+        /// <returns>
+        /// The parsed <see cref="NavigationPosition"/>, or <see cref="NavigationPosition.Start"/>
+        /// when the attribute is omitted or invalid.
+        /// </returns>
+        internal NavigationPosition ParseTabPosition(XElement tabElement, string tabName)
+        {
+            var positionAttr = tabElement.Attribute("Position")?.Value;
+            if (string.IsNullOrWhiteSpace(positionAttr))
+            {
+                return NavigationPosition.Start;
+            }
+
+            if (Enum.TryParse<NavigationPosition>(positionAttr, true, out var position))
+            {
+                return position;
+            }
+
+            Log.LogWarning($"Invalid Position value '{positionAttr}' on Tab '{tabName}'. Using {nameof(NavigationPosition.Start)}.");
+            return NavigationPosition.Start;
         }
 
         /// <summary>

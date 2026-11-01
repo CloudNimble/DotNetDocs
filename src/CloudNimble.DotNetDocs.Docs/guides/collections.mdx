@@ -109,6 +109,25 @@ The `<Navigation>` element inside `<MintlifyTemplate>` controls how the collecti
     ```
 
     This creates a "Platform Overview" tab alongside tabs for each `DocumentationReference`.
+
+    To pin an outbound href tab at the end of the tab bar (after every referenced project), declare it with `Position="End"`:
+
+    ```xml
+    <Navigation Mode="Unified" Type="Tabs" Name="Build for AI">
+      <Pages>
+        <Groups>
+          <Group Name="Getting Started" Icon="stars">
+            <Pages>index;why-easyaf-ai;quickstart</Pages>
+          </Group>
+        </Groups>
+      </Pages>
+      <Tabs>
+        <Tab Name="Core Framework" Href="https://easyaf.dev" Position="End" />
+      </Tabs>
+    </Navigation>
+    ```
+
+    `Position` is a DotNetDocs generation hint. It is not written to `docs.json`. `Start` is the default and keeps declaration order among template tabs. Several `End` tabs keep their declaration order after the referenced tabs. Href-only tabs omit the empty `pages` array.
   </Tab>
 
   <Tab title="Products">

@@ -21,7 +21,7 @@ validation, manipulation, and generation capabilities for Mintlify documentation
 - **URL Management**: Apply prefixes and transformations to navigation URLs
 - **Type-Safe Models**: Strongly-typed classes for all Mintlify configuration options
 - **Comprehensive Validation**: Built-in validation with detailed error reporting
-- **Multiple Target Frameworks**: Supports .NET 8+, .NET 9+, .NET 10+, and .NET Standard 2.0
+- **Multiple Target Frameworks**: Supports .NET 8+, .NET 9+, .NET 10+, .NET 11+, and .NET Standard 2.0
 
 ## Installation
 
@@ -134,6 +134,7 @@ Apply prefixes and transformations to navigation URLs for versioning or multi-te
 - .NET 8.0+ (for modern C# features and performance)
 - .NET 9.0+ (fully supported)
 - .NET 10.0+ (fully supported)
+- .NET 11.0+ (fully supported)
 - .NET Standard 2.0 (for broader compatibility)
 
 ## Dependencies

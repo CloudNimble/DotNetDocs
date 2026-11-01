@@ -17,6 +17,8 @@ namespace CloudNimble.DotNetDocs.Tests.Shared
             public const string framework = "net9.0";
 #elif NET10_0
             public const string framework = "net10.0";
+#elif NET11_0
+            public const string framework = "net11.0";
 #endif
 
         /// <summary>

@@ -25,22 +25,12 @@ Handler for Markdown-based documentation references providing content path rewri
 
 ## Remarks
 
+This class extends [DocReferenceHandlerBase](/api-reference/CloudNimble/DotNetDocs/Core/DocReferenceHandlerBase) to add Markdown-specific
+content rewriting functionality. It handles standard Markdown image and link syntax,
+rewriting absolute paths to include the destination path prefix.
 
-
-
-            This class extends [DocReferenceHandlerBase](/api-reference/CloudNimble/DotNetDocs/Core/DocReferenceHandlerBase) to add Markdown-specific
-            content rewriting functionality. It handles standard Markdown image and link syntax,
-            rewriting absolute paths to include the destination path prefix.
-            
-
-
-
-
-            Derived classes can extend this behavior to handle format-specific patterns such as
-            JSX imports, component props, or other content-specific path references.
-            
-
-
+Derived classes can extend this behavior to handle format-specific patterns such as
+JSX imports, component props, or other content-specific path references.
 
 ## Constructors
 

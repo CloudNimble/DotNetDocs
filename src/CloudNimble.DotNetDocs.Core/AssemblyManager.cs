@@ -27,7 +27,7 @@ namespace CloudNimble.DotNetDocs.Core
     /// <remarks>
     /// Extracts metadata from a single .NET assembly and its XML documentation file, building an in-memory model
     /// (<see cref="DocAssembly"/>) with interconnected types, members, and parameters. Supports conceptual content
-    /// loading from a specified folder. Designed for multi-targeting .NET 10.0, 9.0, and 8.0. One instance per assembly
+    /// loading from a specified folder. Designed for multi-targeting .NET 11.0, 10.0, 9.0, and 8.0. One instance per assembly
     /// is required, with paths specified at construction for incremental build support. Implements <see cref="IDisposable"/>
     /// to release memory used by the compilation and model.
     /// </remarks>
@@ -881,6 +881,37 @@ namespace CloudNimble.DotNetDocs.Core
         }
 
         /// <summary>
+        /// Determines whether a type should appear in generated documentation.
+        /// </summary>
+        /// <param name="type">The type symbol to evaluate.</param>
+        /// <returns><c>true</c> when the type is user-authored and should be documented; otherwise <c>false</c>.</returns>
+        /// <remarks>
+        /// Skips implicitly declared types, compiler-generated types, embedded compiler types, and Microsoft
+        /// Testing Platform entry-point types injected into test assemblies.
+        /// </remarks>
+        internal static bool ShouldDocumentType(INamedTypeSymbol type)
+        {
+            if (type.IsImplicitlyDeclared
+                || type.Name.StartsWith("MicrosoftTestingPlatform", StringComparison.Ordinal))
+            {
+                return false;
+            }
+
+            foreach (var attribute in type.GetAttributes())
+            {
+                var attributeName = attribute.AttributeClass?.ToDisplayString();
+                if (attributeName is "System.Runtime.CompilerServices.CompilerGeneratedAttribute"
+                    or "System.CodeDom.Compiler.GeneratedCodeAttribute"
+                    or "Microsoft.CodeAnalysis.EmbeddedAttribute")
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>
         /// Recursively processes namespaces, only adding those that contain types.
         /// </summary>
         /// <param name="namespaceSymbol">The namespace symbol to process.</param>
@@ -895,7 +926,7 @@ namespace CloudNimble.DotNetDocs.Core
             {
                 // Check if this namespace has any types with the required accessibility
                 var typesInNamespace = ns.GetTypeMembers()
-                    .Where(t => includedMembers.Contains(t.DeclaredAccessibility))
+                    .Where(t => includedMembers.Contains(t.DeclaredAccessibility) && ShouldDocumentType(t))
                     .ToList();
                 
                 // Filter out excluded types if we have a project context

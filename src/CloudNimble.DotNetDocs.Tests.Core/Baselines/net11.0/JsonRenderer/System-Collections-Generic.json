@@ -1,0 +1,205 @@
+{
+  "name": "System.Collections.Generic",
+  "types": [
+    {
+      "members": [
+        {
+          "accessibility": "public",
+          "memberKind": "method",
+          "methodKind": "ordinary",
+          "name": "IsNullOrEmpty",
+          "parameters": [
+            {
+              "hasDefaultValue": false,
+              "isOptional": false,
+              "isParams": false,
+              "name": "list",
+              "parameterType": {
+                "members": [],
+                "assemblyName": "System.Collections",
+                "fullName": "System.Collections.Generic.List\u003CT\u003E",
+                "name": "List",
+                "signature": "System.Collections.Generic.List\u003CT\u003E",
+                "typeKind": "error",
+                "isExternalReference": true,
+                "displayName": "System.Collections.Generic.List\u003CT\u003E"
+              },
+              "typeName": "System.Collections.Generic.List\u003CT\u003E",
+              "displayName": "System.Collections.Generic.List\u003CT\u003E list",
+              "usage": "The list to check."
+            }
+          ],
+          "returnType": {
+            "members": [],
+            "assemblyName": "System.Private.CoreLib",
+            "fullName": "bool",
+            "name": "Boolean",
+            "signature": "bool",
+            "typeKind": "struct",
+            "isExternalReference": true,
+            "displayName": "bool"
+          },
+          "returnTypeName": "bool",
+          "signature": "public static bool IsNullOrEmpty\u003CT\u003E(System.Collections.Generic.List\u003CT\u003E list)",
+          "isInherited": false,
+          "isOverride": false,
+          "isVirtual": false,
+          "isAbstract": false,
+          "declaringTypeName": "System.Collections.Generic.TestsShared_ListExtensions",
+          "isExtensionMethod": true,
+          "extendedTypeName": "System.Collections.Generic.List\u003CT\u003E",
+          "displayName": "System.Collections.Generic.TestsShared_ListExtensions.IsNullOrEmpty\u003CT\u003E(System.Collections.Generic.List\u003CT\u003E)",
+          "examples": "\u003Ccode\u003E\r\n            var numbers = new List\u0026lt;int\u0026gt;();\r\n            if (numbers.IsNullOrEmpty())\r\n            {\r\n                // Handle empty list\r\n            }\r\n            \u003C/code\u003E",
+          "returns": "True if the list is null or empty, otherwise false.",
+          "summary": "Checks if a list is null or empty.",
+          "typeParameters": [
+            {
+              "description": "The type of elements in the list.",
+              "name": "T"
+            }
+          ]
+        },
+        {
+          "accessibility": "public",
+          "memberKind": "method",
+          "methodKind": "ordinary",
+          "name": "AddMultiple",
+          "parameters": [
+            {
+              "hasDefaultValue": false,
+              "isOptional": false,
+              "isParams": false,
+              "name": "list",
+              "parameterType": {
+                "members": [],
+                "assemblyName": "System.Collections",
+                "fullName": "System.Collections.Generic.List\u003CT\u003E",
+                "name": "List",
+                "signature": "System.Collections.Generic.List\u003CT\u003E",
+                "typeKind": "error",
+                "isExternalReference": true,
+                "displayName": "System.Collections.Generic.List\u003CT\u003E"
+              },
+              "typeName": "System.Collections.Generic.List\u003CT\u003E",
+              "displayName": "System.Collections.Generic.List\u003CT\u003E list",
+              "usage": "The list to add items to."
+            },
+            {
+              "hasDefaultValue": false,
+              "isOptional": false,
+              "isParams": true,
+              "name": "items",
+              "parameterType": {
+                "members": [],
+                "fullName": "T[]",
+                "name": "",
+                "signature": "T[]",
+                "typeKind": "array",
+                "isExternalReference": true,
+                "displayName": "T[]"
+              },
+              "typeName": "T[]",
+              "displayName": "params T[] items",
+              "usage": "The items to add."
+            }
+          ],
+          "returnType": {
+            "members": [],
+            "assemblyName": "System.Collections",
+            "fullName": "System.Collections.Generic.List\u003CT\u003E",
+            "name": "List",
+            "signature": "System.Collections.Generic.List\u003CT\u003E",
+            "typeKind": "error",
+            "isExternalReference": true,
+            "displayName": "System.Collections.Generic.List\u003CT\u003E"
+          },
+          "returnTypeName": "System.Collections.Generic.List\u003CT\u003E",
+          "signature": "public static System.Collections.Generic.List\u003CT\u003E AddMultiple\u003CT\u003E(System.Collections.Generic.List\u003CT\u003E list, params T[] items)",
+          "isInherited": false,
+          "isOverride": false,
+          "isVirtual": false,
+          "isAbstract": false,
+          "declaringTypeName": "System.Collections.Generic.TestsShared_ListExtensions",
+          "isExtensionMethod": true,
+          "extendedTypeName": "System.Collections.Generic.List\u003CT\u003E",
+          "displayName": "System.Collections.Generic.TestsShared_ListExtensions.AddMultiple\u003CT\u003E(System.Collections.Generic.List\u003CT\u003E, params T[])",
+          "examples": "\u003Ccode\u003E\r\n            var numbers = new List\u0026lt;int\u0026gt;()\r\n                .AddMultiple(1, 2, 3, 4, 5);\r\n            \u003C/code\u003E",
+          "returns": "The list for fluent chaining.",
+          "summary": "Adds multiple items to a list in one call.",
+          "typeParameters": [
+            {
+              "description": "The type of elements in the list.",
+              "name": "T"
+            }
+          ]
+        },
+        {
+          "accessibility": "public",
+          "memberKind": "method",
+          "methodKind": "ordinary",
+          "name": "Shuffle",
+          "parameters": [
+            {
+              "hasDefaultValue": false,
+              "isOptional": false,
+              "isParams": false,
+              "name": "list",
+              "parameterType": {
+                "members": [],
+                "assemblyName": "System.Collections",
+                "fullName": "System.Collections.Generic.List\u003CT\u003E",
+                "name": "List",
+                "signature": "System.Collections.Generic.List\u003CT\u003E",
+                "typeKind": "error",
+                "isExternalReference": true,
+                "displayName": "System.Collections.Generic.List\u003CT\u003E"
+              },
+              "typeName": "System.Collections.Generic.List\u003CT\u003E",
+              "displayName": "System.Collections.Generic.List\u003CT\u003E list",
+              "usage": "The list to shuffle."
+            }
+          ],
+          "returnType": {
+            "members": [],
+            "assemblyName": "System.Collections",
+            "fullName": "System.Collections.Generic.List\u003CT\u003E",
+            "name": "List",
+            "signature": "System.Collections.Generic.List\u003CT\u003E",
+            "typeKind": "error",
+            "isExternalReference": true,
+            "displayName": "System.Collections.Generic.List\u003CT\u003E"
+          },
+          "returnTypeName": "System.Collections.Generic.List\u003CT\u003E",
+          "signature": "public static System.Collections.Generic.List\u003CT\u003E Shuffle\u003CT\u003E(System.Collections.Generic.List\u003CT\u003E list)",
+          "isInherited": false,
+          "isOverride": false,
+          "isVirtual": false,
+          "isAbstract": false,
+          "declaringTypeName": "System.Collections.Generic.TestsShared_ListExtensions",
+          "isExtensionMethod": true,
+          "extendedTypeName": "System.Collections.Generic.List\u003CT\u003E",
+          "displayName": "System.Collections.Generic.TestsShared_ListExtensions.Shuffle\u003CT\u003E(System.Collections.Generic.List\u003CT\u003E)",
+          "remarks": "This uses the Fisher-Yates shuffle algorithm for randomization.",
+          "returns": "The shuffled list.",
+          "summary": "Shuffles the elements in a list randomly.",
+          "typeParameters": [
+            {
+              "description": "The type of elements in the list.",
+              "name": "T"
+            }
+          ]
+        }
+      ],
+      "assemblyName": "System.Collections",
+      "fullName": "System.Collections.Generic.List\u003CT\u003E",
+      "name": "List",
+      "signature": "System.Collections.Generic.List\u003CT\u003E",
+      "typeKind": "error",
+      "isExternalReference": true,
+      "displayName": "System.Collections.Generic.List\u003CT\u003E",
+      "remarks": "See [Microsoft documentation](https://learn.microsoft.com/dotnet/api/system.collections.generic.list{t}) for more information about the rest of the API.",
+      "summary": "This type is defined in System.Collections."
+    }
+  ],
+  "displayName": "System.Collections.Generic"
+}

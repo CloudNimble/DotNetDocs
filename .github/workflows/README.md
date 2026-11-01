@@ -6,7 +6,7 @@ This directory contains the GitHub Actions workflows for the CloudNimble.Build.D
 
 ### 🚀 Build and Deploy (`build-and-deploy.yml`)
 
-Handles building, testing, and deploying packages to NuGet using .NET 10 preview.
+Handles building, testing, and deploying packages to NuGet using .NET 11 RC3.
 
 **Triggers:**
 - Push to `main` or `dev` branches
@@ -20,7 +20,7 @@ Handles building, testing, and deploying packages to NuGet using .NET 10 preview
 - **Feature/other branches**: CI versioning (e.g., `1.0.0-CI-20250716-193214`)
 
 **Features:**
-- Automatic .NET 10 preview installation via PowerShell
+- Automatic .NET 11 preview installation via PowerShell
 - NuGet package deployment to NuGet.org
 - GitHub release creation for main branch builds
 - Artifact upload with 7-day retention
@@ -32,10 +32,10 @@ Validates pull requests with comprehensive testing.
 **Triggers:**
 - Pull requests to `main` or `dev` branches
 
-**Platform:** Windows only (for .NET 10 preview support)
+**Platform:** Windows only (for .NET 11 preview support)
 
 **Testing:**
-- .NET: 10.0.x (preview)
+- .NET: 11.0.x (preview)
 - Package validation
 - Test result upload
 
@@ -91,18 +91,18 @@ Set these in your repository settings under Settings → Secrets and variables �
 - `YYYYMMDD` = UTC date (e.g., `20250716`)
 - `HHMMSS` = UTC time in 24-hour format (e.g., `193214` = 7:32:14 PM)
 
-## .NET 10 Preview Setup
+## .NET 11 Preview Setup
 
-The workflows automatically install .NET 10 preview using:
+The workflows automatically install .NET 11 preview using:
 
 ```powershell
 Invoke-WebRequest -Uri "https://dot.net/v1/dotnet-install.ps1" -OutFile "dotnet-install.ps1"
-./dotnet-install.ps1 -Channel 10.0 -Quality preview -InstallDir "$env:ProgramFiles\dotnet"
+./dotnet-install.ps1 -Channel 11.0 -Quality preview -InstallDir "$env:ProgramFiles\dotnet"
 ```
 
 **Benefits:**
 - Latest .NET features and performance improvements
-- C# 13 support
+- C# 15 support
 - Enhanced SDK capabilities
 
 ## Deployment Strategy
@@ -154,7 +154,7 @@ Both workflows use consistent environment variables:
 
 ```yaml
 env:
-  DOTNET_VERSION: '10.0.x'
+  DOTNET_VERSION: '11.0.x'
   SOLUTION_FILE: 'src/CloudNimble.Build.Documentation.slnx'
   PROJECT_FILE: 'src/CloudNimble.Build.Documentation/CloudNimble.Build.Documentation.csproj'
 ```
@@ -162,8 +162,8 @@ env:
 ## Troubleshooting
 
 ### .NET Installation Issues
-If .NET 10 preview installation fails:
-1. Check if Channel 10.0 with Quality preview is available
+If .NET 11 preview installation fails:
+1. Check if Channel 11.0 with Quality preview is available
 2. Verify the installation script URL is accessible
 3. Try using a specific version number with `-Version` parameter if needed
 
@@ -206,7 +206,7 @@ Since all jobs run on Windows:
 When creating additional workflows:
 
 1. **Use consistent environment variables** from existing workflows
-2. **Include .NET 10 preview installation** step
+2. **Include .NET 11 preview installation** step
 3. **Use PowerShell** for scripting consistency
 4. **Run on Windows** for .NET preview compatibility
 5. **Follow naming convention:** `{purpose}.yml`

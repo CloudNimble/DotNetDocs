@@ -26,8 +26,8 @@ Represents the configuration for PostHog analytics integration.
 ## Remarks
 
 PostHog is an open-source product analytics platform that provides session
-            recording, feature flags, and product analytics. This configuration enables
-            automatic tracking of documentation events to your PostHog instance.
+recording, feature flags, and product analytics. This configuration enables
+automatic tracking of documentation events to your PostHog instance.
 
 ## Constructors
 
@@ -68,9 +68,9 @@ Type: `string?`
 #### Remarks
 
 This is optional and only needed if you are self-hosting PostHog. If not
-            specified, events will be sent to the default PostHog cloud service at
-            https://app.posthog.com. If you are self-hosting, specify the full URL
-            to your PostHog instance.
+specified, events will be sent to the default PostHog cloud service at
+https://app.posthog.com. If you are self-hosting, specify the full URL
+to your PostHog instance.
 
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ApiKey
 
@@ -89,8 +89,8 @@ Type: `string?`
 #### Remarks
 
 This is your PostHog project's API key, which typically starts with "phc_".
-            You can find this key in your PostHog project settings. All documentation
-            events will be sent to the PostHog project associated with this API key.
+You can find this key in your PostHog project settings. All documentation
+events will be sent to the PostHog project associated with this API key.
 
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> SessionRecording
 
@@ -109,9 +109,9 @@ Type: `System.Nullable<bool>?`
 #### Remarks
 
 Session recordings are enabled by default when PostHog is configured. Set to false
-            to disable session recordings while keeping analytics enabled. You need to add
-            the URL for your docs website to PostHog's "Authorized domains for recordings"
-            before you can receive session recordings.
+to disable session recordings while keeping analytics enabled. You need to add
+the URL for your docs website to PostHog's "Authorized domains for recordings"
+before you can receive session recordings.
 
 ## Methods
 

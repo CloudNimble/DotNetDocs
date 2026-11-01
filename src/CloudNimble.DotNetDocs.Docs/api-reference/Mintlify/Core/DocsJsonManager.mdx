@@ -26,8 +26,8 @@ Loads and manages Mintlify docs.json configuration files with navigation manipul
 ## Remarks
 
 This class provides comprehensive support for loading, validating, and modifying Mintlify
-            documentation configuration files. It handles serialization using the standard Mintlify
-            JSON options and provides APIs for navigation manipulation.
+documentation configuration files. It handles serialization using the standard Mintlify
+JSON options and provides APIs for navigation manipulation.
 
 ## Constructors
 
@@ -96,7 +96,7 @@ public Mintlify.Core.Models.DocsJsonConfig Configuration { get; internal set; }
 
 Type: `Mintlify.Core.Models.DocsJsonConfig?`
 The [DocsJsonConfig](/api-reference/Mintlify/Core/Models/DocsJsonConfig) instance loaded from the file system or string content.
-            Returns null if no configuration has been loaded or if loading failed.
+Returns null if no configuration has been loaded or if loading failed.
 
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ConfigurationErrors
 
@@ -112,7 +112,7 @@ public System.Collections.Generic.List<System.CodeDom.Compiler.CompilerError> Co
 
 Type: `System.Collections.Generic.List<System.CodeDom.Compiler.CompilerError>`
 A collection of [CompilerError](https://learn.microsoft.com/dotnet/api/system.codedom.compiler.compilererror) instances representing validation errors,
-            parsing failures, or other issues encountered during configuration loading.
+parsing failures, or other issues encountered during configuration loading.
 
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> FilePath
 
@@ -128,7 +128,7 @@ public string FilePath { get; private set; }
 
 Type: `string?`
 The full path to the docs.json file that was loaded. Returns null if the configuration
-            was loaded from string content rather than a file.
+was loaded from string content rather than a file.
 
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> IsLoaded
 
@@ -295,8 +295,8 @@ public void ApplyUrlPrefix(string prefix)
 #### Remarks
 
 This method recursively traverses the entire navigation structure and prepends the
-            specified prefix to all page URLs, href attributes, and root paths. The prefix is
-            normalized to ensure proper URL formatting (e.g., trailing slashes are handled).
+specified prefix to all page URLs, href attributes, and root paths. The prefix is
+normalized to ensure proper URL formatting (e.g., trailing slashes are handled).
 
 ### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> CreateDefault
 
@@ -495,8 +495,8 @@ public void Load(Mintlify.Core.Models.DocsJsonConfig config)
 #### Remarks
 
 This method replaces any existing configuration and clears previous configuration
-            errors. After loading, the configuration is validated and navigation groups are cleaned to ensure
-            consistency.
+errors. After loading, the configuration is validated and navigation groups are cleaned to ensure
+consistency.
 
 ### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> MemberwiseClone <Badge color="gray">Inherited</Badge>
 
@@ -540,7 +540,7 @@ public void Merge(Mintlify.Core.Models.DocsJsonConfig other, bool combineBasePro
 #### Remarks
 
 This method performs a shallow merge, with the other configuration taking precedence
-            for non-null values. Navigation structures are combined intelligently.
+for non-null values. Navigation structures are combined intelligently.
 
 ### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> MergeNavigation
 
@@ -569,8 +569,8 @@ public void MergeNavigation(Mintlify.Core.Models.NavigationConfig sourceNavigati
 #### Remarks
 
 This method intelligently merges navigation structures, combining groups with the same name
-            and deduplicating page references. Use the MergeOptions parameter to control specific
-            behaviors like how empty groups are handled.
+and deduplicating page references. Use the MergeOptions parameter to control specific
+behaviors like how empty groups are handled.
 
 ### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> MergeNavigation
 
@@ -600,8 +600,8 @@ public void MergeNavigation(string filePath, Mintlify.Core.Models.MergeOptions o
 #### Remarks
 
 This method loads navigation from an external docs.json file and merges it into the
-            current configuration. Only the navigation structure is merged; other configuration
-            properties are not affected.
+current configuration. Only the navigation structure is merged; other configuration
+properties are not affected.
 
 ### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> PopulateNavigationFromPath
 
@@ -634,18 +634,14 @@ public void PopulateNavigationFromPath(string path, string[] fileExtensions = nu
 
 #### Remarks
 
-
-
 This method scans the specified directory recursively and builds a navigation structure
-            based on the folder hierarchy and MDX files found. The method includes several advanced features:
+          based on the folder hierarchy and MDX files found. The method includes several advanced features:
 
 
 
 
 The method preserves the directory structure in the navigation while applying these intelligent
-            processing rules to create clean, organized documentation.
-
-
+          processing rules to create clean, organized documentation.
 
 ### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ReferenceEquals <Badge color="gray">Inherited</Badge>
 

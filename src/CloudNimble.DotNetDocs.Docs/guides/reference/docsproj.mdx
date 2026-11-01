@@ -221,6 +221,7 @@ Every `.docsproj` file must reference the DotNetDocs.Sdk:
     - `Mode` - Navigation organization mode: `Unified` (default) or `Separated`
     - `Type` - Integration type: `Pages` (default), `Tabs`, or `Products`
     - `Name` - Custom display name for tabs/products (optional, defaults to project name)
+    - `<Tabs>` / `<Tab>` - Explicit tabs. Optional `Position` attribute: `Start` (default) or `End`. `End` appends the tab after every `DocumentationReference` tab, which is how an outbound href such as a sibling product site sits at the right of the tab bar. Href-only tabs omit `pages` in `docs.json`.
 
   <Info>
     The `<Navigation>` element and its attributes are only available in 1.1.0 and later. For 1.0.x, use the legacy `MintlifyNavigationMode` property.
