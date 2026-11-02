@@ -298,7 +298,7 @@ jobs:
       uses: NuGet/login@v1
       id: login
       with:
-        user: ${{ vars.NUGET_USER != '' && vars.NUGET_USER || 'CloudNimble' }}
+        user: ${{ secrets.NUGET_USER }}
 
     - name: Push to NuGet
       id: nuget_push

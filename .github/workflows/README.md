@@ -69,13 +69,14 @@ NuGet.org publishes with GitHub OIDC (no long-lived API key). Register this work
 | Workflow File | `build-and-deploy.yml` |
 | Environment | *(leave empty)* |
 
-The deploy job requests `id-token: write` and uses `NuGet/login@v1` as nuget.org user `CloudNimble` (override with repo variable `NUGET_USER` if needed).
+The deploy job requests `id-token: write` and uses `NuGet/login@v1` with `secrets.NUGET_USER` (nuget.org profile name, not email).
 
-Optional repo variable:
+### Repository Secrets
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `NUGET_USER` | nuget.org profile name for OIDC login | `CloudNimble` |
+| Secret | Description | Required |
+|--------|-------------|----------|
+| `NUGET_USER` | nuget.org profile name for OIDC Trusted Publishing | Yes |
+| `REPO_ACCESS_TOKEN` | Token used to bump version variables after a successful deploy | Yes |
 
 ## Version Number Format
 
@@ -199,7 +200,7 @@ The workflow automatically detects and handles various deployment failures:
 ### Missing Trusted Publishing
 If deployment fails with authentication errors:
 1. Confirm nuget.org Trusted Publishing lists `CloudNimble/DotNetDocs` and workflow `build-and-deploy.yml`
-2. Confirm the nuget.org username matches `NUGET_USER` / `CloudNimble`
+2. Confirm `NUGET_USER` is the nuget.org profile name (not email)
 3. Confirm the deploy job has `permissions.id-token: write`
 
 ### Preview Suffix Issues
