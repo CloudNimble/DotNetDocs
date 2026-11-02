@@ -26,8 +26,8 @@ Represents the font configuration for documentation thumbnails.
 ## Remarks
 
 This configuration controls the fonts used in thumbnail rendering,
-            allowing specification of a Google Fonts family for consistent
-            typography in generated thumbnails.
+allowing specification of a Google Fonts family for consistent
+typography in generated thumbnails.
 
 ## Constructors
 
@@ -68,8 +68,40 @@ Type: `string?`
 #### Remarks
 
 Specifies the name of a Google Fonts family to use for text rendered
-            within thumbnails. The font will be loaded from Google Fonts and applied
-            during thumbnail generation.
+within thumbnails. The font will be loaded from Google Fonts and applied
+during thumbnail generation.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Format
+
+Gets or sets the font file format.
+
+#### Syntax
+
+```csharp
+public string Format { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+
+#### Remarks
+
+Valid values are `woff`, `ttf`, or `otf`.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Source
+
+Gets or sets the URL of a hosted font file used in thumbnail rendering.
+
+#### Syntax
+
+```csharp
+public string Source { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
 
 ## Methods
 

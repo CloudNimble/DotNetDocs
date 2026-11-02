@@ -212,15 +212,37 @@ Every `.docsproj` file must reference the DotNetDocs.Sdk:
 
   **Supported child elements:**
   - `<Name>` - Project name displayed in documentation
-  - `<Theme>` - Mintlify theme name (e.g., `maple`, `quill`, `venus`)
+  - `<Theme>` - Mintlify theme (`mint`, `maple`, `palm`, `willow`, `linden`, `almond`, `aspen`, `sequoia`, `luma`)
+  - `<ThemeVersion>` - Mint theme version (`1` or `2`)
+  - `<Public>` - Whether the documentation is publicly accessible by default
   - `<Colors>` - Color scheme configuration
     - `<Primary>` - Primary brand color
     - `<Light>` - Light mode accent color
     - `<Dark>` - Dark mode accent color
+  - `<Variables>` - Global content variables (`<Variable Name="apiVersion">v2</Variable>`)
+  - `<Markdown>` - Markdown export for AI agents (`Schema`, `Instructions`)
+  - `<Packages>` - Third-party npm libraries (`Ssr`, `Provider`, `Css`, `Registries`)
+  - `<Banner>` - Announcement bar (`Content`, `Dismissible`, `Type`, `Color`)
+  - `<Seo>` - SEO settings (`Indexing`, `TrailingSlash`, `Organization`, `Paths`, `Metatags`)
+  - `<Thumbnails>` - Social preview images (`Preset`, `Surface`, `Eyebrow`, `Fonts`)
+  - `<Styling>` - `<Codeblocks>` as `system`/`dark`/a Shiki theme name, or a `<Theme>`/`<Languages>` object
+  - `<Integrations>` - Analytics and consent providers, including Mixpanel `Region`, Segment `CdnUrl`, OneTrust, and Transcend
+  - `<Contextual>` - `<Options>` as `copy;claude` or `<Option>` children (builtin name or Title/Href custom objects)
+  - `<Api>` - API playground and OpenAPI/AsyncAPI settings
+    - `<Optional>` - Playground optional-field layout (`static`, `expanded`, `collapsed`)
+    - `<Params>` - `<Expanded>` (`all`/`closed`, also accepts `true`/`false`) and `<Post>` (semicolon-separated keys)
+    - `<Playground>` - `<Display>` (`interactive`/`simple`/`auth`/`none`), `<Proxy>`, `<Credentials>`
+    - `<OpenApi>` / `<AsyncApi>` - text URL, `Source`/`Directory` attributes, `<Overlays>`, `<Overlay>` children, nested `<Spec>` entries, or repeated elements for mixed arrays
+    - Legacy `<Proxy>` on `<Api>` maps to `<Playground><Proxy>`
   - `<Navigation>` - **(1.1.0+)** Navigation configuration with attributes:
     - `Mode` - Navigation organization mode: `Unified` (default) or `Separated`
     - `Type` - Integration type: `Pages` (default), `Tabs`, or `Products`
     - `Name` - Custom display name for tabs/products (optional, defaults to project name)
+    - `Graphql` / `<Graphql>` - Auto-populate GraphQL pages (`Source`, `Directory`)
+    - `Mcp` / `<Mcp>` - Auto-populate MCP pages (`Source`, `Directory`)
+    - `<Tabs>` / `<Tab>` - Explicit tabs. Optional `Position` attribute: `Start` (default) or `End`. `End` appends the tab after every `DocumentationReference` tab, which is how an outbound href such as a sibling product site sits at the right of the tab bar. Href-only tabs omit `pages` in `docs.json`. GraphQL and MCP can also be set on a tab or group.
+    - Pages may include `<Page>`, `<Link Href="..." Title="..." />`, and `<SourceRef>` entries.
+    - `Directory` (`none`/`accordion`/`card`), `Searchable`, `Align` (tabs: `start`/`end`), `DisplayName` (products), and `<Thumbnail>` overrides. `Sdk` on navigation is ignored in MintlifyTemplate; put it in `docs.json` if needed.
 
   <Info>
     The `<Navigation>` element and its attributes are only available in 1.1.0 and later. For 1.0.x, use the legacy `MintlifyNavigationMode` property.

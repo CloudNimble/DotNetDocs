@@ -1,0 +1,91 @@
+---
+title: MarkdownInstructionsConverter
+description: "Converts `markdown.instructions` values that can be a string or an array of strings."
+icon: file-brackets-curly
+keywords: ['MarkdownInstructionsConverter', 'Mintlify.Core.Converters.MarkdownInstructionsConverter', 'Mintlify.Core.Converters', 'class', 'System.Text.Json.Serialization.JsonConverter<System.Collections.Generic.List<string>>']
+---
+
+## Definition
+
+**Assembly:** Mintlify.Core.dll
+
+**Namespace:** Mintlify.Core.Converters
+
+**Inheritance:** System.Text.Json.Serialization.JsonConverter&lt;System.Collections.Generic.List&lt;string&gt;&gt;
+
+## Syntax
+
+```csharp
+Mintlify.Core.Converters.MarkdownInstructionsConverter
+```
+
+## Summary
+
+Converts `markdown.instructions` values that can be a string or an array of strings.
+
+## Constructors
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor
+
+#### Syntax
+
+```csharp
+public MarkdownInstructionsConverter()
+```
+
+## Methods
+
+### <Icon icon="code-merge" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> CanConvert <Badge color="blue">Override</Badge>
+
+#### Syntax
+
+```csharp
+public override bool CanConvert(System.Type typeToConvert)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `typeToConvert` | `System.Type` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="code-merge" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Read <Badge color="blue">Override</Badge>
+
+#### Syntax
+
+```csharp
+public override System.Collections.Generic.List<string> Read(ref System.Text.Json.Utf8JsonReader reader, System.Type typeToConvert, System.Text.Json.JsonSerializerOptions options)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `reader` | `System.Text.Json.Utf8JsonReader` | - |
+| `typeToConvert` | `System.Type` | - |
+| `options` | `System.Text.Json.JsonSerializerOptions` | - |
+
+#### Returns
+
+Type: `System.Collections.Generic.List<string>?`
+
+### <Icon icon="code-merge" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Write <Badge color="blue">Override</Badge>
+
+#### Syntax
+
+```csharp
+public override void Write(System.Text.Json.Utf8JsonWriter writer, System.Collections.Generic.List<string> value, System.Text.Json.JsonSerializerOptions options)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `writer` | `System.Text.Json.Utf8JsonWriter` | - |
+| `value` | `System.Collections.Generic.List<string>?` | - |
+| `options` | `System.Text.Json.JsonSerializerOptions` | - |
+

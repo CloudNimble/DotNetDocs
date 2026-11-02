@@ -1,8 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFrameworks>net10.0;net9.0;net8.0;netstandard2.0</TargetFrameworks>
-        <DocumentationFile>$(DocumentationFile)\$(AssemblyName).xml</DocumentationFile>
+        <TargetFrameworks>net11.0;net10.0;net9.0;net8.0;netstandard2.0</TargetFrameworks>
         <NoWarn>$(NoWarn);CA1822;NU1605;</NoWarn>
         <Description>Mintlify.Core is a comprehensive .NET library for working with Mintlify documentation configuration files (docs.json). This package provides robust loading, validation, manipulation, and generation capabilities for Mintlify documentation projects.</Description>
     </PropertyGroup>
@@ -14,6 +13,10 @@
 
     <ItemGroup>
         <PackageReference Include="EasyAF.Core" Version="4.*" />
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(TargetFramework)' == 'net11.0'">
+        <PackageReference Include="System.CodeDom" Version="11.0.0-rc.3.26522.148" />
     </ItemGroup>
 
     <ItemGroup Condition="'$(TargetFramework)' == 'net10.0'">
@@ -35,6 +38,10 @@
     <ItemGroup>
         <!--<InternalsVisibleTo Include="Mintlify.Tests.Core, $(StrongNamePublicKey)" />-->
         <InternalsVisibleTo Include="Mintlify.Tests.Core" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Include="Schemas\*" Pack="false" />
     </ItemGroup>
 
 </Project>

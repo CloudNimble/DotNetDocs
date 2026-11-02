@@ -104,17 +104,16 @@ namespace Mintlify.Core.Models
 
                     if (reader.TokenType == JsonTokenType.PropertyName)
                     {
-                        var propertyName = reader.GetString();
+                        var isDark = reader.ValueTextEquals("dark");
+                        var isLight = !isDark && reader.ValueTextEquals("light");
                         reader.Read();
-
-                        switch (propertyName?.ToLowerInvariant())
+                        if (isDark)
                         {
-                            case "dark":
-                                faviconConfig.Dark = reader.GetString();
-                                break;
-                            case "light":
-                                faviconConfig.Light = reader.GetString();
-                                break;
+                            faviconConfig.Dark = reader.GetString();
+                        }
+                        else if (isLight)
+                        {
+                            faviconConfig.Light = reader.GetString();
                         }
                     }
                 }

@@ -1,0 +1,2384 @@
+name: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios
+types:
+- baseType: System.Object
+  members:
+  - accessibility: Public
+    memberKind: Method
+    methodKind: PropertyGet
+    name: get_BaseProperty
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: string
+      name: String
+      signature: string
+      typeKind: Class
+      isExternalReference: true
+      displayName: string
+    returnTypeName: string
+    signature: public virtual string BaseProperty.get
+    isVirtual: true
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.BaseClass
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.BaseClass.BaseProperty.get
+  - accessibility: Public
+    memberKind: Method
+    methodKind: PropertySet
+    name: set_BaseProperty
+    parameters:
+    - name: value
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: string
+        name: String
+        signature: string
+        typeKind: Class
+        isExternalReference: true
+        displayName: string
+      typeName: string
+      displayName: string value
+    returnTypeName: void
+    signature: public virtual void BaseProperty.set
+    isVirtual: true
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.BaseClass
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.BaseClass.BaseProperty.set
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: VirtualMethod
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: string
+      name: String
+      signature: string
+      typeKind: Class
+      isExternalReference: true
+      displayName: string
+    returnTypeName: string
+    signature: public virtual string VirtualMethod()
+    isVirtual: true
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.BaseClass
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.BaseClass.VirtualMethod()
+    returns: A string value.
+    summary: A virtual method that can be overridden.
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: BaseMethod
+    returnTypeName: void
+    signature: public void BaseMethod()
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.BaseClass
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.BaseClass.BaseMethod()
+    summary: A method in the base class.
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Constructor
+    name: .ctor
+    returnTypeName: void
+    signature: public BaseClass()
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.BaseClass
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.BaseClass.BaseClass()
+  - accessibility: Public
+    memberKind: Property
+    name: BaseProperty
+    returnTypeName: string
+    signature: public virtual string BaseProperty { get; set; }
+    isVirtual: true
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.BaseClass
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.BaseClass.BaseProperty
+    summary: Gets or sets the base property.
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: GetType
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: System.Type
+      name: Type
+      signature: System.Type
+      typeKind: Class
+      isExternalReference: true
+      displayName: System.Type
+    returnTypeName: System.Type
+    signature: public System.Type GetType()
+    isInherited: true
+    declaringTypeName: object
+    displayName: object.GetType()
+  - accessibility: ProtectedOrInternal
+    memberKind: Method
+    methodKind: Ordinary
+    name: MemberwiseClone
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: object
+      name: Object
+      signature: object
+      typeKind: Class
+      isExternalReference: true
+      displayName: object
+    returnTypeName: object
+    signature: protected internal object MemberwiseClone()
+    isInherited: true
+    declaringTypeName: object
+    displayName: object.MemberwiseClone()
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Constructor
+    name: .ctor
+    returnTypeName: void
+    signature: public Object()
+    isInherited: true
+    declaringTypeName: object
+    displayName: object.Object()
+  - accessibility: Protected
+    memberKind: Method
+    methodKind: Destructor
+    name: Finalize
+    returnTypeName: void
+    signature: protected ~Object()
+    isInherited: true
+    declaringTypeName: object
+    displayName: object.~Object()
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: ToString
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: string?
+      name: String
+      signature: string?
+      typeKind: Class
+      isExternalReference: true
+      displayName: string?
+    returnTypeName: string?
+    signature: public virtual string ToString()
+    isInherited: true
+    isVirtual: true
+    declaringTypeName: object
+    displayName: object.ToString()
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: Equals
+    parameters:
+    - name: obj
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: object?
+        name: Object
+        signature: object?
+        typeKind: Class
+        isExternalReference: true
+        displayName: object?
+      typeName: object?
+      displayName: object? obj
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: bool
+      name: Boolean
+      signature: bool
+      typeKind: Struct
+      isExternalReference: true
+      displayName: bool
+    returnTypeName: bool
+    signature: public virtual bool Equals(object obj)
+    isInherited: true
+    isVirtual: true
+    declaringTypeName: object
+    displayName: object.Equals(object?)
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: Equals
+    parameters:
+    - name: objA
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: object?
+        name: Object
+        signature: object?
+        typeKind: Class
+        isExternalReference: true
+        displayName: object?
+      typeName: object?
+      displayName: object? objA
+    - name: objB
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: object?
+        name: Object
+        signature: object?
+        typeKind: Class
+        isExternalReference: true
+        displayName: object?
+      typeName: object?
+      displayName: object? objB
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: bool
+      name: Boolean
+      signature: bool
+      typeKind: Struct
+      isExternalReference: true
+      displayName: bool
+    returnTypeName: bool
+    signature: public static bool Equals(object objA, object objB)
+    isInherited: true
+    declaringTypeName: object
+    displayName: object.Equals(object?, object?)
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: ReferenceEquals
+    parameters:
+    - name: objA
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: object?
+        name: Object
+        signature: object?
+        typeKind: Class
+        isExternalReference: true
+        displayName: object?
+      typeName: object?
+      displayName: object? objA
+    - name: objB
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: object?
+        name: Object
+        signature: object?
+        typeKind: Class
+        isExternalReference: true
+        displayName: object?
+      typeName: object?
+      displayName: object? objB
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: bool
+      name: Boolean
+      signature: bool
+      typeKind: Struct
+      isExternalReference: true
+      displayName: bool
+    returnTypeName: bool
+    signature: public static bool ReferenceEquals(object objA, object objB)
+    isInherited: true
+    declaringTypeName: object
+    displayName: object.ReferenceEquals(object?, object?)
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: GetHashCode
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: int
+      name: Int32
+      signature: int
+      typeKind: Struct
+      isExternalReference: true
+      displayName: int
+    returnTypeName: int
+    signature: public virtual int GetHashCode()
+    isInherited: true
+    isVirtual: true
+    declaringTypeName: object
+    displayName: object.GetHashCode()
+  assemblyName: CloudNimble.DotNetDocs.Tests.Shared
+  fullName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.BaseClass
+  name: BaseClass
+  signature: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.BaseClass
+  typeKind: Class
+  displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.BaseClass
+  remarks: This class serves as the base for DerivedClass.
+  summary: A base class for testing inheritance documentation.
+- baseType: System.Object
+  members:
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: Calculate
+    parameters:
+    - name: a
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: int
+        name: Int32
+        signature: int
+        typeKind: Struct
+        isExternalReference: true
+        displayName: int
+      typeName: int
+      displayName: int a
+      usage: The first number.
+    - name: b
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: int
+        name: Int32
+        signature: int
+        typeKind: Struct
+        isExternalReference: true
+        displayName: int
+      typeName: int
+      displayName: int b
+      usage: The second number.
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: int
+      name: Int32
+      signature: int
+      typeKind: Struct
+      isExternalReference: true
+      displayName: int
+    returnTypeName: int
+    signature: public int Calculate(int a, int b)
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ClassWithMethods
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ClassWithMethods.Calculate(int, int)
+    examples: >-
+      <code>
+                  var result = Calculate(3, 4); // Returns 7
+                  </code>
+    returns: The sum of a and b.
+    summary: Calculates the sum of two numbers.
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: Process
+    parameters:
+    - name: input
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: string
+        name: String
+        signature: string
+        typeKind: Class
+        isExternalReference: true
+        displayName: string
+      typeName: string
+      displayName: string input
+      usage: The string to process.
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: string
+      name: String
+      signature: string
+      typeKind: Class
+      isExternalReference: true
+      displayName: string
+    returnTypeName: string
+    signature: public string Process(string input)
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ClassWithMethods
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ClassWithMethods.Process(string)
+    exceptions:
+    - description: Thrown when input is null.
+      type: ArgumentNullException
+    remarks: This method performs a simple transformation for testing purposes.
+    returns: The processed string in uppercase.
+    summary: Processes the input string.
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: PerformAction
+    returnTypeName: void
+    signature: public void PerformAction()
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ClassWithMethods
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ClassWithMethods.PerformAction()
+    remarks: This method doesn't return anything.
+    summary: A void method that performs an action.
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: GetConditionalValue
+    parameters:
+    - name: condition
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: bool
+        name: Boolean
+        signature: bool
+        typeKind: Struct
+        isExternalReference: true
+        displayName: bool
+      typeName: bool
+      displayName: bool condition
+      usage: The condition to evaluate.
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: string
+      name: String
+      signature: string
+      typeKind: Class
+      isExternalReference: true
+      displayName: string
+    returnTypeName: string
+    signature: public string GetConditionalValue(bool condition)
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ClassWithMethods
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ClassWithMethods.GetConditionalValue(bool)
+    returns: Returns "Yes" if condition is true, "No" otherwise.
+    summary: Gets a value based on a condition.
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Constructor
+    name: .ctor
+    returnTypeName: void
+    signature: public ClassWithMethods()
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ClassWithMethods
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ClassWithMethods.ClassWithMethods()
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: GetType
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: System.Type
+      name: Type
+      signature: System.Type
+      typeKind: Class
+      isExternalReference: true
+      displayName: System.Type
+    returnTypeName: System.Type
+    signature: public System.Type GetType()
+    isInherited: true
+    declaringTypeName: object
+    displayName: object.GetType()
+  - accessibility: ProtectedOrInternal
+    memberKind: Method
+    methodKind: Ordinary
+    name: MemberwiseClone
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: object
+      name: Object
+      signature: object
+      typeKind: Class
+      isExternalReference: true
+      displayName: object
+    returnTypeName: object
+    signature: protected internal object MemberwiseClone()
+    isInherited: true
+    declaringTypeName: object
+    displayName: object.MemberwiseClone()
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Constructor
+    name: .ctor
+    returnTypeName: void
+    signature: public Object()
+    isInherited: true
+    declaringTypeName: object
+    displayName: object.Object()
+  - accessibility: Protected
+    memberKind: Method
+    methodKind: Destructor
+    name: Finalize
+    returnTypeName: void
+    signature: protected ~Object()
+    isInherited: true
+    declaringTypeName: object
+    displayName: object.~Object()
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: ToString
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: string?
+      name: String
+      signature: string?
+      typeKind: Class
+      isExternalReference: true
+      displayName: string?
+    returnTypeName: string?
+    signature: public virtual string ToString()
+    isInherited: true
+    isVirtual: true
+    declaringTypeName: object
+    displayName: object.ToString()
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: Equals
+    parameters:
+    - name: obj
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: object?
+        name: Object
+        signature: object?
+        typeKind: Class
+        isExternalReference: true
+        displayName: object?
+      typeName: object?
+      displayName: object? obj
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: bool
+      name: Boolean
+      signature: bool
+      typeKind: Struct
+      isExternalReference: true
+      displayName: bool
+    returnTypeName: bool
+    signature: public virtual bool Equals(object obj)
+    isInherited: true
+    isVirtual: true
+    declaringTypeName: object
+    displayName: object.Equals(object?)
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: Equals
+    parameters:
+    - name: objA
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: object?
+        name: Object
+        signature: object?
+        typeKind: Class
+        isExternalReference: true
+        displayName: object?
+      typeName: object?
+      displayName: object? objA
+    - name: objB
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: object?
+        name: Object
+        signature: object?
+        typeKind: Class
+        isExternalReference: true
+        displayName: object?
+      typeName: object?
+      displayName: object? objB
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: bool
+      name: Boolean
+      signature: bool
+      typeKind: Struct
+      isExternalReference: true
+      displayName: bool
+    returnTypeName: bool
+    signature: public static bool Equals(object objA, object objB)
+    isInherited: true
+    declaringTypeName: object
+    displayName: object.Equals(object?, object?)
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: ReferenceEquals
+    parameters:
+    - name: objA
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: object?
+        name: Object
+        signature: object?
+        typeKind: Class
+        isExternalReference: true
+        displayName: object?
+      typeName: object?
+      displayName: object? objA
+    - name: objB
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: object?
+        name: Object
+        signature: object?
+        typeKind: Class
+        isExternalReference: true
+        displayName: object?
+      typeName: object?
+      displayName: object? objB
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: bool
+      name: Boolean
+      signature: bool
+      typeKind: Struct
+      isExternalReference: true
+      displayName: bool
+    returnTypeName: bool
+    signature: public static bool ReferenceEquals(object objA, object objB)
+    isInherited: true
+    declaringTypeName: object
+    displayName: object.ReferenceEquals(object?, object?)
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: GetHashCode
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: int
+      name: Int32
+      signature: int
+      typeKind: Struct
+      isExternalReference: true
+      displayName: int
+    returnTypeName: int
+    signature: public virtual int GetHashCode()
+    isInherited: true
+    isVirtual: true
+    declaringTypeName: object
+    displayName: object.GetHashCode()
+  assemblyName: CloudNimble.DotNetDocs.Tests.Shared
+  fullName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ClassWithMethods
+  name: ClassWithMethods
+  signature: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ClassWithMethods
+  typeKind: Class
+  displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ClassWithMethods
+  examples: >-
+    <code>
+                var obj = new ClassWithMethods();
+                var result = obj.Calculate(5, 10);
+                </code>
+  remarks: Contains methods with different signatures, parameters, and return types.
+  summary: A class demonstrating various method documentation scenarios.
+- baseType: System.Object
+  members:
+  - accessibility: Public
+    memberKind: Method
+    methodKind: PropertyGet
+    name: get_Name
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: string
+      name: String
+      signature: string
+      typeKind: Class
+      isExternalReference: true
+      displayName: string
+    returnTypeName: string
+    signature: public string Name.get
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ClassWithProperties
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ClassWithProperties.Name.get
+  - accessibility: Public
+    memberKind: Method
+    methodKind: PropertySet
+    name: set_Name
+    parameters:
+    - name: value
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: string
+        name: String
+        signature: string
+        typeKind: Class
+        isExternalReference: true
+        displayName: string
+      typeName: string
+      displayName: string value
+    returnTypeName: void
+    signature: public void Name.set
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ClassWithProperties
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ClassWithProperties.Name.set
+  - accessibility: Public
+    memberKind: Method
+    methodKind: PropertyGet
+    name: get_Id
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: int
+      name: Int32
+      signature: int
+      typeKind: Struct
+      isExternalReference: true
+      displayName: int
+    returnTypeName: int
+    signature: public int Id.get
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ClassWithProperties
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ClassWithProperties.Id.get
+  - accessibility: Public
+    memberKind: Method
+    methodKind: PropertyGet
+    name: get_Value
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: double
+      name: Double
+      signature: double
+      typeKind: Struct
+      isExternalReference: true
+      displayName: double
+    returnTypeName: double
+    signature: public double Value.get
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ClassWithProperties
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ClassWithProperties.Value.get
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: UpdateValue
+    parameters:
+    - name: newValue
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: double
+        name: Double
+        signature: double
+        typeKind: Struct
+        isExternalReference: true
+        displayName: double
+      typeName: double
+      displayName: double newValue
+      usage: The new value to set.
+    returnTypeName: void
+    signature: public void UpdateValue(double newValue)
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ClassWithProperties
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ClassWithProperties.UpdateValue(double)
+    summary: Updates the value property.
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Constructor
+    name: .ctor
+    returnTypeName: void
+    signature: public ClassWithProperties()
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ClassWithProperties
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ClassWithProperties.ClassWithProperties()
+  - accessibility: Public
+    memberKind: Property
+    name: Name
+    returnTypeName: string
+    signature: public string Name { get; set; }
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ClassWithProperties
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ClassWithProperties.Name
+    remarks: This is a standard public property with get and set accessors.
+    summary: Gets or sets the name.
+  - accessibility: Public
+    memberKind: Property
+    name: Id
+    returnTypeName: int
+    signature: public int Id { get; }
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ClassWithProperties
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ClassWithProperties.Id
+    remarks: This property can only be read, not written to.
+    summary: Gets the read-only identifier.
+  - accessibility: Public
+    memberKind: Property
+    name: Value
+    returnTypeName: double
+    signature: public double Value { get; private set; }
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ClassWithProperties
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ClassWithProperties.Value
+    remarks: This property can be read publicly but only set within the class.
+    summary: Gets or sets the value with a private setter.
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: GetType
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: System.Type
+      name: Type
+      signature: System.Type
+      typeKind: Class
+      isExternalReference: true
+      displayName: System.Type
+    returnTypeName: System.Type
+    signature: public System.Type GetType()
+    isInherited: true
+    declaringTypeName: object
+    displayName: object.GetType()
+  - accessibility: ProtectedOrInternal
+    memberKind: Method
+    methodKind: Ordinary
+    name: MemberwiseClone
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: object
+      name: Object
+      signature: object
+      typeKind: Class
+      isExternalReference: true
+      displayName: object
+    returnTypeName: object
+    signature: protected internal object MemberwiseClone()
+    isInherited: true
+    declaringTypeName: object
+    displayName: object.MemberwiseClone()
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Constructor
+    name: .ctor
+    returnTypeName: void
+    signature: public Object()
+    isInherited: true
+    declaringTypeName: object
+    displayName: object.Object()
+  - accessibility: Protected
+    memberKind: Method
+    methodKind: Destructor
+    name: Finalize
+    returnTypeName: void
+    signature: protected ~Object()
+    isInherited: true
+    declaringTypeName: object
+    displayName: object.~Object()
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: ToString
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: string?
+      name: String
+      signature: string?
+      typeKind: Class
+      isExternalReference: true
+      displayName: string?
+    returnTypeName: string?
+    signature: public virtual string ToString()
+    isInherited: true
+    isVirtual: true
+    declaringTypeName: object
+    displayName: object.ToString()
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: Equals
+    parameters:
+    - name: obj
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: object?
+        name: Object
+        signature: object?
+        typeKind: Class
+        isExternalReference: true
+        displayName: object?
+      typeName: object?
+      displayName: object? obj
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: bool
+      name: Boolean
+      signature: bool
+      typeKind: Struct
+      isExternalReference: true
+      displayName: bool
+    returnTypeName: bool
+    signature: public virtual bool Equals(object obj)
+    isInherited: true
+    isVirtual: true
+    declaringTypeName: object
+    displayName: object.Equals(object?)
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: Equals
+    parameters:
+    - name: objA
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: object?
+        name: Object
+        signature: object?
+        typeKind: Class
+        isExternalReference: true
+        displayName: object?
+      typeName: object?
+      displayName: object? objA
+    - name: objB
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: object?
+        name: Object
+        signature: object?
+        typeKind: Class
+        isExternalReference: true
+        displayName: object?
+      typeName: object?
+      displayName: object? objB
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: bool
+      name: Boolean
+      signature: bool
+      typeKind: Struct
+      isExternalReference: true
+      displayName: bool
+    returnTypeName: bool
+    signature: public static bool Equals(object objA, object objB)
+    isInherited: true
+    declaringTypeName: object
+    displayName: object.Equals(object?, object?)
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: ReferenceEquals
+    parameters:
+    - name: objA
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: object?
+        name: Object
+        signature: object?
+        typeKind: Class
+        isExternalReference: true
+        displayName: object?
+      typeName: object?
+      displayName: object? objA
+    - name: objB
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: object?
+        name: Object
+        signature: object?
+        typeKind: Class
+        isExternalReference: true
+        displayName: object?
+      typeName: object?
+      displayName: object? objB
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: bool
+      name: Boolean
+      signature: bool
+      typeKind: Struct
+      isExternalReference: true
+      displayName: bool
+    returnTypeName: bool
+    signature: public static bool ReferenceEquals(object objA, object objB)
+    isInherited: true
+    declaringTypeName: object
+    displayName: object.ReferenceEquals(object?, object?)
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: GetHashCode
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: int
+      name: Int32
+      signature: int
+      typeKind: Struct
+      isExternalReference: true
+      displayName: int
+    returnTypeName: int
+    signature: public virtual int GetHashCode()
+    isInherited: true
+    isVirtual: true
+    declaringTypeName: object
+    displayName: object.GetHashCode()
+  assemblyName: CloudNimble.DotNetDocs.Tests.Shared
+  fullName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ClassWithProperties
+  name: ClassWithProperties
+  signature: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ClassWithProperties
+  typeKind: Class
+  displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ClassWithProperties
+  remarks: This class contains properties with different access modifiers and documentation styles.
+  summary: A class demonstrating various property documentation scenarios.
+- baseType: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.BaseClass
+  members:
+  - accessibility: Public
+    memberKind: Method
+    methodKind: PropertyGet
+    name: get_DerivedProperty
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: string
+      name: String
+      signature: string
+      typeKind: Class
+      isExternalReference: true
+      displayName: string
+    returnTypeName: string
+    signature: public string DerivedProperty.get
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass.DerivedProperty.get
+  - accessibility: Public
+    memberKind: Method
+    methodKind: PropertySet
+    name: set_DerivedProperty
+    parameters:
+    - name: value
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: string
+        name: String
+        signature: string
+        typeKind: Class
+        isExternalReference: true
+        displayName: string
+      typeName: string
+      displayName: string value
+    returnTypeName: void
+    signature: public void DerivedProperty.set
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass.DerivedProperty.set
+  - accessibility: Public
+    memberKind: Method
+    methodKind: PropertyGet
+    name: get_BaseProperty
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: string
+      name: String
+      signature: string
+      typeKind: Class
+      isExternalReference: true
+      displayName: string
+    returnTypeName: string
+    signature: public override string BaseProperty.get
+    isOverride: true
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass
+    overriddenMember: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.BaseClass.BaseProperty.get
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass.BaseProperty.get
+  - accessibility: Public
+    memberKind: Method
+    methodKind: PropertySet
+    name: set_BaseProperty
+    parameters:
+    - name: value
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: string
+        name: String
+        signature: string
+        typeKind: Class
+        isExternalReference: true
+        displayName: string
+      typeName: string
+      displayName: string value
+    returnTypeName: void
+    signature: public override void BaseProperty.set
+    isOverride: true
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass
+    overriddenMember: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.BaseClass.BaseProperty.set
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass.BaseProperty.set
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: VirtualMethod
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: string
+      name: String
+      signature: string
+      typeKind: Class
+      isExternalReference: true
+      displayName: string
+    returnTypeName: string
+    signature: public override string VirtualMethod()
+    isOverride: true
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass
+    overriddenMember: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.BaseClass.VirtualMethod()
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass.VirtualMethod()
+    remarks: This method provides custom behavior for the derived class.
+    returns: A string indicating the derived implementation.
+    summary: Overrides the virtual method from the base class.
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: DerivedMethod
+    returnTypeName: void
+    signature: public void DerivedMethod()
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass.DerivedMethod()
+    summary: An additional method in the derived class.
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Constructor
+    name: .ctor
+    returnTypeName: void
+    signature: public DerivedClass()
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass.DerivedClass()
+  - accessibility: Public
+    memberKind: Property
+    name: DerivedProperty
+    returnTypeName: string
+    signature: public string DerivedProperty { get; set; }
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass.DerivedProperty
+    summary: Gets or sets the derived property.
+  - accessibility: Public
+    memberKind: Property
+    name: BaseProperty
+    returnTypeName: string
+    signature: public override string BaseProperty { get; set; }
+    isOverride: true
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass
+    overriddenMember: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.BaseClass.BaseProperty
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass.BaseProperty
+    remarks: This property overrides the base implementation.
+    summary: Gets or sets the base property with overridden behavior.
+  - accessibility: Public
+    memberKind: Method
+    methodKind: PropertyGet
+    name: get_BaseProperty
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: string
+      name: String
+      signature: string
+      typeKind: Class
+      isExternalReference: true
+      displayName: string
+    returnTypeName: string
+    signature: public virtual string BaseProperty.get
+    isInherited: true
+    isVirtual: true
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.BaseClass
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.BaseClass.BaseProperty.get
+  - accessibility: Public
+    memberKind: Method
+    methodKind: PropertySet
+    name: set_BaseProperty
+    parameters:
+    - name: value
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: string
+        name: String
+        signature: string
+        typeKind: Class
+        isExternalReference: true
+        displayName: string
+      typeName: string
+      displayName: string value
+    returnTypeName: void
+    signature: public virtual void BaseProperty.set
+    isInherited: true
+    isVirtual: true
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.BaseClass
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.BaseClass.BaseProperty.set
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: VirtualMethod
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: string
+      name: String
+      signature: string
+      typeKind: Class
+      isExternalReference: true
+      displayName: string
+    returnTypeName: string
+    signature: public virtual string VirtualMethod()
+    isInherited: true
+    isVirtual: true
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.BaseClass
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.BaseClass.VirtualMethod()
+    returns: A string value.
+    summary: A virtual method that can be overridden.
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: BaseMethod
+    returnTypeName: void
+    signature: public void BaseMethod()
+    isInherited: true
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.BaseClass
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.BaseClass.BaseMethod()
+    summary: A method in the base class.
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Constructor
+    name: .ctor
+    returnTypeName: void
+    signature: public BaseClass()
+    isInherited: true
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.BaseClass
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.BaseClass.BaseClass()
+  - accessibility: Public
+    memberKind: Property
+    name: BaseProperty
+    returnTypeName: string
+    signature: public virtual string BaseProperty { get; set; }
+    isInherited: true
+    isVirtual: true
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.BaseClass
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.BaseClass.BaseProperty
+    summary: Gets or sets the base property.
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: GetType
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: System.Type
+      name: Type
+      signature: System.Type
+      typeKind: Class
+      isExternalReference: true
+      displayName: System.Type
+    returnTypeName: System.Type
+    signature: public System.Type GetType()
+    isInherited: true
+    declaringTypeName: object
+    displayName: object.GetType()
+  - accessibility: ProtectedOrInternal
+    memberKind: Method
+    methodKind: Ordinary
+    name: MemberwiseClone
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: object
+      name: Object
+      signature: object
+      typeKind: Class
+      isExternalReference: true
+      displayName: object
+    returnTypeName: object
+    signature: protected internal object MemberwiseClone()
+    isInherited: true
+    declaringTypeName: object
+    displayName: object.MemberwiseClone()
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Constructor
+    name: .ctor
+    returnTypeName: void
+    signature: public Object()
+    isInherited: true
+    declaringTypeName: object
+    displayName: object.Object()
+  - accessibility: Protected
+    memberKind: Method
+    methodKind: Destructor
+    name: Finalize
+    returnTypeName: void
+    signature: protected ~Object()
+    isInherited: true
+    declaringTypeName: object
+    displayName: object.~Object()
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: ToString
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: string?
+      name: String
+      signature: string?
+      typeKind: Class
+      isExternalReference: true
+      displayName: string?
+    returnTypeName: string?
+    signature: public virtual string ToString()
+    isInherited: true
+    isVirtual: true
+    declaringTypeName: object
+    displayName: object.ToString()
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: Equals
+    parameters:
+    - name: obj
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: object?
+        name: Object
+        signature: object?
+        typeKind: Class
+        isExternalReference: true
+        displayName: object?
+      typeName: object?
+      displayName: object? obj
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: bool
+      name: Boolean
+      signature: bool
+      typeKind: Struct
+      isExternalReference: true
+      displayName: bool
+    returnTypeName: bool
+    signature: public virtual bool Equals(object obj)
+    isInherited: true
+    isVirtual: true
+    declaringTypeName: object
+    displayName: object.Equals(object?)
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: Equals
+    parameters:
+    - name: objA
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: object?
+        name: Object
+        signature: object?
+        typeKind: Class
+        isExternalReference: true
+        displayName: object?
+      typeName: object?
+      displayName: object? objA
+    - name: objB
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: object?
+        name: Object
+        signature: object?
+        typeKind: Class
+        isExternalReference: true
+        displayName: object?
+      typeName: object?
+      displayName: object? objB
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: bool
+      name: Boolean
+      signature: bool
+      typeKind: Struct
+      isExternalReference: true
+      displayName: bool
+    returnTypeName: bool
+    signature: public static bool Equals(object objA, object objB)
+    isInherited: true
+    declaringTypeName: object
+    displayName: object.Equals(object?, object?)
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: ReferenceEquals
+    parameters:
+    - name: objA
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: object?
+        name: Object
+        signature: object?
+        typeKind: Class
+        isExternalReference: true
+        displayName: object?
+      typeName: object?
+      displayName: object? objA
+    - name: objB
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: object?
+        name: Object
+        signature: object?
+        typeKind: Class
+        isExternalReference: true
+        displayName: object?
+      typeName: object?
+      displayName: object? objB
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: bool
+      name: Boolean
+      signature: bool
+      typeKind: Struct
+      isExternalReference: true
+      displayName: bool
+    returnTypeName: bool
+    signature: public static bool ReferenceEquals(object objA, object objB)
+    isInherited: true
+    declaringTypeName: object
+    displayName: object.ReferenceEquals(object?, object?)
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: GetHashCode
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: int
+      name: Int32
+      signature: int
+      typeKind: Struct
+      isExternalReference: true
+      displayName: int
+    returnTypeName: int
+    signature: public virtual int GetHashCode()
+    isInherited: true
+    isVirtual: true
+    declaringTypeName: object
+    displayName: object.GetHashCode()
+  assemblyName: CloudNimble.DotNetDocs.Tests.Shared
+  fullName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass
+  name: DerivedClass
+  signature: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass
+  typeKind: Class
+  displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass
+  examples: >-
+    <code>
+                var derived = new DerivedClass();
+                var result = derived.VirtualMethod();
+                </code>
+  remarks: This class inherits from BaseClass and overrides some members.
+  summary: A derived class for testing inheritance documentation.
+- baseType: System.Object
+  members:
+  - accessibility: Public
+    memberKind: Method
+    methodKind: PropertyGet
+    name: get_ResourceName
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: string
+      name: String
+      signature: string
+      typeKind: Class
+      isExternalReference: true
+      displayName: string
+    returnTypeName: string
+    signature: public string ResourceName.get
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DisposableClass
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DisposableClass.ResourceName.get
+  - accessibility: Public
+    memberKind: Method
+    methodKind: PropertySet
+    name: set_ResourceName
+    parameters:
+    - name: value
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: string
+        name: String
+        signature: string
+        typeKind: Class
+        isExternalReference: true
+        displayName: string
+      typeName: string
+      displayName: string value
+    returnTypeName: void
+    signature: public void ResourceName.set
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DisposableClass
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DisposableClass.ResourceName.set
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: Dispose
+    returnTypeName: void
+    signature: public void Dispose()
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DisposableClass
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DisposableClass.Dispose()
+    remarks: Implements the IDisposable pattern.
+    summary: Disposes the resources used by this instance.
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: UseResource
+    returnTypeName: void
+    signature: public void UseResource()
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DisposableClass
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DisposableClass.UseResource()
+    exceptions:
+    - description: Thrown if the object has been disposed.
+      type: ObjectDisposedException
+    summary: Uses the resource.
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Constructor
+    name: .ctor
+    returnTypeName: void
+    signature: public DisposableClass()
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DisposableClass
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DisposableClass.DisposableClass()
+  - accessibility: Public
+    memberKind: Property
+    name: ResourceName
+    returnTypeName: string
+    signature: public string ResourceName { get; set; }
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DisposableClass
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DisposableClass.ResourceName
+    summary: Gets or sets the resource name.
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: GetType
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: System.Type
+      name: Type
+      signature: System.Type
+      typeKind: Class
+      isExternalReference: true
+      displayName: System.Type
+    returnTypeName: System.Type
+    signature: public System.Type GetType()
+    isInherited: true
+    declaringTypeName: object
+    displayName: object.GetType()
+  - accessibility: ProtectedOrInternal
+    memberKind: Method
+    methodKind: Ordinary
+    name: MemberwiseClone
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: object
+      name: Object
+      signature: object
+      typeKind: Class
+      isExternalReference: true
+      displayName: object
+    returnTypeName: object
+    signature: protected internal object MemberwiseClone()
+    isInherited: true
+    declaringTypeName: object
+    displayName: object.MemberwiseClone()
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Constructor
+    name: .ctor
+    returnTypeName: void
+    signature: public Object()
+    isInherited: true
+    declaringTypeName: object
+    displayName: object.Object()
+  - accessibility: Protected
+    memberKind: Method
+    methodKind: Destructor
+    name: Finalize
+    returnTypeName: void
+    signature: protected ~Object()
+    isInherited: true
+    declaringTypeName: object
+    displayName: object.~Object()
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: ToString
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: string?
+      name: String
+      signature: string?
+      typeKind: Class
+      isExternalReference: true
+      displayName: string?
+    returnTypeName: string?
+    signature: public virtual string ToString()
+    isInherited: true
+    isVirtual: true
+    declaringTypeName: object
+    displayName: object.ToString()
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: Equals
+    parameters:
+    - name: obj
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: object?
+        name: Object
+        signature: object?
+        typeKind: Class
+        isExternalReference: true
+        displayName: object?
+      typeName: object?
+      displayName: object? obj
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: bool
+      name: Boolean
+      signature: bool
+      typeKind: Struct
+      isExternalReference: true
+      displayName: bool
+    returnTypeName: bool
+    signature: public virtual bool Equals(object obj)
+    isInherited: true
+    isVirtual: true
+    declaringTypeName: object
+    displayName: object.Equals(object?)
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: Equals
+    parameters:
+    - name: objA
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: object?
+        name: Object
+        signature: object?
+        typeKind: Class
+        isExternalReference: true
+        displayName: object?
+      typeName: object?
+      displayName: object? objA
+    - name: objB
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: object?
+        name: Object
+        signature: object?
+        typeKind: Class
+        isExternalReference: true
+        displayName: object?
+      typeName: object?
+      displayName: object? objB
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: bool
+      name: Boolean
+      signature: bool
+      typeKind: Struct
+      isExternalReference: true
+      displayName: bool
+    returnTypeName: bool
+    signature: public static bool Equals(object objA, object objB)
+    isInherited: true
+    declaringTypeName: object
+    displayName: object.Equals(object?, object?)
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: ReferenceEquals
+    parameters:
+    - name: objA
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: object?
+        name: Object
+        signature: object?
+        typeKind: Class
+        isExternalReference: true
+        displayName: object?
+      typeName: object?
+      displayName: object? objA
+    - name: objB
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: object?
+        name: Object
+        signature: object?
+        typeKind: Class
+        isExternalReference: true
+        displayName: object?
+      typeName: object?
+      displayName: object? objB
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: bool
+      name: Boolean
+      signature: bool
+      typeKind: Struct
+      isExternalReference: true
+      displayName: bool
+    returnTypeName: bool
+    signature: public static bool ReferenceEquals(object objA, object objB)
+    isInherited: true
+    declaringTypeName: object
+    displayName: object.ReferenceEquals(object?, object?)
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: GetHashCode
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: int
+      name: Int32
+      signature: int
+      typeKind: Struct
+      isExternalReference: true
+      displayName: int
+    returnTypeName: int
+    signature: public virtual int GetHashCode()
+    isInherited: true
+    isVirtual: true
+    declaringTypeName: object
+    displayName: object.GetHashCode()
+  assemblyName: CloudNimble.DotNetDocs.Tests.Shared
+  fullName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DisposableClass
+  name: DisposableClass
+  signature: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DisposableClass
+  typeKind: Class
+  displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DisposableClass
+  examples: >-
+    <code>
+                using (var disposable = new DisposableClass())
+                {
+                    disposable.UseResource();
+                }
+                </code>
+  relatedApis:
+  - System.IDisposable
+  remarks: This class demonstrates how interface implementation is documented.
+  summary: A class that implements IDisposable for testing interface documentation.
+- members:
+  - accessibility: Public
+    memberKind: Method
+    methodKind: PropertyGet
+    name: get_TestValue
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: string
+      name: String
+      signature: string
+      typeKind: Class
+      isExternalReference: true
+      displayName: string
+    returnTypeName: string
+    signature: string TestValue.get
+    isAbstract: true
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ITestInterface
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ITestInterface.TestValue.get
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: TestMethod
+    returnTypeName: void
+    signature: void TestMethod()
+    isAbstract: true
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ITestInterface
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ITestInterface.TestMethod()
+    returns: The result of the test operation.
+    summary: Performs a test operation.
+  - accessibility: Public
+    memberKind: Property
+    name: TestValue
+    returnTypeName: string
+    signature: string TestValue { get; }
+    isAbstract: true
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ITestInterface
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ITestInterface.TestValue
+    summary: Gets the test value.
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: GetFormattedValue
+    parameters:
+    - name: instance
+      parameterType:
+        assemblyName: CloudNimble.DotNetDocs.Tests.Shared
+        fullName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ITestInterface
+        name: ITestInterface
+        signature: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ITestInterface
+        typeKind: Interface
+        isExternalReference: true
+        displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ITestInterface
+      typeName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ITestInterface
+      displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ITestInterface instance
+      usage: The interface instance.
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: string
+      name: String
+      signature: string
+      typeKind: Class
+      isExternalReference: true
+      displayName: string
+    returnTypeName: string
+    signature: public static string GetFormattedValue(CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ITestInterface instance)
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.TestsShared_ITestInterfaceExtensions
+    isExtensionMethod: true
+    extendedTypeName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ITestInterface
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.TestsShared_ITestInterfaceExtensions.GetFormattedValue(CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ITestInterface)
+    examples: >-
+      <code>
+                  ITestInterface test = new TestImplementation();
+                  var formatted = test.GetFormattedValue();
+                  </code>
+    returns: A formatted string containing the test value.
+    summary: Gets a formatted string from the interface.
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: Validate
+    parameters:
+    - name: instance
+      parameterType:
+        assemblyName: CloudNimble.DotNetDocs.Tests.Shared
+        fullName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ITestInterface
+        name: ITestInterface
+        signature: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ITestInterface
+        typeKind: Interface
+        isExternalReference: true
+        displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ITestInterface
+      typeName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ITestInterface
+      displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ITestInterface instance
+      usage: The interface instance.
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: bool
+      name: Boolean
+      signature: bool
+      typeKind: Struct
+      isExternalReference: true
+      displayName: bool
+    returnTypeName: bool
+    signature: public static bool Validate(CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ITestInterface instance)
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.TestsShared_ITestInterfaceExtensions
+    isExtensionMethod: true
+    extendedTypeName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ITestInterface
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.TestsShared_ITestInterfaceExtensions.Validate(CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ITestInterface)
+    remarks: This extension provides common validation logic for all ITestInterface implementers.
+    returns: True if the instance is valid, otherwise false.
+    summary: Validates the interface instance.
+  assemblyName: CloudNimble.DotNetDocs.Tests.Shared
+  fullName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ITestInterface
+  name: ITestInterface
+  signature: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ITestInterface
+  typeKind: Interface
+  displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ITestInterface
+  remarks: >-
+    This interface is used to test extension methods on interfaces and to verify
+                that inherited members from interfaces are properly documented.
+  summary: A test interface for demonstrating interface inheritance and extension methods.
+- baseType: System.Object
+  members:
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: DoWork
+    returnTypeName: void
+    signature: public void DoWork()
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.SimpleClass
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.SimpleClass.DoWork()
+    remarks: This method doesn't actually do anything, but it has documentation.
+    summary: Performs some work.
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Constructor
+    name: .ctor
+    returnTypeName: void
+    signature: public SimpleClass()
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.SimpleClass
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.SimpleClass.SimpleClass()
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: GetType
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: System.Type
+      name: Type
+      signature: System.Type
+      typeKind: Class
+      isExternalReference: true
+      displayName: System.Type
+    returnTypeName: System.Type
+    signature: public System.Type GetType()
+    isInherited: true
+    declaringTypeName: object
+    displayName: object.GetType()
+  - accessibility: ProtectedOrInternal
+    memberKind: Method
+    methodKind: Ordinary
+    name: MemberwiseClone
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: object
+      name: Object
+      signature: object
+      typeKind: Class
+      isExternalReference: true
+      displayName: object
+    returnTypeName: object
+    signature: protected internal object MemberwiseClone()
+    isInherited: true
+    declaringTypeName: object
+    displayName: object.MemberwiseClone()
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Constructor
+    name: .ctor
+    returnTypeName: void
+    signature: public Object()
+    isInherited: true
+    declaringTypeName: object
+    displayName: object.Object()
+  - accessibility: Protected
+    memberKind: Method
+    methodKind: Destructor
+    name: Finalize
+    returnTypeName: void
+    signature: protected ~Object()
+    isInherited: true
+    declaringTypeName: object
+    displayName: object.~Object()
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: ToString
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: string?
+      name: String
+      signature: string?
+      typeKind: Class
+      isExternalReference: true
+      displayName: string?
+    returnTypeName: string?
+    signature: public virtual string ToString()
+    isInherited: true
+    isVirtual: true
+    declaringTypeName: object
+    displayName: object.ToString()
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: Equals
+    parameters:
+    - name: obj
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: object?
+        name: Object
+        signature: object?
+        typeKind: Class
+        isExternalReference: true
+        displayName: object?
+      typeName: object?
+      displayName: object? obj
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: bool
+      name: Boolean
+      signature: bool
+      typeKind: Struct
+      isExternalReference: true
+      displayName: bool
+    returnTypeName: bool
+    signature: public virtual bool Equals(object obj)
+    isInherited: true
+    isVirtual: true
+    declaringTypeName: object
+    displayName: object.Equals(object?)
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: Equals
+    parameters:
+    - name: objA
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: object?
+        name: Object
+        signature: object?
+        typeKind: Class
+        isExternalReference: true
+        displayName: object?
+      typeName: object?
+      displayName: object? objA
+    - name: objB
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: object?
+        name: Object
+        signature: object?
+        typeKind: Class
+        isExternalReference: true
+        displayName: object?
+      typeName: object?
+      displayName: object? objB
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: bool
+      name: Boolean
+      signature: bool
+      typeKind: Struct
+      isExternalReference: true
+      displayName: bool
+    returnTypeName: bool
+    signature: public static bool Equals(object objA, object objB)
+    isInherited: true
+    declaringTypeName: object
+    displayName: object.Equals(object?, object?)
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: ReferenceEquals
+    parameters:
+    - name: objA
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: object?
+        name: Object
+        signature: object?
+        typeKind: Class
+        isExternalReference: true
+        displayName: object?
+      typeName: object?
+      displayName: object? objA
+    - name: objB
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: object?
+        name: Object
+        signature: object?
+        typeKind: Class
+        isExternalReference: true
+        displayName: object?
+      typeName: object?
+      displayName: object? objB
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: bool
+      name: Boolean
+      signature: bool
+      typeKind: Struct
+      isExternalReference: true
+      displayName: bool
+    returnTypeName: bool
+    signature: public static bool ReferenceEquals(object objA, object objB)
+    isInherited: true
+    declaringTypeName: object
+    displayName: object.ReferenceEquals(object?, object?)
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: GetHashCode
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: int
+      name: Int32
+      signature: int
+      typeKind: Struct
+      isExternalReference: true
+      displayName: int
+    returnTypeName: int
+    signature: public virtual int GetHashCode()
+    isInherited: true
+    isVirtual: true
+    declaringTypeName: object
+    displayName: object.GetHashCode()
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: ToDisplayString
+    parameters:
+    - name: instance
+      parameterType:
+        assemblyName: CloudNimble.DotNetDocs.Tests.Shared
+        fullName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.SimpleClass
+        name: SimpleClass
+        signature: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.SimpleClass
+        typeKind: Class
+        isExternalReference: true
+        displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.SimpleClass
+      typeName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.SimpleClass
+      displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.SimpleClass instance
+      usage: The SimpleClass instance.
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: string
+      name: String
+      signature: string
+      typeKind: Class
+      isExternalReference: true
+      displayName: string
+    returnTypeName: string
+    signature: public static string ToDisplayString(CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.SimpleClass instance)
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.TestsShared_SimpleClassExtensions
+    isExtensionMethod: true
+    extendedTypeName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.SimpleClass
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.TestsShared_SimpleClassExtensions.ToDisplayString(CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.SimpleClass)
+    examples: >-
+      <code>
+                  var simple = new SimpleClass();
+                  var display = simple.ToDisplayString();
+                  </code>
+    returns: A formatted string representation.
+    summary: Converts a SimpleClass instance to a display string.
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: IsValid
+    parameters:
+    - name: instance
+      parameterType:
+        assemblyName: CloudNimble.DotNetDocs.Tests.Shared
+        fullName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.SimpleClass
+        name: SimpleClass
+        signature: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.SimpleClass
+        typeKind: Class
+        isExternalReference: true
+        displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.SimpleClass
+      typeName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.SimpleClass
+      displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.SimpleClass instance
+      usage: The SimpleClass instance.
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: bool
+      name: Boolean
+      signature: bool
+      typeKind: Struct
+      isExternalReference: true
+      displayName: bool
+    returnTypeName: bool
+    signature: public static bool IsValid(CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.SimpleClass instance)
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.TestsShared_SimpleClassExtensions
+    isExtensionMethod: true
+    extendedTypeName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.SimpleClass
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.TestsShared_SimpleClassExtensions.IsValid(CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.SimpleClass)
+    remarks: This is a simple validation extension for demonstration purposes.
+    returns: True if valid, otherwise false.
+    summary: Checks if a SimpleClass instance is valid.
+  assemblyName: CloudNimble.DotNetDocs.Tests.Shared
+  fullName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.SimpleClass
+  name: SimpleClass
+  signature: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.SimpleClass
+  typeKind: Class
+  displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.SimpleClass
+  examples: >-
+    <code>
+                var simple = new SimpleClass();
+                simple.DoWork();
+                </code>
+  remarks: >-
+    These are remarks about the SimpleClass. They provide additional context
+                and information beyond what's in the summary.
+  summary: A simple class for testing basic documentation extraction.
+- baseType: System.Object
+  members:
+  - accessibility: Public
+    memberKind: Method
+    methodKind: PropertyGet
+    name: get_TestValue
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: string
+      name: String
+      signature: string
+      typeKind: Class
+      isExternalReference: true
+      displayName: string
+    returnTypeName: string
+    signature: public string TestValue.get
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.TestImplementation
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.TestImplementation.TestValue.get
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: TestMethod
+    returnTypeName: void
+    signature: public void TestMethod()
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.TestImplementation
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.TestImplementation.TestMethod()
+    summary: Performs a test operation.
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: AdditionalMethod
+    returnTypeName: void
+    signature: public void AdditionalMethod()
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.TestImplementation
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.TestImplementation.AdditionalMethod()
+    summary: An additional method specific to the implementation.
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Constructor
+    name: .ctor
+    returnTypeName: void
+    signature: public TestImplementation()
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.TestImplementation
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.TestImplementation.TestImplementation()
+  - accessibility: Public
+    memberKind: Property
+    name: TestValue
+    returnTypeName: string
+    signature: public string TestValue { get; }
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.TestImplementation
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.TestImplementation.TestValue
+    summary: Gets the test value.
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: GetType
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: System.Type
+      name: Type
+      signature: System.Type
+      typeKind: Class
+      isExternalReference: true
+      displayName: System.Type
+    returnTypeName: System.Type
+    signature: public System.Type GetType()
+    isInherited: true
+    declaringTypeName: object
+    displayName: object.GetType()
+  - accessibility: ProtectedOrInternal
+    memberKind: Method
+    methodKind: Ordinary
+    name: MemberwiseClone
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: object
+      name: Object
+      signature: object
+      typeKind: Class
+      isExternalReference: true
+      displayName: object
+    returnTypeName: object
+    signature: protected internal object MemberwiseClone()
+    isInherited: true
+    declaringTypeName: object
+    displayName: object.MemberwiseClone()
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Constructor
+    name: .ctor
+    returnTypeName: void
+    signature: public Object()
+    isInherited: true
+    declaringTypeName: object
+    displayName: object.Object()
+  - accessibility: Protected
+    memberKind: Method
+    methodKind: Destructor
+    name: Finalize
+    returnTypeName: void
+    signature: protected ~Object()
+    isInherited: true
+    declaringTypeName: object
+    displayName: object.~Object()
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: ToString
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: string?
+      name: String
+      signature: string?
+      typeKind: Class
+      isExternalReference: true
+      displayName: string?
+    returnTypeName: string?
+    signature: public virtual string ToString()
+    isInherited: true
+    isVirtual: true
+    declaringTypeName: object
+    displayName: object.ToString()
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: Equals
+    parameters:
+    - name: obj
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: object?
+        name: Object
+        signature: object?
+        typeKind: Class
+        isExternalReference: true
+        displayName: object?
+      typeName: object?
+      displayName: object? obj
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: bool
+      name: Boolean
+      signature: bool
+      typeKind: Struct
+      isExternalReference: true
+      displayName: bool
+    returnTypeName: bool
+    signature: public virtual bool Equals(object obj)
+    isInherited: true
+    isVirtual: true
+    declaringTypeName: object
+    displayName: object.Equals(object?)
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: Equals
+    parameters:
+    - name: objA
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: object?
+        name: Object
+        signature: object?
+        typeKind: Class
+        isExternalReference: true
+        displayName: object?
+      typeName: object?
+      displayName: object? objA
+    - name: objB
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: object?
+        name: Object
+        signature: object?
+        typeKind: Class
+        isExternalReference: true
+        displayName: object?
+      typeName: object?
+      displayName: object? objB
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: bool
+      name: Boolean
+      signature: bool
+      typeKind: Struct
+      isExternalReference: true
+      displayName: bool
+    returnTypeName: bool
+    signature: public static bool Equals(object objA, object objB)
+    isInherited: true
+    declaringTypeName: object
+    displayName: object.Equals(object?, object?)
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: ReferenceEquals
+    parameters:
+    - name: objA
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: object?
+        name: Object
+        signature: object?
+        typeKind: Class
+        isExternalReference: true
+        displayName: object?
+      typeName: object?
+      displayName: object? objA
+    - name: objB
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: object?
+        name: Object
+        signature: object?
+        typeKind: Class
+        isExternalReference: true
+        displayName: object?
+      typeName: object?
+      displayName: object? objB
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: bool
+      name: Boolean
+      signature: bool
+      typeKind: Struct
+      isExternalReference: true
+      displayName: bool
+    returnTypeName: bool
+    signature: public static bool ReferenceEquals(object objA, object objB)
+    isInherited: true
+    declaringTypeName: object
+    displayName: object.ReferenceEquals(object?, object?)
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: GetHashCode
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: int
+      name: Int32
+      signature: int
+      typeKind: Struct
+      isExternalReference: true
+      displayName: int
+    returnTypeName: int
+    signature: public virtual int GetHashCode()
+    isInherited: true
+    isVirtual: true
+    declaringTypeName: object
+    displayName: object.GetHashCode()
+  assemblyName: CloudNimble.DotNetDocs.Tests.Shared
+  fullName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.TestImplementation
+  name: TestImplementation
+  signature: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.TestImplementation
+  typeKind: Class
+  displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.TestImplementation
+  relatedApis:
+  - CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ITestInterface
+  remarks: >-
+    This class implements ITestInterface to demonstrate interface member inheritance
+                in documentation generation.
+  summary: A test implementation of ITestInterface.
+displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios

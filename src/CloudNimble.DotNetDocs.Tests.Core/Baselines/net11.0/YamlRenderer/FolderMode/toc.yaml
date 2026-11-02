@@ -1,0 +1,70 @@
+title: CloudNimble.DotNetDocs.Tests.Shared
+items:
+- name: CloudNimble.DotNetDocs.Tests.Shared
+  href: index.yaml
+  types:
+  - name: DotNetDocsTestBase
+    kind: Class
+  - name: SampleClass
+    kind: Class
+- name: CloudNimble.DotNetDocs.Tests.Shared.AccessModifiers
+  href: index.yaml
+  types:
+  - name: MixedAccessClass
+    kind: Class
+- name: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios
+  href: index.yaml
+  types:
+  - name: BaseClass
+    kind: Class
+  - name: ClassWithMethods
+    kind: Class
+  - name: ClassWithProperties
+    kind: Class
+  - name: DerivedClass
+    kind: Class
+  - name: DisposableClass
+    kind: Class
+  - name: ITestInterface
+    kind: Interface
+  - name: SimpleClass
+    kind: Class
+  - name: TestImplementation
+    kind: Class
+- name: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases
+  href: index.yaml
+  types:
+  - name: ClassWithMinimalDocs
+    kind: Class
+  - name: ClassWithNoDocs
+    kind: Class
+  - name: ClassWithSpecialCharacters
+    kind: Class
+  - name: ClassWithFullDocs
+    kind: Class
+- name: CloudNimble.DotNetDocs.Tests.Shared.Enums
+  href: index.yaml
+  types:
+  - name: ByteEnum
+    kind: Class
+  - name: FlagsEnum
+    kind: Class
+  - name: LongEnum
+    kind: Class
+  - name: SimpleEnum
+    kind: Class
+- name: CloudNimble.DotNetDocs.Tests.Shared.Parameters
+  href: index.yaml
+  types:
+  - name: ParameterVariations
+    kind: Class
+- name: System.Collections.Generic
+  href: index.yaml
+  types:
+  - name: List
+    kind: Error
+- name: System
+  href: index.yaml
+  types:
+  - name: String
+    kind: Class

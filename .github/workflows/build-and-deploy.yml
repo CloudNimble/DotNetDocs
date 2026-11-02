@@ -24,7 +24,7 @@ permissions:
   actions: write
 
 env:
-   DOTNET_VERSION: '10.0.x'
+   DOTNET_VERSION: '11.0.x'
    SOLUTION_FILE: 'src/CloudNimble.DotNetDocs.slnx'
   
 jobs:
@@ -32,6 +32,7 @@ jobs:
     runs-on: windows-latest
     outputs:
       version: ${{ steps.version.outputs.VERSION }}
+      mintlify_version: ${{ steps.version.outputs.MINTLIFY_VERSION }}
 
     steps:
     - name: Checkout code
@@ -43,16 +44,16 @@ jobs:
       shell: pwsh
       run: |
          Write-Host "📥 Installing .NET versions..."
-         # Install .NET 8, 9, 10
-         $versions = @("8.0", "9.0", "10.0")
+         # Install .NET 8, 9, 10, 11
+         $versions = @("8.0", "9.0", "10.0", "11.0")
          foreach ($version in $versions) {
            Write-Host "Installing .NET $version..."
            Invoke-WebRequest -Uri "https://dot.net/v1/dotnet-install.ps1" -OutFile "dotnet-install.ps1"
-           # if ($version -eq "10.0") {
-           #   ./dotnet-install.ps1 -Channel $version -Quality preview -InstallDir "$env:ProgramFiles\dotnet"
-           # } else {
-           ./dotnet-install.ps1 -Channel $version -InstallDir "$env:ProgramFiles\dotnet"
-           # }
+           if ($version -eq "11.0") {
+             ./dotnet-install.ps1 -Channel $version -Quality preview -InstallDir "$env:ProgramFiles\dotnet"
+           } else {
+             ./dotnet-install.ps1 -Channel $version -InstallDir "$env:ProgramFiles\dotnet"
+           }
          }
          
          # Add to PATH for this job
@@ -65,63 +66,67 @@ jobs:
       id: version
       shell: pwsh
       run: |
-        # Get version components from repository variables
-        $majorVersion = "${{ vars.VERSION_MAJOR }}"
-        if ([string]::IsNullOrEmpty($majorVersion)) { $majorVersion = "1" }
-        
-        $minorVersion = "${{ vars.VERSION_MINOR }}"
-        if ([string]::IsNullOrEmpty($minorVersion)) { $minorVersion = "0" }
-
-        $patchVersion = "${{ vars.VERSION_PATCH }}"
-        if ([string]::IsNullOrEmpty($patchVersion)) { $patchVersion = "0" }
-        
-        $previewSuffix = "${{ vars.VERSION_PREVIEW_SUFFIX }}"
-        if ([string]::IsNullOrEmpty($previewSuffix)) { $previewSuffix = "0" }
-        
-        Write-Host "🔢 Version variables: MAJOR=$majorVersion, MINOR=$minorVersion, PATCH=$patchVersion, PREVIEW_SUFFIX=$previewSuffix"
-        
-        # Determine version based on branch
-        $ref = "${{ github.ref }}"
-        if ($ref -eq "refs/heads/main") {
-          # Main branch: use patch version from repo variables
-          Write-Host "🏷️ Main branch: using PATCH_VERSION from repo variables"
-
-          $version = "$majorVersion.$minorVersion.$patchVersion"
-          $buildNumber = $patchVersion
-
-          # Calculate next patch version for update after successful deployment
-          $nextPatchVersion = [int]$patchVersion + 1
-          echo "NEXT_PATCH_VERSION=$nextPatchVersion" >> $env:GITHUB_OUTPUT
-
-          Write-Host "✅ Main branch version: $version (next patch will be $nextPatchVersion)"
+        function Get-Var([string]$value, [string]$fallback) {
+          if ([string]::IsNullOrEmpty($value)) { return $fallback }
+          return $value
         }
-        elseif ($ref -eq "refs/heads/dev") {
-          # Dev branch: use preview versioning with incremented suffix
-          $nextPreviewSuffix = [int]$previewSuffix + 1
-          $version = "$majorVersion.$minorVersion.$patchVersion-preview.$nextPreviewSuffix"
-          $buildNumber = 0
 
-          # Store the next preview suffix for later update
-          echo "NEXT_PREVIEW_SUFFIX=$nextPreviewSuffix" >> $env:GITHUB_OUTPUT
-          Write-Host "✅ Dev branch version: $version (next suffix will be $nextPreviewSuffix)"
-        }
-        else {
-          # Other branches (features/PRs): use CI versioning with timestamp
+        function Compose-Version([string]$major, [string]$minor, [string]$patch, [string]$previewSuffix, [string]$ref) {
+          if ($ref -eq "refs/heads/main") {
+            return @{
+              Version = "$major.$minor.$patch"
+              NextPatch = ([int]$patch + 1).ToString()
+              NextPreview = $null
+            }
+          }
+          if ($ref -eq "refs/heads/dev") {
+            $next = [int]$previewSuffix + 1
+            return @{
+              Version = "$major.$minor.$patch-preview.$next"
+              NextPatch = $null
+              NextPreview = $next.ToString()
+            }
+          }
           $timestamp = Get-Date -Format "yyyyMMdd-HHmmss" -AsUTC
-          $version = "$majorVersion.$minorVersion.$patchVersion-CI-$timestamp"
-          $buildNumber = 0
-          Write-Host "✅ Feature branch version: $version"
+          return @{
+            Version = "$major.$minor.$patch-CI-$timestamp"
+            NextPatch = $null
+            NextPreview = $null
+          }
         }
-        
-        # Output variables
-        echo "VERSION=$version" >> $env:GITHUB_OUTPUT
+
+        $ref = "${{ github.ref }}"
+
+        $majorVersion = Get-Var "${{ vars.VERSION_MAJOR }}" "1"
+        $minorVersion = Get-Var "${{ vars.VERSION_MINOR }}" "5"
+        $patchVersion = Get-Var "${{ vars.VERSION_PATCH }}" "0"
+        $previewSuffix = Get-Var "${{ vars.VERSION_PREVIEW_SUFFIX }}" "0"
+
+        $mintlifyMajor = Get-Var "${{ vars.MINTLIFY_VERSION_MAJOR }}" "2"
+        $mintlifyMinor = Get-Var "${{ vars.MINTLIFY_VERSION_MINOR }}" "0"
+        $mintlifyPatch = Get-Var "${{ vars.MINTLIFY_VERSION_PATCH }}" "0"
+        $mintlifyPreview = Get-Var "${{ vars.MINTLIFY_VERSION_PREVIEW_SUFFIX }}" "0"
+
+        Write-Host "🔢 DotNetDocs: MAJOR=$majorVersion, MINOR=$minorVersion, PATCH=$patchVersion, PREVIEW_SUFFIX=$previewSuffix"
+        Write-Host "🔢 Mintlify:   MAJOR=$mintlifyMajor, MINOR=$mintlifyMinor, PATCH=$mintlifyPatch, PREVIEW_SUFFIX=$mintlifyPreview"
+
+        $dotnetDocs = Compose-Version $majorVersion $minorVersion $patchVersion $previewSuffix $ref
+        $mintlify = Compose-Version $mintlifyMajor $mintlifyMinor $mintlifyPatch $mintlifyPreview $ref
+
+        if ($dotnetDocs.NextPatch) { echo "NEXT_PATCH_VERSION=$($dotnetDocs.NextPatch)" >> $env:GITHUB_OUTPUT }
+        if ($dotnetDocs.NextPreview) { echo "NEXT_PREVIEW_SUFFIX=$($dotnetDocs.NextPreview)" >> $env:GITHUB_OUTPUT }
+        if ($mintlify.NextPatch) { echo "NEXT_MINTLIFY_PATCH_VERSION=$($mintlify.NextPatch)" >> $env:GITHUB_OUTPUT }
+        if ($mintlify.NextPreview) { echo "NEXT_MINTLIFY_PREVIEW_SUFFIX=$($mintlify.NextPreview)" >> $env:GITHUB_OUTPUT }
+
+        echo "VERSION=$($dotnetDocs.Version)" >> $env:GITHUB_OUTPUT
+        echo "MINTLIFY_VERSION=$($mintlify.Version)" >> $env:GITHUB_OUTPUT
         echo "MAJOR_VERSION=$majorVersion" >> $env:GITHUB_OUTPUT
         echo "MINOR_VERSION=$minorVersion" >> $env:GITHUB_OUTPUT
         echo "PATCH_VERSION=$patchVersion" >> $env:GITHUB_OUTPUT
-        echo "BUILD_NUMBER=$buildNumber" >> $env:GITHUB_OUTPUT
         echo "BRANCH_TYPE=$(if ($ref -eq 'refs/heads/main') { 'main' } elseif ($ref -eq 'refs/heads/dev') { 'dev' } else { 'feature' })" >> $env:GITHUB_OUTPUT
-        
-        Write-Host "📦 Final version: $version"
+
+        Write-Host "📦 DotNetDocs version: $($dotnetDocs.Version)"
+        Write-Host "📦 Mintlify version:   $($mintlify.Version)"
 
     - name: Update .docsproj SDK references
       shell: pwsh
@@ -182,24 +187,24 @@ jobs:
       run: |
         Write-Host "🔨 Building DotNetDocs.Sdk with version ${{ steps.version.outputs.VERSION }}"
         Write-Host "📦 First, build the SDK Tasks project..."
-        dotnet build src/CloudNimble.DotNetDocs.Sdk.Tasks/CloudNimble.DotNetDocs.Sdk.Tasks.csproj --configuration Release /p:Version=${{ steps.version.outputs.VERSION }}
+        dotnet build src/CloudNimble.DotNetDocs.Sdk.Tasks/CloudNimble.DotNetDocs.Sdk.Tasks.csproj --configuration Release /p:DotNetDocsPackageVersion=${{ steps.version.outputs.VERSION }} /p:MintlifyPackageVersion=${{ steps.version.outputs.MINTLIFY_VERSION }}
         Write-Host "✅ SDK Tasks built successfully"
         Write-Host "🔧 Now packing the SDK project..."
-        dotnet pack src/CloudNimble.DotNetDocs.Sdk/CloudNimble.DotNetDocs.Sdk.csproj --configuration Release --output "${{ env.LOCAL_NUGET_FEED }}" /p:Version=${{ steps.version.outputs.VERSION }} /p:PackageVersion=${{ steps.version.outputs.VERSION }}
+        dotnet pack src/CloudNimble.DotNetDocs.Sdk/CloudNimble.DotNetDocs.Sdk.csproj --configuration Release --output "${{ env.LOCAL_NUGET_FEED }}" /p:DotNetDocsPackageVersion=${{ steps.version.outputs.VERSION }} /p:MintlifyPackageVersion=${{ steps.version.outputs.MINTLIFY_VERSION }}
         Write-Host "📦 SDK package created and pushed to local feed"
 
     - name: Restore dependencies
       run: dotnet restore ${{ env.SOLUTION_FILE }}
 
     - name: Build solution
-      run: dotnet build ${{ env.SOLUTION_FILE }} --configuration Release --no-restore /p:Version=${{ steps.version.outputs.VERSION }} /p:PackageVersion=${{ steps.version.outputs.VERSION }}
+      run: dotnet build ${{ env.SOLUTION_FILE }} --configuration Release --no-restore /p:DotNetDocsPackageVersion=${{ steps.version.outputs.VERSION }} /p:MintlifyPackageVersion=${{ steps.version.outputs.MINTLIFY_VERSION }}
 
     - name: Test
       working-directory: src
       run: dotnet test --configuration Release --no-build
 
     - name: Pack
-      run: dotnet pack ${{ env.SOLUTION_FILE }} --configuration Release --no-build --output ./artifacts /p:PackageVersion=${{ steps.version.outputs.VERSION }}
+      run: dotnet pack ${{ env.SOLUTION_FILE }} --configuration Release --no-build --output ./artifacts /p:DotNetDocsPackageVersion=${{ steps.version.outputs.VERSION }} /p:MintlifyPackageVersion=${{ steps.version.outputs.MINTLIFY_VERSION }}
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v7
@@ -242,15 +247,25 @@ jobs:
         $previewSuffix = "${{ vars.VERSION_PREVIEW_SUFFIX }}"
         if ([string]::IsNullOrEmpty($previewSuffix)) { $previewSuffix = "0" }
 
+        $mintlifyPatch = "${{ vars.MINTLIFY_VERSION_PATCH }}"
+        if ([string]::IsNullOrEmpty($mintlifyPatch)) { $mintlifyPatch = "0" }
+
+        $mintlifyPreview = "${{ vars.MINTLIFY_VERSION_PREVIEW_SUFFIX }}"
+        if ([string]::IsNullOrEmpty($mintlifyPreview)) { $mintlifyPreview = "0" }
+
         $ref = "${{ github.ref }}"
         if ($ref -eq "refs/heads/main") {
           $nextPatchVersion = [int]$patchVersion + 1
+          $nextMintlifyPatch = [int]$mintlifyPatch + 1
           echo "NEXT_PATCH_VERSION=$nextPatchVersion" >> $env:GITHUB_OUTPUT
+          echo "NEXT_MINTLIFY_PATCH_VERSION=$nextMintlifyPatch" >> $env:GITHUB_OUTPUT
           echo "BRANCH_TYPE=main" >> $env:GITHUB_OUTPUT
         }
         elseif ($ref -eq "refs/heads/dev") {
           $nextPreviewSuffix = [int]$previewSuffix + 1
+          $nextMintlifyPreview = [int]$mintlifyPreview + 1
           echo "NEXT_PREVIEW_SUFFIX=$nextPreviewSuffix" >> $env:GITHUB_OUTPUT
+          echo "NEXT_MINTLIFY_PREVIEW_SUFFIX=$nextMintlifyPreview" >> $env:GITHUB_OUTPUT
           echo "BRANCH_TYPE=dev" >> $env:GITHUB_OUTPUT
         }
         else {
@@ -261,12 +276,12 @@ jobs:
       shell: pwsh
       run: |
          Write-Host "📥 Installing .NET versions..."
-         # Install .NET 8, 9, 10
-         $versions = @("8.0", "9.0", "10.0")
+         # Install .NET 8, 9, 10, 11
+         $versions = @("8.0", "9.0", "10.0", "11.0")
          foreach ($version in $versions) {
            Write-Host "Installing .NET $version..."
            Invoke-WebRequest -Uri "https://dot.net/v1/dotnet-install.ps1" -OutFile "dotnet-install.ps1"
-           if ($version -eq "10.0") {
+           if ($version -eq "11.0") {
              ./dotnet-install.ps1 -Channel $version -Quality preview -InstallDir "$env:ProgramFiles\dotnet"
            } else {
              ./dotnet-install.ps1 -Channel $version -InstallDir "$env:ProgramFiles\dotnet"
@@ -332,12 +347,16 @@ jobs:
         $nextSuffix = "${{ steps.version.outputs.NEXT_PREVIEW_SUFFIX }}"
         Write-Host "🔄 Updating VERSION_PREVIEW_SUFFIX to $nextSuffix"
 
+        $nextMintlifySuffix = "${{ steps.version.outputs.NEXT_MINTLIFY_PREVIEW_SUFFIX }}"
         try {
           gh variable set VERSION_PREVIEW_SUFFIX --body "$nextSuffix"
           Write-Host "✅ Successfully updated VERSION_PREVIEW_SUFFIX to $nextSuffix"
+
+          gh variable set MINTLIFY_VERSION_PREVIEW_SUFFIX --body "$nextMintlifySuffix"
+          Write-Host "✅ Successfully updated MINTLIFY_VERSION_PREVIEW_SUFFIX to $nextMintlifySuffix"
         }
         catch {
-          Write-Host "⚠️ Failed to update VERSION_PREVIEW_SUFFIX: $($_.Exception.Message)"
+          Write-Host "⚠️ Failed to update preview suffix variables: $($_.Exception.Message)"
           # Don't fail the build for this
         }
 
@@ -348,7 +367,8 @@ jobs:
         GH_TOKEN: ${{ secrets.REPO_ACCESS_TOKEN }}
       run: |
         $nextPatch = "${{ steps.version.outputs.NEXT_PATCH_VERSION }}"
-        Write-Host "🔄 Updating VERSION_PATCH to $nextPatch and resetting VERSION_PREVIEW_SUFFIX to 0"
+        $nextMintlifyPatch = "${{ steps.version.outputs.NEXT_MINTLIFY_PATCH_VERSION }}"
+        Write-Host "🔄 Updating VERSION_PATCH to $nextPatch and MINTLIFY_VERSION_PATCH to $nextMintlifyPatch"
 
         try {
           gh variable set VERSION_PATCH --body "$nextPatch"
@@ -356,6 +376,12 @@ jobs:
 
           gh variable set VERSION_PREVIEW_SUFFIX --body "0"
           Write-Host "✅ Successfully reset VERSION_PREVIEW_SUFFIX to 0"
+
+          gh variable set MINTLIFY_VERSION_PATCH --body "$nextMintlifyPatch"
+          Write-Host "✅ Successfully updated MINTLIFY_VERSION_PATCH to $nextMintlifyPatch"
+
+          gh variable set MINTLIFY_VERSION_PREVIEW_SUFFIX --body "0"
+          Write-Host "✅ Successfully reset MINTLIFY_VERSION_PREVIEW_SUFFIX to 0"
         }
         catch {
           Write-Host "⚠️ Failed to update version variables: $($_.Exception.Message)"
@@ -385,13 +411,19 @@ jobs:
       shell: pwsh
       run: |
          $version = "${{ needs.build.outputs.version }}"
-         Write-Host "Creating release for version: $version"
+         $mintlifyVersion = "${{ needs.build.outputs.mintlify_version }}"
+         Write-Host "Creating release for DotNetDocs $version / Mintlify $mintlifyVersion"
 
-         $packages = Get-ChildItem ./artifacts/*.nupkg | ForEach-Object { $_.Name -replace '\.nupkg$', '' }
          $packageList = ""
-         foreach ($package in $packages) {
-           $packageName = $package -replace "\.$version$", ""
-           $packageList += "- [$packageName](https://www.nuget.org/packages/$packageName/$version)`n"
+         Get-ChildItem ./artifacts/*.nupkg | ForEach-Object {
+           $base = $_.Name -replace '\.nupkg$', ''
+           if ($base -notmatch '^(.*?)\.(\d+.*)$') {
+             Write-Host "⚠️ Skipping unrecognized package name: $($_.Name)"
+             return
+           }
+           $packageName = $Matches[1]
+           $packageVersion = $Matches[2]
+           $packageList += "- [$packageName $packageVersion](https://www.nuget.org/packages/$packageName/$packageVersion)`n"
          }
 
          $lines = @(
@@ -403,13 +435,15 @@ jobs:
            "<Project Sdk=""DotNetDocs.Sdk/$version"">",
            "  <!-- That's it! -->",
            "</Project>",
-           '```'
+           '```',
+           "",
+           "Mintlify.Core $mintlifyVersion is included in this release and versions independently of DotNetDocs."
          )
          $body = $lines -join "`n"
          Set-Content -Path "./release-notes.md" -Value $body -Encoding utf8
 
     - name: Create GitHub Release
-      uses: softprops/action-gh-release@v2
+      uses: softprops/action-gh-release@v3
       with:
          tag_name: v${{ needs.build.outputs.version }}
          name: Release v${{ needs.build.outputs.version }}

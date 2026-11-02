@@ -26,9 +26,9 @@ Configuration for DotNetDocs-specific navigation properties.
 ## Remarks
 
 This class holds metadata that bridges .docsproj XML templates to Mintlify.Core,
-            but is not part of the Mintlify docs.json specification itself.
-            These properties control how DotNetDocs organizes and integrates documentation
-            into the Mintlify navigation structure.
+but is not part of the Mintlify docs.json specification itself.
+These properties control how DotNetDocs organizes and integrates documentation
+into the Mintlify navigation structure.
 
 ## Constructors
 
@@ -64,7 +64,7 @@ public CloudNimble.DotNetDocs.Mintlify.NavigationMode Mode { get; set; }
 
 #### Property Value
 
-Type: `CloudNimble.DotNetDocs.Mintlify.NavigationMode?`
+Type: `CloudNimble.DotNetDocs.Mintlify.NavigationMode`
 The navigation organization mode. Default is NavigationMode.Unified.
 
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Name
@@ -82,6 +82,28 @@ public string Name { get; set; }
 Type: `string?`
 The display name for the tab or product. If not specified, the project name will be used.
 
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> TrailingTabs
+
+Gets or sets template tabs that should be appended after DocumentationReference tabs.
+
+#### Syntax
+
+```csharp
+public System.Collections.Generic.List<Mintlify.Core.Models.TabConfig> TrailingTabs { get; set; }
+```
+
+#### Property Value
+
+Type: `System.Collections.Generic.List<Mintlify.Core.Models.TabConfig>`
+Tabs parsed from `&lt;Tab Position="End"&gt;` in the MintlifyTemplate.
+Empty when no trailing tabs are declared. Never serialized to docs.json.
+
+#### Remarks
+
+The renderer appends these tabs after `ApplyNavigationType`
+and `CombineReferencedNavigation` have added the root and
+collection tabs, matching a sibling-product href tab sitting at the end of the tab bar.
+
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Type
 
 Gets or sets the navigation type for this documentation project.
@@ -94,7 +116,7 @@ public CloudNimble.DotNetDocs.Mintlify.NavigationType Type { get; set; }
 
 #### Property Value
 
-Type: `CloudNimble.DotNetDocs.Mintlify.NavigationType?`
+Type: `CloudNimble.DotNetDocs.Mintlify.NavigationType`
 The navigation type. Default is NavigationType.Pages.
 
 ## Methods

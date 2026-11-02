@@ -26,7 +26,7 @@ Represents a version configuration for global navigation in the Mintlify documen
 ## Remarks
 
 This configuration defines a version option that appears globally across all sections
-            and pages, allowing users to switch between different versions of the documentation.
+and pages, allowing users to switch between different versions of the documentation.
 
 ## Constructors
 
@@ -62,12 +62,30 @@ public System.Nullable<bool> Default { get; set; }
 
 #### Property Value
 
-Type: `System.Nullable<bool>`
+Type: `System.Nullable<bool>?`
 
 #### Remarks
 
 When true, this version will be selected by default when users first visit
-            the documentation. Only one version should be marked as default.
+the documentation. Only one version should be marked as default.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Directory
+
+Gets or sets the directory layout for this version.
+
+#### Syntax
+
+```csharp
+public string Directory { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+
+#### Remarks
+
+Valid values are `none`, `accordion`, and `card`.
 
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Hidden
 
@@ -81,13 +99,13 @@ public System.Nullable<bool> Hidden { get; set; }
 
 #### Property Value
 
-Type: `System.Nullable<bool>`
+Type: `System.Nullable<bool>?`
 
 #### Remarks
 
 When true, this version option will not be visible in the version selector
-            unless specifically shown. This can be useful for versions that are deprecated,
-            in development, or not ready for public access.
+unless specifically shown. This can be useful for versions that are deprecated,
+in development, or not ready for public access.
 
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Href
 
@@ -106,8 +124,55 @@ Type: `string?`
 #### Remarks
 
 Specifies where users should be directed when they select this version.
-            Can be a relative path (e.g., "/v2/") or an absolute URL for a different domain
-            (e.g., "https://v2.docs.example.com/").
+Can be a relative path (e.g., "/v2/") or an absolute URL for a different domain
+(e.g., "https://v2.docs.example.com/").
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Sdk
+
+Gets or sets the SDK documentation artifact used to auto-populate pages.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.SdkRefConfig Sdk { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.SdkRefConfig?`
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Tag
+
+Gets or sets a short tag shown on the version selector.
+
+#### Syntax
+
+```csharp
+public string Tag { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+
+#### Remarks
+
+Badge label displayed next to the version, such as `Latest`,
+`Recommended`, or `Beta`.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Thumbnail
+
+Gets or sets thumbnail overrides for this version.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.NavThumbnailConfig Thumbnail { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.NavThumbnailConfig?`
 
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Version
 
@@ -126,8 +191,8 @@ Type: `string`
 #### Remarks
 
 Specifies the version name that will be displayed to users, such as "v1.0",
-            "v2.0", "latest", "beta", or any descriptive version label. This should be
-            concise and meaningful to your users. This is a required field.
+"v2.0", "latest", "beta", or any descriptive version label. This should be
+concise and meaningful to your users. This is a required field.
 
 ## Methods
 

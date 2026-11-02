@@ -59,6 +59,15 @@ namespace Mintlify.Core.Models
         public ApiSpecConfig? OpenApi { get; set; }
 
         /// <summary>
+        /// Gets or sets how optional fields are shown in the playground.
+        /// </summary>
+        /// <remarks>
+        /// Valid values are <c>static</c>, <c>expanded</c>, and <c>collapsed</c>.
+        /// </remarks>
+        [JsonPropertyName("optional")]
+        public string? Optional { get; set; }
+
+        /// <summary>
         /// Gets or sets the display settings for API parameters.
         /// </summary>
         /// <remarks>
@@ -77,18 +86,6 @@ namespace Mintlify.Core.Models
         /// </remarks>
         [JsonPropertyName("playground")]
         public ApiPlaygroundConfig? Playground { get; set; }
-
-        /// <summary>
-        /// Gets or sets whether to pass API requests through a proxy server.
-        /// </summary>
-        /// <remarks>
-        /// When true, API requests from the playground are routed through Mintlify's
-        /// proxy servers to handle CORS restrictions. This is a legacy property that
-        /// is superseded by Playground.Proxy but kept for backward compatibility.
-        /// Defaults to true when not specified.
-        /// </remarks>
-        [JsonPropertyName("proxy")]
-        public bool? Proxy { get; set; }
 
         /// <summary>
         /// Gets or sets the base URL display mode for API endpoints.

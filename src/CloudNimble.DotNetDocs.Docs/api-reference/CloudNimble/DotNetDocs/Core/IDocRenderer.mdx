@@ -24,7 +24,7 @@ Defines a renderer for documentation output generation.
 ## Remarks
 
 Implementations of this interface generate specific output formats (Markdown, JSON, YAML, etc.)
-            from the documentation model after all transformations have been applied.
+from the documentation model after all transformations have been applied.
 
 ## Methods
 
@@ -51,21 +51,11 @@ A task representing the asynchronous rendering operation.
 
 #### Remarks
 
+When model is null, the renderer should skip API reference generation but still process
+any other operations like navigation file merging (e.g., combining DocumentationReferences).
 
-
-
-            When model is null, the renderer should skip API reference generation but still process
-            any other operations like navigation file merging (e.g., combining DocumentationReferences).
-            
-
-
-
-
-            Renderers that support navigation combining (e.g., Mintlify) should access
-            Context.DocumentationReferences and combine navigation before saving their configuration.
-            
-
-
+Renderers that support navigation combining (e.g., Mintlify) should access
+Context.DocumentationReferences and combine navigation before saving their configuration.
 
 ### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> RenderPlaceholdersAsync <Badge color="orange">Abstract</Badge>
 

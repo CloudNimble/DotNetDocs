@@ -26,7 +26,7 @@ Represents the display settings for API parameters in the documentation.
 ## Remarks
 
 Controls how API parameters are displayed in the interactive playground
-            and documentation pages, including whether they are expanded by default.
+and documentation pages, including whether they are expanded by default.
 
 ## Constructors
 
@@ -52,31 +52,44 @@ public Object()
 
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Expanded
 
-Gets or sets whether to expand all parameters by default.
+Gets or sets how parameter fields are expanded in the playground.
 
 #### Syntax
 
 ```csharp
-public System.Nullable<bool> Expanded { get; set; }
+public string Expanded { get; set; }
 ```
 
 #### Property Value
 
-Type: `System.Nullable<bool>`
+Type: `string?`
 
 #### Examples
 
 ```csharp
 "params": {
-  "expanded": true
+  "expanded": "closed"
 }
 ```
 
 #### Remarks
 
-When true, all API parameters will be displayed in an expanded state.
-            When false or null, parameters will be collapsed by default.
-            Defaults to collapsed (false) when not specified.
+Valid values are `all` and `closed`. Assigning `true` or `false`
+(as strings) maps to `all` and `closed`. Boolean JSON tokens are not accepted.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Post
+
+Gets or sets OpenAPI keys rendered as ParamField pills for POST bodies.
+
+#### Syntax
+
+```csharp
+public System.Collections.Generic.List<string> Post { get; set; }
+```
+
+#### Property Value
+
+Type: `System.Collections.Generic.List<string>?`
 
 ## Methods
 
@@ -162,6 +175,27 @@ protected internal object MemberwiseClone()
 #### Returns
 
 Type: `object`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> NormalizeExpanded
+
+Maps legacy boolean-like values to the schema enum.
+
+#### Syntax
+
+```csharp
+public static string NormalizeExpanded(string value)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `value` | `string?` | The raw expanded value. |
+
+#### Returns
+
+Type: `string?`
+`all` or `closed` when the value is boolean-like; otherwise the trimmed input.
 
 ### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ReferenceEquals <Badge color="gray">Inherited</Badge>
 

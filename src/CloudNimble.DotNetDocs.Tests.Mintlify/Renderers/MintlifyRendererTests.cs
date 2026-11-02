@@ -1513,6 +1513,60 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
         }
 
         [TestMethod]
+        public void CombineReferencedNavigation_AddToTabs_CopiesGraphqlAndMcp()
+        {
+            var context = GetService<ProjectContext>();
+            var options = Options.Create(new MintlifyRendererOptions());
+            var docsJsonManager = new DocsJsonManager();
+
+            var collectionConfig = new DocsJsonConfig
+            {
+                Name = "Collection",
+                Navigation = new NavigationConfig
+                {
+                    Pages = ["introduction"]
+                }
+            };
+            docsJsonManager.Load(JsonSerializer.Serialize(collectionConfig, MintlifyConstants.JsonSerializerOptions));
+
+            var renderer = new MintlifyRenderer(context, options, docsJsonManager);
+
+            var refDocsPath = Path.Combine(context.DocumentationRootPath, "ref_graphql_docs.json");
+            var refConfig = new DocsJsonConfig
+            {
+                Name = "GraphQL Service",
+                Navigation = new NavigationConfig
+                {
+                    Graphql = new SpecRefConfig { Source = "schema.graphql", Directory = "api/graphql" },
+                    Mcp = new SpecRefConfig { Source = "mcp.json" },
+                    Pages = ["overview"]
+                }
+            };
+            File.WriteAllText(refDocsPath, JsonSerializer.Serialize(refConfig, MintlifyConstants.JsonSerializerOptions));
+
+            context.DocumentationReferences.Clear();
+            context.DocumentationReferences.Add(new DocumentationReference
+            {
+                ProjectPath = "GraphqlService.docsproj",
+                DocumentationType = SupportedDocumentationType.Mintlify,
+                NavigationFilePath = refDocsPath,
+                DestinationPath = "services/graphql",
+                IntegrationType = "Tabs",
+                Name = "GraphQL"
+            });
+
+            renderer.CombineReferencedNavigation();
+
+            var tab = renderer._docsJsonManager!.Configuration!.Navigation!.Tabs.Should().ContainSingle().Subject;
+            tab.Tab.Should().Be("GraphQL");
+            tab.Graphql.Should().NotBeNull();
+            tab.Graphql!.Source.Should().Be("schema.graphql");
+            tab.Graphql.Directory.Should().Be("api/graphql");
+            tab.Mcp.Should().NotBeNull();
+            tab.Mcp!.Source.Should().Be("mcp.json");
+        }
+
+        [TestMethod]
         public void CombineReferencedNavigation_AddToProducts_CombinesNavigationCorrectly()
         {
             var context = GetService<ProjectContext>();
@@ -1737,6 +1791,121 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             tab.Pages.Should().NotBeNull();
 
             VerifyPagePrefixes(tab.Pages, "services/service-a/");
+        }
+
+        [TestMethod]
+        public void ApplyTabPositions_AppendsTrailingTabsAfterReferencedTabs()
+        {
+            var context = GetService<ProjectContext>();
+            var options = Options.Create(new MintlifyRendererOptions
+            {
+                Navigation = new DocsNavigationConfig
+                {
+                    TrailingTabs =
+                    [
+                        new TabConfig { Tab = "Core Framework", Href = "https://easyaf.dev" }
+                    ]
+                }
+            });
+            var docsJsonManager = new DocsJsonManager();
+
+            var collectionConfig = new DocsJsonConfig
+            {
+                Name = "Collection",
+                Navigation = new NavigationConfig
+                {
+                    Pages = ["introduction"]
+                }
+            };
+            var collectionJson = JsonSerializer.Serialize(collectionConfig, MintlifyConstants.JsonSerializerOptions);
+            docsJsonManager.Load(collectionJson);
+
+            var renderer = new MintlifyRenderer(context, options, docsJsonManager);
+
+            var refDocsPath = Path.Combine(context.DocumentationRootPath, "ref_docs.json");
+            var refConfig = new DocsJsonConfig
+            {
+                Name = "Service A",
+                Navigation = new NavigationConfig { Pages = ["overview"] }
+            };
+            var refJson = JsonSerializer.Serialize(refConfig, MintlifyConstants.JsonSerializerOptions);
+            File.WriteAllText(refDocsPath, refJson);
+
+            context.DocumentationReferences.Clear();
+            context.DocumentationReferences.Add(new DocumentationReference
+            {
+                ProjectPath = "ServiceA.docsproj",
+                DocumentationType = SupportedDocumentationType.Mintlify,
+                NavigationFilePath = refDocsPath,
+                DestinationPath = "services/service-a",
+                IntegrationType = "Tabs",
+                Name = "MCP Essentials"
+            });
+
+            renderer.CombineReferencedNavigation();
+            renderer.ApplyTabPositions();
+
+            var tabs = renderer._docsJsonManager!.Configuration!.Navigation!.Tabs;
+            tabs.Should().HaveCount(2);
+            tabs![0].Tab.Should().Be("MCP Essentials");
+            tabs[1].Tab.Should().Be("Core Framework");
+            tabs[1].Href.Should().Be("https://easyaf.dev");
+            tabs[1].Pages.Should().BeNull();
+        }
+
+        [TestMethod]
+        public void ApplyTabPositions_HrefOnlyTrailingTab_OmitsPagesInJson()
+        {
+            var context = GetService<ProjectContext>();
+            var options = Options.Create(new MintlifyRendererOptions
+            {
+                Navigation = new DocsNavigationConfig
+                {
+                    TrailingTabs =
+                    [
+                        new TabConfig { Tab = "Core Framework", Href = "https://easyaf.dev" }
+                    ]
+                }
+            });
+            var docsJsonManager = new DocsJsonManager();
+            var collectionConfig = new DocsJsonConfig
+            {
+                Name = "Collection",
+                Navigation = new NavigationConfig { Pages = ["introduction"] }
+            };
+            docsJsonManager.Load(JsonSerializer.Serialize(collectionConfig, MintlifyConstants.JsonSerializerOptions));
+
+            var renderer = new MintlifyRenderer(context, options, docsJsonManager);
+            renderer.ApplyTabPositions();
+
+            var tab = renderer._docsJsonManager!.Configuration!.Navigation!.Tabs.Should().ContainSingle().Subject;
+            var json = JsonSerializer.Serialize(tab, MintlifyConstants.JsonSerializerOptions);
+
+            json.Should().Contain("Core Framework");
+            json.Should().Contain("https://easyaf.dev");
+            json.Should().NotContain("\"pages\"");
+            json.Should().NotContain("position");
+        }
+
+        [TestMethod]
+        public void ApplyTabPositions_NoTrailingTabs_DoesNotThrow()
+        {
+            var context = GetService<ProjectContext>();
+            var options = Options.Create(new MintlifyRendererOptions());
+            var docsJsonManager = new DocsJsonManager();
+            var collectionConfig = new DocsJsonConfig
+            {
+                Name = "Collection",
+                Navigation = new NavigationConfig { Pages = ["introduction"] }
+            };
+            docsJsonManager.Load(JsonSerializer.Serialize(collectionConfig, MintlifyConstants.JsonSerializerOptions));
+
+            var renderer = new MintlifyRenderer(context, options, docsJsonManager);
+
+            Action act = () => renderer.ApplyTabPositions();
+
+            act.Should().NotThrow();
+            renderer._docsJsonManager!.Configuration!.Navigation!.Tabs.Should().BeNull();
         }
 
         #endregion

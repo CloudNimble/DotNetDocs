@@ -59,7 +59,7 @@ public bool GenerateDocsJson { get; set; }
 
 Type: `bool`
 True to generate docs.json alongside MDX files; otherwise, false.
-            Default is true.
+Default is true.
 
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GenerateNamespaceIndex
 
@@ -75,7 +75,7 @@ public bool GenerateNamespaceIndex { get; set; }
 
 Type: `bool`
 True to generate index.mdx files for namespace documentation; otherwise, false.
-            Default is true.
+Default is true.
 
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> IncludeIcons
 
@@ -91,7 +91,7 @@ public bool IncludeIcons { get; set; }
 
 Type: `bool`
 True to include FontAwesome icons; otherwise, false.
-            Default is true.
+Default is true.
 
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> NamespaceOrder
 
@@ -107,7 +107,7 @@ public System.Collections.Generic.List<string> NamespaceOrder { get; set; }
 
 Type: `System.Collections.Generic.List<string>?`
 A list of namespace patterns in the desired order, or null for alphabetical ordering.
-            Supports wildcards (e.g., "System.*" matches all System namespaces).
+Supports wildcards (e.g., "System.*" matches all System namespaces).
 
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Navigation
 
@@ -123,7 +123,7 @@ public CloudNimble.DotNetDocs.Mintlify.DocsNavigationConfig Navigation { get; se
 
 Type: `CloudNimble.DotNetDocs.Mintlify.DocsNavigationConfig`
 A DocsNavigationConfig instance that controls navigation mode, type, and name.
-            Default is a new instance with Mode=Unified, Type=Pages, and Name=null.
+Default is a new instance with Mode=Unified, Type=Pages, and Name=null.
 
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Template
 
@@ -139,7 +139,7 @@ public Mintlify.Core.Models.DocsJsonConfig Template { get; set; }
 
 Type: `Mintlify.Core.Models.DocsJsonConfig?`
 A DocsJsonConfig instance to use as a template, or null to use defaults.
-            The navigation section will be generated automatically.
+The navigation section will be generated automatically.
 
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> UnifiedGroupName
 

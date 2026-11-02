@@ -19,6 +19,12 @@ namespace Mintlify.Core
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonSerializable(typeof(DocsJsonConfig))]
     [JsonSerializable(typeof(GroupConfig))]
+    [JsonSerializable(typeof(NavigationLinkConfig))]
+    [JsonSerializable(typeof(SourceRefConfig))]
+    [JsonSerializable(typeof(CodeblocksConfig))]
+    [JsonSerializable(typeof(SdkRefConfig))]
+    [JsonSerializable(typeof(NavThumbnailConfig))]
+    [JsonSerializable(typeof(ContextualOptionConfig))]
     internal partial class MintlifyJsonContext : JsonSerializerContext
     {
     }

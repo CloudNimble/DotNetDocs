@@ -26,7 +26,7 @@ Represents MSBuild project context for source intent in documentation generation
 ## Remarks
 
 Provides metadata such as referenced assembly paths and the conceptual documentation folder path.
-             Used by `ProjectContext)` to enhance metadata extraction.
+Used by `ProjectContext)` to enhance metadata extraction.
 
 ## Examples
 
@@ -109,8 +109,8 @@ public bool ConceptualDocsEnabled { get; set; }
 
 Type: `bool`
 When true (default), conceptual documentation files are generated for new types
-            and existing conceptual content is loaded. When false, only API documentation
-            from XML comments is processed.
+and existing conceptual content is loaded. When false, only API documentation
+from XML comments is processed.
 
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ConceptualPath
 
@@ -141,14 +141,14 @@ public bool CreateExternalTypeReferences { get; set; }
 
 Type: `bool`
 `true` to create minimal [DocType](/api-reference/CloudNimble/DotNetDocs/Core/DocType) entries for types outside the assembly
-            that are extended by extension methods; `false` to only relocate extensions for types
-            within the assembly. Default is `true`.
+that are extended by extension methods; `false` to only relocate extensions for types
+within the assembly. Default is `true`.
 
 #### Remarks
 
 When enabled, extending `IServiceCollection` creates a documentation page showing
-            only your extension methods, with a link to Microsoft's official documentation for the
-            complete type definition.
+only your extension methods, with a link to Microsoft's official documentation for the
+complete type definition.
 
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> DocumentationReferences
 
@@ -187,8 +187,8 @@ var context = new ProjectContext
 #### Remarks
 
 Similar to MSBuild's ProjectReference, this allows creating unified documentation portals by combining
-            multiple separate .docsproj outputs. Each reference specifies where to copy files from and how to
-            integrate navigation.
+multiple separate .docsproj outputs. Each reference specifies where to copy files from and how to
+integrate navigation.
 
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> DocumentationRootPath
 
@@ -219,7 +219,7 @@ public System.Collections.Generic.HashSet<string> ExcludedTypes { get; set; }
 
 Type: `System.Collections.Generic.HashSet<string>`
 Set of type patterns to exclude. Supports wildcards (*) for flexible matching.
-            This is useful for filtering out compiler-generated or test framework-injected types.
+This is useful for filtering out compiler-generated or test framework-injected types.
 
 #### Examples
 
@@ -233,9 +233,9 @@ ExcludedTypes = new HashSet&lt;string&gt;
 #### Remarks
 
 Patterns can use wildcards:
-            - "*.TypeName" matches TypeName in any namespace
-            - "Namespace.*.TypeName" matches TypeName in any sub-namespace of Namespace
-            - "Full.Namespace.TypeName" matches exact fully qualified type name
+- "*.TypeName" matches TypeName in any namespace
+- "Namespace.*.TypeName" matches TypeName in any sub-namespace of Namespace
+- "Full.Namespace.TypeName" matches exact fully qualified type name
 
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> FileNamingOptions
 
@@ -266,7 +266,7 @@ public bool HasMintlifyTemplate { get; set; }
 
 Type: `bool`
 When true, docs.json will be generated even without assemblies to document.
-            The presence of a template is an explicit signal that the user wants documentation output.
+The presence of a template is an explicit signal that the user wants documentation output.
 
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> IncludedMembers
 
@@ -297,7 +297,7 @@ public bool IncludeFields { get; set; }
 
 Type: `bool`
 When true, public fields (including constants) are included in the documentation.
-            Defaults to false since fields are generally discouraged in favor of properties.
+Defaults to false since fields are generally discouraged in favor of properties.
 
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> IncludeSystemObjectInheritance
 
@@ -313,13 +313,13 @@ public bool IncludeSystemObjectInheritance { get; set; }
 
 Type: `bool`
 `true` to document `ToString()`, `GetHashCode()`, `Equals()`, etc.
-            on every type; `false` to exclude these common members. Default is `true`.
+on every type; `false` to exclude these common members. Default is `true`.
 
 #### Remarks
 
 Setting this to `false` reduces documentation noise while still including
-            members inherited from other base types and interfaces. This matches the behavior
-            of Microsoft's official .NET documentation.
+members inherited from other base types and interfaces. This matches the behavior
+of Microsoft's official .NET documentation.
 
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> References
 
@@ -350,7 +350,7 @@ public bool ShowPlaceholders { get; set; }
 
 Type: `bool`
 When true (default), placeholder content is included. When false, files containing the
-            TODO marker comment are skipped during loading.
+TODO marker comment are skipped during loading.
 
 ## Methods
 
@@ -374,8 +374,8 @@ public void EnsureOutputDirectoryStructure(CloudNimble.DotNetDocs.Core.DocAssemb
 #### Remarks
 
 This method creates the necessary folder structure when using Folder mode.
-            In File mode, it simply ensures the base output directory exists.
-            This centralizes folder creation logic so renderers can assume directories exist.
+In File mode, it simply ensures the base output directory exists.
+This centralizes folder creation logic so renderers can assume directories exist.
 
 ### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Equals <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
 
@@ -432,7 +432,7 @@ public string GetFullConceptualPath()
 
 Type: `string`
 The absolute path to the conceptual documentation folder if [ProjectContext.ConceptualPath](/api-reference/CloudNimble/DotNetDocs/Core/ProjectContext#conceptualpath) is absolute,
-             or the path combined with [ProjectContext.DocumentationRootPath](/api-reference/CloudNimble/DotNetDocs/Core/ProjectContext#documentationrootpath) if [ProjectContext.ConceptualPath](/api-reference/CloudNimble/DotNetDocs/Core/ProjectContext#conceptualpath) is relative.
+or the path combined with [ProjectContext.DocumentationRootPath](/api-reference/CloudNimble/DotNetDocs/Core/ProjectContext#documentationrootpath) if [ProjectContext.ConceptualPath](/api-reference/CloudNimble/DotNetDocs/Core/ProjectContext#conceptualpath) is relative.
 
 #### Examples
 
@@ -450,8 +450,8 @@ var path = context.GetFullConceptualPath(); // Returns "C:\Docs\conceptual"
 #### Remarks
 
 This method ensures that conceptual paths are always resolved to absolute paths,
-             making it easier to work with conceptual documentation files regardless of whether
-             the path is configured as relative or absolute.
+making it easier to work with conceptual documentation files regardless of whether
+the path is configured as relative or absolute.
 
 ### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetHashCode <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
 
@@ -491,9 +491,9 @@ The folder path representation of the namespace.
 #### Remarks
 
 When [FileNamingOptions.NamespaceMode](/api-reference/CloudNimble/DotNetDocs/Core/Configuration/FileNamingOptions#namespacemode) is [NamespaceMode.Folder](/api-reference/CloudNimble/DotNetDocs/Core/Configuration/NamespaceMode#folder),
-            this returns a path with folders for each namespace part (e.g., "System/Collections/Generic").
-            When using [NamespaceMode.File](/api-reference/CloudNimble/DotNetDocs/Core/Configuration/NamespaceMode#file), this returns an empty string as no folder
-            structure is created.
+this returns a path with folders for each namespace part (e.g., "System/Collections/Generic").
+When using [NamespaceMode.File](/api-reference/CloudNimble/DotNetDocs/Core/Configuration/NamespaceMode#file), this returns an empty string as no folder
+structure is created.
 
 ### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetSafeNamespaceName
 
@@ -555,7 +555,7 @@ The file path for the type.
 #### Remarks
 
 In Folder mode: "System.Text.Json.JsonSerializer" becomes "System/Text/Json/JsonSerializer.md"
-            In File mode: "System.Text.Json.JsonSerializer" becomes "System_Text_Json_JsonSerializer.md" (using configured separator)
+In File mode: "System.Text.Json.JsonSerializer" becomes "System_Text_Json_JsonSerializer.md" (using configured separator)
 
 ### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> IsTypeExcluded
 

@@ -27,6 +27,15 @@ namespace Mintlify.Core.Models
         public List<GlobalLanguageConfig>? Languages { get; set; }
 
         /// <summary>
+        /// Gets or sets the products configuration.
+        /// </summary>
+        /// <remarks>
+        /// Product switcher entries that appear across all pages and locales.
+        /// See https://www.mintlify.com/docs/organize/navigation#products.
+        /// </remarks>
+        public List<ProductConfig>? Products { get; set; }
+
+        /// <summary>
         /// Gets or sets the tabs configuration.
         /// </summary>
         public List<GlobalTabConfig>? Tabs { get; set; }

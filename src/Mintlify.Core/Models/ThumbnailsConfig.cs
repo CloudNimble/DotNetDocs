@@ -35,6 +35,15 @@ namespace Mintlify.Core.Models
         public string? Background { get; set; }
 
         /// <summary>
+        /// Gets or sets the label shown above the page title in thumbnails.
+        /// </summary>
+        /// <remarks>
+        /// Site-wide eyebrow source, style, and color are configured here.
+        /// See https://www.mintlify.com/docs/organize/settings-appearance.
+        /// </remarks>
+        public ThumbnailEyebrowConfig? Eyebrow { get; set; }
+
+        /// <summary>
         /// Gets or sets the font configuration for thumbnails.
         /// </summary>
         /// <remarks>
@@ -42,6 +51,22 @@ namespace Mintlify.Core.Models
         /// of the font family used for text displayed within thumbnails.
         /// </remarks>
         public ThumbnailFontsConfig? Fonts { get; set; }
+
+        /// <summary>
+        /// Gets or sets the thumbnail layout preset.
+        /// </summary>
+        /// <remarks>
+        /// Valid values are <c>classic</c>, <c>headline</c>, or <c>minimal</c>.
+        /// </remarks>
+        public string? Preset { get; set; }
+
+        /// <summary>
+        /// Gets or sets the thumbnail surface color treatment.
+        /// </summary>
+        /// <remarks>
+        /// Valid values are <c>neutral</c> or <c>brand</c>.
+        /// </remarks>
+        public string? Surface { get; set; }
 
         #endregion
 

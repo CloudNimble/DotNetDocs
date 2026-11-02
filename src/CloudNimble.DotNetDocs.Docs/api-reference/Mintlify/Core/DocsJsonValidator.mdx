@@ -26,7 +26,7 @@ Validates Mintlify docs.json configuration against the official schema requireme
 ## Remarks
 
 This class provides comprehensive validation of the docs.json configuration to ensure
-            it complies with the Mintlify schema and will work correctly when deployed.
+it complies with the Mintlify schema and will work correctly when deployed.
 
 ## Constructors
 
@@ -223,6 +223,23 @@ public void ValidateAppearance(Mintlify.Core.Models.DocsJsonConfig config, Syste
 | `config` | `Mintlify.Core.Models.DocsJsonConfig` | The configuration to validate. |
 | `errors` | `System.Collections.Generic.List<string>` | The list to add errors to. |
 
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ValidateBanner
+
+Validates the banner configuration.
+
+#### Syntax
+
+```csharp
+public void ValidateBanner(Mintlify.Core.Models.DocsJsonConfig config, System.Collections.Generic.List<string> errors)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `config` | `Mintlify.Core.Models.DocsJsonConfig` | The configuration to validate. |
+| `errors` | `System.Collections.Generic.List<string>` | The list to add errors to. |
+
 ### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ValidateColors
 
 Validates the color configuration.
@@ -231,6 +248,23 @@ Validates the color configuration.
 
 ```csharp
 public void ValidateColors(Mintlify.Core.Models.DocsJsonConfig config, System.Collections.Generic.List<string> errors)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `config` | `Mintlify.Core.Models.DocsJsonConfig` | The configuration to validate. |
+| `errors` | `System.Collections.Generic.List<string>` | The list to add errors to. |
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ValidateDirectoryAndSdk
+
+Validates directory layout, tab alignment, and SDK refs.
+
+#### Syntax
+
+```csharp
+public void ValidateDirectoryAndSdk(Mintlify.Core.Models.DocsJsonConfig config, System.Collections.Generic.List<string> errors)
 ```
 
 #### Parameters
@@ -265,6 +299,23 @@ Validates the icons configuration.
 
 ```csharp
 public void ValidateIcons(Mintlify.Core.Models.DocsJsonConfig config, System.Collections.Generic.List<string> errors)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `config` | `Mintlify.Core.Models.DocsJsonConfig` | The configuration to validate. |
+| `errors` | `System.Collections.Generic.List<string>` | The list to add errors to. |
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ValidateIntegrations
+
+Validates the integrations configuration.
+
+#### Syntax
+
+```csharp
+public void ValidateIntegrations(Mintlify.Core.Models.DocsJsonConfig config, System.Collections.Generic.List<string> errors)
 ```
 
 #### Parameters
@@ -342,6 +393,23 @@ public void ValidateSeo(Mintlify.Core.Models.DocsJsonConfig config, System.Colle
 | `config` | `Mintlify.Core.Models.DocsJsonConfig` | The configuration to validate. |
 | `errors` | `System.Collections.Generic.List<string>` | The list to add errors to. |
 
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ValidateSpecRefs
+
+Validates GraphQL and MCP specification references in navigation.
+
+#### Syntax
+
+```csharp
+public void ValidateSpecRefs(Mintlify.Core.Models.DocsJsonConfig config, System.Collections.Generic.List<string> errors)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `config` | `Mintlify.Core.Models.DocsJsonConfig` | The configuration to validate. |
+| `errors` | `System.Collections.Generic.List<string>` | The list to add errors to. |
+
 ### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ValidateTheme
 
 Validates the theme configuration.
@@ -350,6 +418,40 @@ Validates the theme configuration.
 
 ```csharp
 public void ValidateTheme(Mintlify.Core.Models.DocsJsonConfig config, System.Collections.Generic.List<string> errors)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `config` | `Mintlify.Core.Models.DocsJsonConfig` | The configuration to validate. |
+| `errors` | `System.Collections.Generic.List<string>` | The list to add errors to. |
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ValidateThemeVersion
+
+Validates the theme version configuration.
+
+#### Syntax
+
+```csharp
+public void ValidateThemeVersion(Mintlify.Core.Models.DocsJsonConfig config, System.Collections.Generic.List<string> errors)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `config` | `Mintlify.Core.Models.DocsJsonConfig` | The configuration to validate. |
+| `errors` | `System.Collections.Generic.List<string>` | The list to add errors to. |
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ValidateThumbnails
+
+Validates the thumbnails configuration.
+
+#### Syntax
+
+```csharp
+public void ValidateThumbnails(Mintlify.Core.Models.DocsJsonConfig config, System.Collections.Generic.List<string> errors)
 ```
 
 #### Parameters

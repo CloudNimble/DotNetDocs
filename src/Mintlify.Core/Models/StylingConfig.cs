@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using Mintlify.Core.Converters;
 
 namespace Mintlify.Core.Models
 {
@@ -19,12 +20,12 @@ namespace Mintlify.Core.Models
         /// Gets or sets the code block theme.
         /// </summary>
         /// <remarks>
-        /// Valid values are "system" or "dark". The "system" option uses a theme that
-        /// matches the current light/dark mode, while "dark" always uses a dark theme
-        /// for code blocks regardless of the site's appearance mode. Defaults to "system".
+        /// A string (<c>system</c>, <c>dark</c>, or a Shiki theme name) or an object with
+        /// <c>theme</c> and optional custom languages. Defaults to <c>system</c>.
         /// </remarks>
         [JsonPropertyName("codeblocks")]
-        public string? Codeblocks { get; set; }
+        [JsonConverter(typeof(CodeblocksConverter))]
+        public CodeblocksConfig? Codeblocks { get; set; }
 
         /// <summary>
         /// Gets or sets the eyebrows style for content sections.

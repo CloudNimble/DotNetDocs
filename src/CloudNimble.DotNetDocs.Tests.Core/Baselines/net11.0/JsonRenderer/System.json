@@ -1,0 +1,138 @@
+{
+  "name": "System",
+  "types": [
+    {
+      "members": [
+        {
+          "accessibility": "public",
+          "memberKind": "method",
+          "methodKind": "ordinary",
+          "name": "Reverse",
+          "parameters": [
+            {
+              "hasDefaultValue": false,
+              "isOptional": false,
+              "isParams": false,
+              "name": "value",
+              "parameterType": {
+                "members": [],
+                "assemblyName": "System.Private.CoreLib",
+                "fullName": "string",
+                "name": "String",
+                "signature": "string",
+                "typeKind": "class",
+                "isExternalReference": true,
+                "displayName": "string"
+              },
+              "typeName": "string",
+              "displayName": "string value",
+              "usage": "The string to reverse."
+            }
+          ],
+          "returnType": {
+            "members": [],
+            "assemblyName": "System.Private.CoreLib",
+            "fullName": "string",
+            "name": "String",
+            "signature": "string",
+            "typeKind": "class",
+            "isExternalReference": true,
+            "displayName": "string"
+          },
+          "returnTypeName": "string",
+          "signature": "public static string Reverse(string value)",
+          "isInherited": false,
+          "isOverride": false,
+          "isVirtual": false,
+          "isAbstract": false,
+          "declaringTypeName": "CloudNimble.DotNetDocs.Tests.Shared.Extensions.StringExtensions",
+          "isExtensionMethod": true,
+          "extendedTypeName": "string",
+          "displayName": "CloudNimble.DotNetDocs.Tests.Shared.Extensions.StringExtensions.Reverse(string)",
+          "examples": "\u003Ccode\u003E\r\n             using CloudNimble.DotNetDocs.Tests.Shared.Extensions;\r\n            \r\n             var result = \u0022hello\u0022.Reverse();\r\n             // result = \u0022olleh\u0022\r\n             \u003C/code\u003E",
+          "returns": "The reversed string.",
+          "summary": "Reverses the characters in a string."
+        },
+        {
+          "accessibility": "public",
+          "memberKind": "method",
+          "methodKind": "ordinary",
+          "name": "Repeat",
+          "parameters": [
+            {
+              "hasDefaultValue": false,
+              "isOptional": false,
+              "isParams": false,
+              "name": "value",
+              "parameterType": {
+                "members": [],
+                "assemblyName": "System.Private.CoreLib",
+                "fullName": "string",
+                "name": "String",
+                "signature": "string",
+                "typeKind": "class",
+                "isExternalReference": true,
+                "displayName": "string"
+              },
+              "typeName": "string",
+              "displayName": "string value",
+              "usage": "The string to repeat."
+            },
+            {
+              "hasDefaultValue": false,
+              "isOptional": false,
+              "isParams": false,
+              "name": "count",
+              "parameterType": {
+                "members": [],
+                "assemblyName": "System.Private.CoreLib",
+                "fullName": "int",
+                "name": "Int32",
+                "signature": "int",
+                "typeKind": "struct",
+                "isExternalReference": true,
+                "displayName": "int"
+              },
+              "typeName": "int",
+              "displayName": "int count",
+              "usage": "The number of times to repeat the string."
+            }
+          ],
+          "returnType": {
+            "members": [],
+            "assemblyName": "System.Private.CoreLib",
+            "fullName": "string",
+            "name": "String",
+            "signature": "string",
+            "typeKind": "class",
+            "isExternalReference": true,
+            "displayName": "string"
+          },
+          "returnTypeName": "string",
+          "signature": "public static string Repeat(string value, int count)",
+          "isInherited": false,
+          "isOverride": false,
+          "isVirtual": false,
+          "isAbstract": false,
+          "declaringTypeName": "CloudNimble.DotNetDocs.Tests.Shared.Extensions.StringExtensions",
+          "isExtensionMethod": true,
+          "extendedTypeName": "string",
+          "displayName": "CloudNimble.DotNetDocs.Tests.Shared.Extensions.StringExtensions.Repeat(string, int)",
+          "examples": "\u003Ccode\u003E\r\n            var result = \u0022ha\u0022.Repeat(3);\r\n            // result = \u0022hahaha\u0022\r\n            \u003C/code\u003E",
+          "returns": "The repeated string.",
+          "summary": "Repeats a string a specified number of times."
+        }
+      ],
+      "assemblyName": "System.Private.CoreLib",
+      "fullName": "string",
+      "name": "String",
+      "signature": "string",
+      "typeKind": "class",
+      "isExternalReference": true,
+      "displayName": "string",
+      "remarks": "See [Microsoft documentation](https://learn.microsoft.com/dotnet/api/system.string) for more information about the rest of the API.",
+      "summary": "This type is defined in System.Private.CoreLib."
+    }
+  ],
+  "displayName": "System"
+}

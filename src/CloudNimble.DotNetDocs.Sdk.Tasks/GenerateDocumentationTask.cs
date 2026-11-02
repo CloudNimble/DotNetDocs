@@ -463,6 +463,18 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
                     Theme = root.Element(nameof(DocsJsonConfig.Theme))?.Value ?? "mint"
                 };
 
+                var publicElement = root.Element(nameof(DocsJsonConfig.Public));
+                if (publicElement is not null && bool.TryParse(publicElement.Value.Trim(), out var isPublic))
+                {
+                    config.Public = isPublic;
+                }
+
+                var themeVersionElement = root.Element(nameof(DocsJsonConfig.ThemeVersion));
+                if (themeVersionElement is not null && int.TryParse(themeVersionElement.Value.Trim(), out var themeVersion))
+                {
+                    config.ThemeVersion = themeVersion;
+                }
+
                 // Parse DocsNavigationConfig from Navigation element attributes and legacy elements
                 var docsNavConfig = ParseDocsNavigationConfig(root);
 
@@ -521,7 +533,7 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
                 var navigationElement = root.Element(nameof(DocsJsonConfig.Navigation));
                 if (navigationElement is not null)
                 {
-                    config.Navigation = ParseNavigationConfig(navigationElement);
+                    config.Navigation = ParseNavigationConfig(navigationElement, docsNavConfig);
                 }
 
                 // Parse Styling
@@ -592,6 +604,36 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
                 if (errorsElement is not null)
                 {
                     config.Errors = ParseErrorsConfig(errorsElement);
+                }
+
+                var bannerElement = root.Element(nameof(DocsJsonConfig.Banner));
+                if (bannerElement is not null)
+                {
+                    config.Banner = ParseBannerConfig(bannerElement);
+                }
+
+                var seoElement = root.Element(nameof(DocsJsonConfig.Seo));
+                if (seoElement is not null)
+                {
+                    config.Seo = ParseSeoConfig(seoElement);
+                }
+
+                var markdownElement = root.Element(nameof(DocsJsonConfig.Markdown));
+                if (markdownElement is not null)
+                {
+                    config.Markdown = ParseMarkdownConfig(markdownElement);
+                }
+
+                var packagesElement = root.Element(nameof(DocsJsonConfig.Packages));
+                if (packagesElement is not null)
+                {
+                    config.Packages = ParsePackagesConfig(packagesElement);
+                }
+
+                var variablesElement = root.Element(nameof(DocsJsonConfig.Variables));
+                if (variablesElement is not null)
+                {
+                    config.Variables = ParseNamedValues(variablesElement, "Variable");
                 }
 
                 return (config, docsNavConfig);
@@ -681,7 +723,28 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
         /// <returns>A NavigationConfig instance.</returns>
         internal NavigationConfig ParseNavigationConfig(XElement navigationElement)
         {
-            var navConfig = new NavigationConfig();
+            return ParseNavigationConfig(navigationElement, null);
+        }
+
+        /// <summary>
+        /// Parses the Navigation element from the MintlifyTemplate XML.
+        /// </summary>
+        /// <param name="navigationElement">The navigation XML element.</param>
+        /// <param name="docsNavConfig">
+        /// Optional DotNetDocs navigation metadata. When provided, tabs with
+        /// <c>Position="End"</c> are stored on <see cref="DocsNavigationConfig.TrailingTabs"/>
+        /// instead of <see cref="NavigationConfig.Tabs"/>.
+        /// </param>
+        /// <returns>A NavigationConfig instance.</returns>
+        internal NavigationConfig ParseNavigationConfig(XElement navigationElement, DocsNavigationConfig? docsNavConfig)
+        {
+            var navConfig = new NavigationConfig
+            {
+                Graphql = ParseSpecRefConfig(navigationElement, nameof(NavigationConfig.Graphql)),
+                Mcp = ParseSpecRefConfig(navigationElement, nameof(NavigationConfig.Mcp)),
+                Directory = NullIfWhiteSpace(navigationElement.Attribute("Directory")?.Value)
+                    ?? NullIfWhiteSpace(navigationElement.Element("Directory")?.Value)
+            };
 
             // Parse Tabs
             var tabsElement = navigationElement.Element("Tabs");
@@ -691,7 +754,17 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
                 foreach (var tabElement in tabsElement.Elements("Tab"))
                 {
                     var tab = ParseTabConfig(tabElement);
-                    if (tab is not null)
+                    if (tab is null)
+                    {
+                        continue;
+                    }
+
+                    var position = ParseTabPosition(tabElement, tab.Tab);
+                    if (position == NavigationPosition.End && docsNavConfig is not null)
+                    {
+                        docsNavConfig.TrailingTabs.Add(tab);
+                    }
+                    else
                     {
                         navConfig.Tabs.Add(tab);
                     }
@@ -761,14 +834,7 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
                     }
                 }
 
-                foreach (var pageElement in pagesElement.Elements("Page"))
-                {
-                    var pageName = pageElement.Value?.Trim();
-                    if (!string.IsNullOrWhiteSpace(pageName))
-                    {
-                        navConfig.Pages.Add(pageName);
-                    }
-                }
+                AddParsedPageEntries(pagesElement, navConfig.Pages);
             }
 
             return navConfig;
@@ -808,8 +874,11 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
                 Icon = groupElement.Attribute("Icon")?.Value,
                 Tag = groupElement.Attribute("Tag")?.Value,
                 Root = groupElement.Attribute("Root")?.Value,
+                Graphql = ParseSpecRefConfig(groupElement, nameof(GroupConfig.Graphql)),
+                Mcp = ParseSpecRefConfig(groupElement, nameof(GroupConfig.Mcp)),
                 Pages = []
             };
+            ApplyNavXmlAttributes(groupElement, group);
 
             // Parse the optional Expanded attribute, which controls the group's default expand/collapse state.
             var expandedAttr = groupElement.Attribute("Expanded")?.Value;
@@ -818,19 +887,10 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
                 group.Expanded = expanded;
             }
 
-            // Parse direct pages (semicolon-separated list)
             var pagesElement = groupElement.Element(nameof(GroupConfig.Pages));
-            if (pagesElement is not null && !string.IsNullOrWhiteSpace(pagesElement.Value))
+            if (pagesElement is not null)
             {
-                var pageList = pagesElement.Value.Split(';', StringSplitOptions.RemoveEmptyEntries);
-                foreach (var page in pageList)
-                {
-                    var trimmedPage = page.Trim();
-                    if (!string.IsNullOrWhiteSpace(trimmedPage))
-                    {
-                        group.Pages.Add(trimmedPage);
-                    }
-                }
+                AddParsedPageEntries(pagesElement, group.Pages);
             }
 
             // Parse nested groups - check both <Groups> wrapper and direct <Group> children
@@ -898,8 +958,11 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
                 Anchor = anchorName,
                 Href = anchorElement.Attribute("Href")?.Value,
                 Icon = anchorElement.Attribute("Icon")?.Value,
+                Graphql = ParseSpecRefConfig(anchorElement, nameof(AnchorConfig.Graphql)),
+                Mcp = ParseSpecRefConfig(anchorElement, nameof(AnchorConfig.Mcp)),
                 Pages = []
             };
+            ApplyNavXmlAttributes(anchorElement, anchor);
 
             ParseNavigationSectionPages(anchorElement, anchor.Pages);
 
@@ -955,8 +1018,11 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
                 Dropdown = dropdownName,
                 Href = dropdownElement.Attribute("Href")?.Value,
                 Icon = dropdownElement.Attribute("Icon")?.Value,
+                Graphql = ParseSpecRefConfig(dropdownElement, nameof(DropdownConfig.Graphql)),
+                Mcp = ParseSpecRefConfig(dropdownElement, nameof(DropdownConfig.Mcp)),
                 Pages = []
             };
+            ApplyNavXmlAttributes(dropdownElement, dropdown);
 
             ParseNavigationSectionPages(dropdownElement, dropdown.Pages);
 
@@ -1027,11 +1093,15 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
             var product = new ProductConfig
             {
                 Product = productName,
+                Name = NullIfWhiteSpace(productElement.Attribute("DisplayName")?.Value),
                 Href = productElement.Attribute("Href")?.Value,
                 Icon = productElement.Attribute("Icon")?.Value,
                 Description = productElement.Attribute("Description")?.Value,
+                Graphql = ParseSpecRefConfig(productElement, nameof(ProductConfig.Graphql)),
+                Mcp = ParseSpecRefConfig(productElement, nameof(ProductConfig.Mcp)),
                 Pages = []
             };
+            ApplyNavXmlAttributes(productElement, product);
 
             ParseNavigationSectionPages(productElement, product.Pages);
 
@@ -1044,8 +1114,10 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
         /// <param name="tabElement">The tab XML element.</param>
         /// <returns>A <see cref="TabConfig"/> instance, or <see langword="null"/> if parsing fails.</returns>
         /// <remarks>
-        /// Expects a <c>Name</c> attribute on the element. Optional attributes include <c>Href</c> and <c>Icon</c>.
-        /// Child <c>&lt;Pages&gt;</c> elements are also parsed if present.
+        /// Expects a <c>Name</c> attribute on the element. Optional attributes include <c>Href</c>, <c>Icon</c>,
+        /// and <c>Position</c> (handled by <see cref="ParseNavigationConfig(XElement, DocsNavigationConfig?)"/>).
+        /// Child <c>&lt;Pages&gt;</c> elements are also parsed if present. Href-only tabs leave
+        /// <see cref="NavigationItemBase.Pages"/> null so an empty pages array is not written to docs.json.
         /// </remarks>
         /// <example>
         /// <code>
@@ -1074,12 +1146,49 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
                 Tab = tabName,
                 Href = tabElement.Attribute("Href")?.Value,
                 Icon = tabElement.Attribute("Icon")?.Value,
-                Pages = []
+                Align = NullIfWhiteSpace(tabElement.Attribute("Align")?.Value),
+                Graphql = ParseSpecRefConfig(tabElement, nameof(TabConfig.Graphql)),
+                Mcp = ParseSpecRefConfig(tabElement, nameof(TabConfig.Mcp))
             };
+            ApplyNavXmlAttributes(tabElement, tab);
 
-            ParseNavigationSectionPages(tabElement, tab.Pages);
+            if (tabElement.Element("Pages") is not null)
+            {
+                tab.Pages = [];
+                ParseNavigationSectionPages(tabElement, tab.Pages);
+                if (tab.Pages.Count == 0)
+                {
+                    tab.Pages = null;
+                }
+            }
 
             return tab;
+        }
+
+        /// <summary>
+        /// Parses the optional <c>Position</c> attribute on a Tab element.
+        /// </summary>
+        /// <param name="tabElement">The tab XML element.</param>
+        /// <param name="tabName">The tab name, used in warning messages.</param>
+        /// <returns>
+        /// The parsed <see cref="NavigationPosition"/>, or <see cref="NavigationPosition.Start"/>
+        /// when the attribute is omitted or invalid.
+        /// </returns>
+        internal NavigationPosition ParseTabPosition(XElement tabElement, string tabName)
+        {
+            var positionAttr = tabElement.Attribute("Position")?.Value;
+            if (string.IsNullOrWhiteSpace(positionAttr))
+            {
+                return NavigationPosition.Start;
+            }
+
+            if (Enum.TryParse<NavigationPosition>(positionAttr, true, out var position))
+            {
+                return position;
+            }
+
+            Log.LogWarning($"Invalid Position value '{positionAttr}' on Tab '{tabName}'. Using {nameof(NavigationPosition.Start)}.");
+            return NavigationPosition.Start;
         }
 
         /// <summary>
@@ -1109,14 +1218,7 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
                 }
             }
 
-            foreach (var pageElement in pagesElement.Elements("Page"))
-            {
-                var pageName = pageElement.Value?.Trim();
-                if (!string.IsNullOrWhiteSpace(pageName))
-                {
-                    pages.Add(pageName);
-                }
-            }
+            AddParsedPageEntries(pagesElement, pages);
         }
 
         /// <summary>
@@ -1225,7 +1327,8 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
             {
                 config.Mixpanel = new MixpanelConfig
                 {
-                    ProjectToken = mixpanelElement.Attribute(nameof(MixpanelConfig.ProjectToken))?.Value
+                    ProjectToken = mixpanelElement.Attribute(nameof(MixpanelConfig.ProjectToken))?.Value,
+                    Region = mixpanelElement.Attribute(nameof(MixpanelConfig.Region))?.Value
                 };
             }
 
@@ -1347,7 +1450,29 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
             {
                 config.Segment = new SegmentConfig
                 {
-                    Key = segmentElement.Attribute(nameof(SegmentConfig.Key))?.Value
+                    Key = segmentElement.Attribute(nameof(SegmentConfig.Key))?.Value,
+                    CdnUrl = segmentElement.Attribute(nameof(SegmentConfig.CdnUrl))?.Value
+                };
+            }
+
+            var oneTrustElement = integrationsElement.Element(nameof(IntegrationsConfig.OneTrust));
+            if (oneTrustElement is not null)
+            {
+                config.OneTrust = new OneTrustConfig
+                {
+                    DomainScript = oneTrustElement.Attribute(nameof(OneTrustConfig.DomainScript))?.Value,
+                    CategoryId = oneTrustElement.Attribute(nameof(OneTrustConfig.CategoryId))?.Value,
+                    ScriptSource = oneTrustElement.Attribute(nameof(OneTrustConfig.ScriptSource))?.Value
+                };
+            }
+
+            var transcendElement = integrationsElement.Element(nameof(IntegrationsConfig.Transcend));
+            if (transcendElement is not null)
+            {
+                config.Transcend = new TranscendConfig
+                {
+                    BundleId = transcendElement.Attribute(nameof(TranscendConfig.BundleId))?.Value,
+                    AnalyticsPurpose = transcendElement.Attribute(nameof(TranscendConfig.AnalyticsPurpose))?.Value
                 };
             }
 
@@ -1363,11 +1488,10 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
         {
             var config = new StylingConfig();
 
-            // Parse Codeblocks
             var codeBlocksElement = stylingElement.Element(nameof(StylingConfig.Codeblocks));
-            if (codeBlocksElement is not null && !string.IsNullOrWhiteSpace(codeBlocksElement.Value))
+            if (codeBlocksElement is not null)
             {
-                config.Codeblocks = codeBlocksElement.Value.Trim();
+                config.Codeblocks = ParseCodeblocksConfig(codeBlocksElement);
             }
 
             // Parse Eyebrows
@@ -1457,29 +1581,14 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
                 config.Url = urlElement.Value.Trim();
             }
 
-            // Parse Proxy
-            var proxyElement = apiElement.Element(nameof(ApiConfig.Proxy));
-            if (proxyElement is not null && !string.IsNullOrWhiteSpace(proxyElement.Value))
+            var optionalElement = apiElement.Element(nameof(ApiConfig.Optional));
+            if (optionalElement is not null && !string.IsNullOrWhiteSpace(optionalElement.Value))
             {
-                if (bool.TryParse(proxyElement.Value.Trim(), out var proxy))
-                {
-                    config.Proxy = proxy;
-                }
+                config.Optional = optionalElement.Value.Trim();
             }
 
-            // Parse OpenApi
-            var openApiElement = apiElement.Element(nameof(ApiConfig.OpenApi));
-            if (openApiElement is not null && !string.IsNullOrWhiteSpace(openApiElement.Value))
-            {
-                config.OpenApi = new ApiSpecConfig { Source = openApiElement.Value.Trim() };
-            }
-
-            // Parse AsyncApi
-            var asyncApiElement = apiElement.Element(nameof(ApiConfig.AsyncApi));
-            if (asyncApiElement is not null && !string.IsNullOrWhiteSpace(asyncApiElement.Value))
-            {
-                config.AsyncApi = new ApiSpecConfig { Source = asyncApiElement.Value.Trim() };
-            }
+            config.OpenApi = CombineApiSpecs(apiElement.Elements(nameof(ApiConfig.OpenApi)));
+            config.AsyncApi = CombineApiSpecs(apiElement.Elements(nameof(ApiConfig.AsyncApi)));
 
             // Parse Playground
             var playgroundElement = apiElement.Element(nameof(ApiConfig.Playground));
@@ -1501,6 +1610,20 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
                         config.Playground.Proxy = playgroundProxy;
                     }
                 }
+
+                var credentialsElement = playgroundElement.Element(nameof(ApiPlaygroundConfig.Credentials));
+                if (credentialsElement is not null && bool.TryParse(credentialsElement.Value.Trim(), out var credentials))
+                {
+                    config.Playground.Credentials = credentials;
+                }
+            }
+
+            // Mintlify 2.0 dropped api.proxy. Map the old template element onto playground.proxy.
+            var proxyElement = apiElement.Element("Proxy");
+            if (proxyElement is not null && bool.TryParse(proxyElement.Value.Trim(), out var proxy))
+            {
+                config.Playground ??= new ApiPlaygroundConfig();
+                config.Playground.Proxy ??= proxy;
             }
 
             // Parse Params
@@ -1512,10 +1635,13 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
                 var expandedElement = paramsElement.Element(nameof(ApiParamsConfig.Expanded));
                 if (expandedElement is not null && !string.IsNullOrWhiteSpace(expandedElement.Value))
                 {
-                    if (bool.TryParse(expandedElement.Value.Trim(), out var expanded))
-                    {
-                        config.Params.Expanded = expanded;
-                    }
+                    config.Params.Expanded = expandedElement.Value.Trim();
+                }
+
+                var postElement = paramsElement.Element(nameof(ApiParamsConfig.Post));
+                if (postElement is not null)
+                {
+                    config.Params.Post = ParseDelimitedList(postElement.Value);
                 }
             }
 
@@ -1552,11 +1678,7 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
                 var languagesElement = examplesElement.Element(nameof(ApiExamplesConfig.Languages));
                 if (languagesElement is not null && !string.IsNullOrWhiteSpace(languagesElement.Value))
                 {
-                    config.Examples.Languages = languagesElement.Value
-                        .Split(new[] { ';', ',' }, StringSplitOptions.RemoveEmptyEntries)
-                        .Select(l => l.Trim())
-                        .Where(l => !string.IsNullOrWhiteSpace(l))
-                        .ToList();
+                    config.Examples.Languages = ParseDelimitedList(languagesElement.Value);
                 }
             }
 
@@ -1603,18 +1725,38 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
         {
             var config = new ContextualConfig();
 
-            // Parse Options
             var optionsElement = contextualElement.Element(nameof(ContextualConfig.Options));
-            if (optionsElement is not null && !string.IsNullOrWhiteSpace(optionsElement.Value))
+            if (optionsElement is not null)
             {
-                config.Options = optionsElement.Value
-                    .Split(new[] { ';', ',' }, StringSplitOptions.RemoveEmptyEntries)
-                    .Select(o => o.Trim())
-                    .Where(o => !string.IsNullOrWhiteSpace(o))
-                    .ToList();
+                List<object>? options = null;
+                foreach (var optionElement in optionsElement.Elements("Option"))
+                {
+                    options ??= [];
+                    var parsed = ParseContextualOption(optionElement);
+                    if (parsed is not null)
+                    {
+                        options.Add(parsed);
+                    }
+                }
+
+                if (options is not null)
+                {
+                    config.Options = options;
+                }
+                else if (!string.IsNullOrWhiteSpace(optionsElement.Value))
+                {
+                    var names = ParseDelimitedList(optionsElement.Value);
+                    if (names is not null)
+                    {
+                        config.Options = new List<object>(names.Count);
+                        foreach (var name in names)
+                        {
+                            config.Options.Add(name);
+                        }
+                    }
+                }
             }
 
-            // Parse Display
             var displayElement = contextualElement.Element(nameof(ContextualConfig.Display));
             if (displayElement is not null && !string.IsNullOrWhiteSpace(displayElement.Value))
             {
@@ -1748,6 +1890,41 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
                 {
                     config.Fonts.Family = familyElement.Value.Trim();
                 }
+
+                var sourceElement = fontsElement.Element(nameof(ThumbnailFontsConfig.Source));
+                if (sourceElement is not null && !string.IsNullOrWhiteSpace(sourceElement.Value))
+                {
+                    config.Fonts.Source = sourceElement.Value.Trim();
+                }
+
+                var formatElement = fontsElement.Element(nameof(ThumbnailFontsConfig.Format));
+                if (formatElement is not null && !string.IsNullOrWhiteSpace(formatElement.Value))
+                {
+                    config.Fonts.Format = formatElement.Value.Trim();
+                }
+            }
+
+            var presetElement = thumbnailsElement.Element(nameof(ThumbnailsConfig.Preset));
+            if (presetElement is not null && !string.IsNullOrWhiteSpace(presetElement.Value))
+            {
+                config.Preset = presetElement.Value.Trim();
+            }
+
+            var surfaceElement = thumbnailsElement.Element(nameof(ThumbnailsConfig.Surface));
+            if (surfaceElement is not null && !string.IsNullOrWhiteSpace(surfaceElement.Value))
+            {
+                config.Surface = surfaceElement.Value.Trim();
+            }
+
+            var eyebrowElement = thumbnailsElement.Element(nameof(ThumbnailsConfig.Eyebrow));
+            if (eyebrowElement is not null)
+            {
+                config.Eyebrow = new ThumbnailEyebrowConfig
+                {
+                    Source = eyebrowElement.Element(nameof(ThumbnailEyebrowConfig.Source))?.Value?.Trim(),
+                    Style = eyebrowElement.Element(nameof(ThumbnailEyebrowConfig.Style))?.Value?.Trim(),
+                    Color = eyebrowElement.Element(nameof(ThumbnailEyebrowConfig.Color))?.Value?.Trim()
+                };
             }
 
             return config;
@@ -1812,6 +1989,562 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
             }
 
             return config;
+        }
+
+        /// <summary>
+        /// Parses the Banner element from the MintlifyTemplate XML.
+        /// </summary>
+        /// <param name="bannerElement">The banner XML element.</param>
+        /// <returns>A <see cref="BannerConfig"/> instance.</returns>
+        internal BannerConfig ParseBannerConfig(XElement bannerElement)
+        {
+            var config = new BannerConfig
+            {
+                Content = NullIfWhiteSpace(bannerElement.Element(nameof(BannerConfig.Content))?.Value),
+                Type = NullIfWhiteSpace(bannerElement.Element(nameof(BannerConfig.Type))?.Value)
+            };
+
+            var dismissibleElement = bannerElement.Element(nameof(BannerConfig.Dismissible));
+            if (dismissibleElement is not null && bool.TryParse(dismissibleElement.Value.Trim(), out var dismissible))
+            {
+                config.Dismissible = dismissible;
+            }
+
+            var colorElement = bannerElement.Element(nameof(BannerConfig.Color));
+            if (colorElement is not null)
+            {
+                config.Color = new ColorPairConfig
+                {
+                    Light = NullIfWhiteSpace(colorElement.Element(nameof(ColorPairConfig.Light))?.Value),
+                    Dark = NullIfWhiteSpace(colorElement.Element(nameof(ColorPairConfig.Dark))?.Value)
+                };
+            }
+
+            return config;
+        }
+
+        /// <summary>
+        /// Parses the Seo element from the MintlifyTemplate XML.
+        /// </summary>
+        /// <param name="seoElement">The SEO XML element.</param>
+        /// <returns>A <see cref="SeoConfig"/> instance.</returns>
+        internal SeoConfig ParseSeoConfig(XElement seoElement)
+        {
+            var config = new SeoConfig
+            {
+                Indexing = NullIfWhiteSpace(seoElement.Element(nameof(SeoConfig.Indexing))?.Value),
+                Metatags = ParseNamedValues(seoElement.Element(nameof(SeoConfig.Metatags)), "Meta")
+            };
+
+            var trailingSlashElement = seoElement.Element(nameof(SeoConfig.TrailingSlash));
+            if (trailingSlashElement is not null && bool.TryParse(trailingSlashElement.Value.Trim(), out var trailingSlash))
+            {
+                config.TrailingSlash = trailingSlash;
+            }
+
+            var organizationElement = seoElement.Element(nameof(SeoConfig.Organization));
+            if (organizationElement is not null)
+            {
+                config.Organization = new SeoOrganizationConfig
+                {
+                    Id = NullIfWhiteSpace(organizationElement.Element(nameof(SeoOrganizationConfig.Id))?.Value),
+                    Name = NullIfWhiteSpace(organizationElement.Element(nameof(SeoOrganizationConfig.Name))?.Value),
+                    LegalName = NullIfWhiteSpace(organizationElement.Element(nameof(SeoOrganizationConfig.LegalName))?.Value),
+                    Url = NullIfWhiteSpace(organizationElement.Element(nameof(SeoOrganizationConfig.Url))?.Value),
+                    Logo = NullIfWhiteSpace(organizationElement.Element(nameof(SeoOrganizationConfig.Logo))?.Value),
+                    SameAs = ParseDelimitedList(organizationElement.Element(nameof(SeoOrganizationConfig.SameAs))?.Value)
+                };
+            }
+
+            var pathsElement = seoElement.Element(nameof(SeoConfig.Paths));
+            if (pathsElement is not null)
+            {
+                config.Paths = [];
+                foreach (var pathElement in pathsElement.Elements("Path"))
+                {
+                    var pathValue = NullIfWhiteSpace(pathElement.Attribute("Value")?.Value)
+                        ?? NullIfWhiteSpace(pathElement.Attribute(nameof(SeoPathConfig.Path))?.Value);
+                    if (pathValue is null)
+                    {
+                        continue;
+                    }
+
+                    config.Paths.Add(new SeoPathConfig
+                    {
+                        Path = pathValue,
+                        Metatags = ParseNamedValues(pathElement.Element(nameof(SeoPathConfig.Metatags)), "Meta")
+                    });
+                }
+            }
+
+            return config;
+        }
+
+        /// <summary>
+        /// Parses the Markdown element from the MintlifyTemplate XML.
+        /// </summary>
+        /// <param name="markdownElement">The markdown XML element.</param>
+        /// <returns>A <see cref="MarkdownConfig"/> instance.</returns>
+        internal MarkdownConfig ParseMarkdownConfig(XElement markdownElement)
+        {
+            var config = new MarkdownConfig
+            {
+                Instructions = ParseDelimitedList(markdownElement.Element(nameof(MarkdownConfig.Instructions))?.Value)
+            };
+
+            var schemaElement = markdownElement.Element(nameof(MarkdownConfig.Schema));
+            if (schemaElement is not null && bool.TryParse(schemaElement.Value.Trim(), out var schema))
+            {
+                config.Schema = schema;
+            }
+
+            return config;
+        }
+
+        /// <summary>
+        /// Parses the Packages element from the MintlifyTemplate XML.
+        /// </summary>
+        /// <param name="packagesElement">The packages XML element.</param>
+        /// <returns>A <see cref="PackagesConfig"/> instance.</returns>
+        internal PackagesConfig ParsePackagesConfig(XElement packagesElement)
+        {
+            var config = new PackagesConfig
+            {
+                Provider = NullIfWhiteSpace(packagesElement.Element(nameof(PackagesConfig.Provider))?.Value),
+                Css = ParseDelimitedList(packagesElement.Element(nameof(PackagesConfig.Css))?.Value)
+            };
+
+            var ssrElement = packagesElement.Element(nameof(PackagesConfig.Ssr));
+            if (ssrElement is not null && bool.TryParse(ssrElement.Value.Trim(), out var ssr))
+            {
+                config.Ssr = ssr;
+            }
+
+            var registriesElement = packagesElement.Element(nameof(PackagesConfig.Registries));
+            if (registriesElement is not null)
+            {
+                config.Registries = new Dictionary<string, string>(StringComparer.Ordinal);
+                foreach (var registryElement in registriesElement.Elements("Registry"))
+                {
+                    var scope = NullIfWhiteSpace(registryElement.Attribute("Scope")?.Value);
+                    var url = NullIfWhiteSpace(registryElement.Attribute("Url")?.Value);
+                    if (scope is not null && url is not null)
+                    {
+                        config.Registries[scope] = url;
+                    }
+                }
+            }
+
+            return config;
+        }
+
+        /// <summary>
+        /// Parses an OpenAPI or AsyncAPI specification element.
+        /// </summary>
+        /// <param name="element">The OpenAPI or AsyncAPI XML element.</param>
+        /// <returns>An <see cref="ApiSpecConfig"/> when source, directory, overlays, or nested specs are present; otherwise null.</returns>
+        internal ApiSpecConfig? ParseApiSpecConfig(XElement element)
+        {
+            if (element.Element("Spec") is not null)
+            {
+                return CombineApiSpecs(element.Elements("Spec"));
+            }
+
+            return ParseSingleApiSpec(element);
+        }
+
+        /// <summary>
+        /// Parses a GraphQL or MCP specification reference from an attribute or child element.
+        /// </summary>
+        /// <param name="parentElement">The parent XML element.</param>
+        /// <param name="propertyName">The property name, used as both attribute and child element name.</param>
+        /// <returns>A <see cref="SpecRefConfig"/> when present; otherwise null.</returns>
+        internal SpecRefConfig? ParseSpecRefConfig(XElement parentElement, string propertyName)
+        {
+            var attributeValue = NullIfWhiteSpace(parentElement.Attribute(propertyName)?.Value);
+            if (attributeValue is not null)
+            {
+                return new SpecRefConfig { Source = attributeValue };
+            }
+
+            var specElement = parentElement.Element(propertyName);
+            if (specElement is null)
+            {
+                return null;
+            }
+
+            var source = NullIfWhiteSpace(specElement.Attribute(nameof(SpecRefConfig.Source))?.Value)
+                ?? NullIfWhiteSpace(specElement.Value);
+            var directory = NullIfWhiteSpace(specElement.Attribute(nameof(SpecRefConfig.Directory))?.Value)
+                ?? NullIfWhiteSpace(specElement.Element(nameof(SpecRefConfig.Directory))?.Value);
+
+            if (source is null && directory is null)
+            {
+                return null;
+            }
+
+            return new SpecRefConfig
+            {
+                Source = source,
+                Directory = directory
+            };
+        }
+
+        #endregion
+
+        #region Private Methods
+
+        private ApiSpecConfig? CombineApiSpecs(IEnumerable<XElement> elements)
+        {
+            var parsed = new List<ApiSpecConfig>();
+            foreach (var element in elements)
+            {
+                var spec = ParseApiSpecConfig(element);
+                if (spec is null)
+                {
+                    continue;
+                }
+
+                if (spec.Specs is not null)
+                {
+                    parsed.AddRange(spec.Specs);
+                }
+                else
+                {
+                    parsed.Add(spec);
+                }
+            }
+
+            if (parsed.Count == 0)
+            {
+                return null;
+            }
+
+            if (parsed.Count == 1)
+            {
+                return parsed[0];
+            }
+
+            return new ApiSpecConfig { Specs = parsed };
+        }
+
+        private static ApiSpecConfig? ParseSingleApiSpec(XElement element)
+        {
+            var source = NullIfWhiteSpace(element.Attribute(nameof(ApiSpecConfig.Source))?.Value)
+                ?? NullIfWhiteSpace(element.Element(nameof(ApiSpecConfig.Source))?.Value);
+            if (source is null && !element.HasElements)
+            {
+                source = NullIfWhiteSpace(element.Value);
+            }
+
+            var directory = NullIfWhiteSpace(element.Attribute(nameof(ApiSpecConfig.Directory))?.Value)
+                ?? NullIfWhiteSpace(element.Element(nameof(ApiSpecConfig.Directory))?.Value);
+
+            var overlays = ParseDelimitedList(element.Element(nameof(ApiSpecConfig.Overlays))?.Value);
+            foreach (var overlayElement in element.Elements("Overlay"))
+            {
+                var overlay = NullIfWhiteSpace(overlayElement.Value);
+                if (overlay is null)
+                {
+                    continue;
+                }
+
+                overlays ??= [];
+                overlays.Add(overlay);
+            }
+
+            if (source is null && directory is null && overlays is null)
+            {
+                return null;
+            }
+
+            return new ApiSpecConfig
+            {
+                Source = source,
+                Directory = directory,
+                Overlays = overlays
+            };
+        }
+
+        private static void ApplyNavXmlAttributes(XElement element, NavigationItemBase item)
+        {
+            var directory = NullIfWhiteSpace(element.Attribute("Directory")?.Value)
+                ?? NullIfWhiteSpace(element.Element("Directory")?.Value);
+            if (directory is not null)
+            {
+                item.Directory = directory;
+            }
+
+            var searchableAttr = element.Attribute("Searchable")?.Value;
+            if (!string.IsNullOrWhiteSpace(searchableAttr) && bool.TryParse(searchableAttr, out var searchable))
+            {
+                item.Searchable = searchable;
+            }
+
+            var thumbnailElement = element.Element("Thumbnail");
+            if (thumbnailElement is not null)
+            {
+                item.Thumbnail = new NavThumbnailConfig
+                {
+                    Appearance = NullIfWhiteSpace(thumbnailElement.Attribute("Appearance")?.Value)
+                        ?? NullIfWhiteSpace(thumbnailElement.Element("Appearance")?.Value),
+                    Background = NullIfWhiteSpace(thumbnailElement.Attribute("Background")?.Value)
+                        ?? NullIfWhiteSpace(thumbnailElement.Element("Background")?.Value),
+                    Eyebrow = NullIfWhiteSpace(thumbnailElement.Attribute("Eyebrow")?.Value)
+                        ?? NullIfWhiteSpace(thumbnailElement.Element("Eyebrow")?.Value),
+                    Preset = NullIfWhiteSpace(thumbnailElement.Attribute("Preset")?.Value)
+                        ?? NullIfWhiteSpace(thumbnailElement.Element("Preset")?.Value),
+                    Surface = NullIfWhiteSpace(thumbnailElement.Attribute("Surface")?.Value)
+                        ?? NullIfWhiteSpace(thumbnailElement.Element("Surface")?.Value)
+                };
+            }
+        }
+
+        private static object? ParseContextualOption(XElement optionElement)
+        {
+            var title = NullIfWhiteSpace(optionElement.Attribute("Title")?.Value)
+                ?? NullIfWhiteSpace(optionElement.Element("Title")?.Value);
+            var description = NullIfWhiteSpace(optionElement.Attribute("Description")?.Value)
+                ?? NullIfWhiteSpace(optionElement.Element("Description")?.Value);
+            var href = NullIfWhiteSpace(optionElement.Attribute("Href")?.Value);
+            var hrefElement = optionElement.Element("Href");
+
+            if (title is null && description is null && href is null && hrefElement is null)
+            {
+                return NullIfWhiteSpace(optionElement.Value);
+            }
+
+            ContextualHrefConfig? hrefConfig = href;
+            if (hrefElement is not null)
+            {
+                var query = new List<ContextualHrefQueryConfig>();
+                foreach (var queryElement in hrefElement.Elements("Query"))
+                {
+                    var key = NullIfWhiteSpace(queryElement.Attribute("Key")?.Value);
+                    var value = NullIfWhiteSpace(queryElement.Attribute("Value")?.Value)
+                        ?? NullIfWhiteSpace(queryElement.Value);
+                    if (key is not null)
+                    {
+                        query.Add(new ContextualHrefQueryConfig { Key = key, Value = value });
+                    }
+                }
+
+                hrefConfig = new ContextualHrefConfig
+                {
+                    Base = NullIfWhiteSpace(hrefElement.Attribute("Base")?.Value)
+                        ?? NullIfWhiteSpace(hrefElement.Value),
+                    Query = query.Count == 0 ? null : query
+                };
+            }
+
+            return new ContextualOptionConfig
+            {
+                Title = title,
+                Description = description,
+                Href = hrefConfig,
+                Icon = NullIfWhiteSpace(optionElement.Attribute("Icon")?.Value)
+                    ?? NullIfWhiteSpace(optionElement.Element("Icon")?.Value)
+            };
+        }
+
+        private static void AddParsedPageEntries(XElement pagesElement, List<object> pages)
+        {
+            var hasStructuredChildren = false;
+            var hasGroups = false;
+            foreach (var child in pagesElement.Elements())
+            {
+                if (child.Name.LocalName is "Groups" or "Group")
+                {
+                    hasGroups = true;
+                    continue;
+                }
+
+                var entry = ParsePageEntry(child);
+                if (entry is null)
+                {
+                    continue;
+                }
+
+                hasStructuredChildren = true;
+                pages.Add(entry);
+            }
+
+            if (hasStructuredChildren || hasGroups)
+            {
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(pagesElement.Value))
+            {
+                return;
+            }
+
+            foreach (var page in pagesElement.Value.Split(';', StringSplitOptions.RemoveEmptyEntries))
+            {
+                var trimmedPage = page.Trim();
+                if (!string.IsNullOrWhiteSpace(trimmedPage))
+                {
+                    pages.Add(trimmedPage);
+                }
+            }
+        }
+
+        private static object? ParsePageEntry(XElement element)
+        {
+            var name = element.Name.LocalName;
+            if (name is "Link" || string.Equals(element.Attribute("Type")?.Value, "link", StringComparison.OrdinalIgnoreCase))
+            {
+                var href = NullIfWhiteSpace(element.Attribute("Href")?.Value)
+                    ?? NullIfWhiteSpace(element.Element("Href")?.Value);
+                var title = NullIfWhiteSpace(element.Attribute("Title")?.Value)
+                    ?? NullIfWhiteSpace(element.Element("Title")?.Value)
+                    ?? NullIfWhiteSpace(element.Value);
+                if (href is null && title is null)
+                {
+                    return null;
+                }
+
+                return new NavigationLinkConfig
+                {
+                    Href = href,
+                    Title = title
+                };
+            }
+
+            if (name is "SourceRef")
+            {
+                var sourceRef = NullIfWhiteSpace(element.Attribute("SourceRef")?.Value)
+                    ?? NullIfWhiteSpace(element.Value);
+                return sourceRef is null ? null : new SourceRefConfig { SourceRef = sourceRef };
+            }
+
+            if (name is "Page")
+            {
+                var sourceRef = NullIfWhiteSpace(element.Attribute("SourceRef")?.Value);
+                if (sourceRef is not null)
+                {
+                    return new SourceRefConfig { SourceRef = sourceRef };
+                }
+
+                var pageName = NullIfWhiteSpace(element.Value);
+                return pageName;
+            }
+
+            return null;
+        }
+
+        private static CodeblocksConfig? ParseCodeblocksConfig(XElement element)
+        {
+            if (!element.HasElements)
+            {
+                var theme = NullIfWhiteSpace(element.Value);
+                return theme is null ? null : new CodeblocksConfig { Theme = theme };
+            }
+
+            var config = new CodeblocksConfig();
+            var themeElement = element.Element("Theme");
+            if (themeElement is not null)
+            {
+                if (themeElement.HasElements)
+                {
+                    config.ThemePair = new ThemePairConfig
+                    {
+                        Light = NullIfWhiteSpace(themeElement.Element(nameof(ThemePairConfig.Light))?.Value),
+                        Dark = NullIfWhiteSpace(themeElement.Element(nameof(ThemePairConfig.Dark))?.Value)
+                    };
+                }
+                else
+                {
+                    config.Theme = NullIfWhiteSpace(themeElement.Value);
+                }
+            }
+
+            var languagesElement = element.Element("Languages");
+            if (languagesElement is not null)
+            {
+                var custom = ParseDelimitedList(languagesElement.Element("Custom")?.Value);
+                if (custom is null)
+                {
+                    custom = [];
+                    foreach (var customElement in languagesElement.Elements("Custom"))
+                    {
+                        var path = NullIfWhiteSpace(customElement.Value);
+                        if (path is not null)
+                        {
+                            custom.Add(path);
+                        }
+                    }
+
+                    if (custom.Count == 0)
+                    {
+                        custom = null;
+                    }
+                }
+
+                if (custom is not null)
+                {
+                    config.Languages = new CodeblockLanguagesConfig { Custom = custom };
+                }
+            }
+
+            if (config.Theme is null && config.ThemePair is null && config.Languages is null)
+            {
+                return null;
+            }
+
+            return config;
+        }
+
+        private static readonly char[] ListDelimiters = { ';', ',' };
+
+        private static List<string>? ParseDelimitedList(string? value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                return null;
+            }
+
+            var parts = value.Split(ListDelimiters, StringSplitOptions.RemoveEmptyEntries);
+            List<string>? items = null;
+            foreach (var part in parts)
+            {
+                var trimmed = part.Trim();
+                if (trimmed.Length == 0)
+                {
+                    continue;
+                }
+
+                items ??= [];
+                items.Add(trimmed);
+            }
+
+            return items;
+        }
+
+        private static Dictionary<string, string>? ParseNamedValues(XElement? parent, string childName)
+        {
+            if (parent is null)
+            {
+                return null;
+            }
+
+            var values = new Dictionary<string, string>(StringComparer.Ordinal);
+            foreach (var child in parent.Elements(childName))
+            {
+                var name = NullIfWhiteSpace(child.Attribute("Name")?.Value);
+                var value = NullIfWhiteSpace(child.Attribute("Value")?.Value) ?? NullIfWhiteSpace(child.Value);
+                if (name is not null && value is not null)
+                {
+                    values[name] = value;
+                }
+            }
+
+            return values.Count == 0 ? null : values;
+        }
+
+        private static string? NullIfWhiteSpace(string? value)
+        {
+            return string.IsNullOrWhiteSpace(value) ? null : value.Trim();
         }
 
         #endregion

@@ -73,7 +73,7 @@ Your documentation will be available at `http://localhost:3000`.
 
 ## Requirements
 
-- .NET 8.0+, .NET 9.0+, or .NET 10.0+
+- .NET 8.0+, .NET 9.0+, .NET 10.0+, or .NET 11.0+
 - Mintlify CLI (for local preview)
 
 ## License

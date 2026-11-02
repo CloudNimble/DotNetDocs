@@ -165,6 +165,9 @@ namespace CloudNimble.DotNetDocs.Mintlify
                 // Fourth: Combine referenced navigation
                 CombineReferencedNavigation();
 
+                // Fifth: Append template tabs marked Position="End"
+                ApplyTabPositions();
+
                 // Write docs.json to the DocumentationRootPath (only once, with everything combined)
                 var docsJsonPath = Path.Combine(Context.DocumentationRootPath, "docs.json");
                 _docsJsonManager.Save(docsJsonPath);
@@ -1685,11 +1688,14 @@ namespace CloudNimble.DotNetDocs.Mintlify
         {
             _docsJsonManager!.Configuration!.Navigation!.Tabs ??= [];
 
+            var sourceNav = source.Configuration!.Navigation!;
             _docsJsonManager.Configuration.Navigation.Tabs.Add(new TabConfig
             {
                 Tab = !string.IsNullOrWhiteSpace(reference.Name) ? reference.Name : GetProjectName(reference.ProjectPath),
                 Href = reference.DestinationPath,
-                Pages = source.Configuration!.Navigation!.Pages
+                Pages = sourceNav.Pages,
+                Graphql = sourceNav.Graphql,
+                Mcp = sourceNav.Mcp
             });
         }
 
@@ -1702,12 +1708,15 @@ namespace CloudNimble.DotNetDocs.Mintlify
         {
             _docsJsonManager!.Configuration!.Navigation!.Products ??= [];
 
+            var sourceNav = source.Configuration!.Navigation!;
             _docsJsonManager.Configuration.Navigation.Products.Add(new ProductConfig
             {
                 Product = !string.IsNullOrWhiteSpace(reference.Name) ? reference.Name : GetProjectName(reference.ProjectPath),
                 Href = reference.DestinationPath,
-                Pages = source.Configuration!.Navigation!.Pages,
-                Groups = source.Configuration.Navigation.Groups
+                Pages = sourceNav.Pages,
+                Groups = sourceNav.Groups,
+                Graphql = sourceNav.Graphql,
+                Mcp = sourceNav.Mcp
             });
         }
 
@@ -1719,6 +1728,33 @@ namespace CloudNimble.DotNetDocs.Mintlify
         internal string GetProjectName(string projectPath)
         {
             return Path.GetFileNameWithoutExtension(projectPath);
+        }
+
+        /// <summary>
+        /// Appends template tabs that were declared with <c>Position="End"</c> after
+        /// DocumentationReference tabs.
+        /// </summary>
+        /// <remarks>
+        /// Called after <see cref="ApplyNavigationType"/> and <see cref="CombineReferencedNavigation"/>
+        /// so trailing href tabs (for example a sibling product site) appear at the end of the tab bar.
+        /// </remarks>
+        internal void ApplyTabPositions()
+        {
+            if (_docsJsonManager is null ||
+                !_docsJsonManager.IsLoaded ||
+                _docsJsonManager.Configuration?.Navigation is null)
+            {
+                return;
+            }
+
+            var trailingTabs = _options.Navigation.TrailingTabs;
+            if (trailingTabs.Count == 0)
+            {
+                return;
+            }
+
+            _docsJsonManager.Configuration.Navigation.Tabs ??= [];
+            _docsJsonManager.Configuration.Navigation.Tabs.AddRange(trailingTabs);
         }
 
         /// <summary>
@@ -1749,9 +1785,11 @@ namespace CloudNimble.DotNetDocs.Mintlify
                 return;
             }
 
+            var navigation = _docsJsonManager.Configuration.Navigation;
+
             // Get the current pages and groups to move
-            var currentPages = _docsJsonManager.Configuration.Navigation.Pages;
-            var currentGroups = _docsJsonManager.Configuration.Navigation.Groups;
+            var currentPages = navigation.Pages;
+            var currentGroups = navigation.Groups;
 
             // Determine the name for the root project
             var rootName = !string.IsNullOrWhiteSpace(_options.Navigation.Name)
@@ -1762,34 +1800,38 @@ namespace CloudNimble.DotNetDocs.Mintlify
             if (navigationType == NavigationType.Tabs)
             {
                 // Initialize Tabs if needed
-                _docsJsonManager.Configuration.Navigation.Tabs ??= [];
+                navigation.Tabs ??= [];
 
-                // Add root content as a new tab
-                _docsJsonManager.Configuration.Navigation.Tabs.Add(new TabConfig
+                // Add root content as a new tab, carrying GraphQL/MCP spec refs with the content
+                navigation.Tabs.Add(new TabConfig
                 {
                     Tab = rootName,
-                    Pages = currentPages
+                    Pages = currentPages,
+                    Graphql = navigation.Graphql,
+                    Mcp = navigation.Mcp
                 });
 
                 // Clear the Pages array since content is now in Tabs
-                _docsJsonManager.Configuration.Navigation.Pages = [];
+                navigation.Pages = [];
             }
             else if (navigationType == NavigationType.Products)
             {
                 // Initialize Products if needed
-                _docsJsonManager.Configuration.Navigation.Products ??= [];
+                navigation.Products ??= [];
 
-                // Add root content as a new product
-                _docsJsonManager.Configuration.Navigation.Products.Add(new ProductConfig
+                // Add root content as a new product, carrying GraphQL/MCP spec refs with the content
+                navigation.Products.Add(new ProductConfig
                 {
                     Product = rootName,
                     Pages = currentPages,
-                    Groups = currentGroups
+                    Groups = currentGroups,
+                    Graphql = navigation.Graphql,
+                    Mcp = navigation.Mcp
                 });
 
                 // Clear the Pages and Groups arrays since content is now in Products
-                _docsJsonManager.Configuration.Navigation.Pages = [];
-                _docsJsonManager.Configuration.Navigation.Groups = null;
+                navigation.Pages = [];
+                navigation.Groups = null;
             }
         }
 

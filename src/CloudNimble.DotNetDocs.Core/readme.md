@@ -60,7 +60,7 @@ using (var scope = host.Services.CreateScope())
 
 ## Requirements
 
-- .NET 8.0+, .NET 9.0+, or .NET 10.0+
+- .NET 8.0+, .NET 9.0+, .NET 10.0+, or .NET 11.0+
 
 ## License
 

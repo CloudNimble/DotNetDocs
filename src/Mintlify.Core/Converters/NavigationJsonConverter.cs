@@ -16,6 +16,14 @@ namespace Mintlify.Core.Converters
     public class NavigationJsonConverter : JsonConverter<NavigationConfig>
     {
 
+        #region Private Fields
+
+        private static readonly NavigationPageListConverter PageListConverter = new NavigationPageListConverter();
+
+        #endregion
+
+        #region Public Methods
+
         /// <summary>
         /// Reads navigation from JSON, supporting both array and object formats.
         /// </summary>
@@ -23,72 +31,119 @@ namespace Mintlify.Core.Converters
         {
             if (reader.TokenType == JsonTokenType.StartArray)
             {
-                // Handle array format: "navigation": [...]
-                // Use the NavigationPageListConverter to properly deserialize the pages
-                var converter = new NavigationPageListConverter();
-                var pages = converter.Read(ref reader, typeof(List<object>), options);
+                var pages = PageListConverter.Read(ref reader, typeof(List<object>), options);
                 return pages is not null ? new NavigationConfig { Pages = pages } : null;
             }
-            else if (reader.TokenType == JsonTokenType.StartObject)
+
+            if (reader.TokenType != JsonTokenType.StartObject)
             {
-                // Handle object format: "navigation": { "pages": [...], ... }
-                // We need to manually deserialize to avoid infinite recursion
-                var nav = new NavigationConfig();
-
-                while (reader.Read())
-                {
-                    if (reader.TokenType == JsonTokenType.EndObject)
-                        break;
-
-                    if (reader.TokenType == JsonTokenType.PropertyName)
-                    {
-                        var propertyName = reader.GetString();
-                        reader.Read();
-
-                        switch (propertyName?.ToLowerInvariant())
-                        {
-                            case "pages":
-                                if (reader.TokenType == JsonTokenType.StartArray)
-                                {
-                                    var converter = new NavigationPageListConverter();
-                                    nav.Pages = converter.Read(ref reader, typeof(List<object>), options);
-                                }
-                                break;
-                            case "groups":
-                                if (reader.TokenType == JsonTokenType.StartArray)
-                                {
-                                    nav.Groups = JsonSerializer.Deserialize<List<GroupConfig>>(ref reader, options);
-                                }
-                                break;
-                            case "tabs":
-                                if (reader.TokenType == JsonTokenType.StartArray)
-                                {
-                                    nav.Tabs = JsonSerializer.Deserialize<List<TabConfig>>(ref reader, options);
-                                }
-                                break;
-                            case "products":
-                                if (reader.TokenType == JsonTokenType.StartArray)
-                                {
-                                    nav.Products = JsonSerializer.Deserialize<List<ProductConfig>>(ref reader, options);
-                                }
-                                break;
-                            case "anchors":
-                                if (reader.TokenType == JsonTokenType.StartArray)
-                                {
-                                    nav.Anchors = JsonSerializer.Deserialize<List<AnchorConfig>>(ref reader, options);
-                                }
-                                break;
-                            default:
-                                reader.Skip();
-                                break;
-                        }
-                    }
-                }
-
-                return nav;
+                return null;
             }
 
-            return null;
+            var nav = new NavigationConfig();
+
+            while (reader.Read())
+            {
+                if (reader.TokenType == JsonTokenType.EndObject)
+                {
+                    break;
+                }
+
+                if (reader.TokenType != JsonTokenType.PropertyName)
+                {
+                    continue;
+                }
+
+                if (reader.ValueTextEquals("pages"))
+                {
+                    reader.Read();
+                    if (reader.TokenType == JsonTokenType.StartArray)
+                    {
+                        nav.Pages = PageListConverter.Read(ref reader, typeof(List<object>), options);
+                    }
+                }
+                else if (reader.ValueTextEquals("groups"))
+                {
+                    nav.Groups = ReadArray<GroupConfig>(ref reader, options) ?? nav.Groups;
+                }
+                else if (reader.ValueTextEquals("tabs"))
+                {
+                    nav.Tabs = ReadArray<TabConfig>(ref reader, options) ?? nav.Tabs;
+                }
+                else if (reader.ValueTextEquals("products"))
+                {
+                    nav.Products = ReadArray<ProductConfig>(ref reader, options) ?? nav.Products;
+                }
+                else if (reader.ValueTextEquals("anchors"))
+                {
+                    nav.Anchors = ReadArray<AnchorConfig>(ref reader, options) ?? nav.Anchors;
+                }
+                else if (reader.ValueTextEquals("dropdowns"))
+                {
+                    nav.Dropdowns = ReadArray<DropdownConfig>(ref reader, options) ?? nav.Dropdowns;
+                }
+                else if (reader.ValueTextEquals("languages"))
+                {
+                    nav.Languages = ReadArray<LanguageConfig>(ref reader, options) ?? nav.Languages;
+                }
+                else if (reader.ValueTextEquals("versions"))
+                {
+                    nav.Versions = ReadArray<VersionConfig>(ref reader, options) ?? nav.Versions;
+                }
+                else if (reader.ValueTextEquals("global"))
+                {
+                    reader.Read();
+                    if (reader.TokenType == JsonTokenType.StartObject)
+                    {
+                        nav.Global = JsonSerializer.Deserialize<GlobalNavigationConfig>(ref reader, options);
+                    }
+                }
+                else if (reader.ValueTextEquals("graphql"))
+                {
+                    reader.Read();
+                    nav.Graphql = JsonSerializer.Deserialize<SpecRefConfig>(ref reader, options);
+                }
+                else if (reader.ValueTextEquals("mcp"))
+                {
+                    reader.Read();
+                    nav.Mcp = JsonSerializer.Deserialize<SpecRefConfig>(ref reader, options);
+                }
+                else if (reader.ValueTextEquals("sdk"))
+                {
+                    reader.Read();
+                    if (reader.TokenType == JsonTokenType.StartObject)
+                    {
+                        nav.Sdk = JsonSerializer.Deserialize<SdkRefConfig>(ref reader, options);
+                    }
+                    else
+                    {
+                        reader.Skip();
+                    }
+                }
+                else if (reader.ValueTextEquals("directory"))
+                {
+                    reader.Read();
+                    if (reader.TokenType == JsonTokenType.String)
+                    {
+                        nav.Directory = reader.GetString();
+                    }
+                    else
+                    {
+                        reader.Skip();
+                    }
+                }
+                else
+                {
+                    var propertyName = reader.GetString();
+                    reader.Read();
+                    if (!TryReadIgnoreCase(ref reader, nav, propertyName, options))
+                    {
+                        reader.Skip();
+                    }
+                }
+            }
+
+            return nav;
         }
 
         /// <summary>
@@ -108,8 +163,7 @@ namespace Mintlify.Core.Converters
             if (value.Pages is not null && value.Pages.Count > 0)
             {
                 writer.WritePropertyName("pages");
-                var converter = new NavigationPageListConverter();
-                converter.Write(writer, value.Pages, options);
+                PageListConverter.Write(writer, value.Pages, options);
             }
 
             if (value.Groups is not null)
@@ -160,8 +214,188 @@ namespace Mintlify.Core.Converters
                 JsonSerializer.Serialize(writer, value.Global, options);
             }
 
+            if (value.Graphql is not null)
+            {
+                writer.WritePropertyName("graphql");
+                JsonSerializer.Serialize(writer, value.Graphql, options);
+            }
+
+            if (value.Mcp is not null)
+            {
+                writer.WritePropertyName("mcp");
+                JsonSerializer.Serialize(writer, value.Mcp, options);
+            }
+
+            if (value.Sdk is not null)
+            {
+                writer.WritePropertyName("sdk");
+                JsonSerializer.Serialize(writer, value.Sdk, options);
+            }
+
+            if (!string.IsNullOrWhiteSpace(value.Directory))
+            {
+                writer.WriteString("directory", value.Directory);
+            }
+
             writer.WriteEndObject();
         }
+
+        #endregion
+
+        #region Private Methods
+
+        private static List<T>? ReadArray<T>(ref Utf8JsonReader reader, JsonSerializerOptions options)
+        {
+            reader.Read();
+            if (reader.TokenType == JsonTokenType.StartArray)
+            {
+                return JsonSerializer.Deserialize<List<T>>(ref reader, options);
+            }
+
+            return null;
+        }
+
+        private static bool TryReadIgnoreCase(ref Utf8JsonReader reader, NavigationConfig nav, string? propertyName, JsonSerializerOptions options)
+        {
+            if (propertyName is null)
+            {
+                return false;
+            }
+
+            if (propertyName.Equals("pages", StringComparison.OrdinalIgnoreCase))
+            {
+                if (reader.TokenType == JsonTokenType.StartArray)
+                {
+                    nav.Pages = PageListConverter.Read(ref reader, typeof(List<object>), options);
+                }
+
+                return true;
+            }
+
+            if (propertyName.Equals("groups", StringComparison.OrdinalIgnoreCase))
+            {
+                if (reader.TokenType == JsonTokenType.StartArray)
+                {
+                    nav.Groups = JsonSerializer.Deserialize<List<GroupConfig>>(ref reader, options);
+                }
+
+                return true;
+            }
+
+            if (propertyName.Equals("tabs", StringComparison.OrdinalIgnoreCase))
+            {
+                if (reader.TokenType == JsonTokenType.StartArray)
+                {
+                    nav.Tabs = JsonSerializer.Deserialize<List<TabConfig>>(ref reader, options);
+                }
+
+                return true;
+            }
+
+            if (propertyName.Equals("products", StringComparison.OrdinalIgnoreCase))
+            {
+                if (reader.TokenType == JsonTokenType.StartArray)
+                {
+                    nav.Products = JsonSerializer.Deserialize<List<ProductConfig>>(ref reader, options);
+                }
+
+                return true;
+            }
+
+            if (propertyName.Equals("anchors", StringComparison.OrdinalIgnoreCase))
+            {
+                if (reader.TokenType == JsonTokenType.StartArray)
+                {
+                    nav.Anchors = JsonSerializer.Deserialize<List<AnchorConfig>>(ref reader, options);
+                }
+
+                return true;
+            }
+
+            if (propertyName.Equals("dropdowns", StringComparison.OrdinalIgnoreCase))
+            {
+                if (reader.TokenType == JsonTokenType.StartArray)
+                {
+                    nav.Dropdowns = JsonSerializer.Deserialize<List<DropdownConfig>>(ref reader, options);
+                }
+
+                return true;
+            }
+
+            if (propertyName.Equals("languages", StringComparison.OrdinalIgnoreCase))
+            {
+                if (reader.TokenType == JsonTokenType.StartArray)
+                {
+                    nav.Languages = JsonSerializer.Deserialize<List<LanguageConfig>>(ref reader, options);
+                }
+
+                return true;
+            }
+
+            if (propertyName.Equals("versions", StringComparison.OrdinalIgnoreCase))
+            {
+                if (reader.TokenType == JsonTokenType.StartArray)
+                {
+                    nav.Versions = JsonSerializer.Deserialize<List<VersionConfig>>(ref reader, options);
+                }
+
+                return true;
+            }
+
+            if (propertyName.Equals("global", StringComparison.OrdinalIgnoreCase))
+            {
+                if (reader.TokenType == JsonTokenType.StartObject)
+                {
+                    nav.Global = JsonSerializer.Deserialize<GlobalNavigationConfig>(ref reader, options);
+                }
+
+                return true;
+            }
+
+            if (propertyName.Equals("graphql", StringComparison.OrdinalIgnoreCase))
+            {
+                nav.Graphql = JsonSerializer.Deserialize<SpecRefConfig>(ref reader, options);
+                return true;
+            }
+
+            if (propertyName.Equals("mcp", StringComparison.OrdinalIgnoreCase))
+            {
+                nav.Mcp = JsonSerializer.Deserialize<SpecRefConfig>(ref reader, options);
+                return true;
+            }
+
+            if (propertyName.Equals("sdk", StringComparison.OrdinalIgnoreCase))
+            {
+                if (reader.TokenType == JsonTokenType.StartObject)
+                {
+                    nav.Sdk = JsonSerializer.Deserialize<SdkRefConfig>(ref reader, options);
+                }
+                else
+                {
+                    reader.Skip();
+                }
+
+                return true;
+            }
+
+            if (propertyName.Equals("directory", StringComparison.OrdinalIgnoreCase))
+            {
+                if (reader.TokenType == JsonTokenType.String)
+                {
+                    nav.Directory = reader.GetString();
+                }
+                else
+                {
+                    reader.Skip();
+                }
+
+                return true;
+            }
+
+            return false;
+        }
+
+        #endregion
 
     }
 

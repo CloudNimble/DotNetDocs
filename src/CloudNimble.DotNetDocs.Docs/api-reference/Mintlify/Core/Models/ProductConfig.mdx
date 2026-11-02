@@ -26,7 +26,7 @@ Represents a product configuration in Mintlify navigation.
 ## Remarks
 
 Products separate documentation into distinct product-specific sections.
-            The product name is required.
+The product name is required.
 
 ## Constructors
 
@@ -89,7 +89,7 @@ Type: `Mintlify.Core.Models.ApiSpecConfig?`
 #### Remarks
 
 Can be a string URL, an array of URLs, or an object with source and directory properties
-            pointing to AsyncAPI specification files.
+pointing to AsyncAPI specification files.
 
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Description
 
@@ -108,6 +108,60 @@ Type: `string?`
 #### Remarks
 
 Provides additional context about the product section.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Directory <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `Mintlify.Core.Models.NavigationItemBase`</Note>
+
+Gets or sets the directory layout for this node and its descendants.
+
+#### Syntax
+
+```csharp
+public string Directory { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+
+#### Remarks
+
+Valid values are `none` (default, no listing), `accordion` (collapsible
+list grouped by section), and `card` (horizontal cards). The value inherits
+recursively; a descendant can override it. Directory listings only appear on
+groups that have a `root` page.
+See https://www.mintlify.com/docs/organize/navigation#directory-listings.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Graphql <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `Mintlify.Core.Models.NavigationItemBase`</Note>
+
+Gets or sets the GraphQL schema used to auto-populate reference pages.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.SpecRefConfig Graphql { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.SpecRefConfig?`
+
+#### Examples
+
+```csharp
+"tab": "GraphQL API",
+"graphql": "schema.graphql"
+```
+
+#### Remarks
+
+Accepts a local SDL path, an HTTPS URL, or an object with `source` and
+optional `directory`. You can declare `graphql` on a tab or a group.
+Defaults directory to `graphql-reference`.
+See https://www.mintlify.com/docs/api-playground/graphql-setup.
 
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Groups <Badge color="gray">Inherited</Badge>
 
@@ -188,7 +242,47 @@ Type: `Mintlify.Core.Models.IconConfig?`
 #### Remarks
 
 Can be a Font Awesome icon name, Lucide icon name, JSX-compatible SVG code,
-            URL to an externally hosted icon, or path to an icon file in your project.
+URL to an externally hosted icon, or path to an icon file in your project.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Mcp <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `Mintlify.Core.Models.NavigationItemBase`</Note>
+
+Gets or sets the MCP definition used to auto-populate reference pages.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.SpecRefConfig Mcp { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.SpecRefConfig?`
+
+#### Remarks
+
+Accepts a local path to an MCP definition JSON file, or an object with
+`source` and optional `directory`.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Name
+
+Gets or sets the display name shown in the product switcher.
+
+#### Syntax
+
+```csharp
+public string Name { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+
+#### Remarks
+
+When set, this label is shown instead of [ProductConfig.Product](/api-reference/Mintlify/Core/Models/ProductConfig#product) in the switcher.
+[ProductConfig.Product](/api-reference/Mintlify/Core/Models/ProductConfig#product) remains the identity used to match products during merge.
 
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> OpenApi <Badge color="gray">Inherited</Badge>
 
@@ -209,7 +303,7 @@ Type: `Mintlify.Core.Models.ApiSpecConfig?`
 #### Remarks
 
 Can be a string URL, an array of URLs, or an object with source and directory properties
-            pointing to OpenAPI specification files.
+pointing to OpenAPI specification files.
 
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Pages <Badge color="gray">Inherited</Badge>
 
@@ -248,6 +342,73 @@ Type: `string`
 #### Remarks
 
 This is a required field that appears as the product label in navigation.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Sdk <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `Mintlify.Core.Models.NavigationItemBase`</Note>
+
+Gets or sets the SDK documentation artifact used to auto-populate pages.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.SdkRefConfig Sdk { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.SdkRefConfig?`
+
+#### Remarks
+
+Declare `sdk` on a tab or a group. Nested groups inherit the parent
+settings unless they set their own. See [SdkRefConfig](/api-reference/Mintlify/Core/Models/SdkRefConfig).
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Searchable <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `Mintlify.Core.Models.NavigationItemBase`</Note>
+
+Gets or sets whether hidden descendants remain indexed for search and llms.txt.
+
+#### Syntax
+
+```csharp
+public System.Nullable<bool> Searchable { get; set; }
+```
+
+#### Property Value
+
+Type: `System.Nullable<bool>?`
+
+#### Remarks
+
+When `true` on a hidden tab or group, descendant pages stay in site search,
+`sitemap.xml`, AI assistant context, MCP search, and search-engine indexing.
+The tab or group itself stays hidden. Has no effect when [NavigationItemBase.Hidden](/api-reference/Mintlify/Core/Models/NavigationItemBase#hidden) is
+false. A page's own `hidden` frontmatter always wins.
+See https://www.mintlify.com/docs/organize/hidden-pages.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Thumbnail <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `Mintlify.Core.Models.NavigationItemBase`</Note>
+
+Gets or sets thumbnail overrides for pages under this node.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.NavThumbnailConfig Thumbnail { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.NavThumbnailConfig?`
+
+#### Remarks
+
+Each key overrides the nearest parent and site-level `thumbnails`.
+In an override, `eyebrow` is literal text and `""` hides it.
+See https://www.mintlify.com/docs/organize/settings-appearance#override-thumbnails-for-a-page-or-section.
 
 ## Methods
 

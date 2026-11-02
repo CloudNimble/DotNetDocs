@@ -37,6 +37,42 @@ namespace Mintlify.Core.Models
         [JsonPropertyName("metatags")]
         public Dictionary<string, string>? Metatags { get; set; }
 
+        /// <summary>
+        /// Gets or sets the organization used as the publisher entity in structured data.
+        /// </summary>
+        /// <remarks>
+        /// All fields are optional. If omitted, Mintlify derives the organization from the
+        /// site name, docs logo, and site URL. See https://www.mintlify.com/docs/optimize/seo.
+        /// </remarks>
+        public SeoOrganizationConfig? Organization { get; set; }
+
+        /// <summary>
+        /// Gets or sets meta tags scoped to a folder.
+        /// </summary>
+        /// <remarks>
+        /// Use this to apply different tags to a subset of pages without repeating them in
+        /// frontmatter. Each entry has a folder <c>path</c> and <c>metatags</c>.
+        /// See https://www.mintlify.com/docs/organize/settings-seo.
+        /// </remarks>
+        public List<SeoPathConfig>? Paths { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether SEO URLs include a trailing slash.
+        /// </summary>
+        /// <example>
+        /// <code>
+        /// "seo": {
+        ///   "trailingSlash": true
+        /// }
+        /// </code>
+        /// </example>
+        /// <remarks>
+        /// Enable this when hosting serves every page with a trailing slash, such as
+        /// <c>/quickstart/</c> instead of <c>/quickstart</c>, so canonical, Open Graph,
+        /// and sitemap URLs match.
+        /// </remarks>
+        public bool? TrailingSlash { get; set; }
+
         #endregion
 
     }

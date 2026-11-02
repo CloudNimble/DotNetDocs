@@ -26,7 +26,7 @@ Represents the SEO (Search Engine Optimization) configuration for the Mintlify d
 ## Remarks
 
 This configuration controls how search engines index and display the documentation,
-            including meta tags and indexing behavior.
+including meta tags and indexing behavior.
 
 ## Constructors
 
@@ -67,8 +67,8 @@ Type: `string?`
 #### Remarks
 
 Valid values are "navigable" (only pages in navigation) or "all" (all pages).
-            The "navigable" setting indexes only pages that appear in the site navigation,
-            while "all" indexes every page in the documentation. Defaults to "navigable".
+The "navigable" setting indexes only pages that appear in the site navigation,
+while "all" indexes every page in the documentation. Defaults to "navigable".
 
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Metatags
 
@@ -87,8 +87,75 @@ Type: `System.Collections.Generic.Dictionary<string, string>?`
 #### Remarks
 
 Each key-value pair represents a meta tag name and its content.
-            These tags are included in the HTML head section of all pages
-            to provide additional information to search engines.
+These tags are included in the HTML head section of all pages
+to provide additional information to search engines.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Organization
+
+Gets or sets the organization used as the publisher entity in structured data.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.SeoOrganizationConfig Organization { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.SeoOrganizationConfig?`
+
+#### Remarks
+
+All fields are optional. If omitted, Mintlify derives the organization from the
+site name, docs logo, and site URL. See https://www.mintlify.com/docs/optimize/seo.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Paths
+
+Gets or sets meta tags scoped to a folder.
+
+#### Syntax
+
+```csharp
+public System.Collections.Generic.List<Mintlify.Core.Models.SeoPathConfig> Paths { get; set; }
+```
+
+#### Property Value
+
+Type: `System.Collections.Generic.List<Mintlify.Core.Models.SeoPathConfig>?`
+
+#### Remarks
+
+Use this to apply different tags to a subset of pages without repeating them in
+frontmatter. Each entry has a folder `path` and `metatags`.
+See https://www.mintlify.com/docs/organize/settings-seo.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> TrailingSlash
+
+Gets or sets whether SEO URLs include a trailing slash.
+
+#### Syntax
+
+```csharp
+public System.Nullable<bool> TrailingSlash { get; set; }
+```
+
+#### Property Value
+
+Type: `System.Nullable<bool>?`
+
+#### Examples
+
+```csharp
+"seo": {
+  "trailingSlash": true
+}
+```
+
+#### Remarks
+
+Enable this when hosting serves every page with a trailing slash, such as
+`/quickstart/` instead of `/quickstart`, so canonical, Open Graph,
+and sitemap URLs match.
 
 ## Methods
 

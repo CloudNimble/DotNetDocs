@@ -27,9 +27,27 @@ namespace Mintlify.Core.Models
         public string? Description { get; set; }
 
         /// <summary>
+        /// Gets or sets the directory layout for this menu item and its descendants.
+        /// </summary>
+        /// <remarks>
+        /// Valid values are <c>none</c>, <c>accordion</c>, and <c>card</c>.
+        /// </remarks>
+        public string? Directory { get; set; }
+
+        /// <summary>
         /// Gets or sets the groups for the menu item.
         /// </summary>
         public List<GroupConfig>? Groups { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether the menu item is hidden by default.
+        /// </summary>
+        public bool? Hidden { get; set; }
+
+        /// <summary>
+        /// Gets or sets the URL or path for the menu item.
+        /// </summary>
+        public string? Href { get; set; }
 
         /// <summary>
         /// Gets or sets the icon to be displayed for the menu item.
@@ -54,6 +72,16 @@ namespace Mintlify.Core.Models
         /// </remarks>
         [JsonConverter(typeof(NavigationPageListConverter))]
         public List<object>? Pages { get; set; }
+
+        /// <summary>
+        /// Gets or sets the SDK documentation artifact used to auto-populate pages.
+        /// </summary>
+        public SdkRefConfig? Sdk { get; set; }
+
+        /// <summary>
+        /// Gets or sets thumbnail overrides for pages under this menu item.
+        /// </summary>
+        public NavThumbnailConfig? Thumbnail { get; set; }
 
         #endregion
 
