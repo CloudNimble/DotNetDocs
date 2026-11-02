@@ -1,0 +1,245 @@
+---
+title: ContextualOptionConfig
+description: "Represents a custom contextual menu option."
+icon: file-brackets-curly
+keywords: ['ContextualOptionConfig', 'Mintlify.Core.Models.ContextualOptionConfig', 'Mintlify.Core.Models', 'class', 'System.Object']
+---
+
+## Definition
+
+**Assembly:** Mintlify.Core.dll
+
+**Namespace:** Mintlify.Core.Models
+
+**Inheritance:** System.Object
+
+## Syntax
+
+```csharp
+Mintlify.Core.Models.ContextualOptionConfig
+```
+
+## Summary
+
+Represents a custom contextual menu option.
+
+## Remarks
+
+Custom options require [ContextualOptionConfig.Title](/api-reference/Mintlify/Core/Models/ContextualOptionConfig#title), [ContextualOptionConfig.Description](/api-reference/Mintlify/Core/Models/ContextualOptionConfig#description), and
+[ContextualOptionConfig.Href](/api-reference/Mintlify/Core/Models/ContextualOptionConfig#href). See https://www.mintlify.com/docs/ai/contextual-menu.
+
+## Examples
+
+```csharp
+{
+  "title": "Request a feature",
+  "description": "Join the discussion on GitHub",
+  "icon": "plus",
+  "href": "https://github.com/orgs/mintlify/discussions"
+}
+```
+
+## Constructors
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor
+
+#### Syntax
+
+```csharp
+public ContextualOptionConfig()
+```
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public Object()
+```
+
+## Properties
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Description
+
+Gets or sets the option description shown beneath the title when the menu expands.
+
+#### Syntax
+
+```csharp
+public string Description { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Href
+
+Gets or sets the destination URL or URL template.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.ContextualHrefConfig Href { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.ContextualHrefConfig?`
+
+#### Remarks
+
+A string for a simple link, or an object with `base` and `query`
+for dynamic links. Query values may use `$page`, `$path`, and
+`$mcp` placeholders.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Icon
+
+Gets or sets the option icon.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.IconConfig Icon { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.IconConfig?`
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Title
+
+Gets or sets the option title.
+
+#### Syntax
+
+```csharp
+public string Title { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+
+## Methods
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Equals <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual bool Equals(object obj)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `obj` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Equals <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public static bool Equals(object objA, object objB)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `objA` | `object?` | - |
+| `objB` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetHashCode <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual int GetHashCode()
+```
+
+#### Returns
+
+Type: `int`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetType <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public System.Type GetType()
+```
+
+#### Returns
+
+Type: `System.Type`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> MemberwiseClone <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+protected internal object MemberwiseClone()
+```
+
+#### Returns
+
+Type: `object`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ReferenceEquals <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public static bool ReferenceEquals(object objA, object objB)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `objA` | `object?` | - |
+| `objB` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ToString <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual string ToString()
+```
+
+#### Returns
+
+Type: `string?`
+

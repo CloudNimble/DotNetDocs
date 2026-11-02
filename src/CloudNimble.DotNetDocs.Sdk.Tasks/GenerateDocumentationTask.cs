@@ -741,7 +741,9 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
             var navConfig = new NavigationConfig
             {
                 Graphql = ParseSpecRefConfig(navigationElement, nameof(NavigationConfig.Graphql)),
-                Mcp = ParseSpecRefConfig(navigationElement, nameof(NavigationConfig.Mcp))
+                Mcp = ParseSpecRefConfig(navigationElement, nameof(NavigationConfig.Mcp)),
+                Directory = NullIfWhiteSpace(navigationElement.Attribute("Directory")?.Value)
+                    ?? NullIfWhiteSpace(navigationElement.Element("Directory")?.Value)
             };
 
             // Parse Tabs
@@ -832,14 +834,7 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
                     }
                 }
 
-                foreach (var pageElement in pagesElement.Elements("Page"))
-                {
-                    var pageName = pageElement.Value?.Trim();
-                    if (!string.IsNullOrWhiteSpace(pageName))
-                    {
-                        navConfig.Pages.Add(pageName);
-                    }
-                }
+                AddParsedPageEntries(pagesElement, navConfig.Pages);
             }
 
             return navConfig;
@@ -883,6 +878,7 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
                 Mcp = ParseSpecRefConfig(groupElement, nameof(GroupConfig.Mcp)),
                 Pages = []
             };
+            ApplyNavXmlAttributes(groupElement, group);
 
             // Parse the optional Expanded attribute, which controls the group's default expand/collapse state.
             var expandedAttr = groupElement.Attribute("Expanded")?.Value;
@@ -891,19 +887,10 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
                 group.Expanded = expanded;
             }
 
-            // Parse direct pages (semicolon-separated list)
             var pagesElement = groupElement.Element(nameof(GroupConfig.Pages));
-            if (pagesElement is not null && !string.IsNullOrWhiteSpace(pagesElement.Value))
+            if (pagesElement is not null)
             {
-                var pageList = pagesElement.Value.Split(';', StringSplitOptions.RemoveEmptyEntries);
-                foreach (var page in pageList)
-                {
-                    var trimmedPage = page.Trim();
-                    if (!string.IsNullOrWhiteSpace(trimmedPage))
-                    {
-                        group.Pages.Add(trimmedPage);
-                    }
-                }
+                AddParsedPageEntries(pagesElement, group.Pages);
             }
 
             // Parse nested groups - check both <Groups> wrapper and direct <Group> children
@@ -975,6 +962,7 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
                 Mcp = ParseSpecRefConfig(anchorElement, nameof(AnchorConfig.Mcp)),
                 Pages = []
             };
+            ApplyNavXmlAttributes(anchorElement, anchor);
 
             ParseNavigationSectionPages(anchorElement, anchor.Pages);
 
@@ -1034,6 +1022,7 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
                 Mcp = ParseSpecRefConfig(dropdownElement, nameof(DropdownConfig.Mcp)),
                 Pages = []
             };
+            ApplyNavXmlAttributes(dropdownElement, dropdown);
 
             ParseNavigationSectionPages(dropdownElement, dropdown.Pages);
 
@@ -1104,6 +1093,7 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
             var product = new ProductConfig
             {
                 Product = productName,
+                Name = NullIfWhiteSpace(productElement.Attribute("DisplayName")?.Value),
                 Href = productElement.Attribute("Href")?.Value,
                 Icon = productElement.Attribute("Icon")?.Value,
                 Description = productElement.Attribute("Description")?.Value,
@@ -1111,6 +1101,7 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
                 Mcp = ParseSpecRefConfig(productElement, nameof(ProductConfig.Mcp)),
                 Pages = []
             };
+            ApplyNavXmlAttributes(productElement, product);
 
             ParseNavigationSectionPages(productElement, product.Pages);
 
@@ -1155,9 +1146,11 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
                 Tab = tabName,
                 Href = tabElement.Attribute("Href")?.Value,
                 Icon = tabElement.Attribute("Icon")?.Value,
+                Align = NullIfWhiteSpace(tabElement.Attribute("Align")?.Value),
                 Graphql = ParseSpecRefConfig(tabElement, nameof(TabConfig.Graphql)),
                 Mcp = ParseSpecRefConfig(tabElement, nameof(TabConfig.Mcp))
             };
+            ApplyNavXmlAttributes(tabElement, tab);
 
             if (tabElement.Element("Pages") is not null)
             {
@@ -1225,14 +1218,7 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
                 }
             }
 
-            foreach (var pageElement in pagesElement.Elements("Page"))
-            {
-                var pageName = pageElement.Value?.Trim();
-                if (!string.IsNullOrWhiteSpace(pageName))
-                {
-                    pages.Add(pageName);
-                }
-            }
+            AddParsedPageEntries(pagesElement, pages);
         }
 
         /// <summary>
@@ -1502,11 +1488,10 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
         {
             var config = new StylingConfig();
 
-            // Parse Codeblocks
             var codeBlocksElement = stylingElement.Element(nameof(StylingConfig.Codeblocks));
-            if (codeBlocksElement is not null && !string.IsNullOrWhiteSpace(codeBlocksElement.Value))
+            if (codeBlocksElement is not null)
             {
-                config.Codeblocks = codeBlocksElement.Value.Trim();
+                config.Codeblocks = ParseCodeblocksConfig(codeBlocksElement);
             }
 
             // Parse Eyebrows
@@ -1596,29 +1581,14 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
                 config.Url = urlElement.Value.Trim();
             }
 
-            // Parse Proxy
-            var proxyElement = apiElement.Element(nameof(ApiConfig.Proxy));
-            if (proxyElement is not null && !string.IsNullOrWhiteSpace(proxyElement.Value))
+            var optionalElement = apiElement.Element(nameof(ApiConfig.Optional));
+            if (optionalElement is not null && !string.IsNullOrWhiteSpace(optionalElement.Value))
             {
-                if (bool.TryParse(proxyElement.Value.Trim(), out var proxy))
-                {
-                    config.Proxy = proxy;
-                }
+                config.Optional = optionalElement.Value.Trim();
             }
 
-            // Parse OpenApi
-            var openApiElement = apiElement.Element(nameof(ApiConfig.OpenApi));
-            if (openApiElement is not null && !string.IsNullOrWhiteSpace(openApiElement.Value))
-            {
-                config.OpenApi = new ApiSpecConfig { Source = openApiElement.Value.Trim() };
-            }
-
-            // Parse AsyncApi
-            var asyncApiElement = apiElement.Element(nameof(ApiConfig.AsyncApi));
-            if (asyncApiElement is not null && !string.IsNullOrWhiteSpace(asyncApiElement.Value))
-            {
-                config.AsyncApi = new ApiSpecConfig { Source = asyncApiElement.Value.Trim() };
-            }
+            config.OpenApi = CombineApiSpecs(apiElement.Elements(nameof(ApiConfig.OpenApi)));
+            config.AsyncApi = CombineApiSpecs(apiElement.Elements(nameof(ApiConfig.AsyncApi)));
 
             // Parse Playground
             var playgroundElement = apiElement.Element(nameof(ApiConfig.Playground));
@@ -1640,6 +1610,20 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
                         config.Playground.Proxy = playgroundProxy;
                     }
                 }
+
+                var credentialsElement = playgroundElement.Element(nameof(ApiPlaygroundConfig.Credentials));
+                if (credentialsElement is not null && bool.TryParse(credentialsElement.Value.Trim(), out var credentials))
+                {
+                    config.Playground.Credentials = credentials;
+                }
+            }
+
+            // Mintlify 2.0 dropped api.proxy. Map the old template element onto playground.proxy.
+            var proxyElement = apiElement.Element("Proxy");
+            if (proxyElement is not null && bool.TryParse(proxyElement.Value.Trim(), out var proxy))
+            {
+                config.Playground ??= new ApiPlaygroundConfig();
+                config.Playground.Proxy ??= proxy;
             }
 
             // Parse Params
@@ -1651,10 +1635,13 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
                 var expandedElement = paramsElement.Element(nameof(ApiParamsConfig.Expanded));
                 if (expandedElement is not null && !string.IsNullOrWhiteSpace(expandedElement.Value))
                 {
-                    if (bool.TryParse(expandedElement.Value.Trim(), out var expanded))
-                    {
-                        config.Params.Expanded = expanded;
-                    }
+                    config.Params.Expanded = expandedElement.Value.Trim();
+                }
+
+                var postElement = paramsElement.Element(nameof(ApiParamsConfig.Post));
+                if (postElement is not null)
+                {
+                    config.Params.Post = ParseDelimitedList(postElement.Value);
                 }
             }
 
@@ -1691,11 +1678,7 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
                 var languagesElement = examplesElement.Element(nameof(ApiExamplesConfig.Languages));
                 if (languagesElement is not null && !string.IsNullOrWhiteSpace(languagesElement.Value))
                 {
-                    config.Examples.Languages = languagesElement.Value
-                        .Split(new[] { ';', ',' }, StringSplitOptions.RemoveEmptyEntries)
-                        .Select(l => l.Trim())
-                        .Where(l => !string.IsNullOrWhiteSpace(l))
-                        .ToList();
+                    config.Examples.Languages = ParseDelimitedList(languagesElement.Value);
                 }
             }
 
@@ -1742,18 +1725,38 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
         {
             var config = new ContextualConfig();
 
-            // Parse Options
             var optionsElement = contextualElement.Element(nameof(ContextualConfig.Options));
-            if (optionsElement is not null && !string.IsNullOrWhiteSpace(optionsElement.Value))
+            if (optionsElement is not null)
             {
-                config.Options = optionsElement.Value
-                    .Split(new[] { ';', ',' }, StringSplitOptions.RemoveEmptyEntries)
-                    .Select(o => o.Trim())
-                    .Where(o => !string.IsNullOrWhiteSpace(o))
-                    .ToList();
+                List<object>? options = null;
+                foreach (var optionElement in optionsElement.Elements("Option"))
+                {
+                    options ??= [];
+                    var parsed = ParseContextualOption(optionElement);
+                    if (parsed is not null)
+                    {
+                        options.Add(parsed);
+                    }
+                }
+
+                if (options is not null)
+                {
+                    config.Options = options;
+                }
+                else if (!string.IsNullOrWhiteSpace(optionsElement.Value))
+                {
+                    var names = ParseDelimitedList(optionsElement.Value);
+                    if (names is not null)
+                    {
+                        config.Options = new List<object>(names.Count);
+                        foreach (var name in names)
+                        {
+                            config.Options.Add(name);
+                        }
+                    }
+                }
             }
 
-            // Parse Display
             var displayElement = contextualElement.Element(nameof(ContextualConfig.Display));
             if (displayElement is not null && !string.IsNullOrWhiteSpace(displayElement.Value))
             {
@@ -2136,6 +2139,21 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
         }
 
         /// <summary>
+        /// Parses an OpenAPI or AsyncAPI specification element.
+        /// </summary>
+        /// <param name="element">The OpenAPI or AsyncAPI XML element.</param>
+        /// <returns>An <see cref="ApiSpecConfig"/> when source, directory, overlays, or nested specs are present; otherwise null.</returns>
+        internal ApiSpecConfig? ParseApiSpecConfig(XElement element)
+        {
+            if (element.Element("Spec") is not null)
+            {
+                return CombineApiSpecs(element.Elements("Spec"));
+            }
+
+            return ParseSingleApiSpec(element);
+        }
+
+        /// <summary>
         /// Parses a GraphQL or MCP specification reference from an attribute or child element.
         /// </summary>
         /// <param name="parentElement">The parent XML element.</param>
@@ -2176,6 +2194,309 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
 
         #region Private Methods
 
+        private ApiSpecConfig? CombineApiSpecs(IEnumerable<XElement> elements)
+        {
+            var parsed = new List<ApiSpecConfig>();
+            foreach (var element in elements)
+            {
+                var spec = ParseApiSpecConfig(element);
+                if (spec is null)
+                {
+                    continue;
+                }
+
+                if (spec.Specs is not null)
+                {
+                    parsed.AddRange(spec.Specs);
+                }
+                else
+                {
+                    parsed.Add(spec);
+                }
+            }
+
+            if (parsed.Count == 0)
+            {
+                return null;
+            }
+
+            if (parsed.Count == 1)
+            {
+                return parsed[0];
+            }
+
+            return new ApiSpecConfig { Specs = parsed };
+        }
+
+        private static ApiSpecConfig? ParseSingleApiSpec(XElement element)
+        {
+            var source = NullIfWhiteSpace(element.Attribute(nameof(ApiSpecConfig.Source))?.Value)
+                ?? NullIfWhiteSpace(element.Element(nameof(ApiSpecConfig.Source))?.Value);
+            if (source is null && !element.HasElements)
+            {
+                source = NullIfWhiteSpace(element.Value);
+            }
+
+            var directory = NullIfWhiteSpace(element.Attribute(nameof(ApiSpecConfig.Directory))?.Value)
+                ?? NullIfWhiteSpace(element.Element(nameof(ApiSpecConfig.Directory))?.Value);
+
+            var overlays = ParseDelimitedList(element.Element(nameof(ApiSpecConfig.Overlays))?.Value);
+            foreach (var overlayElement in element.Elements("Overlay"))
+            {
+                var overlay = NullIfWhiteSpace(overlayElement.Value);
+                if (overlay is null)
+                {
+                    continue;
+                }
+
+                overlays ??= [];
+                overlays.Add(overlay);
+            }
+
+            if (source is null && directory is null && overlays is null)
+            {
+                return null;
+            }
+
+            return new ApiSpecConfig
+            {
+                Source = source,
+                Directory = directory,
+                Overlays = overlays
+            };
+        }
+
+        private static void ApplyNavXmlAttributes(XElement element, NavigationItemBase item)
+        {
+            var directory = NullIfWhiteSpace(element.Attribute("Directory")?.Value)
+                ?? NullIfWhiteSpace(element.Element("Directory")?.Value);
+            if (directory is not null)
+            {
+                item.Directory = directory;
+            }
+
+            var searchableAttr = element.Attribute("Searchable")?.Value;
+            if (!string.IsNullOrWhiteSpace(searchableAttr) && bool.TryParse(searchableAttr, out var searchable))
+            {
+                item.Searchable = searchable;
+            }
+
+            var thumbnailElement = element.Element("Thumbnail");
+            if (thumbnailElement is not null)
+            {
+                item.Thumbnail = new NavThumbnailConfig
+                {
+                    Appearance = NullIfWhiteSpace(thumbnailElement.Attribute("Appearance")?.Value)
+                        ?? NullIfWhiteSpace(thumbnailElement.Element("Appearance")?.Value),
+                    Background = NullIfWhiteSpace(thumbnailElement.Attribute("Background")?.Value)
+                        ?? NullIfWhiteSpace(thumbnailElement.Element("Background")?.Value),
+                    Eyebrow = NullIfWhiteSpace(thumbnailElement.Attribute("Eyebrow")?.Value)
+                        ?? NullIfWhiteSpace(thumbnailElement.Element("Eyebrow")?.Value),
+                    Preset = NullIfWhiteSpace(thumbnailElement.Attribute("Preset")?.Value)
+                        ?? NullIfWhiteSpace(thumbnailElement.Element("Preset")?.Value),
+                    Surface = NullIfWhiteSpace(thumbnailElement.Attribute("Surface")?.Value)
+                        ?? NullIfWhiteSpace(thumbnailElement.Element("Surface")?.Value)
+                };
+            }
+        }
+
+        private static object? ParseContextualOption(XElement optionElement)
+        {
+            var title = NullIfWhiteSpace(optionElement.Attribute("Title")?.Value)
+                ?? NullIfWhiteSpace(optionElement.Element("Title")?.Value);
+            var description = NullIfWhiteSpace(optionElement.Attribute("Description")?.Value)
+                ?? NullIfWhiteSpace(optionElement.Element("Description")?.Value);
+            var href = NullIfWhiteSpace(optionElement.Attribute("Href")?.Value);
+            var hrefElement = optionElement.Element("Href");
+
+            if (title is null && description is null && href is null && hrefElement is null)
+            {
+                return NullIfWhiteSpace(optionElement.Value);
+            }
+
+            ContextualHrefConfig? hrefConfig = href;
+            if (hrefElement is not null)
+            {
+                var query = new List<ContextualHrefQueryConfig>();
+                foreach (var queryElement in hrefElement.Elements("Query"))
+                {
+                    var key = NullIfWhiteSpace(queryElement.Attribute("Key")?.Value);
+                    var value = NullIfWhiteSpace(queryElement.Attribute("Value")?.Value)
+                        ?? NullIfWhiteSpace(queryElement.Value);
+                    if (key is not null)
+                    {
+                        query.Add(new ContextualHrefQueryConfig { Key = key, Value = value });
+                    }
+                }
+
+                hrefConfig = new ContextualHrefConfig
+                {
+                    Base = NullIfWhiteSpace(hrefElement.Attribute("Base")?.Value)
+                        ?? NullIfWhiteSpace(hrefElement.Value),
+                    Query = query.Count == 0 ? null : query
+                };
+            }
+
+            return new ContextualOptionConfig
+            {
+                Title = title,
+                Description = description,
+                Href = hrefConfig,
+                Icon = NullIfWhiteSpace(optionElement.Attribute("Icon")?.Value)
+                    ?? NullIfWhiteSpace(optionElement.Element("Icon")?.Value)
+            };
+        }
+
+        private static void AddParsedPageEntries(XElement pagesElement, List<object> pages)
+        {
+            var hasStructuredChildren = false;
+            var hasGroups = false;
+            foreach (var child in pagesElement.Elements())
+            {
+                if (child.Name.LocalName is "Groups" or "Group")
+                {
+                    hasGroups = true;
+                    continue;
+                }
+
+                var entry = ParsePageEntry(child);
+                if (entry is null)
+                {
+                    continue;
+                }
+
+                hasStructuredChildren = true;
+                pages.Add(entry);
+            }
+
+            if (hasStructuredChildren || hasGroups)
+            {
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(pagesElement.Value))
+            {
+                return;
+            }
+
+            foreach (var page in pagesElement.Value.Split(';', StringSplitOptions.RemoveEmptyEntries))
+            {
+                var trimmedPage = page.Trim();
+                if (!string.IsNullOrWhiteSpace(trimmedPage))
+                {
+                    pages.Add(trimmedPage);
+                }
+            }
+        }
+
+        private static object? ParsePageEntry(XElement element)
+        {
+            var name = element.Name.LocalName;
+            if (name is "Link" || string.Equals(element.Attribute("Type")?.Value, "link", StringComparison.OrdinalIgnoreCase))
+            {
+                var href = NullIfWhiteSpace(element.Attribute("Href")?.Value)
+                    ?? NullIfWhiteSpace(element.Element("Href")?.Value);
+                var title = NullIfWhiteSpace(element.Attribute("Title")?.Value)
+                    ?? NullIfWhiteSpace(element.Element("Title")?.Value)
+                    ?? NullIfWhiteSpace(element.Value);
+                if (href is null && title is null)
+                {
+                    return null;
+                }
+
+                return new NavigationLinkConfig
+                {
+                    Href = href,
+                    Title = title
+                };
+            }
+
+            if (name is "SourceRef")
+            {
+                var sourceRef = NullIfWhiteSpace(element.Attribute("SourceRef")?.Value)
+                    ?? NullIfWhiteSpace(element.Value);
+                return sourceRef is null ? null : new SourceRefConfig { SourceRef = sourceRef };
+            }
+
+            if (name is "Page")
+            {
+                var sourceRef = NullIfWhiteSpace(element.Attribute("SourceRef")?.Value);
+                if (sourceRef is not null)
+                {
+                    return new SourceRefConfig { SourceRef = sourceRef };
+                }
+
+                var pageName = NullIfWhiteSpace(element.Value);
+                return pageName;
+            }
+
+            return null;
+        }
+
+        private static CodeblocksConfig? ParseCodeblocksConfig(XElement element)
+        {
+            if (!element.HasElements)
+            {
+                var theme = NullIfWhiteSpace(element.Value);
+                return theme is null ? null : new CodeblocksConfig { Theme = theme };
+            }
+
+            var config = new CodeblocksConfig();
+            var themeElement = element.Element("Theme");
+            if (themeElement is not null)
+            {
+                if (themeElement.HasElements)
+                {
+                    config.ThemePair = new ThemePairConfig
+                    {
+                        Light = NullIfWhiteSpace(themeElement.Element(nameof(ThemePairConfig.Light))?.Value),
+                        Dark = NullIfWhiteSpace(themeElement.Element(nameof(ThemePairConfig.Dark))?.Value)
+                    };
+                }
+                else
+                {
+                    config.Theme = NullIfWhiteSpace(themeElement.Value);
+                }
+            }
+
+            var languagesElement = element.Element("Languages");
+            if (languagesElement is not null)
+            {
+                var custom = ParseDelimitedList(languagesElement.Element("Custom")?.Value);
+                if (custom is null)
+                {
+                    custom = [];
+                    foreach (var customElement in languagesElement.Elements("Custom"))
+                    {
+                        var path = NullIfWhiteSpace(customElement.Value);
+                        if (path is not null)
+                        {
+                            custom.Add(path);
+                        }
+                    }
+
+                    if (custom.Count == 0)
+                    {
+                        custom = null;
+                    }
+                }
+
+                if (custom is not null)
+                {
+                    config.Languages = new CodeblockLanguagesConfig { Custom = custom };
+                }
+            }
+
+            if (config.Theme is null && config.ThemePair is null && config.Languages is null)
+            {
+                return null;
+            }
+
+            return config;
+        }
+
+        private static readonly char[] ListDelimiters = { ';', ',' };
+
         private static List<string>? ParseDelimitedList(string? value)
         {
             if (string.IsNullOrWhiteSpace(value))
@@ -2183,13 +2504,21 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
                 return null;
             }
 
-            var items = value
-                .Split([';', ','], StringSplitOptions.RemoveEmptyEntries)
-                .Select(item => item.Trim())
-                .Where(item => !string.IsNullOrWhiteSpace(item))
-                .ToList();
+            var parts = value.Split(ListDelimiters, StringSplitOptions.RemoveEmptyEntries);
+            List<string>? items = null;
+            foreach (var part in parts)
+            {
+                var trimmed = part.Trim();
+                if (trimmed.Length == 0)
+                {
+                    continue;
+                }
 
-            return items.Count == 0 ? null : items;
+                items ??= [];
+                items.Add(trimmed);
+            }
+
+            return items;
         }
 
         private static Dictionary<string, string>? ParseNamedValues(XElement? parent, string childName)

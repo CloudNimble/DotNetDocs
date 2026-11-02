@@ -62,12 +62,30 @@ public System.Nullable<bool> Default { get; set; }
 
 #### Property Value
 
-Type: `System.Nullable<bool>`
+Type: `System.Nullable<bool>?`
 
 #### Remarks
 
 When true, this version will be selected by default when users first visit
 the documentation. Only one version should be marked as default.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Directory
+
+Gets or sets the directory layout for this version.
+
+#### Syntax
+
+```csharp
+public string Directory { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+
+#### Remarks
+
+Valid values are `none`, `accordion`, and `card`.
 
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Hidden
 
@@ -81,7 +99,7 @@ public System.Nullable<bool> Hidden { get; set; }
 
 #### Property Value
 
-Type: `System.Nullable<bool>`
+Type: `System.Nullable<bool>?`
 
 #### Remarks
 
@@ -108,6 +126,53 @@ Type: `string?`
 Specifies where users should be directed when they select this version.
 Can be a relative path (e.g., "/v2/") or an absolute URL for a different domain
 (e.g., "https://v2.docs.example.com/").
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Sdk
+
+Gets or sets the SDK documentation artifact used to auto-populate pages.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.SdkRefConfig Sdk { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.SdkRefConfig?`
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Tag
+
+Gets or sets a short tag shown on the version selector.
+
+#### Syntax
+
+```csharp
+public string Tag { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+
+#### Remarks
+
+Badge label displayed next to the version, such as `Latest`,
+`Recommended`, or `Beta`.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Thumbnail
+
+Gets or sets thumbnail overrides for this version.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.NavThumbnailConfig Thumbnail { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.NavThumbnailConfig?`
 
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Version
 

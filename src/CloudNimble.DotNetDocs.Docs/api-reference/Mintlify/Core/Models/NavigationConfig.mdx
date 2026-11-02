@@ -64,6 +64,26 @@ public System.Collections.Generic.List<Mintlify.Core.Models.AnchorConfig> Anchor
 
 Type: `System.Collections.Generic.List<Mintlify.Core.Models.AnchorConfig>?`
 
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Directory
+
+Gets or sets the directory layout for this navigation tree.
+
+#### Syntax
+
+```csharp
+public string Directory { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+
+#### Remarks
+
+Valid values are `none`, `accordion`, and `card`. Descendants
+inherit the value unless they override it.
+See https://www.mintlify.com/docs/organize/navigation#directory-listings.
+
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Dropdowns
 
 Gets or sets the dropdowns in the navigation.
@@ -188,6 +208,26 @@ Type: `System.Collections.Generic.List<Mintlify.Core.Models.ProductConfig>?`
 #### Remarks
 
 Products separate documentation into distinct product-specific sections.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Sdk
+
+Gets or sets the SDK documentation artifact used to auto-populate pages.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.SdkRefConfig Sdk { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.SdkRefConfig?`
+
+#### Remarks
+
+Typically declared on a tab or group rather than the navigation root.
+See [SdkRefConfig](/api-reference/Mintlify/Core/Models/SdkRefConfig) and
+https://www.mintlify.com/docs/api-playground/sdk-reference-setup.
 
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Tabs
 

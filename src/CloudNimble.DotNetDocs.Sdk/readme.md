@@ -65,6 +65,12 @@ The SDK automatically detects your documentation type based on configuration fil
 | **Hugo** | `hugo.toml` | `content/**`, `layouts/**`, `static/**`, `themes/**` |
 | **Generic** | *fallback* | `*.md`, `*.rst`, `docs/**`, common formats |
 
+## MintlifyTemplate
+
+Mintlify projects can embed `docs.json` settings in `<MintlifyTemplate>` inside the `.docsproj`. The parser is forgiving (legacy `<Proxy>`, boolean `Expanded`, repeated `<OpenApi>` elements). Generated `docs.json` always uses the current Mintlify schema.
+
+See [docsproj.mdx](https://dotnetdocs.com/guides/reference/docsproj) for the full element list (`Api`, `Seo`, `Banner`, `Styling`/`Codeblocks`, GraphQL/MCP, links/`SourceRef`, directory/searchable/thumbnails). The `sdk` navigation property is modeled in Mintlify.Core for load/save of existing `docs.json` files; it is **not** parsed from `<MintlifyTemplate>`.
+
 ## Configuration Options
 
 ### Basic Options

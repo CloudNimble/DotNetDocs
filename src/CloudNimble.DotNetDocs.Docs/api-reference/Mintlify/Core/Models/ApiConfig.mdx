@@ -126,6 +126,24 @@ Type: `Mintlify.Core.Models.ApiSpecConfig?`
 Can be a string URL, an array of URLs, or an object with source and directory properties
 pointing to OpenAPI specification files.
 
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Optional
+
+Gets or sets how optional fields are shown in the playground.
+
+#### Syntax
+
+```csharp
+public string Optional { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+
+#### Remarks
+
+Valid values are `static`, `expanded`, and `collapsed`.
+
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Params
 
 Gets or sets the display settings for API parameters.
@@ -163,27 +181,6 @@ Type: `Mintlify.Core.Models.ApiPlaygroundConfig?`
 
 Controls the display mode of the API playground and whether requests
 are proxied through Mintlify's servers for CORS handling.
-
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Proxy
-
-Gets or sets whether to pass API requests through a proxy server.
-
-#### Syntax
-
-```csharp
-public System.Nullable<bool> Proxy { get; set; }
-```
-
-#### Property Value
-
-Type: `System.Nullable<bool>?`
-
-#### Remarks
-
-When true, API requests from the playground are routed through Mintlify's
-proxy servers to handle CORS restrictions. This is a legacy property that
-is superseded by Playground.Proxy but kept for backward compatibility.
-Defaults to true when not specified.
 
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Url
 

@@ -158,6 +158,30 @@ Type: `string?`
 
 Provides additional descriptive text about this navigation section.
 
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Directory <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `Mintlify.Core.Models.NavigationItemBase`</Note>
+
+Gets or sets the directory layout for this node and its descendants.
+
+#### Syntax
+
+```csharp
+public string Directory { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+
+#### Remarks
+
+Valid values are `none` (default, no listing), `accordion` (collapsible
+list grouped by section), and `card` (horizontal cards). The value inherits
+recursively; a descendant can override it. Directory listings only appear on
+groups that have a `root` page.
+See https://www.mintlify.com/docs/organize/navigation#directory-listings.
+
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Dropdown
 
 Gets or sets the name of the dropdown.
@@ -409,6 +433,51 @@ Type: `System.Collections.Generic.List<object>?`
 
 Pages can be strings (page paths) or nested GroupConfig objects for hierarchical navigation.
 
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Sdk <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `Mintlify.Core.Models.NavigationItemBase`</Note>
+
+Gets or sets the SDK documentation artifact used to auto-populate pages.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.SdkRefConfig Sdk { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.SdkRefConfig?`
+
+#### Remarks
+
+Declare `sdk` on a tab or a group. Nested groups inherit the parent
+settings unless they set their own. See [SdkRefConfig](/api-reference/Mintlify/Core/Models/SdkRefConfig).
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Searchable <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `Mintlify.Core.Models.NavigationItemBase`</Note>
+
+Gets or sets whether hidden descendants remain indexed for search and llms.txt.
+
+#### Syntax
+
+```csharp
+public System.Nullable<bool> Searchable { get; set; }
+```
+
+#### Property Value
+
+Type: `System.Nullable<bool>?`
+
+#### Remarks
+
+When `true` on a hidden tab or group, descendant pages stay in site search,
+`sitemap.xml`, AI assistant context, MCP search, and search-engine indexing.
+The tab or group itself stays hidden. Has no effect when [NavigationItemBase.Hidden](/api-reference/Mintlify/Core/Models/NavigationItemBase#hidden) is
+false. A page's own `hidden` frontmatter always wins.
+See https://www.mintlify.com/docs/organize/hidden-pages.
+
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Tabs
 
 Gets or sets the tabs for the dropdown.
@@ -426,6 +495,28 @@ Type: `System.Collections.Generic.List<Mintlify.Core.Models.TabConfig>?`
 #### Remarks
 
 Allows creating multiple tabs within a dropdown section.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Thumbnail <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `Mintlify.Core.Models.NavigationItemBase`</Note>
+
+Gets or sets thumbnail overrides for pages under this node.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.NavThumbnailConfig Thumbnail { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.NavThumbnailConfig?`
+
+#### Remarks
+
+Each key overrides the nearest parent and site-level `thumbnails`.
+In an override, `eyebrow` is literal text and `""` hides it.
+See https://www.mintlify.com/docs/organize/settings-appearance#override-thumbnails-for-a-page-or-section.
 
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Versions <Badge color="gray">Inherited</Badge>
 

@@ -1,8 +1,12 @@
+using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Text;
 using System.Text.Json;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Mintlify.Core;
+using Mintlify.Core.Converters;
 using Mintlify.Core.Models;
 
 namespace Mintlify.Tests.Core.Converters
@@ -95,6 +99,57 @@ namespace Mintlify.Tests.Core.Converters
             result!.AsyncApi!.Urls.Should().BeNull();
         }
 
+        /// <summary>
+        /// Tests that an OpenAPI object with overlays deserializes onto ApiSpecConfig.
+        /// </summary>
+        [TestMethod]
+        public void ApiConfigConverter_DeserializeObjectWithOverlays_SetsOverlays()
+        {
+            var json = """
+            {
+                "group": "Test Group",
+                "openapi": {
+                    "source": "./openapi.yaml",
+                    "directory": "./specs",
+                    "overlays": ["overlay.json"]
+                }
+            }
+            """;
+
+            var result = JsonSerializer.Deserialize<GroupConfig>(json, _jsonOptions);
+
+            result!.OpenApi!.Source.Should().Be("./openapi.yaml");
+            result.OpenApi.Directory.Should().Be("./specs");
+            result.OpenApi.Overlays.Should().Equal("overlay.json");
+        }
+
+        /// <summary>
+        /// Tests that a mixed OpenAPI array of strings and objects is preserved in order.
+        /// </summary>
+        [TestMethod]
+        public void ApiConfigConverter_DeserializeMixedArray_PreservesEntries()
+        {
+            var json = """
+            {
+                "group": "Test Group",
+                "openapi": [
+                    "a.json",
+                    {
+                        "source": "b.json",
+                        "overlays": ["b.overlay.json"]
+                    }
+                ]
+            }
+            """;
+
+            var result = JsonSerializer.Deserialize<GroupConfig>(json, _jsonOptions);
+
+            result!.OpenApi!.Specs.Should().HaveCount(2);
+            result.OpenApi.Specs![0].Source.Should().Be("a.json");
+            result.OpenApi.Specs[1].Source.Should().Be("b.json");
+            result.OpenApi.Specs[1].Overlays.Should().Equal("b.overlay.json");
+        }
+
         #endregion
 
         #region Serialization Tests
@@ -157,6 +212,54 @@ namespace Mintlify.Tests.Core.Converters
             json.Should().Contain("\"directory\": \"./specs\"");
         }
 
+        /// <summary>
+        /// Tests that overlays force an object write even when directory is omitted.
+        /// </summary>
+        [TestMethod]
+        public void ApiConfigConverter_SerializeOverlays_WritesObject()
+        {
+            var config = new GroupConfig
+            {
+                Group = "Test Group",
+                OpenApi = new ApiSpecConfig
+                {
+                    Source = "openapi.yaml",
+                    Overlays = []
+                }
+            };
+
+            var json = JsonSerializer.Serialize(config, _jsonOptions);
+
+            json.Should().Contain("\"source\": \"openapi.yaml\"");
+            json.Should().Contain("\"overlays\"");
+        }
+
+        /// <summary>
+        /// Tests that a mixed Specs list writes strings and objects in order.
+        /// </summary>
+        [TestMethod]
+        public void ApiConfigConverter_SerializeMixedSpecs_WritesArray()
+        {
+            var config = new GroupConfig
+            {
+                Group = "Test Group",
+                OpenApi = new ApiSpecConfig
+                {
+                    Specs =
+                    [
+                        new ApiSpecConfig { Source = "a.json" },
+                        new ApiSpecConfig { Source = "b.json", Overlays = ["b.overlay.json"] }
+                    ]
+                }
+            };
+
+            var json = JsonSerializer.Serialize(config, _jsonOptions);
+
+            json.Should().Contain("\"a.json\"");
+            json.Should().Contain("\"b.json\"");
+            json.Should().Contain("\"b.overlay.json\"");
+        }
+
         #endregion
 
         #region Implicit Conversion Tests
@@ -184,6 +287,12 @@ namespace Mintlify.Tests.Core.Converters
             // Test ApiSpecConfig to List<string>
             List<string>? urlsFromApi = apiFromList;
             urlsFromApi.Should().HaveCount(2);
+
+            List<string>? urlsFromSource = new ApiSpecConfig { Source = "only.json" };
+            urlsFromSource.Should().Equal("only.json");
+
+            List<string>? urlsFromNull = (ApiSpecConfig?)null;
+            urlsFromNull.Should().BeNull();
         }
 
         /// <summary>
@@ -206,6 +315,137 @@ namespace Mintlify.Tests.Core.Converters
             var api = new ApiSpecConfig { Urls = ["spec1.json", "spec2.json"] };
 
             api.ToString().Should().Be("spec1.json");
+        }
+
+        /// <summary>
+        /// Tests that ToString returns empty when no source or URLs are set.
+        /// </summary>
+        [TestMethod]
+        public void ApiSpecConfig_ToString_EmptyWhenUnset()
+        {
+            new ApiSpecConfig().ToString().Should().BeEmpty();
+        }
+
+        #endregion
+
+        #region Edge Cases
+
+        /// <summary>
+        /// Tests CanConvert for ApiSpecConfig and unrelated types.
+        /// </summary>
+        [TestMethod]
+        public void ApiConfigConverter_CanConvert_OnlyApiSpecConfig()
+        {
+            var converter = new ApiConfigConverter();
+
+            converter.CanConvert(typeof(ApiSpecConfig)).Should().BeTrue();
+            converter.CanConvert(typeof(string)).Should().BeFalse();
+        }
+
+        /// <summary>
+        /// Tests that a null token deserializes to a null spec.
+        /// </summary>
+        [TestMethod]
+        public void ApiConfigConverter_DeserializeNull_ReturnsNull()
+        {
+            var json = """
+            {
+                "group": "Test Group",
+                "openapi": null
+            }
+            """;
+
+            var result = JsonSerializer.Deserialize<GroupConfig>(json, _jsonOptions);
+
+            result!.OpenApi.Should().BeNull();
+
+            var reader = new Utf8JsonReader("null"u8.ToArray());
+            reader.Read();
+            new ApiConfigConverter().Read(ref reader, typeof(ApiSpecConfig), _jsonOptions).Should().BeNull();
+        }
+
+        /// <summary>
+        /// Tests that an unsupported JSON token throws.
+        /// </summary>
+        [TestMethod]
+        public void ApiConfigConverter_DeserializeNumber_Throws()
+        {
+            var json = """
+            {
+                "group": "Test Group",
+                "openapi": 1
+            }
+            """;
+
+            var act = () => JsonSerializer.Deserialize<GroupConfig>(json, _jsonOptions);
+
+            act.Should().Throw<JsonException>();
+        }
+
+        /// <summary>
+        /// Tests that an unsupported array token throws.
+        /// </summary>
+        [TestMethod]
+        public void ApiConfigConverter_DeserializeArrayOfNumbers_Throws()
+        {
+            var json = """
+            {
+                "group": "Test Group",
+                "openapi": [1]
+            }
+            """;
+
+            var act = () => JsonSerializer.Deserialize<GroupConfig>(json, _jsonOptions);
+
+            act.Should().Throw<JsonException>();
+        }
+
+        /// <summary>
+        /// Tests that blank strings in an OpenAPI array are skipped.
+        /// </summary>
+        [TestMethod]
+        public void ApiConfigConverter_DeserializeArrayWithBlankString_SkipsBlank()
+        {
+            var json = """
+            {
+                "group": "Test Group",
+                "openapi": ["a.json", "  "]
+            }
+            """;
+
+            var result = JsonSerializer.Deserialize<GroupConfig>(json, _jsonOptions);
+
+            result!.OpenApi!.Urls.Should().Equal("a.json");
+        }
+
+        /// <summary>
+        /// Tests that writing a null spec emits JSON null.
+        /// </summary>
+        [TestMethod]
+        public void ApiConfigConverter_WriteNull_WritesNullToken()
+        {
+            var converter = new ApiConfigConverter();
+            using var stream = new MemoryStream();
+            using var writer = new Utf8JsonWriter(stream);
+
+            converter.Write(writer, null, _jsonOptions);
+            writer.Flush();
+
+            Encoding.UTF8.GetString(stream.ToArray()).Should().Be("null");
+        }
+
+        /// <summary>
+        /// Tests NormalizeExpanded mappings including null and boolean-like strings.
+        /// </summary>
+        [TestMethod]
+        public void ApiParamsConfig_NormalizeExpanded_MapsBooleanLikeValues()
+        {
+            ApiParamsConfig.NormalizeExpanded(null).Should().BeNull();
+            ApiParamsConfig.NormalizeExpanded("   ").Should().BeNull();
+            ApiParamsConfig.NormalizeExpanded("true").Should().Be("all");
+            ApiParamsConfig.NormalizeExpanded("FALSE").Should().Be("closed");
+            ApiParamsConfig.NormalizeExpanded("all").Should().Be("all");
+            ApiParamsConfig.NormalizeExpanded("closed").Should().Be("closed");
         }
 
         #endregion

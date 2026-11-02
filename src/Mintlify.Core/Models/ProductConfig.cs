@@ -24,6 +24,15 @@ namespace Mintlify.Core.Models
         public string? Description { get; set; }
 
         /// <summary>
+        /// Gets or sets the display name shown in the product switcher.
+        /// </summary>
+        /// <remarks>
+        /// When set, this label is shown instead of <see cref="Product"/> in the switcher.
+        /// <see cref="Product"/> remains the identity used to match products during merge.
+        /// </remarks>
+        public string? Name { get; set; }
+
+        /// <summary>
         /// Gets or sets the name of the product.
         /// </summary>
         /// <remarks>

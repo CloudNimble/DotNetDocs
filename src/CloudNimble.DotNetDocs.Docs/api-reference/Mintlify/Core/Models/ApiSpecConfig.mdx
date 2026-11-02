@@ -69,6 +69,25 @@ Type: `string?`
 Specifies a directory containing API specification files.
 Used in conjunction with Source for complex configurations.
 
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Overlays
+
+Gets or sets OpenAPI overlay files applied to [ApiSpecConfig.Source](/api-reference/Mintlify/Core/Models/ApiSpecConfig#source).
+
+#### Syntax
+
+```csharp
+public System.Collections.Generic.List<string> Overlays { get; set; }
+```
+
+#### Property Value
+
+Type: `System.Collections.Generic.List<string>?`
+
+#### Remarks
+
+An empty list disables auto-discovered overlays. Overlay paths are relative
+to the specification file.
+
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Source
 
 Gets or sets the source URL or path for API specifications.
@@ -86,6 +105,26 @@ Type: `string?`
 #### Remarks
 
 Can be an absolute URL or relative path to an API specification file.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Specs
+
+Gets or sets mixed array entries when OpenAPI is specified as an array of
+strings and objects.
+
+#### Syntax
+
+```csharp
+public System.Collections.Generic.List<Mintlify.Core.Models.ApiSpecConfig> Specs { get; set; }
+```
+
+#### Property Value
+
+Type: `System.Collections.Generic.List<Mintlify.Core.Models.ApiSpecConfig>?`
+
+#### Remarks
+
+Used internally by [ApiConfigConverter](/api-reference/Mintlify/Core/Converters/ApiConfigConverter). Not serialized
+as a named JSON property.
 
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Urls
 

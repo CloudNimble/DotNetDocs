@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Text.Json.Serialization;
+using Mintlify.Core.Converters;
 
 namespace Mintlify.Core.Models
 {
@@ -20,11 +22,15 @@ namespace Mintlify.Core.Models
         /// </summary>
         /// <remarks>
         /// The first option in the array appears as the default action. Built-in options:
-        /// copy, view, assistant, chatgpt, claude, perplexity, grok, aistudio, devin,
-        /// windsurf, download-pdf, download-spec, mcp, add-mcp, cursor, vscode, and
-        /// devin-mcp. See https://www.mintlify.com/docs/organize/settings-structure#contextual.
+        /// <c>copy</c>, <c>view</c>, <c>assistant</c>, <c>chatgpt</c>, <c>claude</c>,
+        /// <c>perplexity</c>, <c>grok</c>, <c>aistudio</c>, <c>devin</c>, <c>windsurf</c>,
+        /// <c>download-pdf</c>, <c>download-spec</c>, <c>mcp</c>, <c>add-mcp</c>,
+        /// <c>cursor</c>, <c>vscode</c>, and <c>devin-mcp</c>. Custom objects use
+        /// <c>title</c>, <c>description</c>, <c>icon</c>, and <c>href</c>.
+        /// See https://www.mintlify.com/docs/ai/contextual-menu.
         /// </remarks>
-        public List<string>? Options { get; set; }
+        [JsonConverter(typeof(ContextualOptionListConverter))]
+        public List<object>? Options { get; set; }
 
         /// <summary>
         /// Gets or sets the display location of the contextual menu.

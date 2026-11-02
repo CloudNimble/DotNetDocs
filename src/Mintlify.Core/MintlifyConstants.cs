@@ -47,6 +47,8 @@ namespace Mintlify.Core
                     new IconConverter(),
                     new ApiConfigConverter(),
                     new SpecRefConverter(),
+                    new CodeblocksConverter(),
+                    new ContextualHrefConverter(),
                     new ServerConfigConverter(),
                     new ColorConverter(),
                     new BackgroundImageConverter(),

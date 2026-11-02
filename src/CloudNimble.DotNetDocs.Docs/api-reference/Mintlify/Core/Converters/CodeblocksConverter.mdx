@@ -1,0 +1,91 @@
+---
+title: CodeblocksConverter
+description: "Converts `styling.codeblocks` values that can be a string or a theme object."
+icon: file-brackets-curly
+keywords: ['CodeblocksConverter', 'Mintlify.Core.Converters.CodeblocksConverter', 'Mintlify.Core.Converters', 'class', 'System.Text.Json.Serialization.JsonConverter<Mintlify.Core.Models.CodeblocksConfig>']
+---
+
+## Definition
+
+**Assembly:** Mintlify.Core.dll
+
+**Namespace:** Mintlify.Core.Converters
+
+**Inheritance:** System.Text.Json.Serialization.JsonConverter&lt;Mintlify.Core.Models.CodeblocksConfig&gt;
+
+## Syntax
+
+```csharp
+Mintlify.Core.Converters.CodeblocksConverter
+```
+
+## Summary
+
+Converts `styling.codeblocks` values that can be a string or a theme object.
+
+## Constructors
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor
+
+#### Syntax
+
+```csharp
+public CodeblocksConverter()
+```
+
+## Methods
+
+### <Icon icon="code-merge" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> CanConvert <Badge color="blue">Override</Badge>
+
+#### Syntax
+
+```csharp
+public override bool CanConvert(System.Type typeToConvert)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `typeToConvert` | `System.Type` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="code-merge" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Read <Badge color="blue">Override</Badge>
+
+#### Syntax
+
+```csharp
+public override Mintlify.Core.Models.CodeblocksConfig Read(ref System.Text.Json.Utf8JsonReader reader, System.Type typeToConvert, System.Text.Json.JsonSerializerOptions options)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `reader` | `System.Text.Json.Utf8JsonReader` | - |
+| `typeToConvert` | `System.Type` | - |
+| `options` | `System.Text.Json.JsonSerializerOptions` | - |
+
+#### Returns
+
+Type: `Mintlify.Core.Models.CodeblocksConfig?`
+
+### <Icon icon="code-merge" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Write <Badge color="blue">Override</Badge>
+
+#### Syntax
+
+```csharp
+public override void Write(System.Text.Json.Utf8JsonWriter writer, Mintlify.Core.Models.CodeblocksConfig value, System.Text.Json.JsonSerializerOptions options)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `writer` | `System.Text.Json.Utf8JsonWriter` | - |
+| `value` | `Mintlify.Core.Models.CodeblocksConfig?` | - |
+| `options` | `System.Text.Json.JsonSerializerOptions` | - |
+

@@ -34,7 +34,12 @@ namespace Mintlify.Core
         /// The comparison is case-insensitive to handle different filesystem conventions.
         /// Common exclusions include package directories, internal documentation, and build artifacts.
         /// </remarks>
-        private static readonly string[] ExcludedDirectories = { "node_modules", "conceptual", "overrides" };
+        private static readonly HashSet<string> ExcludedDirectories = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            "node_modules",
+            "conceptual",
+            "overrides"
+        };
 
         /// <summary>
         /// Stores the set of page paths that are recognized as known within the application.
@@ -994,6 +999,33 @@ namespace Mintlify.Core
                 target.Graphql = source.Graphql;
             if (source.Mcp is not null)
                 target.Mcp = source.Mcp;
+            if (source.Sdk is not null)
+                target.Sdk = source.Sdk;
+            if (!string.IsNullOrWhiteSpace(source.Directory))
+                target.Directory = source.Directory;
+        }
+
+        private static void MergeNavigationItemExtras(NavigationItemBase target, NavigationItemBase source)
+        {
+            if (source.Sdk is not null)
+            {
+                target.Sdk = source.Sdk;
+            }
+
+            if (!string.IsNullOrWhiteSpace(source.Directory))
+            {
+                target.Directory = source.Directory;
+            }
+
+            if (source.Searchable.HasValue)
+            {
+                target.Searchable = source.Searchable;
+            }
+
+            if (source.Thumbnail is not null)
+            {
+                target.Thumbnail = source.Thumbnail;
+            }
         }
 
         /// <summary>
@@ -1196,6 +1228,7 @@ namespace Mintlify.Core
                 target.Graphql = source.Graphql;
             if (source.Mcp is not null)
                 target.Mcp = source.Mcp;
+            MergeNavigationItemExtras(target, source);
 
             // Merge pages recursively
             if (source.Pages is not null)
@@ -1383,6 +1416,9 @@ namespace Mintlify.Core
                 target.Graphql = source.Graphql;
             if (source.Mcp is not null)
                 target.Mcp = source.Mcp;
+            MergeNavigationItemExtras(target, source);
+            if (!string.IsNullOrWhiteSpace(source.Align))
+                target.Align = source.Align;
 
             // Merge pages recursively
             if (source.Pages is not null)
@@ -1519,7 +1555,7 @@ namespace Mintlify.Core
             {
                 var extension = Path.GetExtension(file);
 
-                if (fileExtensions.Any(ext => extension.Equals(ext, StringComparison.OrdinalIgnoreCase)))
+                if (HasExtension(fileExtensions, extension))
                 {
                     entries.Add((Path.GetFileNameWithoutExtension(file), file, false));
                 }
@@ -1539,13 +1575,8 @@ namespace Mintlify.Core
                 var dirName = Path.GetFileName(directory);
                 // Skip hidden directories, excluded directories, and optionally api-reference
                 if (!dirName.StartsWith(".") &&
-#if NETSTANDARD2_0
-                    !ExcludedDirectories.Any(excluded => string.Equals(excluded, dirName, StringComparison.OrdinalIgnoreCase)) &&
-                    (excludeDirectories is null || !excludeDirectories.Any(excluded => string.Equals(excluded, dirName, StringComparison.OrdinalIgnoreCase))) &&
-#else
-                    !ExcludedDirectories.Contains(dirName, StringComparer.OrdinalIgnoreCase) &&
-                    (excludeDirectories is null || !excludeDirectories.Contains(dirName, StringComparer.OrdinalIgnoreCase)) &&
-#endif
+                    !ExcludedDirectories.Contains(dirName) &&
+                    !ContainsDirectoryName(excludeDirectories, dirName) &&
                     (includeApiReference || !string.Equals(dirName, "api-reference", StringComparison.OrdinalIgnoreCase))
                     )
                 {
@@ -1555,13 +1586,9 @@ namespace Mintlify.Core
 
             // Multi-level sorting: index files first, then files before directories, then alphabetical
             entries = entries
-                .OrderBy(e => e.name.Equals("index", StringComparison.OrdinalIgnoreCase) ? 0 : 1) // Index files first
-                .ThenBy(e => e.isDirectory ? 1 : 0) // Files before directories
-#if NETSTANDARD2_0
-                .ThenBy(e => e.name.ToLowerInvariant()) // Alphabetical (case-insensitive for .NET Standard 2.0)
-#else
-                .ThenBy(e => e.name, StringComparer.OrdinalIgnoreCase) // Alphabetical (case-insensitive)
-#endif
+                .OrderBy(e => e.name.Equals("index", StringComparison.OrdinalIgnoreCase) ? 0 : 1)
+                .ThenBy(e => e.isDirectory ? 1 : 0)
+                .ThenBy(e => e.name, StringComparer.OrdinalIgnoreCase)
                 .ToList();
 
             foreach (var (name, path, isDirectory) in entries)
@@ -1571,7 +1598,7 @@ namespace Mintlify.Core
                     var subPages = new List<object>();
                     PopulateNavigationFromDirectory(path, subPages, rootPath, fileExtensions, includeApiReference, false, allowDuplicatePaths, excludeDirectories);
 
-                    if (subPages.Any())
+                    if (subPages.Count > 0)
                     {
                         // Check if the first item is already a GroupConfig (from navigation.json override)
                         if (subPages.Count == 1 && subPages[0] is GroupConfig existingGroup)
@@ -1758,6 +1785,37 @@ namespace Mintlify.Core
                     ApplyUrlPrefixToTab(tab, prefix);
                 }
             }
+        }
+
+        private static bool ContainsDirectoryName(string[]? names, string dirName)
+        {
+            if (names is null)
+            {
+                return false;
+            }
+
+            for (var i = 0; i < names.Length; i++)
+            {
+                if (string.Equals(names[i], dirName, StringComparison.OrdinalIgnoreCase))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private static bool HasExtension(string[] extensions, string extension)
+        {
+            for (var i = 0; i < extensions.Length; i++)
+            {
+                if (extension.Equals(extensions[i], StringComparison.OrdinalIgnoreCase))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         #endregion

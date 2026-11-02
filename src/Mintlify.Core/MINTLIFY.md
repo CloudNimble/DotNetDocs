@@ -24,12 +24,16 @@ Not fully documented in the main settings page:
 
 ```json
 "api": {
+  "optional": "collapsed",
   "playground": {
-    "display": "interactive",  // Options: "interactive", "simple", "none"
-    "proxy": true  // Whether to proxy requests through Mintlify servers
+    "display": "interactive",
+    "proxy": true,
+    "credentials": false
   }
 }
 ```
+
+Playground `display` values: `interactive`, `simple`, `auth`, `none`.
 
 ### API Examples Configuration (`api.examples`)
 Controls code example generation:
@@ -49,32 +53,41 @@ Controls parameter display:
 ```json
 "api": {
   "params": {
-    "expanded": false  // Whether to expand parameters by default
+    "expanded": "closed",
+    "post": ["payload"]
   }
 }
 ```
 
-### Legacy Proxy Property (`api.proxy`)
-A top-level proxy property exists for backward compatibility:
-
-```json
-"api": {
-  "proxy": true  // Legacy, superseded by playground.proxy
-}
-```
+`params.expanded` is `"all"` or `"closed"`. Boolean JSON tokens are not accepted in Mintlify.Core 2.0.
 
 ## Navigation Properties
 
 ### Navigation Pages Polymorphism
-Pages in navigation can be either strings OR nested GroupConfig objects:
+Pages in navigation can be strings, nested groups, outbound links, or git source refs:
 
 ```json
 "navigation": {
+  "directory": "accordion",
+  "sdk": {
+    "format": "docfx",
+    "source": "api.zip",
+    "directory": "reference"
+  },
   "pages": [
     "simple-page",
     {
       "group": "Nested Group",
+      "searchable": true,
       "pages": ["nested-page-1", "nested-page-2"]
+    },
+    {
+      "type": "link",
+      "href": "https://example.com",
+      "title": "Example"
+    },
+    {
+      "sourceRef": "docs-src"
     }
   ]
 }
@@ -115,7 +128,13 @@ The `contextual` configuration for copy buttons and AI integrations:
 
 ```json
 "contextual": {
-  "options": ["copy", "view", "chatgpt", "claude", "grok", "mcp"],
+  "options": [
+    "copy",
+    {
+      "title": "Ask Grok",
+      "href": "https://grok.com"
+    }
+  ],
   "display": "header"
 }
 ```

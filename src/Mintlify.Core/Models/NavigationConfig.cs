@@ -33,6 +33,17 @@ namespace Mintlify.Core.Models
         public GlobalNavigationConfig? Global { get; set; }
 
         /// <summary>
+        /// Gets or sets the directory layout for this navigation tree.
+        /// </summary>
+        /// <remarks>
+        /// Valid values are <c>none</c>, <c>accordion</c>, and <c>card</c>. Descendants
+        /// inherit the value unless they override it.
+        /// See https://www.mintlify.com/docs/organize/navigation#directory-listings.
+        /// </remarks>
+        [JsonPropertyName("directory")]
+        public string? Directory { get; set; }
+
+        /// <summary>
         /// Gets or sets the GraphQL schema used to auto-populate reference pages.
         /// </summary>
         /// <remarks>
@@ -77,6 +88,16 @@ namespace Mintlify.Core.Models
         /// Products separate documentation into distinct product-specific sections.
         /// </remarks>
         public List<ProductConfig>? Products { get; set; }
+
+        /// <summary>
+        /// Gets or sets the SDK documentation artifact used to auto-populate pages.
+        /// </summary>
+        /// <remarks>
+        /// Typically declared on a tab or group rather than the navigation root.
+        /// See <see cref="SdkRefConfig"/> and
+        /// https://www.mintlify.com/docs/api-playground/sdk-reference-setup.
+        /// </remarks>
+        public SdkRefConfig? Sdk { get; set; }
 
         /// <summary>
         /// Gets or sets the tabs in the navigation.

@@ -154,6 +154,58 @@ namespace Mintlify.Tests.Core
         }
 
         /// <summary>
+        /// Tests that Merge copies sdk, directory, searchable, and thumbnail on matching groups.
+        /// </summary>
+        [TestMethod]
+        public void Merge_CopiesSdkDirectorySearchableAndThumbnail()
+        {
+            var manager = new DocsJsonManager();
+            manager.Load(_validDocsJson);
+
+            var otherConfig = new DocsJsonConfig
+            {
+                Navigation = new NavigationConfig
+                {
+                    Directory = "accordion",
+                    Sdk = new SdkRefConfig { Format = "docfx", Source = "api.zip", Directory = "reference" },
+                    Pages =
+                    [
+                        new GroupConfig
+                        {
+                            Group = "Getting Started",
+                            Directory = "card",
+                            Searchable = true,
+                            Sdk = new SdkRefConfig { Format = "typedoc", Source = "dist", Directory = "js" },
+                            Thumbnail = new NavThumbnailConfig { Preset = "headline", Eyebrow = "Start" },
+                            Pages = ["quickstart"]
+                        }
+                    ],
+                    Tabs =
+                    [
+                        new TabConfig
+                        {
+                            Tab = "API",
+                            Align = "end",
+                            Pages = ["api/index"]
+                        }
+                    ]
+                }
+            };
+
+            manager.Merge(otherConfig);
+
+            var navigation = manager.Configuration!.Navigation;
+            navigation.Directory.Should().Be("accordion");
+            navigation.Sdk!.Format.Should().Be("docfx");
+            var group = navigation.Pages!.OfType<GroupConfig>().First(g => g.Group == "Getting Started");
+            group.Directory.Should().Be("card");
+            group.Searchable.Should().BeTrue();
+            group.Sdk!.Directory.Should().Be("js");
+            group.Thumbnail!.Eyebrow.Should().Be("Start");
+            navigation.Tabs.Should().ContainSingle(t => t.Tab == "API").Which.Align.Should().Be("end");
+        }
+
+        /// <summary>
         /// Tests that Merge throws exception when no configuration is loaded.
         /// </summary>
         [TestMethod]

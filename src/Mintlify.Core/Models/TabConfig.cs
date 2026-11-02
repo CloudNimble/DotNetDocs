@@ -25,6 +25,15 @@ namespace Mintlify.Core.Models
         public List<AnchorConfig>? Anchors { get; set; }
 
         /// <summary>
+        /// Gets or sets tab alignment in the navigation bar.
+        /// </summary>
+        /// <remarks>
+        /// Valid values are <c>start</c> and <c>end</c>. <c>end</c> places the tab after
+        /// the other tabs in the bar.
+        /// </remarks>
+        public string? Align { get; set; }
+
+        /// <summary>
         /// Gets or sets the menu items for the tab.
         /// </summary>
         /// <remarks>

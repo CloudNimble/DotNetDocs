@@ -29,6 +29,19 @@ namespace Mintlify.Core.Models
         public ApiSpecConfig? AsyncApi { get; set; }
 
         /// <summary>
+        /// Gets or sets the directory layout for this node and its descendants.
+        /// </summary>
+        /// <remarks>
+        /// Valid values are <c>none</c> (default, no listing), <c>accordion</c> (collapsible
+        /// list grouped by section), and <c>card</c> (horizontal cards). The value inherits
+        /// recursively; a descendant can override it. Directory listings only appear on
+        /// groups that have a <c>root</c> page.
+        /// See https://www.mintlify.com/docs/organize/navigation#directory-listings.
+        /// </remarks>
+        [JsonPropertyName("directory")]
+        public string? Directory { get; set; }
+
+        /// <summary>
         /// Gets or sets the GraphQL schema used to auto-populate reference pages.
         /// </summary>
         /// <example>
@@ -95,6 +108,37 @@ namespace Mintlify.Core.Models
         /// </remarks>
         [JsonConverter(typeof(NavigationPageListConverter))]
         public List<object>? Pages { get; set; }
+
+        /// <summary>
+        /// Gets or sets the SDK documentation artifact used to auto-populate pages.
+        /// </summary>
+        /// <remarks>
+        /// Declare <c>sdk</c> on a tab or a group. Nested groups inherit the parent
+        /// settings unless they set their own. See <see cref="SdkRefConfig"/>.
+        /// </remarks>
+        public SdkRefConfig? Sdk { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether hidden descendants remain indexed for search and llms.txt.
+        /// </summary>
+        /// <remarks>
+        /// When <c>true</c> on a hidden tab or group, descendant pages stay in site search,
+        /// <c>sitemap.xml</c>, AI assistant context, MCP search, and search-engine indexing.
+        /// The tab or group itself stays hidden. Has no effect when <see cref="Hidden"/> is
+        /// false. A page's own <c>hidden</c> frontmatter always wins.
+        /// See https://www.mintlify.com/docs/organize/hidden-pages.
+        /// </remarks>
+        public bool? Searchable { get; set; }
+
+        /// <summary>
+        /// Gets or sets thumbnail overrides for pages under this node.
+        /// </summary>
+        /// <remarks>
+        /// Each key overrides the nearest parent and site-level <c>thumbnails</c>.
+        /// In an override, <c>eyebrow</c> is literal text and <c>""</c> hides it.
+        /// See https://www.mintlify.com/docs/organize/settings-appearance#override-thumbnails-for-a-page-or-section.
+        /// </remarks>
+        public NavThumbnailConfig? Thumbnail { get; set; }
 
         #endregion
 

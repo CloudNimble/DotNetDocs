@@ -76,19 +76,22 @@ Gets or sets the list of contextual options to enable.
 #### Syntax
 
 ```csharp
-public System.Collections.Generic.List<string> Options { get; set; }
+public System.Collections.Generic.List<object> Options { get; set; }
 ```
 
 #### Property Value
 
-Type: `System.Collections.Generic.List<string>?`
+Type: `System.Collections.Generic.List<object>?`
 
 #### Remarks
 
 The first option in the array appears as the default action. Built-in options:
-copy, view, assistant, chatgpt, claude, perplexity, grok, aistudio, devin,
-windsurf, download-pdf, download-spec, mcp, add-mcp, cursor, vscode, and
-devin-mcp. See https://www.mintlify.com/docs/organize/settings-structure#contextual.
+`copy`, `view`, `assistant`, `chatgpt`, `claude`,
+`perplexity`, `grok`, `aistudio`, `devin`, `windsurf`,
+`download-pdf`, `download-spec`, `mcp`, `add-mcp`,
+`cursor`, `vscode`, and `devin-mcp`. Custom objects use
+`title`, `description`, `icon`, and `href`.
+See https://www.mintlify.com/docs/ai/contextual-menu.
 
 ## Methods
 

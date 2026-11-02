@@ -92,6 +92,28 @@ public System.Nullable<bool> Default { get; set; }
 
 Type: `System.Nullable<bool>?`
 
+#### Remarks
+
+When omitted, the first version in the array is the default.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Directory
+
+Gets or sets the directory layout for this version and its descendants.
+
+#### Syntax
+
+```csharp
+public string Directory { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+
+#### Remarks
+
+Valid values are `none`, `accordion`, and `card`.
+
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Dropdowns
 
 Gets or sets the dropdowns for the version.
@@ -204,6 +226,20 @@ public System.Collections.Generic.List<object> Pages { get; set; }
 
 Type: `System.Collections.Generic.List<object>?`
 
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Sdk
+
+Gets or sets the SDK documentation artifact used to auto-populate pages.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.SdkRefConfig Sdk { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.SdkRefConfig?`
+
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Tabs
 
 Gets or sets the tabs for the version.
@@ -217,6 +253,40 @@ public System.Collections.Generic.List<Mintlify.Core.Models.TabConfig> Tabs { ge
 #### Property Value
 
 Type: `System.Collections.Generic.List<Mintlify.Core.Models.TabConfig>?`
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Tag
+
+Gets or sets a short tag shown on the version selector.
+
+#### Syntax
+
+```csharp
+public string Tag { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+
+#### Remarks
+
+Badge label displayed next to the version, such as `Latest`,
+`Recommended`, or `Beta`.
+See https://www.mintlify.com/docs/organize/settings-structure#navigation-versions.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Thumbnail
+
+Gets or sets thumbnail overrides for this version.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.NavThumbnailConfig Thumbnail { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.NavThumbnailConfig?`
 
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Version
 

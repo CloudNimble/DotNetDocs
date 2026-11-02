@@ -30,12 +30,33 @@ namespace Mintlify.Core
         private static readonly string[] ValidSeoIndexing = { "navigable", "all" };
         private static readonly string[] ValidLanguages = { "en", "cn", "zh", "zh-Hans", "zh-Hant", "zh-CN", "zh-TW", "es", "fr", "fr-CA", "fr-ca", "ja", "jp", "ja-jp", "ja-JP", "pt", "pt-BR", "de", "ko", "it", "ru", "ro", "cs", "id", "ar", "tr", "hi", "sv", "no", "da", "lv", "nl", "uk", "vi", "pl", "uz", "he", "ca", "fi", "hu" };
         private static readonly string[] ValidApiAuthMethods = { "bearer", "basic", "key", "cobo" };
-        private static readonly string[] ValidApiPlaygroundDisplayModes = { "interactive", "simple", "none" };
+        private static readonly string[] ValidApiPlaygroundDisplayModes = { "interactive", "simple", "none", "auth" };
         private static readonly string[] ValidApiExamplesDefaults = { "all", "required" };
+        private static readonly string[] ValidApiParamsExpanded = { "all", "closed" };
+        private static readonly string[] ValidApiOptional = { "static", "expanded", "collapsed" };
         private static readonly string[] ValidBannerTypes = { "info", "warning", "critical" };
         private static readonly string[] ValidThumbnailPresets = { "classic", "headline", "minimal" };
         private static readonly string[] ValidThumbnailSurfaces = { "neutral", "brand" };
         private static readonly string[] ValidMixpanelRegions = { "us", "eu", "in" };
+        private static readonly string[] ValidDirectoryLayouts = { "none", "accordion", "card" };
+        private static readonly string[] ValidTabAlignments = { "start", "end" };
+        private static readonly string[] ValidSdkFormats = { "typedoc", "docfx", "javadoc", "sphinx", "phpdoc", "go" };
+        private static readonly HashSet<string> ValidThemeSet = new HashSet<string>(ValidThemes, StringComparer.OrdinalIgnoreCase);
+        private static readonly HashSet<string> ValidAppearanceModeSet = new HashSet<string>(ValidAppearanceModes, StringComparer.OrdinalIgnoreCase);
+        private static readonly HashSet<string> ValidIconLibrarySet = new HashSet<string>(ValidIconLibraries, StringComparer.OrdinalIgnoreCase);
+        private static readonly HashSet<string> ValidSeoIndexingSet = new HashSet<string>(ValidSeoIndexing, StringComparer.OrdinalIgnoreCase);
+        private static readonly HashSet<string> ValidApiAuthMethodSet = new HashSet<string>(ValidApiAuthMethods, StringComparer.OrdinalIgnoreCase);
+        private static readonly HashSet<string> ValidApiPlaygroundDisplayModeSet = new HashSet<string>(ValidApiPlaygroundDisplayModes, StringComparer.OrdinalIgnoreCase);
+        private static readonly HashSet<string> ValidApiExamplesDefaultSet = new HashSet<string>(ValidApiExamplesDefaults, StringComparer.OrdinalIgnoreCase);
+        private static readonly HashSet<string> ValidApiParamsExpandedSet = new HashSet<string>(ValidApiParamsExpanded, StringComparer.OrdinalIgnoreCase);
+        private static readonly HashSet<string> ValidApiOptionalSet = new HashSet<string>(ValidApiOptional, StringComparer.OrdinalIgnoreCase);
+        private static readonly HashSet<string> ValidBannerTypeSet = new HashSet<string>(ValidBannerTypes, StringComparer.OrdinalIgnoreCase);
+        private static readonly HashSet<string> ValidThumbnailPresetSet = new HashSet<string>(ValidThumbnailPresets, StringComparer.OrdinalIgnoreCase);
+        private static readonly HashSet<string> ValidThumbnailSurfaceSet = new HashSet<string>(ValidThumbnailSurfaces, StringComparer.OrdinalIgnoreCase);
+        private static readonly HashSet<string> ValidMixpanelRegionSet = new HashSet<string>(ValidMixpanelRegions, StringComparer.OrdinalIgnoreCase);
+        private static readonly HashSet<string> ValidDirectoryLayoutSet = new HashSet<string>(ValidDirectoryLayouts, StringComparer.OrdinalIgnoreCase);
+        private static readonly HashSet<string> ValidTabAlignmentSet = new HashSet<string>(ValidTabAlignments, StringComparer.OrdinalIgnoreCase);
+        private static readonly HashSet<string> ValidSdkFormatSet = new HashSet<string>(ValidSdkFormats, StringComparer.OrdinalIgnoreCase);
 #if NET7_0_OR_GREATER
         private static readonly Regex HexColorRegex = MyRegex();
 #else
@@ -72,6 +93,7 @@ namespace Mintlify.Core
             ValidateThumbnails(config, errors);
             ValidateIntegrations(config, errors);
             ValidateSpecRefs(config, errors);
+            ValidateDirectoryAndSdk(config, errors);
 
             return errors;
         }
@@ -111,7 +133,7 @@ namespace Mintlify.Core
         /// <param name="errors">The list to add errors to.</param>
         public void ValidateTheme(DocsJsonConfig config, List<string> errors)
         {
-            if (!string.IsNullOrWhiteSpace(config.Theme) && !ValidThemes.Contains(config.Theme, StringComparer.OrdinalIgnoreCase))
+            if (!string.IsNullOrWhiteSpace(config.Theme) && !IsKnown(ValidThemeSet, config.Theme))
             {
                 errors.Add($"Invalid theme '{config.Theme}'. Valid themes are: {string.Join(", ", ValidThemes)}");
             }
@@ -310,7 +332,7 @@ namespace Mintlify.Core
             if (config.Appearance is null)
                 return;
 
-            if (!string.IsNullOrWhiteSpace(config.Appearance.Default) && !ValidAppearanceModes.Contains(config.Appearance.Default, StringComparer.OrdinalIgnoreCase))
+            if (!string.IsNullOrWhiteSpace(config.Appearance.Default) && !IsKnown(ValidAppearanceModeSet, config.Appearance.Default))
             {
                 errors.Add($"Invalid appearance default '{config.Appearance.Default}'. Valid modes are: {string.Join(", ", ValidAppearanceModes)}");
             }
@@ -326,7 +348,7 @@ namespace Mintlify.Core
             if (config.Icons is null)
                 return;
 
-            if (!string.IsNullOrWhiteSpace(config.Icons.Library) && !ValidIconLibraries.Contains(config.Icons.Library, StringComparer.OrdinalIgnoreCase))
+            if (!string.IsNullOrWhiteSpace(config.Icons.Library) && !IsKnown(ValidIconLibrarySet, config.Icons.Library))
             {
                 errors.Add($"Invalid icon library '{config.Icons.Library}'. Valid libraries are: {string.Join(", ", ValidIconLibraries)}");
             }
@@ -342,7 +364,7 @@ namespace Mintlify.Core
             if (config.Seo is null)
                 return;
 
-            if (!string.IsNullOrWhiteSpace(config.Seo.Indexing) && !ValidSeoIndexing.Contains(config.Seo.Indexing, StringComparer.OrdinalIgnoreCase))
+            if (!string.IsNullOrWhiteSpace(config.Seo.Indexing) && !IsKnown(ValidSeoIndexingSet, config.Seo.Indexing))
             {
                 errors.Add($"Invalid SEO indexing mode '{config.Seo.Indexing}'. Valid modes are: {string.Join(", ", ValidSeoIndexing)}");
             }
@@ -364,7 +386,7 @@ namespace Mintlify.Core
                 if (config.Api.Mdx.Auth is not null)
                 {
                     if (!string.IsNullOrWhiteSpace(config.Api.Mdx.Auth.Method) &&
-                        !ValidApiAuthMethods.Contains(config.Api.Mdx.Auth.Method, StringComparer.OrdinalIgnoreCase))
+                        !IsKnown(ValidApiAuthMethodSet, config.Api.Mdx.Auth.Method))
                     {
                         errors.Add($"Invalid API MDX auth method '{config.Api.Mdx.Auth.Method}'. Valid methods are: {string.Join(", ", ValidApiAuthMethods)}");
                     }
@@ -380,7 +402,7 @@ namespace Mintlify.Core
             if (config.Api.Playground is not null)
             {
                 if (!string.IsNullOrWhiteSpace(config.Api.Playground.Display) &&
-                    !ValidApiPlaygroundDisplayModes.Contains(config.Api.Playground.Display, StringComparer.OrdinalIgnoreCase))
+                    !IsKnown(ValidApiPlaygroundDisplayModeSet, config.Api.Playground.Display))
                 {
                     errors.Add($"Invalid API playground display mode '{config.Api.Playground.Display}'. Valid modes are: {string.Join(", ", ValidApiPlaygroundDisplayModes)}");
                 }
@@ -390,10 +412,23 @@ namespace Mintlify.Core
             if (config.Api.Examples is not null)
             {
                 if (!string.IsNullOrWhiteSpace(config.Api.Examples.Defaults) &&
-                    !ValidApiExamplesDefaults.Contains(config.Api.Examples.Defaults, StringComparer.OrdinalIgnoreCase))
+                    !IsKnown(ValidApiExamplesDefaultSet, config.Api.Examples.Defaults))
                 {
                     errors.Add($"Invalid API examples defaults '{config.Api.Examples.Defaults}'. Valid values are: {string.Join(", ", ValidApiExamplesDefaults)}");
                 }
+            }
+
+            if (!string.IsNullOrWhiteSpace(config.Api.Optional) &&
+                !IsKnown(ValidApiOptionalSet, config.Api.Optional))
+            {
+                errors.Add($"Invalid API optional layout '{config.Api.Optional}'. Valid values are: {string.Join(", ", ValidApiOptional)}");
+            }
+
+            var expanded = config.Api.Params?.Expanded;
+            if (!string.IsNullOrWhiteSpace(expanded) &&
+                !IsKnown(ValidApiParamsExpandedSet, expanded))
+            {
+                errors.Add($"Invalid API params expanded '{expanded}'. Valid values are: {string.Join(", ", ValidApiParamsExpanded)}");
             }
         }
 
@@ -410,7 +445,7 @@ namespace Mintlify.Core
                 return;
             }
 
-            if (!ValidBannerTypes.Contains(bannerType, StringComparer.OrdinalIgnoreCase))
+            if (!IsKnown(ValidBannerTypeSet, bannerType))
             {
                 errors.Add($"Invalid banner type '{bannerType}'. Valid types are: {string.Join(", ", ValidBannerTypes)}");
             }
@@ -429,13 +464,13 @@ namespace Mintlify.Core
             }
 
             if (!string.IsNullOrWhiteSpace(config.Thumbnails.Preset) &&
-                !ValidThumbnailPresets.Contains(config.Thumbnails.Preset, StringComparer.OrdinalIgnoreCase))
+                !IsKnown(ValidThumbnailPresetSet, config.Thumbnails.Preset))
             {
                 errors.Add($"Invalid thumbnail preset '{config.Thumbnails.Preset}'. Valid presets are: {string.Join(", ", ValidThumbnailPresets)}");
             }
 
             if (!string.IsNullOrWhiteSpace(config.Thumbnails.Surface) &&
-                !ValidThumbnailSurfaces.Contains(config.Thumbnails.Surface, StringComparer.OrdinalIgnoreCase))
+                !IsKnown(ValidThumbnailSurfaceSet, config.Thumbnails.Surface))
             {
                 errors.Add($"Invalid thumbnail surface '{config.Thumbnails.Surface}'. Valid surfaces are: {string.Join(", ", ValidThumbnailSurfaces)}");
             }
@@ -455,7 +490,7 @@ namespace Mintlify.Core
 
             var mixpanelRegion = config.Integrations.Mixpanel?.Region;
             if (!string.IsNullOrWhiteSpace(mixpanelRegion) &&
-                !ValidMixpanelRegions.Contains(mixpanelRegion, StringComparer.OrdinalIgnoreCase))
+                !IsKnown(ValidMixpanelRegionSet, mixpanelRegion))
             {
                 errors.Add($"Invalid Mixpanel region '{mixpanelRegion}'. Valid regions are: {string.Join(", ", ValidMixpanelRegions)}");
             }
@@ -495,9 +530,38 @@ namespace Mintlify.Core
             ValidateSpecRefsOnProducts(config.Navigation.Products, "navigation.products", errors);
         }
 
+        /// <summary>
+        /// Validates directory layout, tab alignment, and SDK refs.
+        /// </summary>
+        /// <param name="config">The configuration to validate.</param>
+        /// <param name="errors">The list to add errors to.</param>
+        public void ValidateDirectoryAndSdk(DocsJsonConfig config, List<string> errors)
+        {
+            if (config.Navigation is null)
+            {
+                return;
+            }
+
+            ValidateDirectory(config.Navigation.Directory, "navigation.directory", errors);
+            ValidateSdk(config.Navigation.Sdk, "navigation.sdk", errors);
+            ValidateDirectoryAndSdkOnItems(config.Navigation.Pages, "navigation.pages", errors);
+            ValidateDirectoryAndSdkOnGroups(config.Navigation.Groups, "navigation.groups", errors);
+            ValidateDirectoryAndSdkOnTabs(config.Navigation.Tabs, "navigation.tabs", errors);
+            ValidateDirectoryAndSdkOnAnchors(config.Navigation.Anchors, "navigation.anchors", errors);
+            ValidateDirectoryAndSdkOnDropdowns(config.Navigation.Dropdowns, "navigation.dropdowns", errors);
+            ValidateDirectoryAndSdkOnProducts(config.Navigation.Products, "navigation.products", errors);
+            ValidateDirectoryAndSdkOnLanguages(config.Navigation.Languages, "navigation.languages", errors);
+            ValidateDirectoryAndSdkOnVersions(config.Navigation.Versions, "navigation.versions", errors);
+        }
+
         #endregion
 
         #region Private Methods
+
+        private static bool IsKnown(HashSet<string> allowed, string? value)
+        {
+            return value is not null && allowed.Contains(value);
+        }
 
         private static void ValidateSpecRef(SpecRefConfig? specRef, string path, List<string> errors)
         {
@@ -516,6 +580,210 @@ namespace Mintlify.Core
         {
             ValidateSpecRef(item.Graphql, $"{path}.graphql", errors);
             ValidateSpecRef(item.Mcp, $"{path}.mcp", errors);
+        }
+
+        private static void ValidateDirectory(string? directory, string path, List<string> errors)
+        {
+            if (!string.IsNullOrWhiteSpace(directory) &&
+                !IsKnown(ValidDirectoryLayoutSet, directory))
+            {
+                errors.Add($"Invalid directory layout '{directory}' at {path}. Valid values are: {string.Join(", ", ValidDirectoryLayouts)}");
+            }
+        }
+
+        private static void ValidateSdk(SdkRefConfig? sdk, string path, List<string> errors)
+        {
+            if (sdk is null)
+            {
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(sdk.Format) ||
+                !IsKnown(ValidSdkFormatSet, sdk.Format))
+            {
+                errors.Add($"{path}.format must be one of: {string.Join(", ", ValidSdkFormats)}");
+            }
+
+            if (string.IsNullOrWhiteSpace(sdk.Source))
+            {
+                errors.Add($"{path}.source is required when sdk is configured.");
+            }
+        }
+
+        private static void ValidateDirectoryAndSdkOnItem(NavigationItemBase item, string path, List<string> errors)
+        {
+            ValidateDirectory(item.Directory, $"{path}.directory", errors);
+            ValidateSdk(item.Sdk, $"{path}.sdk", errors);
+        }
+
+        private static void ValidateDirectoryAndSdkOnItems(List<object>? pages, string path, List<string> errors)
+        {
+            if (pages is null)
+            {
+                return;
+            }
+
+            for (var i = 0; i < pages.Count; i++)
+            {
+                if (pages[i] is GroupConfig group)
+                {
+                    ValidateDirectoryAndSdkOnItem(group, $"{path}[{i}]", errors);
+                    ValidateDirectoryAndSdkOnItems(group.Pages, $"{path}[{i}].pages", errors);
+                }
+            }
+        }
+
+        private static void ValidateDirectoryAndSdkOnGroups(List<GroupConfig>? groups, string path, List<string> errors)
+        {
+            if (groups is null)
+            {
+                return;
+            }
+
+            for (var i = 0; i < groups.Count; i++)
+            {
+                var groupPath = $"{path}[{i}]";
+                ValidateDirectoryAndSdkOnItem(groups[i], groupPath, errors);
+                ValidateDirectoryAndSdkOnItems(groups[i].Pages, $"{groupPath}.pages", errors);
+            }
+        }
+
+        private static void ValidateDirectoryAndSdkOnTabs(List<TabConfig>? tabs, string path, List<string> errors)
+        {
+            if (tabs is null)
+            {
+                return;
+            }
+
+            for (var i = 0; i < tabs.Count; i++)
+            {
+                var tab = tabs[i];
+                var tabPath = $"{path}[{i}]";
+                ValidateDirectoryAndSdkOnItem(tab, tabPath, errors);
+                if (!string.IsNullOrWhiteSpace(tab.Align) &&
+                    !IsKnown(ValidTabAlignmentSet, tab.Align))
+                {
+                    errors.Add($"Invalid tab align '{tab.Align}'. Valid values are: {string.Join(", ", ValidTabAlignments)}");
+                }
+
+                ValidateDirectoryAndSdkOnItems(tab.Pages, $"{tabPath}.pages", errors);
+                ValidateDirectoryAndSdkOnGroups(tab.Groups, $"{tabPath}.groups", errors);
+                ValidateDirectoryAndSdkOnAnchors(tab.Anchors, $"{tabPath}.anchors", errors);
+                ValidateDirectoryAndSdkOnDropdowns(tab.Dropdowns, $"{tabPath}.dropdowns", errors);
+                ValidateDirectoryAndSdkOnMenus(tab.Menu, $"{tabPath}.menu", errors);
+                ValidateDirectoryAndSdkOnLanguages(tab.Languages, $"{tabPath}.languages", errors);
+                ValidateDirectoryAndSdkOnVersions(tab.Versions, $"{tabPath}.versions", errors);
+            }
+        }
+
+        private static void ValidateDirectoryAndSdkOnAnchors(List<AnchorConfig>? anchors, string path, List<string> errors)
+        {
+            if (anchors is null)
+            {
+                return;
+            }
+
+            for (var i = 0; i < anchors.Count; i++)
+            {
+                var anchorPath = $"{path}[{i}]";
+                ValidateDirectoryAndSdkOnItem(anchors[i], anchorPath, errors);
+                ValidateDirectoryAndSdkOnItems(anchors[i].Pages, $"{anchorPath}.pages", errors);
+                ValidateDirectoryAndSdkOnGroups(anchors[i].Groups, $"{anchorPath}.groups", errors);
+            }
+        }
+
+        private static void ValidateDirectoryAndSdkOnDropdowns(List<DropdownConfig>? dropdowns, string path, List<string> errors)
+        {
+            if (dropdowns is null)
+            {
+                return;
+            }
+
+            for (var i = 0; i < dropdowns.Count; i++)
+            {
+                var dropdownPath = $"{path}[{i}]";
+                ValidateDirectoryAndSdkOnItem(dropdowns[i], dropdownPath, errors);
+                ValidateDirectoryAndSdkOnItems(dropdowns[i].Pages, $"{dropdownPath}.pages", errors);
+                ValidateDirectoryAndSdkOnGroups(dropdowns[i].Groups, $"{dropdownPath}.groups", errors);
+            }
+        }
+
+        private static void ValidateDirectoryAndSdkOnProducts(List<ProductConfig>? products, string path, List<string> errors)
+        {
+            if (products is null)
+            {
+                return;
+            }
+
+            for (var i = 0; i < products.Count; i++)
+            {
+                var productPath = $"{path}[{i}]";
+                ValidateDirectoryAndSdkOnItem(products[i], productPath, errors);
+                ValidateDirectoryAndSdkOnItems(products[i].Pages, $"{productPath}.pages", errors);
+                ValidateDirectoryAndSdkOnGroups(products[i].Groups, $"{productPath}.groups", errors);
+            }
+        }
+
+        private static void ValidateDirectoryAndSdkOnLanguages(List<LanguageConfig>? languages, string path, List<string> errors)
+        {
+            if (languages is null)
+            {
+                return;
+            }
+
+            for (var i = 0; i < languages.Count; i++)
+            {
+                var language = languages[i];
+                var languagePath = $"{path}[{i}]";
+                ValidateDirectory(language.Directory, $"{languagePath}.directory", errors);
+                ValidateSdk(language.Sdk, $"{languagePath}.sdk", errors);
+                ValidateDirectoryAndSdkOnItems(language.Pages, $"{languagePath}.pages", errors);
+                ValidateDirectoryAndSdkOnGroups(language.Groups, $"{languagePath}.groups", errors);
+                ValidateDirectoryAndSdkOnTabs(language.Tabs, $"{languagePath}.tabs", errors);
+                ValidateDirectoryAndSdkOnAnchors(language.Anchors, $"{languagePath}.anchors", errors);
+                ValidateDirectoryAndSdkOnDropdowns(language.Dropdowns, $"{languagePath}.dropdowns", errors);
+                ValidateDirectoryAndSdkOnVersions(language.Versions, $"{languagePath}.versions", errors);
+            }
+        }
+
+        private static void ValidateDirectoryAndSdkOnVersions(List<VersionConfig>? versions, string path, List<string> errors)
+        {
+            if (versions is null)
+            {
+                return;
+            }
+
+            for (var i = 0; i < versions.Count; i++)
+            {
+                var version = versions[i];
+                var versionPath = $"{path}[{i}]";
+                ValidateDirectory(version.Directory, $"{versionPath}.directory", errors);
+                ValidateSdk(version.Sdk, $"{versionPath}.sdk", errors);
+                ValidateDirectoryAndSdkOnItems(version.Pages, $"{versionPath}.pages", errors);
+                ValidateDirectoryAndSdkOnGroups(version.Groups, $"{versionPath}.groups", errors);
+                ValidateDirectoryAndSdkOnTabs(version.Tabs, $"{versionPath}.tabs", errors);
+                ValidateDirectoryAndSdkOnAnchors(version.Anchors, $"{versionPath}.anchors", errors);
+                ValidateDirectoryAndSdkOnDropdowns(version.Dropdowns, $"{versionPath}.dropdowns", errors);
+                ValidateDirectoryAndSdkOnLanguages(version.Languages, $"{versionPath}.languages", errors);
+            }
+        }
+
+        private static void ValidateDirectoryAndSdkOnMenus(List<MenuConfig>? menus, string path, List<string> errors)
+        {
+            if (menus is null)
+            {
+                return;
+            }
+
+            for (var i = 0; i < menus.Count; i++)
+            {
+                var menu = menus[i];
+                var menuPath = $"{path}[{i}]";
+                ValidateDirectory(menu.Directory, $"{menuPath}.directory", errors);
+                ValidateSdk(menu.Sdk, $"{menuPath}.sdk", errors);
+                ValidateDirectoryAndSdkOnItems(menu.Pages, $"{menuPath}.pages", errors);
+                ValidateDirectoryAndSdkOnGroups(menu.Groups, $"{menuPath}.groups", errors);
+            }
         }
 
         private static void ValidateSpecRefsOnItems(List<object>? pages, string path, List<string> errors)

@@ -73,6 +73,25 @@ public object AsyncApi { get; set; }
 
 Type: `object?`
 
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Banner
+
+Gets or sets a banner specific to this language.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.BannerConfig Banner { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.BannerConfig?`
+
+#### Remarks
+
+Accepts the same options as the top-level `banner` field.
+See https://www.mintlify.com/docs/organize/settings-structure#navigation-languages.
+
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Default
 
 Gets or sets whether this language is the default language.
@@ -87,6 +106,24 @@ public System.Nullable<bool> Default { get; set; }
 
 Type: `System.Nullable<bool>?`
 
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Directory
+
+Gets or sets the directory layout for this language and its descendants.
+
+#### Syntax
+
+```csharp
+public string Directory { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+
+#### Remarks
+
+Valid values are `none`, `accordion`, and `card`.
+
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Dropdowns
 
 Gets or sets the dropdowns for the language.
@@ -100,6 +137,24 @@ public System.Collections.Generic.List<Mintlify.Core.Models.DropdownConfig> Drop
 #### Property Value
 
 Type: `System.Collections.Generic.List<Mintlify.Core.Models.DropdownConfig>?`
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Footer
+
+Gets or sets a footer specific to this language.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.FooterConfig Footer { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.FooterConfig?`
+
+#### Remarks
+
+Accepts the same options as the top-level `footer` field.
 
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Global
 
@@ -175,6 +230,24 @@ Type: `string`
 
 This is a required field that identifies the language.
 
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Navbar
+
+Gets or sets a navbar specific to this language.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.NavbarConfig Navbar { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.NavbarConfig?`
+
+#### Remarks
+
+Accepts the same options as the top-level `navbar` field.
+
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> OpenApi
 
 Gets or sets the OpenAPI configuration.
@@ -203,6 +276,20 @@ public System.Collections.Generic.List<object> Pages { get; set; }
 
 Type: `System.Collections.Generic.List<object>?`
 
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Sdk
+
+Gets or sets the SDK documentation artifact used to auto-populate pages.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.SdkRefConfig Sdk { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.SdkRefConfig?`
+
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Tabs
 
 Gets or sets the tabs for the language.
@@ -216,6 +303,20 @@ public System.Collections.Generic.List<Mintlify.Core.Models.TabConfig> Tabs { ge
 #### Property Value
 
 Type: `System.Collections.Generic.List<Mintlify.Core.Models.TabConfig>?`
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Thumbnail
+
+Gets or sets thumbnail overrides for this language.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.NavThumbnailConfig Thumbnail { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.NavThumbnailConfig?`
 
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Versions
 

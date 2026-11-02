@@ -540,6 +540,17 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
                     {
                         Mixpanel = new MixpanelConfig { ProjectToken = "token", Region = "eu" }
                     },
+                    Api = new ApiConfig
+                    {
+                        Optional = "collapsed",
+                        Params = new ApiParamsConfig { Expanded = "all", Post = ["payload"] },
+                        Playground = new ApiPlaygroundConfig { Display = "auth", Credentials = true, Proxy = false },
+                        OpenApi = new ApiSpecConfig
+                        {
+                            Source = "openapi.yaml",
+                            Overlays = ["overlay.json"]
+                        }
+                    },
                     Navigation = new NavigationConfig
                     {
                         Graphql = new SpecRefConfig { Source = "schema.graphql" },
@@ -568,6 +579,16 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             config.Thumbnails.Surface.Should().Be("brand");
             config.Integrations!.Mixpanel!.Region.Should().Be("eu");
             config.Navigation.Graphql!.Source.Should().Be("schema.graphql");
+            config.Api!.Optional.Should().Be("collapsed");
+            config.Api.Params!.Expanded.Should().Be("all");
+            config.Api.Params.Post.Should().Equal("payload");
+            config.Api.Playground!.Display.Should().Be("auth");
+            config.Api.Playground.Credentials.Should().BeTrue();
+            config.Api.Playground.Proxy.Should().BeFalse();
+            config.Api.OpenApi!.Source.Should().Be("openapi.yaml");
+            config.Api.OpenApi.Overlays.Should().Equal("overlay.json");
+            json.Should().NotContain("\"expanded\": true");
+            json.Should().NotContain("\"api\": {\"proxy\"");
         }
 
         /// <summary>
