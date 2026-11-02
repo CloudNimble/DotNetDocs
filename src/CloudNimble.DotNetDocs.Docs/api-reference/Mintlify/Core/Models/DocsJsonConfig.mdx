@@ -269,6 +269,25 @@ public Mintlify.Core.Models.LogoConfig Logo { get; set; }
 
 Type: `Mintlify.Core.Models.LogoConfig?`
 
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Markdown
+
+Gets or sets settings for the Markdown that Mintlify serves to AI tools and agents.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.MarkdownConfig Markdown { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.MarkdownConfig?`
+
+#### Remarks
+
+Controls Markdown export used by `.md` URLs, `llms.txt`, and AI agents.
+See https://www.mintlify.com/docs/ai/markdown-export.
+
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Metadata
 
 Gets or sets the metadata configuration for documentation pages.
@@ -337,6 +356,39 @@ Type: `Mintlify.Core.Models.NavigationConfig`
 #### Remarks
 
 This is a required field that defines the structure of your documentation.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Packages
+
+Gets or sets third-party npm package configuration for MDX pages and snippets.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.PackagesConfig Packages { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.PackagesConfig?`
+
+#### Remarks
+
+Adding this object, even empty, turns on third-party libraries. Requires a
+lockfile next to `docs.json`. See https://www.mintlify.com/docs/customize/third-party-libraries.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Public
+
+Gets or sets whether the documentation is publicly accessible by default.
+
+#### Syntax
+
+```csharp
+public System.Nullable<bool> Public { get; set; }
+```
+
+#### Property Value
+
+Type: `System.Nullable<bool>?`
 
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Redirects
 
@@ -424,7 +476,27 @@ Type: `string`
 
 #### Remarks
 
-This is a required field. Valid values are: mint, maple, palm, willow, linden, almond, aspen.
+This is a required field. Valid values are: mint, maple, palm, willow, linden, almond, aspen, sequoia, luma.
+See https://www.mintlify.com/docs/customize/themes.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ThemeVersion
+
+Gets or sets the version of the theme to use.
+
+#### Syntax
+
+```csharp
+public System.Nullable<int> ThemeVersion { get; set; }
+```
+
+#### Property Value
+
+Type: `System.Nullable<int>?`
+
+#### Remarks
+
+Integer from 1 to 2. Defaults to 1, the original version. This property applies
+to the mint theme.
 
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Thumbnails
 
@@ -444,6 +516,27 @@ Type: `Mintlify.Core.Models.ThumbnailsConfig?`
 
 Defines custom thumbnail images for social media sharing and link previews.
 Can include background images and other preview assets.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Variables
+
+Gets or sets global content variables replaced at build time.
+
+#### Syntax
+
+```csharp
+public System.Collections.Generic.Dictionary<string, string> Variables { get; set; }
+```
+
+#### Property Value
+
+Type: `System.Collections.Generic.Dictionary<string, string>?`
+
+#### Remarks
+
+Keys are variable names (alphanumeric and hyphens only) and values are replacement
+strings. Use `{{variableName}}` in MDX pages and snippets. Substitution does
+not apply to OpenAPI specification files or other static assets.
+See https://www.mintlify.com/docs/organize/settings-reference#variables.
 
 ## Methods
 

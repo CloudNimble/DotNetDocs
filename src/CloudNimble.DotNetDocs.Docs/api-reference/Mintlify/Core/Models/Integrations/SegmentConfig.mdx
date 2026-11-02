@@ -52,6 +52,27 @@ public Object()
 
 ## Properties
 
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> CdnUrl
+
+Gets or sets a custom CDN URL for loading the Segment script.
+
+#### Syntax
+
+```csharp
+public string CdnUrl { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+
+#### Remarks
+
+Use this if you configure a custom domain in Segment to serve analytics from
+your own subdomain, which helps avoid ad blockers that block `cdn.segment.com`.
+Must be an HTTPS URL without query parameters or fragments. Defaults to
+`https://cdn.segment.com`. See https://www.mintlify.com/docs/integrations/analytics/segment.
+
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Key
 
 Gets or sets the Segment write key.

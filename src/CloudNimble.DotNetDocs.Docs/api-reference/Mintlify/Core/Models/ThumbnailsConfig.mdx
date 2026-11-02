@@ -91,6 +91,25 @@ Specifies the path to a background image used when rendering thumbnails.
 This allows for custom branding and visual consistency across all
 documentation thumbnails.
 
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Eyebrow
+
+Gets or sets the label shown above the page title in thumbnails.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.ThumbnailEyebrowConfig Eyebrow { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.ThumbnailEyebrowConfig?`
+
+#### Remarks
+
+Site-wide eyebrow source, style, and color are configured here.
+See https://www.mintlify.com/docs/organize/settings-appearance.
+
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Fonts
 
 Gets or sets the font configuration for thumbnails.
@@ -109,6 +128,42 @@ Type: `Mintlify.Core.Models.ThumbnailFontsConfig?`
 
 Controls the fonts used in thumbnail rendering, allowing customization
 of the font family used for text displayed within thumbnails.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Preset
+
+Gets or sets the thumbnail layout preset.
+
+#### Syntax
+
+```csharp
+public string Preset { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+
+#### Remarks
+
+Valid values are `classic`, `headline`, or `minimal`.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Surface
+
+Gets or sets the thumbnail surface color treatment.
+
+#### Syntax
+
+```csharp
+public string Surface { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+
+#### Remarks
+
+Valid values are `neutral` or `brand`.
 
 ## Methods
 

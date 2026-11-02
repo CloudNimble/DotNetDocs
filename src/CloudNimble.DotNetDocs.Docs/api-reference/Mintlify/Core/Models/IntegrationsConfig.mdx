@@ -357,6 +357,25 @@ Type: `Mintlify.Core.Models.Integrations.MixpanelConfig?`
 Mixpanel provides detailed product analytics and user behavior tracking.
 When configured, all documentation events are sent to your Mixpanel project.
 
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> OneTrust
+
+Gets or sets the OneTrust cookie consent integration configuration.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.Integrations.OneTrustConfig OneTrust { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.Integrations.OneTrustConfig?`
+
+#### Remarks
+
+Configure OneTrust when you use it as your consent management platform.
+`domainScript` is required.
+
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Pirsch
 
 Gets or sets the Pirsch analytics integration configuration.
@@ -452,6 +471,26 @@ Type: `Mintlify.Core.Models.Integrations.TelemetryConfig?`
 
 Controls whether telemetry and feedback collection is enabled
 on the documentation site.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Transcend
+
+Gets or sets the Transcend Consent Management integration configuration.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.Integrations.TranscendConfig Transcend { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.Integrations.TranscendConfig?`
+
+#### Remarks
+
+When configured, Mintlify loads your Transcend bundle and gates analytics
+behind visitor consent. `bundleId` is required.
+See https://www.mintlify.com/docs/integrations/privacy/transcend.
 
 ## Methods
 

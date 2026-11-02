@@ -288,6 +288,52 @@ namespace Mintlify.Core
                     Configuration.Logo = other.Logo;
                 if (other.Footer is not null)
                     Configuration.Footer = other.Footer;
+                if (other.Public.HasValue)
+                    Configuration.Public = other.Public;
+                if (other.ThemeVersion.HasValue)
+                    Configuration.ThemeVersion = other.ThemeVersion;
+                if (other.Variables is not null)
+                    Configuration.Variables = other.Variables;
+                if (other.Markdown is not null)
+                    Configuration.Markdown = other.Markdown;
+                if (other.Packages is not null)
+                    Configuration.Packages = other.Packages;
+                if (other.Api is not null)
+                    Configuration.Api = other.Api;
+                if (other.Appearance is not null)
+                    Configuration.Appearance = other.Appearance;
+                if (other.Background is not null)
+                    Configuration.Background = other.Background;
+                if (other.Banner is not null)
+                    Configuration.Banner = other.Banner;
+                if (other.Contextual is not null)
+                    Configuration.Contextual = other.Contextual;
+                if (other.Errors is not null)
+                    Configuration.Errors = other.Errors;
+                if (other.Favicon is not null)
+                    Configuration.Favicon = other.Favicon;
+                if (other.Fonts is not null)
+                    Configuration.Fonts = other.Fonts;
+                if (other.Icons is not null)
+                    Configuration.Icons = other.Icons;
+                if (other.Integrations is not null)
+                    Configuration.Integrations = other.Integrations;
+                if (other.Interaction is not null)
+                    Configuration.Interaction = other.Interaction;
+                if (other.Navbar is not null)
+                    Configuration.Navbar = other.Navbar;
+                if (other.Redirects is not null)
+                    Configuration.Redirects = other.Redirects;
+                if (other.Search is not null)
+                    Configuration.Search = other.Search;
+                if (other.Seo is not null)
+                    Configuration.Seo = other.Seo;
+                if (other.Styling is not null)
+                    Configuration.Styling = other.Styling;
+                if (other.Thumbnails is not null)
+                    Configuration.Thumbnails = other.Thumbnails;
+                if (other.Metadata is not null)
+                    Configuration.Metadata = other.Metadata;
             }
 
             // Always merge navigation
@@ -944,6 +990,10 @@ namespace Mintlify.Core
 
             if (source.Global is not null)
                 target.Global = source.Global;
+            if (source.Graphql is not null)
+                target.Graphql = source.Graphql;
+            if (source.Mcp is not null)
+                target.Mcp = source.Mcp;
         }
 
         /// <summary>
@@ -1142,6 +1192,10 @@ namespace Mintlify.Core
                 target.AsyncApi = source.AsyncApi;
             if (source.OpenApi is not null)
                 target.OpenApi = source.OpenApi;
+            if (source.Graphql is not null)
+                target.Graphql = source.Graphql;
+            if (source.Mcp is not null)
+                target.Mcp = source.Mcp;
 
             // Merge pages recursively
             if (source.Pages is not null)
@@ -1325,6 +1379,10 @@ namespace Mintlify.Core
                 target.OpenApi = source.OpenApi;
             if (source.Global is not null)
                 target.Global = source.Global;
+            if (source.Graphql is not null)
+                target.Graphql = source.Graphql;
+            if (source.Mcp is not null)
+                target.Mcp = source.Mcp;
 
             // Merge pages recursively
             if (source.Pages is not null)

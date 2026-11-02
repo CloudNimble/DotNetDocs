@@ -19,16 +19,10 @@ namespace Mintlify.Core.Models
         /// Gets or sets the list of contextual options to enable.
         /// </summary>
         /// <remarks>
-        /// Valid options include:
-        /// - "copy": Shows a copy button for code blocks and other copyable content
-        /// - "view": Provides view source or view raw options for content
-        /// - "chatgpt": Enables ChatGPT integration for AI assistance
-        /// - "claude": Enables Claude AI integration for AI assistance
-        /// - "perplexity": Enables Perplexity AI integration for AI assistance
-        /// - "mcp": Provides details for connecting any AI to the documentation through the MCP protocol
-        /// - "cursor": Enables Cursor integration for AI assistance
-        /// - "vscode": Enables VS Code integration for AI assistance
-        /// These options enhance user interaction with the documentation content.
+        /// The first option in the array appears as the default action. Built-in options:
+        /// copy, view, assistant, chatgpt, claude, perplexity, grok, aistudio, devin,
+        /// windsurf, download-pdf, download-spec, mcp, add-mcp, cursor, vscode, and
+        /// devin-mcp. See https://www.mintlify.com/docs/organize/settings-structure#contextual.
         /// </remarks>
         public List<string>? Options { get; set; }
 

@@ -99,8 +99,14 @@ Used for social media previews but not documented in main settings:
 
 ```json
 "thumbnails": {
+  "preset": "headline",
+  "appearance": "dark",
+  "surface": "brand",
   "background": "/images/thumbnail/background.svg",
-  "logo": "/images/thumbnail/logo.png"
+  "eyebrow": {
+    "source": "group",
+    "style": "pill"
+  }
 }
 ```
 
@@ -109,7 +115,8 @@ The `contextual` configuration for copy buttons and AI integrations:
 
 ```json
 "contextual": {
-  "options": ["copy", "chatgpt", "claude", "cursor", "vscode"]
+  "options": ["copy", "view", "chatgpt", "claude", "grok", "mcp"],
+  "display": "header"
 }
 ```
 
@@ -120,10 +127,10 @@ The `contextual` configuration for copy buttons and AI integrations:
 - Regex pattern: `^#([a-fA-F0-9]{6}|[a-fA-F0-9]{3})$`
 
 ### Theme Values
-Valid themes: `mint`, `maple`, `palm`, `willow`, `linden`, `almond`, `aspen`
+Valid themes: `mint`, `maple`, `palm`, `willow`, `linden`, `almond`, `aspen`, `sequoia`, `luma`
 
 ### Icon Libraries
-Valid libraries: `fontawesome`, `lucide`
+Valid libraries: `fontawesome`, `lucide`, `tabler`
 
 ### Appearance Modes
 Valid modes: `system`, `light`, `dark`
@@ -135,7 +142,7 @@ Valid values: `navigable`, `all`
 Valid methods for MDX API: `bearer`, `basic`, `key`, `cobo`
 
 ### Playground Display Modes
-Valid modes: `interactive`, `simple`, `none`
+Valid modes: `interactive`, `simple`, `none`, `auth`
 
 ### Examples Defaults
 Valid values: `all`, `required`

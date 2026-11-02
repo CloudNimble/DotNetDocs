@@ -24,14 +24,18 @@ namespace Mintlify.Core
 
         #region Private Fields
 
-        private static readonly string[] ValidThemes = { "mint", "maple", "palm", "willow", "linden", "almond", "aspen" };
+        private static readonly string[] ValidThemes = { "mint", "maple", "palm", "willow", "linden", "almond", "aspen", "sequoia", "luma" };
         private static readonly string[] ValidAppearanceModes = { "system", "light", "dark" };
-        private static readonly string[] ValidIconLibraries = { "fontawesome", "lucide" };
+        private static readonly string[] ValidIconLibraries = { "fontawesome", "lucide", "tabler" };
         private static readonly string[] ValidSeoIndexing = { "navigable", "all" };
-        private static readonly string[] ValidLanguages = { "en", "cn", "zh", "zh-Hans", "zh-Hant", "es", "fr", "fr-CA", "ja", "jp", "pt", "pt-BR", "de", "ko", "it", "ru", "id", "ar", "tr", "hi" };
+        private static readonly string[] ValidLanguages = { "en", "cn", "zh", "zh-Hans", "zh-Hant", "zh-CN", "zh-TW", "es", "fr", "fr-CA", "fr-ca", "ja", "jp", "ja-jp", "ja-JP", "pt", "pt-BR", "de", "ko", "it", "ru", "ro", "cs", "id", "ar", "tr", "hi", "sv", "no", "da", "lv", "nl", "uk", "vi", "pl", "uz", "he", "ca", "fi", "hu" };
         private static readonly string[] ValidApiAuthMethods = { "bearer", "basic", "key", "cobo" };
         private static readonly string[] ValidApiPlaygroundDisplayModes = { "interactive", "simple", "none" };
         private static readonly string[] ValidApiExamplesDefaults = { "all", "required" };
+        private static readonly string[] ValidBannerTypes = { "info", "warning", "critical" };
+        private static readonly string[] ValidThumbnailPresets = { "classic", "headline", "minimal" };
+        private static readonly string[] ValidThumbnailSurfaces = { "neutral", "brand" };
+        private static readonly string[] ValidMixpanelRegions = { "us", "eu", "in" };
 #if NET7_0_OR_GREATER
         private static readonly Regex HexColorRegex = MyRegex();
 #else
@@ -55,6 +59,7 @@ namespace Mintlify.Core
 
             ValidateRequired(config, errors);
             ValidateTheme(config, errors);
+            ValidateThemeVersion(config, errors);
             ValidateColors(config, errors);
             ValidateLogo(config, errors);
             ValidateNavigation(config, errors);
@@ -63,6 +68,10 @@ namespace Mintlify.Core
             ValidateIcons(config, errors);
             ValidateSeo(config, errors);
             ValidateApi(config, errors);
+            ValidateBanner(config, errors);
+            ValidateThumbnails(config, errors);
+            ValidateIntegrations(config, errors);
+            ValidateSpecRefs(config, errors);
 
             return errors;
         }
@@ -105,6 +114,30 @@ namespace Mintlify.Core
             if (!string.IsNullOrWhiteSpace(config.Theme) && !ValidThemes.Contains(config.Theme, StringComparer.OrdinalIgnoreCase))
             {
                 errors.Add($"Invalid theme '{config.Theme}'. Valid themes are: {string.Join(", ", ValidThemes)}");
+            }
+        }
+
+        /// <summary>
+        /// Validates the theme version configuration.
+        /// </summary>
+        /// <param name="config">The configuration to validate.</param>
+        /// <param name="errors">The list to add errors to.</param>
+        public void ValidateThemeVersion(DocsJsonConfig config, List<string> errors)
+        {
+            if (!config.ThemeVersion.HasValue)
+            {
+                return;
+            }
+
+            if (config.ThemeVersion.Value < 1 || config.ThemeVersion.Value > 2)
+            {
+                errors.Add($"Invalid themeVersion '{config.ThemeVersion.Value}'. Valid values are 1 or 2.");
+            }
+
+            if (!string.IsNullOrWhiteSpace(config.Theme) &&
+                !string.Equals(config.Theme, "mint", StringComparison.OrdinalIgnoreCase))
+            {
+                errors.Add("themeVersion is only supported when theme is 'mint'.");
             }
         }
 
@@ -361,6 +394,223 @@ namespace Mintlify.Core
                 {
                     errors.Add($"Invalid API examples defaults '{config.Api.Examples.Defaults}'. Valid values are: {string.Join(", ", ValidApiExamplesDefaults)}");
                 }
+            }
+        }
+
+        /// <summary>
+        /// Validates the banner configuration.
+        /// </summary>
+        /// <param name="config">The configuration to validate.</param>
+        /// <param name="errors">The list to add errors to.</param>
+        public void ValidateBanner(DocsJsonConfig config, List<string> errors)
+        {
+            var bannerType = config.Banner?.Type;
+            if (string.IsNullOrWhiteSpace(bannerType))
+            {
+                return;
+            }
+
+            if (!ValidBannerTypes.Contains(bannerType, StringComparer.OrdinalIgnoreCase))
+            {
+                errors.Add($"Invalid banner type '{bannerType}'. Valid types are: {string.Join(", ", ValidBannerTypes)}");
+            }
+        }
+
+        /// <summary>
+        /// Validates the thumbnails configuration.
+        /// </summary>
+        /// <param name="config">The configuration to validate.</param>
+        /// <param name="errors">The list to add errors to.</param>
+        public void ValidateThumbnails(DocsJsonConfig config, List<string> errors)
+        {
+            if (config.Thumbnails is null)
+            {
+                return;
+            }
+
+            if (!string.IsNullOrWhiteSpace(config.Thumbnails.Preset) &&
+                !ValidThumbnailPresets.Contains(config.Thumbnails.Preset, StringComparer.OrdinalIgnoreCase))
+            {
+                errors.Add($"Invalid thumbnail preset '{config.Thumbnails.Preset}'. Valid presets are: {string.Join(", ", ValidThumbnailPresets)}");
+            }
+
+            if (!string.IsNullOrWhiteSpace(config.Thumbnails.Surface) &&
+                !ValidThumbnailSurfaces.Contains(config.Thumbnails.Surface, StringComparer.OrdinalIgnoreCase))
+            {
+                errors.Add($"Invalid thumbnail surface '{config.Thumbnails.Surface}'. Valid surfaces are: {string.Join(", ", ValidThumbnailSurfaces)}");
+            }
+        }
+
+        /// <summary>
+        /// Validates the integrations configuration.
+        /// </summary>
+        /// <param name="config">The configuration to validate.</param>
+        /// <param name="errors">The list to add errors to.</param>
+        public void ValidateIntegrations(DocsJsonConfig config, List<string> errors)
+        {
+            if (config.Integrations is null)
+            {
+                return;
+            }
+
+            var mixpanelRegion = config.Integrations.Mixpanel?.Region;
+            if (!string.IsNullOrWhiteSpace(mixpanelRegion) &&
+                !ValidMixpanelRegions.Contains(mixpanelRegion, StringComparer.OrdinalIgnoreCase))
+            {
+                errors.Add($"Invalid Mixpanel region '{mixpanelRegion}'. Valid regions are: {string.Join(", ", ValidMixpanelRegions)}");
+            }
+
+            if (config.Integrations.Transcend is not null &&
+                string.IsNullOrWhiteSpace(config.Integrations.Transcend.BundleId))
+            {
+                errors.Add("Transcend bundleId is required when the Transcend integration is configured.");
+            }
+
+            if (config.Integrations.OneTrust is not null &&
+                string.IsNullOrWhiteSpace(config.Integrations.OneTrust.DomainScript))
+            {
+                errors.Add("OneTrust domainScript is required when the OneTrust integration is configured.");
+            }
+        }
+
+        /// <summary>
+        /// Validates GraphQL and MCP specification references in navigation.
+        /// </summary>
+        /// <param name="config">The configuration to validate.</param>
+        /// <param name="errors">The list to add errors to.</param>
+        public void ValidateSpecRefs(DocsJsonConfig config, List<string> errors)
+        {
+            if (config.Navigation is null)
+            {
+                return;
+            }
+
+            ValidateSpecRef(config.Navigation.Graphql, "navigation.graphql", errors);
+            ValidateSpecRef(config.Navigation.Mcp, "navigation.mcp", errors);
+            ValidateSpecRefsOnItems(config.Navigation.Pages, "navigation.pages", errors);
+            ValidateSpecRefsOnGroups(config.Navigation.Groups, "navigation.groups", errors);
+            ValidateSpecRefsOnTabs(config.Navigation.Tabs, "navigation.tabs", errors);
+            ValidateSpecRefsOnAnchors(config.Navigation.Anchors, "navigation.anchors", errors);
+            ValidateSpecRefsOnDropdowns(config.Navigation.Dropdowns, "navigation.dropdowns", errors);
+            ValidateSpecRefsOnProducts(config.Navigation.Products, "navigation.products", errors);
+        }
+
+        #endregion
+
+        #region Private Methods
+
+        private static void ValidateSpecRef(SpecRefConfig? specRef, string path, List<string> errors)
+        {
+            if (specRef is null)
+            {
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(specRef.Source))
+            {
+                errors.Add($"{path} requires a source path or URL.");
+            }
+        }
+
+        private static void ValidateSpecRefsOnItem(NavigationItemBase item, string path, List<string> errors)
+        {
+            ValidateSpecRef(item.Graphql, $"{path}.graphql", errors);
+            ValidateSpecRef(item.Mcp, $"{path}.mcp", errors);
+        }
+
+        private static void ValidateSpecRefsOnItems(List<object>? pages, string path, List<string> errors)
+        {
+            if (pages is null)
+            {
+                return;
+            }
+
+            for (var i = 0; i < pages.Count; i++)
+            {
+                if (pages[i] is GroupConfig group)
+                {
+                    ValidateSpecRefsOnGroup(group, $"{path}[{i}]", errors);
+                }
+            }
+        }
+
+        private static void ValidateSpecRefsOnGroup(GroupConfig group, string path, List<string> errors)
+        {
+            ValidateSpecRefsOnItem(group, path, errors);
+            ValidateSpecRefsOnItems(group.Pages, $"{path}.pages", errors);
+        }
+
+        private static void ValidateSpecRefsOnGroups(List<GroupConfig>? groups, string path, List<string> errors)
+        {
+            if (groups is null)
+            {
+                return;
+            }
+
+            for (var i = 0; i < groups.Count; i++)
+            {
+                ValidateSpecRefsOnGroup(groups[i], $"{path}[{i}]", errors);
+            }
+        }
+
+        private static void ValidateSpecRefsOnTabs(List<TabConfig>? tabs, string path, List<string> errors)
+        {
+            if (tabs is null)
+            {
+                return;
+            }
+
+            for (var i = 0; i < tabs.Count; i++)
+            {
+                var tabPath = $"{path}[{i}]";
+                ValidateSpecRefsOnItem(tabs[i], tabPath, errors);
+                ValidateSpecRefsOnItems(tabs[i].Pages, $"{tabPath}.pages", errors);
+                ValidateSpecRefsOnGroups(tabs[i].Groups, $"{tabPath}.groups", errors);
+            }
+        }
+
+        private static void ValidateSpecRefsOnAnchors(List<AnchorConfig>? anchors, string path, List<string> errors)
+        {
+            if (anchors is null)
+            {
+                return;
+            }
+
+            for (var i = 0; i < anchors.Count; i++)
+            {
+                var anchorPath = $"{path}[{i}]";
+                ValidateSpecRefsOnItem(anchors[i], anchorPath, errors);
+                ValidateSpecRefsOnItems(anchors[i].Pages, $"{anchorPath}.pages", errors);
+            }
+        }
+
+        private static void ValidateSpecRefsOnDropdowns(List<DropdownConfig>? dropdowns, string path, List<string> errors)
+        {
+            if (dropdowns is null)
+            {
+                return;
+            }
+
+            for (var i = 0; i < dropdowns.Count; i++)
+            {
+                var dropdownPath = $"{path}[{i}]";
+                ValidateSpecRefsOnItem(dropdowns[i], dropdownPath, errors);
+                ValidateSpecRefsOnItems(dropdowns[i].Pages, $"{dropdownPath}.pages", errors);
+            }
+        }
+
+        private static void ValidateSpecRefsOnProducts(List<ProductConfig>? products, string path, List<string> errors)
+        {
+            if (products is null)
+            {
+                return;
+            }
+
+            for (var i = 0; i < products.Count; i++)
+            {
+                var productPath = $"{path}[{i}]";
+                ValidateSpecRefsOnItem(products[i], productPath, errors);
+                ValidateSpecRefsOnItems(products[i].Pages, $"{productPath}.pages", errors);
             }
         }
 

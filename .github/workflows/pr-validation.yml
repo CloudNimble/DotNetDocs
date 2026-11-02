@@ -54,27 +54,30 @@ jobs:
       id: version
       shell: pwsh
       run: |
-        # Get version components from repository variables
-        $majorVersion = "${{ vars.VERSION_MAJOR }}"
-        if ([string]::IsNullOrEmpty($majorVersion)) { $majorVersion = "1" }
+        function Get-Var([string]$value, [string]$fallback) {
+          if ([string]::IsNullOrEmpty($value)) { return $fallback }
+          return $value
+        }
 
-        $minorVersion = "${{ vars.VERSION_MINOR }}"
-        if ([string]::IsNullOrEmpty($minorVersion)) { $minorVersion = "0" }
+        $majorVersion = Get-Var "${{ vars.VERSION_MAJOR }}" "1"
+        $minorVersion = Get-Var "${{ vars.VERSION_MINOR }}" "5"
+        $mintlifyMajor = Get-Var "${{ vars.MINTLIFY_VERSION_MAJOR }}" "2"
+        $mintlifyMinor = Get-Var "${{ vars.MINTLIFY_VERSION_MINOR }}" "0"
 
-        Write-Host "🔢 Version variables: MAJOR=$majorVersion, MINOR=$minorVersion"
+        Write-Host "🔢 DotNetDocs: MAJOR=$majorVersion, MINOR=$minorVersion"
+        Write-Host "🔢 Mintlify:   MAJOR=$mintlifyMajor, MINOR=$mintlifyMinor"
 
-        # PR validation: always use CI versioning with timestamp (no version increment)
         $timestamp = Get-Date -Format "yyyyMMdd-HHmmss" -AsUTC
         $version = "$majorVersion.$minorVersion.0-CI-$timestamp"
+        $mintlifyVersion = "$mintlifyMajor.$mintlifyMinor.0-CI-$timestamp"
 
-        Write-Host "✅ PR validation version: $version"
-
-        # Output variables
         echo "VERSION=$version" >> $env:GITHUB_OUTPUT
+        echo "MINTLIFY_VERSION=$mintlifyVersion" >> $env:GITHUB_OUTPUT
         echo "MAJOR_VERSION=$majorVersion" >> $env:GITHUB_OUTPUT
         echo "MINOR_VERSION=$minorVersion" >> $env:GITHUB_OUTPUT
 
-        Write-Host "📦 Final version: $version"
+        Write-Host "📦 DotNetDocs version: $version"
+        Write-Host "📦 Mintlify version:   $mintlifyVersion"
 
     - name: Update .docsproj SDK references
       shell: pwsh
@@ -135,24 +138,24 @@ jobs:
       run: |
         Write-Host "🔨 Building DotNetDocs.Sdk with version ${{ steps.version.outputs.VERSION }}"
         Write-Host "📦 First, build the SDK Tasks project..."
-        dotnet build src/CloudNimble.DotNetDocs.Sdk.Tasks/CloudNimble.DotNetDocs.Sdk.Tasks.csproj --configuration Release /p:Version=${{ steps.version.outputs.VERSION }}
+        dotnet build src/CloudNimble.DotNetDocs.Sdk.Tasks/CloudNimble.DotNetDocs.Sdk.Tasks.csproj --configuration Release /p:DotNetDocsPackageVersion=${{ steps.version.outputs.VERSION }} /p:MintlifyPackageVersion=${{ steps.version.outputs.MINTLIFY_VERSION }}
         Write-Host "✅ SDK Tasks built successfully"
         Write-Host "🔧 Now packing the SDK project..."
-        dotnet pack src/CloudNimble.DotNetDocs.Sdk/CloudNimble.DotNetDocs.Sdk.csproj --configuration Release --output "${{ env.LOCAL_NUGET_FEED }}" /p:Version=${{ steps.version.outputs.VERSION }} /p:PackageVersion=${{ steps.version.outputs.VERSION }}
+        dotnet pack src/CloudNimble.DotNetDocs.Sdk/CloudNimble.DotNetDocs.Sdk.csproj --configuration Release --output "${{ env.LOCAL_NUGET_FEED }}" /p:DotNetDocsPackageVersion=${{ steps.version.outputs.VERSION }} /p:MintlifyPackageVersion=${{ steps.version.outputs.MINTLIFY_VERSION }}
         Write-Host "📦 SDK package created and pushed to local feed"
 
     - name: Restore dependencies
       run: dotnet restore ${{ env.SOLUTION_FILE }}
 
     - name: Build solution
-      run: dotnet build ${{ env.SOLUTION_FILE }} --configuration Release --no-restore /p:Version=${{ steps.version.outputs.VERSION }} /p:PackageVersion=${{ steps.version.outputs.VERSION }}
+      run: dotnet build ${{ env.SOLUTION_FILE }} --configuration Release --no-restore /p:DotNetDocsPackageVersion=${{ steps.version.outputs.VERSION }} /p:MintlifyPackageVersion=${{ steps.version.outputs.MINTLIFY_VERSION }}
 
     - name: Test
       working-directory: src
       run: dotnet test --configuration Release --no-build
 
     - name: Pack
-      run: dotnet pack ${{ env.SOLUTION_FILE }} --configuration Release --no-build --output ./artifacts /p:PackageVersion=${{ steps.version.outputs.VERSION }}
+      run: dotnet pack ${{ env.SOLUTION_FILE }} --configuration Release --no-build --output ./artifacts /p:DotNetDocsPackageVersion=${{ steps.version.outputs.VERSION }} /p:MintlifyPackageVersion=${{ steps.version.outputs.MINTLIFY_VERSION }}
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v7

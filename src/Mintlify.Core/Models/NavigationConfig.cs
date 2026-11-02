@@ -33,6 +33,17 @@ namespace Mintlify.Core.Models
         public GlobalNavigationConfig? Global { get; set; }
 
         /// <summary>
+        /// Gets or sets the GraphQL schema used to auto-populate reference pages.
+        /// </summary>
+        /// <remarks>
+        /// Accepts a local SDL path, an HTTPS URL, or an object with <c>source</c> and
+        /// optional <c>directory</c>. See https://www.mintlify.com/docs/api-playground/graphql-setup.
+        /// </remarks>
+        [JsonPropertyName("graphql")]
+        [JsonConverter(typeof(SpecRefConverter))]
+        public SpecRefConfig? Graphql { get; set; }
+
+        /// <summary>
         /// Gets or sets the groups in the navigation.
         /// </summary>
         public List<GroupConfig>? Groups { get; set; }
@@ -41,6 +52,13 @@ namespace Mintlify.Core.Models
         /// Gets or sets the languages in the navigation.
         /// </summary>
         public List<LanguageConfig>? Languages { get; set; }
+
+        /// <summary>
+        /// Gets or sets the MCP definition used to auto-populate reference pages.
+        /// </summary>
+        [JsonPropertyName("mcp")]
+        [JsonConverter(typeof(SpecRefConverter))]
+        public SpecRefConfig? Mcp { get; set; }
 
         /// <summary>
         /// Gets or sets the pages in the navigation.

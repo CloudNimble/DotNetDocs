@@ -50,6 +50,27 @@ public Object()
 
 ## Properties
 
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Color
+
+Gets or sets a custom banner background color.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.ColorPairConfig Color { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.ColorPairConfig?`
+
+#### Remarks
+
+When set, this takes precedence over the color implied by [BannerConfig.Type](/api-reference/Mintlify/Core/Models/BannerConfig#type).
+Banner text is white, so choose a background dark enough to remain legible.
+If only one of light or dark is provided, it is used in both modes.
+See https://www.mintlify.com/docs/components/banner.
+
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Content
 
 Gets or sets the content to display in the banner.
@@ -89,6 +110,28 @@ Type: `System.Nullable<bool>?`
 When true, displays a dismiss button (X) on the right side of the banner,
 allowing users to close the banner. When false or not specified, the banner
 cannot be dismissed by users and will always be visible.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Type
+
+Gets or sets the visual style of the banner.
+
+#### Syntax
+
+```csharp
+public string Type { get; set; }
+```
+
+#### Property Value
+
+Type: `string?`
+
+#### Remarks
+
+Controls the background color so visitors can recognize urgency. Defaults to
+          `info`. Valid values:
+          
+
+          See https://www.mintlify.com/docs/components/banner.
 
 ## Methods
 

@@ -15,9 +15,11 @@ Handles building, testing, and deploying packages to NuGet using .NET 11 RC3.
 **Platform:** Windows (all jobs run on `windows-latest`)
 
 **Versioning:**
-- **Main branch**: Standard SemVer (e.g., `1.0.42`)
-- **Dev branch**: Preview versioning (e.g., `1.0.42-preview.1`)
-- **Feature/other branches**: CI versioning (e.g., `1.0.0-CI-20250716-193214`)
+- DotNetDocs and Mintlify.Core version independently (`DotNetDocsPackageVersion` / `MintlifyPackageVersion`).
+- **Main branch**: Standard SemVer (e.g., DotNetDocs `1.5.5`, Mintlify.Core `2.0.0`)
+- **Dev branch**: Preview versioning (e.g., `1.5.5-preview.2`, `2.0.0-preview.1`)
+- **Feature/other branches**: CI versioning (e.g., `1.5.0-CI-20250716-193214`, `2.0.0-CI-20250716-193214`)
+- GitHub releases are tagged with the DotNetDocs version and list each nupkg at its own version.
 
 **Features:**
 - Automatic .NET 11 preview installation via PowerShell
@@ -47,9 +49,14 @@ Set these in your repository settings under Settings â†’ Secrets and variables â
 
 | Variable | Description | Default | Example |
 |----------|-------------|---------|---------|
-| `VERSION_MAJOR` | Major version number | `1` | `2` |
-| `VERSION_MINOR` | Minor version number | `0` | `1` |
-| `VERSION_PREVIEW_SUFFIX` | Preview build counter (auto-updated by workflow) | `0` | `5` |
+| `VERSION_MAJOR` | DotNetDocs major version | `1` | `2` |
+| `VERSION_MINOR` | DotNetDocs minor version | `5` | `1` |
+| `VERSION_PATCH` | DotNetDocs patch version (auto-incremented on main) | `0` | `5` |
+| `VERSION_PREVIEW_SUFFIX` | DotNetDocs preview counter (auto-updated on dev) | `0` | `5` |
+| `MINTLIFY_VERSION_MAJOR` | Mintlify.Core major version | `2` | `2` |
+| `MINTLIFY_VERSION_MINOR` | Mintlify.Core minor version | `0` | `1` |
+| `MINTLIFY_VERSION_PATCH` | Mintlify.Core patch version (auto-incremented on main) | `0` | `1` |
+| `MINTLIFY_VERSION_PREVIEW_SUFFIX` | Mintlify.Core preview counter (auto-updated on dev) | `0` | `3` |
 
 ### Repository Secrets
 
@@ -121,10 +128,11 @@ Invoke-WebRequest -Uri "https://dot.net/v1/dotnet-install.ps1" -OutFile "dotnet-
 
 ### Bumping Versions
 
-1. **Major Version:** Update `VERSION_MAJOR` repository variable (resets preview suffix when used)
-2. **Minor Version:** Update `VERSION_MINOR` repository variable (resets preview suffix when used)
-3. **Preview Builds:** Automatically handled by `VERSION_PREVIEW_SUFFIX` variable (auto-updated after successful dev deployments)
-4. **Patch Versions:** Automatically handled by examining Git tags on main branch
+1. **DotNetDocs major/minor:** Update `VERSION_MAJOR` / `VERSION_MINOR`
+2. **Mintlify.Core major/minor:** Update `MINTLIFY_VERSION_MAJOR` / `MINTLIFY_VERSION_MINOR`
+3. **Preview builds:** `VERSION_PREVIEW_SUFFIX` and `MINTLIFY_VERSION_PREVIEW_SUFFIX` increment after successful dev deployments
+4. **Patch versions:** `VERSION_PATCH` and `MINTLIFY_VERSION_PATCH` increment after successful main deployments
+5. Do **not** pass `/p:PackageVersion` or `/p:Version` in CI. Pass `/p:DotNetDocsPackageVersion` and `/p:MintlifyPackageVersion` so MSBuild does not stamp one version on every project.
 
 ### Version Strategy Examples
 
@@ -225,4 +233,4 @@ The repository includes automatic dependency updates via `.github/dependabot.yml
 - `actions/checkout@v4` - Repository checkout
 - `actions/upload-artifact@v4` - Artifact management
 - `actions/download-artifact@v4` - Artifact retrieval
-- `softprops/action-gh-release@v1` - GitHub release creation
+- `softprops/action-gh-release@v3` - GitHub release creation

@@ -78,6 +78,36 @@ namespace Mintlify.Core.Converters
                                     nav.Anchors = JsonSerializer.Deserialize<List<AnchorConfig>>(ref reader, options);
                                 }
                                 break;
+                            case "dropdowns":
+                                if (reader.TokenType == JsonTokenType.StartArray)
+                                {
+                                    nav.Dropdowns = JsonSerializer.Deserialize<List<DropdownConfig>>(ref reader, options);
+                                }
+                                break;
+                            case "languages":
+                                if (reader.TokenType == JsonTokenType.StartArray)
+                                {
+                                    nav.Languages = JsonSerializer.Deserialize<List<LanguageConfig>>(ref reader, options);
+                                }
+                                break;
+                            case "versions":
+                                if (reader.TokenType == JsonTokenType.StartArray)
+                                {
+                                    nav.Versions = JsonSerializer.Deserialize<List<VersionConfig>>(ref reader, options);
+                                }
+                                break;
+                            case "global":
+                                if (reader.TokenType == JsonTokenType.StartObject)
+                                {
+                                    nav.Global = JsonSerializer.Deserialize<GlobalNavigationConfig>(ref reader, options);
+                                }
+                                break;
+                            case "graphql":
+                                nav.Graphql = JsonSerializer.Deserialize<SpecRefConfig>(ref reader, options);
+                                break;
+                            case "mcp":
+                                nav.Mcp = JsonSerializer.Deserialize<SpecRefConfig>(ref reader, options);
+                                break;
                             default:
                                 reader.Skip();
                                 break;
@@ -158,6 +188,18 @@ namespace Mintlify.Core.Converters
             {
                 writer.WritePropertyName("global");
                 JsonSerializer.Serialize(writer, value.Global, options);
+            }
+
+            if (value.Graphql is not null)
+            {
+                writer.WritePropertyName("graphql");
+                JsonSerializer.Serialize(writer, value.Graphql, options);
+            }
+
+            if (value.Mcp is not null)
+            {
+                writer.WritePropertyName("mcp");
+                JsonSerializer.Serialize(writer, value.Mcp, options);
             }
 
             writer.WriteEndObject();

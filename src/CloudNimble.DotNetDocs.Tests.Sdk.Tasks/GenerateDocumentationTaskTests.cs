@@ -2520,6 +2520,300 @@ namespace CloudNimble.DotNetDocs.Tests.Sdk.Tasks
 
         #endregion
 
+        #region Schema Gap 2026 Parser Tests
+
+        /// <summary>
+        /// Tests that ParseMintlifyTemplate reads Public, ThemeVersion, Variables, Markdown, and Packages.
+        /// </summary>
+        [TestMethod]
+        public void ParseMintlifyTemplate_WithNewRootProperties_ParsesCorrectly()
+        {
+            var xml = """
+                <Name>Example</Name>
+                <Theme>mint</Theme>
+                <Public>true</Public>
+                <ThemeVersion>2</ThemeVersion>
+                <Variables>
+                    <Variable Name="apiVersion">v2</Variable>
+                </Variables>
+                <Markdown>
+                    <Schema>false</Schema>
+                    <Instructions>Always cite the API version.;Prefer the TypeScript SDK.</Instructions>
+                </Markdown>
+                <Packages>
+                    <Ssr>false</Ssr>
+                    <Provider>/snippets/provider.jsx</Provider>
+                    <Css>@acme/ui/dist/styles.css</Css>
+                    <Registries>
+                        <Registry Scope="@acme" Url="https://npm.acme.com/" />
+                    </Registries>
+                </Packages>
+                """;
+
+            var (config, _) = _task.ParseMintlifyTemplate(xml);
+
+            config.Should().NotBeNull();
+            config!.Public.Should().BeTrue();
+            config.ThemeVersion.Should().Be(2);
+            config.Variables.Should().ContainKey("apiVersion").WhoseValue.Should().Be("v2");
+            config.Markdown.Should().NotBeNull();
+            config.Markdown!.Schema.Should().BeFalse();
+            config.Markdown.Instructions.Should().Equal("Always cite the API version.", "Prefer the TypeScript SDK.");
+            config.Packages.Should().NotBeNull();
+            config.Packages!.Ssr.Should().BeFalse();
+            config.Packages.Provider.Should().Be("/snippets/provider.jsx");
+            config.Packages.Css.Should().Contain("@acme/ui/dist/styles.css");
+            config.Packages.Registries.Should().ContainKey("@acme").WhoseValue.Should().Be("https://npm.acme.com/");
+        }
+
+        /// <summary>
+        /// Tests that ParseBannerConfig reads type, color, content, and dismissible.
+        /// </summary>
+        [TestMethod]
+        public void ParseBannerConfig_WithTypeAndColor_ParsesCorrectly()
+        {
+            var xml = """
+                <Banner>
+                    <Content>Scheduled maintenance tonight.</Content>
+                    <Dismissible>true</Dismissible>
+                    <Type>warning</Type>
+                    <Color>
+                        <Light>#B45309</Light>
+                        <Dark>#F59E0B</Dark>
+                    </Color>
+                </Banner>
+                """;
+
+            var result = _task.ParseBannerConfig(XElement.Parse(xml));
+
+            result.Content.Should().Be("Scheduled maintenance tonight.");
+            result.Dismissible.Should().BeTrue();
+            result.Type.Should().Be("warning");
+            result.Color.Should().NotBeNull();
+            result.Color!.Light.Should().Be("#B45309");
+            result.Color.Dark.Should().Be("#F59E0B");
+        }
+
+        /// <summary>
+        /// Tests that ParseSeoConfig reads trailingSlash, organization, and paths.
+        /// </summary>
+        [TestMethod]
+        public void ParseSeoConfig_WithPathsAndOrganization_ParsesCorrectly()
+        {
+            var xml = """
+                <Seo>
+                    <Indexing>all</Indexing>
+                    <TrailingSlash>true</TrailingSlash>
+                    <Metatags>
+                        <Meta Name="og:site_name" Value="Example Co. Docs" />
+                    </Metatags>
+                    <Organization>
+                        <Id>https://example.com/#organization</Id>
+                        <Name>Example Co.</Name>
+                        <LegalName>Example Co. Inc.</LegalName>
+                        <Url>https://example.com</Url>
+                        <Logo>https://example.com/logo.png</Logo>
+                        <SameAs>https://github.com/example;https://x.com/example</SameAs>
+                    </Organization>
+                    <Paths>
+                        <Path Value="guides/v2">
+                            <Metatags>
+                                <Meta Name="robots" Value="noindex" />
+                            </Metatags>
+                        </Path>
+                    </Paths>
+                </Seo>
+                """;
+
+            var result = _task.ParseSeoConfig(XElement.Parse(xml));
+
+            result.Indexing.Should().Be("all");
+            result.TrailingSlash.Should().BeTrue();
+            result.Metatags.Should().ContainKey("og:site_name").WhoseValue.Should().Be("Example Co. Docs");
+            result.Organization.Should().NotBeNull();
+            result.Organization!.LegalName.Should().Be("Example Co. Inc.");
+            result.Organization.SameAs.Should().Equal("https://github.com/example", "https://x.com/example");
+            result.Paths.Should().ContainSingle();
+            result.Paths![0].Path.Should().Be("guides/v2");
+            result.Paths[0].Metatags.Should().ContainKey("robots").WhoseValue.Should().Be("noindex");
+        }
+
+        /// <summary>
+        /// Tests that ParseThumbnailsConfig reads preset, surface, eyebrow, and font source/format.
+        /// </summary>
+        [TestMethod]
+        public void ParseThumbnailsConfig_WithPresetSurfaceEyebrow_ParsesCorrectly()
+        {
+            var xml = """
+                <Thumbnails>
+                    <Appearance>dark</Appearance>
+                    <Preset>headline</Preset>
+                    <Surface>brand</Surface>
+                    <Eyebrow>
+                        <Source>tab</Source>
+                        <Style>pill</Style>
+                        <Color>#419AC5</Color>
+                    </Eyebrow>
+                    <Fonts>
+                        <Family>Inter</Family>
+                        <Source>https://example.com/inter.woff</Source>
+                        <Format>woff</Format>
+                    </Fonts>
+                </Thumbnails>
+                """;
+
+            var result = _task.ParseThumbnailsConfig(XElement.Parse(xml));
+
+            result.Preset.Should().Be("headline");
+            result.Surface.Should().Be("brand");
+            result.Eyebrow.Should().NotBeNull();
+            result.Eyebrow!.Source.Should().Be("tab");
+            result.Eyebrow.Style.Should().Be("pill");
+            result.Eyebrow.Color.Should().Be("#419AC5");
+            result.Fonts.Should().NotBeNull();
+            result.Fonts!.Family.Should().Be("Inter");
+            result.Fonts.Source.Should().Be("https://example.com/inter.woff");
+            result.Fonts.Format.Should().Be("woff");
+        }
+
+        /// <summary>
+        /// Tests that Mixpanel region, Segment cdnUrl, OneTrust, and Transcend parse from attributes.
+        /// </summary>
+        [TestMethod]
+        public void ParseIntegrationsConfig_WithNewProvidersAndFields_ParsesCorrectly()
+        {
+            var xml = """
+                <Integrations>
+                    <Mixpanel ProjectToken="token" Region="eu" />
+                    <Segment Key="write-key" CdnUrl="https://cdn.example.com" />
+                    <OneTrust DomainScript="abc-123" CategoryId="C0002" ScriptSource="https://cdn.cookielaw.org/scripttemplates/otSDKStub.js" />
+                    <Transcend BundleId="bundle_1" AnalyticsPurpose="Product Analytics" />
+                </Integrations>
+                """;
+
+            var result = _task.ParseIntegrationsConfig(XElement.Parse(xml));
+
+            result.Mixpanel.Should().NotBeNull();
+            result.Mixpanel!.ProjectToken.Should().Be("token");
+            result.Mixpanel.Region.Should().Be("eu");
+            result.Segment.Should().NotBeNull();
+            result.Segment!.Key.Should().Be("write-key");
+            result.Segment.CdnUrl.Should().Be("https://cdn.example.com");
+            result.OneTrust.Should().NotBeNull();
+            result.OneTrust!.DomainScript.Should().Be("abc-123");
+            result.OneTrust.CategoryId.Should().Be("C0002");
+            result.Transcend.Should().NotBeNull();
+            result.Transcend!.BundleId.Should().Be("bundle_1");
+            result.Transcend.AnalyticsPurpose.Should().Be("Product Analytics");
+        }
+
+        /// <summary>
+        /// Tests that a GraphQL string attribute on a tab is parsed as a spec ref.
+        /// </summary>
+        [TestMethod]
+        public void ParseTabConfig_WithGraphqlAttribute_ParsesSource()
+        {
+            var xml = """<Tab Name="GraphQL API" Graphql="schema.graphql" />""";
+
+            var result = _task.ParseTabConfig(XElement.Parse(xml));
+
+            result.Should().NotBeNull();
+            result!.Graphql.Should().NotBeNull();
+            result.Graphql!.Source.Should().Be("schema.graphql");
+            result.Graphql.Directory.Should().BeNull();
+        }
+
+        /// <summary>
+        /// Tests that a GraphQL child element with source and directory is parsed on a group.
+        /// </summary>
+        [TestMethod]
+        public void ParseGroupConfig_WithGraphqlElement_ParsesSourceAndDirectory()
+        {
+            var xml = """
+                <Group Name="GraphQL API">
+                    <Graphql Source="schema.graphql" Directory="api/graphql" />
+                    <Pages>graphql/overview</Pages>
+                </Group>
+                """;
+
+            var result = _task.ParseGroupConfig(XElement.Parse(xml));
+
+            result.Should().NotBeNull();
+            result!.Graphql.Should().NotBeNull();
+            result.Graphql!.Source.Should().Be("schema.graphql");
+            result.Graphql.Directory.Should().Be("api/graphql");
+        }
+
+        /// <summary>
+        /// Tests that an MCP string attribute on a group is parsed as a spec ref.
+        /// </summary>
+        [TestMethod]
+        public void ParseGroupConfig_WithMcpAttribute_ParsesSource()
+        {
+            var xml = """
+                <Group Name="MCP Tools" Mcp="mcp.json">
+                    <Pages>mcp/overview</Pages>
+                </Group>
+                """;
+
+            var result = _task.ParseGroupConfig(XElement.Parse(xml));
+
+            result.Should().NotBeNull();
+            result!.Mcp.Should().NotBeNull();
+            result.Mcp!.Source.Should().Be("mcp.json");
+        }
+
+        /// <summary>
+        /// Tests that navigation-level graphql and mcp attributes are parsed.
+        /// </summary>
+        [TestMethod]
+        public void ParseNavigationConfig_WithGraphqlAndMcp_ParsesSpecRefs()
+        {
+            var xml = """
+                <Navigation Graphql="schema.graphql">
+                    <Mcp Source="mcp.json" Directory="mcp-reference" />
+                    <Pages>
+                        <Page>index</Page>
+                    </Pages>
+                </Navigation>
+                """;
+
+            var result = _task.ParseNavigationConfig(XElement.Parse(xml));
+
+            result.Graphql.Should().NotBeNull();
+            result.Graphql!.Source.Should().Be("schema.graphql");
+            result.Mcp.Should().NotBeNull();
+            result.Mcp!.Source.Should().Be("mcp.json");
+            result.Mcp.Directory.Should().Be("mcp-reference");
+        }
+
+        /// <summary>
+        /// Tests that GraphQL and MCP attributes parse on anchors, dropdowns, and products.
+        /// </summary>
+        [TestMethod]
+        public void ParseAnchorDropdownProduct_WithGraphqlAndMcp_ParsesSpecRefs()
+        {
+            var anchor = _task.ParseAnchorConfig(XElement.Parse("""<Anchor Name="API" Graphql="schema.graphql" Mcp="mcp.json" />"""));
+            anchor.Should().NotBeNull();
+            anchor!.Graphql!.Source.Should().Be("schema.graphql");
+            anchor.Mcp!.Source.Should().Be("mcp.json");
+
+            var dropdown = _task.ParseDropdownConfig(XElement.Parse("""
+                <Dropdown Name="Products">
+                    <Graphql Source="schema.graphql" Directory="api/graphql" />
+                </Dropdown>
+                """));
+            dropdown.Should().NotBeNull();
+            dropdown!.Graphql!.Source.Should().Be("schema.graphql");
+            dropdown.Graphql.Directory.Should().Be("api/graphql");
+
+            var product = _task.ParseProductConfig(XElement.Parse("""<Product Name="Core" Mcp="mcp.json" />"""));
+            product.Should().NotBeNull();
+            product!.Mcp!.Source.Should().Be("mcp.json");
+        }
+
+        #endregion
+
     }
 
 }

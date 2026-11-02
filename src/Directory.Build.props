@@ -32,7 +32,8 @@
         <PackageId>$(MSBuildProjectName.Replace('CloudNimble.', ''))</PackageId>
         <Product>DotNetDocs</Product>
         <AssemblyVersion>1.1.0.0</AssemblyVersion>
-        <PackageVersion Condition="'$(PackageVersion)' == ''">1.5.0-preview.1</PackageVersion>
+        <DotNetDocsPackageVersion Condition="'$(DotNetDocsPackageVersion)' == ''">1.5.0-preview.1</DotNetDocsPackageVersion>
+        <MintlifyPackageVersion Condition="'$(MintlifyPackageVersion)' == ''">2.0.0-preview.1</MintlifyPackageVersion>
         <Authors>CloudNimble</Authors>
         <Company>CloudNimble, Inc.</Company>
         <RpmPackageVendor>CloudNimble</RpmPackageVendor>
@@ -62,6 +63,20 @@
         <RepositoryRoot>$(MSBuildThisFileDirectory)</RepositoryRoot>
         <RepositoryUrl>https://github.com/CloudNimble/DotNetDocs.git</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
+    </PropertyGroup>
+
+    <!-- Mintlify.Core tracks the docs.json schema and versions independently of DotNetDocs.
+         CI must pass DotNetDocsPackageVersion and MintlifyPackageVersion. Do not pass
+         PackageVersion or Version on the command line; those global properties would stamp
+         one number on every project. -->
+    <PropertyGroup Condition="$([MSBuild]::ValueOrDefault('$(MSBuildProjectName)', '').StartsWith('Mintlify.'))">
+        <PackageVersion>$(MintlifyPackageVersion)</PackageVersion>
+        <Version>$(MintlifyPackageVersion)</Version>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="!$([MSBuild]::ValueOrDefault('$(MSBuildProjectName)', '').StartsWith('Mintlify.'))">
+        <PackageVersion>$(DotNetDocsPackageVersion)</PackageVersion>
+        <Version>$(DotNetDocsPackageVersion)</Version>
     </PropertyGroup>
 
     <!-- Compilation options -->

@@ -24,6 +24,19 @@ namespace Mintlify.Core.Models
         /// </remarks>
         public string? Family { get; set; }
 
+        /// <summary>
+        /// Gets or sets the font file format.
+        /// </summary>
+        /// <remarks>
+        /// Valid values are <c>woff</c>, <c>ttf</c>, or <c>otf</c>.
+        /// </remarks>
+        public string? Format { get; set; }
+
+        /// <summary>
+        /// Gets or sets the URL of a hosted font file used in thumbnail rendering.
+        /// </summary>
+        public string? Source { get; set; }
+
         #endregion
 
     }

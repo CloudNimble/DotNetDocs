@@ -24,6 +24,17 @@ namespace Mintlify.Core.Models
         public string? Content { get; set; }
 
         /// <summary>
+        /// Gets or sets a custom banner background color.
+        /// </summary>
+        /// <remarks>
+        /// When set, this takes precedence over the color implied by <see cref="Type"/>.
+        /// Banner text is white, so choose a background dark enough to remain legible.
+        /// If only one of light or dark is provided, it is used in both modes.
+        /// See https://www.mintlify.com/docs/components/banner.
+        /// </remarks>
+        public ColorPairConfig? Color { get; set; }
+
+        /// <summary>
         /// Gets or sets whether to show a dismiss button on the banner.
         /// </summary>
         /// <remarks>
@@ -32,6 +43,21 @@ namespace Mintlify.Core.Models
         /// cannot be dismissed by users and will always be visible.
         /// </remarks>
         public bool? Dismissible { get; set; }
+
+        /// <summary>
+        /// Gets or sets the visual style of the banner.
+        /// </summary>
+        /// <remarks>
+        /// Controls the background color so visitors can recognize urgency. Defaults to
+        /// <c>info</c>. Valid values:
+        /// <list type="bullet">
+        /// <item><description><c>info</c>: primary brand color, for announcements and updates.</description></item>
+        /// <item><description><c>warning</c>: amber background, for maintenance or deprecations.</description></item>
+        /// <item><description><c>critical</c>: red background, for outages or required actions.</description></item>
+        /// </list>
+        /// See https://www.mintlify.com/docs/components/banner.
+        /// </remarks>
+        public string? Type { get; set; }
 
         #endregion
 

@@ -113,6 +113,16 @@ namespace Mintlify.Core.Models
         public MixpanelConfig? Mixpanel { get; set; }
 
         /// <summary>
+        /// Gets or sets the OneTrust cookie consent integration configuration.
+        /// </summary>
+        /// <remarks>
+        /// Configure OneTrust when you use it as your consent management platform.
+        /// <c>domainScript</c> is required.
+        /// </remarks>
+        [JsonPropertyName("onetrust")]
+        public OneTrustConfig? OneTrust { get; set; }
+
+        /// <summary>
         /// Gets or sets the Pirsch analytics integration configuration.
         /// </summary>
         /// <remarks>
@@ -212,6 +222,16 @@ namespace Mintlify.Core.Models
         /// on the documentation site.
         /// </remarks>
         public TelemetryConfig? Telemetry { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Transcend Consent Management integration configuration.
+        /// </summary>
+        /// <remarks>
+        /// When configured, Mintlify loads your Transcend bundle and gates analytics
+        /// behind visitor consent. <c>bundleId</c> is required.
+        /// See https://www.mintlify.com/docs/integrations/privacy/transcend.
+        /// </remarks>
+        public TranscendConfig? Transcend { get; set; }
 
         #endregion
 

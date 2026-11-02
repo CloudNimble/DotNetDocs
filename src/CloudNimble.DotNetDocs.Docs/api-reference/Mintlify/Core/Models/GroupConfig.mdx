@@ -99,6 +99,36 @@ Type: `System.Nullable<bool>?`
 When true, the group will be expanded by default showing all its pages.
 When false or null, the group will be collapsed by default.
 
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Graphql <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `Mintlify.Core.Models.NavigationItemBase`</Note>
+
+Gets or sets the GraphQL schema used to auto-populate reference pages.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.SpecRefConfig Graphql { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.SpecRefConfig?`
+
+#### Examples
+
+```csharp
+"tab": "GraphQL API",
+"graphql": "schema.graphql"
+```
+
+#### Remarks
+
+Accepts a local SDL path, an HTTPS URL, or an object with `source` and
+optional `directory`. You can declare `graphql` on a tab or a group.
+Defaults directory to `graphql-reference`.
+See https://www.mintlify.com/docs/api-playground/graphql-setup.
+
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Group
 
 Gets or sets the name of the group.
@@ -160,6 +190,27 @@ Type: `Mintlify.Core.Models.IconConfig?`
 
 Can be a Font Awesome icon name, Lucide icon name, JSX-compatible SVG code,
 URL to an externally hosted icon, or path to an icon file in your project.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Mcp <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `Mintlify.Core.Models.NavigationItemBase`</Note>
+
+Gets or sets the MCP definition used to auto-populate reference pages.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.SpecRefConfig Mcp { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.SpecRefConfig?`
+
+#### Remarks
+
+Accepts a local path to an MCP definition JSON file, or an object with
+`source` and optional `directory`.
 
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> OpenApi <Badge color="gray">Inherited</Badge>
 

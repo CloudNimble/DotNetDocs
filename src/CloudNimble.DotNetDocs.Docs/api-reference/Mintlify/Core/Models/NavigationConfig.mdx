@@ -92,6 +92,25 @@ public Mintlify.Core.Models.GlobalNavigationConfig Global { get; set; }
 
 Type: `Mintlify.Core.Models.GlobalNavigationConfig?`
 
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Graphql
+
+Gets or sets the GraphQL schema used to auto-populate reference pages.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.SpecRefConfig Graphql { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.SpecRefConfig?`
+
+#### Remarks
+
+Accepts a local SDL path, an HTTPS URL, or an object with `source` and
+optional `directory`. See https://www.mintlify.com/docs/api-playground/graphql-setup.
+
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Groups
 
 Gets or sets the groups in the navigation.
@@ -119,6 +138,20 @@ public System.Collections.Generic.List<Mintlify.Core.Models.LanguageConfig> Lang
 #### Property Value
 
 Type: `System.Collections.Generic.List<Mintlify.Core.Models.LanguageConfig>?`
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Mcp
+
+Gets or sets the MCP definition used to auto-populate reference pages.
+
+#### Syntax
+
+```csharp
+public Mintlify.Core.Models.SpecRefConfig Mcp { get; set; }
+```
+
+#### Property Value
+
+Type: `Mintlify.Core.Models.SpecRefConfig?`
 
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Pages
 

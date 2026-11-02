@@ -1513,6 +1513,60 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
         }
 
         [TestMethod]
+        public void CombineReferencedNavigation_AddToTabs_CopiesGraphqlAndMcp()
+        {
+            var context = GetService<ProjectContext>();
+            var options = Options.Create(new MintlifyRendererOptions());
+            var docsJsonManager = new DocsJsonManager();
+
+            var collectionConfig = new DocsJsonConfig
+            {
+                Name = "Collection",
+                Navigation = new NavigationConfig
+                {
+                    Pages = ["introduction"]
+                }
+            };
+            docsJsonManager.Load(JsonSerializer.Serialize(collectionConfig, MintlifyConstants.JsonSerializerOptions));
+
+            var renderer = new MintlifyRenderer(context, options, docsJsonManager);
+
+            var refDocsPath = Path.Combine(context.DocumentationRootPath, "ref_graphql_docs.json");
+            var refConfig = new DocsJsonConfig
+            {
+                Name = "GraphQL Service",
+                Navigation = new NavigationConfig
+                {
+                    Graphql = new SpecRefConfig { Source = "schema.graphql", Directory = "api/graphql" },
+                    Mcp = new SpecRefConfig { Source = "mcp.json" },
+                    Pages = ["overview"]
+                }
+            };
+            File.WriteAllText(refDocsPath, JsonSerializer.Serialize(refConfig, MintlifyConstants.JsonSerializerOptions));
+
+            context.DocumentationReferences.Clear();
+            context.DocumentationReferences.Add(new DocumentationReference
+            {
+                ProjectPath = "GraphqlService.docsproj",
+                DocumentationType = SupportedDocumentationType.Mintlify,
+                NavigationFilePath = refDocsPath,
+                DestinationPath = "services/graphql",
+                IntegrationType = "Tabs",
+                Name = "GraphQL"
+            });
+
+            renderer.CombineReferencedNavigation();
+
+            var tab = renderer._docsJsonManager!.Configuration!.Navigation!.Tabs.Should().ContainSingle().Subject;
+            tab.Tab.Should().Be("GraphQL");
+            tab.Graphql.Should().NotBeNull();
+            tab.Graphql!.Source.Should().Be("schema.graphql");
+            tab.Graphql.Directory.Should().Be("api/graphql");
+            tab.Mcp.Should().NotBeNull();
+            tab.Mcp!.Source.Should().Be("mcp.json");
+        }
+
+        [TestMethod]
         public void CombineReferencedNavigation_AddToProducts_CombinesNavigationCorrectly()
         {
             var context = GetService<ProjectContext>();
