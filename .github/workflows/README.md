@@ -58,13 +58,24 @@ Set these in your repository settings under Settings → Secrets and variables �
 | `MINTLIFY_VERSION_PATCH` | Mintlify.Core patch version (auto-incremented on main) | `0` | `1` |
 | `MINTLIFY_VERSION_PREVIEW_SUFFIX` | Mintlify.Core preview counter (auto-updated on dev) | `0` | `3` |
 
-### Repository Secrets
+### NuGet Trusted Publishing
 
-Set these in your repository settings under Settings → Secrets and variables → Actions → Secrets:
+NuGet.org publishes with GitHub OIDC (no long-lived API key). Register this workflow on nuget.org → Trusted Publishing:
 
-| Secret | Description | Required |
-|--------|-------------|----------|
-| `NUGET_API_KEY` | NuGet.org API key for package publishing | Yes |
+| Field | Value |
+|-------|-------|
+| Repository Owner | `CloudNimble` |
+| Repository | `DotNetDocs` |
+| Workflow File | `build-and-deploy.yml` |
+| Environment | *(leave empty)* |
+
+The deploy job requests `id-token: write` and uses `NuGet/login@v1` as nuget.org user `CloudNimble` (override with repo variable `NUGET_USER` if needed).
+
+Optional repo variable:
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `NUGET_USER` | nuget.org profile name for OIDC login | `CloudNimble` |
 
 ## Version Number Format
 
@@ -181,15 +192,15 @@ The workflow uses `--skip-duplicate` to handle cases where a package version alr
 ### Deployment Error Detection
 The workflow automatically detects and handles various deployment failures:
 
-- **Authentication Errors (403/Unauthorized)**: Bad API key or expired token
+- **Authentication Errors (403/Unauthorized)**: Trusted Publishing policy mismatch or OIDC login failure
 - **Version Conflicts (409)**: Package version already exists (treated as warning with `--skip-duplicate`)
 - **General Errors**: Other push failures are captured and reported
 
-### Missing Secrets
+### Missing Trusted Publishing
 If deployment fails with authentication errors:
-1. Verify `NUGET_API_KEY` secret is configured
-2. Ensure the API key has package publishing permissions
-3. Check if the API key has expired
+1. Confirm nuget.org Trusted Publishing lists `CloudNimble/DotNetDocs` and workflow `build-and-deploy.yml`
+2. Confirm the nuget.org username matches `NUGET_USER` / `CloudNimble`
+3. Confirm the deploy job has `permissions.id-token: write`
 
 ### Preview Suffix Issues
 If `VERSION_PREVIEW_SUFFIX` updates fail:

@@ -216,6 +216,9 @@ jobs:
   deploy:
     needs: build
     runs-on: windows-latest
+    permissions:
+      id-token: write
+      contents: read
     if: |
       (github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev')) ||
       (github.event_name == 'workflow_dispatch' && github.event.inputs.deploy_to_nuget == 'true')
@@ -291,6 +294,12 @@ jobs:
          # Add to PATH for this job
          echo "$env:ProgramFiles\dotnet" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
+    - name: NuGet login (OIDC)
+      uses: NuGet/login@v1
+      id: login
+      with:
+        user: ${{ vars.NUGET_USER != '' && vars.NUGET_USER || 'CloudNimble' }}
+
     - name: Push to NuGet
       id: nuget_push
       shell: pwsh
@@ -302,7 +311,7 @@ jobs:
           Write-Host "📤 Pushing $($_.Name) to NuGet..."
           try {
             $result = dotnet nuget push $_.FullName `
-              --api-key ${{ secrets.NUGET_API_KEY }} `
+              --api-key ${{ steps.login.outputs.NUGET_API_KEY }} `
               --source https://api.nuget.org/v3/index.json `
               --skip-duplicate 2>&1
             
@@ -311,7 +320,7 @@ jobs:
             # Check for specific error patterns
             if ($result -match "error.*unauthorized|invalid.*api.*key|403") {
               $deploymentSuccess = $false
-              $errorMessage = "Authentication failed - invalid API key"
+              $errorMessage = "Authentication failed - Trusted Publishing OIDC login was rejected"
               Write-Host "❌ $errorMessage"
             }
             elseif ($result -match "error.*conflict|409|already exists") {
