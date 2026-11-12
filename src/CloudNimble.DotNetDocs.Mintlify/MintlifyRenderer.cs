@@ -1057,8 +1057,8 @@ namespace CloudNimble.DotNetDocs.Mintlify
             if (!string.IsNullOrWhiteSpace(type.BaseType))
             {
                 sb.AppendLine();
-                // Escape angle brackets for generic types to prevent MDX parsing errors
-                sb.AppendLine($"**Inheritance:** {type.BaseType.Replace("<", "&lt;").Replace(">", "&gt;")}");
+                // Outside a code span, MDX would parse generic brackets (e.g. List<T>) as JSX tags, so they must be escaped.
+                sb.AppendLine($"**Inheritance:** {EscapeXmlTagsInString(type.BaseType)}");
             }
 
             // TODO: Add interface information when available in DocType
@@ -1369,6 +1369,7 @@ namespace CloudNimble.DotNetDocs.Mintlify
                 sb.AppendLine("|------|------|-------------|");
                 foreach (var param in member.Parameters)
                 {
+                    // Rendered inside a backtick code span, which MDX shows literally; do not escape with EscapeXmlTagsInString or "&lt;" appears in the output.
                     var paramType = param.TypeName ?? "unknown";
                     var description = !string.IsNullOrWhiteSpace(param.Usage) ? param.Usage : param.Summary ?? "-";
                     sb.AppendLine($"| `{param.Name}` | `{paramType}` | {description} |");
@@ -1382,6 +1383,7 @@ namespace CloudNimble.DotNetDocs.Mintlify
             {
                 sb.AppendLine("#### Returns");
                 sb.AppendLine();
+                // Code span: leave unescaped (see the parameter table above).
                 sb.AppendLine($"Type: `{member.ReturnTypeName}`");
                 if (!string.IsNullOrWhiteSpace(member.Returns))
                 {
@@ -1395,6 +1397,7 @@ namespace CloudNimble.DotNetDocs.Mintlify
             {
                 sb.AppendLine("#### Property Value");
                 sb.AppendLine();
+                // Code span: leave unescaped (see the parameter table above).
                 sb.AppendLine($"Type: `{member.ReturnTypeName}`");
                 if (!string.IsNullOrWhiteSpace(member.Value))
                 {
