@@ -11,4 +11,13 @@
         <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
     </PropertyGroup>
 
+    <!--
+        RWM: EasyAF.MSBuild 5.0.0's buildTransitive targets inject Microsoft.Build.* 17.14.*, but its own nuspec requires >= 18.9.6,
+        which fails restore with NU1605. This file is imported after NuGet's buildTransitive targets, so the Update lands on those items.
+        Remove once EasyAF.MSBuild ships targets that match its dependencies.
+    -->
+    <ItemGroup>
+        <PackageReference Update="Microsoft.Build;Microsoft.Build.Framework;Microsoft.Build.Tasks.Core;Microsoft.Build.Utilities.Core" Version="18.*" />
+    </ItemGroup>
+
 </Project>

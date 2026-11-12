@@ -20,7 +20,7 @@
         <UsingMicrosoftNoTargetsSdk>true</UsingMicrosoftNoTargetsSdk>
 
         <!-- Default target framework -->
-        <TargetFramework Condition="'$(TargetFramework)' == ''">net8.0</TargetFramework>
+        <TargetFramework Condition="'$(TargetFramework)' == ''">net10.0</TargetFramework>
         
         <!-- Suppress all NuGet warnings about vulnerable packages and framework references -->
         <NoWarn>$(NoWarn);NU1903;NU1902;NU1901;NU1604;NU1603;NU1605</NoWarn>

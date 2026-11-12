@@ -34,10 +34,10 @@ Validates pull requests with comprehensive testing.
 **Triggers:**
 - Pull requests to `main` or `dev` branches
 
-**Platform:** Windows only (for .NET 11 preview support)
+**Platform:** Windows only (for .NET 11 support)
 
 **Testing:**
-- .NET: 11.0.x (preview)
+- .NET: 10.0.x and 11.0.x
 - Package validation
 - Test result upload
 

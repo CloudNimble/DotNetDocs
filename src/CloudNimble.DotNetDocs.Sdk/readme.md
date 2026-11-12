@@ -220,9 +220,9 @@ dotnet build -t:GenerateDocumentation
 
 ## Requirements
 
-- .NET SDK 8.0 or later
-- MSBuild 16.0 or later
-- Visual Studio 2019 or later (for full IDE support)
+- .NET SDK 10.0 or later
+- Visual Studio 2026 (MSBuild 18.0) or later to generate documentation inside Visual Studio
+  - Visual Studio 2022 can open and edit `.docsproj` files, but its .NET Framework MSBuild can't run the DotNetDocs tasks, so documentation generation is skipped with a warning there. Use `dotnet build` instead, or upgrade to Visual Studio 2026.
 
 ## See Also
 

@@ -419,9 +419,13 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
                 return false;
             }
 #else
-            // For netstandard2.0, we can't use the documentation generation
-            // This would typically shell out to a tool instead
-            Log.LogWarning("Documentation generation is not supported on .NET Framework. Please use the dotnet tool instead.");
+            // The net472 build loads only when the .NET tasks can't: on .NET Framework MSBuild before 18.0 (Visual Studio 2022 and
+            // earlier), or on Visual Studio 2026 when global.json pins a .NET SDK older than 10. Visual Studio 2026 (MSBuild 18.0+)
+            // otherwise runs the .NET tasks in the .NET TaskHost (see Sdk.targets).
+            Log.LogWarning(
+                "DotNetDocs skipped documentation generation because this build is running on the .NET Framework version of MSBuild, " +
+                "which can't run the DotNetDocs .NET tasks. Upgrade to Visual Studio 2026 (MSBuild 18.0 or later) with the .NET 10 SDK " +
+                "or later to generate documentation inside Visual Studio, or run 'dotnet build' from the command line.");
             return true;
 #endif
         }

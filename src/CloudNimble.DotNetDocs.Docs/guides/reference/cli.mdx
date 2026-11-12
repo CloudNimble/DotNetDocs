@@ -292,9 +292,9 @@ dotnet docs build [options]
 Create a text file with one assembly path per line:
 
 ```text assemblies.txt
-bin/Release/net8.0/MyProject.Core.dll
-bin/Release/net8.0/MyProject.Extensions.dll
-bin/Release/net8.0/MyProject.Utilities.dll
+bin/Release/net10.0/MyProject.Core.dll
+bin/Release/net10.0/MyProject.Extensions.dll
+bin/Release/net10.0/MyProject.Utilities.dll
 ```
 
 <Note>
@@ -365,7 +365,7 @@ dotnet docs build \
 
   <Step title="Create Assembly List">
     ```bash
-    echo "bin/Release/net8.0/MyProject.dll" > assemblies.txt
+    echo "bin/Release/net10.0/MyProject.dll" > assemblies.txt
     ```
     List assemblies to document
   </Step>
@@ -400,9 +400,9 @@ For solutions with multiple projects:
 
   <Step title="Create Assembly List">
     ```text assemblies.txt
-    ProjectA/bin/Release/net8.0/ProjectA.dll
-    ProjectB/bin/Release/net8.0/ProjectB.dll
-    ProjectC/bin/Release/net8.0/ProjectC.dll
+    ProjectA/bin/Release/net10.0/ProjectA.dll
+    ProjectB/bin/Release/net10.0/ProjectB.dll
+    ProjectC/bin/Release/net10.0/ProjectC.dll
     ```
   </Step>
 
@@ -434,7 +434,7 @@ For solutions with multiple projects:
           - name: Setup .NET
             uses: actions/setup-dotnet@v4
             with:
-              dotnet-version: '8.0.x'
+              dotnet-version: '10.0.x'
 
           - name: Install DotNetDocs CLI
             run: dotnet tool install --global DotNetDocs
@@ -463,7 +463,7 @@ For solutions with multiple projects:
     steps:
       - task: UseDotNet@2
         inputs:
-          version: '8.0.x'
+          version: '10.0.x'
 
       - script: dotnet tool install --global DotNetDocs
         displayName: 'Install DotNetDocs CLI'
@@ -502,10 +502,10 @@ For solutions with multiple projects:
 
     ```text
     # Good - relative paths
-    bin/Release/net8.0/MyProject.dll
+    bin/Release/net10.0/MyProject.dll
 
     # Avoid - absolute paths
-    C:\Projects\MyApp\bin\Release\net8.0\MyProject.dll
+    C:\Projects\MyApp\bin\Release\net10.0\MyProject.dll
     ```
   </Accordion>
 

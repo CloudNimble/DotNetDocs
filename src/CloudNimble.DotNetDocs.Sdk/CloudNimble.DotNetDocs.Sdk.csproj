@@ -38,18 +38,6 @@
         <None Include="build\**" Pack="true" PackagePath="build" />
         
         <!-- Include pre-built task assemblies directly (only during packaging) -->
-        <!-- .NET 8.0 tasks -->
-        <None Include="..\CloudNimble.DotNetDocs.Sdk.Tasks\bin\$(Configuration)\net8.0\*.dll"
-              Pack="true"
-              PackagePath="tasks\net8.0"
-              Visible="false" />
-              
-        <!-- .NET 9.0 tasks -->
-        <None Include="..\CloudNimble.DotNetDocs.Sdk.Tasks\bin\$(Configuration)\net9.0\*.dll"
-              Pack="true"
-              PackagePath="tasks\net9.0"
-              Visible="false" />
-              
         <!-- .NET 10.0 tasks -->
         <None Include="..\CloudNimble.DotNetDocs.Sdk.Tasks\bin\$(Configuration)\net10.0\*.dll"
               Pack="true"

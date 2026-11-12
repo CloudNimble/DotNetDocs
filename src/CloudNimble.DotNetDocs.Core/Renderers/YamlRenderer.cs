@@ -134,11 +134,13 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
         {
             ArgumentNullException.ThrowIfNull(model);
 
-            var conceptualPath = Context.ConceptualPath;
-            if (string.IsNullOrWhiteSpace(conceptualPath))
+            if (string.IsNullOrWhiteSpace(Context.ConceptualPath))
             {
                 return;
             }
+
+            // Resolve a relative ConceptualPath against DocumentationRootPath, matching where DocumentationManager loads it from.
+            var conceptualPath = Context.GetFullConceptualPath();
 
             // Ensure conceptual directory exists
             Directory.CreateDirectory(conceptualPath);
