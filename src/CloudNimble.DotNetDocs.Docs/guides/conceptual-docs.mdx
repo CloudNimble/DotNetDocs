@@ -271,7 +271,10 @@ The `DocumentationManager` constructs file paths based on the fully qualified na
 
 <Note>
   Dots in namespace names are converted to directory separators. For example, `System.Text.Json` becomes `conceptual/System/Text/Json/`.
+  Types in the global namespace go under `conceptual/global/`.
 </Note>
+
+This layout is the same whether your API reference uses `NamespaceMode.File` or `NamespaceMode.Folder`. Placeholder generation and content loading both use it, so content is always read from the folder it was generated in.
 
 ## Placeholders and the ShowPlaceholders Property
 

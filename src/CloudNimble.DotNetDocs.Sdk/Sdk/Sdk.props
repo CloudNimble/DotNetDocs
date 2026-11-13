@@ -93,7 +93,8 @@
         <None Include="$(DocumentationRoot)**/*.mdx" />
         <None Include="$(DocumentationRoot)**/*.md" />
         <None Include="$(DocumentationRoot)api-reference/**/*" />
-        <None Include="$(DocumentationRoot)conceptual/**/*" />
+        <!-- Items evaluate after all properties, so this sees a ConceptualPath set in the .docsproj. Path.Combine keeps absolute paths as-is. -->
+        <None Include="$([System.IO.Path]::Combine('$(DocumentationRoot)', '$(ConceptualPath)'))/**/*" />
         <None Include="$(DocumentationRoot)overrides/**/*" />
         <None Include="$(DocumentationRoot)guides/**/*" />
         <None Include="$(DocumentationRoot)images/**/*" />

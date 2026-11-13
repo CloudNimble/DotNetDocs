@@ -197,6 +197,7 @@
             DocumentationType="$(DocumentationType)"
             NamespaceMode="$(NamespaceMode)"
             ApiReferencePath="$(ApiReferencePath)"
+            ConceptualPath="$(ConceptualPath)"
             MintlifyNavigationMode="$(MintlifyNavigationMode)"
             MintlifyUnifiedGroupName="$(MintlifyUnifiedGroupName)"
             DocsJsonTemplatePath="$(DocsJsonTemplatePath)"

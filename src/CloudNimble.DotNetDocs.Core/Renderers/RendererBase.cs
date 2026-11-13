@@ -92,18 +92,7 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
         /// <returns>A safe type name with invalid characters replaced.</returns>
         protected string GetSafeTypeName(DocType type)
         {
-            // Replace angle brackets (from <Module> and generic types) and other invalid filename characters
-            return type.Name
-                .Replace('<', '_')
-                .Replace('>', '_')
-                .Replace('`', '_')
-                .Replace('/', '_')
-                .Replace('\\', '_')
-                .Replace(':', '_')
-                .Replace('*', '_')
-                .Replace('?', '_')
-                .Replace('"', '_')
-                .Replace('|', '_');
+            return ProjectContext.GetSafeFileName(type.Name);
         }
 
         /// <summary>
@@ -113,23 +102,46 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
         /// <param name="outputPath">The base output path.</param>
         /// <param name="extension">The file extension (without the dot).</param>
         /// <returns>The full file path for the namespace documentation.</returns>
+        /// <remarks>
+        /// The location comes from <see cref="ProjectContext.GetNamespacePagePath(string?)"/>, which cross-reference links also use.
+        /// </remarks>
         protected string GetNamespaceFilePath(DocNamespace ns, string outputPath, string extension)
         {
-            var namespaceName = GetSafeNamespaceName(ns);
-            var folderPath = Context.GetNamespaceFolderPath(namespaceName);
+            return Path.Combine(outputPath, $"{Context.GetNamespacePagePath(ns.Name)}.{extension}");
+        }
 
-            if (FileNamingOptions.NamespaceMode == NamespaceMode.Folder)
+        /// <summary>
+        /// Gets a link to a namespace documentation page, relative to the documentation output root.
+        /// </summary>
+        /// <param name="ns">The namespace to get the link for.</param>
+        /// <param name="extension">The file extension (without the dot).</param>
+        /// <param name="omitIndexFile">
+        /// <see langword="true"/> to link to the namespace folder instead of its index file in <see cref="NamespaceMode.Folder"/>,
+        /// for renderers whose output platform resolves a folder link to its index page.
+        /// </param>
+        /// <returns>The relative link to the namespace page, using forward slashes.</returns>
+        /// <example>
+        /// For the namespace <c>CloudNimble.DotNetDocs.Core</c> with the extension <c>md</c>:
+        /// <code>
+        /// // NamespaceMode.File (separator '-'):            CloudNimble-DotNetDocs-Core.md
+        /// // NamespaceMode.Folder:                          CloudNimble/DotNetDocs/Core/index.md
+        /// // NamespaceMode.Folder, omitIndexFile = true:    CloudNimble/DotNetDocs/Core
+        /// </code>
+        /// </example>
+        /// <remarks>
+        /// Use this for links from the assembly index page, which sits at the output root. It shares the path logic in
+        /// <see cref="GetNamespaceFilePath(DocNamespace, string, string)"/>, so links always match where the namespace pages are written.
+        /// </remarks>
+        protected string GetNamespaceLink(DocNamespace ns, string extension, bool omitIndexFile = false)
+        {
+            var relativePath = GetNamespaceFilePath(ns, string.Empty, extension);
+
+            if (omitIndexFile && FileNamingOptions.NamespaceMode == NamespaceMode.Folder)
             {
-                // Use folder structure with index file
-                var fullPath = Path.Combine(outputPath, folderPath);
-                return Path.Combine(fullPath, $"index.{extension}");
+                relativePath = Path.GetDirectoryName(relativePath) ?? string.Empty;
             }
-            else
-            {
-                // Use flat file structure with separator
-                var fileName = $"{namespaceName.Replace('.', FileNamingOptions.NamespaceSeparator)}.{extension}";
-                return Path.Combine(outputPath, fileName);
-            }
+
+            return relativePath.Replace('\\', '/');
         }
 
         /// <summary>
@@ -140,24 +152,12 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
         /// <param name="outputPath">The base output path.</param>
         /// <param name="extension">The file extension (without the dot).</param>
         /// <returns>The full file path for the type documentation.</returns>
+        /// <remarks>
+        /// The location comes from <see cref="ProjectContext.GetTypePagePath(string?, string)"/>, which cross-reference links also use.
+        /// </remarks>
         protected string GetTypeFilePath(DocType type, DocNamespace ns, string outputPath, string extension)
         {
-            var namespaceName = GetSafeNamespaceName(ns);
-            var typeName = GetSafeTypeName(type);
-            var folderPath = Context.GetNamespaceFolderPath(namespaceName);
-
-            if (FileNamingOptions.NamespaceMode == NamespaceMode.Folder)
-            {
-                // Use folder structure based on namespace
-                var fullPath = Path.Combine(outputPath, folderPath);
-                return Path.Combine(fullPath, $"{typeName}.{extension}");
-            }
-            else
-            {
-                // Use flat file structure with separator
-                var fileName = $"{namespaceName.Replace('.', FileNamingOptions.NamespaceSeparator)}.{typeName}.{extension}";
-                return Path.Combine(outputPath, fileName);
-            }
+            return Path.Combine(outputPath, $"{Context.GetTypePagePath(ns.Name, type.Name)}.{extension}");
         }
 
         /// <summary>

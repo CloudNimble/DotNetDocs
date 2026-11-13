@@ -12,6 +12,11 @@
     </ItemGroup>
 
     <ItemGroup>
+        <Compile Include="..\CloudNimble.DotNetDocs.Tests.Core\Helpers\ConceptualRoundTrip.cs" Link="Helpers\ConceptualRoundTrip.cs" />
+        <Compile Include="..\CloudNimble.DotNetDocs.Tests.Core\Helpers\RenderedOutputInspector.cs" Link="Helpers\RenderedOutputInspector.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
         <None Update="Baselines\**\*.*">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>

@@ -205,6 +205,23 @@ namespace CloudNimble.DotNetDocs.Tests.Core
 
         #endregion
 
+        #region GetRelativePath Tests
+
+        [TestMethod]
+        [DataRow("api-reference", "/api-reference/System/Text/Json/JsonSerializer")]
+        [DataRow("/docs/api/", "/docs/api/System/Text/Json/JsonSerializer")]
+        [DataRow("", "/System/Text/Json/JsonSerializer")]
+        public void GetRelativePath_ReturnsSingleRootedPath(string apiReferencePath, string expected)
+        {
+            _context.ApiReferencePath = apiReferencePath;
+
+            var result = _resolver.GetRelativePath(string.Empty, "System/Text/Json/JsonSerializer");
+
+            result.Should().Be(expected, "an empty ApiReferencePath must not produce '//', which browsers treat as a host name");
+        }
+
+        #endregion
+
         #region Helper Method Tests
 
         [TestMethod]

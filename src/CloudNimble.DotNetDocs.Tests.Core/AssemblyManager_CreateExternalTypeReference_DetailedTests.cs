@@ -2,10 +2,12 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using CloudNimble.DotNetDocs.Core;
+using CloudNimble.DotNetDocs.Core.Configuration;
 using CloudNimble.DotNetDocs.Tests.Shared;
 using CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios;
 using FluentAssertions;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace CloudNimble.DotNetDocs.Tests.Core
@@ -58,6 +60,27 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             systemNamespace.Should().NotBeNull("Should create namespace for external type");
             systemNamespace!.Name.Should().Be("System.Collections.Generic");
             systemNamespace.DisplayName.Should().Be("System.Collections.Generic");
+        }
+
+        [TestMethod]
+        [DataRow(NamespaceMode.File, "global.GlobalWidget")]
+        [DataRow(NamespaceMode.Folder, "global/GlobalWidget")]
+        public void CreateExternalTypeReference_WithGlobalNamespaceType_UsesEmptyNamespaceName(NamespaceMode mode, string expectedPagePath)
+        {
+            var compilation = CSharpCompilation.Create("ExternalLibrary", [CSharpSyntaxTree.ParseText("public class GlobalWidget { }")]);
+            var globalType = compilation.GetTypeByMetadataName("GlobalWidget")!;
+            var testAssemblyPath = typeof(SimpleClass).Assembly.Location;
+            using var manager = new AssemblyManager(testAssemblyPath, System.IO.Path.ChangeExtension(testAssemblyPath, ".xml"));
+            var docAssembly = new DocAssembly(compilation.Assembly);
+            var context = new ProjectContext { FileNamingOptions = new FileNamingOptions(mode, '-') };
+
+            var docType = manager.CreateExternalTypeReference(globalType, docAssembly, [], context);
+
+            var ns = docAssembly.Namespaces.Should().ContainSingle().Subject;
+            ns.Name.Should().BeEmpty("Roslyn's \"<global namespace>\" display string must not be used as a namespace name");
+            ns.Types.Should().ContainSingle().Which.Should().BeSameAs(docType);
+            context.GetTypePagePath(ns.Name, docType.Name)
+                .Should().Be(expectedPagePath.Replace('/', System.IO.Path.DirectorySeparatorChar), "the page should go in the global location, with no angle brackets in the path");
         }
 
         #endregion

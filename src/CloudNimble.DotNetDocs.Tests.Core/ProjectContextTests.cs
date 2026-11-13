@@ -644,6 +644,121 @@ namespace CloudNimble.DotNetDocs.Tests.Core
 
         #endregion
 
+        #region Conceptual Path Tests
+
+        [TestMethod]
+        [DataRow(NamespaceMode.File)]
+        [DataRow(NamespaceMode.Folder)]
+        public void GetConceptualNamespacePath_WithNestedNamespace_ReturnsNestedFolderInEveryMode(NamespaceMode mode)
+        {
+            var context = new ProjectContext
+            {
+                DocumentationRootPath = "docs",
+                FileNamingOptions = new FileNamingOptions(mode, '-')
+            };
+
+            var result = context.GetConceptualNamespacePath("System.Text.Json");
+
+            result.Should().Be(Path.Combine("docs", "conceptual", "System", "Text", "Json"));
+        }
+
+        [TestMethod]
+        [DataRow(null)]
+        [DataRow("")]
+        [DataRow("   ")]
+        [DataRow("global")]
+        public void GetConceptualNamespacePath_WithGlobalNamespace_ReturnsGlobalFolder(string? namespaceName)
+        {
+            var context = new ProjectContext { DocumentationRootPath = "docs" };
+
+            var result = context.GetConceptualNamespacePath(namespaceName);
+
+            result.Should().Be(Path.Combine("docs", "conceptual", "global"));
+        }
+
+        [TestMethod]
+        [DataRow(NamespaceMode.File)]
+        [DataRow(NamespaceMode.Folder)]
+        public void GetConceptualTypePath_WithSameTypeNameInDifferentNamespaces_ReturnsDifferentFolders(NamespaceMode mode)
+        {
+            var context = new ProjectContext
+            {
+                DocumentationRootPath = "docs",
+                FileNamingOptions = new FileNamingOptions(mode, '-')
+            };
+
+            var first = context.GetConceptualTypePath("Contoso.Models", "Order");
+            var second = context.GetConceptualTypePath("Contoso.Data", "Order");
+
+            first.Should().Be(Path.Combine("docs", "conceptual", "Contoso", "Models", "Order"));
+            second.Should().Be(Path.Combine("docs", "conceptual", "Contoso", "Data", "Order"));
+        }
+
+        [TestMethod]
+        public void GetConceptualTypePath_WithGlobalNamespace_ReturnsFolderInsideGlobal()
+        {
+            var context = new ProjectContext { DocumentationRootPath = "docs" };
+
+            var result = context.GetConceptualTypePath(string.Empty, "Program");
+
+            result.Should().Be(Path.Combine("docs", "conceptual", "global", "Program"));
+        }
+
+        [TestMethod]
+        public void GetConceptualMemberPath_ReturnsFolderInsideTypeFolder()
+        {
+            var context = new ProjectContext { DocumentationRootPath = "docs" };
+
+            var result = context.GetConceptualMemberPath("System.Text.Json", "JsonSerializer", "Serialize");
+
+            result.Should().Be(Path.Combine("docs", "conceptual", "System", "Text", "Json", "JsonSerializer", "Serialize"));
+        }
+
+        [TestMethod]
+        public void GetConceptualTypePath_WithWhitespaceTypeName_ThrowsArgumentException()
+        {
+            var context = new ProjectContext();
+
+            var act = () => context.GetConceptualTypePath("System", " ");
+
+            act.Should().Throw<ArgumentException>();
+        }
+
+        #endregion
+
+        #region Page Path Tests
+
+        [TestMethod]
+        [DataRow(NamespaceMode.File, "System.Text.Json", "System-Text-Json")]
+        [DataRow(NamespaceMode.File, "", "global")]
+        [DataRow(NamespaceMode.Folder, "System.Text.Json", "System/Text/Json/index")]
+        [DataRow(NamespaceMode.Folder, "", "global/index")]
+        public void GetNamespacePagePath_ReturnsPathForMode(NamespaceMode mode, string namespaceName, string expected)
+        {
+            var context = new ProjectContext { FileNamingOptions = new FileNamingOptions(mode, '-') };
+
+            var result = context.GetNamespacePagePath(namespaceName);
+
+            result.Should().Be(expected.Replace('/', Path.DirectorySeparatorChar));
+        }
+
+        [TestMethod]
+        [DataRow(NamespaceMode.File, "System.Text.Json", "JsonSerializer", "System-Text-Json.JsonSerializer")]
+        [DataRow(NamespaceMode.File, "", "Program", "global.Program")]
+        [DataRow(NamespaceMode.Folder, "System.Text.Json", "JsonSerializer", "System/Text/Json/JsonSerializer")]
+        [DataRow(NamespaceMode.Folder, "", "Program", "global/Program")]
+        [DataRow(NamespaceMode.Folder, "Contoso", "<Module>", "Contoso/_Module_")]
+        public void GetTypePagePath_ReturnsPathForMode(NamespaceMode mode, string namespaceName, string typeName, string expected)
+        {
+            var context = new ProjectContext { FileNamingOptions = new FileNamingOptions(mode, '-') };
+
+            var result = context.GetTypePagePath(namespaceName, typeName);
+
+            result.Should().Be(expected.Replace('/', Path.DirectorySeparatorChar));
+        }
+
+        #endregion
+
         #region GetFullConceptualPath Tests
 
         [TestMethod]

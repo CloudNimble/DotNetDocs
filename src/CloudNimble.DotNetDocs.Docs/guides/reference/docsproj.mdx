@@ -66,10 +66,10 @@ Every `.docsproj` file must reference the DotNetDocs.Sdk:
 </ParamField>
 
 <ParamField path="ConceptualPath" type="string" default="conceptual">
-  The output directory for conceptual documentation, relative to `DocumentationRoot`.
+  The folder that holds your conceptual content (`usage.mdz`, `examples.mdz`, and so on), relative to the `.docsproj` folder or as an absolute path. Placeholders are generated here and content is loaded from here.
 
   ```xml
-  <ConceptualPath>guides</ConceptualPath>
+  <ConceptualPath>content/conceptual</ConceptualPath>
   ```
 </ParamField>
 
@@ -431,7 +431,7 @@ The SDK automatically includes files based on your `DocumentationType`. You don'
 - `docs.json`
 - `**/*.md`, `**/*.mdx`, `**/*.mdz`
 - `api-reference/**/*`
-- `conceptual/**/*`
+- `$(ConceptualPath)/**/*` (`conceptual/**/*` by default)
 - `overrides/**/*`
 - `guides/**/*`
 - `images/**/*`

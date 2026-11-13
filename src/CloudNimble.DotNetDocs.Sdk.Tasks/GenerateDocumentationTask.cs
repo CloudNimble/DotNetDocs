@@ -62,12 +62,13 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
         /// <summary>
         /// Gets or sets the conceptual content path.
         /// </summary>
+        /// <value>
+        /// A path relative to <see cref="OutputPath"/>, or an absolute path. When not set, <c>conceptual</c> is used.
+        /// </value>
+        /// <remarks>
+        /// The SDK passes the <c>ConceptualPath</c> MSBuild property, which defaults to <c>conceptual</c> and can be overridden in the <c>.docsproj</c>.
+        /// </remarks>
         public string? ConceptualPath { get; set; }
-
-        /// <summary>
-        /// Gets or sets whether to generate placeholders for missing documentation.
-        /// </summary>
-        public bool GeneratePlaceholders { get; set; } = true;
 
         /// <summary>
         /// Gets or sets the list of generated files (output).
@@ -191,7 +192,8 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
                 {
                     context.DocumentationRootPath = OutputPath;
                     context.ApiReferencePath = ApiReferencePath;
-                    context.ConceptualPath = ConceptualPath ?? Path.Combine(OutputPath, "conceptual");
+                    // ProjectContext.GetFullConceptualPath resolves a relative path against DocumentationRootPath (OutputPath) and keeps absolute paths.
+                    context.ConceptualPath = string.IsNullOrWhiteSpace(ConceptualPath) ? "conceptual" : ConceptualPath;
                     context.FileNamingOptions.NamespaceMode = Enum.TryParse<NamespaceMode>(NamespaceMode, true, out var mode) ? mode : Core.Configuration.NamespaceMode.Folder;
                     context.ConceptualDocsEnabled = ConceptualDocsEnabled;
                     context.ShowPlaceholders = ShowPlaceholders;

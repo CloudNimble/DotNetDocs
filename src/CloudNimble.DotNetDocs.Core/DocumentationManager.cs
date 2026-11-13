@@ -363,14 +363,12 @@ namespace CloudNimble.DotNetDocs.Core
                 return;
             }
 
-            var showPlaceholders = projectContext?.ShowPlaceholders ?? true;
+            var showPlaceholders = projectContext.ShowPlaceholders;
 
             foreach (var ns in assembly.Namespaces)
             {
-                // Load namespace-level conceptual content
-                var namespacePath = ns.Symbol.IsGlobalNamespace
-                    ? conceptualPath
-                    : Path.Combine(conceptualPath, ns.Symbol.ToDisplayString().Replace('.', Path.DirectorySeparatorChar));
+                // Load namespace-level conceptual content from the same folder the renderers write placeholders to
+                var namespacePath = projectContext.GetConceptualNamespacePath(ns.Name);
 
                 if (Directory.Exists(namespacePath))
                 {
@@ -406,8 +404,8 @@ namespace CloudNimble.DotNetDocs.Core
 
                 foreach (var type in ns.Types)
                 {
-                    // Build type path like /conceptual/System/Text/Json/JsonSerializer/
-                    var typeDir = Path.Combine(namespacePath ?? "", type.Symbol.Name);
+                    // Type folders look like {conceptual}/System/Text/Json/JsonSerializer
+                    var typeDir = projectContext.GetConceptualTypePath(ns.Name, type.Name);
 
                     if (Directory.Exists(typeDir))
                     {
@@ -444,7 +442,7 @@ namespace CloudNimble.DotNetDocs.Core
                         // Load member-specific conceptual content
                         foreach (var member in type.Members)
                         {
-                            var memberDir = Path.Combine(typeDir, member.Symbol.Name);
+                            var memberDir = projectContext.GetConceptualMemberPath(ns.Name, type.Name, member.Name);
                             if (Directory.Exists(memberDir))
                             {
                                 await LoadConceptualFileAsync(memberDir, DocConstants.UsageFileName, content => member.Usage = content, showPlaceholders);

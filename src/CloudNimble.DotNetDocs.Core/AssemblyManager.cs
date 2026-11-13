@@ -1076,7 +1076,11 @@ namespace CloudNimble.DotNetDocs.Core
             // For now, we'll use the error type as-is, but note this in the summary
             var resolvedSymbol = typeSymbol;
 
-            var nsName = resolvedSymbol.ContainingNamespace?.ToDisplayString() ?? "";
+            // Roslyn displays the global namespace as "<global namespace>", so map it to string.Empty like ProcessNamespaceRecursive does.
+            // The path helpers then treat it as the global namespace instead of putting angle brackets in file names.
+            var nsName = resolvedSymbol.ContainingNamespace is { IsGlobalNamespace: false } containingNamespace
+                ? containingNamespace.ToDisplayString()
+                : string.Empty;
 
             // Find or create namespace
             var ns = assembly.Namespaces.FirstOrDefault(n => n.Name == nsName);

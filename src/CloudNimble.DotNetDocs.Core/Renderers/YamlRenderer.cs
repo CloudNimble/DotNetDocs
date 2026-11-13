@@ -150,7 +150,7 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
             {
                 foreach (var type in ns.Types)
                 {
-                    await GenerateTypePlaceholdersAsync(type, ns, conceptualPath);
+                    await GenerateTypePlaceholdersAsync(type, ns);
                 }
             }
         }
@@ -255,13 +255,11 @@ Document considerations for `{entityName}` here.
         /// </summary>
         /// <param name="type">The type to generate placeholders for.</param>
         /// <param name="ns">The namespace containing the type.</param>
-        /// <param name="conceptualPath">The base conceptual content path.</param>
         /// <returns>A task representing the asynchronous operation.</returns>
-        private async Task GenerateTypePlaceholdersAsync(DocType type, DocNamespace ns, string conceptualPath)
+        private async Task GenerateTypePlaceholdersAsync(DocType type, DocNamespace ns)
         {
             // Build the type directory path
-            var namespacePath = Context.GetNamespaceFolderPath(ns.Name ?? "global");
-            var typeDir = Path.Combine(conceptualPath, namespacePath, type.Name);
+            var typeDir = Context.GetConceptualTypePath(ns.Name, type.Name);
 
             Directory.CreateDirectory(typeDir);
 

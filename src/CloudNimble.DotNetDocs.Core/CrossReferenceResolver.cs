@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using CloudNimble.DotNetDocs.Core.Configuration;
 using Microsoft.CodeAnalysis;
 
@@ -314,20 +315,12 @@ namespace CloudNimble.DotNetDocs.Core
         /// </summary>
         /// <param name="ns">The namespace to get the path for.</param>
         /// <returns>The relative path to the namespace documentation file.</returns>
+        /// <remarks>
+        /// Uses <see cref="ProjectContext.GetNamespacePagePath(string?)"/>, the same source the renderers use to write the page.
+        /// </remarks>
         internal string GetNamespacePath(DocNamespace ns)
         {
-            var namespaceName = ns.Name ?? "Global";
-            var folderPath = _context.GetNamespaceFolderPath(namespaceName);
-
-            if (_context.FileNamingOptions.NamespaceMode == NamespaceMode.Folder)
-            {
-                return Path.Combine(folderPath, "index");
-            }
-            else
-            {
-                var fileName = namespaceName.Replace('.', _context.FileNamingOptions.NamespaceSeparator);
-                return fileName;
-            }
+            return _context.GetNamespacePagePath(ns.Name).Replace('\\', '/');
         }
 
         /// <summary>
@@ -336,20 +329,12 @@ namespace CloudNimble.DotNetDocs.Core
         /// <param name="type">The type to get the path for.</param>
         /// <param name="ns">The parent namespace of the type.</param>
         /// <returns>The relative path to the type documentation file.</returns>
+        /// <remarks>
+        /// Uses <see cref="ProjectContext.GetTypePagePath(string?, string)"/>, the same source the renderers use to write the page.
+        /// </remarks>
         internal string GetTypePath(DocType type, DocNamespace ns)
         {
-            var namespaceName = ns.Name ?? "Global";
-            var typeName = type.Name;
-            var folderPath = _context.GetNamespaceFolderPath(namespaceName);
-
-            if (_context.FileNamingOptions.NamespaceMode == NamespaceMode.Folder)
-            {
-                return Path.Combine(folderPath, typeName).Replace('\\', '/');
-            }
-            else
-            {
-                return typeName;
-            }
+            return _context.GetTypePagePath(ns.Name, type.Name).Replace('\\', '/');
         }
 
         /// <summary>
@@ -362,19 +347,13 @@ namespace CloudNimble.DotNetDocs.Core
         {
             // Use root-relative paths starting with /
             // This ensures all links work regardless of the current document's depth
-            if (string.IsNullOrWhiteSpace(toPath))
-            {
-                return $"/{_context.ApiReferencePath}";
-            }
-
-            // Ensure the path starts with the API reference path for root-relative
-            var cleanPath = toPath.Replace('\\', '/');
-
-            // Prepend the API reference path
             var apiRefPath = _context.ApiReferencePath?.Replace('\\', '/').Trim('/') ?? "api-reference";
-            cleanPath = $"/{apiRefPath}/{cleanPath.TrimStart('/')}";
+            var cleanPath = toPath?.Replace('\\', '/').Trim('/') ?? string.Empty;
 
-            return cleanPath;
+            // Join only the non-empty segments: an empty ApiReferencePath must not produce "//path", which browsers treat as a host name.
+            var segments = new[] { apiRefPath, cleanPath }.Where(segment => !string.IsNullOrWhiteSpace(segment));
+
+            return $"/{string.Join('/', segments)}";
         }
 
         /// <summary>

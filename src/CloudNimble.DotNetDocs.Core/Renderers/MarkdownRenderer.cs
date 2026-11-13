@@ -157,8 +157,8 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
             sb.AppendLine();
             foreach (var ns in assembly.Namespaces)
             {
-                var nsFileName = Path.GetFileName(GetNamespaceFilePath(ns, outputPath, "md"));
-                sb.AppendLine($"- [{ns.Name}]({nsFileName})");
+                // Plain Markdown viewers don't resolve a folder link to its index file, so link to the file itself.
+                sb.AppendLine($"- [{ns.Name}]({GetNamespaceLink(ns, "md")})");
             }
 
             var filePath = Path.Combine(outputPath, "index.md");
@@ -742,11 +742,11 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
             // Generate placeholders for namespace-level and type-level conceptual content
             foreach (var ns in model.Namespaces)
             {
-                await GenerateNamespacePlaceholdersAsync(ns, conceptualPath);
+                await GenerateNamespacePlaceholdersAsync(ns);
 
                 foreach (var type in ns.Types)
                 {
-                    await GenerateTypePlaceholdersAsync(type, ns, conceptualPath);
+                    await GenerateTypePlaceholdersAsync(type, ns);
                 }
             }
         }
@@ -755,13 +755,11 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
         /// Generates placeholder files for namespace-level conceptual content.
         /// </summary>
         /// <param name="ns">The namespace to generate placeholders for.</param>
-        /// <param name="conceptualPath">The base conceptual content path.</param>
         /// <returns>A task representing the asynchronous operation.</returns>
-        private async Task GenerateNamespacePlaceholdersAsync(DocNamespace ns, string conceptualPath)
+        private async Task GenerateNamespacePlaceholdersAsync(DocNamespace ns)
         {
             // Build the namespace directory path
-            var namespacePath = Context.GetNamespaceFolderPath(ns.Name ?? "global");
-            var namespaceDir = Path.Combine(conceptualPath, namespacePath);
+            var namespaceDir = Context.GetConceptualNamespacePath(ns.Name);
 
             Directory.CreateDirectory(namespaceDir);
 
@@ -769,43 +767,43 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
             var summaryPath = Path.Combine(namespaceDir, DocConstants.SummaryFileName);
             if (!File.Exists(summaryPath))
             {
-                await File.WriteAllTextAsync(summaryPath, GetSummaryTemplate(ns.Name ?? "global"));
+                await File.WriteAllTextAsync(summaryPath, GetSummaryTemplate(GetSafeNamespaceName(ns)));
             }
 
             var usagePath = Path.Combine(namespaceDir, DocConstants.UsageFileName);
             if (!File.Exists(usagePath))
             {
-                await File.WriteAllTextAsync(usagePath, GetUsageTemplate(ns.Name ?? "global"));
+                await File.WriteAllTextAsync(usagePath, GetUsageTemplate(GetSafeNamespaceName(ns)));
             }
 
             var examplesPath = Path.Combine(namespaceDir, DocConstants.ExamplesFileName);
             if (!File.Exists(examplesPath))
             {
-                await File.WriteAllTextAsync(examplesPath, GetExamplesTemplate(ns.Name ?? "global"));
+                await File.WriteAllTextAsync(examplesPath, GetExamplesTemplate(GetSafeNamespaceName(ns)));
             }
 
             var bestPracticesPath = Path.Combine(namespaceDir, DocConstants.BestPracticesFileName);
             if (!File.Exists(bestPracticesPath))
             {
-                await File.WriteAllTextAsync(bestPracticesPath, GetBestPracticesTemplate(ns.Name ?? "global"));
+                await File.WriteAllTextAsync(bestPracticesPath, GetBestPracticesTemplate(GetSafeNamespaceName(ns)));
             }
 
             var patternsPath = Path.Combine(namespaceDir, DocConstants.PatternsFileName);
             if (!File.Exists(patternsPath))
             {
-                await File.WriteAllTextAsync(patternsPath, GetPatternsTemplate(ns.Name ?? "global"));
+                await File.WriteAllTextAsync(patternsPath, GetPatternsTemplate(GetSafeNamespaceName(ns)));
             }
 
             var considerationsPath = Path.Combine(namespaceDir, DocConstants.ConsiderationsFileName);
             if (!File.Exists(considerationsPath))
             {
-                await File.WriteAllTextAsync(considerationsPath, GetConsiderationsTemplate(ns.Name ?? "global"));
+                await File.WriteAllTextAsync(considerationsPath, GetConsiderationsTemplate(GetSafeNamespaceName(ns)));
             }
 
             var relatedApisPath = Path.Combine(namespaceDir, DocConstants.RelatedApisFileName);
             if (!File.Exists(relatedApisPath))
             {
-                await File.WriteAllTextAsync(relatedApisPath, GetRelatedApisTemplate(ns.Name ?? "global"));
+                await File.WriteAllTextAsync(relatedApisPath, GetRelatedApisTemplate(GetSafeNamespaceName(ns)));
             }
         }
 
@@ -814,13 +812,11 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
         /// </summary>
         /// <param name="type">The type to generate placeholders for.</param>
         /// <param name="ns">The namespace containing the type.</param>
-        /// <param name="conceptualPath">The base conceptual content path.</param>
         /// <returns>A task representing the asynchronous operation.</returns>
-        private async Task GenerateTypePlaceholdersAsync(DocType type, DocNamespace ns, string conceptualPath)
+        private async Task GenerateTypePlaceholdersAsync(DocType type, DocNamespace ns)
         {
             // Build the type directory path
-            var namespacePath = Context.GetNamespaceFolderPath(ns.Name ?? "global");
-            var typeDir = Path.Combine(conceptualPath, namespacePath, type.Name);
+            var typeDir = Context.GetConceptualTypePath(ns.Name, type.Name);
 
             Directory.CreateDirectory(typeDir);
 
