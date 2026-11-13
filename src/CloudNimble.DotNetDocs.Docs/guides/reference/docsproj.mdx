@@ -79,9 +79,10 @@ Every `.docsproj` file must reference the DotNetDocs.Sdk:
 
 <ParamField path="NamespaceMode" type="string" default="Folder">
   Controls how namespaces are organized in generated documentation:
-  - `Folder` - Each namespace gets its own folder
-  - `File` - All namespaces in a single file
-  - `Flat` - Flat file structure without namespace hierarchy
+  - `Folder` - Each namespace gets a folder matching its hierarchy. For example, `System.Collections.Generic` becomes `System/Collections/Generic/`.
+  - `File` - Each namespace gets one file in the output root, with namespace segments joined by a separator. For example, `System.Collections.Generic` becomes `System-Collections-Generic.mdx`.
+
+  This setting only affects the generated API reference. Conceptual files always use the nested folder layout.
 
   ```xml
   <NamespaceMode>Folder</NamespaceMode>
@@ -90,16 +91,16 @@ Every `.docsproj` file must reference the DotNetDocs.Sdk:
 
 ### Content Options
 
-<ParamField path="ConceptualDocsEnabled" type="bool" default="false">
-  When `true`, enables generation of conceptual documentation from XML comments.
+<ParamField path="ConceptualDocsEnabled" type="bool" default="true">
+  When `true`, creates placeholder conceptual files (such as `usage.mdz` and `examples.mdz`) under `ConceptualPath` for every namespace and type that doesn't have them yet, and merges their content into the generated documentation. Existing files are never overwritten. Set it to `false` to skip both steps.
 
   ```xml
-  <ConceptualDocsEnabled>true</ConceptualDocsEnabled>
+  <ConceptualDocsEnabled>false</ConceptualDocsEnabled>
   ```
 </ParamField>
 
-<ParamField path="ShowPlaceholders" type="bool" default="false">
-  When `true`, shows placeholder content for types/members that don't have XML documentation.
+<ParamField path="ShowPlaceholders" type="bool" default="true">
+  When `true`, conceptual files that still contain the placeholder marker (`<!-- TODO: REMOVE THIS COMMENT AFTER YOU CUSTOMIZE THIS CONTENT -->`) are included in the generated documentation. Set it to `false` for production builds, so only conceptual content you've written appears.
 
   ```xml
   <ShowPlaceholders>false</ShowPlaceholders>

@@ -88,6 +88,21 @@ namespace CloudNimble.DotNetDocs.Tests.Sdk.Tasks
         }
 
         [TestMethod]
+        [DataRow("", true)]
+        [DataRow("<ShowPlaceholders>false</ShowPlaceholders>", false)]
+        public void GenerateDocumentation_ShowPlaceholders_DefaultsToTrue(string propertyXml, bool expected)
+        {
+            var project = LoadDocsProject(propertyXml);
+            var task = GetGenerateDocumentationTask(project);
+            var value = project.ExpandString(task.Parameters[nameof(GenerateDocumentationTask.ShowPlaceholders)]);
+
+            // MSBuild doesn't set a task parameter whose value expands to empty, so the task's own default applies.
+            var effective = string.IsNullOrWhiteSpace(value) ? new GenerateDocumentationTask().ShowPlaceholders : bool.Parse(value);
+
+            effective.Should().Be(expected, "placeholders should appear by default, and a .docsproj can turn them off");
+        }
+
+        [TestMethod]
         public void SdkProps_WithCustomConceptualPath_IncludesConceptualFilesInProject()
         {
             // Use a .json file, because the SDK already globs .mdz, .md, .mdx, and image files anywhere in the project.
