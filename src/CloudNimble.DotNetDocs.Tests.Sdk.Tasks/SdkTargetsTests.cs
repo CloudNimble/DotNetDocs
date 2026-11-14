@@ -88,6 +88,68 @@ namespace CloudNimble.DotNetDocs.Tests.Sdk.Tasks
         }
 
         [TestMethod]
+        public void GenerateDocumentation_WithDefaultDocumentationRoot_WritesToProjectDirectory()
+        {
+            var project = LoadDocsProject(string.Empty);
+            var task = GetGenerateDocumentationTask(project);
+
+            NormalizePath(project.ExpandString(task.Parameters[nameof(GenerateDocumentationTask.OutputPath)]))
+                .Should().Be(NormalizePath(_testProjectPath), "DocumentationRoot defaults to the .docsproj folder");
+        }
+
+        [TestMethod]
+        public void GenerateDocumentation_WithCustomDocumentationRoot_WritesToDocumentationRoot()
+        {
+            var documentationRoot = GetSiblingDocumentationRoot();
+            var project = LoadDocsProject($"<DocumentationRoot>{documentationRoot}</DocumentationRoot>");
+            var task = GetGenerateDocumentationTask(project);
+
+            NormalizePath(project.ExpandString(task.Parameters[nameof(GenerateDocumentationTask.OutputPath)]))
+                .Should().Be(NormalizePath(documentationRoot), "generated docs belong in the same folder the SDK reads the docs site from");
+        }
+
+        [TestMethod]
+        public void GenerateDocumentation_WithCustomDocumentationRoot_PassesNoPathInsideProjectDirectory()
+        {
+            var project = LoadDocsProject($"<DocumentationRoot>{GetSiblingDocumentationRoot()}</DocumentationRoot>");
+            var task = GetGenerateDocumentationTask(project);
+            var projectDirectory = NormalizePath(_testProjectPath) + Path.DirectorySeparatorChar;
+
+            // Docs-site paths come from DocumentationRoot. A path under the .docsproj folder here means a parameter skipped it.
+            var misrouted = task.Parameters
+                .SelectMany(parameter => project.ExpandString(parameter.Value)
+                    .Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                    .Where(Path.IsPathRooted)
+                    .Where(path => (NormalizePath(path) + Path.DirectorySeparatorChar).StartsWith(projectDirectory, StringComparison.OrdinalIgnoreCase))
+                    .Select(path => $"{parameter.Key}={path}"))
+                .ToList();
+
+            misrouted.Should().BeEmpty("no docs-site path should point into the .docsproj folder when DocumentationRoot is elsewhere");
+        }
+
+        [TestMethod]
+        [DataRow(null)]
+        [DataRow("*Undefined*")]
+        public void DiscoverDocumentedProjects_WithoutSolutionDir_SearchesParentOfProjectDirectory(string? solutionDir)
+        {
+            var globalProperties = solutionDir is null ? null : new Dictionary<string, string> { ["SolutionDir"] = solutionDir };
+            var project = LoadDocsProject(string.Empty, globalProperties);
+
+            NormalizePath(project.ExpandString(GetDiscoverDocumentedProjectsTask(project).Parameters[nameof(DiscoverDocumentedProjectsTask.SolutionDir)]))
+                .Should().Be(NormalizePath(Path.Combine(_testProjectPath, "..")), "without a solution, the folder above the .docsproj is the best guess");
+        }
+
+        [TestMethod]
+        public void DiscoverDocumentedProjects_WithSolutionDir_SearchesSolutionDir()
+        {
+            var solutionDir = Path.Combine(Path.GetTempPath(), $"SdkTargetsTest_{Guid.NewGuid()}_solution") + Path.DirectorySeparatorChar;
+            var project = LoadDocsProject(string.Empty, new Dictionary<string, string> { ["SolutionDir"] = solutionDir });
+
+            NormalizePath(project.ExpandString(GetDiscoverDocumentedProjectsTask(project).Parameters[nameof(DiscoverDocumentedProjectsTask.SolutionDir)]))
+                .Should().Be(NormalizePath(solutionDir), "a solution build knows where the solution is, so discovery should search there");
+        }
+
+        [TestMethod]
         [DataRow("", true)]
         [DataRow("<ShowPlaceholders>false</ShowPlaceholders>", false)]
         public void GenerateDocumentation_ShowPlaceholders_DefaultsToTrue(string propertyXml, bool expected)
@@ -123,6 +185,19 @@ namespace CloudNimble.DotNetDocs.Tests.Sdk.Tasks
         #region Private Methods
 
         /// <summary>
+        /// Gets the <see cref="DiscoverDocumentedProjectsTask"/> invocation from the <c>DiscoverDocumentedProjects</c> target.
+        /// </summary>
+        /// <param name="project">The evaluated project instance.</param>
+        /// <returns>The task invocation with its unevaluated parameters.</returns>
+        private static ProjectTaskInstance GetDiscoverDocumentedProjectsTask(ProjectInstance project)
+        {
+            project.Targets.Should().ContainKey("DiscoverDocumentedProjects");
+
+            return project.Targets["DiscoverDocumentedProjects"].Tasks
+                .Single(task => task.Name == typeof(DiscoverDocumentedProjectsTask).FullName);
+        }
+
+        /// <summary>
         /// Gets the <see cref="GenerateDocumentationTask"/> invocation from the <c>GenerateDocumentation</c> target.
         /// </summary>
         /// <param name="project">The evaluated project instance.</param>
@@ -145,6 +220,25 @@ namespace CloudNimble.DotNetDocs.Tests.Sdk.Tasks
                 .GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly)
                 .Where(property => property.CanWrite && property.GetCustomAttribute<OutputAttribute>() is null)
                 .Select(property => property.Name);
+        }
+
+        /// <summary>
+        /// Gets a documentation root next to the test project, outside its folder.
+        /// </summary>
+        /// <returns>An absolute path with a trailing separator. Nothing is created there, because only evaluation reads it.</returns>
+        private string GetSiblingDocumentationRoot()
+        {
+            return $"{NormalizePath(_testProjectPath)}_site{Path.DirectorySeparatorChar}";
+        }
+
+        /// <summary>
+        /// Normalizes a path for comparison.
+        /// </summary>
+        /// <param name="path">The path to normalize.</param>
+        /// <returns>The full path without a trailing separator.</returns>
+        private static string NormalizePath(string path)
+        {
+            return Path.TrimEndingDirectorySeparator(Path.GetFullPath(path));
         }
 
         /// <summary>
@@ -174,8 +268,9 @@ namespace CloudNimble.DotNetDocs.Tests.Sdk.Tasks
         /// Writes and evaluates a <c>.docsproj</c> that imports the SDK files from this repository.
         /// </summary>
         /// <param name="propertyXml">Property elements to set in the project body, between the SDK imports.</param>
+        /// <param name="globalProperties">Global properties to evaluate with, such as the <c>SolutionDir</c> a solution build sets.</param>
         /// <returns>The evaluated project instance.</returns>
-        private ProjectInstance LoadDocsProject(string propertyXml)
+        private ProjectInstance LoadDocsProject(string propertyXml, IDictionary<string, string>? globalProperties = null)
         {
             var sdkPath = StageSdk();
 
@@ -190,7 +285,7 @@ namespace CloudNimble.DotNetDocs.Tests.Sdk.Tasks
                 </Project>
                 """);
 
-            return new Project(projectFile, null, null, _projectCollection).CreateProjectInstance();
+            return new Project(projectFile, globalProperties, null, _projectCollection).CreateProjectInstance();
         }
 
         #endregion

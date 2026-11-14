@@ -37,6 +37,15 @@
         <_DotNetDocsTasksAssembly>$(_DotNetDocsTasksRoot)$(_DotNetDocsTaskFramework)\CloudNimble.DotNetDocs.Sdk.Tasks.dll</_DotNetDocsTasksAssembly>
     </PropertyGroup>
 
+    <!--
+        Folder searched for documented projects. Solution builds and Visual Studio set SolutionDir, so use it when MSBuild knows it.
+        Otherwise fall back to the folder above the .docsproj, which is where a docs project usually sits in a solution.
+    -->
+    <PropertyGroup>
+        <_DotNetDocsSolutionDir Condition="'$(SolutionDir)' != '' AND '$(SolutionDir)' != '*Undefined*'">$(SolutionDir)</_DotNetDocsSolutionDir>
+        <_DotNetDocsSolutionDir Condition="'$(_DotNetDocsSolutionDir)' == ''">$(MSBuildProjectDirectory)\..</_DotNetDocsSolutionDir>
+    </PropertyGroup>
+
     <!-- A runtime newer than the newest packaged tasks (e.g. .NET 12) rolls forward onto the net11.0 tasks -->
     <PropertyGroup Condition="!Exists('$(_DotNetDocsTasksAssembly)') AND '$(_DotNetDocsRuntimeMajor)' != '' AND $([MSBuild]::VersionGreaterThan('$(_DotNetDocsRuntimeMajor)', '11'))">
         <_DotNetDocsTaskFramework>net11.0</_DotNetDocsTaskFramework>
@@ -128,7 +137,7 @@
 
         <!-- Use compiled task to discover projects -->
         <CloudNimble.DotNetDocs.Sdk.Tasks.DiscoverDocumentedProjectsTask
-            SolutionDir="$(MSBuildProjectDirectory)\.."
+            SolutionDir="$(_DotNetDocsSolutionDir)"
             ExcludePatterns="$(ExcludePatterns)">
             <Output TaskParameter="DocumentedProjects" ItemName="DocumentedProjects" />
         </CloudNimble.DotNetDocs.Sdk.Tasks.DiscoverDocumentedProjectsTask>
@@ -175,12 +184,6 @@
         <!-- Debug: Show assembly paths -->
         <Message Text="   Assembly: %(AssemblyPaths.Identity)" Importance="normal" />
 
-        <!-- Call DocumentationManager to process assemblies -->
-        <PropertyGroup>
-            <DocumentationRootPath>$(MSBuildProjectDirectory)</DocumentationRootPath>
-            <NamespaceModeProperty>$(NamespaceMode)</NamespaceModeProperty>
-        </PropertyGroup>
-
         <!-- Create assembly list file for DocumentationManager (for debugging) -->
         <WriteLinesToFile File="$(MSBuildProjectDirectory)\assembly-list.txt"
                          Lines="@(AssemblyPaths)"
@@ -191,9 +194,11 @@
         <Message Text="🔧 Calling GenerateDocumentationTask with @(AssemblyPaths->Count()) assemblies" Importance="high" />
 
         <!-- Use compiled task to generate documentation -->
+        <!-- DocumentationRoot is the root of the docs site: docs.json, ApiReferencePath and ConceptualPath all resolve from it,
+             matching the detection, template lookup and project includes in Sdk.props. MSBuildProjectDirectory is only for build artifacts. -->
         <CloudNimble.DotNetDocs.Sdk.Tasks.GenerateDocumentationTask
             Assemblies="@(AssemblyPaths)"
-            OutputPath="$(DocumentationRootPath)"
+            OutputPath="$(DocumentationRoot)"
             DocumentationType="$(DocumentationType)"
             NamespaceMode="$(NamespaceMode)"
             ApiReferencePath="$(ApiReferencePath)"

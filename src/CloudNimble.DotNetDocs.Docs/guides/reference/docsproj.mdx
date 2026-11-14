@@ -38,7 +38,9 @@ Every `.docsproj` file must reference the DotNetDocs.Sdk:
 </ParamField>
 
 <ParamField path="DocumentationRoot" type="string" default="$(MSBuildProjectDirectory)">
-  The root directory containing your documentation files. This allows the `.docsproj` file to be in a different location than your actual documentation files.
+  The root directory of your documentation site. This allows the `.docsproj` file to be in a different location than your actual documentation files.
+
+  Everything the SDK reads and writes for the site resolves from this folder: documentation type detection, `docs-template.json`, the generated `docs.json`, `ApiReferencePath`, and `ConceptualPath`. Only build artifacts, such as the files under `bin`, stay next to the `.docsproj`.
 
   ```xml
   <DocumentationRoot>$(MSBuildProjectDirectory)\..\docs\</DocumentationRoot>
@@ -66,7 +68,7 @@ Every `.docsproj` file must reference the DotNetDocs.Sdk:
 </ParamField>
 
 <ParamField path="ConceptualPath" type="string" default="conceptual">
-  The folder that holds your conceptual content (`usage.mdz`, `examples.mdz`, and so on), relative to the `.docsproj` folder or as an absolute path. Placeholders are generated here and content is loaded from here.
+  The folder that holds your conceptual content (`usage.mdz`, `examples.mdz`, and so on), relative to `DocumentationRoot` or as an absolute path. Placeholders are generated here and content is loaded from here.
 
   ```xml
   <ConceptualPath>content/conceptual</ConceptualPath>
