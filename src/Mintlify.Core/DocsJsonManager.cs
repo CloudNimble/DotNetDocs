@@ -171,11 +171,12 @@ namespace Mintlify.Core
             ConfigurationErrors.Clear();
             Configuration = config;
 
-            // Populate known page paths from the loaded configuration
+            // Rebuild known page paths from the loaded configuration
             // Allow duplicates in loaded data (assume user intent), but track them for future additions
-            if (Configuration.Navigation?.Pages is not null)
+            _knownPagePaths.Clear();
+            if (Configuration.Navigation is not null)
             {
-                PopulateKnownPaths(Configuration.Navigation.Pages);
+                PopulateKnownPaths(Configuration.Navigation);
             }
         }
 
@@ -386,10 +387,11 @@ namespace Mintlify.Core
             {
                 Configuration.Navigation = defaults.Navigation;
 
-                // Add discovered navigation paths to _knownPagePaths
-                if (Configuration.Navigation?.Pages is not null)
+                // The previous navigation was replaced, so rebuild _knownPagePaths from the default navigation
+                _knownPagePaths.Clear();
+                if (Configuration.Navigation is not null)
                 {
-                    PopulateKnownPaths(Configuration.Navigation.Pages);
+                    PopulateKnownPaths(Configuration.Navigation);
                 }
             }
 
@@ -694,10 +696,7 @@ namespace Mintlify.Core
                     {
                         // Add new group and track all its pages
                         pages.Add(group);
-                        if (group.Pages is not null)
-                        {
-                            PopulateKnownPaths(group.Pages);
-                        }
+                        PopulateKnownPaths(group);
                         return true;
                     }
 
@@ -775,27 +774,216 @@ namespace Mintlify.Core
         #region Private Methods
 
         /// <summary>
-        /// Recursively populates the _knownPagePaths hashset from a navigation structure.
+        /// Adds every page path in a navigation structure to the _knownPagePaths hashset.
         /// </summary>
-        /// <param name="pages">The pages list to extract page paths from.</param>
-        internal void PopulateKnownPaths(List<object> pages)
+        /// <param name="navigation">The navigation to extract page paths from.</param>
+        /// <remarks>
+        /// Walks every navigation container Mintlify supports: pages, groups (including their root pages), tabs,
+        /// menus, anchors, dropdowns, products, versions, and languages.
+        /// </remarks>
+        internal void PopulateKnownPaths(NavigationConfig navigation)
         {
+            CollectPagePaths(navigation, _knownPagePaths);
+        }
+
+        /// <summary>
+        /// Adds the root page and every nested page path of a group to the _knownPagePaths hashset.
+        /// </summary>
+        /// <param name="group">The group to extract page paths from.</param>
+        internal void PopulateKnownPaths(GroupConfig group)
+        {
+            CollectPagePaths(group, _knownPagePaths);
+        }
+
+        // Removed RefreshKnownPagePaths - we now maintain _knownPagePaths incrementally
+        // through AddPage, AddPageToGroup, and AddNavigationItem methods
+
+        /// <summary>
+        /// Collects every page path in a navigation structure.
+        /// </summary>
+        /// <param name="navigation">The navigation to walk.</param>
+        /// <param name="paths">The collection that receives the page paths.</param>
+        private static void CollectPagePaths(NavigationConfig navigation, ICollection<string> paths)
+        {
+            CollectPagePaths(navigation.Pages, paths);
+            CollectPagePaths(navigation.Groups, paths);
+            CollectPagePaths(navigation.Tabs, paths);
+            CollectPagePaths(navigation.Anchors, paths);
+            CollectPagePaths(navigation.Dropdowns, paths);
+            CollectPagePaths(navigation.Products, paths);
+            CollectPagePaths(navigation.Versions, paths);
+            CollectPagePaths(navigation.Languages, paths);
+        }
+
+        /// <summary>
+        /// Collects every page path in a pages list, descending into nested groups.
+        /// </summary>
+        /// <param name="pages">The pages list to walk.</param>
+        /// <param name="paths">The collection that receives the page paths.</param>
+        /// <remarks>
+        /// Link entries and git source mounts are skipped because they do not reference a page in this site.
+        /// </remarks>
+        private static void CollectPagePaths(List<object>? pages, ICollection<string> paths)
+        {
+            if (pages is null)
+            {
+                return;
+            }
+
             foreach (var page in pages)
             {
                 switch (page)
                 {
-                    case string stringPage:
-                        _knownPagePaths.Add(stringPage);
+                    case string stringPage when !string.IsNullOrWhiteSpace(stringPage):
+                        paths.Add(stringPage);
                         break;
-                    case GroupConfig groupConfig when groupConfig.Pages is not null:
-                        PopulateKnownPaths(groupConfig.Pages);
+                    case GroupConfig group:
+                        CollectPagePaths(group, paths);
                         break;
                 }
             }
         }
 
-        // Removed RefreshKnownPagePaths - we now maintain _knownPagePaths incrementally
-        // through AddPage, AddPageToGroup, and AddNavigationItem methods
+        /// <summary>
+        /// Collects the root page and every nested page path of a group.
+        /// </summary>
+        /// <param name="group">The group to walk.</param>
+        /// <param name="paths">The collection that receives the page paths.</param>
+        private static void CollectPagePaths(GroupConfig group, ICollection<string> paths)
+        {
+            if (!string.IsNullOrWhiteSpace(group.Root))
+            {
+                paths.Add(group.Root!);
+            }
+
+            CollectPagePaths(group.Pages, paths);
+        }
+
+        /// <summary>
+        /// Collects every page path in a list of navigation containers, such as tabs, anchors, dropdowns, or products.
+        /// </summary>
+        /// <typeparam name="TContainer">The navigation container type.</typeparam>
+        /// <param name="containers">The containers to walk.</param>
+        /// <param name="paths">The collection that receives the page paths.</param>
+        private static void CollectPagePaths<TContainer>(List<TContainer>? containers, ICollection<string> paths)
+            where TContainer : NavigationContainerBase
+        {
+            if (containers is null)
+            {
+                return;
+            }
+
+            foreach (var container in containers)
+            {
+                CollectPagePaths(container.Pages, paths);
+                CollectPagePaths(container.Groups, paths);
+
+                if (container is NavigationSectionBase section)
+                {
+                    CollectPagePaths(section.Dropdowns, paths);
+                    CollectPagePaths(section.Languages, paths);
+                    CollectPagePaths(section.Versions, paths);
+                }
+
+                switch (container)
+                {
+                    case TabConfig tab:
+                        CollectPagePaths(tab.Anchors, paths);
+                        CollectPagePaths(tab.Menu, paths);
+                        break;
+                    case AnchorConfig anchor:
+                        CollectPagePaths(anchor.Tabs, paths);
+                        break;
+                    case DropdownConfig dropdown:
+                        CollectPagePaths(dropdown.Anchors, paths);
+                        CollectPagePaths(dropdown.Tabs, paths);
+                        break;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Collects every page path in a list of groups.
+        /// </summary>
+        /// <param name="groups">The groups to walk.</param>
+        /// <param name="paths">The collection that receives the page paths.</param>
+        private static void CollectPagePaths(List<GroupConfig>? groups, ICollection<string> paths)
+        {
+            if (groups is null)
+            {
+                return;
+            }
+
+            foreach (var group in groups)
+            {
+                CollectPagePaths(group, paths);
+            }
+        }
+
+        /// <summary>
+        /// Collects every page path in a list of languages.
+        /// </summary>
+        /// <param name="languages">The languages to walk.</param>
+        /// <param name="paths">The collection that receives the page paths.</param>
+        private static void CollectPagePaths(List<LanguageConfig>? languages, ICollection<string> paths)
+        {
+            if (languages is null)
+            {
+                return;
+            }
+
+            foreach (var language in languages)
+            {
+                CollectPagePaths(language.Pages, paths);
+                CollectPagePaths(language.Groups, paths);
+                CollectPagePaths(language.Tabs, paths);
+                CollectPagePaths(language.Anchors, paths);
+                CollectPagePaths(language.Dropdowns, paths);
+                CollectPagePaths(language.Versions, paths);
+            }
+        }
+
+        /// <summary>
+        /// Collects every page path in a list of tab menu items.
+        /// </summary>
+        /// <param name="menu">The menu items to walk.</param>
+        /// <param name="paths">The collection that receives the page paths.</param>
+        private static void CollectPagePaths(List<MenuConfig>? menu, ICollection<string> paths)
+        {
+            if (menu is null)
+            {
+                return;
+            }
+
+            foreach (var item in menu)
+            {
+                CollectPagePaths(item.Pages, paths);
+                CollectPagePaths(item.Groups, paths);
+            }
+        }
+
+        /// <summary>
+        /// Collects every page path in a list of versions.
+        /// </summary>
+        /// <param name="versions">The versions to walk.</param>
+        /// <param name="paths">The collection that receives the page paths.</param>
+        private static void CollectPagePaths(List<VersionConfig>? versions, ICollection<string> paths)
+        {
+            if (versions is null)
+            {
+                return;
+            }
+
+            foreach (var version in versions)
+            {
+                CollectPagePaths(version.Pages, paths);
+                CollectPagePaths(version.Groups, paths);
+                CollectPagePaths(version.Tabs, paths);
+                CollectPagePaths(version.Anchors, paths);
+                CollectPagePaths(version.Dropdowns, paths);
+                CollectPagePaths(version.Languages, paths);
+            }
+        }
 
         #endregion
 
@@ -808,6 +996,7 @@ namespace Mintlify.Core
         internal void LoadInternal(string content)
         {
             ConfigurationErrors.Clear();
+            _knownPagePaths.Clear();
 
             try
             {
@@ -821,6 +1010,12 @@ namespace Mintlify.Core
 
                 // Remove null groups that would cause Mintlify to reject the configuration
                 RemoveNullGroups();
+
+                // Track the loaded navigation pages so later additions do not duplicate them
+                if (Configuration.Navigation is not null)
+                {
+                    PopulateKnownPaths(Configuration.Navigation);
+                }
 
                 // Apply validation using injected DocsJsonValidator
                 var validationErrors = _validator.Validate(Configuration);
@@ -1003,6 +1198,12 @@ namespace Mintlify.Core
                 target.Sdk = source.Sdk;
             if (!string.IsNullOrWhiteSpace(source.Directory))
                 target.Directory = source.Directory;
+
+            // Track every page merged into the loaded configuration so later additions do not duplicate them
+            if (ReferenceEquals(target, Configuration?.Navigation))
+            {
+                PopulateKnownPaths(target);
+            }
         }
 
         private static void MergeNavigationItemExtras(NavigationItemBase target, NavigationItemBase source)
@@ -1069,11 +1270,8 @@ namespace Mintlify.Core
                         {
                             groupsByName[groupConfig.Group] = groupConfig;
                             processedPages.Add(groupConfig);
-                            // Track pages in this group
-                            if (groupConfig.Pages is not null)
-                            {
-                                PopulateKnownPaths(groupConfig.Pages);
-                            }
+                            // Track the root and pages in this group
+                            PopulateKnownPaths(groupConfig);
                         }
                         break;
                     case GroupConfig groupConfig when string.IsNullOrWhiteSpace(groupConfig.Group):
@@ -1085,6 +1283,8 @@ namespace Mintlify.Core
                             {
                                 groupsByName[string.Empty] = groupConfig;
                                 processedPages.Add(groupConfig);
+                                // Track the root and pages in this group
+                                PopulateKnownPaths(groupConfig);
                             }
                             else
                             {
@@ -1096,11 +1296,8 @@ namespace Mintlify.Core
                         {
                             // Keep empty groups separate (default Mintlify behavior)
                             processedPages.Add(groupConfig);
-                            // Track pages in this group
-                            if (groupConfig.Pages is not null)
-                            {
-                                PopulateKnownPaths(groupConfig.Pages);
-                            }
+                            // Track the root and pages in this group
+                            PopulateKnownPaths(groupConfig);
                         }
                         break;
                     default:
@@ -1115,21 +1312,20 @@ namespace Mintlify.Core
                 switch (page)
                 {
                     case string stringPage:
-                        if (!seenPagePaths.Contains(stringPage))
+                        // Only deduplicate against the list being merged into. Mintlify allows the same page in more
+                        // than one section, so a page listed elsewhere in the navigation is still added here.
+                        if (seenPagePaths.Add(stringPage))
                         {
                             // Check if we should add this to "Getting Started" instead of root level
                             if (options?.AddRootPagesToGettingStarted == true && groupsByName.TryGetValue("Getting Started", out var gettingStartedGroup))
                             {
                                 // Add to Getting Started group instead of root level
-                                AddPageToGroup(gettingStartedGroup, stringPage);
+                                AddPageToGroup(gettingStartedGroup, stringPage, allowDuplicatePaths: true);
                             }
                             else
                             {
                                 // Use AddPage to properly track the page
-                                if (AddPage(processedPages, stringPage))
-                                {
-                                    seenPagePaths.Add(stringPage);
-                                }
+                                AddPage(processedPages, stringPage, allowDuplicatePaths: true);
                             }
                         }
                         break;
@@ -1181,27 +1377,6 @@ namespace Mintlify.Core
             targetPages.AddRange(processedPages);
         }
 
-        /// <summary>
-        /// Collects all page paths from a navigation structure into a hashset.
-        /// This includes both root-level string pages and pages within groups.
-        /// </summary>
-        /// <param name="pages">The pages list to collect paths from.</param>
-        /// <param name="pagePaths">The hashset to add page paths to.</param>
-        internal void CollectPagePaths(List<object> pages, HashSet<string> pagePaths)
-        {
-            foreach (var page in pages)
-            {
-                switch (page)
-                {
-                    case string stringPage:
-                        pagePaths.Add(stringPage);
-                        break;
-                    case GroupConfig groupConfig when groupConfig.Pages is not null:
-                        CollectPagePaths(groupConfig.Pages, pagePaths);
-                        break;
-                }
-            }
-        }
 
         /// <summary>
         /// Merges two GroupConfig objects with the same group name.
@@ -1512,11 +1687,8 @@ namespace Mintlify.Core
                     if (customGroup is not null)
                     {
                         pages.Add(customGroup);
-                        // Populate known page paths from the custom navigation group
-                        if (customGroup.Pages is not null)
-                        {
-                            PopulateKnownPaths(customGroup.Pages);
-                        }
+                        // Populate known page paths from the custom navigation group, including its root page
+                        PopulateKnownPaths(customGroup);
                         return; // User controls this directory and all subdirectories completely
                     }
                     else
