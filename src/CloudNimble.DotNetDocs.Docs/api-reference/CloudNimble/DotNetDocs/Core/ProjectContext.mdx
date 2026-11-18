@@ -2,7 +2,7 @@
 title: ProjectContext
 description: "Represents MSBuild project context for source intent in documentation generation."
 icon: file-brackets-curly
-keywords: ['ProjectContext', 'CloudNimble.DotNetDocs.Core.ProjectContext', 'CloudNimble.DotNetDocs.Core', 'class', 'System.Object']
+keywords: ['ProjectContext', 'CloudNimble.DotNetDocs.Core.ProjectContext', 'CloudNimble.DotNetDocs.Core', 'class']
 ---
 
 ## Definition
@@ -10,8 +10,6 @@ keywords: ['ProjectContext', 'CloudNimble.DotNetDocs.Core.ProjectContext', 'Clou
 **Assembly:** CloudNimble.DotNetDocs.Core.dll
 
 **Namespace:** CloudNimble.DotNetDocs.Core
-
-**Inheritance:** System.Object
 
 ## Syntax
 
@@ -26,7 +24,7 @@ Represents MSBuild project context for source intent in documentation generation
 ## Remarks
 
 Provides metadata such as referenced assembly paths and the conceptual documentation folder path.
-Used by `ProjectContext)` to enhance metadata extraction.
+Used by [AssemblyManager.DocumentAsync](/api-reference/CloudNimble/DotNetDocs/Core/AssemblyManager#documentasync) to enhance metadata extraction.
 
 ## Examples
 
@@ -450,7 +448,7 @@ context.GetConceptualMemberPath("System.Text.Json", "JsonSerializer", "Serialize
 
 #### Remarks
 
-See `String)` for how the conceptual layout is structured.
+See [ProjectContext.GetConceptualNamespacePath](/api-reference/CloudNimble/DotNetDocs/Core/ProjectContext#getconceptualnamespacepath) for how the conceptual layout is structured.
 
 ### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetConceptualNamespacePath
 
@@ -519,7 +517,7 @@ context.GetConceptualTypePath("System.Text.Json", "JsonSerializer");
 
 #### Remarks
 
-See `String)` for how the conceptual layout is structured.
+See [ProjectContext.GetConceptualNamespacePath](/api-reference/CloudNimble/DotNetDocs/Core/ProjectContext#getconceptualnamespacepath) for how the conceptual layout is structured.
 
 ### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetFullConceptualPath
 
@@ -593,9 +591,9 @@ The folder path representation of the namespace.
 
 #### Remarks
 
-When [FileNamingOptions.NamespaceMode](/api-reference/CloudNimble/DotNetDocs/Core/Configuration/FileNamingOptions#namespacemode) is [NamespaceMode.Folder](/api-reference/CloudNimble/DotNetDocs/Core/Configuration/NamespaceMode#folder),
+When [FileNamingOptions.NamespaceMode](/api-reference/CloudNimble/DotNetDocs/Core/Configuration/FileNamingOptions#namespacemode) is [NamespaceMode.Folder](/api-reference/CloudNimble/DotNetDocs/Core/Configuration/NamespaceMode),
 this returns a path with folders for each namespace part (e.g., "System/Collections/Generic").
-When using [NamespaceMode.File](/api-reference/CloudNimble/DotNetDocs/Core/Configuration/NamespaceMode#file), this returns an empty string as no folder
+When using [NamespaceMode.File](/api-reference/CloudNimble/DotNetDocs/Core/Configuration/NamespaceMode), this returns an empty string as no folder
 structure is created.
 
 ### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetNamespacePagePath
@@ -730,7 +728,7 @@ context.GetTypePagePath("System.Text.Json", "JsonSerializer"); // Returns "Syste
 
 #### Remarks
 
-This is the single source of truth for type page locations. See `String)`.
+This is the single source of truth for type page locations. See [ProjectContext.GetNamespacePagePath](/api-reference/CloudNimble/DotNetDocs/Core/ProjectContext#getnamespacepagepath).
 
 ### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> IsTypeExcluded
 

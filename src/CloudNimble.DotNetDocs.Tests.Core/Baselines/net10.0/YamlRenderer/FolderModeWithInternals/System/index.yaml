@@ -32,7 +32,17 @@ types:
     isExtensionMethod: true
     extendedTypeName: string
     displayName: CloudNimble.DotNetDocs.Tests.Shared.Extensions.StringExtensions.Reverse(string)
-    examples: "<code>\r\n             using CloudNimble.DotNetDocs.Tests.Shared.Extensions;\r\n            \r\n             var result = \"hello\".Reverse();\r\n             // result = \"olleh\"\r\n             </code>"
+    examples: >-
+      <code>
+
+      using CloudNimble.DotNetDocs.Tests.Shared.Extensions;
+
+
+      var result = "hello".Reverse();
+
+      // result = "olleh"
+
+      </code>
     returns: The reversed string.
     summary: Reverses the characters in a string.
   - accessibility: Public
@@ -80,9 +90,12 @@ types:
     displayName: CloudNimble.DotNetDocs.Tests.Shared.Extensions.StringExtensions.Repeat(string, int)
     examples: >-
       <code>
-                  var result = "ha".Repeat(3);
-                  // result = "hahaha"
-                  </code>
+
+      var result = "ha".Repeat(3);
+
+      // result = "hahaha"
+
+      </code>
     returns: The repeated string.
     summary: Repeats a string a specified number of times.
   assemblyName: System.Private.CoreLib

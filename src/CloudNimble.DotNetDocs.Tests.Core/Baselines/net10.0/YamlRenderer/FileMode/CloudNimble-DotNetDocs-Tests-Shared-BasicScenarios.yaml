@@ -334,8 +334,10 @@ types:
     displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ClassWithMethods.Calculate(int, int)
     examples: >-
       <code>
-                  var result = Calculate(3, 4); // Returns 7
-                  </code>
+
+      var result = Calculate(3, 4); // Returns 7
+
+      </code>
     returns: The sum of a and b.
     summary: Calculates the sum of two numbers.
   - accessibility: Public
@@ -628,9 +630,12 @@ types:
   displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ClassWithMethods
   examples: >-
     <code>
-                var obj = new ClassWithMethods();
-                var result = obj.Calculate(5, 10);
-                </code>
+
+    var obj = new ClassWithMethods();
+
+    var result = obj.Calculate(5, 10);
+
+    </code>
   remarks: Contains methods with different signatures, parameters, and return types.
   summary: A class demonstrating various method documentation scenarios.
 - members:
@@ -1395,9 +1400,12 @@ types:
   displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass
   examples: >-
     <code>
-                var derived = new DerivedClass();
-                var result = derived.VirtualMethod();
-                </code>
+
+    var derived = new DerivedClass();
+
+    var result = derived.VirtualMethod();
+
+    </code>
   remarks: This class inherits from BaseClass and overrides some members.
   summary: A derived class for testing inheritance documentation.
 - members:
@@ -1681,11 +1689,14 @@ types:
   displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DisposableClass
   examples: >-
     <code>
-                using (var disposable = new DisposableClass())
-                {
-                    disposable.UseResource();
-                }
-                </code>
+
+    using (var disposable = new DisposableClass())
+
+    {
+        disposable.UseResource();
+    }
+
+    </code>
   relatedApis:
   - System.IDisposable
   remarks: This class demonstrates how interface implementation is documented.
@@ -1761,9 +1772,12 @@ types:
     displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.TestsShared_ITestInterfaceExtensions.GetFormattedValue(CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ITestInterface)
     examples: >-
       <code>
-                  ITestInterface test = new TestImplementation();
-                  var formatted = test.GetFormattedValue();
-                  </code>
+
+      ITestInterface test = new TestImplementation();
+
+      var formatted = test.GetFormattedValue();
+
+      </code>
     returns: A formatted string containing the test value.
     summary: Gets a formatted string from the interface.
   - accessibility: Public
@@ -1808,7 +1822,8 @@ types:
   displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ITestInterface
   remarks: >-
     This interface is used to test extension methods on interfaces and to verify
-                that inherited members from interfaces are properly documented.
+
+    that inherited members from interfaces are properly documented.
   summary: A test interface for demonstrating interface inheritance and extension methods.
 - members:
   - accessibility: Public
@@ -2060,9 +2075,12 @@ types:
     displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.TestsShared_SimpleClassExtensions.ToDisplayString(CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.SimpleClass)
     examples: >-
       <code>
-                  var simple = new SimpleClass();
-                  var display = simple.ToDisplayString();
-                  </code>
+
+      var simple = new SimpleClass();
+
+      var display = simple.ToDisplayString();
+
+      </code>
     returns: A formatted string representation.
     summary: Converts a SimpleClass instance to a display string.
   - accessibility: Public
@@ -2107,12 +2125,16 @@ types:
   displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.SimpleClass
   examples: >-
     <code>
-                var simple = new SimpleClass();
-                simple.DoWork();
-                </code>
+
+    var simple = new SimpleClass();
+
+    simple.DoWork();
+
+    </code>
   remarks: >-
     These are remarks about the SimpleClass. They provide additional context
-                and information beyond what's in the summary.
+
+    and information beyond what's in the summary.
   summary: A simple class for testing basic documentation extraction.
 - members:
   - accessibility: Public
@@ -2373,6 +2395,7 @@ types:
   - CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ITestInterface
   remarks: >-
     This class implements ITestInterface to demonstrate interface member inheritance
-                in documentation generation.
+
+    in documentation generation.
   summary: A test implementation of ITestInterface.
 displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios

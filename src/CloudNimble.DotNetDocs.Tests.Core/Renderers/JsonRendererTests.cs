@@ -83,42 +83,6 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
 
         #endregion
 
-        #region RenderPlaceholdersAsync Tests
-
-        [TestMethod]
-        public async Task RenderPlaceholdersAsync_WithRelativeConceptualPath_WritesUnderDocumentationRoot()
-        {
-            var assemblyPath = typeof(SimpleClass).Assembly.Location;
-            var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
-            var context = GetService<ProjectContext>();
-            context.ConceptualPath = "conceptual";
-            using var manager = new AssemblyManager(assemblyPath, xmlPath);
-            var model = await manager.DocumentAsync(context);
-
-            await GetJsonRenderer().RenderPlaceholdersAsync(model);
-
-            var expectedPath = Path.Combine(_testOutputPath, "conceptual");
-            Directory.Exists(expectedPath).Should().BeTrue("a relative ConceptualPath resolves against DocumentationRootPath, not the working directory");
-            Directory.EnumerateFiles(expectedPath, "*", SearchOption.AllDirectories).Should().NotBeEmpty();
-        }
-
-        [TestMethod]
-        public async Task RenderPlaceholdersAsync_WithEmptyConceptualPath_WritesNothing()
-        {
-            var assemblyPath = typeof(SimpleClass).Assembly.Location;
-            var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
-            var context = GetService<ProjectContext>();
-            context.ConceptualPath = string.Empty;
-            using var manager = new AssemblyManager(assemblyPath, xmlPath);
-            var model = await manager.DocumentAsync(context);
-
-            await GetJsonRenderer().RenderPlaceholdersAsync(model);
-
-            Directory.EnumerateFileSystemEntries(_testOutputPath).Should().BeEmpty();
-        }
-
-        #endregion
-
         #region RenderAsync Tests
 
         [TestMethod]

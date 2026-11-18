@@ -1143,8 +1143,10 @@ namespaces:
       displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ClassWithMethods.Calculate(int, int)
       examples: >-
         <code>
-                    var result = Calculate(3, 4); // Returns 7
-                    </code>
+
+        var result = Calculate(3, 4); // Returns 7
+
+        </code>
       returns: The sum of a and b.
       summary: Calculates the sum of two numbers.
     - accessibility: Public
@@ -1437,9 +1439,12 @@ namespaces:
     displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ClassWithMethods
     examples: >-
       <code>
-                  var obj = new ClassWithMethods();
-                  var result = obj.Calculate(5, 10);
-                  </code>
+
+      var obj = new ClassWithMethods();
+
+      var result = obj.Calculate(5, 10);
+
+      </code>
     remarks: Contains methods with different signatures, parameters, and return types.
     summary: A class demonstrating various method documentation scenarios.
   - members:
@@ -2204,9 +2209,12 @@ namespaces:
     displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass
     examples: >-
       <code>
-                  var derived = new DerivedClass();
-                  var result = derived.VirtualMethod();
-                  </code>
+
+      var derived = new DerivedClass();
+
+      var result = derived.VirtualMethod();
+
+      </code>
     remarks: This class inherits from BaseClass and overrides some members.
     summary: A derived class for testing inheritance documentation.
   - members:
@@ -2490,11 +2498,14 @@ namespaces:
     displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DisposableClass
     examples: >-
       <code>
-                  using (var disposable = new DisposableClass())
-                  {
-                      disposable.UseResource();
-                  }
-                  </code>
+
+      using (var disposable = new DisposableClass())
+
+      {
+          disposable.UseResource();
+      }
+
+      </code>
     relatedApis:
     - System.IDisposable
     remarks: This class demonstrates how interface implementation is documented.
@@ -2570,9 +2581,12 @@ namespaces:
       displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.TestsShared_ITestInterfaceExtensions.GetFormattedValue(CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ITestInterface)
       examples: >-
         <code>
-                    ITestInterface test = new TestImplementation();
-                    var formatted = test.GetFormattedValue();
-                    </code>
+
+        ITestInterface test = new TestImplementation();
+
+        var formatted = test.GetFormattedValue();
+
+        </code>
       returns: A formatted string containing the test value.
       summary: Gets a formatted string from the interface.
     - accessibility: Public
@@ -2617,7 +2631,8 @@ namespaces:
     displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ITestInterface
     remarks: >-
       This interface is used to test extension methods on interfaces and to verify
-                  that inherited members from interfaces are properly documented.
+
+      that inherited members from interfaces are properly documented.
     summary: A test interface for demonstrating interface inheritance and extension methods.
   - members:
     - accessibility: Public
@@ -2869,9 +2884,12 @@ namespaces:
       displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.TestsShared_SimpleClassExtensions.ToDisplayString(CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.SimpleClass)
       examples: >-
         <code>
-                    var simple = new SimpleClass();
-                    var display = simple.ToDisplayString();
-                    </code>
+
+        var simple = new SimpleClass();
+
+        var display = simple.ToDisplayString();
+
+        </code>
       returns: A formatted string representation.
       summary: Converts a SimpleClass instance to a display string.
     - accessibility: Public
@@ -2916,12 +2934,16 @@ namespaces:
     displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.SimpleClass
     examples: >-
       <code>
-                  var simple = new SimpleClass();
-                  simple.DoWork();
-                  </code>
+
+      var simple = new SimpleClass();
+
+      simple.DoWork();
+
+      </code>
     remarks: >-
       These are remarks about the SimpleClass. They provide additional context
-                  and information beyond what's in the summary.
+
+      and information beyond what's in the summary.
     summary: A simple class for testing basic documentation extraction.
   - members:
     - accessibility: Public
@@ -3182,7 +3204,8 @@ namespaces:
     - CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ITestInterface
     remarks: >-
       This class implements ITestInterface to demonstrate interface member inheritance
-                  in documentation generation.
+
+      in documentation generation.
     summary: A test implementation of ITestInterface.
   displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios
 - name: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases
@@ -3965,13 +3988,18 @@ namespaces:
     displayName: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithSpecialCharacters
     examples: >-
       <code>
-                  // Using generics: List&lt;string&gt;
-                  var list = new List&lt;string&gt;();
-                  if (x &gt; 0 &amp;&amp; y &lt; 10) { }
-                  </code>
+
+      // Using generics: List&lt;string&gt;
+
+      var list = new List&lt;string&gt;();
+
+      if (x &gt; 0 &amp;&amp; y &lt; 10) { }
+
+      </code>
     remarks: >-
       This tests handling of XML special characters like &lt;tag&gt; and &amp;entity;.
-                  Also tests "quotes" and 'apostrophes'.
+
+      Also tests "quotes" and 'apostrophes'.
     summary: "A class with special characters in documentation: &lt;, &gt;, &amp;, \", '."
   - members:
     - accessibility: Public
@@ -4058,20 +4086,27 @@ namespaces:
         type: ArgumentOutOfRangeException
       examples: >-
         <code>
-                    var result = ComplexMethod("hello", 5);
-                    Console.WriteLine(result);
-                    </code>
+
+        var result = ComplexMethod("hello", 5);
+
+        Console.WriteLine(result);
+
+        </code>
       remarks: >-
         <para>This method performs complex processing.</para><list type="bullet">
-          <item>
-            <description>First, it validates the input.</description>
-          </item>
-          <item>
-            <description>Then, it processes the data.</description>
-          </item>
-          <item>
-            <description>Finally, it returns the result.</description>
-          </item>
+
+        <item>
+          <description>First, it validates the input.</description>
+        </item>
+
+        <item>
+          <description>Then, it processes the data.</description>
+        </item>
+
+        <item>
+          <description>Finally, it returns the result.</description>
+        </item>
+
         </list>
       returns: A processed result string.
       seeAlso:
@@ -4096,16 +4131,17 @@ namespaces:
       displayName: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithFullDocs.ProcessNumbers()
       examples: >-
         <code>
-                    var numbers = Enumerable.Range(1, 10)
-                        .Where(x =&gt; x % 2 == 0)
-                        .Select(x =&gt; new
-                        {
-                            Number = x,
-                            Square = x * x,
-                            Cube = x * x * x
-                        })
-                        .ToList();
-                    </code>
+
+        var numbers = Enumerable.Range(1, 10)
+            .Where(x =&gt; x % 2 == 0)
+            .Select(x =&gt; new
+            {
+                Number = x,
+                Square = x * x,
+                Cube = x * x * x
+            })
+            .ToList();
+        </code>
       returns: A collection of transformed numbers.
       summary: Filters and transforms a collection of numbers.
     - accessibility: Public
@@ -4332,9 +4368,12 @@ namespaces:
     displayName: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithFullDocs
     examples: >-
       <code>
-                  var fullDocs = new ClassWithFullDocs();
-                  fullDocs.ComplexMethod("test", 42);
-                  </code>
+
+      var fullDocs = new ClassWithFullDocs();
+
+      fullDocs.ComplexMethod("test", 42);
+
+      </code>
     remarks: <para>This class demonstrates all available XML documentation tags.</para><para>It includes multiple paragraphs in the remarks section.</para>
     seeAlso:
     - rawReference: T:CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithMinimalDocs
@@ -4385,7 +4424,8 @@ namespaces:
     - System.IConvertible
     remarks: >-
       This enum uses a byte as its underlying type to save memory.
-                  Values are limited to 0-255.
+
+      Values are limited to 0-255.
     summary: An enum with byte underlying type.
   - isFlags: true
     underlyingType:
@@ -4555,9 +4595,12 @@ namespaces:
       displayName: CloudNimble.DotNetDocs.Tests.Shared.Parameters.ParameterVariations.MethodWithOptionalParam(string, int)
       examples: >-
         <code>
-                    var result1 = MethodWithOptionalParam("test");      // Uses default value 42
-                    var result2 = MethodWithOptionalParam("test", 100); // Uses provided value
-                    </code>
+
+        var result1 = MethodWithOptionalParam("test");      // Uses default value 42
+
+        var result2 = MethodWithOptionalParam("test", 100); // Uses provided value
+
+        </code>
       returns: A formatted string combining both parameters.
       summary: A method with an optional parameter.
     - accessibility: Public
@@ -4590,9 +4633,12 @@ namespaces:
       displayName: CloudNimble.DotNetDocs.Tests.Shared.Parameters.ParameterVariations.MethodWithParams(params int[])
       examples: >-
         <code>
-                    var sum1 = MethodWithParams(1, 2, 3);        // Returns 6
-                    var sum2 = MethodWithParams(new[] { 1, 2 }); // Returns 3
-                    </code>
+
+        var sum1 = MethodWithParams(1, 2, 3);        // Returns 6
+
+        var sum2 = MethodWithParams(new[] { 1, 2 }); // Returns 3
+
+        </code>
       returns: The sum of all provided values.
       summary: A method with a params array.
     - accessibility: Public
@@ -4692,9 +4738,12 @@ namespaces:
       displayName: CloudNimble.DotNetDocs.Tests.Shared.Parameters.ParameterVariations.GenericMethod<T>(T)
       examples: >-
         <code>
-                    var result1 = GenericMethod&lt;int&gt;(42);
-                    var result2 = GenericMethod("hello");
-                    </code>
+
+        var result1 = GenericMethod&lt;int&gt;(42);
+
+        var result2 = GenericMethod("hello");
+
+        </code>
       returns: The string representation of the value.
       summary: A generic method with a type parameter.
       typeParameters:
@@ -5076,12 +5125,16 @@ namespaces:
       displayName: System.Collections.Generic.TestsShared_ListExtensions.IsNullOrEmpty<T>(System.Collections.Generic.List<T>)
       examples: >-
         <code>
-                    var numbers = new List&lt;int&gt;();
-                    if (numbers.IsNullOrEmpty())
-                    {
-                        // Handle empty list
-                    }
-                    </code>
+
+        var numbers = new List&lt;int&gt;();
+
+        if (numbers.IsNullOrEmpty())
+
+        {
+            // Handle empty list
+        }
+
+        </code>
       returns: True if the list is null or empty, otherwise false.
       summary: Checks if a list is null or empty.
       typeParameters:
@@ -5131,9 +5184,10 @@ namespaces:
       displayName: System.Collections.Generic.TestsShared_ListExtensions.AddMultiple<T>(System.Collections.Generic.List<T>, params T[])
       examples: >-
         <code>
-                    var numbers = new List&lt;int&gt;()
-                        .AddMultiple(1, 2, 3, 4, 5);
-                    </code>
+
+        var numbers = new List&lt;int&gt;()
+            .AddMultiple(1, 2, 3, 4, 5);
+        </code>
       returns: The list for fluent chaining.
       summary: Adds multiple items to a list in one call.
       typeParameters:
@@ -5220,7 +5274,17 @@ namespaces:
       isExtensionMethod: true
       extendedTypeName: string
       displayName: CloudNimble.DotNetDocs.Tests.Shared.Extensions.StringExtensions.Reverse(string)
-      examples: "<code>\r\n             using CloudNimble.DotNetDocs.Tests.Shared.Extensions;\r\n            \r\n             var result = \"hello\".Reverse();\r\n             // result = \"olleh\"\r\n             </code>"
+      examples: >-
+        <code>
+
+        using CloudNimble.DotNetDocs.Tests.Shared.Extensions;
+
+
+        var result = "hello".Reverse();
+
+        // result = "olleh"
+
+        </code>
       returns: The reversed string.
       summary: Reverses the characters in a string.
     - accessibility: Public
@@ -5268,9 +5332,12 @@ namespaces:
       displayName: CloudNimble.DotNetDocs.Tests.Shared.Extensions.StringExtensions.Repeat(string, int)
       examples: >-
         <code>
-                    var result = "ha".Repeat(3);
-                    // result = "hahaha"
-                    </code>
+
+        var result = "ha".Repeat(3);
+
+        // result = "hahaha"
+
+        </code>
       returns: The repeated string.
       summary: Repeats a string a specified number of times.
     assemblyName: System.Private.CoreLib

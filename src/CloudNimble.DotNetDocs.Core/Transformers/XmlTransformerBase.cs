@@ -140,8 +140,8 @@ namespace CloudNimble.DotNetDocs.Core.Transformers
         /// <param name="skipEscaping">When true, the text is conceptual content that is already in the output format.</param>
         /// <returns>The converted text, or the original text when it is null, whitespace, or contains no tags.</returns>
         /// <remarks>
-        /// Indentation is normalized before the tag check, because plain multi-line text without tags also carries the
-        /// indentation of the XML documentation file.
+        /// Indentation is left as it is. <see cref="AssemblyManager"/> already removed the XML documentation file's indentation
+        /// when it extracted the text, and conceptual content is indented on purpose, for example in code blocks and nested lists.
         /// </remarks>
         protected virtual string? ConvertText(string? text, bool skipEscaping = false)
         {
@@ -152,8 +152,6 @@ namespace CloudNimble.DotNetDocs.Core.Transformers
                 _stringsSkipped++;
                 return text;
             }
-
-            text = NormalizeXmlDocIndentation(text);
 
             // Text with HTML tags is still converted, so the derived class can apply its escaping rules to it.
             if (!HasXmlTags().IsMatch(text) && !text.Contains('<'))
@@ -168,7 +166,7 @@ namespace CloudNimble.DotNetDocs.Core.Transformers
         /// <summary>
         /// Converts the XML documentation tags in a string into the output format.
         /// </summary>
-        /// <param name="text">The text to convert. It is never null or whitespace, its indentation is already normalized, and it contains at least one tag.</param>
+        /// <param name="text">The text to convert. It is never null or whitespace and contains at least one tag. Text extracted by <see cref="AssemblyManager"/> has no XML file indentation.</param>
         /// <param name="skipEscaping">When true, the text is conceptual content that is already in the output format, so tags that were not converted must be left as they are.</param>
         /// <returns>The converted text.</returns>
         protected abstract string ConvertXml(string text, bool skipEscaping);
@@ -380,14 +378,16 @@ namespace CloudNimble.DotNetDocs.Core.Transformers
             }
             else if (IsFrameworkType(lookupKey))
             {
+                // Microsoft Learn has one page per method name, covering all its overloads.
+                var nameWithoutParameters = StripParameters(lookupKey);
                 docRef.ReferenceType = ReferenceType.Framework;
-                docRef.RelativePath = GetFrameworkDocumentationUrl(lookupKey);
-                docRef.DisplayName = GetSimpleTypeName(lookupKey);
+                docRef.RelativePath = GetFrameworkDocumentationUrl(nameWithoutParameters);
+                docRef.DisplayName = GetSimpleTypeName(nameWithoutParameters);
                 docRef.IsResolved = true;
             }
             else
             {
-                docRef.DisplayName = GetSimpleTypeName(lookupKey);
+                docRef.DisplayName = GetSimpleTypeName(StripParameters(lookupKey));
             }
 
             return docRef;
@@ -607,7 +607,7 @@ namespace CloudNimble.DotNetDocs.Core.Transformers
         }
 
         /// <summary>
-        /// Indexes a member in the reference map by its documentation ID.
+        /// Indexes a member in the reference map by its type-qualified name and by its Roslyn documentation ID.
         /// </summary>
         /// <param name="member">The member to index.</param>
         /// <param name="parentType">The parent type containing the member.</param>
@@ -619,6 +619,10 @@ namespace CloudNimble.DotNetDocs.Core.Transformers
             // Members are rendered on the same page as their type.
             var memberPath = GetTypePath(parentType, ns);
             AddToReferenceMap(member, memberId, memberPath);
+
+            // The compiler writes crefs with Roslyn's documentation ID, which includes the parameter list that tells overloads
+            // apart. For an extension method moved to the type it extends, the ID still names the static class that declares it.
+            AddToReferenceMap(member, member.Symbol.GetDocumentationCommentId()!, memberPath);
         }
 
         /// <summary>
@@ -692,7 +696,7 @@ namespace CloudNimble.DotNetDocs.Core.Transformers
         /// <returns>The text with XML file indentation removed from all lines.</returns>
         /// <remarks>
         /// <para>
-        /// <c>ExtractInnerXml</c> trims the overall string, which strips the first line's
+        /// <see cref="AssemblyManager"/> calls this when it extracts text. Trimming the extracted string strips the first line's
         /// leading whitespace but leaves continuation lines with their XML file indentation.
         /// <see cref="RemoveCommonIndentation(string)"/> handles the uniform case (all lines indented);
         /// this method handles the mixed case where the first line has indent 0 but the
@@ -740,6 +744,20 @@ namespace CloudNimble.DotNetDocs.Core.Transformers
             }
 
             return result.ToString().Trim();
+        }
+
+        /// <summary>
+        /// Removes the parameter list from a method or indexer reference.
+        /// </summary>
+        /// <param name="reference">The reference, such as <c>M:System.String.Format(System.String,System.Object)</c>.</param>
+        /// <returns>The reference up to its parameter list, such as <c>M:System.String.Format</c>, or the reference unchanged when it has none.</returns>
+        /// <remarks>
+        /// Parameter types contain dots, so names must be split only after the parameter list is removed.
+        /// </remarks>
+        internal static string StripParameters(string reference)
+        {
+            var parenthesisIndex = reference.IndexOf('(');
+            return parenthesisIndex >= 0 ? reference[..parenthesisIndex] : reference;
         }
 
         /// <summary>
@@ -791,7 +809,7 @@ namespace CloudNimble.DotNetDocs.Core.Transformers
         /// <returns><c>Type.Member</c>, or the member name alone when the reference has no type qualifier.</returns>
         private string QualifyWithTypeName(string reference, string memberName)
         {
-            var withoutPrefix = StripPrefix(reference);
+            var withoutPrefix = StripParameters(StripPrefix(reference));
             var lastDot = withoutPrefix.LastIndexOf('.');
             return lastDot > 0
                 ? $"{GetSimpleTypeName(withoutPrefix[..lastDot])}.{memberName}"

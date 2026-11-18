@@ -218,75 +218,6 @@ This handles both generic type syntax (e.g., JsonConverter&lt;object&gt;) and XM
 (e.g., &lt;see cref="..."&gt;) by converting them to JsonConverter&amp;lt;object&amp;gt; and
 &amp;lt;see cref="..."&amp;gt; respectively.
 
-### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetBestPracticesTemplate <Badge color="gray">Inherited</Badge>
-
-<Note>Inherited from `CloudNimble.DotNetDocs.Core.Renderers.MarkdownRendererBase`</Note>
-
-Gets a template for best practices documentation.
-
-#### Syntax
-
-```csharp
-protected static string GetBestPracticesTemplate(string entityName)
-```
-
-#### Parameters
-
-| Name | Type | Description |
-|------|------|-------------|
-| `entityName` | `string` | The name of the entity (type, assembly, etc.). |
-
-#### Returns
-
-Type: `string`
-A markdown template string for best practices documentation.
-
-### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetConsiderationsTemplate <Badge color="gray">Inherited</Badge>
-
-<Note>Inherited from `CloudNimble.DotNetDocs.Core.Renderers.MarkdownRendererBase`</Note>
-
-Gets a template for considerations documentation.
-
-#### Syntax
-
-```csharp
-protected static string GetConsiderationsTemplate(string entityName)
-```
-
-#### Parameters
-
-| Name | Type | Description |
-|------|------|-------------|
-| `entityName` | `string` | The name of the entity (type, assembly, etc.). |
-
-#### Returns
-
-Type: `string`
-A markdown template string for considerations documentation.
-
-### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetExamplesTemplate <Badge color="gray">Inherited</Badge>
-
-<Note>Inherited from `CloudNimble.DotNetDocs.Core.Renderers.MarkdownRendererBase`</Note>
-
-Gets a template for examples documentation.
-
-#### Syntax
-
-```csharp
-protected static string GetExamplesTemplate(string entityName)
-```
-
-#### Parameters
-
-| Name | Type | Description |
-|------|------|-------------|
-| `entityName` | `string` | The name of the entity (type, assembly, etc.). |
-
-#### Returns
-
-Type: `string`
-A markdown template string for examples documentation.
-
 ### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetHashCode <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
 
 <Note>Inherited from `object`</Note>
@@ -381,7 +312,7 @@ The full file path for the namespace documentation.
 
 #### Remarks
 
-The location comes from `String)`, which cross-reference links also use.
+The location comes from [ProjectContext.GetNamespacePagePath](/api-reference/CloudNimble/DotNetDocs/Core/ProjectContext#getnamespacepagepath), which cross-reference links also use.
 
 ### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetNamespaceLink <Badge color="gray">Inherited</Badge>
 
@@ -401,7 +332,7 @@ protected string GetNamespaceLink(CloudNimble.DotNetDocs.Core.DocNamespace ns, s
 |------|------|-------------|
 | `ns` | `CloudNimble.DotNetDocs.Core.DocNamespace` | The namespace to get the link for. |
 | `extension` | `string` | The file extension (without the dot). |
-| `omitIndexFile` | `bool` | [`true`](https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool) to link to the namespace folder instead of its index file in [NamespaceMode.Folder](/api-reference/CloudNimble/DotNetDocs/Core/Configuration/NamespaceMode#folder),
+| `omitIndexFile` | `bool` | [`true`](https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool) to link to the namespace folder instead of its index file in [NamespaceMode.Folder](/api-reference/CloudNimble/DotNetDocs/Core/Configuration/NamespaceMode),
 for renderers whose output platform resolves a folder link to its index page. |
 
 #### Returns
@@ -421,53 +352,7 @@ For the namespace `CloudNimble.DotNetDocs.Core` with the extension `md`:
 #### Remarks
 
 Use this for links from the assembly index page, which sits at the output root. It shares the path logic in
-`String)`, so links always match where the namespace pages are written.
-
-### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetPatternsTemplate <Badge color="gray">Inherited</Badge>
-
-<Note>Inherited from `CloudNimble.DotNetDocs.Core.Renderers.MarkdownRendererBase`</Note>
-
-Gets a template for patterns documentation.
-
-#### Syntax
-
-```csharp
-protected static string GetPatternsTemplate(string entityName)
-```
-
-#### Parameters
-
-| Name | Type | Description |
-|------|------|-------------|
-| `entityName` | `string` | The name of the entity (type, assembly, etc.). |
-
-#### Returns
-
-Type: `string`
-A markdown template string for patterns documentation.
-
-### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetRelatedApisTemplate <Badge color="gray">Inherited</Badge>
-
-<Note>Inherited from `CloudNimble.DotNetDocs.Core.Renderers.MarkdownRendererBase`</Note>
-
-Gets a template for related APIs documentation.
-
-#### Syntax
-
-```csharp
-protected static string GetRelatedApisTemplate(string entityName)
-```
-
-#### Parameters
-
-| Name | Type | Description |
-|------|------|-------------|
-| `entityName` | `string` | The name of the entity (type, assembly, etc.). |
-
-#### Returns
-
-Type: `string`
-A markdown template string for related APIs documentation.
+[RendererBase.GetNamespaceFilePath](/api-reference/CloudNimble/DotNetDocs/Core/Renderers/YamlRenderer#getnamespacefilepath), so links always match where the namespace pages are written.
 
 ### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetSafeNamespaceName <Badge color="gray">Inherited</Badge>
 
@@ -515,29 +400,6 @@ protected string GetSafeTypeName(CloudNimble.DotNetDocs.Core.DocType type)
 Type: `string`
 A safe type name with invalid characters replaced.
 
-### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetSummaryTemplate <Badge color="gray">Inherited</Badge>
-
-<Note>Inherited from `CloudNimble.DotNetDocs.Core.Renderers.MarkdownRendererBase`</Note>
-
-Gets a template for summary documentation.
-
-#### Syntax
-
-```csharp
-protected static string GetSummaryTemplate(string entityName)
-```
-
-#### Parameters
-
-| Name | Type | Description |
-|------|------|-------------|
-| `entityName` | `string` | The name of the entity (namespace, assembly, etc.). |
-
-#### Returns
-
-Type: `string`
-A markdown template string for summary documentation.
-
 ### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetType <Badge color="gray">Inherited</Badge>
 
 <Note>Inherited from `object`</Note>
@@ -580,30 +442,7 @@ The full file path for the type documentation.
 
 #### Remarks
 
-The location comes from `String)`, which cross-reference links also use.
-
-### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetUsageTemplate <Badge color="gray">Inherited</Badge>
-
-<Note>Inherited from `CloudNimble.DotNetDocs.Core.Renderers.MarkdownRendererBase`</Note>
-
-Gets a template for usage documentation.
-
-#### Syntax
-
-```csharp
-protected static string GetUsageTemplate(string entityName)
-```
-
-#### Parameters
-
-| Name | Type | Description |
-|------|------|-------------|
-| `entityName` | `string` | The name of the entity (type, assembly, etc.). |
-
-#### Returns
-
-Type: `string`
-A markdown template string for usage documentation.
+The location comes from [ProjectContext.GetTypePagePath](/api-reference/CloudNimble/DotNetDocs/Core/ProjectContext#gettypepagepath), which cross-reference links also use.
 
 ### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> MemberwiseClone <Badge color="gray">Inherited</Badge>
 
@@ -640,29 +479,6 @@ public static bool ReferenceEquals(object objA, object objB)
 
 Type: `bool`
 
-### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> RemoveIndentation <Badge color="gray">Inherited</Badge>
-
-<Note>Inherited from `CloudNimble.DotNetDocs.Core.Renderers.RendererBase`</Note>
-
-Removes common leading indentation from multi-line text content.
-
-#### Syntax
-
-```csharp
-internal static string RemoveIndentation(string text)
-```
-
-#### Parameters
-
-| Name | Type | Description |
-|------|------|-------------|
-| `text` | `string` | The text to remove indentation from. |
-
-#### Returns
-
-Type: `string`
-The text with common indentation removed.
-
 ### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> RenderAsync
 
 Renders the documentation assembly to Markdown files.
@@ -684,26 +500,34 @@ public System.Threading.Tasks.Task RenderAsync(CloudNimble.DotNetDocs.Core.DocAs
 Type: `System.Threading.Tasks.Task`
 A task representing the asynchronous rendering operation.
 
-### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> RenderPlaceholdersAsync
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> RenderPlaceholdersAsync <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
 
-Renders placeholder conceptual content files for the documentation assembly.
+<Note>Inherited from `CloudNimble.DotNetDocs.Core.Renderers.RendererBase`</Note>
+
+Adds this renderer's own files to the conceptual content folder. The default implementation does nothing.
 
 #### Syntax
 
 ```csharp
-public System.Threading.Tasks.Task RenderPlaceholdersAsync(CloudNimble.DotNetDocs.Core.DocAssembly model)
+public virtual System.Threading.Tasks.Task RenderPlaceholdersAsync(CloudNimble.DotNetDocs.Core.DocAssembly model)
 ```
 
 #### Parameters
 
 | Name | Type | Description |
 |------|------|-------------|
-| `model` | `CloudNimble.DotNetDocs.Core.DocAssembly` | The documentation assembly to generate placeholders for. |
+| `model` | `CloudNimble.DotNetDocs.Core.DocAssembly` | The documentation model that placeholders are being generated for. |
 
 #### Returns
 
 Type: `System.Threading.Tasks.Task`
-A task representing the asynchronous placeholder rendering operation.
+A completed task.
+
+#### Remarks
+
+[DocumentationManager.GeneratePlaceholdersAsync](/api-reference/CloudNimble/DotNetDocs/Core/DocumentationManager#generateplaceholdersasync) writes the standard namespace and type
+placeholders, then calls this method on each registered renderer. Override it to add files that a renderer needs
+beyond the standard placeholders; files written into the conceptual folder are loaded with the rest of the content.
 
 ### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ToString <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
 

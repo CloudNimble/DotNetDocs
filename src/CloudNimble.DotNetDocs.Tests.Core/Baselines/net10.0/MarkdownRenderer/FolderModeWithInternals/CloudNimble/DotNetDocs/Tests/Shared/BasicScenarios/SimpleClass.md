@@ -19,7 +19,7 @@ A simple class for testing basic documentation extraction.
 ## Remarks
 
 These are remarks about the SimpleClass. They provide additional context
-            and information beyond what's in the summary.
+and information beyond what's in the summary.
 
 ## Examples
 

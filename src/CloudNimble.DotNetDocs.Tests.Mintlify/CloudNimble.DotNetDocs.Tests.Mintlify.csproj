@@ -15,6 +15,7 @@
         <Compile Include="..\CloudNimble.DotNetDocs.Tests.Core\Helpers\BaselineAssert.cs" Link="Helpers\BaselineAssert.cs" />
         <Compile Include="..\CloudNimble.DotNetDocs.Tests.Core\Helpers\BaselinePermutations.cs" Link="Helpers\BaselinePermutations.cs" />
         <Compile Include="..\CloudNimble.DotNetDocs.Tests.Core\Helpers\ConceptualRoundTrip.cs" Link="Helpers\ConceptualRoundTrip.cs" />
+        <Compile Include="..\CloudNimble.DotNetDocs.Tests.Core\Helpers\IndentationSamples.cs" Link="Helpers\IndentationSamples.cs" />
         <Compile Include="..\CloudNimble.DotNetDocs.Tests.Core\Helpers\RenderedOutputInspector.cs" Link="Helpers\RenderedOutputInspector.cs" />
     </ItemGroup>
 

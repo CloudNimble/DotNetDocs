@@ -40,7 +40,8 @@ types:
   - System.IConvertible
   remarks: >-
     This enum uses a byte as its underlying type to save memory.
-                Values are limited to 0-255.
+
+    Values are limited to 0-255.
   summary: An enum with byte underlying type.
 - isFlags: true
   underlyingType:

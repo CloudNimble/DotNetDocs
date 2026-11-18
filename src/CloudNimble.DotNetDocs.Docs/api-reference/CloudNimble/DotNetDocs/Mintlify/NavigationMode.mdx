@@ -3,7 +3,7 @@ title: NavigationMode
 description: "Specifies how navigation should be organized when generating documentation from multiple assemblies."
 icon: list-ol
 tag: "ENUM"
-keywords: ['NavigationMode', 'CloudNimble.DotNetDocs.Mintlify.NavigationMode', 'CloudNimble.DotNetDocs.Mintlify', 'class', 'System.Enum']
+keywords: ['NavigationMode', 'CloudNimble.DotNetDocs.Mintlify.NavigationMode', 'CloudNimble.DotNetDocs.Mintlify', 'enum', 'System.Enum', 'System.IComparable', 'System.ISpanFormattable', 'System.IFormattable', 'System.IConvertible']
 ---
 
 ## Definition
@@ -29,7 +29,14 @@ Specifies how navigation should be organized when generating documentation from 
 | Name | Value | Description |
 |------|-------|-------------|
 | `Unified` | 0 | All assemblies are merged into a single unified navigation structure.
-            This is the default mode for backward compatibility. |
+This is the default mode for backward compatibility. |
 | `ByAssembly` | 1 | Each assembly gets its own top-level group in the navigation.
-            Useful for large solutions with distinct assembly boundaries. |
+Useful for large solutions with distinct assembly boundaries. |
+
+## Related APIs
+
+- System.IComparable
+- System.ISpanFormattable
+- System.IFormattable
+- System.IConvertible
 

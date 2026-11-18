@@ -34,12 +34,16 @@ types:
     displayName: System.Collections.Generic.TestsShared_ListExtensions.IsNullOrEmpty<T>(System.Collections.Generic.List<T>)
     examples: >-
       <code>
-                  var numbers = new List&lt;int&gt;();
-                  if (numbers.IsNullOrEmpty())
-                  {
-                      // Handle empty list
-                  }
-                  </code>
+
+      var numbers = new List&lt;int&gt;();
+
+      if (numbers.IsNullOrEmpty())
+
+      {
+          // Handle empty list
+      }
+
+      </code>
     returns: True if the list is null or empty, otherwise false.
     summary: Checks if a list is null or empty.
     typeParameters:
@@ -89,9 +93,10 @@ types:
     displayName: System.Collections.Generic.TestsShared_ListExtensions.AddMultiple<T>(System.Collections.Generic.List<T>, params T[])
     examples: >-
       <code>
-                  var numbers = new List&lt;int&gt;()
-                      .AddMultiple(1, 2, 3, 4, 5);
-                  </code>
+
+      var numbers = new List&lt;int&gt;()
+          .AddMultiple(1, 2, 3, 4, 5);
+      </code>
     returns: The list for fluent chaining.
     summary: Adds multiple items to a list in one call.
     typeParameters:

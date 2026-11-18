@@ -17,7 +17,7 @@
         "System.IFormattable",
         "System.IConvertible"
       ],
-      "remarks": "This enum uses a byte as its underlying type to save memory.\r\n            Values are limited to 0-255.",
+      "remarks": "This enum uses a byte as its underlying type to save memory.\r\nValues are limited to 0-255.",
       "summary": "An enum with byte underlying type."
     },
     {

@@ -723,7 +723,7 @@ namespace CloudNimble.DotNetDocs.Mintlify
                     sb.AppendLine(header);
                     sb.AppendLine();
                 }
-                sb.AppendLine(RemoveIndentation(assembly.Examples));
+                sb.AppendLine(assembly.Examples);
                 sb.AppendLine();
             }
 
@@ -841,7 +841,7 @@ namespace CloudNimble.DotNetDocs.Mintlify
                     sb.AppendLine(header);
                     sb.AppendLine();
                 }
-                sb.AppendLine(RemoveIndentation(ns.Examples));
+                sb.AppendLine(ns.Examples);
                 sb.AppendLine();
             }
 
@@ -1111,7 +1111,7 @@ namespace CloudNimble.DotNetDocs.Mintlify
                     sb.AppendLine(header);
                     sb.AppendLine();
                 }
-                sb.AppendLine(RemoveIndentation(type.Examples));
+                sb.AppendLine(type.Examples);
                 sb.AppendLine();
             }
 
@@ -1420,7 +1420,7 @@ namespace CloudNimble.DotNetDocs.Mintlify
             {
                 sb.AppendLine("#### Examples");
                 sb.AppendLine();
-                sb.AppendLine(RemoveIndentation(member.Examples));
+                sb.AppendLine(member.Examples);
                 sb.AppendLine();
             }
 
@@ -1817,170 +1817,6 @@ namespace CloudNimble.DotNetDocs.Mintlify
                 // Clear the Pages and Groups arrays since content is now in Products
                 navigation.Pages = [];
                 navigation.Groups = null;
-            }
-        }
-
-        #endregion
-
-        #region Private Methods - Placeholder Generation
-
-        /// <summary>
-        /// Renders placeholder conceptual content files for the documentation assembly.
-        /// </summary>
-        /// <param name="model">The documentation assembly to generate placeholders for.</param>
-        /// <returns>A task representing the asynchronous placeholder rendering operation.</returns>
-        public async Task RenderPlaceholdersAsync(DocAssembly model)
-        {
-            ArgumentNullException.ThrowIfNull(model);
-
-            if (string.IsNullOrWhiteSpace(Context.ConceptualPath))
-            {
-                return;
-            }
-
-            // Resolve a relative ConceptualPath against DocumentationRootPath, matching where DocumentationManager loads it from.
-            var conceptualPath = Context.GetFullConceptualPath();
-
-            // Ensure conceptual directory exists
-            Directory.CreateDirectory(conceptualPath);
-
-            // Generate placeholders for assembly-level conceptual content
-            await GenerateAssemblyPlaceholdersAsync(model, conceptualPath);
-
-            // Generate placeholders for namespace-level conceptual content
-            foreach (var ns in model.Namespaces)
-            {
-                await GenerateNamespacePlaceholdersAsync(ns);
-            }
-
-            // Generate placeholders for type-level conceptual content
-            foreach (var ns in model.Namespaces)
-            {
-                foreach (var type in ns.Types)
-                {
-                    await GenerateTypePlaceholdersAsync(type, ns);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Generates placeholder files for assembly-level conceptual content.
-        /// </summary>
-        /// <param name="assembly">The assembly to generate placeholders for.</param>
-        /// <param name="conceptualPath">The base conceptual content path.</param>
-        /// <returns>A task representing the asynchronous operation.</returns>
-        private Task GenerateAssemblyPlaceholdersAsync(DocAssembly assembly, string conceptualPath)
-        {
-            // Assembly-level placeholders would go in the root conceptual directory
-            // For now, we'll focus on type-level placeholders as requested
-            return Task.CompletedTask;
-        }
-
-        /// <summary>
-        /// Generates placeholder files for namespace-level conceptual content.
-        /// </summary>
-        /// <param name="ns">The namespace to generate placeholders for.</param>
-        /// <returns>A task representing the asynchronous operation.</returns>
-        private async Task GenerateNamespacePlaceholdersAsync(DocNamespace ns)
-        {
-            // Build the namespace directory path
-            var namespaceDir = Context.GetConceptualNamespacePath(ns.Name);
-
-            Console.WriteLine($"📝 Generating namespace placeholders for: {ns.Name} at {namespaceDir}");
-            Directory.CreateDirectory(namespaceDir);
-
-            // Generate individual placeholder files
-            var summaryPath = Path.Combine(namespaceDir, DocConstants.SummaryFileName);
-            if (!File.Exists(summaryPath))
-            {
-                await File.WriteAllTextAsync(summaryPath, GetSummaryTemplate(GetSafeNamespaceName(ns)));
-            }
-
-            var usagePath = Path.Combine(namespaceDir, DocConstants.UsageFileName);
-            if (!File.Exists(usagePath))
-            {
-                await File.WriteAllTextAsync(usagePath, GetUsageTemplate(GetSafeNamespaceName(ns)));
-            }
-
-            var examplesPath = Path.Combine(namespaceDir, DocConstants.ExamplesFileName);
-            if (!File.Exists(examplesPath))
-            {
-                await File.WriteAllTextAsync(examplesPath, GetExamplesTemplate(GetSafeNamespaceName(ns)));
-            }
-
-            var bestPracticesPath = Path.Combine(namespaceDir, DocConstants.BestPracticesFileName);
-            if (!File.Exists(bestPracticesPath))
-            {
-                await File.WriteAllTextAsync(bestPracticesPath, GetBestPracticesTemplate(GetSafeNamespaceName(ns)));
-            }
-
-            var patternsPath = Path.Combine(namespaceDir, DocConstants.PatternsFileName);
-            if (!File.Exists(patternsPath))
-            {
-                await File.WriteAllTextAsync(patternsPath, GetPatternsTemplate(GetSafeNamespaceName(ns)));
-            }
-
-            var considerationsPath = Path.Combine(namespaceDir, DocConstants.ConsiderationsFileName);
-            if (!File.Exists(considerationsPath))
-            {
-                await File.WriteAllTextAsync(considerationsPath, GetConsiderationsTemplate(GetSafeNamespaceName(ns)));
-            }
-
-            var relatedApisPath = Path.Combine(namespaceDir, DocConstants.RelatedApisFileName);
-            if (!File.Exists(relatedApisPath))
-            {
-                await File.WriteAllTextAsync(relatedApisPath, GetRelatedApisTemplate(GetSafeNamespaceName(ns)));
-            }
-        }
-
-        /// <summary>
-        /// Generates placeholder files for type-level conceptual content.
-        /// </summary>
-        /// <param name="type">The type to generate placeholders for.</param>
-        /// <param name="ns">The namespace containing the type.</param>
-        /// <returns>A task representing the asynchronous operation.</returns>
-        private async Task GenerateTypePlaceholdersAsync(DocType type, DocNamespace ns)
-        {
-            // Build the type directory path
-            var typeDir = Context.GetConceptualTypePath(ns.Name, type.Name);
-
-            Directory.CreateDirectory(typeDir);
-
-            // Generate individual placeholder files
-            var usagePath = Path.Combine(typeDir, DocConstants.UsageFileName);
-            if (!File.Exists(usagePath))
-            {
-                await File.WriteAllTextAsync(usagePath, GetUsageTemplate(type.Name));
-            }
-
-            var examplesPath = Path.Combine(typeDir, DocConstants.ExamplesFileName);
-            if (!File.Exists(examplesPath))
-            {
-                await File.WriteAllTextAsync(examplesPath, GetExamplesTemplate(type.Name));
-            }
-
-            var bestPracticesPath = Path.Combine(typeDir, DocConstants.BestPracticesFileName);
-            if (!File.Exists(bestPracticesPath))
-            {
-                await File.WriteAllTextAsync(bestPracticesPath, GetBestPracticesTemplate(type.Name));
-            }
-
-            var patternsPath = Path.Combine(typeDir, DocConstants.PatternsFileName);
-            if (!File.Exists(patternsPath))
-            {
-                await File.WriteAllTextAsync(patternsPath, GetPatternsTemplate(type.Name));
-            }
-
-            var considerationsPath = Path.Combine(typeDir, DocConstants.ConsiderationsFileName);
-            if (!File.Exists(considerationsPath))
-            {
-                await File.WriteAllTextAsync(considerationsPath, GetConsiderationsTemplate(type.Name));
-            }
-
-            var relatedApisPath = Path.Combine(typeDir, DocConstants.RelatedApisFileName);
-            if (!File.Exists(relatedApisPath))
-            {
-                await File.WriteAllTextAsync(relatedApisPath, GetRelatedApisTemplate(type.Name));
             }
         }
 

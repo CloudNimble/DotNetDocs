@@ -3,7 +3,7 @@ title: DocReferenceHandlerBase
 description: "Base class for documentation reference handlers providing common file copying functionality."
 icon: shapes
 tag: "ABSTRACT"
-keywords: ['DocReferenceHandlerBase', 'CloudNimble.DotNetDocs.Core.DocReferenceHandlerBase', 'CloudNimble.DotNetDocs.Core', 'class', 'System.Object', 'CloudNimble.DotNetDocs.Core.IDocReferenceHandler']
+keywords: ['DocReferenceHandlerBase', 'CloudNimble.DotNetDocs.Core.DocReferenceHandlerBase', 'CloudNimble.DotNetDocs.Core', 'class', 'CloudNimble.DotNetDocs.Core.IDocReferenceHandler']
 ---
 
 ## Definition
@@ -11,8 +11,6 @@ keywords: ['DocReferenceHandlerBase', 'CloudNimble.DotNetDocs.Core.DocReferenceH
 **Assembly:** CloudNimble.DotNetDocs.Core.dll
 
 **Namespace:** CloudNimble.DotNetDocs.Core
-
-**Inheritance:** System.Object
 
 ## Syntax
 
@@ -29,7 +27,7 @@ Base class for documentation reference handlers providing common file copying fu
 This abstract class contains shared logic for copying files from referenced documentation projects,
 including directory recursion, exclusion pattern matching, and glob pattern support.
 
-Derived classes should implement `String)` to provide format-specific
+Derived classes should implement [DocReferenceHandlerBase.ProcessAsync](/api-reference/CloudNimble/DotNetDocs/Core/MarkdownDocReferenceHandler#processasync) to provide format-specific
 processing such as content rewriting and resource relocation.
 
 ## Constructors

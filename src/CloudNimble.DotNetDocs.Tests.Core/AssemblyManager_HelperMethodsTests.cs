@@ -1,4 +1,5 @@
 using System.Linq;
+using System.Threading.Tasks;
 using CloudNimble.DotNetDocs.Core;
 using CloudNimble.DotNetDocs.Tests.Shared;
 using CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios;
@@ -436,6 +437,71 @@ namespace Test
             withText.Descendants("seealso").Should().ContainSingle("the original element must not be modified");
             manager.ExtractInnerXmlExcluding(onlyExcluded, "seealso").Should().BeNull();
             manager.ExtractInnerXmlExcluding(null, "seealso").Should().BeNull();
+        }
+
+        #endregion
+
+        #region Tests - Indentation Normalization
+
+        [TestMethod]
+        public void ExtractRemarks_RemovesTheXmlFileIndentationFromContinuationLines()
+        {
+            using var manager = CreateManager();
+            var doc = System.Xml.Linq.XDocument.Parse("""
+                <member>
+                    <remarks>
+                    These are remarks about the SimpleClass. They provide additional context
+                    and information beyond what's in the summary.
+                    </remarks>
+                </member>
+                """);
+
+            var remarks = manager.ExtractRemarks(doc);
+
+            remarks.Should().Be(string.Join(System.Environment.NewLine,
+                "These are remarks about the SimpleClass. They provide additional context",
+                "and information beyond what's in the summary."));
+        }
+
+        [TestMethod]
+        public void ExtractExamples_KeepsRelativeIndentationInsideCode()
+        {
+            using var manager = CreateManager();
+            var doc = System.Xml.Linq.XDocument.Parse("""
+                <member>
+                    <example>
+                    <code>
+                    if (ready)
+                    {
+                        Go();
+                    }
+                    </code>
+                    </example>
+                </member>
+                """);
+
+            var examples = manager.ExtractExamples(doc);
+
+            examples.Should().Be(string.Join(System.Environment.NewLine,
+                "<code>",
+                "if (ready)",
+                "{",
+                "    Go();",
+                "}",
+                "</code>"), "only the indentation shared by every line comes from the XML file");
+        }
+
+        [TestMethod]
+        public async Task DocumentAsync_ExtractsMultiLineRemarksWithoutDocCommentIndentation()
+        {
+            using var manager = CreateManager();
+
+            var assembly = await manager.DocumentAsync(new ProjectContext());
+
+            assembly.Namespaces.SelectMany(n => n.Types).Single(t => t.Name == nameof(SimpleClass)).Remarks
+                .Should().Be(string.Join(System.Environment.NewLine,
+                    "These are remarks about the SimpleClass. They provide additional context",
+                    "and information beyond what's in the summary."));
         }
 
         #endregion

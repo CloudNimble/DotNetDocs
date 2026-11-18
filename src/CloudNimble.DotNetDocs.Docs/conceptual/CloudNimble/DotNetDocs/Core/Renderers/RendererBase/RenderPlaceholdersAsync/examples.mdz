@@ -1,0 +1,45 @@
+`DocumentationManager` writes the standard placeholders for every namespace and type. Members don't get any, so a renderer that wants member-level placeholders can add them by overriding `RenderPlaceholdersAsync`. This one adds an examples file for every method:
+
+```csharp
+public class MyRenderer : RendererBase, IDocRenderer
+{
+    public MyRenderer(ProjectContext context) : base(context)
+    {
+    }
+
+    public Task RenderAsync(DocAssembly? model)
+    {
+        // Write the output format here.
+        return Task.CompletedTask;
+    }
+
+    public override async Task RenderPlaceholdersAsync(DocAssembly model)
+    {
+        foreach (var ns in model.Namespaces)
+        {
+            foreach (var type in ns.Types)
+            {
+                foreach (var member in type.Members.Where(m => m.MemberKind == SymbolKind.Method))
+                {
+                    var folder = Context.GetConceptualMemberPath(ns.Name, type.Name, member.Name);
+                    var path = Path.Combine(folder, DocConstants.ExamplesFileName);
+
+                    // Never overwrite a file someone may have edited.
+                    if (File.Exists(path))
+                    {
+                        continue;
+                    }
+
+                    Directory.CreateDirectory(folder);
+                    await File.WriteAllTextAsync(path, $"""
+                        <!-- TODO: REMOVE THIS COMMENT AFTER YOU CUSTOMIZE THIS CONTENT -->
+                        Show an example of calling `{member.Name}` here.
+                        """);
+                }
+            }
+        }
+    }
+}
+```
+
+Register the renderer as usual. `CreateConceptualFilesAsync` and `ProcessAsync` then write the method placeholders after the standard ones. `ProcessAsync` loads them into each member's `Examples` in the same run.

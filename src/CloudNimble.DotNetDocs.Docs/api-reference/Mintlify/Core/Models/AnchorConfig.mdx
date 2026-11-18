@@ -281,12 +281,12 @@ Gets or sets whether the current option is default hidden.
 #### Syntax
 
 ```csharp
-public System.Nullable<bool> Hidden { get; set; }
+public bool? Hidden { get; set; }
 ```
 
 #### Property Value
 
-Type: `System.Nullable<bool>?`
+Type: `bool?`
 
 #### Remarks
 
@@ -445,18 +445,18 @@ Gets or sets whether hidden descendants remain indexed for search and llms.txt.
 #### Syntax
 
 ```csharp
-public System.Nullable<bool> Searchable { get; set; }
+public bool? Searchable { get; set; }
 ```
 
 #### Property Value
 
-Type: `System.Nullable<bool>?`
+Type: `bool?`
 
 #### Remarks
 
 When `true` on a hidden tab or group, descendant pages stay in site search,
 `sitemap.xml`, AI assistant context, MCP search, and search-engine indexing.
-The tab or group itself stays hidden. Has no effect when [NavigationItemBase.Hidden](/api-reference/Mintlify/Core/Models/NavigationItemBase#hidden) is
+The tab or group itself stays hidden. Has no effect when [NavigationItemBase.Hidden](/api-reference/Mintlify/Core/Models/TabConfig#hidden) is
 false. A page's own `hidden` frontmatter always wins.
 See https://www.mintlify.com/docs/organize/hidden-pages.
 

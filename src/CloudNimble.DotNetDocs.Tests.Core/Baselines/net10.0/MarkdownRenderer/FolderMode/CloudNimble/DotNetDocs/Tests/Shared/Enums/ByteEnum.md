@@ -21,7 +21,7 @@ An enum with byte underlying type.
 ## Remarks
 
 This enum uses a byte as its underlying type to save memory.
-            Values are limited to 0-255.
+Values are limited to 0-255.
 
 **Underlying Type:** byte
 

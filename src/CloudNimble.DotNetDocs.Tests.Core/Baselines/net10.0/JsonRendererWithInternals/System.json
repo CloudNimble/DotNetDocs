@@ -49,7 +49,7 @@
           "isExtensionMethod": true,
           "extendedTypeName": "string",
           "displayName": "CloudNimble.DotNetDocs.Tests.Shared.Extensions.StringExtensions.Reverse(string)",
-          "examples": "\u003Ccode\u003E\r\n             using CloudNimble.DotNetDocs.Tests.Shared.Extensions;\r\n            \r\n             var result = \u0022hello\u0022.Reverse();\r\n             // result = \u0022olleh\u0022\r\n             \u003C/code\u003E",
+          "examples": "\u003Ccode\u003E\r\nusing CloudNimble.DotNetDocs.Tests.Shared.Extensions;\r\n\r\nvar result = \u0022hello\u0022.Reverse();\r\n// result = \u0022olleh\u0022\r\n\u003C/code\u003E",
           "returns": "The reversed string.",
           "summary": "Reverses the characters in a string."
         },
@@ -118,7 +118,7 @@
           "isExtensionMethod": true,
           "extendedTypeName": "string",
           "displayName": "CloudNimble.DotNetDocs.Tests.Shared.Extensions.StringExtensions.Repeat(string, int)",
-          "examples": "\u003Ccode\u003E\r\n            var result = \u0022ha\u0022.Repeat(3);\r\n            // result = \u0022hahaha\u0022\r\n            \u003C/code\u003E",
+          "examples": "\u003Ccode\u003E\r\nvar result = \u0022ha\u0022.Repeat(3);\r\n// result = \u0022hahaha\u0022\r\n\u003C/code\u003E",
           "returns": "The repeated string.",
           "summary": "Repeats a string a specified number of times."
         }

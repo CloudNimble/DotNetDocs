@@ -1,4 +1,5 @@
 using System;
+using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -131,13 +132,15 @@ namespace CloudNimble.DotNetDocs.Core.Transformers
         /// <returns>The text with <c>c</c> and <c>code</c> tags converted to inline code and fenced code blocks.</returns>
         protected virtual string ConvertCodeTags(string text)
         {
+            // The XML documentation file stores <, > and & in code as entities, and Markdown shows entities in code literally,
+            // so they are decoded back to the characters the author wrote.
             text = InlineCodePattern().Replace(text, match =>
             {
-                var code = match.Groups[1].Value.Trim();
+                var code = WebUtility.HtmlDecode(match.Groups[1].Value.Trim());
                 return string.IsNullOrEmpty(code) ? "" : $"`{code}`";
             });
 
-            // Code blocks may wrap their content in CDATA.
+            // Code blocks may wrap their content in CDATA, which is stored as written, so only other content is decoded.
             text = CodeBlockPattern().Replace(text, match =>
             {
                 var language = match.Groups[1].Success ? match.Groups[1].Value : "csharp";
@@ -147,6 +150,10 @@ namespace CloudNimble.DotNetDocs.Core.Transformers
                 {
                     code = Regex.Replace(code, @"^\s*<!\[CDATA\[", "", RegexOptions.Singleline);
                     code = Regex.Replace(code, @"\]\]>\s*$", "", RegexOptions.Singleline);
+                }
+                else
+                {
+                    code = WebUtility.HtmlDecode(code);
                 }
 
                 code = RemoveCommonIndentation(code);

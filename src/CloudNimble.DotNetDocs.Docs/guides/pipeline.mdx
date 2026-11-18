@@ -7,12 +7,12 @@ icon: faucet-drip
 
 ## Overview
 
-The DotNetDocs pipeline is a flexible, extensible system for transforming .NET assemblies and XML documentation into rich, multi-format documentation. At its core, the pipeline follows a linear flow through five distinct stages, each building on the previous one to create comprehensive documentation from your code.
+The DotNetDocs pipeline is a flexible, extensible system for transforming .NET assemblies and XML documentation into rich, multi-format documentation. At its core, the pipeline follows a linear flow through six distinct stages, each building on the previous one to create comprehensive documentation from your code.
 
 ```mermaid
 flowchart LR
     %% Main horizontal flow
-    C[Extract] --> D[Load Conceptual] --> E[Enrich] --> F[Transform] --> G[Render]
+    C[Extract] --> M[Merge] --> D[Load Conceptual] --> E[Enrich] --> F[Transform] --> G[Render]
     %% Inputs above the horizontal flow
     A[Assembly DLL] --> C
     B[XML Documentation] --> C
@@ -104,103 +104,13 @@ The first stage loads your compiled .NET assembly and uses Roslyn's powerful cod
 
 **Output**: A `DocAssembly` object containing `DocNamespace` → `DocType` → `DocMember` hierarchy with XML documentation.
 
-### Stage 2: Conceptual Content Loading
-
-**Purpose**: Enrich API documentation with conceptual content from `.mdz` files
-
-**Component**: `DocumentationManager.LoadConceptualAsync()`
-
-After extracting API metadata, the pipeline loads conceptual documentation from the file system to add context-rich content that goes beyond XML comments.
-
-<AccordionGroup>
-  <Accordion title="Folder Structure Discovery" icon="folder-tree">
-    The `DocumentationManager` scans the configured `ConceptualPath` directory, looking for `.mdz` files organized by namespace/type/member:
-
-    ```
-    conceptual/
-    ├── MyNamespace/
-    │   ├── summary.mdz              # Namespace summary
-    │   ├── usage.mdz                # Namespace usage
-    │   ├── MyClass/
-    │   │   ├── usage.mdz            # Type usage
-    │   │   ├── examples.mdz         # Type examples
-    │   │   ├── best-practices.mdz   # Type best practices
-    │   │   └── MyMethod/
-    │   │       └── usage.mdz        # Member usage
-    ```
-
-    The pipeline walks this hierarchy, loading content for each API element.
-  </Accordion>
-
-  <Accordion title="Conceptual Sections" icon="book-open">
-    Seven conceptual sections can be loaded at different levels:
-
-    | Section | File | Namespace | Type | Member |
-    |---------|------|-----------|------|--------|
-    | **Summary** | `summary.mdz` | ✅ | ❌ | ❌ |
-    | **Usage** | `usage.mdz` | ✅ | ✅ | ✅ |
-    | **Examples** | `examples.mdz` | ✅ | ✅ | ✅ |
-    | **Best Practices** | `best-practices.mdz` | ✅ | ✅ | ✅ |
-    | **Patterns** | `patterns.mdz` | ✅ | ✅ | ✅ |
-    | **Considerations** | `considerations.mdz` | ✅ | ✅ | ✅ |
-    | **Related APIs** | `related-apis.mdz` | ❌ | ✅ | ✅ |
-
-    Each file contains Markdown content that renderers can format appropriately.
-  </Accordion>
-
-  <Accordion title="Placeholder Handling" icon="file-dashed">
-    The pipeline can generate placeholder files for missing conceptual content and control their visibility:
-
-    **Placeholder Generation**: When `ConceptualDocsEnabled = true`, renderers create placeholder `.mdz` files marked with:
-
-    ```markdown
-    <!-- TODO: REMOVE THIS COMMENT AFTER YOU CUSTOMIZE THIS CONTENT -->
-    ```
-
-    **Placeholder Loading**: The `ShowPlaceholders` property controls whether placeholders appear in final documentation:
-
-    - `ShowPlaceholders = true` (default): Load all conceptual content including placeholders
-    - `ShowPlaceholders = false`: Skip files containing the TODO marker
-
-    ```csharp
-    if (!showPlaceholders && IsTodoPlaceholderFile(content))
-    {
-        return; // Skip loading this placeholder
-    }
-    ```
-
-    This allows you to see documentation gaps during development but hide them in production builds.
-  </Accordion>
-
-  <Accordion title="Parallel Loading" icon="layer-group">
-    Conceptual content loading happens in parallel per assembly for performance:
-
-    ```csharp
-    var assemblyTasks = docAssemblies.Select(async assembly =>
-    {
-        // Generate placeholders for this assembly
-        await Task.WhenAll(renderers.Select(r => r.RenderPlaceholdersAsync(assembly)));
-
-        // Load conceptual content for this assembly
-        await LoadConceptualAsync(assembly);
-    });
-
-    await Task.WhenAll(assemblyTasks);
-    ```
-
-    Each assembly has its own conceptual directory subtree, so parallel loading is safe.
-  </Accordion>
-</AccordionGroup>
-
-**Output**: The `DocAssembly` model now has both XML documentation AND conceptual content in each entity's properties.
-
-### Stage 3: Assembly Merging
+### Stage 2: Assembly Merging
 
 **Purpose**: Combine multiple assemblies into a unified documentation model
 
 **Component**: `DocumentationManager.MergeDocAssembliesAsync()`
 
-When documenting multiple assemblies together, the pipeline merges them into a single cohesive model before enrichment and transformation.
+When documenting multiple assemblies together, the pipeline merges them into a single cohesive model before anything else runs on it. With a single assembly, its model is used as-is.
 
 <Steps>
   <Step title="Namespace Merging">
@@ -255,10 +165,97 @@ When documenting multiple assemblies together, the pipeline merges them into a s
 </Steps>
 
 <Note>
-  Merging happens AFTER conceptual content loading, so each assembly's conceptual documentation is preserved during the merge. Conflicting documentation prefers the first assembly encountered.
+  Merging happens BEFORE placeholders are generated and conceptual content is loaded, so both run once against the complete model. Conflicting XML documentation prefers the first assembly encountered.
 </Note>
 
 **Output**: A single merged `DocAssembly` containing all types and members from all processed assemblies.
+
+### Stage 3: Conceptual Content Loading
+
+**Purpose**: Enrich API documentation with conceptual content from `.mdz` files
+
+**Component**: `DocumentationManager.GeneratePlaceholdersAsync()` and `DocumentationManager.LoadConceptualAsync()`
+
+Once the assemblies are merged, and only when `ConceptualDocsEnabled` is true, the pipeline writes any missing placeholder files and then loads conceptual documentation from the file system, adding context-rich content that goes beyond XML comments.
+
+<AccordionGroup>
+  <Accordion title="Folder Structure Discovery" icon="folder-tree">
+    The `DocumentationManager` scans the configured `ConceptualPath` directory, looking for `.mdz` files organized by namespace/type/member:
+
+    ```
+    conceptual/
+    ├── MyNamespace/
+    │   ├── summary.mdz              # Namespace summary
+    │   ├── usage.mdz                # Namespace usage
+    │   ├── MyClass/
+    │   │   ├── usage.mdz            # Type usage
+    │   │   ├── examples.mdz         # Type examples
+    │   │   ├── best-practices.mdz   # Type best practices
+    │   │   └── MyMethod/
+    │   │       └── usage.mdz        # Member usage
+    ```
+
+    The pipeline walks this hierarchy, loading content for each API element.
+  </Accordion>
+
+  <Accordion title="Conceptual Sections" icon="book-open">
+    Seven conceptual sections can be loaded at different levels:
+
+    | Section | File | Namespace | Type | Member |
+    |---------|------|-----------|------|--------|
+    | **Summary** | `summary.mdz` | ✅ | ❌ | ❌ |
+    | **Usage** | `usage.mdz` | ✅ | ✅ | ✅ |
+    | **Examples** | `examples.mdz` | ✅ | ✅ | ✅ |
+    | **Best Practices** | `best-practices.mdz` | ✅ | ✅ | ✅ |
+    | **Patterns** | `patterns.mdz` | ✅ | ✅ | ✅ |
+    | **Considerations** | `considerations.mdz` | ✅ | ✅ | ✅ |
+    | **Related APIs** | `related-apis.mdz` | ❌ | ✅ | ✅ |
+
+    Each file contains Markdown content that renderers can format appropriately.
+  </Accordion>
+
+  <Accordion title="Placeholder Handling" icon="file-dashed">
+    The pipeline can generate placeholder files for missing conceptual content and control their visibility:
+
+    **Placeholder Generation**: When `ConceptualDocsEnabled = true`, `DocumentationManager.GeneratePlaceholdersAsync` creates placeholder `.mdz` files for every namespace and type, without overwriting files that already exist. Each file is marked with:
+
+    ```markdown
+    <!-- TODO: REMOVE THIS COMMENT AFTER YOU CUSTOMIZE THIS CONTENT -->
+    ```
+
+    **Placeholder Loading**: The `ShowPlaceholders` property controls whether placeholders appear in final documentation:
+
+    - `ShowPlaceholders = true` (default): Load all conceptual content including placeholders
+    - `ShowPlaceholders = false`: Skip files containing the TODO marker
+
+    ```csharp
+    if (!showPlaceholders && IsTodoPlaceholderFile(content))
+    {
+        return; // Skip loading this placeholder
+    }
+    ```
+
+    This allows you to see documentation gaps during development but hide them in production builds.
+  </Accordion>
+
+  <Accordion title="Runs Once on the Merged Model" icon="layer-group">
+    Placeholders are generated and conceptual content is loaded once, after the assemblies are merged:
+
+    ```csharp
+    var mergedModel = await BuildMergedModelAsync(assemblies);
+
+    if (mergedModel is not null && projectContext.ConceptualDocsEnabled)
+    {
+        await GeneratePlaceholdersAsync(mergedModel);
+        await LoadConceptualAsync(mergedModel);
+    }
+    ```
+
+    When several assemblies extend the same external type, merging leaves one shadow class for it, so its placeholders are written once. Placeholders don't depend on which renderers are registered. After the standard files are written, each renderer's `RenderPlaceholdersAsync` runs, one at a time, so a renderer can add files of its own.
+  </Accordion>
+</AccordionGroup>
+
+**Output**: The `DocAssembly` model now has both XML documentation AND conceptual content in each entity's properties.
 
 ### Stage 4: Enrichment
 
@@ -442,7 +439,7 @@ Renderers take the final documentation model and generate output files in variou
     ```
 
     - `RenderAsync()`: Generate final documentation output
-    - `RenderPlaceholdersAsync()`: Generate placeholder conceptual files
+    - `RenderPlaceholdersAsync()`: Add the renderer's own files to the conceptual folder. The standard placeholders are written by `DocumentationManager`, so most renderers don't need this; `RendererBase` provides an implementation that does nothing.
 
     Example renderer:
 
@@ -772,17 +769,20 @@ var assemblies = new[]
 await manager.ProcessAsync(assemblies);
 ```
 
-Assemblies are merged into a unified model after conceptual loading.
+Assemblies are merged into a unified model before placeholders are generated and conceptual content is loaded.
 
 ### Manual Control
 
 Separate conceptual placeholder generation from full processing:
 
 ```csharp
-// Generate placeholders only
+// Generate placeholders only. This always writes them, whatever ConceptualDocsEnabled is set to.
 await manager.CreateConceptualFilesAsync("MyLibrary.dll", "MyLibrary.xml");
 
-// Later: process with full pipeline
+// Or, if you already have a model, write placeholders for it directly
+await manager.GeneratePlaceholdersAsync(model);
+
+// Later: process with full pipeline. The assembly isn't documented again.
 await manager.ProcessAsync("MyLibrary.dll", "MyLibrary.xml");
 ```
 
@@ -927,12 +927,6 @@ public class HtmlRenderer : RendererBase, IDocRenderer
         }
     }
 
-    public Task RenderPlaceholdersAsync(DocAssembly model)
-    {
-        // HTML renderer doesn't generate placeholders
-        return Task.CompletedTask;
-    }
-
     private string GenerateNamespaceHtml(DocNamespace ns)
     {
         return $@"
@@ -970,8 +964,8 @@ services.AddDocRenderer<HtmlRenderer>();
     `AssemblyManager` caches compiled assemblies and only rebuilds when files change or configuration changes. Reuse `AssemblyManager` instances for incremental builds.
   </Card>
 
-  <Card title="Parallel Processing" icon="layer-group">
-    Conceptual content loading happens in parallel per assembly. Multiple assemblies process simultaneously without blocking.
+  <Card title="Single Pass" icon="layer-group">
+    Assemblies are merged first, so placeholders are generated and conceptual content is loaded once for the whole model rather than once per assembly.
   </Card>
 
   <Card title="Scoped Services" icon="arrows-rotate">

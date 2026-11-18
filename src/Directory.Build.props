@@ -31,8 +31,8 @@
     <PropertyGroup>
         <PackageId>$(MSBuildProjectName.Replace('CloudNimble.', ''))</PackageId>
         <Product>DotNetDocs</Product>
-        <AssemblyVersion>1.1.0.0</AssemblyVersion>
-        <DotNetDocsPackageVersion Condition="'$(DotNetDocsPackageVersion)' == ''">1.5.0-preview.1</DotNetDocsPackageVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <DotNetDocsPackageVersion Condition="'$(DotNetDocsPackageVersion)' == ''">2.0.0-preview.1</DotNetDocsPackageVersion>
         <MintlifyPackageVersion Condition="'$(MintlifyPackageVersion)' == ''">2.0.0-preview.1</MintlifyPackageVersion>
         <Authors>CloudNimble</Authors>
         <Company>CloudNimble, Inc.</Company>

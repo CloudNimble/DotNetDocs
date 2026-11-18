@@ -2,7 +2,7 @@
 title: FileNamingOptions
 description: "Provides configuration options for how documentation files are named and organized."
 icon: file-brackets-curly
-keywords: ['FileNamingOptions', 'CloudNimble.DotNetDocs.Core.Configuration.FileNamingOptions', 'CloudNimble.DotNetDocs.Core.Configuration', 'class', 'System.Object']
+keywords: ['FileNamingOptions', 'CloudNimble.DotNetDocs.Core.Configuration.FileNamingOptions', 'CloudNimble.DotNetDocs.Core.Configuration', 'class']
 ---
 
 ## Definition
@@ -10,8 +10,6 @@ keywords: ['FileNamingOptions', 'CloudNimble.DotNetDocs.Core.Configuration.FileN
 **Assembly:** CloudNimble.DotNetDocs.Core.dll
 
 **Namespace:** CloudNimble.DotNetDocs.Core.Configuration
-
-**Inheritance:** System.Object
 
 ## Syntax
 
@@ -83,7 +81,7 @@ public CloudNimble.DotNetDocs.Core.Configuration.NamespaceMode NamespaceMode { g
 #### Property Value
 
 Type: `CloudNimble.DotNetDocs.Core.Configuration.NamespaceMode`
-The namespace organization mode. Default is [NamespaceMode.File](/api-reference/CloudNimble/DotNetDocs/Core/Configuration/NamespaceMode#file).
+The namespace organization mode. Default is [NamespaceMode.File](/api-reference/CloudNimble/DotNetDocs/Core/Configuration/NamespaceMode).
 
 #### Remarks
 
@@ -107,8 +105,8 @@ The separator character. Default is '-'.
 
 #### Remarks
 
-This setting is only used when [FileNamingOptions.NamespaceMode](/api-reference/CloudNimble/DotNetDocs/Core/Configuration/FileNamingOptions#namespacemode) is set to [NamespaceMode.File](/api-reference/CloudNimble/DotNetDocs/Core/Configuration/NamespaceMode#file).
-When using [NamespaceMode.Folder](/api-reference/CloudNimble/DotNetDocs/Core/Configuration/NamespaceMode#folder), this setting is ignored as namespaces
+This setting is only used when [FileNamingOptions.NamespaceMode](/api-reference/CloudNimble/DotNetDocs/Core/Configuration/FileNamingOptions#namespacemode) is set to [NamespaceMode.File](/api-reference/CloudNimble/DotNetDocs/Core/Configuration/NamespaceMode).
+When using [NamespaceMode.Folder](/api-reference/CloudNimble/DotNetDocs/Core/Configuration/NamespaceMode), this setting is ignored as namespaces
 are organized into actual folder hierarchies.
 Common values include '-' (hyphen), '_' (underscore), or '.' (period).
 

@@ -159,6 +159,62 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Transformers
         }
 
         [TestMethod]
+        public async Task ResolveReference_WithMethodParameters_ResolvesToTheMethod()
+        {
+            var assembly = await DocumentCoreAssemblyAsync();
+            _resolver.BuildReferenceMap(assembly);
+
+            var reference = _resolver.ResolveReference("M:CloudNimble.DotNetDocs.Core.DocumentationManager.GeneratePlaceholdersAsync(CloudNimble.DotNetDocs.Core.DocAssembly)", "");
+
+            reference.IsResolved.Should().BeTrue("the compiler writes method crefs with their parameter list");
+            reference.TargetEntity.Should().BeOfType<DocMember>().Which.Name.Should().Be("GeneratePlaceholdersAsync");
+            reference.DisplayName.Should().Be("DocumentationManager.GeneratePlaceholdersAsync");
+            reference.Anchor.Should().Be("generateplaceholdersasync");
+            reference.RelativePath.Should().Be("/api-reference/CloudNimble/DotNetDocs/Core/DocumentationManager");
+        }
+
+        [TestMethod]
+        public async Task ResolveReference_WithOverloads_ResolvesEachToItsOwnMember()
+        {
+            var assembly = await DocumentCoreAssemblyAsync();
+            _resolver.BuildReferenceMap(assembly);
+
+            var single = _resolver.ResolveReference("M:CloudNimble.DotNetDocs.Core.DocumentationManager.ProcessAsync(System.String,System.String)", "");
+            var multiple = _resolver.ResolveReference("M:CloudNimble.DotNetDocs.Core.DocumentationManager.ProcessAsync(System.Collections.Generic.IEnumerable{System.ValueTuple{System.String,System.String}})", "");
+
+            single.IsResolved.Should().BeTrue();
+            multiple.IsResolved.Should().BeTrue();
+            single.TargetEntity.Should().NotBeSameAs(multiple.TargetEntity);
+            ((DocMember)single.TargetEntity!).Symbol.GetDocumentationCommentId().Should().Be("M:CloudNimble.DotNetDocs.Core.DocumentationManager.ProcessAsync(System.String,System.String)");
+        }
+
+        [TestMethod]
+        public async Task ResolveReference_WithUnknownMethodParameters_ShowsTheMethodName()
+        {
+            var assembly = await DocumentCoreAssemblyAsync();
+            _resolver.BuildReferenceMap(assembly);
+
+            var reference = _resolver.ResolveReference("M:Unknown.Library.Widget.Configure(Unknown.Library.Options,System.Int32)", "");
+
+            reference.IsResolved.Should().BeFalse();
+            reference.DisplayName.Should().Be("Configure", "the name must not be cut from inside the parameter list");
+        }
+
+        [TestMethod]
+        public async Task ResolveReference_WithFrameworkMethodParameters_LinksToTheMethodPage()
+        {
+            var assembly = await DocumentCoreAssemblyAsync();
+            _resolver.BuildReferenceMap(assembly);
+
+            var reference = _resolver.ResolveReference("M:System.String.Format(System.String,System.Object)", "");
+
+            reference.IsResolved.Should().BeTrue();
+            reference.ReferenceType.Should().Be(ReferenceType.Framework);
+            reference.RelativePath.Should().Be("https://learn.microsoft.com/dotnet/api/system.string.format");
+            reference.DisplayName.Should().Be("Format");
+        }
+
+        [TestMethod]
         public async Task ResolveReference_WithTypePrefix_ResolvesCorrectly()
         {
             // Arrange
@@ -724,6 +780,35 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Transformers
         }
 
         [TestMethod]
+        public async Task TransformAsync_KeepsTheIndentationOfConceptualContent()
+        {
+            CreateWidgetAssembly(out var widget, out _);
+            var considerations = string.Join(Environment.NewLine,
+                "- **When it runs.** After the standard files.",
+                "  - Always from `CreateConceptualFilesAsync`.",
+                "  - From `ProcessAsync` when enabled.",
+                "- **Don't overwrite.** Check first.");
+            var examples = string.Join(Environment.NewLine,
+                "Override the method:",
+                "",
+                "```csharp",
+                "public class MyRenderer",
+                "{",
+                "    public void Render()",
+                "    {",
+                "    }",
+                "}",
+                "```");
+            widget.Considerations = considerations;
+            widget.Examples = examples;
+
+            await _resolver.TransformAsync(widget);
+
+            widget.Considerations.Should().Be(considerations, "nested list items are indented on purpose");
+            widget.Examples.Should().Be(examples, "code inside a fence keeps its indentation");
+        }
+
+        [TestMethod]
         [DataRow(null)]
         [DataRow("")]
         [DataRow("   ")]
@@ -735,17 +820,6 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Transformers
             await _resolver.TransformAsync(widget);
 
             widget.Summary.Should().Be(summary);
-        }
-
-        [TestMethod]
-        public async Task TransformAsync_WithMultiLinePlainText_RemovesXmlFileIndentation()
-        {
-            CreateWidgetAssembly(out var widget, out _);
-            widget.Summary = "First line\n\t\tsecond line\n\t\t\tthird line";
-
-            await _resolver.TransformAsync(widget);
-
-            widget.Summary.Should().Be(string.Join(Environment.NewLine, "First line", "second line", "\tthird line"), "the indentation the lines share is removed and the extra tab is kept");
         }
 
         [TestMethod]
@@ -801,6 +875,16 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Transformers
         #endregion
 
         #region Helper Methods
+
+        /// <summary>
+        /// Documents CloudNimble.DotNetDocs.Core itself, which has methods with parameters and overloads.
+        /// </summary>
+        private static async Task<DocAssembly> DocumentCoreAssemblyAsync()
+        {
+            var assemblyPath = typeof(NamespaceMode).Assembly.Location;
+            using var manager = new AssemblyManager(assemblyPath, System.IO.Path.ChangeExtension(assemblyPath, ".xml"));
+            return await manager.DocumentAsync();
+        }
 
         /// <summary>
         /// Builds a documentation assembly from real Roslyn symbols with two types that share the simple name "Widget".

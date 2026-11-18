@@ -3,7 +3,7 @@ title: XmlTransformerBase
 description: "Provides the format-neutral foundation for transformers that convert XML documentation comments into an output format."
 icon: shapes
 tag: "ABSTRACT"
-keywords: ['XmlTransformerBase', 'CloudNimble.DotNetDocs.Core.Transformers.XmlTransformerBase', 'CloudNimble.DotNetDocs.Core.Transformers', 'class', 'System.Object', 'CloudNimble.DotNetDocs.Core.IDocTransformer']
+keywords: ['XmlTransformerBase', 'CloudNimble.DotNetDocs.Core.Transformers.XmlTransformerBase', 'CloudNimble.DotNetDocs.Core.Transformers', 'class', 'CloudNimble.DotNetDocs.Core.IDocTransformer']
 ---
 
 ## Definition
@@ -11,8 +11,6 @@ keywords: ['XmlTransformerBase', 'CloudNimble.DotNetDocs.Core.Transformers.XmlTr
 **Assembly:** CloudNimble.DotNetDocs.Core.dll
 
 **Namespace:** CloudNimble.DotNetDocs.Core.Transformers
-
-**Inheritance:** System.Object
 
 ## Syntax
 
@@ -30,8 +28,8 @@ This class owns everything that does not depend on the output format: walking th
 strings contain XML documentation tags, normalizing the indentation inherited from the XML documentation file, indexing
 every entity so `cref` references can be resolved, and building Microsoft Learn URLs for framework types and C# keywords.
 
-Derived classes implement `Boolean)` to turn the XML tags into their own format, such as
-Markdown or HTML, and call `String)` to turn a `cref` into a [DocReference](/api-reference/CloudNimble/DotNetDocs/Core/DocReference).
+Derived classes implement [XmlTransformerBase.ConvertXml](/api-reference/CloudNimble/DotNetDocs/Core/Transformers/MarkdownXmlTransformer#convertxml) to turn the XML tags into their own format, such as
+Markdown or HTML, and call [XmlTransformerBase.ResolveReference](/api-reference/CloudNimble/DotNetDocs/Core/Transformers/MarkdownXmlTransformer#resolvereference) to turn a `cref` into a [DocReference](/api-reference/CloudNimble/DotNetDocs/Core/DocReference).
 
 ## Constructors
 

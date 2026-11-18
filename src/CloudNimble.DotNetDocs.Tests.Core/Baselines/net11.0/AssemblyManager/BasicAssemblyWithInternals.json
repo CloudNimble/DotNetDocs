@@ -2509,7 +2509,7 @@
               "declaringTypeName": "CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ClassWithMethods",
               "isExtensionMethod": false,
               "displayName": "CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ClassWithMethods.Calculate(int, int)",
-              "examples": "<code>\r\n            var result = Calculate(3, 4); // Returns 7\r\n            </code>",
+              "examples": "<code>\r\nvar result = Calculate(3, 4); // Returns 7\r\n</code>",
               "returns": "The sum of a and b.",
               "summary": "Calculates the sum of two numbers."
             },
@@ -2970,7 +2970,7 @@
           "typeKind": "class",
           "isExternalReference": false,
           "displayName": "CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ClassWithMethods",
-          "examples": "<code>\r\n            var obj = new ClassWithMethods();\r\n            var result = obj.Calculate(5, 10);\r\n            </code>",
+          "examples": "<code>\r\nvar obj = new ClassWithMethods();\r\nvar result = obj.Calculate(5, 10);\r\n</code>",
           "relatedApis": [],
           "remarks": "Contains methods with different signatures, parameters, and return types.",
           "summary": "A class demonstrating various method documentation scenarios."
@@ -4282,7 +4282,7 @@
           "typeKind": "class",
           "isExternalReference": false,
           "displayName": "CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass",
-          "examples": "<code>\r\n            var derived = new DerivedClass();\r\n            var result = derived.VirtualMethod();\r\n            </code>",
+          "examples": "<code>\r\nvar derived = new DerivedClass();\r\nvar result = derived.VirtualMethod();\r\n</code>",
           "relatedApis": [],
           "remarks": "This class inherits from BaseClass and overrides some members.",
           "summary": "A derived class for testing inheritance documentation."
@@ -4744,7 +4744,7 @@
           "typeKind": "class",
           "isExternalReference": false,
           "displayName": "CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DisposableClass",
-          "examples": "<code>\r\n            using (var disposable = new DisposableClass())\r\n            {\r\n                disposable.UseResource();\r\n            }\r\n            </code>",
+          "examples": "<code>\r\nusing (var disposable = new DisposableClass())\r\n{\r\n    disposable.UseResource();\r\n}\r\n</code>",
           "relatedApis": [
             "System.IDisposable"
           ],
@@ -4859,7 +4859,7 @@
               "isExtensionMethod": true,
               "extendedTypeName": "CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ITestInterface",
               "displayName": "CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.TestsShared_ITestInterfaceExtensions.GetFormattedValue(CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ITestInterface)",
-              "examples": "<code>\r\n            ITestInterface test = new TestImplementation();\r\n            var formatted = test.GetFormattedValue();\r\n            </code>",
+              "examples": "<code>\r\nITestInterface test = new TestImplementation();\r\nvar formatted = test.GetFormattedValue();\r\n</code>",
               "returns": "A formatted string containing the test value.",
               "summary": "Gets a formatted string from the interface."
             },
@@ -4922,7 +4922,7 @@
           "isExternalReference": false,
           "displayName": "CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ITestInterface",
           "relatedApis": [],
-          "remarks": "This interface is used to test extension methods on interfaces and to verify\r\n            that inherited members from interfaces are properly documented.",
+          "remarks": "This interface is used to test extension methods on interfaces and to verify\r\nthat inherited members from interfaces are properly documented.",
           "summary": "A test interface for demonstrating interface inheritance and extension methods."
         },
         {
@@ -5319,7 +5319,7 @@
               "isExtensionMethod": true,
               "extendedTypeName": "CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.SimpleClass",
               "displayName": "CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.TestsShared_SimpleClassExtensions.ToDisplayString(CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.SimpleClass)",
-              "examples": "<code>\r\n            var simple = new SimpleClass();\r\n            var display = simple.ToDisplayString();\r\n            </code>",
+              "examples": "<code>\r\nvar simple = new SimpleClass();\r\nvar display = simple.ToDisplayString();\r\n</code>",
               "returns": "A formatted string representation.",
               "summary": "Converts a SimpleClass instance to a display string."
             },
@@ -5381,9 +5381,9 @@
           "typeKind": "class",
           "isExternalReference": false,
           "displayName": "CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.SimpleClass",
-          "examples": "<code>\r\n            var simple = new SimpleClass();\r\n            simple.DoWork();\r\n            </code>",
+          "examples": "<code>\r\nvar simple = new SimpleClass();\r\nsimple.DoWork();\r\n</code>",
           "relatedApis": [],
-          "remarks": "These are remarks about the SimpleClass. They provide additional context\r\n            and information beyond what's in the summary.",
+          "remarks": "These are remarks about the SimpleClass. They provide additional context\r\nand information beyond what's in the summary.",
           "summary": "A simple class for testing basic documentation extraction."
         },
         {
@@ -5803,7 +5803,7 @@
           "relatedApis": [
             "CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ITestInterface"
           ],
-          "remarks": "This class implements ITestInterface to demonstrate interface member inheritance\r\n            in documentation generation.",
+          "remarks": "This class implements ITestInterface to demonstrate interface member inheritance\r\nin documentation generation.",
           "summary": "A test implementation of ITestInterface."
         }
       ],
@@ -7068,9 +7068,9 @@
           "typeKind": "class",
           "isExternalReference": false,
           "displayName": "CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithSpecialCharacters",
-          "examples": "<code>\r\n            // Using generics: List&lt;string&gt;\r\n            var list = new List&lt;string&gt;();\r\n            if (x &gt; 0 &amp;&amp; y &lt; 10) { }\r\n            </code>",
+          "examples": "<code>\r\n// Using generics: List&lt;string&gt;\r\nvar list = new List&lt;string&gt;();\r\nif (x &gt; 0 &amp;&amp; y &lt; 10) { }\r\n</code>",
           "relatedApis": [],
-          "remarks": "This tests handling of XML special characters like &lt;tag&gt; and &amp;entity;.\r\n            Also tests \"quotes\" and 'apostrophes'.",
+          "remarks": "This tests handling of XML special characters like &lt;tag&gt; and &amp;entity;.\r\nAlso tests \"quotes\" and 'apostrophes'.",
           "summary": "A class with special characters in documentation: &lt;, &gt;, &amp;, \", '."
         },
         {
@@ -7211,8 +7211,8 @@
                   "type": "ArgumentOutOfRangeException"
                 }
               ],
-              "examples": "<code>\r\n            var result = ComplexMethod(\"hello\", 5);\r\n            Console.WriteLine(result);\r\n            </code>",
-              "remarks": "<para>This method performs complex processing.</para><list type=\"bullet\">\r\n  <item>\r\n    <description>First, it validates the input.</description>\r\n  </item>\r\n  <item>\r\n    <description>Then, it processes the data.</description>\r\n  </item>\r\n  <item>\r\n    <description>Finally, it returns the result.</description>\r\n  </item>\r\n</list>",
+              "examples": "<code>\r\nvar result = ComplexMethod(\"hello\", 5);\r\nConsole.WriteLine(result);\r\n</code>",
+              "remarks": "<para>This method performs complex processing.</para><list type=\"bullet\">\r\n<item>\r\n  <description>First, it validates the input.</description>\r\n</item>\r\n<item>\r\n  <description>Then, it processes the data.</description>\r\n</item>\r\n<item>\r\n  <description>Finally, it returns the result.</description>\r\n</item>\r\n</list>",
               "returns": "A processed result string.",
               "seeAlso": [
                 {
@@ -7248,7 +7248,7 @@
               "declaringTypeName": "CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithFullDocs",
               "isExtensionMethod": false,
               "displayName": "CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithFullDocs.ProcessNumbers()",
-              "examples": "<code>\r\n            var numbers = Enumerable.Range(1, 10)\r\n                .Where(x =&gt; x % 2 == 0)\r\n                .Select(x =&gt; new\r\n                {\r\n                    Number = x,\r\n                    Square = x * x,\r\n                    Cube = x * x * x\r\n                })\r\n                .ToList();\r\n            </code>",
+              "examples": "<code>\r\nvar numbers = Enumerable.Range(1, 10)\r\n    .Where(x =&gt; x % 2 == 0)\r\n    .Select(x =&gt; new\r\n    {\r\n        Number = x,\r\n        Square = x * x,\r\n        Cube = x * x * x\r\n    })\r\n    .ToList();\r\n</code>",
               "returns": "A collection of transformed numbers.",
               "summary": "Filters and transforms a collection of numbers."
             },
@@ -7606,7 +7606,7 @@
           "typeKind": "class",
           "isExternalReference": false,
           "displayName": "CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithFullDocs",
-          "examples": "<code>\r\n            var fullDocs = new ClassWithFullDocs();\r\n            fullDocs.ComplexMethod(\"test\", 42);\r\n            </code>",
+          "examples": "<code>\r\nvar fullDocs = new ClassWithFullDocs();\r\nfullDocs.ComplexMethod(\"test\", 42);\r\n</code>",
           "relatedApis": [],
           "remarks": "<para>This class demonstrates all available XML documentation tags.</para><para>It includes multiple paragraphs in the remarks section.</para>",
           "seeAlso": [
@@ -7645,7 +7645,7 @@
             "System.IFormattable",
             "System.IConvertible"
           ],
-          "remarks": "This enum uses a byte as its underlying type to save memory.\r\n            Values are limited to 0-255.",
+          "remarks": "This enum uses a byte as its underlying type to save memory.\r\nValues are limited to 0-255.",
           "summary": "An enum with byte underlying type."
         },
         {
@@ -7775,7 +7775,7 @@
               "declaringTypeName": "CloudNimble.DotNetDocs.Tests.Shared.Parameters.ParameterVariations",
               "isExtensionMethod": false,
               "displayName": "CloudNimble.DotNetDocs.Tests.Shared.Parameters.ParameterVariations.MethodWithOptionalParam(string, int)",
-              "examples": "<code>\r\n            var result1 = MethodWithOptionalParam(\"test\");      // Uses default value 42\r\n            var result2 = MethodWithOptionalParam(\"test\", 100); // Uses provided value\r\n            </code>",
+              "examples": "<code>\r\nvar result1 = MethodWithOptionalParam(\"test\");      // Uses default value 42\r\nvar result2 = MethodWithOptionalParam(\"test\", 100); // Uses provided value\r\n</code>",
               "returns": "A formatted string combining both parameters.",
               "summary": "A method with an optional parameter."
             },
@@ -7823,7 +7823,7 @@
               "declaringTypeName": "CloudNimble.DotNetDocs.Tests.Shared.Parameters.ParameterVariations",
               "isExtensionMethod": false,
               "displayName": "CloudNimble.DotNetDocs.Tests.Shared.Parameters.ParameterVariations.MethodWithParams(params int[])",
-              "examples": "<code>\r\n            var sum1 = MethodWithParams(1, 2, 3);        // Returns 6\r\n            var sum2 = MethodWithParams(new[] { 1, 2 }); // Returns 3\r\n            </code>",
+              "examples": "<code>\r\nvar sum1 = MethodWithParams(1, 2, 3);        // Returns 6\r\nvar sum2 = MethodWithParams(new[] { 1, 2 }); // Returns 3\r\n</code>",
               "returns": "The sum of all provided values.",
               "summary": "A method with a params array."
             },
@@ -7977,7 +7977,7 @@
               "declaringTypeName": "CloudNimble.DotNetDocs.Tests.Shared.Parameters.ParameterVariations",
               "isExtensionMethod": false,
               "displayName": "CloudNimble.DotNetDocs.Tests.Shared.Parameters.ParameterVariations.GenericMethod<T>(T)",
-              "examples": "<code>\r\n            var result1 = GenericMethod&lt;int&gt;(42);\r\n            var result2 = GenericMethod(\"hello\");\r\n            </code>",
+              "examples": "<code>\r\nvar result1 = GenericMethod&lt;int&gt;(42);\r\nvar result2 = GenericMethod(\"hello\");\r\n</code>",
               "returns": "The string representation of the value.",
               "summary": "A generic method with a type parameter.",
               "typeParameters": [
@@ -8579,7 +8579,7 @@
               "isExtensionMethod": true,
               "extendedTypeName": "System.Collections.Generic.List<T>",
               "displayName": "System.Collections.Generic.TestsShared_ListExtensions.IsNullOrEmpty<T>(System.Collections.Generic.List<T>)",
-              "examples": "<code>\r\n            var numbers = new List&lt;int&gt;();\r\n            if (numbers.IsNullOrEmpty())\r\n            {\r\n                // Handle empty list\r\n            }\r\n            </code>",
+              "examples": "<code>\r\nvar numbers = new List&lt;int&gt;();\r\nif (numbers.IsNullOrEmpty())\r\n{\r\n    // Handle empty list\r\n}\r\n</code>",
               "returns": "True if the list is null or empty, otherwise false.",
               "summary": "Checks if a list is null or empty.",
               "typeParameters": [
@@ -8653,7 +8653,7 @@
               "isExtensionMethod": true,
               "extendedTypeName": "System.Collections.Generic.List<T>",
               "displayName": "System.Collections.Generic.TestsShared_ListExtensions.AddMultiple<T>(System.Collections.Generic.List<T>, params T[])",
-              "examples": "<code>\r\n            var numbers = new List&lt;int&gt;()\r\n                .AddMultiple(1, 2, 3, 4, 5);\r\n            </code>",
+              "examples": "<code>\r\nvar numbers = new List&lt;int&gt;()\r\n    .AddMultiple(1, 2, 3, 4, 5);\r\n</code>",
               "returns": "The list for fluent chaining.",
               "summary": "Adds multiple items to a list in one call.",
               "typeParameters": [
@@ -8784,7 +8784,7 @@
               "isExtensionMethod": true,
               "extendedTypeName": "string",
               "displayName": "CloudNimble.DotNetDocs.Tests.Shared.Extensions.StringExtensions.Reverse(string)",
-              "examples": "<code>\r\n             using CloudNimble.DotNetDocs.Tests.Shared.Extensions;\r\n            \r\n             var result = \"hello\".Reverse();\r\n             // result = \"olleh\"\r\n             </code>",
+              "examples": "<code>\r\nusing CloudNimble.DotNetDocs.Tests.Shared.Extensions;\r\n\r\nvar result = \"hello\".Reverse();\r\n// result = \"olleh\"\r\n</code>",
               "returns": "The reversed string.",
               "summary": "Reverses the characters in a string."
             },
@@ -8853,7 +8853,7 @@
               "isExtensionMethod": true,
               "extendedTypeName": "string",
               "displayName": "CloudNimble.DotNetDocs.Tests.Shared.Extensions.StringExtensions.Repeat(string, int)",
-              "examples": "<code>\r\n            var result = \"ha\".Repeat(3);\r\n            // result = \"hahaha\"\r\n            </code>",
+              "examples": "<code>\r\nvar result = \"ha\".Repeat(3);\r\n// result = \"hahaha\"\r\n</code>",
               "returns": "The repeated string.",
               "summary": "Repeats a string a specified number of times."
             }

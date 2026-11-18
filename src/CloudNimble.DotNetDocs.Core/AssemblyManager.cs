@@ -215,7 +215,12 @@ namespace CloudNimble.DotNetDocs.Core
         /// Extracts inner XML content from an XElement, preserving nested XML tags.
         /// </summary>
         /// <param name="element">The XML element to extract content from.</param>
-        /// <returns>The inner XML as a string, or null if element is null.</returns>
+        /// <returns>The inner XML as a string, or null if element is null or empty.</returns>
+        /// <remarks>
+        /// The indentation that every continuation line inherits from the XML documentation file is removed here, where it
+        /// comes from, with <see cref="XmlTransformerBase.NormalizeXmlDocIndentation(string)"/>. Later stages can then leave
+        /// all text as it is, including conceptual content, which is already formatted.
+        /// </remarks>
         internal string? ExtractInnerXml(XElement? element)
         {
             if (element is null)
@@ -224,7 +229,7 @@ namespace CloudNimble.DotNetDocs.Core
             // Get all nodes and concatenate them, preserving XML tags
             var innerXml = string.Concat(element.Nodes().Select(n => n.ToString()));
             var trimmed = innerXml.Trim();
-            return string.IsNullOrWhiteSpace(trimmed) ? null : trimmed;
+            return string.IsNullOrWhiteSpace(trimmed) ? null : XmlTransformerBase.NormalizeXmlDocIndentation(trimmed);
         }
 
         /// <summary>
@@ -232,7 +237,10 @@ namespace CloudNimble.DotNetDocs.Core
         /// </summary>
         /// <param name="element">The XML element to extract content from.</param>
         /// <param name="excludeTags">Tag names to exclude from the output (including all their content).</param>
-        /// <returns>The inner XML as a string with excluded tags and their content removed, or null if element is null.</returns>
+        /// <returns>The inner XML as a string with excluded tags and their content removed, or null if element is null or nothing is left.</returns>
+        /// <remarks>
+        /// Like <see cref="ExtractInnerXml(XElement?)"/>, this removes the indentation inherited from the XML documentation file.
+        /// </remarks>
         internal string? ExtractInnerXmlExcluding(XElement? element, params string[] excludeTags)
         {
             if (element is null)
@@ -250,7 +258,7 @@ namespace CloudNimble.DotNetDocs.Core
             // Get all nodes and concatenate them, preserving XML tags
             var innerXml = string.Concat(cloned.Nodes().Select(n => n.ToString()));
             var trimmed = innerXml.Trim();
-            return string.IsNullOrWhiteSpace(trimmed) ? null : trimmed;
+            return string.IsNullOrWhiteSpace(trimmed) ? null : XmlTransformerBase.NormalizeXmlDocIndentation(trimmed);
         }
 
         /// <summary>
