@@ -6,8 +6,6 @@
 
 **Namespace:** CloudNimble.DotNetDocs.Tests.Shared.AccessModifiers
 
-**Inheritance:** System.Object
-
 ## Syntax
 
 ```csharp

@@ -269,11 +269,8 @@ internal string GetAnchor(CloudNimble.DotNetDocs.Core.DocEntity entity)
 #### Returns
 
 Type: `string?`
-The lowercase member name for members, or null for assemblies, namespaces, and types, which have their own pages.
-
-#### Remarks
-
-The reference map only holds assemblies, namespaces, types, and members, so those are the only entities that reach this method.
+The lowercase member name for members, or null for assemblies, namespaces, and types, which have their own pages,
+and for enum values, which are rows in their enum's table.
 
 ### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetAssemblyDocumentationId <Badge color="gray">Inherited</Badge>
 
@@ -321,6 +318,10 @@ internal string GetDisplayName(string reference, CloudNimble.DotNetDocs.Core.Doc
 
 Type: `string`
 A display name suitable for rendering in documentation.
+
+#### Remarks
+
+Members and enum values include their type's simple name for clarity, such as `NamespaceMode.File`.
 
 ### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetFrameworkDocumentationUrl <Badge color="gray">Inherited</Badge>
 
@@ -573,11 +574,35 @@ The relative path to the type documentation page.
 
 Uses `String)`, the same source the renderers use to write the page.
 
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> IndexEnumValue <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Core.Transformers.XmlTransformerBase`</Note>
+
+Indexes an enum value in the reference map as `F:Enum.Value` and `Enum.Value`.
+
+#### Syntax
+
+```csharp
+internal void IndexEnumValue(CloudNimble.DotNetDocs.Core.DocEnumValue value, CloudNimble.DotNetDocs.Core.DocEnum parentEnum, CloudNimble.DotNetDocs.Core.DocNamespace ns)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `value` | `CloudNimble.DotNetDocs.Core.DocEnumValue` | The enum value to index. |
+| `parentEnum` | `CloudNimble.DotNetDocs.Core.DocEnum` | The enum that declares the value. |
+| `ns` | `CloudNimble.DotNetDocs.Core.DocNamespace` | The namespace containing the enum. |
+
+#### Remarks
+
+Enum values are rendered in a table on the enum's page, so they resolve to that page with no anchor.
+
 ### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> IndexMember <Badge color="gray">Inherited</Badge>
 
 <Note>Inherited from `CloudNimble.DotNetDocs.Core.Transformers.XmlTransformerBase`</Note>
 
-Indexes a member in the reference map with multiple lookup keys.
+Indexes a member in the reference map by its documentation ID.
 
 #### Syntax
 

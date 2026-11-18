@@ -31,3 +31,10 @@ A flags enum for bitwise operations.
 | `Delete` | 8 | Delete permission. |
 | `All` | 15 | All permissions combined. |
 
+## Related APIs
+
+- System.IComparable
+- System.ISpanFormattable
+- System.IFormattable
+- System.IConvertible
+

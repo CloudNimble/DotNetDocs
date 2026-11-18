@@ -2,7 +2,6 @@
   "name": "CloudNimble.DotNetDocs.Tests.Shared.Parameters",
   "types": [
     {
-      "baseType": "System.Object",
       "members": [
         {
           "accessibility": "public",
@@ -328,11 +327,11 @@
           ],
           "returnType": {
             "members": [],
-            "assemblyName": "System.Runtime",
+            "assemblyName": "System.Private.CoreLib",
             "fullName": "System.Collections.Generic.KeyValuePair\u003CTKey, TValue\u003E",
             "name": "KeyValuePair",
             "signature": "System.Collections.Generic.KeyValuePair\u003CTKey, TValue\u003E",
-            "typeKind": "error",
+            "typeKind": "struct",
             "isExternalReference": true,
             "displayName": "System.Collections.Generic.KeyValuePair\u003CTKey, TValue\u003E"
           },
@@ -371,16 +370,16 @@
               "name": "nullableInt",
               "parameterType": {
                 "members": [],
-                "assemblyName": "System.Runtime",
-                "fullName": "System.Nullable\u003Cint\u003E",
+                "assemblyName": "System.Private.CoreLib",
+                "fullName": "int?",
                 "name": "Nullable",
-                "signature": "System.Nullable\u003Cint\u003E",
-                "typeKind": "error",
+                "signature": "int?",
+                "typeKind": "struct",
                 "isExternalReference": true,
-                "displayName": "System.Nullable\u003Cint\u003E"
+                "displayName": "int?"
               },
-              "typeName": "System.Nullable\u003Cint\u003E",
-              "displayName": "System.Nullable\u003Cint\u003E nullableInt",
+              "typeName": "int?",
+              "displayName": "int? nullableInt",
               "usage": "An optional nullable integer."
             },
             {
@@ -414,14 +413,14 @@
             "displayName": "string"
           },
           "returnTypeName": "string",
-          "signature": "public string MethodWithNullables(System.Nullable\u003Cint\u003E nullableInt, string nullableString)",
+          "signature": "public string MethodWithNullables(int? nullableInt, string nullableString)",
           "isInherited": false,
           "isOverride": false,
           "isVirtual": false,
           "isAbstract": false,
           "declaringTypeName": "CloudNimble.DotNetDocs.Tests.Shared.Parameters.ParameterVariations",
           "isExtensionMethod": false,
-          "displayName": "CloudNimble.DotNetDocs.Tests.Shared.Parameters.ParameterVariations.MethodWithNullables(System.Nullable\u003Cint\u003E, string?)",
+          "displayName": "CloudNimble.DotNetDocs.Tests.Shared.Parameters.ParameterVariations.MethodWithNullables(int?, string?)",
           "returns": "A description of the provided values.",
           "summary": "A method with nullable parameters."
         },

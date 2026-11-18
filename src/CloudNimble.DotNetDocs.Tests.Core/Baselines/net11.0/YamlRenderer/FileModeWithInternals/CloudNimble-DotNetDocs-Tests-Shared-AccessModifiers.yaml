@@ -1,7 +1,6 @@
 name: CloudNimble.DotNetDocs.Tests.Shared.AccessModifiers
 types:
-- baseType: System.Object
-  members:
+- members:
   - accessibility: Public
     memberKind: Method
     methodKind: PropertyGet
@@ -322,8 +321,7 @@ types:
   displayName: CloudNimble.DotNetDocs.Tests.Shared.AccessModifiers.InternalClass
   remarks: This class should only be visible when internal members are included.
   summary: An internal class for testing internal type visibility.
-- baseType: System.Object
-  members:
+- members:
   - accessibility: Public
     memberKind: Field
     name: PublicField

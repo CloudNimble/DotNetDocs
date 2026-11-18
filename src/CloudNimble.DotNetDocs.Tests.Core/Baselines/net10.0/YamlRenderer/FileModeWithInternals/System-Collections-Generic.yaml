@@ -8,11 +8,11 @@ types:
     parameters:
     - name: list
       parameterType:
-        assemblyName: System.Collections
+        assemblyName: System.Private.CoreLib
         fullName: System.Collections.Generic.List<T>
         name: List
         signature: System.Collections.Generic.List<T>
-        typeKind: Error
+        typeKind: Class
         isExternalReference: true
         displayName: System.Collections.Generic.List<T>
       typeName: System.Collections.Generic.List<T>
@@ -52,11 +52,11 @@ types:
     parameters:
     - name: list
       parameterType:
-        assemblyName: System.Collections
+        assemblyName: System.Private.CoreLib
         fullName: System.Collections.Generic.List<T>
         name: List
         signature: System.Collections.Generic.List<T>
-        typeKind: Error
+        typeKind: Class
         isExternalReference: true
         displayName: System.Collections.Generic.List<T>
       typeName: System.Collections.Generic.List<T>
@@ -74,11 +74,11 @@ types:
       displayName: params T[] items
       usage: The items to add.
     returnType:
-      assemblyName: System.Collections
+      assemblyName: System.Private.CoreLib
       fullName: System.Collections.Generic.List<T>
       name: List
       signature: System.Collections.Generic.List<T>
-      typeKind: Error
+      typeKind: Class
       isExternalReference: true
       displayName: System.Collections.Generic.List<T>
     returnTypeName: System.Collections.Generic.List<T>
@@ -104,22 +104,22 @@ types:
     parameters:
     - name: list
       parameterType:
-        assemblyName: System.Collections
+        assemblyName: System.Private.CoreLib
         fullName: System.Collections.Generic.List<T>
         name: List
         signature: System.Collections.Generic.List<T>
-        typeKind: Error
+        typeKind: Class
         isExternalReference: true
         displayName: System.Collections.Generic.List<T>
       typeName: System.Collections.Generic.List<T>
       displayName: System.Collections.Generic.List<T> list
       usage: The list to shuffle.
     returnType:
-      assemblyName: System.Collections
+      assemblyName: System.Private.CoreLib
       fullName: System.Collections.Generic.List<T>
       name: List
       signature: System.Collections.Generic.List<T>
-      typeKind: Error
+      typeKind: Class
       isExternalReference: true
       displayName: System.Collections.Generic.List<T>
     returnTypeName: System.Collections.Generic.List<T>
@@ -134,13 +134,13 @@ types:
     typeParameters:
     - description: The type of elements in the list.
       name: T
-  assemblyName: System.Collections
+  assemblyName: System.Private.CoreLib
   fullName: System.Collections.Generic.List<T>
   name: List
   signature: System.Collections.Generic.List<T>
-  typeKind: Error
+  typeKind: Class
   isExternalReference: true
   displayName: System.Collections.Generic.List<T>
   remarks: See <see href="https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1">Microsoft documentation</see> for more information about the rest of the API.
-  summary: This type is defined in System.Collections.
+  summary: This type is defined in System.Private.CoreLib.
 displayName: System.Collections.Generic

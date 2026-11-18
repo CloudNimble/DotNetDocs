@@ -2,7 +2,6 @@
   "name": "CloudNimble.DotNetDocs.Tests.Shared.EdgeCases",
   "types": [
     {
-      "baseType": "System.Object",
       "members": [
         {
           "accessibility": "public",
@@ -439,7 +438,6 @@
       "summary": "A class with minimal documentation."
     },
     {
-      "baseType": "System.Object",
       "members": [
         {
           "accessibility": "public",
@@ -873,7 +871,6 @@
       "relatedApis": []
     },
     {
-      "baseType": "System.Object",
       "members": [
         {
           "accessibility": "public",
@@ -1266,7 +1263,6 @@
       "summary": "A class with special characters in documentation: \u0026lt;, \u0026gt;, \u0026amp;, \u0022, \u0027."
     },
     {
-      "baseType": "System.Object",
       "members": [
         {
           "accessibility": "public",
@@ -1424,11 +1420,11 @@
           "parameters": [],
           "returnType": {
             "members": [],
-            "assemblyName": "System.Runtime",
+            "assemblyName": "System.Private.CoreLib",
             "fullName": "System.Collections.Generic.IEnumerable\u003Cobject\u003E",
             "name": "IEnumerable",
             "signature": "System.Collections.Generic.IEnumerable\u003Cobject\u003E",
-            "typeKind": "error",
+            "typeKind": "interface",
             "isExternalReference": true,
             "displayName": "System.Collections.Generic.IEnumerable\u003Cobject\u003E"
           },

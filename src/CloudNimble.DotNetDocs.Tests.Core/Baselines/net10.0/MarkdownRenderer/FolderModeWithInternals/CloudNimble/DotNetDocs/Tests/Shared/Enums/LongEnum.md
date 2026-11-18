@@ -29,3 +29,10 @@ An enum with long underlying type for large values.
 | `Billion` | 1000000000 | Large value in billions. |
 | `VeryLarge` | 9223372036854775807 | Very large value. |
 
+## Related APIs
+
+- System.IComparable
+- System.ISpanFormattable
+- System.IFormattable
+- System.IConvertible
+

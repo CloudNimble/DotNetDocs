@@ -35,3 +35,10 @@ This enum uses a byte as its underlying type to save memory.
 | `High` | 200 | High value. |
 | `Max` | 255 | Maximum value for byte. |
 
+## Related APIs
+
+- System.IComparable
+- System.ISpanFormattable
+- System.IFormattable
+- System.IConvertible
+

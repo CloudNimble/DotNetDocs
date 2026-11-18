@@ -3,6 +3,7 @@ using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection.PortableExecutable;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using CloudNimble.DotNetDocs.Core.Transformers;
@@ -57,6 +58,11 @@ namespace CloudNimble.DotNetDocs.Core
             genericsOptions: SymbolDisplayGenericsOptions.IncludeTypeParameters |
                              SymbolDisplayGenericsOptions.IncludeTypeConstraints,
             miscellaneousOptions: SymbolDisplayMiscellaneousOptions.UseSpecialTypes);
+
+        /// <summary>
+        /// Paths to the managed assemblies of the running .NET runtime, read once per process.
+        /// </summary>
+        private static readonly Lazy<IReadOnlyList<string>> FrameworkReferencePaths = new(GetFrameworkReferencePaths);
 
         /// <summary>
         /// SymbolDisplayFormat for generating property signatures with accessors.
@@ -406,13 +412,8 @@ namespace CloudNimble.DotNetDocs.Core
 
             DocType docType;
 
-            // Create DocEnum for enum types
-            // Note: When loading from metadata (compiled DLL), enums appear as sealed classes with const fields
-            // We need to detect this pattern since TypeKind.Enum is not preserved in metadata
-            var isEnum = type.TypeKind == TypeKind.Enum ||
-                         (type.TypeKind == TypeKind.Class && type.IsSealed && type.BaseType?.Name == "Enum");
-
-            if (isEnum)
+            // Roslyn reports TypeKind.Enum for metadata enums once System.Enum resolves, which CreateCompilationAsync ensures.
+            if (type.TypeKind == TypeKind.Enum)
             {
                 var docEnum = new DocEnum(type)
                 {
@@ -436,46 +437,16 @@ namespace CloudNimble.DotNetDocs.Core
                 docEnum.IsFlags = type.GetAttributes()
                     .Any(a => a.AttributeClass?.ToDisplayString() == "System.FlagsAttribute");
 
-                // Get underlying type
-                if (type is INamedTypeSymbol namedType)
+                // Every enum symbol is a named type with an underlying type.
+                if (type is INamedTypeSymbol { EnumUnderlyingType: { } underlyingType })
                 {
-                    ITypeSymbol? underlyingType = namedType.EnumUnderlyingType;
-
-                    // Fallback: For metadata-loaded enums, infer from constant value type
-                    if (underlyingType is null)
+                    docEnum.UnderlyingType = new DocReference
                     {
-                        var firstConstField = type.GetMembers()
-                            .OfType<IFieldSymbol>()
-                            .FirstOrDefault(f => f.IsConst && f.HasConstantValue);
-
-                        if (firstConstField?.ConstantValue is not null)
-                        {
-                            // Determine underlying type from the constant value's actual type
-                            underlyingType = firstConstField.ConstantValue switch
-                            {
-                                byte => compilation.GetSpecialType(SpecialType.System_Byte),
-                                sbyte => compilation.GetSpecialType(SpecialType.System_SByte),
-                                short => compilation.GetSpecialType(SpecialType.System_Int16),
-                                ushort => compilation.GetSpecialType(SpecialType.System_UInt16),
-                                int => compilation.GetSpecialType(SpecialType.System_Int32),
-                                uint => compilation.GetSpecialType(SpecialType.System_UInt32),
-                                long => compilation.GetSpecialType(SpecialType.System_Int64),
-                                ulong => compilation.GetSpecialType(SpecialType.System_UInt64),
-                                _ => compilation.GetSpecialType(SpecialType.System_Int32) // Default to int
-                            };
-                        }
-                    }
-
-                    if (underlyingType is not null)
-                    {
-                        docEnum.UnderlyingType = new DocReference
-                        {
-                            RawReference = $"T:{underlyingType.ToDisplayString()}",
-                            DisplayName = GetFriendlyTypeName(underlyingType),
-                            IsResolved = true,
-                            ReferenceType = ReferenceType.Framework
-                        };
-                    }
+                        RawReference = $"T:{underlyingType.ToDisplayString()}",
+                        DisplayName = GetFriendlyTypeName(underlyingType),
+                        IsResolved = true,
+                        ReferenceType = ReferenceType.Framework
+                    };
                 }
 
                 // Extract enum values
@@ -536,22 +507,11 @@ namespace CloudNimble.DotNetDocs.Core
             if (type.TypeKind != TypeKind.Enum)
             {
                 // Get all members including inherited from base types
-                // Replace any error System.Object types with the properly-resolved one from compilation
                 // For static classes, only get members from the class itself (not inherited) since static classes
                 // can't use inherited instance members and we need to detect empty extension classes for removal
                 var allTypesInChain = type.IsStatic
                     ? [type]
-                    : GetBaseTypesAndThis(type)
-                    .Select(t =>
-                    {
-                        // If this is System.Object but it's an error type, replace it with the compilation's special type
-                        if (t.Name == "Object" && t.TypeKind == TypeKind.Error && _compilation is not null)
-                        {
-                            return _compilation.GetSpecialType(SpecialType.System_Object);
-                        }
-                        return t;
-                    })
-                    .ToList();
+                    : GetBaseTypesAndThis(type).ToList();
 
                 var allMembers = allTypesInChain
                     .SelectMany(t => t.GetMembers())
@@ -789,7 +749,9 @@ namespace CloudNimble.DotNetDocs.Core
         /// <returns>A task representing the asynchronous operation, containing the <see cref="Compilation"/>.</returns>
         /// <remarks>
         /// Uses a bridge compilation technique with IgnoresAccessChecksTo attribute to enable
-        /// visibility of internal members for documentation purposes.
+        /// visibility of internal members for documentation purposes. The managed assemblies of the running .NET
+        /// runtime are referenced so framework types resolve; a provided reference with the same assembly name
+        /// replaces the runtime's copy.
         /// </remarks>
         internal async Task<Compilation> CreateCompilationAsync(IEnumerable<string> references)
         {
@@ -844,21 +806,23 @@ namespace CloudNimble.DotNetDocs.Core
             compilation = compilation.AddReferences(targetReference);
 
             // Add all provided references
+            var referencedNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { assemblyName };
             foreach (var refPath in references)
             {
                 if (File.Exists(refPath))
                 {
                     compilation = compilation.AddReferences(MetadataReference.CreateFromFile(refPath));
+                    referencedNames.Add(Path.GetFileNameWithoutExtension(refPath));
                 }
             }
 
-            // Add common .NET references for resolution
-            var netRefs = new[]
-            {
-                MetadataReference.CreateFromFile(typeof(object).Assembly.Location),
-                MetadataReference.CreateFromFile(typeof(Enumerable).Assembly.Location)
-            };
-            compilation = compilation.AddReferences(netRefs);
+            // Add the framework assemblies the target compiled against (System.Runtime, System.Collections, and so on).
+            // Without them, framework types such as System.Enum and List<T> are error types, and enums report TypeKind.Class.
+            // A provided reference with the same name wins, so callers can supply the exact framework they target.
+            var frameworkReferences = FrameworkReferencePaths.Value
+                .Where(path => !referencedNames.Contains(Path.GetFileNameWithoutExtension(path)))
+                .Select(path => MetadataReference.CreateFromFile(path));
+            compilation = compilation.AddReferences(frameworkReferences);
 
             return await Task.FromResult(compilation);
         }
@@ -1196,6 +1160,51 @@ namespace CloudNimble.DotNetDocs.Core
             var typeName = documentationId[(documentationId.IndexOf(':') + 1)..];
 
             return string.IsNullOrWhiteSpace(typeName) || typeName.Contains('{') ? null : typeName;
+        }
+
+        /// <summary>
+        /// Gets the paths of the managed assemblies in the running .NET runtime's directory.
+        /// </summary>
+        /// <returns>The managed assembly paths, or an empty list when the runtime's location is unknown.</returns>
+        /// <remarks>
+        /// The runtime directory also contains native libraries such as <c>coreclr.dll</c>, which Roslyn rejects with CS0009,
+        /// so only files with .NET metadata are returned. The location is empty when the runtime is bundled into a single file.
+        /// </remarks>
+        internal static IReadOnlyList<string> GetFrameworkReferencePaths()
+        {
+            var runtimeDirectory = Path.GetDirectoryName(typeof(object).Assembly.Location);
+            if (string.IsNullOrWhiteSpace(runtimeDirectory) || !Directory.Exists(runtimeDirectory))
+            {
+                return [];
+            }
+
+            return [.. Directory.EnumerateFiles(runtimeDirectory, "*.dll").Where(IsManagedAssembly).Order(StringComparer.OrdinalIgnoreCase)];
+        }
+
+        /// <summary>
+        /// Determines whether a file is a .NET assembly that Roslyn can reference.
+        /// </summary>
+        /// <param name="path">The path of the file to check.</param>
+        /// <returns>True when the file exists and is a portable executable with .NET metadata; otherwise, false.</returns>
+        internal static bool IsManagedAssembly(string path)
+        {
+            ArgumentException.ThrowIfNullOrWhiteSpace(path);
+
+            if (!File.Exists(path))
+            {
+                return false;
+            }
+
+            try
+            {
+                using var stream = File.OpenRead(path);
+                using var peReader = new PEReader(stream);
+                return peReader.HasMetadata;
+            }
+            catch (BadImageFormatException)
+            {
+                return false;
+            }
         }
 
         #endregion

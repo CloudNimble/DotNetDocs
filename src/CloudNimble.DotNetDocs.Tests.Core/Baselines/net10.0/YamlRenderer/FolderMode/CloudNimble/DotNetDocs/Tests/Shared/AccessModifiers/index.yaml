@@ -1,7 +1,6 @@
 name: CloudNimble.DotNetDocs.Tests.Shared.AccessModifiers
 types:
-- baseType: System.Object
-  members:
+- members:
   - accessibility: Public
     memberKind: Field
     name: PublicField

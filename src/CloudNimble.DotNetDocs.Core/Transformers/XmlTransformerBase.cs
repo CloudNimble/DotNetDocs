@@ -443,10 +443,10 @@ namespace CloudNimble.DotNetDocs.Core.Transformers
         /// Gets the anchor for a resolved documentation reference.
         /// </summary>
         /// <param name="entity">The resolved entity.</param>
-        /// <returns>The lowercase member name for members, or null for assemblies, namespaces, and types, which have their own pages.</returns>
-        /// <remarks>
-        /// The reference map only holds assemblies, namespaces, types, and members, so those are the only entities that reach this method.
-        /// </remarks>
+        /// <returns>
+        /// The lowercase member name for members, or null for assemblies, namespaces, and types, which have their own pages,
+        /// and for enum values, which are rows in their enum's table.
+        /// </returns>
         internal string? GetAnchor(DocEntity entity)
         {
             return entity is DocMember member ? member.Name.ToLowerInvariant() : null;
@@ -468,24 +468,19 @@ namespace CloudNimble.DotNetDocs.Core.Transformers
         /// <param name="reference">The raw reference string.</param>
         /// <param name="entity">The resolved entity.</param>
         /// <returns>A display name suitable for rendering in documentation.</returns>
+        /// <remarks>
+        /// Members and enum values include their type's simple name for clarity, such as <c>NamespaceMode.File</c>.
+        /// </remarks>
         internal string GetDisplayName(string reference, DocEntity entity)
         {
-            switch (entity)
+            return entity switch
             {
-                case DocMember member:
-                    // Include the type name for clarity.
-                    var withoutPrefix = StripPrefix(reference);
-                    var lastDot = withoutPrefix.LastIndexOf('.');
-                    return lastDot > 0
-                        ? $"{GetSimpleTypeName(withoutPrefix[..lastDot])}.{member.Name}"
-                        : member.Name;
-                case DocType type:
-                    return type.Name;
-                case DocNamespace ns:
-                    return ns.Name;
-                default:
-                    return entity.DisplayName ?? GetSimpleTypeName(reference);
-            }
+                DocMember member => QualifyWithTypeName(reference, member.Name),
+                DocEnumValue value => QualifyWithTypeName(reference, value.Name),
+                DocType type => type.Name,
+                DocNamespace ns => ns.Name,
+                _ => entity.DisplayName ?? GetSimpleTypeName(reference)
+            };
         }
 
         /// <summary>
@@ -588,7 +583,26 @@ namespace CloudNimble.DotNetDocs.Core.Transformers
         }
 
         /// <summary>
-        /// Indexes a member in the reference map with multiple lookup keys.
+        /// Indexes an enum value in the reference map as <c>F:Enum.Value</c> and <c>Enum.Value</c>.
+        /// </summary>
+        /// <param name="value">The enum value to index.</param>
+        /// <param name="parentEnum">The enum that declares the value.</param>
+        /// <param name="ns">The namespace containing the enum.</param>
+        /// <remarks>
+        /// Enum values are rendered in a table on the enum's page, so they resolve to that page with no anchor.
+        /// </remarks>
+        internal void IndexEnumValue(DocEnumValue value, DocEnum parentEnum, DocNamespace ns)
+        {
+            var valueId = $"{parentEnum.FullName ?? parentEnum.Name}.{value.Name}";
+            var valuePath = GetTypePath(parentEnum, ns);
+            AddToReferenceMap(value, $"F:{valueId}", valuePath);
+
+            // No other entity can own "Enum.Value": enums cannot contain types, and a namespace cannot share an enum's full name.
+            AddToReferenceMap(value, valueId, valuePath);
+        }
+
+        /// <summary>
+        /// Indexes a member in the reference map by its documentation ID.
         /// </summary>
         /// <param name="member">The member to index.</param>
         /// <param name="parentType">The parent type containing the member.</param>
@@ -600,22 +614,6 @@ namespace CloudNimble.DotNetDocs.Core.Transformers
             // Members are rendered on the same page as their type.
             var memberPath = GetTypePath(parentType, ns);
             AddToReferenceMap(member, memberId, memberPath);
-
-            if (member.MemberKind == SymbolKind.Field && parentType.TypeKind == TypeKind.Enum)
-            {
-                // Enum fields are also referenced as "Enum.Field" and "F:Enum.Field".
-                var enumFieldId = $"{parentType.FullName ?? parentType.Name}.{member.Name}";
-                if (!_referenceMap.ContainsKey(enumFieldId))
-                {
-                    AddToReferenceMap(member, enumFieldId, memberPath);
-                }
-
-                var withPrefix = $"F:{enumFieldId}";
-                if (!_referenceMap.ContainsKey(withPrefix))
-                {
-                    AddToReferenceMap(member, withPrefix, memberPath);
-                }
-            }
         }
 
         /// <summary>
@@ -659,6 +657,14 @@ namespace CloudNimble.DotNetDocs.Core.Transformers
             foreach (var member in type.Members)
             {
                 IndexMember(member, type, ns);
+            }
+
+            if (type is DocEnum docEnum)
+            {
+                foreach (var value in docEnum.Values)
+                {
+                    IndexEnumValue(value, docEnum, ns);
+                }
             }
         }
 
@@ -776,6 +782,21 @@ namespace CloudNimble.DotNetDocs.Core.Transformers
             }
 
             return indent;
+        }
+
+        /// <summary>
+        /// Prefixes a member name with the simple name of the type in a reference.
+        /// </summary>
+        /// <param name="reference">The reference, such as <c>F:Namespace.Type.Member</c>.</param>
+        /// <param name="memberName">The member's name.</param>
+        /// <returns><c>Type.Member</c>, or the member name alone when the reference has no type qualifier.</returns>
+        private string QualifyWithTypeName(string reference, string memberName)
+        {
+            var withoutPrefix = StripPrefix(reference);
+            var lastDot = withoutPrefix.LastIndexOf('.');
+            return lastDot > 0
+                ? $"{GetSimpleTypeName(withoutPrefix[..lastDot])}.{memberName}"
+                : memberName;
         }
 
         #endregion

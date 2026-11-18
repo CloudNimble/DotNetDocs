@@ -16,11 +16,11 @@
               "name": "list",
               "parameterType": {
                 "members": [],
-                "assemblyName": "System.Collections",
+                "assemblyName": "System.Private.CoreLib",
                 "fullName": "System.Collections.Generic.List\u003CT\u003E",
                 "name": "List",
                 "signature": "System.Collections.Generic.List\u003CT\u003E",
-                "typeKind": "error",
+                "typeKind": "class",
                 "isExternalReference": true,
                 "displayName": "System.Collections.Generic.List\u003CT\u003E"
               },
@@ -72,11 +72,11 @@
               "name": "list",
               "parameterType": {
                 "members": [],
-                "assemblyName": "System.Collections",
+                "assemblyName": "System.Private.CoreLib",
                 "fullName": "System.Collections.Generic.List\u003CT\u003E",
                 "name": "List",
                 "signature": "System.Collections.Generic.List\u003CT\u003E",
-                "typeKind": "error",
+                "typeKind": "class",
                 "isExternalReference": true,
                 "displayName": "System.Collections.Generic.List\u003CT\u003E"
               },
@@ -105,11 +105,11 @@
           ],
           "returnType": {
             "members": [],
-            "assemblyName": "System.Collections",
+            "assemblyName": "System.Private.CoreLib",
             "fullName": "System.Collections.Generic.List\u003CT\u003E",
             "name": "List",
             "signature": "System.Collections.Generic.List\u003CT\u003E",
-            "typeKind": "error",
+            "typeKind": "class",
             "isExternalReference": true,
             "displayName": "System.Collections.Generic.List\u003CT\u003E"
           },
@@ -146,11 +146,11 @@
               "name": "list",
               "parameterType": {
                 "members": [],
-                "assemblyName": "System.Collections",
+                "assemblyName": "System.Private.CoreLib",
                 "fullName": "System.Collections.Generic.List\u003CT\u003E",
                 "name": "List",
                 "signature": "System.Collections.Generic.List\u003CT\u003E",
-                "typeKind": "error",
+                "typeKind": "class",
                 "isExternalReference": true,
                 "displayName": "System.Collections.Generic.List\u003CT\u003E"
               },
@@ -161,11 +161,11 @@
           ],
           "returnType": {
             "members": [],
-            "assemblyName": "System.Collections",
+            "assemblyName": "System.Private.CoreLib",
             "fullName": "System.Collections.Generic.List\u003CT\u003E",
             "name": "List",
             "signature": "System.Collections.Generic.List\u003CT\u003E",
-            "typeKind": "error",
+            "typeKind": "class",
             "isExternalReference": true,
             "displayName": "System.Collections.Generic.List\u003CT\u003E"
           },
@@ -190,15 +190,15 @@
           ]
         }
       ],
-      "assemblyName": "System.Collections",
+      "assemblyName": "System.Private.CoreLib",
       "fullName": "System.Collections.Generic.List\u003CT\u003E",
       "name": "List",
       "signature": "System.Collections.Generic.List\u003CT\u003E",
-      "typeKind": "error",
+      "typeKind": "class",
       "isExternalReference": true,
       "displayName": "System.Collections.Generic.List\u003CT\u003E",
       "remarks": "See \u003Csee href=\u0022https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1\u0022\u003EMicrosoft documentation\u003C/see\u003E for more information about the rest of the API.",
-      "summary": "This type is defined in System.Collections."
+      "summary": "This type is defined in System.Private.CoreLib."
     }
   ],
   "displayName": "System.Collections.Generic"

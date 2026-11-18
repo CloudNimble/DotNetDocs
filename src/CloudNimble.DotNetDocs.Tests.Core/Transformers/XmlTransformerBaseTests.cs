@@ -104,8 +104,42 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Transformers
             reference.Should().NotBeNull();
             reference.IsResolved.Should().BeTrue();
             reference.DisplayName.Should().Be("NamespaceMode.File");
-            reference.Anchor.Should().Be("file");
+            reference.TargetEntity.Should().BeOfType<DocEnumValue>().Which.Name.Should().Be("File");
+            reference.Anchor.Should().BeNull("enum values are rows in the enum's table, which has no per-value anchors");
             reference.ReferenceType.Should().Be(ReferenceType.Field);
+            reference.RelativePath.Should().Be("/api-reference/CloudNimble/DotNetDocs/Core/Configuration/NamespaceMode");
+        }
+
+        [TestMethod]
+        public async Task ResolveReference_WithEnumValueWithoutPrefix_ResolvesToTheSameValue()
+        {
+            var assemblyPath = typeof(NamespaceMode).Assembly.Location;
+            using var manager = new AssemblyManager(assemblyPath, System.IO.Path.ChangeExtension(assemblyPath, ".xml"));
+            var assembly = await manager.DocumentAsync();
+            _resolver.BuildReferenceMap(assembly);
+
+            var prefixed = _resolver.ResolveReference("F:CloudNimble.DotNetDocs.Core.Configuration.NamespaceMode.Folder", "");
+            var unprefixed = _resolver.ResolveReference("CloudNimble.DotNetDocs.Core.Configuration.NamespaceMode.Folder", "");
+
+            unprefixed.IsResolved.Should().BeTrue();
+            unprefixed.TargetEntity.Should().BeSameAs(prefixed.TargetEntity);
+            unprefixed.DisplayName.Should().Be("NamespaceMode.Folder");
+            unprefixed.RelativePath.Should().Be(prefixed.RelativePath);
+        }
+
+        [TestMethod]
+        public async Task ResolveReference_WithUnknownEnumValue_IsNotResolved()
+        {
+            var assemblyPath = typeof(NamespaceMode).Assembly.Location;
+            using var manager = new AssemblyManager(assemblyPath, System.IO.Path.ChangeExtension(assemblyPath, ".xml"));
+            var assembly = await manager.DocumentAsync();
+            _resolver.BuildReferenceMap(assembly);
+
+            var reference = _resolver.ResolveReference("F:CloudNimble.DotNetDocs.Core.Configuration.NamespaceMode.Nested", "");
+
+            reference.IsResolved.Should().BeFalse();
+            reference.TargetEntity.Should().BeNull();
+            reference.DisplayName.Should().Be("Nested");
         }
 
         [TestMethod]

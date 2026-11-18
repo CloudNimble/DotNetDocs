@@ -89,8 +89,7 @@ types:
   signature: CloudNimble.DotNetDocs.Tests.Shared.DotNetDocsTestBase
   typeKind: Class
   displayName: CloudNimble.DotNetDocs.Tests.Shared.DotNetDocsTestBase
-- baseType: System.Object
-  members:
+- members:
   - accessibility: Public
     memberKind: Method
     methodKind: PropertyGet

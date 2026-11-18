@@ -2,7 +2,6 @@
   "name": "CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios",
   "types": [
     {
-      "baseType": "System.Object",
       "members": [
         {
           "accessibility": "public",
@@ -468,7 +467,6 @@
       "summary": "A base class for testing inheritance documentation."
     },
     {
-      "baseType": "System.Object",
       "members": [
         {
           "accessibility": "public",
@@ -1001,7 +999,6 @@
       "summary": "A class demonstrating various method documentation scenarios."
     },
     {
-      "baseType": "System.Object",
       "members": [
         {
           "accessibility": "public",
@@ -2236,7 +2233,6 @@
       "summary": "A derived class for testing inheritance documentation."
     },
     {
-      "baseType": "System.Object",
       "members": [
         {
           "accessibility": "public",
@@ -2875,7 +2871,6 @@
       "summary": "A test interface for demonstrating interface inheritance and extension methods."
     },
     {
-      "baseType": "System.Object",
       "members": [
         {
           "accessibility": "public",
@@ -3337,7 +3332,6 @@
       "summary": "A simple class for testing basic documentation extraction."
     },
     {
-      "baseType": "System.Object",
       "members": [
         {
           "accessibility": "public",

@@ -42,8 +42,8 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             type.Patterns.Should().BeNull();
             type.Considerations.Should().BeNull();
             type.RelatedApis.Should().BeEmpty();
-            // Note: Members may be populated from AssemblyManager
-            type.BaseType.Should().NotBeNull(); // SampleClass inherits from DotNetDocsTestBase
+            // SampleClass derives directly from System.Object, which is not reported as a base type.
+            type.BaseType.Should().BeNull();
         }
 
         [TestMethod]
@@ -107,14 +107,27 @@ namespace CloudNimble.DotNetDocs.Tests.Core
         public void BaseType_IsExtractedCorrectly()
         {
             var assembly = GetTestsDotSharedAssembly();
-            
-            // SampleClass should have a base type
+
+            var type = assembly.Namespaces
+                .SelectMany(n => n.Types)
+                .FirstOrDefault(t => t.Symbol.Name == "DerivedClass");
+
+            type.Should().NotBeNull();
+            type!.BaseType.Should().Be("CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.BaseClass");
+        }
+
+        [TestMethod]
+        public void BaseType_IsNull_ForTypeDerivingFromObject()
+        {
+            var assembly = GetTestsDotSharedAssembly();
+
             var type = assembly.Namespaces
                 .SelectMany(n => n.Types)
                 .FirstOrDefault(t => t.Symbol.Name == "SampleClass");
-            
+
             type.Should().NotBeNull();
-            type!.BaseType.Should().NotBeNull();
+            type!.Symbol.BaseType!.SpecialType.Should().Be(Microsoft.CodeAnalysis.SpecialType.System_Object);
+            type.BaseType.Should().BeNull();
         }
 
         [TestMethod]

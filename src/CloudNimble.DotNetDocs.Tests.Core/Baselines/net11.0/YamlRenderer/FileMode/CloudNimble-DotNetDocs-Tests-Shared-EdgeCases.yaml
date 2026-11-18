@@ -1,7 +1,6 @@
 name: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases
 types:
-- baseType: System.Object
-  members:
+- members:
   - accessibility: Public
     memberKind: Method
     methodKind: PropertyGet
@@ -268,8 +267,7 @@ types:
   typeKind: Class
   displayName: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithMinimalDocs
   summary: A class with minimal documentation.
-- baseType: System.Object
-  members:
+- members:
   - accessibility: Public
     memberKind: Method
     methodKind: PropertyGet
@@ -533,8 +531,7 @@ types:
   signature: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithNoDocs
   typeKind: Class
   displayName: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithNoDocs
-- baseType: System.Object
-  members:
+- members:
   - accessibility: Public
     memberKind: Method
     methodKind: Ordinary
@@ -789,8 +786,7 @@ types:
     This tests handling of XML special characters like &lt;tag&gt; and &amp;entity;.
                 Also tests "quotes" and 'apostrophes'.
   summary: "A class with special characters in documentation: &lt;, &gt;, &amp;, \", '."
-- baseType: System.Object
-  members:
+- members:
   - accessibility: Public
     memberKind: Method
     methodKind: PropertyGet
@@ -900,11 +896,11 @@ types:
     methodKind: Ordinary
     name: ProcessNumbers
     returnType:
-      assemblyName: System.Runtime
+      assemblyName: System.Private.CoreLib
       fullName: System.Collections.Generic.IEnumerable<object>
       name: IEnumerable
       signature: System.Collections.Generic.IEnumerable<object>
-      typeKind: Error
+      typeKind: Interface
       isExternalReference: true
       displayName: System.Collections.Generic.IEnumerable<object>
     returnTypeName: System.Collections.Generic.IEnumerable<object>

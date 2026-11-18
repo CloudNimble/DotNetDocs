@@ -2,7 +2,6 @@
   "name": "CloudNimble.DotNetDocs.Tests.Shared.AccessModifiers",
   "types": [
     {
-      "baseType": "System.Object",
       "members": [
         {
           "accessibility": "public",
@@ -529,7 +528,6 @@
       "summary": "An internal class for testing internal type visibility."
     },
     {
-      "baseType": "System.Object",
       "members": [
         {
           "accessibility": "public",

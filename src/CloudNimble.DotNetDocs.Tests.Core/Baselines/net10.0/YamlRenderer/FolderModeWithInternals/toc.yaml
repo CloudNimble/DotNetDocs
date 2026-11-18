@@ -48,13 +48,13 @@ items:
   href: index.yaml
   types:
   - name: ByteEnum
-    kind: Class
+    kind: Enum
   - name: FlagsEnum
-    kind: Class
+    kind: Enum
   - name: LongEnum
-    kind: Class
+    kind: Enum
   - name: SimpleEnum
-    kind: Class
+    kind: Enum
 - name: CloudNimble.DotNetDocs.Tests.Shared.Parameters
   href: index.yaml
   types:
@@ -64,7 +64,7 @@ items:
   href: index.yaml
   types:
   - name: List
-    kind: Error
+    kind: Class
 - name: System
   href: index.yaml
   types:

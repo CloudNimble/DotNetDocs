@@ -2,7 +2,7 @@
 
 ## Definition
 
-**Assembly:** System.Collections.dll
+**Assembly:** System.Private.CoreLib.dll
 
 **Namespace:** System.Collections.Generic
 
@@ -14,7 +14,7 @@ System.Collections.Generic.List<T>
 
 ## Summary
 
-This type is defined in System.Collections.
+This type is defined in System.Private.CoreLib.
 
 ## Remarks
 

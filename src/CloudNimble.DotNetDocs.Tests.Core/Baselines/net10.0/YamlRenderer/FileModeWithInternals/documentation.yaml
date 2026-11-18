@@ -91,8 +91,7 @@ namespaces:
     signature: CloudNimble.DotNetDocs.Tests.Shared.DotNetDocsTestBase
     typeKind: Class
     displayName: CloudNimble.DotNetDocs.Tests.Shared.DotNetDocsTestBase
-  - baseType: System.Object
-    members:
+  - members:
     - accessibility: Public
       memberKind: Method
       methodKind: PropertyGet
@@ -522,8 +521,7 @@ namespaces:
   displayName: CloudNimble.DotNetDocs.Tests.Shared
 - name: CloudNimble.DotNetDocs.Tests.Shared.AccessModifiers
   types:
-  - baseType: System.Object
-    members:
+  - members:
     - accessibility: Public
       memberKind: Method
       methodKind: PropertyGet
@@ -844,8 +842,7 @@ namespaces:
     displayName: CloudNimble.DotNetDocs.Tests.Shared.AccessModifiers.InternalClass
     remarks: This class should only be visible when internal members are included.
     summary: An internal class for testing internal type visibility.
-  - baseType: System.Object
-    members:
+  - members:
     - accessibility: Public
       memberKind: Field
       name: PublicField
@@ -1203,8 +1200,7 @@ namespaces:
   displayName: CloudNimble.DotNetDocs.Tests.Shared.AccessModifiers
 - name: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios
   types:
-  - baseType: System.Object
-    members:
+  - members:
     - accessibility: Public
       memberKind: Method
       methodKind: PropertyGet
@@ -1494,8 +1490,7 @@ namespaces:
     displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.BaseClass
     remarks: This class serves as the base for DerivedClass.
     summary: A base class for testing inheritance documentation.
-  - baseType: System.Object
-    members:
+  - members:
     - accessibility: Public
       memberKind: Method
       methodKind: Ordinary
@@ -1838,8 +1833,7 @@ namespaces:
                   </code>
     remarks: Contains methods with different signatures, parameters, and return types.
     summary: A class demonstrating various method documentation scenarios.
-  - baseType: System.Object
-    members:
+  - members:
     - accessibility: Public
       memberKind: Method
       methodKind: PropertyGet
@@ -2650,8 +2644,7 @@ namespaces:
                   </code>
     remarks: This class inherits from BaseClass and overrides some members.
     summary: A derived class for testing inheritance documentation.
-  - baseType: System.Object
-    members:
+  - members:
     - accessibility: Public
       memberKind: Method
       methodKind: PropertyGet
@@ -3061,8 +3054,7 @@ namespaces:
       This interface is used to test extension methods on interfaces and to verify
                   that inherited members from interfaces are properly documented.
     summary: A test interface for demonstrating interface inheritance and extension methods.
-  - baseType: System.Object
-    members:
+  - members:
     - accessibility: Public
       memberKind: Method
       methodKind: Ordinary
@@ -3366,8 +3358,7 @@ namespaces:
       These are remarks about the SimpleClass. They provide additional context
                   and information beyond what's in the summary.
     summary: A simple class for testing basic documentation extraction.
-  - baseType: System.Object
-    members:
+  - members:
     - accessibility: Public
       memberKind: Method
       methodKind: PropertyGet
@@ -3631,8 +3622,7 @@ namespaces:
   displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios
 - name: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases
   types:
-  - baseType: System.Object
-    members:
+  - members:
     - accessibility: Public
       memberKind: Method
       methodKind: PropertyGet
@@ -3899,8 +3889,7 @@ namespaces:
     typeKind: Class
     displayName: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithMinimalDocs
     summary: A class with minimal documentation.
-  - baseType: System.Object
-    members:
+  - members:
     - accessibility: Public
       memberKind: Method
       methodKind: PropertyGet
@@ -4164,8 +4153,7 @@ namespaces:
     signature: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithNoDocs
     typeKind: Class
     displayName: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithNoDocs
-  - baseType: System.Object
-    members:
+  - members:
     - accessibility: Public
       memberKind: Method
       methodKind: Ordinary
@@ -4420,8 +4408,7 @@ namespaces:
       This tests handling of XML special characters like &lt;tag&gt; and &amp;entity;.
                   Also tests "quotes" and 'apostrophes'.
     summary: "A class with special characters in documentation: &lt;, &gt;, &amp;, \", '."
-  - baseType: System.Object
-    members:
+  - members:
     - accessibility: Public
       memberKind: Method
       methodKind: PropertyGet
@@ -4531,11 +4518,11 @@ namespaces:
       methodKind: Ordinary
       name: ProcessNumbers
       returnType:
-        assemblyName: System.Runtime
+        assemblyName: System.Private.CoreLib
         fullName: System.Collections.Generic.IEnumerable<object>
         name: IEnumerable
         signature: System.Collections.Generic.IEnumerable<object>
-        typeKind: Error
+        typeKind: Interface
         isExternalReference: true
         displayName: System.Collections.Generic.IEnumerable<object>
       returnTypeName: System.Collections.Generic.IEnumerable<object>
@@ -4820,60 +4807,17 @@ namespaces:
       displayName: CloudNimble.DotNetDocs.Tests.Shared.Enums.ByteEnum.Max
       summary: Maximum value for byte.
     baseType: System.Enum
-    members:
-    - accessibility: Public
-      memberKind: Field
-      name: value__
-      returnTypeName: byte
-      signature: public byte value__
-      declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.Enums.ByteEnum
-      displayName: CloudNimble.DotNetDocs.Tests.Shared.Enums.ByteEnum.value__
-    - accessibility: Public
-      memberKind: Field
-      name: Min
-      returnTypeName: CloudNimble.DotNetDocs.Tests.Shared.Enums.ByteEnum
-      signature: public const CloudNimble.DotNetDocs.Tests.Shared.Enums.ByteEnum Min
-      declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.Enums.ByteEnum
-      displayName: CloudNimble.DotNetDocs.Tests.Shared.Enums.ByteEnum.Min
-      summary: Minimum value.
-    - accessibility: Public
-      memberKind: Field
-      name: Low
-      returnTypeName: CloudNimble.DotNetDocs.Tests.Shared.Enums.ByteEnum
-      signature: public const CloudNimble.DotNetDocs.Tests.Shared.Enums.ByteEnum Low
-      declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.Enums.ByteEnum
-      displayName: CloudNimble.DotNetDocs.Tests.Shared.Enums.ByteEnum.Low
-      summary: Low value.
-    - accessibility: Public
-      memberKind: Field
-      name: Medium
-      returnTypeName: CloudNimble.DotNetDocs.Tests.Shared.Enums.ByteEnum
-      signature: public const CloudNimble.DotNetDocs.Tests.Shared.Enums.ByteEnum Medium
-      declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.Enums.ByteEnum
-      displayName: CloudNimble.DotNetDocs.Tests.Shared.Enums.ByteEnum.Medium
-      summary: Medium value.
-    - accessibility: Public
-      memberKind: Field
-      name: High
-      returnTypeName: CloudNimble.DotNetDocs.Tests.Shared.Enums.ByteEnum
-      signature: public const CloudNimble.DotNetDocs.Tests.Shared.Enums.ByteEnum High
-      declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.Enums.ByteEnum
-      displayName: CloudNimble.DotNetDocs.Tests.Shared.Enums.ByteEnum.High
-      summary: High value.
-    - accessibility: Public
-      memberKind: Field
-      name: Max
-      returnTypeName: CloudNimble.DotNetDocs.Tests.Shared.Enums.ByteEnum
-      signature: public const CloudNimble.DotNetDocs.Tests.Shared.Enums.ByteEnum Max
-      declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.Enums.ByteEnum
-      displayName: CloudNimble.DotNetDocs.Tests.Shared.Enums.ByteEnum.Max
-      summary: Maximum value for byte.
     assemblyName: CloudNimble.DotNetDocs.Tests.Shared
     fullName: CloudNimble.DotNetDocs.Tests.Shared.Enums.ByteEnum
     name: ByteEnum
     signature: CloudNimble.DotNetDocs.Tests.Shared.Enums.ByteEnum
-    typeKind: Class
+    typeKind: Enum
     displayName: CloudNimble.DotNetDocs.Tests.Shared.Enums.ByteEnum
+    relatedApis:
+    - System.IComparable
+    - System.ISpanFormattable
+    - System.IFormattable
+    - System.IConvertible
     remarks: >-
       This enum uses a byte as its underlying type to save memory.
                   Values are limited to 0-255.
@@ -4910,68 +4854,17 @@ namespaces:
       displayName: CloudNimble.DotNetDocs.Tests.Shared.Enums.FlagsEnum.All
       summary: All permissions combined.
     baseType: System.Enum
-    members:
-    - accessibility: Public
-      memberKind: Field
-      name: value__
-      returnTypeName: int
-      signature: public int value__
-      declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.Enums.FlagsEnum
-      displayName: CloudNimble.DotNetDocs.Tests.Shared.Enums.FlagsEnum.value__
-    - accessibility: Public
-      memberKind: Field
-      name: None
-      returnTypeName: CloudNimble.DotNetDocs.Tests.Shared.Enums.FlagsEnum
-      signature: public const CloudNimble.DotNetDocs.Tests.Shared.Enums.FlagsEnum None
-      declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.Enums.FlagsEnum
-      displayName: CloudNimble.DotNetDocs.Tests.Shared.Enums.FlagsEnum.None
-      summary: No permissions.
-    - accessibility: Public
-      memberKind: Field
-      name: Read
-      returnTypeName: CloudNimble.DotNetDocs.Tests.Shared.Enums.FlagsEnum
-      signature: public const CloudNimble.DotNetDocs.Tests.Shared.Enums.FlagsEnum Read
-      declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.Enums.FlagsEnum
-      displayName: CloudNimble.DotNetDocs.Tests.Shared.Enums.FlagsEnum.Read
-      summary: Read permission.
-    - accessibility: Public
-      memberKind: Field
-      name: Write
-      returnTypeName: CloudNimble.DotNetDocs.Tests.Shared.Enums.FlagsEnum
-      signature: public const CloudNimble.DotNetDocs.Tests.Shared.Enums.FlagsEnum Write
-      declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.Enums.FlagsEnum
-      displayName: CloudNimble.DotNetDocs.Tests.Shared.Enums.FlagsEnum.Write
-      summary: Write permission.
-    - accessibility: Public
-      memberKind: Field
-      name: Execute
-      returnTypeName: CloudNimble.DotNetDocs.Tests.Shared.Enums.FlagsEnum
-      signature: public const CloudNimble.DotNetDocs.Tests.Shared.Enums.FlagsEnum Execute
-      declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.Enums.FlagsEnum
-      displayName: CloudNimble.DotNetDocs.Tests.Shared.Enums.FlagsEnum.Execute
-      summary: Execute permission.
-    - accessibility: Public
-      memberKind: Field
-      name: Delete
-      returnTypeName: CloudNimble.DotNetDocs.Tests.Shared.Enums.FlagsEnum
-      signature: public const CloudNimble.DotNetDocs.Tests.Shared.Enums.FlagsEnum Delete
-      declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.Enums.FlagsEnum
-      displayName: CloudNimble.DotNetDocs.Tests.Shared.Enums.FlagsEnum.Delete
-      summary: Delete permission.
-    - accessibility: Public
-      memberKind: Field
-      name: All
-      returnTypeName: CloudNimble.DotNetDocs.Tests.Shared.Enums.FlagsEnum
-      signature: public const CloudNimble.DotNetDocs.Tests.Shared.Enums.FlagsEnum All
-      declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.Enums.FlagsEnum
-      displayName: CloudNimble.DotNetDocs.Tests.Shared.Enums.FlagsEnum.All
-      summary: All permissions combined.
     assemblyName: CloudNimble.DotNetDocs.Tests.Shared
     fullName: CloudNimble.DotNetDocs.Tests.Shared.Enums.FlagsEnum
     name: FlagsEnum
     signature: CloudNimble.DotNetDocs.Tests.Shared.Enums.FlagsEnum
-    typeKind: Class
+    typeKind: Enum
     displayName: CloudNimble.DotNetDocs.Tests.Shared.Enums.FlagsEnum
+    relatedApis:
+    - System.IComparable
+    - System.ISpanFormattable
+    - System.IFormattable
+    - System.IConvertible
     summary: A flags enum for bitwise operations.
   - underlyingType:
       displayName: long
@@ -4996,52 +4889,17 @@ namespaces:
       displayName: CloudNimble.DotNetDocs.Tests.Shared.Enums.LongEnum.VeryLarge
       summary: Very large value.
     baseType: System.Enum
-    members:
-    - accessibility: Public
-      memberKind: Field
-      name: value__
-      returnTypeName: long
-      signature: public long value__
-      declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.Enums.LongEnum
-      displayName: CloudNimble.DotNetDocs.Tests.Shared.Enums.LongEnum.value__
-    - accessibility: Public
-      memberKind: Field
-      name: Small
-      returnTypeName: CloudNimble.DotNetDocs.Tests.Shared.Enums.LongEnum
-      signature: public const CloudNimble.DotNetDocs.Tests.Shared.Enums.LongEnum Small
-      declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.Enums.LongEnum
-      displayName: CloudNimble.DotNetDocs.Tests.Shared.Enums.LongEnum.Small
-      summary: Small value.
-    - accessibility: Public
-      memberKind: Field
-      name: Million
-      returnTypeName: CloudNimble.DotNetDocs.Tests.Shared.Enums.LongEnum
-      signature: public const CloudNimble.DotNetDocs.Tests.Shared.Enums.LongEnum Million
-      declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.Enums.LongEnum
-      displayName: CloudNimble.DotNetDocs.Tests.Shared.Enums.LongEnum.Million
-      summary: Large value in millions.
-    - accessibility: Public
-      memberKind: Field
-      name: Billion
-      returnTypeName: CloudNimble.DotNetDocs.Tests.Shared.Enums.LongEnum
-      signature: public const CloudNimble.DotNetDocs.Tests.Shared.Enums.LongEnum Billion
-      declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.Enums.LongEnum
-      displayName: CloudNimble.DotNetDocs.Tests.Shared.Enums.LongEnum.Billion
-      summary: Large value in billions.
-    - accessibility: Public
-      memberKind: Field
-      name: VeryLarge
-      returnTypeName: CloudNimble.DotNetDocs.Tests.Shared.Enums.LongEnum
-      signature: public const CloudNimble.DotNetDocs.Tests.Shared.Enums.LongEnum VeryLarge
-      declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.Enums.LongEnum
-      displayName: CloudNimble.DotNetDocs.Tests.Shared.Enums.LongEnum.VeryLarge
-      summary: Very large value.
     assemblyName: CloudNimble.DotNetDocs.Tests.Shared
     fullName: CloudNimble.DotNetDocs.Tests.Shared.Enums.LongEnum
     name: LongEnum
     signature: CloudNimble.DotNetDocs.Tests.Shared.Enums.LongEnum
-    typeKind: Class
+    typeKind: Enum
     displayName: CloudNimble.DotNetDocs.Tests.Shared.Enums.LongEnum
+    relatedApis:
+    - System.IComparable
+    - System.ISpanFormattable
+    - System.IFormattable
+    - System.IConvertible
     summary: An enum with long underlying type for large values.
   - underlyingType:
       displayName: int
@@ -5070,66 +4928,22 @@ namespaces:
       displayName: CloudNimble.DotNetDocs.Tests.Shared.Enums.SimpleEnum.Fourth
       summary: Fourth option continues from Third.
     baseType: System.Enum
-    members:
-    - accessibility: Public
-      memberKind: Field
-      name: value__
-      returnTypeName: int
-      signature: public int value__
-      declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.Enums.SimpleEnum
-      displayName: CloudNimble.DotNetDocs.Tests.Shared.Enums.SimpleEnum.value__
-    - accessibility: Public
-      memberKind: Field
-      name: None
-      returnTypeName: CloudNimble.DotNetDocs.Tests.Shared.Enums.SimpleEnum
-      signature: public const CloudNimble.DotNetDocs.Tests.Shared.Enums.SimpleEnum None
-      declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.Enums.SimpleEnum
-      displayName: CloudNimble.DotNetDocs.Tests.Shared.Enums.SimpleEnum.None
-      summary: No value specified.
-    - accessibility: Public
-      memberKind: Field
-      name: First
-      returnTypeName: CloudNimble.DotNetDocs.Tests.Shared.Enums.SimpleEnum
-      signature: public const CloudNimble.DotNetDocs.Tests.Shared.Enums.SimpleEnum First
-      declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.Enums.SimpleEnum
-      displayName: CloudNimble.DotNetDocs.Tests.Shared.Enums.SimpleEnum.First
-      summary: First option.
-    - accessibility: Public
-      memberKind: Field
-      name: Second
-      returnTypeName: CloudNimble.DotNetDocs.Tests.Shared.Enums.SimpleEnum
-      signature: public const CloudNimble.DotNetDocs.Tests.Shared.Enums.SimpleEnum Second
-      declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.Enums.SimpleEnum
-      displayName: CloudNimble.DotNetDocs.Tests.Shared.Enums.SimpleEnum.Second
-      summary: Second option.
-    - accessibility: Public
-      memberKind: Field
-      name: Third
-      returnTypeName: CloudNimble.DotNetDocs.Tests.Shared.Enums.SimpleEnum
-      signature: public const CloudNimble.DotNetDocs.Tests.Shared.Enums.SimpleEnum Third
-      declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.Enums.SimpleEnum
-      displayName: CloudNimble.DotNetDocs.Tests.Shared.Enums.SimpleEnum.Third
-      summary: Third option with explicit value.
-    - accessibility: Public
-      memberKind: Field
-      name: Fourth
-      returnTypeName: CloudNimble.DotNetDocs.Tests.Shared.Enums.SimpleEnum
-      signature: public const CloudNimble.DotNetDocs.Tests.Shared.Enums.SimpleEnum Fourth
-      declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.Enums.SimpleEnum
-      displayName: CloudNimble.DotNetDocs.Tests.Shared.Enums.SimpleEnum.Fourth
-      summary: Fourth option continues from Third.
     assemblyName: CloudNimble.DotNetDocs.Tests.Shared
     fullName: CloudNimble.DotNetDocs.Tests.Shared.Enums.SimpleEnum
     name: SimpleEnum
     signature: CloudNimble.DotNetDocs.Tests.Shared.Enums.SimpleEnum
-    typeKind: Class
+    typeKind: Enum
     displayName: CloudNimble.DotNetDocs.Tests.Shared.Enums.SimpleEnum
+    relatedApis:
+    - System.IComparable
+    - System.ISpanFormattable
+    - System.IFormattable
+    - System.IConvertible
     summary: A simple enum with default int underlying type.
   displayName: CloudNimble.DotNetDocs.Tests.Shared.Enums
 - name: CloudNimble.DotNetDocs.Tests.Shared.Parameters
   types:
-  - baseType: System.Object
-    members:
+  - members:
     - accessibility: Public
       memberKind: Method
       methodKind: Ordinary
@@ -5351,11 +5165,11 @@ namespaces:
         displayName: TValue value
         usage: The value.
       returnType:
-        assemblyName: System.Runtime
+        assemblyName: System.Private.CoreLib
         fullName: System.Collections.Generic.KeyValuePair<TKey, TValue>
         name: KeyValuePair
         signature: System.Collections.Generic.KeyValuePair<TKey, TValue>
-        typeKind: Error
+        typeKind: Struct
         isExternalReference: true
         displayName: System.Collections.Generic.KeyValuePair<TKey, TValue>
       returnTypeName: System.Collections.Generic.KeyValuePair<TKey, TValue>
@@ -5376,15 +5190,15 @@ namespaces:
       parameters:
       - name: nullableInt
         parameterType:
-          assemblyName: System.Runtime
-          fullName: System.Nullable<int>
+          assemblyName: System.Private.CoreLib
+          fullName: int?
           name: Nullable
-          signature: System.Nullable<int>
-          typeKind: Error
+          signature: int?
+          typeKind: Struct
           isExternalReference: true
-          displayName: System.Nullable<int>
-        typeName: System.Nullable<int>
-        displayName: System.Nullable<int> nullableInt
+          displayName: int?
+        typeName: int?
+        displayName: int? nullableInt
         usage: An optional nullable integer.
       - name: nullableString
         parameterType:
@@ -5407,9 +5221,9 @@ namespaces:
         isExternalReference: true
         displayName: string
       returnTypeName: string
-      signature: public string MethodWithNullables(System.Nullable<int> nullableInt, string nullableString)
+      signature: public string MethodWithNullables(int? nullableInt, string nullableString)
       declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.Parameters.ParameterVariations
-      displayName: CloudNimble.DotNetDocs.Tests.Shared.Parameters.ParameterVariations.MethodWithNullables(System.Nullable<int>, string?)
+      displayName: CloudNimble.DotNetDocs.Tests.Shared.Parameters.ParameterVariations.MethodWithNullables(int?, string?)
       returns: A description of the provided values.
       summary: A method with nullable parameters.
     - accessibility: Public
@@ -5671,11 +5485,11 @@ namespaces:
       parameters:
       - name: list
         parameterType:
-          assemblyName: System.Collections
+          assemblyName: System.Private.CoreLib
           fullName: System.Collections.Generic.List<T>
           name: List
           signature: System.Collections.Generic.List<T>
-          typeKind: Error
+          typeKind: Class
           isExternalReference: true
           displayName: System.Collections.Generic.List<T>
         typeName: System.Collections.Generic.List<T>
@@ -5715,11 +5529,11 @@ namespaces:
       parameters:
       - name: list
         parameterType:
-          assemblyName: System.Collections
+          assemblyName: System.Private.CoreLib
           fullName: System.Collections.Generic.List<T>
           name: List
           signature: System.Collections.Generic.List<T>
-          typeKind: Error
+          typeKind: Class
           isExternalReference: true
           displayName: System.Collections.Generic.List<T>
         typeName: System.Collections.Generic.List<T>
@@ -5737,11 +5551,11 @@ namespaces:
         displayName: params T[] items
         usage: The items to add.
       returnType:
-        assemblyName: System.Collections
+        assemblyName: System.Private.CoreLib
         fullName: System.Collections.Generic.List<T>
         name: List
         signature: System.Collections.Generic.List<T>
-        typeKind: Error
+        typeKind: Class
         isExternalReference: true
         displayName: System.Collections.Generic.List<T>
       returnTypeName: System.Collections.Generic.List<T>
@@ -5767,22 +5581,22 @@ namespaces:
       parameters:
       - name: list
         parameterType:
-          assemblyName: System.Collections
+          assemblyName: System.Private.CoreLib
           fullName: System.Collections.Generic.List<T>
           name: List
           signature: System.Collections.Generic.List<T>
-          typeKind: Error
+          typeKind: Class
           isExternalReference: true
           displayName: System.Collections.Generic.List<T>
         typeName: System.Collections.Generic.List<T>
         displayName: System.Collections.Generic.List<T> list
         usage: The list to shuffle.
       returnType:
-        assemblyName: System.Collections
+        assemblyName: System.Private.CoreLib
         fullName: System.Collections.Generic.List<T>
         name: List
         signature: System.Collections.Generic.List<T>
-        typeKind: Error
+        typeKind: Class
         isExternalReference: true
         displayName: System.Collections.Generic.List<T>
       returnTypeName: System.Collections.Generic.List<T>
@@ -5797,15 +5611,15 @@ namespaces:
       typeParameters:
       - description: The type of elements in the list.
         name: T
-    assemblyName: System.Collections
+    assemblyName: System.Private.CoreLib
     fullName: System.Collections.Generic.List<T>
     name: List
     signature: System.Collections.Generic.List<T>
-    typeKind: Error
+    typeKind: Class
     isExternalReference: true
     displayName: System.Collections.Generic.List<T>
     remarks: See <see href="https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1">Microsoft documentation</see> for more information about the rest of the API.
-    summary: This type is defined in System.Collections.
+    summary: This type is defined in System.Private.CoreLib.
   displayName: System.Collections.Generic
 - name: System
   types:

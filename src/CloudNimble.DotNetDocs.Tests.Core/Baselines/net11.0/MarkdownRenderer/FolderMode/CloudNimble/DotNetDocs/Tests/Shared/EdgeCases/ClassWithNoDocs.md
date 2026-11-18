@@ -6,8 +6,6 @@
 
 **Namespace:** CloudNimble.DotNetDocs.Tests.Shared.EdgeCases
 
-**Inheritance:** System.Object
-
 ## Syntax
 
 ```csharp

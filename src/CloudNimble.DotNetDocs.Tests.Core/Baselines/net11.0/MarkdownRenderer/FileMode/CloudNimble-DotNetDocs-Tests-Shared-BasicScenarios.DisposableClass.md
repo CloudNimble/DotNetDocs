@@ -6,8 +6,6 @@
 
 **Namespace:** CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios
 
-**Inheritance:** System.Object
-
 ## Syntax
 
 ```csharp

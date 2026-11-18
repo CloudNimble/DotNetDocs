@@ -1,7 +1,6 @@
 name: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios
 types:
-- baseType: System.Object
-  members:
+- members:
   - accessibility: Public
     memberKind: Method
     methodKind: PropertyGet
@@ -291,8 +290,7 @@ types:
   displayName: CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.BaseClass
   remarks: This class serves as the base for DerivedClass.
   summary: A base class for testing inheritance documentation.
-- baseType: System.Object
-  members:
+- members:
   - accessibility: Public
     memberKind: Method
     methodKind: Ordinary
@@ -635,8 +633,7 @@ types:
                 </code>
   remarks: Contains methods with different signatures, parameters, and return types.
   summary: A class demonstrating various method documentation scenarios.
-- baseType: System.Object
-  members:
+- members:
   - accessibility: Public
     memberKind: Method
     methodKind: PropertyGet
@@ -1403,8 +1400,7 @@ types:
                 </code>
   remarks: This class inherits from BaseClass and overrides some members.
   summary: A derived class for testing inheritance documentation.
-- baseType: System.Object
-  members:
+- members:
   - accessibility: Public
     memberKind: Method
     methodKind: PropertyGet
@@ -1814,8 +1810,7 @@ types:
     This interface is used to test extension methods on interfaces and to verify
                 that inherited members from interfaces are properly documented.
   summary: A test interface for demonstrating interface inheritance and extension methods.
-- baseType: System.Object
-  members:
+- members:
   - accessibility: Public
     memberKind: Method
     methodKind: Ordinary
@@ -2119,8 +2114,7 @@ types:
     These are remarks about the SimpleClass. They provide additional context
                 and information beyond what's in the summary.
   summary: A simple class for testing basic documentation extraction.
-- baseType: System.Object
-  members:
+- members:
   - accessibility: Public
     memberKind: Method
     methodKind: PropertyGet

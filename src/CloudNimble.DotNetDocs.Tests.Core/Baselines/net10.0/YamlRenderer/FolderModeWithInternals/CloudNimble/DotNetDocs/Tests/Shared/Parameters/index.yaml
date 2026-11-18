@@ -1,7 +1,6 @@
 name: CloudNimble.DotNetDocs.Tests.Shared.Parameters
 types:
-- baseType: System.Object
-  members:
+- members:
   - accessibility: Public
     memberKind: Method
     methodKind: Ordinary
@@ -223,11 +222,11 @@ types:
       displayName: TValue value
       usage: The value.
     returnType:
-      assemblyName: System.Runtime
+      assemblyName: System.Private.CoreLib
       fullName: System.Collections.Generic.KeyValuePair<TKey, TValue>
       name: KeyValuePair
       signature: System.Collections.Generic.KeyValuePair<TKey, TValue>
-      typeKind: Error
+      typeKind: Struct
       isExternalReference: true
       displayName: System.Collections.Generic.KeyValuePair<TKey, TValue>
     returnTypeName: System.Collections.Generic.KeyValuePair<TKey, TValue>
@@ -248,15 +247,15 @@ types:
     parameters:
     - name: nullableInt
       parameterType:
-        assemblyName: System.Runtime
-        fullName: System.Nullable<int>
+        assemblyName: System.Private.CoreLib
+        fullName: int?
         name: Nullable
-        signature: System.Nullable<int>
-        typeKind: Error
+        signature: int?
+        typeKind: Struct
         isExternalReference: true
-        displayName: System.Nullable<int>
-      typeName: System.Nullable<int>
-      displayName: System.Nullable<int> nullableInt
+        displayName: int?
+      typeName: int?
+      displayName: int? nullableInt
       usage: An optional nullable integer.
     - name: nullableString
       parameterType:
@@ -279,9 +278,9 @@ types:
       isExternalReference: true
       displayName: string
     returnTypeName: string
-    signature: public string MethodWithNullables(System.Nullable<int> nullableInt, string nullableString)
+    signature: public string MethodWithNullables(int? nullableInt, string nullableString)
     declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.Parameters.ParameterVariations
-    displayName: CloudNimble.DotNetDocs.Tests.Shared.Parameters.ParameterVariations.MethodWithNullables(System.Nullable<int>, string?)
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.Parameters.ParameterVariations.MethodWithNullables(int?, string?)
     returns: A description of the provided values.
     summary: A method with nullable parameters.
   - accessibility: Public

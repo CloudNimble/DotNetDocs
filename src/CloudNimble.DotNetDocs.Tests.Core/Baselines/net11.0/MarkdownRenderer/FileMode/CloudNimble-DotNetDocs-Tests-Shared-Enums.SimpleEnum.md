@@ -28,3 +28,10 @@ A simple enum with default int underlying type.
 | `Third` | 10 | Third option with explicit value. |
 | `Fourth` | 11 | Fourth option continues from Third. |
 
+## Related APIs
+
+- System.IComparable
+- System.ISpanFormattable
+- System.IFormattable
+- System.IConvertible
+

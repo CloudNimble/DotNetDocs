@@ -6,8 +6,6 @@
 
 **Namespace:** CloudNimble.DotNetDocs.Tests.Shared.Parameters
 
-**Inheritance:** System.Object
-
 ## Syntax
 
 ```csharp
@@ -206,14 +204,14 @@ A method with nullable parameters.
 #### Syntax
 
 ```csharp
-public string MethodWithNullables(System.Nullable<int> nullableInt, string nullableString)
+public string MethodWithNullables(int? nullableInt, string nullableString)
 ```
 
 #### Parameters
 
 | Name | Type | Description |
 |------|------|-------------|
-| `nullableInt` | `System.Nullable&lt;int&gt;` | An optional nullable integer. |
+| `nullableInt` | `int?` | An optional nullable integer. |
 | `nullableString` | `string?` | An optional nullable string. |
 
 #### Returns
