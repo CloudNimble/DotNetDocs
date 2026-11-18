@@ -63,19 +63,6 @@ namespace CloudNimble.DotNetDocs.Core.Configuration
 
         #endregion
 
-        #region Public Methods
-
-        /// <summary>
-        /// Creates a copy of the current <see cref="FileNamingOptions"/> instance.
-        /// </summary>
-        /// <returns>A new instance with the same settings.</returns>
-        public FileNamingOptions Clone()
-        {
-            return new FileNamingOptions(NamespaceMode, NamespaceSeparator);
-        }
-
-        #endregion
-
     }
 
 }

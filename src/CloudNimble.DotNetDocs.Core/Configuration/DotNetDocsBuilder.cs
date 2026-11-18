@@ -162,11 +162,8 @@ namespace CloudNimble.DotNetDocs.Core.Configuration
         /// </example>
         public DotNetDocsBuilder UseJsonRenderer(Action<JsonRendererOptions>? configure = null)
         {
-            if (configure is not null)
-            {
-                _services.Configure(configure);
-            }
-            return AddRenderer<JsonRenderer>();
+            _services.AddJsonRenderer(configure);
+            return this;
         }
 
         /// <summary>
@@ -174,7 +171,8 @@ namespace CloudNimble.DotNetDocs.Core.Configuration
         /// </summary>
         /// <returns>The builder for chaining.</returns>
         /// <remarks>
-        /// Also registers MarkdownXmlTransformer to process XML documentation tags.
+        /// Registers the same services as <see cref="DotNetDocsCore_IServiceCollectionExtensions.AddMarkdownRenderer(IServiceCollection)"/>,
+        /// including MarkdownXmlTransformer to process XML documentation tags and MarkdownDocReferenceHandler to process DocumentationReferences.
         /// </remarks>
         /// <example>
         /// <code>
@@ -183,8 +181,8 @@ namespace CloudNimble.DotNetDocs.Core.Configuration
         /// </example>
         public DotNetDocsBuilder UseMarkdownRenderer()
         {
-            AddTransformer<MarkdownXmlTransformer>();
-            return AddRenderer<MarkdownRenderer>();
+            _services.AddMarkdownRenderer();
+            return this;
         }
 
         /// <summary>
@@ -198,7 +196,8 @@ namespace CloudNimble.DotNetDocs.Core.Configuration
         /// </example>
         public DotNetDocsBuilder UseYamlRenderer()
         {
-            return AddRenderer<YamlRenderer>();
+            _services.AddYamlRenderer();
+            return this;
         }
 
         #endregion

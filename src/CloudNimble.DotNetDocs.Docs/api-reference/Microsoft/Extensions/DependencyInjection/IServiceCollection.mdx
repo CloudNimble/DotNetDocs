@@ -179,8 +179,9 @@ services.AddDotNetDocs(context =&gt;
 This method registers:
 - ProjectContext as Singleton
 - DocumentationManager as Scoped
-- All built-in renderers (Markdown, JSON, YAML) as Scoped
-- MarkdownXmlTransformer for processing XML documentation tags
+- All built-in renderers (Markdown, JSON, YAML) as Scoped, each through its own registration method,
+  so each renderer brings the services it needs, such as the MarkdownXmlTransformer and MarkdownDocReferenceHandler
+  from [IServiceCollection)](https://learn.microsoft.com/dotnet/api/microsoft.extensions.dependencyinjection.dotnetdocscore_iservicecollectionextensions.addmarkdownrenderer(microsoft.extensions.dependencyinjection.iservicecollection))
 
 ### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> AddDotNetDocsCore <Badge color="green">Extension</Badge>
 

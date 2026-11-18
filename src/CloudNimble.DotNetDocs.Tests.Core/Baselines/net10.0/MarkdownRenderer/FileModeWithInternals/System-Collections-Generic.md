@@ -1,0 +1,4 @@
+# System.Collections.Generic
+
+## Types
+

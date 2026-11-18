@@ -10,6 +10,7 @@ using CloudNimble.DotNetDocs.Core.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using CloudNimble.DotNetDocs.Tools.Commands.Base;
+using Mintlify.Core;
 
 namespace CloudNimble.DotNetDocs.Tools.Commands
 {
@@ -163,6 +164,15 @@ namespace CloudNimble.DotNetDocs.Tools.Commands
                 {
                     var documentationManager = scope.ServiceProvider.GetRequiredService<DocumentationManager>();
                     await documentationManager.ProcessAsync(assemblies);
+
+                    // Referenced documentation is copied during ProcessAsync, so every page file is in place by now
+                    if (scope.ServiceProvider.GetService<DocsJsonManager>()?.Configuration is { } docsJsonConfig)
+                    {
+                        foreach (var missingPage in DocsJsonManager.FindMissingPages(docsJsonConfig, OutputPath))
+                        {
+                            Console.WriteLine($"⚠️ {DocsJsonManager.GetMissingPageMessage(missingPage)}");
+                        }
+                    }
                 }
 
                 Console.WriteLine("✅ Documentation generation completed successfully!");

@@ -130,7 +130,7 @@
       "typeKind": "class",
       "isExternalReference": true,
       "displayName": "string",
-      "remarks": "See [Microsoft documentation](https://learn.microsoft.com/dotnet/api/system.string) for more information about the rest of the API.",
+      "remarks": "See \u003Csee href=\u0022https://learn.microsoft.com/dotnet/api/system.string\u0022\u003EMicrosoft documentation\u003C/see\u003E for more information about the rest of the API.",
       "summary": "This type is defined in System.Private.CoreLib."
     }
   ],

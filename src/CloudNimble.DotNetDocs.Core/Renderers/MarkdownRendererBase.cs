@@ -47,11 +47,6 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
         protected const string UsageHeader = "## Usage";
 
         /// <summary>
-        /// Regex pattern to match markdown headers (lines starting with #).
-        /// </summary>
-        private static readonly Regex HeaderRegex = new(@"^\s*#+\s", RegexOptions.Compiled);
-
-        /// <summary>
         /// Regex pattern to match the TODO comment marker.
         /// </summary>
         [GeneratedRegex(@"^\s*<!--\s*TODO:\s*REMOVE\s+THIS\s+COMMENT\s+AFTER\s+YOU\s+CUSTOMIZE\s+THIS\s+CONTENT\s*-->\s*$", RegexOptions.IgnoreCase)]

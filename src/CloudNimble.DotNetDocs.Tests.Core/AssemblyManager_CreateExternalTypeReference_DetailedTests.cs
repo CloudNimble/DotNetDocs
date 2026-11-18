@@ -184,8 +184,23 @@ namespace CloudNimble.DotNetDocs.Tests.Core
                 .FirstOrDefault(t => t.Name == "List" && t.IsExternalReference);
 
             listType.Should().NotBeNull();
-            listType!.Remarks.Should().Contain("Microsoft documentation", "Should link to MS docs for System types");
-            listType.Remarks.Should().Contain("https://learn.microsoft.com/dotnet/api/");
+            listType!.Remarks.Should().Be(
+                "See <see href=\"https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1\">Microsoft documentation</see> for more information about the rest of the API.",
+                "the link must be an XML documentation tag that the output format's transformer converts, and must use the Microsoft Learn page name for List`1");
+        }
+
+        [TestMethod]
+        public void CreateExternalTypeReference_LeavesRemarksEmpty_ForNonMicrosoftAssembly()
+        {
+            var compilation = CSharpCompilation.Create("ExternalLibrary", [CSharpSyntaxTree.ParseText("namespace External { public class Widget { } }")]);
+            var widgetType = compilation.GetTypeByMetadataName("External.Widget")!;
+            var testAssemblyPath = typeof(SimpleClass).Assembly.Location;
+            using var manager = new AssemblyManager(testAssemblyPath, System.IO.Path.ChangeExtension(testAssemblyPath, ".xml"));
+
+            var docType = manager.CreateExternalTypeReference(widgetType, new DocAssembly(compilation.Assembly), [], new ProjectContext());
+
+            docType.Summary.Should().Be("This type is defined in ExternalLibrary.");
+            docType.Remarks.Should().BeNull("only Microsoft types have a Microsoft Learn page to link to");
         }
 
         [TestMethod]

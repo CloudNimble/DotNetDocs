@@ -33,14 +33,6 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             public new string GetNamespaceFilePath(DocNamespace ns, string outputPath, string extension) => base.GetNamespaceFilePath(ns, outputPath, extension);
             public new string GetTypeFilePath(DocType type, DocNamespace ns, string outputPath, string extension) => base.GetTypeFilePath(type, ns, outputPath, extension);
             public new string GetNamespaceFileName(DocNamespace ns, string extension) => base.GetNamespaceFileName(ns, extension);
-            public new string GetTypeFileName(DocType type, DocNamespace ns, string extension) => base.GetTypeFileName(type, ns, extension);
-            public new string GetAccessModifier(Accessibility accessibility) => base.GetAccessModifier(accessibility);
-            public new string GetMemberSignature(DocMember member) => base.GetMemberSignature(member);
-            public new string GetMethodSignature(IMethodSymbol method) => base.GetMethodSignature(method);
-            public new string GetPropertySignature(IPropertySymbol property) => base.GetPropertySignature(property);
-            public new string GetFieldSignature(IFieldSymbol field) => base.GetFieldSignature(field);
-            public new string GetEventSignature(IEventSymbol evt) => base.GetEventSignature(evt);
-            public new string GetTypeSignature(DocType type) => base.GetTypeSignature(type);
             public new ProjectContext Context => base.Context;
             public new FileNamingOptions FileNamingOptions => base.FileNamingOptions;
         }
@@ -243,29 +235,6 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             // Assert
             result.Should().Be(Path.Combine("output", "CloudNimble", "DotNetDocs", "Tests", "Shared", "BasicScenarios", "SimpleClass.md"));
         }
-
-        #endregion
-
-        #region GetAccessModifier Tests
-
-        [TestMethod]
-        public void GetAccessModifier_ReturnsCorrectStrings()
-        {
-            // Arrange & Act & Assert
-            _renderer.GetAccessModifier(Accessibility.Public).Should().Be("public");
-            _renderer.GetAccessModifier(Accessibility.Protected).Should().Be("protected");
-            _renderer.GetAccessModifier(Accessibility.Internal).Should().Be("internal");
-            _renderer.GetAccessModifier(Accessibility.ProtectedOrInternal).Should().Be("protected internal");
-            _renderer.GetAccessModifier(Accessibility.ProtectedAndInternal).Should().Be("private protected");
-            _renderer.GetAccessModifier(Accessibility.Private).Should().Be("private");
-            _renderer.GetAccessModifier(Accessibility.NotApplicable).Should().Be("");
-        }
-
-        #endregion
-
-        #region GetMethodSignature Tests
-
-        // Method signature tests removed - use GetMemberSignature tests with real assembly data
 
         #endregion
 

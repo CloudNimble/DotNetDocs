@@ -30,6 +30,18 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
     public class GenerateDocumentationTask : Task
     {
 
+        #region Fields
+
+        /// <summary>
+        /// The warning code logged when docs.json navigation lists a page whose file was not found.
+        /// </summary>
+        /// <remarks>
+        /// Projects can suppress it with <c>NoWarn</c> or promote it with <c>WarningsAsErrors</c>.
+        /// </remarks>
+        internal const string MissingNavigationPageWarningCode = "DOTNETDOCS001";
+
+        #endregion
+
         #region Properties
 
         /// <summary>
@@ -373,6 +385,17 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
                 {
                     Log.LogError($"Failed to process assemblies: {ex.Message}");
                     return false;
+                }
+
+                // Referenced documentation is copied during ProcessAsync, so every page file is in place by now
+                if (DocumentationType.Equals(RendererType.Mintlify, StringComparison.OrdinalIgnoreCase)
+                    && serviceProvider.GetService<DocsJsonManager>()?.Configuration is { } docsJsonConfig)
+                {
+                    var docsJsonPath = Path.Combine(OutputPath, "docs.json");
+                    foreach (var missingPage in DocsJsonManager.FindMissingPages(docsJsonConfig, OutputPath))
+                    {
+                        Log.LogWarning(null, MissingNavigationPageWarningCode, null, docsJsonPath, 0, 0, 0, 0, DocsJsonManager.GetMissingPageMessage(missingPage));
+                    }
                 }
 
                 // Collect statistics after processing

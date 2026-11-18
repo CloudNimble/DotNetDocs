@@ -141,6 +141,6 @@ types:
   typeKind: Error
   isExternalReference: true
   displayName: System.Collections.Generic.List<T>
-  remarks: See [Microsoft documentation](https://learn.microsoft.com/dotnet/api/system.collections.generic.list{t}) for more information about the rest of the API.
+  remarks: See <see href="https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1">Microsoft documentation</see> for more information about the rest of the API.
   summary: This type is defined in System.Collections.
 displayName: System.Collections.Generic

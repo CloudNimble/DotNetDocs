@@ -396,7 +396,7 @@ namespace CloudNimble.DotNetDocs.Core
         /// </example>
         /// <remarks>
         /// This is the single source of truth for namespace page locations. Renderers use it to decide where pages are written
-        /// and <see cref="CrossReferenceResolver"/> uses it to build links to them, so the two always agree.
+        /// and <see cref="Transformers.XmlTransformerBase"/> uses it to build links to them, so the two always agree.
         /// </remarks>
         public string GetNamespacePagePath(string? namespaceName)
         {

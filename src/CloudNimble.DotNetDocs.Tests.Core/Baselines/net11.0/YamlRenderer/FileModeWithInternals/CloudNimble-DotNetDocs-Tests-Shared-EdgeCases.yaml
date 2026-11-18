@@ -1,0 +1,1162 @@
+name: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases
+types:
+- baseType: System.Object
+  members:
+  - accessibility: Public
+    memberKind: Method
+    methodKind: PropertyGet
+    name: get_Name
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: string
+      name: String
+      signature: string
+      typeKind: Class
+      isExternalReference: true
+      displayName: string
+    returnTypeName: string
+    signature: public string Name.get
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithMinimalDocs
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithMinimalDocs.Name.get
+  - accessibility: Public
+    memberKind: Method
+    methodKind: PropertySet
+    name: set_Name
+    parameters:
+    - name: value
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: string
+        name: String
+        signature: string
+        typeKind: Class
+        isExternalReference: true
+        displayName: string
+      typeName: string
+      displayName: string value
+    returnTypeName: void
+    signature: public void Name.set
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithMinimalDocs
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithMinimalDocs.Name.set
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: DoSomething
+    returnTypeName: void
+    signature: public void DoSomething()
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithMinimalDocs
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithMinimalDocs.DoSomething()
+    summary: Does something.
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Constructor
+    name: .ctor
+    returnTypeName: void
+    signature: public ClassWithMinimalDocs()
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithMinimalDocs
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithMinimalDocs.ClassWithMinimalDocs()
+  - accessibility: Public
+    memberKind: Property
+    name: Name
+    returnTypeName: string
+    signature: public string Name { get; set; }
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithMinimalDocs
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithMinimalDocs.Name
+    summary: Gets or sets the name.
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: GetType
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: System.Type
+      name: Type
+      signature: System.Type
+      typeKind: Class
+      isExternalReference: true
+      displayName: System.Type
+    returnTypeName: System.Type
+    signature: public System.Type GetType()
+    isInherited: true
+    declaringTypeName: object
+    displayName: object.GetType()
+  - accessibility: ProtectedOrInternal
+    memberKind: Method
+    methodKind: Ordinary
+    name: MemberwiseClone
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: object
+      name: Object
+      signature: object
+      typeKind: Class
+      isExternalReference: true
+      displayName: object
+    returnTypeName: object
+    signature: protected internal object MemberwiseClone()
+    isInherited: true
+    declaringTypeName: object
+    displayName: object.MemberwiseClone()
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Constructor
+    name: .ctor
+    returnTypeName: void
+    signature: public Object()
+    isInherited: true
+    declaringTypeName: object
+    displayName: object.Object()
+  - accessibility: Protected
+    memberKind: Method
+    methodKind: Destructor
+    name: Finalize
+    returnTypeName: void
+    signature: protected ~Object()
+    isInherited: true
+    declaringTypeName: object
+    displayName: object.~Object()
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: ToString
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: string?
+      name: String
+      signature: string?
+      typeKind: Class
+      isExternalReference: true
+      displayName: string?
+    returnTypeName: string?
+    signature: public virtual string ToString()
+    isInherited: true
+    isVirtual: true
+    declaringTypeName: object
+    displayName: object.ToString()
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: Equals
+    parameters:
+    - name: obj
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: object?
+        name: Object
+        signature: object?
+        typeKind: Class
+        isExternalReference: true
+        displayName: object?
+      typeName: object?
+      displayName: object? obj
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: bool
+      name: Boolean
+      signature: bool
+      typeKind: Struct
+      isExternalReference: true
+      displayName: bool
+    returnTypeName: bool
+    signature: public virtual bool Equals(object obj)
+    isInherited: true
+    isVirtual: true
+    declaringTypeName: object
+    displayName: object.Equals(object?)
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: Equals
+    parameters:
+    - name: objA
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: object?
+        name: Object
+        signature: object?
+        typeKind: Class
+        isExternalReference: true
+        displayName: object?
+      typeName: object?
+      displayName: object? objA
+    - name: objB
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: object?
+        name: Object
+        signature: object?
+        typeKind: Class
+        isExternalReference: true
+        displayName: object?
+      typeName: object?
+      displayName: object? objB
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: bool
+      name: Boolean
+      signature: bool
+      typeKind: Struct
+      isExternalReference: true
+      displayName: bool
+    returnTypeName: bool
+    signature: public static bool Equals(object objA, object objB)
+    isInherited: true
+    declaringTypeName: object
+    displayName: object.Equals(object?, object?)
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: ReferenceEquals
+    parameters:
+    - name: objA
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: object?
+        name: Object
+        signature: object?
+        typeKind: Class
+        isExternalReference: true
+        displayName: object?
+      typeName: object?
+      displayName: object? objA
+    - name: objB
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: object?
+        name: Object
+        signature: object?
+        typeKind: Class
+        isExternalReference: true
+        displayName: object?
+      typeName: object?
+      displayName: object? objB
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: bool
+      name: Boolean
+      signature: bool
+      typeKind: Struct
+      isExternalReference: true
+      displayName: bool
+    returnTypeName: bool
+    signature: public static bool ReferenceEquals(object objA, object objB)
+    isInherited: true
+    declaringTypeName: object
+    displayName: object.ReferenceEquals(object?, object?)
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: GetHashCode
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: int
+      name: Int32
+      signature: int
+      typeKind: Struct
+      isExternalReference: true
+      displayName: int
+    returnTypeName: int
+    signature: public virtual int GetHashCode()
+    isInherited: true
+    isVirtual: true
+    declaringTypeName: object
+    displayName: object.GetHashCode()
+  assemblyName: CloudNimble.DotNetDocs.Tests.Shared
+  fullName: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithMinimalDocs
+  name: ClassWithMinimalDocs
+  signature: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithMinimalDocs
+  typeKind: Class
+  displayName: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithMinimalDocs
+  summary: A class with minimal documentation.
+- baseType: System.Object
+  members:
+  - accessibility: Public
+    memberKind: Method
+    methodKind: PropertyGet
+    name: get_UndocumentedProperty
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: string
+      name: String
+      signature: string
+      typeKind: Class
+      isExternalReference: true
+      displayName: string
+    returnTypeName: string
+    signature: public string UndocumentedProperty.get
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithNoDocs
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithNoDocs.UndocumentedProperty.get
+  - accessibility: Public
+    memberKind: Method
+    methodKind: PropertySet
+    name: set_UndocumentedProperty
+    parameters:
+    - name: value
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: string
+        name: String
+        signature: string
+        typeKind: Class
+        isExternalReference: true
+        displayName: string
+      typeName: string
+      displayName: string value
+    returnTypeName: void
+    signature: public void UndocumentedProperty.set
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithNoDocs
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithNoDocs.UndocumentedProperty.set
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: UndocumentedMethod
+    returnTypeName: void
+    signature: public void UndocumentedMethod()
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithNoDocs
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithNoDocs.UndocumentedMethod()
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Constructor
+    name: .ctor
+    returnTypeName: void
+    signature: public ClassWithNoDocs()
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithNoDocs
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithNoDocs.ClassWithNoDocs()
+  - accessibility: Public
+    memberKind: Property
+    name: UndocumentedProperty
+    returnTypeName: string
+    signature: public string UndocumentedProperty { get; set; }
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithNoDocs
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithNoDocs.UndocumentedProperty
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: GetType
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: System.Type
+      name: Type
+      signature: System.Type
+      typeKind: Class
+      isExternalReference: true
+      displayName: System.Type
+    returnTypeName: System.Type
+    signature: public System.Type GetType()
+    isInherited: true
+    declaringTypeName: object
+    displayName: object.GetType()
+  - accessibility: ProtectedOrInternal
+    memberKind: Method
+    methodKind: Ordinary
+    name: MemberwiseClone
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: object
+      name: Object
+      signature: object
+      typeKind: Class
+      isExternalReference: true
+      displayName: object
+    returnTypeName: object
+    signature: protected internal object MemberwiseClone()
+    isInherited: true
+    declaringTypeName: object
+    displayName: object.MemberwiseClone()
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Constructor
+    name: .ctor
+    returnTypeName: void
+    signature: public Object()
+    isInherited: true
+    declaringTypeName: object
+    displayName: object.Object()
+  - accessibility: Protected
+    memberKind: Method
+    methodKind: Destructor
+    name: Finalize
+    returnTypeName: void
+    signature: protected ~Object()
+    isInherited: true
+    declaringTypeName: object
+    displayName: object.~Object()
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: ToString
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: string?
+      name: String
+      signature: string?
+      typeKind: Class
+      isExternalReference: true
+      displayName: string?
+    returnTypeName: string?
+    signature: public virtual string ToString()
+    isInherited: true
+    isVirtual: true
+    declaringTypeName: object
+    displayName: object.ToString()
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: Equals
+    parameters:
+    - name: obj
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: object?
+        name: Object
+        signature: object?
+        typeKind: Class
+        isExternalReference: true
+        displayName: object?
+      typeName: object?
+      displayName: object? obj
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: bool
+      name: Boolean
+      signature: bool
+      typeKind: Struct
+      isExternalReference: true
+      displayName: bool
+    returnTypeName: bool
+    signature: public virtual bool Equals(object obj)
+    isInherited: true
+    isVirtual: true
+    declaringTypeName: object
+    displayName: object.Equals(object?)
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: Equals
+    parameters:
+    - name: objA
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: object?
+        name: Object
+        signature: object?
+        typeKind: Class
+        isExternalReference: true
+        displayName: object?
+      typeName: object?
+      displayName: object? objA
+    - name: objB
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: object?
+        name: Object
+        signature: object?
+        typeKind: Class
+        isExternalReference: true
+        displayName: object?
+      typeName: object?
+      displayName: object? objB
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: bool
+      name: Boolean
+      signature: bool
+      typeKind: Struct
+      isExternalReference: true
+      displayName: bool
+    returnTypeName: bool
+    signature: public static bool Equals(object objA, object objB)
+    isInherited: true
+    declaringTypeName: object
+    displayName: object.Equals(object?, object?)
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: ReferenceEquals
+    parameters:
+    - name: objA
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: object?
+        name: Object
+        signature: object?
+        typeKind: Class
+        isExternalReference: true
+        displayName: object?
+      typeName: object?
+      displayName: object? objA
+    - name: objB
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: object?
+        name: Object
+        signature: object?
+        typeKind: Class
+        isExternalReference: true
+        displayName: object?
+      typeName: object?
+      displayName: object? objB
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: bool
+      name: Boolean
+      signature: bool
+      typeKind: Struct
+      isExternalReference: true
+      displayName: bool
+    returnTypeName: bool
+    signature: public static bool ReferenceEquals(object objA, object objB)
+    isInherited: true
+    declaringTypeName: object
+    displayName: object.ReferenceEquals(object?, object?)
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: GetHashCode
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: int
+      name: Int32
+      signature: int
+      typeKind: Struct
+      isExternalReference: true
+      displayName: int
+    returnTypeName: int
+    signature: public virtual int GetHashCode()
+    isInherited: true
+    isVirtual: true
+    declaringTypeName: object
+    displayName: object.GetHashCode()
+  assemblyName: CloudNimble.DotNetDocs.Tests.Shared
+  fullName: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithNoDocs
+  name: ClassWithNoDocs
+  signature: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithNoDocs
+  typeKind: Class
+  displayName: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithNoDocs
+- baseType: System.Object
+  members:
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: MethodWithSpecialChars
+    parameters:
+    - name: input
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: string
+        name: String
+        signature: string
+        typeKind: Class
+        isExternalReference: true
+        displayName: string
+      typeName: string
+      displayName: string input
+      usage: An input with "quotes" and 'apostrophes'.
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: string
+      name: String
+      signature: string
+      typeKind: Class
+      isExternalReference: true
+      displayName: string
+    returnTypeName: string
+    signature: public string MethodWithSpecialChars(string input)
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithSpecialCharacters
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithSpecialCharacters.MethodWithSpecialChars(string)
+    remarks: This method handles &lt;, &gt;, &amp; characters properly.
+    returns: A string with &amp; ampersands.
+    summary: 'A method with special characters in docs: &lt;T&gt; generics.'
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Constructor
+    name: .ctor
+    returnTypeName: void
+    signature: public ClassWithSpecialCharacters()
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithSpecialCharacters
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithSpecialCharacters.ClassWithSpecialCharacters()
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: GetType
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: System.Type
+      name: Type
+      signature: System.Type
+      typeKind: Class
+      isExternalReference: true
+      displayName: System.Type
+    returnTypeName: System.Type
+    signature: public System.Type GetType()
+    isInherited: true
+    declaringTypeName: object
+    displayName: object.GetType()
+  - accessibility: ProtectedOrInternal
+    memberKind: Method
+    methodKind: Ordinary
+    name: MemberwiseClone
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: object
+      name: Object
+      signature: object
+      typeKind: Class
+      isExternalReference: true
+      displayName: object
+    returnTypeName: object
+    signature: protected internal object MemberwiseClone()
+    isInherited: true
+    declaringTypeName: object
+    displayName: object.MemberwiseClone()
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Constructor
+    name: .ctor
+    returnTypeName: void
+    signature: public Object()
+    isInherited: true
+    declaringTypeName: object
+    displayName: object.Object()
+  - accessibility: Protected
+    memberKind: Method
+    methodKind: Destructor
+    name: Finalize
+    returnTypeName: void
+    signature: protected ~Object()
+    isInherited: true
+    declaringTypeName: object
+    displayName: object.~Object()
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: ToString
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: string?
+      name: String
+      signature: string?
+      typeKind: Class
+      isExternalReference: true
+      displayName: string?
+    returnTypeName: string?
+    signature: public virtual string ToString()
+    isInherited: true
+    isVirtual: true
+    declaringTypeName: object
+    displayName: object.ToString()
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: Equals
+    parameters:
+    - name: obj
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: object?
+        name: Object
+        signature: object?
+        typeKind: Class
+        isExternalReference: true
+        displayName: object?
+      typeName: object?
+      displayName: object? obj
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: bool
+      name: Boolean
+      signature: bool
+      typeKind: Struct
+      isExternalReference: true
+      displayName: bool
+    returnTypeName: bool
+    signature: public virtual bool Equals(object obj)
+    isInherited: true
+    isVirtual: true
+    declaringTypeName: object
+    displayName: object.Equals(object?)
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: Equals
+    parameters:
+    - name: objA
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: object?
+        name: Object
+        signature: object?
+        typeKind: Class
+        isExternalReference: true
+        displayName: object?
+      typeName: object?
+      displayName: object? objA
+    - name: objB
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: object?
+        name: Object
+        signature: object?
+        typeKind: Class
+        isExternalReference: true
+        displayName: object?
+      typeName: object?
+      displayName: object? objB
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: bool
+      name: Boolean
+      signature: bool
+      typeKind: Struct
+      isExternalReference: true
+      displayName: bool
+    returnTypeName: bool
+    signature: public static bool Equals(object objA, object objB)
+    isInherited: true
+    declaringTypeName: object
+    displayName: object.Equals(object?, object?)
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: ReferenceEquals
+    parameters:
+    - name: objA
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: object?
+        name: Object
+        signature: object?
+        typeKind: Class
+        isExternalReference: true
+        displayName: object?
+      typeName: object?
+      displayName: object? objA
+    - name: objB
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: object?
+        name: Object
+        signature: object?
+        typeKind: Class
+        isExternalReference: true
+        displayName: object?
+      typeName: object?
+      displayName: object? objB
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: bool
+      name: Boolean
+      signature: bool
+      typeKind: Struct
+      isExternalReference: true
+      displayName: bool
+    returnTypeName: bool
+    signature: public static bool ReferenceEquals(object objA, object objB)
+    isInherited: true
+    declaringTypeName: object
+    displayName: object.ReferenceEquals(object?, object?)
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: GetHashCode
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: int
+      name: Int32
+      signature: int
+      typeKind: Struct
+      isExternalReference: true
+      displayName: int
+    returnTypeName: int
+    signature: public virtual int GetHashCode()
+    isInherited: true
+    isVirtual: true
+    declaringTypeName: object
+    displayName: object.GetHashCode()
+  assemblyName: CloudNimble.DotNetDocs.Tests.Shared
+  fullName: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithSpecialCharacters
+  name: ClassWithSpecialCharacters
+  signature: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithSpecialCharacters
+  typeKind: Class
+  displayName: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithSpecialCharacters
+  examples: >-
+    <code>
+                // Using generics: List&lt;string&gt;
+                var list = new List&lt;string&gt;();
+                if (x &gt; 0 &amp;&amp; y &lt; 10) { }
+                </code>
+  remarks: >-
+    This tests handling of XML special characters like &lt;tag&gt; and &amp;entity;.
+                Also tests "quotes" and 'apostrophes'.
+  summary: "A class with special characters in documentation: &lt;, &gt;, &amp;, \", '."
+- baseType: System.Object
+  members:
+  - accessibility: Public
+    memberKind: Method
+    methodKind: PropertyGet
+    name: get_Value
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: string
+      name: String
+      signature: string
+      typeKind: Class
+      isExternalReference: true
+      displayName: string
+    returnTypeName: string
+    signature: public string Value.get
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithFullDocs
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithFullDocs.Value.get
+  - accessibility: Public
+    memberKind: Method
+    methodKind: PropertySet
+    name: set_Value
+    parameters:
+    - name: value
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: string
+        name: String
+        signature: string
+        typeKind: Class
+        isExternalReference: true
+        displayName: string
+      typeName: string
+      displayName: string value
+    returnTypeName: void
+    signature: public void Value.set
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithFullDocs
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithFullDocs.Value.set
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: ComplexMethod
+    parameters:
+    - name: text
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: string
+        name: String
+        signature: string
+        typeKind: Class
+        isExternalReference: true
+        displayName: string
+      typeName: string
+      displayName: string text
+      usage: The text parameter to process.
+    - name: number
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: int
+        name: Int32
+        signature: int
+        typeKind: Struct
+        isExternalReference: true
+        displayName: int
+      typeName: int
+      displayName: int number
+      usage: The number to use in processing.
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: string
+      name: String
+      signature: string
+      typeKind: Class
+      isExternalReference: true
+      displayName: string
+    returnTypeName: string
+    signature: public string ComplexMethod(string text, int number)
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithFullDocs
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithFullDocs.ComplexMethod(string, int)
+    exceptions:
+    - description: Thrown when text is null.
+      type: ArgumentNullException
+    - description: Thrown when number is negative.
+      type: ArgumentOutOfRangeException
+    examples: >-
+      <code>
+                  var result = ComplexMethod("hello", 5);
+                  Console.WriteLine(result);
+                  </code>
+    remarks: >-
+      <para>This method performs complex processing.</para><list type="bullet">
+        <item>
+          <description>First, it validates the input.</description>
+        </item>
+        <item>
+          <description>Then, it processes the data.</description>
+        </item>
+        <item>
+          <description>Finally, it returns the result.</description>
+        </item>
+      </list>
+    returns: A processed result string.
+    seeAlso:
+    - rawReference: M:System.String.Format(System.String,System.Object[])
+      referenceType: Method
+    summary: A complex method with full documentation.
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: ProcessNumbers
+    returnType:
+      assemblyName: System.Runtime
+      fullName: System.Collections.Generic.IEnumerable<object>
+      name: IEnumerable
+      signature: System.Collections.Generic.IEnumerable<object>
+      typeKind: Error
+      isExternalReference: true
+      displayName: System.Collections.Generic.IEnumerable<object>
+    returnTypeName: System.Collections.Generic.IEnumerable<object>
+    signature: public System.Collections.Generic.IEnumerable<object> ProcessNumbers()
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithFullDocs
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithFullDocs.ProcessNumbers()
+    examples: >-
+      <code>
+                  var numbers = Enumerable.Range(1, 10)
+                      .Where(x =&gt; x % 2 == 0)
+                      .Select(x =&gt; new
+                      {
+                          Number = x,
+                          Square = x * x,
+                          Cube = x * x * x
+                      })
+                      .ToList();
+                  </code>
+    returns: A collection of transformed numbers.
+    summary: Filters and transforms a collection of numbers.
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Constructor
+    name: .ctor
+    returnTypeName: void
+    signature: public ClassWithFullDocs()
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithFullDocs
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithFullDocs.ClassWithFullDocs()
+  - accessibility: Public
+    memberKind: Property
+    name: Value
+    returnTypeName: string
+    signature: public string Value { get; set; }
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithFullDocs
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithFullDocs.Value
+    remarks: This property stores important data.
+    summary: Gets or sets the value property.
+    value: The current value as a string.
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: GetType
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: System.Type
+      name: Type
+      signature: System.Type
+      typeKind: Class
+      isExternalReference: true
+      displayName: System.Type
+    returnTypeName: System.Type
+    signature: public System.Type GetType()
+    isInherited: true
+    declaringTypeName: object
+    displayName: object.GetType()
+  - accessibility: ProtectedOrInternal
+    memberKind: Method
+    methodKind: Ordinary
+    name: MemberwiseClone
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: object
+      name: Object
+      signature: object
+      typeKind: Class
+      isExternalReference: true
+      displayName: object
+    returnTypeName: object
+    signature: protected internal object MemberwiseClone()
+    isInherited: true
+    declaringTypeName: object
+    displayName: object.MemberwiseClone()
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Constructor
+    name: .ctor
+    returnTypeName: void
+    signature: public Object()
+    isInherited: true
+    declaringTypeName: object
+    displayName: object.Object()
+  - accessibility: Protected
+    memberKind: Method
+    methodKind: Destructor
+    name: Finalize
+    returnTypeName: void
+    signature: protected ~Object()
+    isInherited: true
+    declaringTypeName: object
+    displayName: object.~Object()
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: ToString
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: string?
+      name: String
+      signature: string?
+      typeKind: Class
+      isExternalReference: true
+      displayName: string?
+    returnTypeName: string?
+    signature: public virtual string ToString()
+    isInherited: true
+    isVirtual: true
+    declaringTypeName: object
+    displayName: object.ToString()
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: Equals
+    parameters:
+    - name: obj
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: object?
+        name: Object
+        signature: object?
+        typeKind: Class
+        isExternalReference: true
+        displayName: object?
+      typeName: object?
+      displayName: object? obj
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: bool
+      name: Boolean
+      signature: bool
+      typeKind: Struct
+      isExternalReference: true
+      displayName: bool
+    returnTypeName: bool
+    signature: public virtual bool Equals(object obj)
+    isInherited: true
+    isVirtual: true
+    declaringTypeName: object
+    displayName: object.Equals(object?)
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: Equals
+    parameters:
+    - name: objA
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: object?
+        name: Object
+        signature: object?
+        typeKind: Class
+        isExternalReference: true
+        displayName: object?
+      typeName: object?
+      displayName: object? objA
+    - name: objB
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: object?
+        name: Object
+        signature: object?
+        typeKind: Class
+        isExternalReference: true
+        displayName: object?
+      typeName: object?
+      displayName: object? objB
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: bool
+      name: Boolean
+      signature: bool
+      typeKind: Struct
+      isExternalReference: true
+      displayName: bool
+    returnTypeName: bool
+    signature: public static bool Equals(object objA, object objB)
+    isInherited: true
+    declaringTypeName: object
+    displayName: object.Equals(object?, object?)
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: ReferenceEquals
+    parameters:
+    - name: objA
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: object?
+        name: Object
+        signature: object?
+        typeKind: Class
+        isExternalReference: true
+        displayName: object?
+      typeName: object?
+      displayName: object? objA
+    - name: objB
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: object?
+        name: Object
+        signature: object?
+        typeKind: Class
+        isExternalReference: true
+        displayName: object?
+      typeName: object?
+      displayName: object? objB
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: bool
+      name: Boolean
+      signature: bool
+      typeKind: Struct
+      isExternalReference: true
+      displayName: bool
+    returnTypeName: bool
+    signature: public static bool ReferenceEquals(object objA, object objB)
+    isInherited: true
+    declaringTypeName: object
+    displayName: object.ReferenceEquals(object?, object?)
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: GetHashCode
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: int
+      name: Int32
+      signature: int
+      typeKind: Struct
+      isExternalReference: true
+      displayName: int
+    returnTypeName: int
+    signature: public virtual int GetHashCode()
+    isInherited: true
+    isVirtual: true
+    declaringTypeName: object
+    displayName: object.GetHashCode()
+  assemblyName: CloudNimble.DotNetDocs.Tests.Shared
+  fullName: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithFullDocs
+  name: ClassWithFullDocs
+  signature: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithFullDocs
+  typeKind: Class
+  displayName: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithFullDocs
+  examples: >-
+    <code>
+                var fullDocs = new ClassWithFullDocs();
+                fullDocs.ComplexMethod("test", 42);
+                </code>
+  remarks: <para>This class demonstrates all available XML documentation tags.</para><para>It includes multiple paragraphs in the remarks section.</para>
+  seeAlso:
+  - rawReference: T:CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithMinimalDocs
+    referenceType: Type
+  - rawReference: T:System.String
+    referenceType: Type
+  summary: A class with comprehensive XML documentation tags.
+displayName: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases

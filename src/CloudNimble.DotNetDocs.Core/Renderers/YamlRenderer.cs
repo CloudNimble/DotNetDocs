@@ -34,7 +34,6 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
             .WithTypeConverter(new AccessibilityTypeConverter())
             .WithTypeConverter(new SymbolKindTypeConverter())
             .WithTypeConverter(new TypeKindTypeConverter())
-            .WithTypeConverter(new RefKindTypeConverter())
             .Build();
 
         #endregion

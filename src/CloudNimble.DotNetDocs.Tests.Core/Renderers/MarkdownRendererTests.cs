@@ -7,6 +7,7 @@ using CloudNimble.Breakdance.Assemblies;
 using CloudNimble.DotNetDocs.Core;
 using CloudNimble.DotNetDocs.Core.Configuration;
 using CloudNimble.DotNetDocs.Core.Renderers;
+using CloudNimble.DotNetDocs.Tests.Core.Helpers;
 using CloudNimble.DotNetDocs.Tests.Shared;
 using CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios;
 using FluentAssertions;
@@ -121,32 +122,29 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
         #region RenderAsync Tests
 
         [TestMethod]
-        public async Task RenderAsync_ProducesConsistentBaseline()
+        [DataRow(false, DisplayName = "Public members")]
+        [DataRow(true, DisplayName = "Public and internal members")]
+        public async Task RenderAsync_ProducesConsistentBaseline(bool includeInternals)
         {
             var assemblyPath = typeof(SimpleClass).Assembly.Location;
             var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
+            GetService<ProjectContext>().IncludedMembers = BaselinePermutations.GetIncludedMembers(includeInternals);
             var documentationManager = GetService<DocumentationManager>();
 
             await documentationManager.ProcessAsync(assemblyPath, xmlPath);
 
-            var baselinePath = Path.Combine(projectPath, "Baselines", "MarkdownRenderer", "FileMode", "index.md");
-            
-            if (File.Exists(baselinePath))
-            {
-                var baseline = await File.ReadAllTextAsync(baselinePath, TestContext.CancellationToken);
-                var actual = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, "index.md"), TestContext.CancellationToken);
-                
-                // Normalize line endings for cross-platform compatibility
-                var normalizedActual = actual.ReplaceLineEndings(Environment.NewLine);
-                var normalizedBaseline = baseline.ReplaceLineEndings(Environment.NewLine);
-                
-                normalizedActual.Should().Be(normalizedBaseline,
-                    "Markdown output has changed. If this is intentional, regenerate baselines using 'dotnet breakdance generate'");
-            }
-            else
-            {
-                Assert.Inconclusive($"Baseline not found at {baselinePath}. Run 'dotnet breakdance generate' to create baselines.");
-            }
+            var baselinePath = Path.Combine(projectPath, "Baselines", framework, "MarkdownRenderer", BaselinePermutations.GetName("FileMode", includeInternals), "index.md");
+            File.Exists(baselinePath).Should().BeTrue($"the baseline should exist at {baselinePath}; run 'dotnet breakdance generate' to create it");
+
+            var baseline = await File.ReadAllTextAsync(baselinePath, TestContext.CancellationToken);
+            var actual = await File.ReadAllTextAsync(Path.Combine(_testOutputPath, "index.md"), TestContext.CancellationToken);
+
+            // Normalize line endings for cross-platform compatibility
+            var normalizedActual = actual.ReplaceLineEndings(Environment.NewLine);
+            var normalizedBaseline = baseline.ReplaceLineEndings(Environment.NewLine);
+
+            normalizedActual.Should().Be(normalizedBaseline,
+                "Markdown output has changed. If this is intentional, regenerate baselines using 'dotnet breakdance generate'");
         }
 
         [TestMethod]
@@ -564,7 +562,9 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
         #region Folder Structure Baseline Tests
 
         [TestMethod]
-        public async Task RenderAsync_WithFolderMode_MatchesFolderStructureBaseline()
+        [DataRow(false, DisplayName = "Public members")]
+        [DataRow(true, DisplayName = "Public and internal members")]
+        public async Task RenderAsync_WithFolderMode_MatchesFolderStructureBaseline(bool includeInternals)
         {
             var testOutputPath = Path.Combine(Path.GetTempPath(), $"MDFolderBaseline_{Guid.NewGuid()}");
 
@@ -573,10 +573,12 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             var originalFileNamingOptions = context.FileNamingOptions;
             var originalPath = context.DocumentationRootPath;
             var originalApiReferencePath = context.ApiReferencePath;
+            var originalIncludedMembers = context.IncludedMembers;
 
             context.FileNamingOptions = new FileNamingOptions(NamespaceMode.Folder);
             context.DocumentationRootPath = testOutputPath;
             context.ApiReferencePath = string.Empty;
+            context.IncludedMembers = BaselinePermutations.GetIncludedMembers(includeInternals);
 
             var renderer = GetMarkdownRenderer();
 
@@ -615,14 +617,8 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
                 File.Exists(Path.Combine(basicScenariosDir, "index.md")).Should().BeTrue();
                 File.Exists(Path.Combine(basicScenariosDir, "SimpleClass.md")).Should().BeTrue();
 
-                // Compare specific files with baselines
-                await CompareWithFolderBaseline(
-                    Path.Combine(sharedDir, "index.md"),
-                    "CloudNimble/DotNetDocs/Tests/Shared/index.md");
-
-                await CompareWithFolderBaseline(
-                    Path.Combine(basicScenariosDir, "SimpleClass.md"),
-                    "CloudNimble/DotNetDocs/Tests/Shared/BasicScenarios/SimpleClass.md");
+                // Compare every rendered file with the FolderMode baselines, reporting all differences at once
+                BaselineAssert.DirectoryMatches(Path.Combine(projectPath, "Baselines", framework, "MarkdownRenderer", BaselinePermutations.GetName("FolderMode", includeInternals)), testOutputPath);
             }
             finally
             {
@@ -630,6 +626,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
                 context.FileNamingOptions = originalFileNamingOptions;
                 context.DocumentationRootPath = originalPath;
                 context.ApiReferencePath = originalApiReferencePath;
+                context.IncludedMembers = originalIncludedMembers;
 
                 // Cleanup
                 if (Directory.Exists(testOutputPath))
@@ -637,43 +634,6 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
                     Directory.Delete(testOutputPath, true);
                 }
             }
-        }
-
-        private async Task CompareWithFolderBaseline(string actualFilePath, string baselineRelativePath)
-        {
-            // Read actual file
-            var actualContent = await File.ReadAllTextAsync(actualFilePath);
-            
-            // Construct baseline path
-            var baselineDir = Path.Combine(
-                Directory.GetCurrentDirectory(),
-                "Baselines",
-                framework,
-                "MarkdownRenderer",
-                "FolderMode");
-            var baselinePath = Path.Combine(baselineDir, baselineRelativePath);
-            
-            // If baseline doesn't exist, create it for first run
-            if (!File.Exists(baselinePath))
-            {
-                var directory = Path.GetDirectoryName(baselinePath);
-                if (!string.IsNullOrEmpty(directory))
-                {
-                    Directory.CreateDirectory(directory);
-                }
-                await File.WriteAllTextAsync(baselinePath, actualContent);
-                Assert.Inconclusive($"Baseline created at: {baselinePath}. Re-run test to verify.");
-            }
-            
-            // Compare with baseline - normalize line endings for cross-platform compatibility
-            var baselineContent = await File.ReadAllTextAsync(baselinePath);
-
-            // Normalize both to Environment.NewLine to handle any line ending differences
-            var normalizedActual = actualContent.ReplaceLineEndings(Environment.NewLine);
-            var normalizedBaseline = baselineContent.ReplaceLineEndings(Environment.NewLine);
-
-            normalizedActual.Should().Be(normalizedBaseline,
-                $"Output should match baseline at {baselinePath}");
         }
 
         #endregion
@@ -1046,21 +1006,6 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
 
         #region Enum Support Tests
 
-        /// <summary>
-        /// Generates baseline files for the MarkdownRenderer in both FileMode and FolderMode.
-        /// This method is marked with [BreakdanceManifestGenerator] and is called by the Breakdance tool
-        /// to generate baseline files for comparison in unit tests.
-        /// </summary>
-        /// <param name="projectPath">The root path of the test project where baselines will be stored.</param>
-        /// <remarks>
-        /// This method uses Dependency Injection to get the ProjectContext and MarkdownRenderer instances.
-        /// It modifies the context properties to configure the output location and file naming options,
-        /// then uses the renderer from DI (which ensures all dependencies are properly injected).
-        ///
-        /// The baseline generation intentionally does NOT use DocumentationManager.ProcessAsync because
-        /// these are unit test baselines for the renderer itself, not integration test baselines.
-        /// The renderer should be tested in isolation without transformers applied.
-        /// </remarks>
         [TestMethod]
         public async Task RenderTypeAsync_Should_Include_Enum_Values()
         {
@@ -1175,90 +1120,74 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
 
         #region Baseline Generation
 
+        /// <summary>
+        /// Generates baseline files for the MarkdownRenderer in FileMode and FolderMode, each for public members and for public
+        /// and internal members.
+        /// This method is marked with [BreakdanceManifestGenerator] and is called by the Breakdance tool
+        /// to generate baseline files for comparison in unit tests.
+        /// </summary>
+        /// <param name="projectPath">The root path of the test project where baselines will be stored.</param>
+        /// <remarks>
+        /// This method uses Dependency Injection to get the ProjectContext and MarkdownRenderer instances.
+        /// It modifies the context properties to configure the output location, file naming options, and documented members,
+        /// then uses the renderer from DI (which ensures all dependencies are properly injected).
+        ///
+        /// The baseline generation intentionally does NOT use DocumentationManager.ProcessAsync because
+        /// these are unit test baselines for the renderer itself, not integration test baselines.
+        /// The renderer should be tested in isolation without transformers applied.
+        /// </remarks>
         //[TestMethod]
         //[DataRow(projectPath)]
         [BreakdanceManifestGenerator]
         public async Task GenerateMarkdownBaselines(string projectPath)
         {
-            await GenerateFileModeBaselines(projectPath);
-            await GenerateFolderModeBaselines(projectPath);
+            foreach (var namespaceMode in new[] { NamespaceMode.File, NamespaceMode.Folder })
+            {
+                foreach (var includeInternals in new[] { false, true })
+                {
+                    await GenerateBaselinesAsync(projectPath, namespaceMode, includeInternals);
+                }
+            }
         }
 
         /// <summary>
-        /// Generates baseline files for MarkdownRenderer in FileMode configuration.
+        /// Generates the MarkdownRenderer baseline files for one permutation.
         /// </summary>
         /// <param name="projectPath">The root path of the test project where baselines will be stored.</param>
+        /// <param name="namespaceMode">Whether namespaces render as files or folders.</param>
+        /// <param name="includeInternals">Whether internal members are documented along with public ones.</param>
         /// <remarks>
         /// This method:
-        /// 1. Gets the ProjectContext from DI to ensure consistent configuration
-        /// 2. Modifies the context properties for FileMode output
-        /// 3. Gets the MarkdownRenderer from DI with all dependencies properly injected
+        /// 1. Clears the permutation's baseline folder, such as "FolderMode" or "FolderModeWithInternals"
+        /// 2. Creates a DI scope so no renderer state carries over from another permutation
+        /// 3. Sets every ProjectContext property the permutation depends on
         /// 4. Uses AssemblyManager directly (not DocumentationManager) to generate documentation
         ///    without transformers, as these are unit test baselines for the renderer alone
-        /// 5. Does not restore context values since this runs in an isolated Breakdance process
         /// </remarks>
-        private async Task GenerateFileModeBaselines(string projectPath)
+        private async Task GenerateBaselinesAsync(string projectPath, NamespaceMode namespaceMode, bool includeInternals)
         {
-            var baselinesDir = Path.Combine(projectPath, "Baselines", framework, "MarkdownRenderer", "FileMode");
+            var baselinesDir = Path.Combine(projectPath, "Baselines", framework, "MarkdownRenderer", BaselinePermutations.GetName($"{namespaceMode}Mode", includeInternals));
             if (Directory.Exists(baselinesDir))
             {
                 Directory.Delete(baselinesDir, true);
             }
             Directory.CreateDirectory(baselinesDir);
 
-            // Get context from DI and modify it for baseline generation
-            var context = GetService<ProjectContext>();
-            context.Should().NotBeNull("ProjectContext should be registered in DI");
+            using var scope = TestHost.Services.CreateScope();
 
-            context.FileNamingOptions = new FileNamingOptions(NamespaceMode.File, '-');
+            // Get context from DI and modify it for baseline generation
+            var context = scope.ServiceProvider.GetRequiredService<ProjectContext>();
+            context.FileNamingOptions = new FileNamingOptions(namespaceMode, '-');
             context.DocumentationRootPath = baselinesDir;
             context.ApiReferencePath = string.Empty;
+            context.IncludedMembers = BaselinePermutations.GetIncludedMembers(includeInternals);
 
             // Get renderer from DI to ensure all dependencies are properly injected
-            var renderer = GetMarkdownRenderer();
+            var renderer = scope.ServiceProvider.GetServices<IDocRenderer>().OfType<MarkdownRenderer>().Single();
 
             var assemblyPath = typeof(SimpleClass).Assembly.Location;
             var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
-            var manager = new AssemblyManager(assemblyPath, xmlPath);
-            var assembly = await manager.DocumentAsync(context);
-
-            await renderer.RenderAsync(assembly);
-        }
-
-        /// <summary>
-        /// Generates baseline files for MarkdownRenderer in FolderMode configuration.
-        /// </summary>
-        /// <param name="projectPath">The root path of the test project where baselines will be stored.</param>
-        /// <remarks>
-        /// This method:
-        /// 1. Gets the ProjectContext from DI to ensure consistent configuration
-        /// 2. Modifies the context properties for FolderMode output
-        /// 3. Gets the MarkdownRenderer from DI with all dependencies properly injected
-        /// 4. Uses AssemblyManager directly (not DocumentationManager) to generate documentation
-        ///    without transformers, as these are unit test baselines for the renderer alone
-        /// 5. Does not restore context values since this runs in an isolated Breakdance process
-        /// </remarks>
-        private async Task GenerateFolderModeBaselines(string projectPath)
-        {
-            var baselinesDir = Path.Combine(projectPath, "Baselines", framework, "MarkdownRenderer", "FolderMode");
-            if (Directory.Exists(baselinesDir))
-            {
-                Directory.Delete(baselinesDir, true);
-            }
-            Directory.CreateDirectory(baselinesDir);
-
-            // Get context from DI and modify it for baseline generation
-            var context = GetService<ProjectContext>();
-            context.FileNamingOptions = new FileNamingOptions(NamespaceMode.Folder, '-');
-            context.DocumentationRootPath = baselinesDir;
-            context.ApiReferencePath = string.Empty;
-
-            // Get renderer from DI to ensure all dependencies are properly injected
-            var renderer = GetMarkdownRenderer();
-
-            var assemblyPath = typeof(SimpleClass).Assembly.Location;
-            var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
-            var manager = new AssemblyManager(assemblyPath, xmlPath);
+            using var manager = new AssemblyManager(assemblyPath, xmlPath);
             var assembly = await manager.DocumentAsync(context);
 
             await renderer.RenderAsync(assembly);

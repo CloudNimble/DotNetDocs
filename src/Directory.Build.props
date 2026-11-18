@@ -112,6 +112,11 @@
         <TestingPlatformShowTestsFailure>true</TestingPlatformShowTestsFailure>
         <TestingPlatformCommandLineArguments>$(TestingPlatformCommandLineArguments) --ignore-exit-code 8</TestingPlatformCommandLineArguments>
 
+        <!-- Collect code coverage with Microsoft.Testing.Extensions.CodeCoverage, which the MSTest package brings in.
+             Every test project shares the test results directory (src/TestResults when run from src), so the report name
+             includes the project and target framework to keep runs from overwriting each other. -->
+        <TestingPlatformCommandLineArguments>$(TestingPlatformCommandLineArguments) --coverage --coverage-output-format cobertura --coverage-output "$(MSBuildProjectName).$(TargetFramework).cobertura.xml" --coverage-settings "$(MSBuildThisFileDirectory)coverage.config"</TestingPlatformCommandLineArguments>
+
         <IsPackable>false</IsPackable>
     </PropertyGroup>
 
@@ -121,13 +126,6 @@
 
     <PropertyGroup>
         <SuppressNETCoreSdkPreviewMessage>true</SuppressNETCoreSdkPreviewMessage>
-    </PropertyGroup>
-
-    <PropertyGroup Condition=" $(IsPrimaryProject) == 'true' ">
-        <CollectCoverage>true</CollectCoverage>
-        <CoverletOutputFormat>opencover</CoverletOutputFormat>
-        <CoverletOutput>$(MSBuildProjectDirectory)/Coverage/</CoverletOutput>
-        <Exclude>[*.Tests.*]*,[*]*.Program,[*]*Migrations*</Exclude>
     </PropertyGroup>
 
     <PropertyGroup Condition=" $(IsPrimaryProject) == 'true' and '$(IsTemplateProject)' != 'true' ">
@@ -150,7 +148,6 @@
     </ItemGroup>
 
     <ItemGroup Condition=" $(IsTestProject) == 'true' and $(IsSampleProject) != 'true' ">
-        <PackageReference Include="coverlet.collector" Version="6.*" PrivateAssets="All" />
         <PackageReference Include="FluentAssertions" Version="6.*" PrivateAssets="All" />
         <PackageReference Include="FluentAssertions.Analyzers" Version="0.*" PrivateAssets="All" />
         <PackageReference Include="MSTest" Version="4.*" />

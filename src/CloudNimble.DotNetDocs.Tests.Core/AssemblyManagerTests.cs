@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CloudNimble.Breakdance.Assemblies;
 using CloudNimble.DotNetDocs.Core;
+using CloudNimble.DotNetDocs.Tests.Core.Helpers;
 using CloudNimble.DotNetDocs.Tests.Shared;
 using CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios;
 using FluentAssertions;
@@ -308,10 +309,12 @@ namespace CloudNimble.DotNetDocs.Tests.Core
         }
 
         [TestMethod]
-        public async Task DocumentAsync_ProducesConsistentBaseline()
+        [DataRow(false, DisplayName = "Public members")]
+        [DataRow(true, DisplayName = "Public and internal members")]
+        public async Task DocumentAsync_ProducesConsistentBaseline(bool includeInternals)
         {
             var manager = new AssemblyManager(testAssemblyPath, testXmlPath);
-            var context = new ProjectContext();
+            var context = new ProjectContext(BaselinePermutations.GetIncludedMembers(includeInternals));
 
             var result = await manager.DocumentAsync(context);
 
@@ -330,24 +333,19 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             var json = SerializeToJson(result);
 
             // Compare against baseline
-            var baselinePath = Path.Combine(projectPath, "Baselines", framework, "AssemblyManager", "BasicAssembly.json");
+            var baselinePath = Path.Combine(projectPath, "Baselines", framework, "AssemblyManager", $"{BaselinePermutations.GetName("BasicAssembly", includeInternals)}.json");
             var fullPath = Path.GetFullPath(baselinePath);
 
-            if (File.Exists(baselinePath))
-            {
-                var baseline = await File.ReadAllTextAsync(baselinePath, TestContext.CancellationToken);
+            File.Exists(baselinePath).Should().BeTrue($"the baseline should exist at {fullPath}; run 'dotnet breakdance generate' to create it");
 
-                // Normalize line endings for cross-platform compatibility
-                var normalizedJson = json.ReplaceLineEndings(Environment.NewLine);
-                var normalizedBaseline = baseline.ReplaceLineEndings(Environment.NewLine);
+            var baseline = await File.ReadAllTextAsync(baselinePath, TestContext.CancellationToken);
 
-                normalizedJson.Should().Be(normalizedBaseline,
-                    "Assembly documentation has changed. If this is intentional, regenerate baselines using 'dotnet breakdance generate'");
-            }
-            else
-            {
-                Assert.Inconclusive($"Baseline not found at {baselinePath}. Run 'dotnet breakdance generate' to create baselines.");
-            }
+            // Normalize line endings for cross-platform compatibility
+            var normalizedJson = json.ReplaceLineEndings(Environment.NewLine);
+            var normalizedBaseline = baseline.ReplaceLineEndings(Environment.NewLine);
+
+            normalizedJson.Should().Be(normalizedBaseline,
+                "Assembly documentation has changed. If this is intentional, regenerate baselines using 'dotnet breakdance generate'");
         }
 
         //[TestMethod]
@@ -359,7 +357,6 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             var assemblyPath = typeof(SimpleClass).Assembly.Location;
             var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
             
-            var manager = new AssemblyManager(assemblyPath, xmlPath);
             var directory = Path.Combine(projectPath, "Baselines", framework, "AssemblyManager");
 
             if (!Directory.Exists(directory))
@@ -367,14 +364,18 @@ namespace CloudNimble.DotNetDocs.Tests.Core
                 Directory.CreateDirectory(directory);
             }
 
-            // Generate baseline
-            var context = new ProjectContext();
-            var result = await manager.DocumentAsync(context);
-            var json = SerializeToJson(result);
-            var baselinePath = Path.Combine(directory, "BasicAssembly.json");
-            Console.WriteLine($"Writing baseline to: {baselinePath}");
-            Console.WriteLine($"Namespace count: {result.Namespaces.Count}");
-            await File.WriteAllTextAsync(baselinePath, json);
+            // Generate one baseline per member visibility, each from its own manager and context
+            foreach (var includeInternals in new[] { false, true })
+            {
+                using var manager = new AssemblyManager(assemblyPath, xmlPath);
+                var context = new ProjectContext(BaselinePermutations.GetIncludedMembers(includeInternals));
+                var result = await manager.DocumentAsync(context);
+                var json = SerializeToJson(result);
+                var baselinePath = Path.Combine(directory, $"{BaselinePermutations.GetName("BasicAssembly", includeInternals)}.json");
+                Console.WriteLine($"Writing baseline to: {baselinePath}");
+                Console.WriteLine($"Namespace count: {result.Namespaces.Count}");
+                await File.WriteAllTextAsync(baselinePath, json);
+            }
         }
 
         [TestInitialize]

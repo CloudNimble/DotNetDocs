@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using CloudNimble.DotNetDocs.Core.Transformers;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 
@@ -1105,20 +1106,21 @@ namespace CloudNimble.DotNetDocs.Core
                 TypeKind = resolvedSymbol.TypeKind,
                 AssemblyName = resolvedSymbol.ContainingAssembly?.Name,
                 IsExternalReference = true,
-                IncludedMembers = projectContext?.IncludedMembers ?? [Accessibility.Public]
+                IncludedMembers = projectContext?.IncludedMembers ?? [Accessibility.Public],
+                Summary = $"This type is defined in {resolvedSymbol.ContainingAssembly?.Name ?? "external assembly"}."
             };
 
-            // Add helpful summary linking to official docs
+            // Link Microsoft types to Microsoft Learn. The remarks are written as an XML documentation tag, like every other
+            // documentation string at this stage, so the transformer for the output format decides how the link is written.
             if (resolvedSymbol.ContainingAssembly?.Name?.StartsWith("System") == true ||
                 resolvedSymbol.ContainingAssembly?.Name?.StartsWith("Microsoft") == true)
             {
-                var docsUrl = GetMicrosoftDocsUrl(resolvedSymbol);
-                docType.Summary = $"This type is defined in {resolvedSymbol.ContainingAssembly.Name}.";
-                docType.Remarks = $"See [Microsoft documentation]({docsUrl}) for more information about the rest of the API.";
-            }
-            else
-            {
-                docType.Summary = $"This type is defined in {resolvedSymbol.ContainingAssembly?.Name ?? "external assembly"}.";
+                var learnTypeName = GetLearnTypeName(resolvedSymbol);
+                if (learnTypeName is not null)
+                {
+                    var docsUrl = XmlTransformerBase.GetFrameworkDocumentationUrl(learnTypeName);
+                    docType.Remarks = $"See <see href=\"{docsUrl}\">Microsoft documentation</see> for more information about the rest of the API.";
+                }
             }
 
             ns.Types.Add(docType);
@@ -1174,29 +1176,26 @@ namespace CloudNimble.DotNetDocs.Core
         }
 
         /// <summary>
-        /// Generates a Microsoft Learn documentation URL for a type.
+        /// Gets the name Microsoft Learn uses to identify a type: its documentation ID without the prefix.
         /// </summary>
         /// <param name="typeSymbol">The type symbol.</param>
-        /// <returns>A URL to the Microsoft Learn documentation, or empty string if not applicable.</returns>
-        internal static string GetMicrosoftDocsUrl(ITypeSymbol typeSymbol)
+        /// <returns>The type's name with generic arity, such as <c>System.Collections.Generic.List`1</c>, or null when the symbol has no usable documentation ID.</returns>
+        /// <remarks>
+        /// The ID comes from the type's original definition, because a constructed type such as <c>List&lt;int&gt;</c> has the ID
+        /// <c>List{System.Int32}</c>, which is not a Microsoft Learn page. Unresolved types have the <c>!:</c> prefix instead of
+        /// <c>T:</c>, and an ID that still contains type arguments cannot be turned into a page name, so it returns null.
+        /// </remarks>
+        internal static string? GetLearnTypeName(ITypeSymbol typeSymbol)
         {
-            if (typeSymbol.ContainingAssembly?.Name?.StartsWith("System") != true &&
-                typeSymbol.ContainingAssembly?.Name?.StartsWith("Microsoft") != true)
+            var documentationId = typeSymbol.OriginalDefinition.GetDocumentationCommentId();
+            if (string.IsNullOrWhiteSpace(documentationId))
             {
-                return "";
+                return null;
             }
 
-            // Use a format that shows full metadata names (System.String instead of string)
-            var format = new SymbolDisplayFormat(
-                typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces,
-                genericsOptions: SymbolDisplayGenericsOptions.IncludeTypeParameters);
+            var typeName = documentationId[(documentationId.IndexOf(':') + 1)..];
 
-            var fullName = typeSymbol.ToDisplayString(format)
-                .Replace('<', '{')
-                .Replace('>', '}')
-                .ToLowerInvariant();
-
-            return $"https://learn.microsoft.com/dotnet/api/{fullName}";
+            return string.IsNullOrWhiteSpace(typeName) || typeName.Contains('{') ? null : typeName;
         }
 
         #endregion

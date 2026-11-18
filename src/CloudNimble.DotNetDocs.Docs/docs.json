@@ -105,7 +105,6 @@
                     "pages": [
                       "api-reference/CloudNimble/DotNetDocs/Core/index",
                       "api-reference/CloudNimble/DotNetDocs/Core/AssemblyManager",
-                      "api-reference/CloudNimble/DotNetDocs/Core/CrossReferenceResolver",
                       "api-reference/CloudNimble/DotNetDocs/Core/DocAssembly",
                       "api-reference/CloudNimble/DotNetDocs/Core/DocConstants",
                       "api-reference/CloudNimble/DotNetDocs/Core/DocEntity",
@@ -157,7 +156,6 @@
                             "pages": [
                               "api-reference/CloudNimble/DotNetDocs/Core/Renderers/YamlConverters/index",
                               "api-reference/CloudNimble/DotNetDocs/Core/Renderers/YamlConverters/AccessibilityTypeConverter",
-                              "api-reference/CloudNimble/DotNetDocs/Core/Renderers/YamlConverters/RefKindTypeConverter",
                               "api-reference/CloudNimble/DotNetDocs/Core/Renderers/YamlConverters/SymbolKindTypeConverter",
                               "api-reference/CloudNimble/DotNetDocs/Core/Renderers/YamlConverters/SymbolTypeConverter",
                               "api-reference/CloudNimble/DotNetDocs/Core/Renderers/YamlConverters/TypeKindTypeConverter"
@@ -170,7 +168,8 @@
                         "icon": "folder-tree",
                         "pages": [
                           "api-reference/CloudNimble/DotNetDocs/Core/Transformers/index",
-                          "api-reference/CloudNimble/DotNetDocs/Core/Transformers/MarkdownXmlTransformer"
+                          "api-reference/CloudNimble/DotNetDocs/Core/Transformers/MarkdownXmlTransformer",
+                          "api-reference/CloudNimble/DotNetDocs/Core/Transformers/XmlTransformerBase"
                         ]
                       }
                     ]

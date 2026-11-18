@@ -8,6 +8,7 @@ using CloudNimble.Breakdance.Assemblies;
 using CloudNimble.DotNetDocs.Core;
 using CloudNimble.DotNetDocs.Core.Configuration;
 using CloudNimble.DotNetDocs.Core.Renderers;
+using CloudNimble.DotNetDocs.Tests.Core.Helpers;
 using CloudNimble.DotNetDocs.Tests.Shared;
 using CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios;
 using CloudNimble.DotNetDocs.Tests.Shared.Parameters;
@@ -129,12 +130,18 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
         #region RenderAsync Tests
 
         [TestMethod]
-        public async Task RenderAsync_ProducesConsistentBaseline()
+        [DataRow(false, DisplayName = "Public members")]
+        [DataRow(true, DisplayName = "Public and internal members")]
+        public async Task RenderAsync_ProducesConsistentBaseline(bool includeInternals)
         {
             // Arrange
             var assemblyPath = typeof(SimpleClass).Assembly.Location;
             var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
             var context = GetService<ProjectContext>();
+
+            // The FileMode baselines are generated with an empty ApiReferencePath, so render the same way
+            context.ApiReferencePath = string.Empty;
+            context.IncludedMembers = BaselinePermutations.GetIncludedMembers(includeInternals);
             using var manager = new AssemblyManager(assemblyPath, xmlPath);
             var assembly = await manager.DocumentAsync(context);
             var renderer = GetYamlRenderer();
@@ -142,26 +149,8 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             // Act
             await renderer.RenderAsync(assembly);
 
-            // Assert - Compare against baseline
-            var baselinePath = Path.Combine(projectPath, "Baselines", "YamlRenderer", "FileMode", "documentation.yaml");
-            var actualPath = Path.Combine(_testOutputPath, context.ApiReferencePath, "documentation.yaml");
-
-            if (File.Exists(baselinePath))
-            {
-                var baseline = await File.ReadAllTextAsync(baselinePath, TestContext.CancellationToken);
-                var actual = await File.ReadAllTextAsync(actualPath, TestContext.CancellationToken);
-
-                // Normalize line endings for cross-platform compatibility
-                var normalizedActual = actual.ReplaceLineEndings(Environment.NewLine);
-                var normalizedBaseline = baseline.ReplaceLineEndings(Environment.NewLine);
-
-                normalizedActual.Should().Be(normalizedBaseline,
-                    "YAML output has changed. If this is intentional, regenerate baselines using 'dotnet breakdance generate'");
-            }
-            else
-            {
-                Assert.Inconclusive($"Baseline not found at {baselinePath}. Run 'dotnet breakdance generate' to create baselines.");
-            }
+            // Assert - Compare every rendered file with the FileMode baselines, reporting all differences at once
+            BaselineAssert.DirectoryMatches(Path.Combine(projectPath, "Baselines", framework, "YamlRenderer", BaselinePermutations.GetName("FileMode", includeInternals)), _testOutputPath);
         }
 
         [TestMethod]
@@ -759,7 +748,9 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
         #region Folder Structure Baseline Tests
 
         [TestMethod]
-        public async Task RenderAsync_WithFolderMode_MatchesFolderStructureBaseline()
+        [DataRow(false, DisplayName = "Public members")]
+        [DataRow(true, DisplayName = "Public and internal members")]
+        public async Task RenderAsync_WithFolderMode_MatchesFolderStructureBaseline(bool includeInternals)
         {
             var testOutputPath = Path.Combine(Path.GetTempPath(), $"YamlFolderBaseline_{Guid.NewGuid()}");
 
@@ -768,10 +759,12 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             var originalFileNamingOptions = context.FileNamingOptions;
             var originalPath = context.DocumentationRootPath;
             var originalApiReferencePath = context.ApiReferencePath;
+            var originalIncludedMembers = context.IncludedMembers;
 
             context.FileNamingOptions = new FileNamingOptions(NamespaceMode.Folder);
             context.DocumentationRootPath = testOutputPath;
             context.ApiReferencePath = string.Empty;
+            context.IncludedMembers = BaselinePermutations.GetIncludedMembers(includeInternals);
 
             try
             {
@@ -805,14 +798,8 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
                 Directory.Exists(basicScenariosDir).Should().BeTrue();
                 File.Exists(Path.Combine(basicScenariosDir, "index.yaml")).Should().BeTrue();
 
-                // Compare specific files with baselines
-                await CompareYamlWithFolderBaseline(
-                    Path.Combine(sharedDir, "index.yaml"),
-                    "CloudNimble/DotNetDocs/Tests/Shared/index.yaml");
-
-                await CompareYamlWithFolderBaseline(
-                    Path.Combine(basicScenariosDir, "index.yaml"),
-                    "CloudNimble/DotNetDocs/Tests/Shared/BasicScenarios/index.yaml");
+                // Compare every rendered file with the FolderMode baselines, reporting all differences at once
+                BaselineAssert.DirectoryMatches(Path.Combine(projectPath, "Baselines", framework, "YamlRenderer", BaselinePermutations.GetName("FolderMode", includeInternals)), testOutputPath);
 
                 // Verify TOC structure
                 var tocPath = Path.Combine(testOutputPath, "toc.yaml");
@@ -824,6 +811,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
                 context.FileNamingOptions = originalFileNamingOptions;
                 context.DocumentationRootPath = originalPath;
                 context.ApiReferencePath = originalApiReferencePath;
+                context.IncludedMembers = originalIncludedMembers;
 
                 // Cleanup
                 if (Directory.Exists(testOutputPath))
@@ -833,147 +821,78 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             }
         }
 
-        private async Task CompareYamlWithFolderBaseline(string actualFilePath, string baselineRelativePath)
-        {
-            // Read actual file
-            var actualContent = await File.ReadAllTextAsync(actualFilePath, TestContext.CancellationToken);
-            
-            // Construct baseline path
-            var baselineDir = Path.Combine(
-                Directory.GetCurrentDirectory(),
-                "Baselines",
-                framework,
-                "YamlRenderer",
-                "FolderMode");
-            var baselinePath = Path.Combine(baselineDir, baselineRelativePath);
-            
-            // If baseline doesn't exist, create it for first run
-            if (!File.Exists(baselinePath))
-            {
-                var directory = Path.GetDirectoryName(baselinePath);
-                if (!string.IsNullOrEmpty(directory))
-                {
-                    Directory.CreateDirectory(directory);
-                }
-                await File.WriteAllTextAsync(baselinePath, actualContent, TestContext.CancellationToken);
-                Assert.Inconclusive($"Baseline created at: {baselinePath}. Re-run test to verify.");
-            }
-            
-            // Parse YAML for comparison
-            var actualYaml = _yamlDeserializer.Deserialize<DocNamespace>(actualContent);
-            var baselineContent = await File.ReadAllTextAsync(baselinePath, TestContext.CancellationToken);
-            var baselineYaml = _yamlDeserializer.Deserialize<DocNamespace>(baselineContent);
-
-            // Compare YAML structures
-            actualYaml.Should().BeEquivalentTo(baselineYaml,
-                $"YAML output should match baseline at {baselinePath}");
-        }
-
         #endregion
 
         #region Baseline Generation
 
         /// <summary>
-        /// Generates baseline files for the YamlRenderer in both FileMode and FolderMode.
+        /// Generates baseline files for the YamlRenderer in FileMode and FolderMode, each for public members and for public
+        /// and internal members.
         /// This method is marked with [BreakdanceManifestGenerator] and is called by the Breakdance tool
         /// to generate baseline files for comparison in unit tests.
         /// </summary>
         /// <param name="projectPath">The root path of the test project where baselines will be stored.</param>
         /// <remarks>
         /// This method uses Dependency Injection to get the ProjectContext and YamlRenderer instances.
-        /// It modifies the context properties to configure the output location and file naming options,
+        /// It modifies the context properties to configure the output location, file naming options, and documented members,
         /// then uses the renderer from DI (which ensures all dependencies are properly injected).
         ///
         /// The baseline generation intentionally does NOT use DocumentationManager.ProcessAsync because
         /// these are unit test baselines for the renderer itself, not integration test baselines.
         /// The renderer should be tested in isolation without transformers applied.
         /// </remarks>
-        [TestMethod]
-        [DataRow(projectPath)]
+        //[TestMethod]
+        //[DataRow(projectPath)]
         [BreakdanceManifestGenerator]
         public async Task GenerateYamlBaselines(string projectPath)
         {
-            // Generate baselines for both FileMode and FolderMode
-            await GenerateFileModeBaselines(projectPath);
-            await GenerateFolderModeBaselines(projectPath);
+            foreach (var namespaceMode in new[] { NamespaceMode.File, NamespaceMode.Folder })
+            {
+                foreach (var includeInternals in new[] { false, true })
+                {
+                    await GenerateBaselinesAsync(projectPath, namespaceMode, includeInternals);
+                }
+            }
         }
 
         /// <summary>
-        /// Generates baseline files for YamlRenderer in FileMode configuration.
+        /// Generates the YamlRenderer baseline files for one permutation.
         /// </summary>
         /// <param name="projectPath">The root path of the test project where baselines will be stored.</param>
+        /// <param name="namespaceMode">Whether namespaces render as files or folders.</param>
+        /// <param name="includeInternals">Whether internal members are documented along with public ones.</param>
         /// <remarks>
         /// This method:
-        /// 1. Gets the ProjectContext from DI to ensure consistent configuration
-        /// 2. Modifies the context properties for FileMode output
-        /// 3. Gets the YamlRenderer from DI with all dependencies properly injected
+        /// 1. Clears the permutation's baseline folder, such as "FolderMode" or "FolderModeWithInternals"
+        /// 2. Creates a DI scope so no renderer state carries over from another permutation
+        /// 3. Sets every ProjectContext property the permutation depends on
         /// 4. Uses AssemblyManager directly (not DocumentationManager) to generate documentation
         ///    without transformers, as these are unit test baselines for the renderer alone
-        /// 5. Does not restore context values since this runs in an isolated Breakdance process
         /// </remarks>
-        private async Task GenerateFileModeBaselines(string projectPath)
+        private async Task GenerateBaselinesAsync(string projectPath, NamespaceMode namespaceMode, bool includeInternals)
         {
-            var baselinesDir = Path.Combine(projectPath, "Baselines", framework, "YamlRenderer", "FileMode");
+            var baselinesDir = Path.Combine(projectPath, "Baselines", framework, "YamlRenderer", BaselinePermutations.GetName($"{namespaceMode}Mode", includeInternals));
             if (Directory.Exists(baselinesDir))
             {
                 Directory.Delete(baselinesDir, true);
             }
             Directory.CreateDirectory(baselinesDir);
 
+            using var scope = TestHost.Services.CreateScope();
+
             // Get context from DI and modify it for baseline generation
-            var context = GetService<ProjectContext>();
-            context.FileNamingOptions = new FileNamingOptions(NamespaceMode.File, '-');
+            var context = scope.ServiceProvider.GetRequiredService<ProjectContext>();
+            context.FileNamingOptions = new FileNamingOptions(namespaceMode, '-');
             context.DocumentationRootPath = baselinesDir;
             context.ApiReferencePath = string.Empty;
+            context.IncludedMembers = BaselinePermutations.GetIncludedMembers(includeInternals);
 
             // Get renderer from DI to ensure all dependencies are properly injected
-            var renderer = GetService<IDocRenderer>();
-            renderer.Should()
-                .NotBeNull("YamlRenderer should be registered in DI")
-                .And.BeOfType<YamlRenderer>("Registered IDocRenderer should be YamlRenderer");
+            var renderer = scope.ServiceProvider.GetServices<IDocRenderer>().OfType<YamlRenderer>().Single();
 
             var assemblyPath = typeof(SimpleClass).Assembly.Location;
             var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
-            var manager = new AssemblyManager(assemblyPath, xmlPath);
-            var assembly = await manager.DocumentAsync(context);
-
-            await renderer.RenderAsync(assembly);
-        }
-
-        /// <summary>
-        /// Generates baseline files for YamlRenderer in FolderMode configuration.
-        /// </summary>
-        /// <param name="projectPath">The root path of the test project where baselines will be stored.</param>
-        /// <remarks>
-        /// This method:
-        /// 1. Gets the ProjectContext from DI to ensure consistent configuration
-        /// 2. Modifies the context properties for FolderMode output
-        /// 3. Gets the YamlRenderer from DI with all dependencies properly injected
-        /// 4. Uses AssemblyManager directly (not DocumentationManager) to generate documentation
-        ///    without transformers, as these are unit test baselines for the renderer alone
-        /// 5. Does not restore context values since this runs in an isolated Breakdance process
-        /// </remarks>
-        private async Task GenerateFolderModeBaselines(string projectPath)
-        {
-            var baselinesDir = Path.Combine(projectPath, "Baselines", framework, "YamlRenderer", "FolderMode");
-            if (Directory.Exists(baselinesDir))
-            {
-                Directory.Delete(baselinesDir, true);
-            }
-            Directory.CreateDirectory(baselinesDir);
-
-            // Get context from DI and modify it for baseline generation
-            var context = GetService<ProjectContext>();
-            context.FileNamingOptions = new FileNamingOptions(NamespaceMode.Folder, '-');
-            context.DocumentationRootPath = baselinesDir;
-            context.ApiReferencePath = string.Empty;
-
-            // Get renderer from DI to ensure all dependencies are properly injected
-            var renderer = GetYamlRenderer();
-
-            var assemblyPath = typeof(SimpleClass).Assembly.Location;
-            var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
-            var manager = new AssemblyManager(assemblyPath, xmlPath);
+            using var manager = new AssemblyManager(assemblyPath, xmlPath);
             var assembly = await manager.DocumentAsync(context);
 
             await renderer.RenderAsync(assembly);

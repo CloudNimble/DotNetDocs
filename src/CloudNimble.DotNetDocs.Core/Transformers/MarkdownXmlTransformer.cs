@@ -1,8 +1,6 @@
 using System;
-using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace CloudNimble.DotNetDocs.Core.Transformers
 {
@@ -11,24 +9,14 @@ namespace CloudNimble.DotNetDocs.Core.Transformers
     /// Transforms XML documentation tags in DocEntity properties to Markdown format.
     /// </summary>
     /// <remarks>
-    /// This transformer processes all string properties in the DocEntity object graph,
-    /// converting XML documentation tags to their Markdown equivalents. It uses performance-optimized
-    /// regex patterns to skip strings without XML tags and builds cross-references in a single pass.
+    /// This transformer converts XML documentation tags to their Markdown equivalents. The traversal of the documentation
+    /// model, the skipping of strings without tags, and the resolution of <c>cref</c> references come from
+    /// <see cref="XmlTransformerBase"/>; this class only decides how each tag is written in Markdown.
     /// </remarks>
-    public partial class MarkdownXmlTransformer : IDocTransformer
+    public partial class MarkdownXmlTransformer : XmlTransformerBase
     {
 
         #region Fields
-
-        private readonly CrossReferenceResolver _resolver;
-        private readonly ProjectContext _projectContext;
-        private string? _currentPath;
-
-        /// <summary>
-        /// Compiled regex for quick detection of any XML documentation tags.
-        /// </summary>
-        [GeneratedRegex(@"<(?:see|c|code|para|b|i|br|list|item|paramref|typeparamref|exception|returns|summary|remarks|example|value)", RegexOptions.IgnoreCase)]
-        private static partial Regex HasXmlTags();
 
         /// <summary>
         /// Pattern for see cref tags.
@@ -120,11 +108,6 @@ namespace CloudNimble.DotNetDocs.Core.Transformers
         [GeneratedRegex(@"<listheader>(?:<term>(.*?)</term>)?(?:<description>(.*?)</description>)?</listheader>", RegexOptions.IgnoreCase | RegexOptions.Singleline)]
         private static partial Regex ListHeaderPattern();
 
-        // Performance metrics (optional)
-        private int _stringsProcessed;
-        private int _stringsWithTags;
-        private int _stringsSkipped;
-
         #endregion
 
         #region Constructors
@@ -133,41 +116,8 @@ namespace CloudNimble.DotNetDocs.Core.Transformers
         /// Initializes a new instance of the <see cref="MarkdownXmlTransformer"/> class.
         /// </summary>
         /// <param name="projectContext">The project context for configuration and file naming.</param>
-        public MarkdownXmlTransformer(ProjectContext projectContext)
+        public MarkdownXmlTransformer(ProjectContext projectContext) : base(projectContext)
         {
-            ArgumentNullException.ThrowIfNull(projectContext);
-            _projectContext = projectContext;
-            _resolver = new CrossReferenceResolver(projectContext);
-        }
-
-        #endregion
-
-        #region Public Methods
-
-        /// <summary>
-        /// Transforms a documentation entity by converting XML tags to Markdown.
-        /// </summary>
-        /// <param name="entity">The documentation entity to transform.</param>
-        /// <returns>A task representing the asynchronous transformation operation.</returns>
-        public async Task TransformAsync(DocEntity entity)
-        {
-            ArgumentNullException.ThrowIfNull(entity);
-
-            // Build reference map if this is an assembly
-            if (entity is DocAssembly assembly)
-            {
-                _resolver.BuildReferenceMap(assembly);
-            }
-
-            var references = new Dictionary<string, DocEntity>();
-            await TransformEntityRecursive(entity, references);
-
-            // Optional: Log performance metrics
-            if (_stringsProcessed > 0)
-            {
-                var skipRate = _stringsSkipped * 100.0 / _stringsProcessed;
-                Console.WriteLine($"XML Transform Stats: {_stringsSkipped}/{_stringsProcessed} strings skipped ({skipRate:F1}%)");
-            }
         }
 
         #endregion
@@ -175,225 +125,33 @@ namespace CloudNimble.DotNetDocs.Core.Transformers
         #region Protected Methods
 
         /// <summary>
-        /// Recursively transforms an entity and its children, building references along the way.
-        /// </summary>
-        protected virtual async Task TransformEntityRecursive(DocEntity entity, Dictionary<string, DocEntity> references)
-        {
-            // Add entity to references for cross-referencing
-            AddToReferences(entity, references);
-
-            // Update current path context
-            UpdateCurrentPath(entity);
-
-            // Transform string properties from XML documentation (may contain XML tags)
-            entity.Summary = ConvertXmlToMarkdown(entity.Summary, references);
-            entity.Remarks = ConvertXmlToMarkdown(entity.Remarks, references);
-            entity.Returns = ConvertXmlToMarkdown(entity.Returns, references);
-            entity.Examples = ConvertXmlToMarkdown(entity.Examples, references);
-            entity.Value = ConvertXmlToMarkdown(entity.Value, references);
-
-            // Transform conceptual properties (already valid Markdown, skip escaping)
-            entity.Usage = ConvertXmlToMarkdown(entity.Usage, references, skipEscaping: true);
-            entity.BestPractices = ConvertXmlToMarkdown(entity.BestPractices, references, skipEscaping: true);
-            entity.Patterns = ConvertXmlToMarkdown(entity.Patterns, references, skipEscaping: true);
-            entity.Considerations = ConvertXmlToMarkdown(entity.Considerations, references, skipEscaping: true);
-
-            // Transform collections
-            if (entity.Exceptions is not null)
-            {
-                foreach (var exception in entity.Exceptions)
-                {
-                    exception.Description = ConvertXmlToMarkdown(exception.Description, references);
-                }
-            }
-
-            if (entity.TypeParameters is not null)
-            {
-                foreach (var typeParam in entity.TypeParameters)
-                {
-                    typeParam.Description = ConvertXmlToMarkdown(typeParam.Description, references);
-                }
-            }
-
-            // Resolve SeeAlso references
-            if (entity.SeeAlso is not null)
-            {
-                foreach (var seeAlsoRef in entity.SeeAlso)
-                {
-                    if (!seeAlsoRef.IsResolved)
-                    {
-                        var resolved = _resolver.ResolveReference(seeAlsoRef.RawReference, _currentPath ?? string.Empty);
-                        // Copy resolved properties
-                        seeAlsoRef.IsResolved = resolved.IsResolved;
-                        seeAlsoRef.ReferenceType = resolved.ReferenceType;
-                        seeAlsoRef.RelativePath = resolved.RelativePath;
-                        seeAlsoRef.DisplayName = resolved.DisplayName;
-                        seeAlsoRef.Anchor = resolved.Anchor;
-                        seeAlsoRef.TargetEntity = resolved.TargetEntity;
-                    }
-                }
-            }
-
-            // Handle DocParameter special case (no children, but has Usage to transform)
-            if (entity is DocParameter parameter)
-            {
-                parameter.Usage = ConvertXmlToMarkdown(parameter.Usage, references);
-            }
-
-            // Recursively transform child entities
-            foreach (var child in GetChildren(entity))
-            {
-                await TransformEntityRecursive(child, references);
-            }
-        }
-
-        /// <summary>
-        /// Adds an entity to the references dictionary for cross-referencing.
-        /// </summary>
-        protected virtual void AddToReferences(DocEntity entity, Dictionary<string, DocEntity> references)
-        {
-            if (entity.DisplayName is not null && !references.ContainsKey(entity.DisplayName))
-            {
-                references[entity.DisplayName] = entity;
-            }
-
-            // Also add by simple name for easier lookup
-            if (entity is DocType type && type.Symbol?.Name is not null)
-            {
-                if (!references.ContainsKey(type.Symbol.Name))
-                {
-                    references[type.Symbol.Name] = entity;
-                }
-
-                // Also add without namespace for simple lookups
-                var simpleName = GetSimpleTypeName(type.Symbol.Name);
-                if (!references.ContainsKey(simpleName))
-                {
-                    references[simpleName] = entity;
-                }
-            }
-            else if (entity is DocMember member && member.Symbol?.Name is not null)
-            {
-                if (!references.ContainsKey(member.Symbol.Name))
-                {
-                    references[member.Symbol.Name] = entity;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Main conversion method that orchestrates all XML to Markdown transformations.
-        /// </summary>
-        /// <param name="text">The text to convert from XML to Markdown.</param>
-        /// <param name="references">Dictionary of referenced entities for cross-referencing.</param>
-        /// <param name="skipEscaping">When true, skips the final XML tag escaping step. Use for conceptual content that is already valid Markdown.</param>
-        protected virtual string? ConvertXmlToMarkdown(string? text, Dictionary<string, DocEntity> references, bool skipEscaping = false)
-        {
-            _stringsProcessed++;
-
-            if (string.IsNullOrWhiteSpace(text))
-            {
-                _stringsSkipped++;
-                return text;
-            }
-
-            // Normalize indentation inherited from XML doc file formatting.
-            // This must run before the XML tag check because plain multi-line text
-            // (e.g., summaries without <para> tags) also carries this artifact.
-            // ExtractInnerXml trims the overall string, which strips the first line's
-            // indentation but leaves continuation lines with their XML file indentation.
-            // RemoveCommonIndentation handles blocks where ALL lines share indentation;
-            // NormalizeXmlDocIndentation handles the mixed case from extraction.
-            text = NormalizeXmlDocIndentation(text);
-
-            // Quick check - skip processing if no XML tags or HTML tags present
-            // We need to process content with HTML tags to apply noescape handling and escaping
-            if (!HasXmlTags().IsMatch(text) && !text.Contains('<'))
-            {
-                _stringsSkipped++;
-                return text;
-            }
-
-            _stringsWithTags++;
-
-            // Process transformations in order of likelihood/importance
-            text = ConvertSeeReferences(text, references);
-            text = ConvertCodeTags(text);
-            text = ConvertReferenceParams(text);
-            text = ConvertFormattingTags(text);
-            text = ConvertLists(text);
-
-            // Final cleanup - escape any remaining unprocessed XML tags (unless skipping for conceptual content)
-            if (!skipEscaping)
-            {
-                text = EscapeRemainingXmlTags(text);
-            }
-
-            return text;
-        }
-
-        /// <summary>
-        /// Converts see reference tags to Markdown links or inline code.
-        /// </summary>
-        protected virtual string ConvertSeeReferences(string text, Dictionary<string, DocEntity> references)
-        {
-            // Convert <see cref=""/> tags
-            text = SeeRefPattern().Replace(text, match =>
-            {
-                var typeRef = match.Groups[1].Value;
-                var docRef = _resolver.ResolveReference(typeRef, _currentPath ?? string.Empty);
-                return docRef.ToMarkdownLink();
-            });
-
-            // Convert <see href=""/> tags
-            text = SeeHrefPattern().Replace(text, match =>
-            {
-                var url = match.Groups[1].Value;
-                var linkText = match.Groups[2].Success ? match.Groups[2].Value : "link";
-                return $"[{linkText}]({url})";
-            });
-
-            // Convert <see langword=""/> tags
-            text = SeeLangwordPattern().Replace(text, match =>
-            {
-                var keyword = match.Groups[1].Value.ToLowerInvariant();
-                var url = GetLanguageKeywordUrl(keyword);
-                return url is not null ? $"[`{keyword}`]({url})" : $"`{keyword}`";
-            });
-
-            return text;
-        }
-
-        /// <summary>
         /// Converts code-related tags to Markdown code formatting.
         /// </summary>
+        /// <param name="text">The text to convert.</param>
+        /// <returns>The text with <c>c</c> and <c>code</c> tags converted to inline code and fenced code blocks.</returns>
         protected virtual string ConvertCodeTags(string text)
         {
-            // Convert <c></c> inline code tags
             text = InlineCodePattern().Replace(text, match =>
             {
                 var code = match.Groups[1].Value.Trim();
                 return string.IsNullOrEmpty(code) ? "" : $"`{code}`";
             });
 
-            // Convert <code></code> block tags (including those with CDATA)
+            // Code blocks may wrap their content in CDATA.
             text = CodeBlockPattern().Replace(text, match =>
             {
                 var language = match.Groups[1].Success ? match.Groups[1].Value : "csharp";
                 var code = match.Groups[2].Value;
 
-                // Remove CDATA wrapper if present
                 if (code.Contains("<![CDATA["))
                 {
                     code = Regex.Replace(code, @"^\s*<!\[CDATA\[", "", RegexOptions.Singleline);
                     code = Regex.Replace(code, @"\]\]>\s*$", "", RegexOptions.Singleline);
                 }
 
-                // Remove excessive indentation from code blocks
                 code = RemoveCommonIndentation(code);
 
-                // Escape any existing triple backticks in the code to prevent Markdown parsing issues
-                // Replace ``` with \`\`\` so they display as literal backticks in the code block
+                // Escape existing triple backticks so they display as literal backticks instead of closing the fence.
                 code = code.Replace("```", "\\`\\`\\`");
 
                 return string.IsNullOrEmpty(code) ? "" : $"```{language}\n{code}\n```";
@@ -403,192 +161,21 @@ namespace CloudNimble.DotNetDocs.Core.Transformers
         }
 
         /// <summary>
-        /// Removes common leading whitespace from all lines in a code block.
-        /// </summary>
-        /// <param name="code">The code block to process.</param>
-        /// <returns>The code block with common indentation removed.</returns>
-        internal static string RemoveCommonIndentation(string code)
-        {
-            if (string.IsNullOrWhiteSpace(code))
-                return code;
-
-            var lines = code.Split(["\r\n", "\r", "\n"], StringSplitOptions.None);
-
-            // Find the minimum indentation (excluding empty lines)
-            var minIndent = int.MaxValue;
-            foreach (var line in lines)
-            {
-                if (string.IsNullOrWhiteSpace(line))
-                    continue;
-
-                var indent = 0;
-                foreach (var ch in line)
-                {
-                    if (ch == ' ' || ch == '\t')
-                        indent++;
-                    else
-                        break;
-                }
-
-                if (indent < minIndent)
-                    minIndent = indent;
-            }
-
-            // If no indentation found, return as-is
-            if (minIndent == int.MaxValue || minIndent == 0)
-                return code.Trim();
-
-            // Remove common indentation from each line
-            var result = new StringBuilder();
-            for (var i = 0; i < lines.Length; i++)
-            {
-                var line = lines[i];
-                if (!string.IsNullOrWhiteSpace(line) && line.Length >= minIndent)
-                {
-                    result.AppendLine(line.Substring(minIndent));
-                }
-                else if (string.IsNullOrWhiteSpace(line))
-                {
-                    // Preserve empty lines but without indentation
-                    result.AppendLine();
-                }
-                else
-                {
-                    result.AppendLine(line);
-                }
-            }
-
-            return result.ToString().Trim();
-        }
-
-        /// <summary>
-        /// Normalizes indentation artifacts from XML documentation file formatting.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// <c>ExtractInnerXml</c> trims the overall string, which strips the first line's
-        /// leading whitespace but leaves continuation lines with their XML file indentation.
-        /// <c>RemoveCommonIndentation</c> handles the uniform case (all lines indented);
-        /// this method handles the mixed case where the first line has indent 0 but the
-        /// rest share a common indent from the XML file structure.
-        /// </para>
-        /// </remarks>
-        /// <param name="text">The text to normalize.</param>
-        /// <returns>The text with XML file indentation removed from all lines.</returns>
-        internal static string NormalizeXmlDocIndentation(string text)
-        {
-            if (string.IsNullOrWhiteSpace(text) || !text.Contains('\n'))
-                return text;
-
-            var lines = text.Split(["\r\n", "\r", "\n"], StringSplitOptions.None);
-
-            // Find the minimum indentation across non-empty lines that actually have indentation.
-            // Lines with zero indent (e.g., the first line after ExtractInnerXml.Trim()) are excluded
-            // from the calculation so they don't force the minimum to zero.
-            var minIndent = int.MaxValue;
-            foreach (var line in lines)
-            {
-                if (string.IsNullOrWhiteSpace(line))
-                    continue;
-
-                var indent = 0;
-                foreach (var ch in line)
-                {
-                    if (ch is ' ' or '\t')
-                        indent++;
-                    else
-                        break;
-                }
-
-                // Only consider lines that actually have indentation
-                if (indent > 0 && indent < minIndent)
-                    minIndent = indent;
-            }
-
-            // No indented lines found, nothing to normalize
-            if (minIndent == int.MaxValue)
-                return text.Trim();
-
-            // Remove common indentation from indented lines, leave others as-is
-            var result = new StringBuilder();
-            for (var i = 0; i < lines.Length; i++)
-            {
-                var line = lines[i];
-                if (!string.IsNullOrWhiteSpace(line) && line.Length >= minIndent)
-                {
-                    var indent = 0;
-                    foreach (var ch in line)
-                    {
-                        if (ch is ' ' or '\t')
-                            indent++;
-                        else
-                            break;
-                    }
-
-                    result.AppendLine(indent >= minIndent ? line[minIndent..] : line);
-                }
-                else if (string.IsNullOrWhiteSpace(line))
-                {
-                    result.AppendLine();
-                }
-                else
-                {
-                    result.AppendLine(line);
-                }
-            }
-
-            return result.ToString().Trim();
-        }
-
-        /// <summary>
-        /// Converts parameter and type parameter reference tags.
-        /// </summary>
-        protected virtual string ConvertReferenceParams(string text)
-        {
-            // Convert <paramref name=""/> tags
-            text = ParamRefPattern().Replace(text, match =>
-            {
-                var paramName = match.Groups[1].Value;
-                return $"*{paramName}*";
-            });
-
-            // Convert <typeparamref name=""/> tags
-            text = TypeParamRefPattern().Replace(text, match =>
-            {
-                var typeParamName = match.Groups[1].Value;
-                return $"*{typeParamName}*";
-            });
-
-            return text;
-        }
-
-        /// <summary>
         /// Converts text formatting tags to Markdown equivalents.
         /// </summary>
+        /// <param name="text">The text to convert.</param>
+        /// <returns>The text with <c>para</c>, <c>b</c>, <c>i</c>, and <c>br</c> tags converted.</returns>
         protected virtual string ConvertFormattingTags(string text)
         {
-            // Convert <para></para> tags, trimming indentation from XML doc comments
+            // Trim the indentation that para content inherits from the XML doc comment.
             text = ParaPattern().Replace(text, match =>
             {
                 var content = RemoveCommonIndentation(match.Groups[1].Value);
                 return $"\n\n{content}\n\n";
             });
 
-            // Convert <b></b> bold tags
-            text = BoldPattern().Replace(text, match =>
-            {
-                var content = match.Groups[1].Value;
-                return $"**{content}**";
-            });
-
-            // Convert <i></i> italic tags
-            text = ItalicPattern().Replace(text, match =>
-            {
-                var content = match.Groups[1].Value;
-                return $"*{content}*";
-            });
-
-            // Convert <br/> line break tags
+            text = BoldPattern().Replace(text, match => $"**{match.Groups[1].Value}**");
+            text = ItalicPattern().Replace(text, match => $"*{match.Groups[1].Value}*");
             text = LineBreakPattern().Replace(text, "  \n");
 
             // Collapse runs of 3+ newlines (from para conversion + inter-tag whitespace) to at most one blank line,
@@ -601,6 +188,8 @@ namespace CloudNimble.DotNetDocs.Core.Transformers
         /// <summary>
         /// Converts list structures to Markdown format.
         /// </summary>
+        /// <param name="text">The text to convert.</param>
+        /// <returns>The text with bullet and number lists converted to Markdown lists, and table lists converted to tables or definition lists.</returns>
         protected virtual string ConvertLists(string text)
         {
             return ListPattern().Replace(text, match =>
@@ -613,25 +202,21 @@ namespace CloudNimble.DotNetDocs.Core.Transformers
 
                 if (listType == "table")
                 {
-                    // Check for list header
                     var headerMatch = ListHeaderPattern().Match(listContent);
                     if (headerMatch.Success)
                     {
-                        // Table format
                         result.AppendLine();
                         result.AppendLine($"| {headerMatch.Groups[1].Value} | {headerMatch.Groups[2].Value} |");
                         result.AppendLine("|----------|----------|");
 
                         foreach (Match item in items)
                         {
-                            var term = item.Groups[1].Value;
-                            var desc = item.Groups[2].Value;
-                            result.AppendLine($"| {term} | {desc} |");
+                            result.AppendLine($"| {item.Groups[1].Value} | {item.Groups[2].Value} |");
                         }
                     }
                     else
                     {
-                        // Definition list format
+                        // A table without a header is written as a definition list.
                         foreach (Match item in items)
                         {
                             var term = item.Groups[1].Value;
@@ -641,6 +226,7 @@ namespace CloudNimble.DotNetDocs.Core.Transformers
                             {
                                 result.AppendLine($"\n**{term}**");
                             }
+
                             if (!string.IsNullOrWhiteSpace(desc))
                             {
                                 result.AppendLine(desc);
@@ -650,16 +236,16 @@ namespace CloudNimble.DotNetDocs.Core.Transformers
                 }
                 else
                 {
-                    // Bullet or numbered list
                     var counter = 1;
                     result.AppendLine();
 
                     foreach (Match item in items)
                     {
+                        // Fall back to the term when an item has no description.
                         var description = item.Groups[2].Value;
                         if (string.IsNullOrWhiteSpace(description))
                         {
-                            description = item.Groups[1].Value; // Try term if no description
+                            description = item.Groups[1].Value;
                         }
 
                         if (!string.IsNullOrWhiteSpace(description))
@@ -676,127 +262,71 @@ namespace CloudNimble.DotNetDocs.Core.Transformers
         }
 
         /// <summary>
-        /// Updates the current path context based on the entity being processed.
+        /// Converts parameter and type parameter reference tags.
         /// </summary>
-        protected virtual void UpdateCurrentPath(DocEntity entity)
+        /// <param name="text">The text to convert.</param>
+        /// <returns>The text with <c>paramref</c> and <c>typeparamref</c> tags converted to italic names.</returns>
+        protected virtual string ConvertReferenceParams(string text)
         {
-            if (entity is DocNamespace ns)
-            {
-                var namespaceName = ns.Name ?? "Global";
-                var folderPath = _projectContext.GetNamespaceFolderPath(namespaceName);
+            text = ParamRefPattern().Replace(text, match => $"*{match.Groups[1].Value}*");
+            text = TypeParamRefPattern().Replace(text, match => $"*{match.Groups[1].Value}*");
 
-                if (_projectContext.FileNamingOptions.NamespaceMode == Configuration.NamespaceMode.Folder)
-                {
-                    _currentPath = System.IO.Path.Combine(folderPath, "index");
-                }
-                else
-                {
-                    var fileName = namespaceName.Replace('.', _projectContext.FileNamingOptions.NamespaceSeparator);
-                    _currentPath = fileName;
-                }
+            return text;
+        }
+
+        /// <summary>
+        /// Converts see reference tags to Markdown links or inline code.
+        /// </summary>
+        /// <param name="text">The text to convert.</param>
+        /// <returns>The text with <c>see cref</c>, <c>see href</c>, and <c>see langword</c> tags converted.</returns>
+        protected virtual string ConvertSeeReferences(string text)
+        {
+            text = SeeRefPattern().Replace(text, match => ResolveReference(match.Groups[1].Value, CurrentPath).ToMarkdownLink());
+
+            text = SeeHrefPattern().Replace(text, match =>
+            {
+                var url = match.Groups[1].Value;
+                var linkText = match.Groups[2].Success ? match.Groups[2].Value : "link";
+                return $"[{linkText}]({url})";
+            });
+
+            text = SeeLangwordPattern().Replace(text, match =>
+            {
+                var keyword = match.Groups[1].Value.ToLowerInvariant();
+                var url = GetLanguageKeywordUrl(keyword);
+                return url is not null ? $"[`{keyword}`]({url})" : $"`{keyword}`";
+            });
+
+            return text;
+        }
+
+        /// <summary>
+        /// Converts the XML documentation tags in a string to Markdown.
+        /// </summary>
+        /// <param name="text">The text to convert.</param>
+        /// <param name="skipEscaping">When true, skips the final XML tag escaping step. Use for conceptual content that is already valid Markdown.</param>
+        /// <returns>The text converted to Markdown.</returns>
+        protected override string ConvertXml(string text, bool skipEscaping)
+        {
+            text = ConvertSeeReferences(text);
+            text = ConvertCodeTags(text);
+            text = ConvertReferenceParams(text);
+            text = ConvertFormattingTags(text);
+            text = ConvertLists(text);
+
+            if (!skipEscaping)
+            {
+                text = EscapeRemainingXmlTags(text);
             }
-            else if (entity is DocType type && entity.OriginalSymbol?.ContainingNamespace is not null)
-            {
-                var namespaceName = entity.OriginalSymbol.ContainingNamespace.ToDisplayString();
-                var typeName = type.Name;
-                var folderPath = _projectContext.GetNamespaceFolderPath(namespaceName);
 
-                if (_projectContext.FileNamingOptions.NamespaceMode == Configuration.NamespaceMode.Folder)
-                {
-                    _currentPath = System.IO.Path.Combine(folderPath, typeName).Replace('\\', '/');
-                }
-                else
-                {
-                    _currentPath = typeName;
-                }
-            }
+            return text;
         }
-
-        /// <summary>
-        /// Generates Microsoft Learn documentation URL for a .NET type.
-        /// </summary>
-        protected virtual string GetMicrosoftDocsUrl(string typeName)
-        {
-            // Remove generic arity (List`1 becomes List-1)
-            typeName = Regex.Replace(typeName, @"`(\d+)", "-$1");
-
-            // Handle nested types (+ becomes .)
-            typeName = typeName.Replace('+', '.');
-
-            // Convert to lowercase for URL
-            typeName = typeName.ToLowerInvariant();
-
-            return $"https://learn.microsoft.com/dotnet/api/{typeName}";
-        }
-
-        /// <summary>
-        /// Gets the URL for a language keyword.
-        /// </summary>
-        protected virtual string? GetLanguageKeywordUrl(string keyword)
-        {
-            return keyword switch
-            {
-                "null" => "https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null",
-                "true" or "false" => "https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool",
-                "void" => "https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/void",
-                "async" => "https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/async",
-                "await" => "https://learn.microsoft.com/dotnet/csharp/language-reference/operators/await",
-                "static" => "https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/static",
-                "abstract" => "https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/abstract",
-                "virtual" => "https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/virtual",
-                "override" => "https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/override",
-                "sealed" => "https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/sealed",
-                _ => null
-            };
-        }
-
-        /// <summary>
-        /// Determines if a type reference is a .NET Framework type.
-        /// </summary>
-        protected virtual bool IsFrameworkType(string typeRef)
-        {
-            return typeRef.StartsWith("System.") ||
-                   typeRef.StartsWith("Microsoft.") ||
-                   typeRef.StartsWith("Windows.");
-        }
-
-        /// <summary>
-        /// Gets the simple type name from a fully qualified reference.
-        /// </summary>
-        protected virtual string GetSimpleTypeName(string typeRef)
-        {
-            var colonIndex = typeRef.IndexOf(':');
-            var workingRef = colonIndex >= 0 ? typeRef[(colonIndex + 1)..] : typeRef;
-            var lastDot = workingRef.LastIndexOf('.');
-
-            return lastDot >= 0 ? workingRef[(lastDot + 1)..] : workingRef;
-        }
-
-        /// <summary>
-        /// Gets the child entities for recursive transformation.
-        /// </summary>
-        /// <param name="entity">The parent entity.</param>
-        /// <returns>An enumerable of child entities to process.</returns>
-        private static IEnumerable<DocEntity> GetChildren(DocEntity entity) => entity switch
-        {
-            DocAssembly assembly => assembly.Namespaces,
-            DocNamespace ns => ns.Types,
-            DocType type => type.Members,
-            DocMember member => member.Parameters,
-            _ => []
-        };
-
-        /// <summary>
-        /// Escapes XML special characters for display outside of code blocks.
-        /// </summary>
-        /// <param name="text">The text to escape.</param>
-        /// <returns>The text with &lt; and &gt; escaped as HTML entities.</returns>
-        private static string EscapeXmlTags(string text)
-            => text.Replace("<", "&lt;").Replace(">", "&gt;");
 
         /// <summary>
         /// Escapes any remaining XML tags that weren't processed.
         /// </summary>
+        /// <param name="text">The text to escape.</param>
+        /// <returns>The text with the remaining tags escaped outside of code.</returns>
         /// <remarks>
         /// This method preserves content inside various delimiter pairs to avoid double-escaping:
         /// - Single backticks (inline code): `code`
@@ -814,29 +344,22 @@ namespace CloudNimble.DotNetDocs.Core.Transformers
 
                 if (nextBacktick == -1)
                 {
-                    // No more backticks, escape remaining text
                     result.Append(EscapeXmlTags(text[position..]));
                     break;
                 }
 
-                // Escape content before backtick
                 if (nextBacktick > position)
                 {
                     result.Append(EscapeXmlTags(text[position..nextBacktick]));
                 }
 
-                // Check if it's a triple backtick
                 if (nextBacktick + 2 < text.Length &&
                     text[nextBacktick + 1] == '`' &&
                     text[nextBacktick + 2] == '`')
                 {
                     // Triple backtick code fence
                     var fenceStart = nextBacktick + 3;
-
-                    // Check if it's a noescape block
                     var isNoEscape = text.IndexOf("noescape", fenceStart, Math.Min(20, text.Length - fenceStart), StringComparison.Ordinal) == fenceStart;
-
-                    // Find closing triple backtick
                     var closingPos = text.IndexOf("```", fenceStart, StringComparison.Ordinal);
 
                     if (closingPos == -1)
@@ -848,9 +371,8 @@ namespace CloudNimble.DotNetDocs.Core.Transformers
 
                     if (isNoEscape)
                     {
-                        // Extract content without delimiters and without escaping
-                        // Skip past "noescape" and any following newline
-                        var contentStart = fenceStart + 8; // "noescape" is 8 chars
+                        // Extract the content without the delimiters or escaping, skipping "noescape" (8 chars) and the newline after it.
+                        var contentStart = fenceStart + 8;
                         if (contentStart < text.Length && text[contentStart] == '\r') contentStart++;
                         if (contentStart < text.Length && text[contentStart] == '\n') contentStart++;
 
@@ -858,7 +380,6 @@ namespace CloudNimble.DotNetDocs.Core.Transformers
                     }
                     else
                     {
-                        // Preserve entire code fence including delimiters
                         result.Append(text[nextBacktick..(closingPos + 3)]);
                     }
 
@@ -866,7 +387,6 @@ namespace CloudNimble.DotNetDocs.Core.Transformers
                 }
                 else
                 {
-                    // Single backtick - find matching closing backtick
                     var closingPos = text.IndexOf('`', nextBacktick + 1);
 
                     if (closingPos == -1)
@@ -876,7 +396,6 @@ namespace CloudNimble.DotNetDocs.Core.Transformers
                         break;
                     }
 
-                    // Preserve inline code with backticks
                     result.Append(text[nextBacktick..(closingPos + 1)]);
                     position = closingPos + 1;
                 }
@@ -884,6 +403,18 @@ namespace CloudNimble.DotNetDocs.Core.Transformers
 
             return result.ToString();
         }
+
+        #endregion
+
+        #region Private Methods
+
+        /// <summary>
+        /// Escapes XML special characters for display outside of code blocks.
+        /// </summary>
+        /// <param name="text">The text to escape.</param>
+        /// <returns>The text with &lt; and &gt; escaped as HTML entities.</returns>
+        private static string EscapeXmlTags(string text)
+            => text.Replace("<", "&lt;").Replace(">", "&gt;");
 
         #endregion
 

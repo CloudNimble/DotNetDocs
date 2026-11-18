@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Xml.Linq;
 using CloudNimble.DotNetDocs.Mintlify;
@@ -3165,6 +3167,96 @@ namespace CloudNimble.DotNetDocs.Tests.Sdk.Tasks
             var product = _task.ParseProductConfig(XElement.Parse("""<Product Name="Core" Mcp="mcp.json" />"""));
             product.Should().NotBeNull();
             product!.Mcp!.Source.Should().Be("mcp.json");
+        }
+
+        #endregion
+
+        #region Missing Navigation Page Tests
+
+        /// <summary>
+        /// Execute logs DOTNETDOCS001 against docs.json for each navigation page whose file was not found, and still succeeds.
+        /// </summary>
+        [TestMethod]
+        public void Execute_TemplateListsMissingPage_LogsDotNetDocs001()
+        {
+            var outputPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+            Directory.CreateDirectory(Path.Combine(outputPath, "guides"));
+
+            try
+            {
+                File.WriteAllText(Path.Combine(outputPath, "index.mdx"), "# Home");
+                File.WriteAllText(Path.Combine(outputPath, "guides", "present.mdx"), "# Present");
+
+                _task.OutputPath = outputPath;
+                _task.DocumentationType = "Mintlify";
+                _task.HasMintlifyTemplate = true;
+                _task.MintlifyTemplate = """
+                    <Name>Test</Name>
+                    <Navigation>
+                        <Pages>
+                            <Groups>
+                                <Group Name="Guides">
+                                    <Pages>guides/present;guides/missing</Pages>
+                                </Group>
+                            </Groups>
+                        </Pages>
+                    </Navigation>
+                    """;
+
+                _task.Execute().Should().BeTrue();
+
+                var engine = (TestBuildEngine)_task.BuildEngine;
+                engine.LoggedErrors.Should().BeEmpty();
+                var warning = engine.LoggedWarnings.Should().ContainSingle(w => w.Code == "DOTNETDOCS001").Subject;
+                warning.File.Should().Be(Path.Combine(outputPath, "docs.json"));
+                warning.Message.Should().Be("docs.json navigation lists 'guides/missing', but guides/missing.mdx or guides/missing.md were not found");
+            }
+            finally
+            {
+                Directory.Delete(outputPath, true);
+            }
+        }
+
+        /// <summary>
+        /// Execute logs no DOTNETDOCS001 warning when every navigation page has a file.
+        /// </summary>
+        [TestMethod]
+        public void Execute_TemplatePagesAllExist_LogsNoDotNetDocs001()
+        {
+            var outputPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+            Directory.CreateDirectory(Path.Combine(outputPath, "guides"));
+
+            try
+            {
+                File.WriteAllText(Path.Combine(outputPath, "index.mdx"), "# Home");
+                File.WriteAllText(Path.Combine(outputPath, "guides", "present.mdx"), "# Present");
+
+                _task.OutputPath = outputPath;
+                _task.DocumentationType = "Mintlify";
+                _task.HasMintlifyTemplate = true;
+                _task.MintlifyTemplate = """
+                    <Name>Test</Name>
+                    <Navigation>
+                        <Pages>
+                            <Groups>
+                                <Group Name="Guides">
+                                    <Pages>guides/present</Pages>
+                                </Group>
+                            </Groups>
+                        </Pages>
+                    </Navigation>
+                    """;
+
+                _task.Execute().Should().BeTrue();
+
+                var engine = (TestBuildEngine)_task.BuildEngine;
+                engine.LoggedErrors.Should().BeEmpty();
+                engine.LoggedWarnings.Should().NotContain(w => w.Code == "DOTNETDOCS001");
+            }
+            finally
+            {
+                Directory.Delete(outputPath, true);
+            }
         }
 
         #endregion

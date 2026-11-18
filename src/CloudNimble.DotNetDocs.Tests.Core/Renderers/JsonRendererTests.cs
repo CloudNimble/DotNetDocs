@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using CloudNimble.Breakdance.Assemblies;
 using CloudNimble.DotNetDocs.Core;
 using CloudNimble.DotNetDocs.Core.Renderers;
+using CloudNimble.DotNetDocs.Tests.Core.Helpers;
 using CloudNimble.DotNetDocs.Tests.Shared;
 using CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios;
 using CloudNimble.DotNetDocs.Tests.Shared.Parameters;
@@ -121,36 +122,34 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
         #region RenderAsync Tests
 
         [TestMethod]
-        public async Task RenderAsync_ProducesConsistentBaseline()
+        [DataRow(false, DisplayName = "Public members")]
+        [DataRow(true, DisplayName = "Public and internal members")]
+        public async Task RenderAsync_ProducesConsistentBaseline(bool includeInternals)
         {
             // Arrange
             var assemblyPath = typeof(SimpleClass).Assembly.Location;
             var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
+            GetService<ProjectContext>().IncludedMembers = BaselinePermutations.GetIncludedMembers(includeInternals);
             var documentationManager = GetService<DocumentationManager>();
 
             // Act
             await documentationManager.ProcessAsync(assemblyPath, xmlPath);
 
             // Assert - Compare against baseline
-            var baselinePath = Path.Combine(projectPath, "Baselines", framework, "JsonRenderer", "documentation.json");
+            var baselinePath = Path.Combine(projectPath, "Baselines", framework, BaselinePermutations.GetName("JsonRenderer", includeInternals), "documentation.json");
             var actualPath = Path.Combine(_testOutputPath, "documentation.json");
             
-            if (File.Exists(baselinePath))
-            {
-                var baseline = await File.ReadAllTextAsync(baselinePath, TestContext.CancellationToken);
-                var actual = await File.ReadAllTextAsync(actualPath, TestContext.CancellationToken);
-                
-                // Normalize line endings for cross-platform compatibility
-                var normalizedActual = actual.ReplaceLineEndings(Environment.NewLine);
-                var normalizedBaseline = baseline.ReplaceLineEndings(Environment.NewLine);
-                
-                normalizedActual.Should().Be(normalizedBaseline,
-                    "JSON output has changed. If this is intentional, regenerate baselines using 'dotnet breakdance generate'");
-            }
-            else
-            {
-                Assert.Inconclusive($"Baseline not found at {baselinePath}. Run 'dotnet breakdance generate' to create baselines.");
-            }
+            File.Exists(baselinePath).Should().BeTrue($"the baseline should exist at {baselinePath}; run 'dotnet breakdance generate' to create it");
+
+            var baseline = await File.ReadAllTextAsync(baselinePath, TestContext.CancellationToken);
+            var actual = await File.ReadAllTextAsync(actualPath, TestContext.CancellationToken);
+
+            // Normalize line endings for cross-platform compatibility
+            var normalizedActual = actual.ReplaceLineEndings(Environment.NewLine);
+            var normalizedBaseline = baseline.ReplaceLineEndings(Environment.NewLine);
+
+            normalizedActual.Should().Be(normalizedBaseline,
+                "JSON output has changed. If this is intentional, regenerate baselines using 'dotnet breakdance generate'");
         }
 
         [TestMethod]
@@ -453,32 +452,40 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
         /// these are unit test baselines for the renderer itself, not integration test baselines.
         /// The renderer should be tested in isolation without transformers applied.
         ///
-        /// JSON output is not affected by FileNamingOptions, so only one baseline is generated.
+        /// JSON output is not affected by FileNamingOptions, so one baseline folder is generated per member visibility:
+        /// "JsonRenderer" for public members and "JsonRendererWithInternals" for public and internal members. Each is rendered
+        /// in its own DI scope so no renderer state carries from one to the next.
         /// </remarks>
         //[TestMethod]
         //[DataRow(projectPath)]
         [BreakdanceManifestGenerator]
         public async Task GenerateJsonBaseline(string projectPath)
         {
-            var baselinesDir = Path.Combine(projectPath, "Baselines", framework, "JsonRenderer");
-            if (!Directory.Exists(baselinesDir))
+            foreach (var includeInternals in new[] { false, true })
             {
-                Directory.CreateDirectory(baselinesDir);
+                var baselinesDir = Path.Combine(projectPath, "Baselines", framework, BaselinePermutations.GetName("JsonRenderer", includeInternals));
+                if (!Directory.Exists(baselinesDir))
+                {
+                    Directory.CreateDirectory(baselinesDir);
+                }
+
+                using var scope = TestHost.Services.CreateScope();
+
+                // Get context from DI and modify it for baseline generation
+                var context = scope.ServiceProvider.GetRequiredService<ProjectContext>();
+                context.DocumentationRootPath = baselinesDir;
+                context.IncludedMembers = BaselinePermutations.GetIncludedMembers(includeInternals);
+
+                // Get renderer from DI to ensure all dependencies are properly injected
+                var renderer = scope.ServiceProvider.GetServices<IDocRenderer>().OfType<JsonRenderer>().Single();
+
+                var assemblyPath = typeof(SimpleClass).Assembly.Location;
+                var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
+                using var manager = new AssemblyManager(assemblyPath, xmlPath);
+                var assembly = await manager.DocumentAsync(context);
+
+                await renderer.RenderAsync(assembly);
             }
-
-            // Get context from DI and modify it for baseline generation
-            var context = GetService<ProjectContext>();
-            context.DocumentationRootPath = baselinesDir;
-
-            // Get renderer from DI to ensure all dependencies are properly injected
-            var renderer = GetJsonRenderer();
-
-            var assemblyPath = typeof(SimpleClass).Assembly.Location;
-            var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
-            var manager = new AssemblyManager(assemblyPath, xmlPath);
-            var assembly = await manager.DocumentAsync(context);
-
-            await renderer.RenderAsync(assembly);
         }
 
         #endregion

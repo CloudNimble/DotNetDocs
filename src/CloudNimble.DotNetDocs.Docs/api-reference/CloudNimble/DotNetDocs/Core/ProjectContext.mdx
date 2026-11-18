@@ -418,6 +418,109 @@ public static bool Equals(object objA, object objB)
 
 Type: `bool`
 
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetConceptualMemberPath
+
+Gets the full path to the conceptual content folder for a member.
+
+#### Syntax
+
+```csharp
+public string GetConceptualMemberPath(string namespaceName, string typeName, string memberName)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `namespaceName` | `string?` | The namespace containing the member's type, or [`null`](https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null) or empty for the global namespace. |
+| `typeName` | `string` | The simple name of the type containing the member. |
+| `memberName` | `string` | The simple name of the member. Overloads share a folder. |
+
+#### Returns
+
+Type: `string`
+The member's folder inside its type's conceptual folder.
+
+#### Examples
+
+```csharp
+context.GetConceptualMemberPath("System.Text.Json", "JsonSerializer", "Serialize");
+// Returns "{conceptual}/System/Text/Json/JsonSerializer/Serialize"
+```
+
+#### Remarks
+
+See `String)` for how the conceptual layout is structured.
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetConceptualNamespacePath
+
+Gets the full path to the conceptual content folder for a namespace.
+
+#### Syntax
+
+```csharp
+public string GetConceptualNamespacePath(string namespaceName)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `namespaceName` | `string?` | The namespace name, or [`null`](https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null) or empty for the global namespace. |
+
+#### Returns
+
+Type: `string`
+A nested folder with one level per namespace segment under [ProjectContext.GetFullConceptualPath](/api-reference/CloudNimble/DotNetDocs/Core/ProjectContext#getfullconceptualpath),
+or a `global` folder for the global namespace.
+
+#### Examples
+
+```csharp
+context.GetConceptualNamespacePath("System.Text.Json"); // Returns "{conceptual}/System/Text/Json"
+context.GetConceptualNamespacePath(string.Empty);       // Returns "{conceptual}/global"
+```
+
+#### Remarks
+
+Conceptual content is a source tree that people edit, not rendered output, so it always uses this nested layout
+regardless of [FileNamingOptions.NamespaceMode](/api-reference/CloudNimble/DotNetDocs/Core/Configuration/FileNamingOptions#namespacemode). Placeholder generation and
+[DocumentationManager](/api-reference/CloudNimble/DotNetDocs/Core/DocumentationManager) both resolve folders through these methods, so content is always read from
+where it was written.
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetConceptualTypePath
+
+Gets the full path to the conceptual content folder for a type.
+
+#### Syntax
+
+```csharp
+public string GetConceptualTypePath(string namespaceName, string typeName)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `namespaceName` | `string?` | The namespace containing the type, or [`null`](https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null) or empty for the global namespace. |
+| `typeName` | `string` | The simple name of the type. |
+
+#### Returns
+
+Type: `string`
+The type's folder inside its namespace's conceptual folder.
+
+#### Examples
+
+```csharp
+context.GetConceptualTypePath("System.Text.Json", "JsonSerializer");
+// Returns "{conceptual}/System/Text/Json/JsonSerializer"
+```
+
+#### Remarks
+
+See `String)` for how the conceptual layout is structured.
+
 ### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetFullConceptualPath
 
 Gets the full path to the conceptual documentation folder.
@@ -495,6 +598,42 @@ this returns a path with folders for each namespace part (e.g., "System/Collecti
 When using [NamespaceMode.File](/api-reference/CloudNimble/DotNetDocs/Core/Configuration/NamespaceMode#file), this returns an empty string as no folder
 structure is created.
 
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetNamespacePagePath
+
+Gets the path of a namespace's documentation page, relative to the API reference output folder and without an extension.
+
+#### Syntax
+
+```csharp
+public string GetNamespacePagePath(string namespaceName)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `namespaceName` | `string?` | The namespace name, or [`null`](https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null) or empty for the global namespace. |
+
+#### Returns
+
+Type: `string`
+The page path for the configured [ProjectContext.FileNamingOptions](/api-reference/CloudNimble/DotNetDocs/Core/ProjectContext#filenamingoptions).
+
+#### Examples
+
+```csharp
+// NamespaceMode.File with separator '-':
+context.GetNamespacePagePath("System.Text.Json"); // Returns "System-Text-Json"
+
+// NamespaceMode.Folder:
+context.GetNamespacePagePath("System.Text.Json"); // Returns "System/Text/Json/index"
+```
+
+#### Remarks
+
+This is the single source of truth for namespace page locations. Renderers use it to decide where pages are written
+and [XmlTransformerBase](/api-reference/CloudNimble/DotNetDocs/Core/Transformers/XmlTransformerBase) uses it to build links to them, so the two always agree.
+
 ### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetSafeNamespaceName
 
 Gets the safe namespace name for a given namespace symbol.
@@ -556,6 +695,42 @@ The file path for the type.
 
 In Folder mode: "System.Text.Json.JsonSerializer" becomes "System/Text/Json/JsonSerializer.md"
 In File mode: "System.Text.Json.JsonSerializer" becomes "System_Text_Json_JsonSerializer.md" (using configured separator)
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetTypePagePath
+
+Gets the path of a type's documentation page, relative to the API reference output folder and without an extension.
+
+#### Syntax
+
+```csharp
+public string GetTypePagePath(string namespaceName, string typeName)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `namespaceName` | `string?` | The namespace containing the type, or [`null`](https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null) or empty for the global namespace. |
+| `typeName` | `string` | The simple name of the type. |
+
+#### Returns
+
+Type: `string`
+The page path for the configured [ProjectContext.FileNamingOptions](/api-reference/CloudNimble/DotNetDocs/Core/ProjectContext#filenamingoptions).
+
+#### Examples
+
+```csharp
+// NamespaceMode.File with separator '-':
+context.GetTypePagePath("System.Text.Json", "JsonSerializer"); // Returns "System-Text-Json.JsonSerializer"
+
+// NamespaceMode.Folder:
+context.GetTypePagePath("System.Text.Json", "JsonSerializer"); // Returns "System/Text/Json/JsonSerializer"
+```
+
+#### Remarks
+
+This is the single source of truth for type page locations. See `String)`.
 
 ### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> IsTypeExcluded
 

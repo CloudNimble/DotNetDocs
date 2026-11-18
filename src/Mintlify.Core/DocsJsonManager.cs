@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using CloudNimble.EasyAF.Core;
 using Mintlify.Core.Models;
 
@@ -40,6 +41,15 @@ namespace Mintlify.Core
             "conceptual",
             "overrides"
         };
+
+        /// <summary>
+        /// Matches navigation entries that reference an OpenAPI operation or webhook instead of a page file.
+        /// </summary>
+        /// <remarks>
+        /// Mintlify accepts "/path/openapi.json GET /users" and, under a group that sets an OpenAPI spec, "GET /users".
+        /// The method must be uppercase and followed by a target.
+        /// </remarks>
+        private static readonly Regex OpenApiEntryRegex = new(@"(^|\s)(GET|POST|PUT|PATCH|DELETE|HEAD|OPTIONS|TRACE|webhook)\s+\S", RegexOptions.CultureInvariant);
 
         /// <summary>
         /// Stores the set of page paths that are recognized as known within the application.
@@ -216,6 +226,105 @@ namespace Mintlify.Core
 
             var json = JsonSerializer.Serialize(Configuration, MintlifyConstants.JsonSerializerOptions);
             File.WriteAllText(filePath, json);
+        }
+
+        /// <summary>
+        /// Finds the navigation entries in a configuration that have no matching page file.
+        /// </summary>
+        /// <param name="config">The configuration whose navigation is checked.</param>
+        /// <param name="documentationRootPath">The folder that page paths are resolved against, normally the folder that holds docs.json.</param>
+        /// <returns>The navigation entries, as written, whose page file was not found. Each entry appears once.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="config"/> is null.</exception>
+        /// <exception cref="ArgumentException">Thrown when <paramref name="documentationRootPath"/> is null or whitespace.</exception>
+        /// <example>
+        /// <code>
+        /// var missingPages = DocsJsonManager.FindMissingPages(manager.Configuration, "docs");
+        /// foreach (var page in missingPages)
+        /// {
+        ///     Console.WriteLine(DocsJsonManager.GetMissingPageMessage(page));
+        /// }
+        /// </code>
+        /// </example>
+        /// <remarks>
+        /// Every navigation container is checked, including group root pages. Links, git source mounts, and OpenAPI
+        /// operation entries are skipped because they do not point to a page file. A leading slash is ignored. An entry
+        /// that ends in .mdx or .md must exist exactly as written; any other entry is found when either
+        /// <c>{entry}.mdx</c> or <c>{entry}.md</c> exists.
+        /// </remarks>
+        public static IReadOnlyList<string> FindMissingPages(DocsJsonConfig config, string documentationRootPath)
+        {
+            Ensure.ArgumentNotNull(config, nameof(config));
+            Ensure.ArgumentNotNullOrWhiteSpace(documentationRootPath, nameof(documentationRootPath));
+
+            var pagePaths = new List<string>();
+            CollectPagePaths(config.Navigation, pagePaths);
+
+            var checkedPagePaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            var missingPages = new List<string>();
+            foreach (var pagePath in pagePaths)
+            {
+                if (!checkedPagePaths.Add(pagePath) || OpenApiEntryRegex.IsMatch(pagePath))
+                {
+                    continue;
+                }
+
+                if (!GetPageFileCandidates(pagePath).Any(candidate => File.Exists(Path.Combine(documentationRootPath, candidate))))
+                {
+                    missingPages.Add(pagePath);
+                }
+            }
+
+            return missingPages;
+        }
+
+        /// <summary>
+        /// Finds the navigation entries in a docs.json file that have no matching page file.
+        /// </summary>
+        /// <param name="docsJsonPath">The path to the docs.json file. Page paths are resolved against its folder.</param>
+        /// <returns>The navigation entries, as written, whose page file was not found. Each entry appears once.</returns>
+        /// <exception cref="ArgumentException">Thrown when <paramref name="docsJsonPath"/> is null, whitespace, or does not exist.</exception>
+        /// <exception cref="InvalidOperationException">Thrown when the file does not contain a docs.json configuration.</exception>
+        /// <exception cref="JsonException">Thrown when the file is not valid JSON.</exception>
+        /// <remarks>
+        /// Use this overload when only the file is available. During a build, prefer
+        /// <see cref="FindMissingPages(DocsJsonConfig, string)"/> with the loaded <see cref="Configuration"/>.
+        /// </remarks>
+        public static IReadOnlyList<string> FindMissingPages(string docsJsonPath)
+        {
+            Ensure.ArgumentNotNullOrWhiteSpace(docsJsonPath, nameof(docsJsonPath));
+
+            var fullPath = Path.GetFullPath(docsJsonPath);
+            if (!File.Exists(fullPath))
+            {
+                throw new ArgumentException("The docsJsonPath specified does not exist.", nameof(docsJsonPath));
+            }
+
+            var config = JsonSerializer.Deserialize<DocsJsonConfig>(File.ReadAllText(fullPath), MintlifyConstants.JsonSerializerOptions)
+                ?? throw new InvalidOperationException($"'{fullPath}' does not contain a docs.json configuration.");
+
+            return FindMissingPages(config, Path.GetDirectoryName(fullPath)!);
+        }
+
+        /// <summary>
+        /// Describes a navigation entry whose page file was not found.
+        /// </summary>
+        /// <param name="pagePath">The navigation entry returned by <see cref="FindMissingPages(DocsJsonConfig, string)"/>.</param>
+        /// <returns>A message naming the entry and the files that were looked for.</returns>
+        /// <exception cref="ArgumentException">Thrown when <paramref name="pagePath"/> is null or whitespace.</exception>
+        /// <example>
+        /// <code>
+        /// // docs.json navigation lists 'guides/setup', but guides/setup.mdx or guides/setup.md were not found
+        /// var message = DocsJsonManager.GetMissingPageMessage("guides/setup");
+        /// </code>
+        /// </example>
+        public static string GetMissingPageMessage(string pagePath)
+        {
+            Ensure.ArgumentNotNullOrWhiteSpace(pagePath, nameof(pagePath));
+
+            var candidates = GetPageFileCandidates(pagePath);
+            var notFound = candidates.Count == 1 ? $"{candidates[0]} was not found" : $"{string.Join(" or ", candidates)} were not found";
+
+            return $"docs.json navigation lists '{pagePath}', but {notFound}";
         }
 
         /// <summary>
@@ -983,6 +1092,23 @@ namespace Mintlify.Core
                 CollectPagePaths(version.Dropdowns, paths);
                 CollectPagePaths(version.Languages, paths);
             }
+        }
+
+        /// <summary>
+        /// Gets the files, relative to the documentation root, that can satisfy a navigation entry.
+        /// </summary>
+        /// <param name="pagePath">The navigation entry.</param>
+        /// <returns>The entry itself when it ends in .mdx or .md; otherwise the entry with .mdx and with .md appended.</returns>
+        private static IReadOnlyList<string> GetPageFileCandidates(string pagePath)
+        {
+            var relativePath = pagePath.TrimStart('/');
+
+            if (relativePath.EndsWith(".mdx", StringComparison.OrdinalIgnoreCase) || relativePath.EndsWith(".md", StringComparison.OrdinalIgnoreCase))
+            {
+                return [relativePath];
+            }
+
+            return [$"{relativePath}.mdx", $"{relativePath}.md"];
         }
 
         #endregion

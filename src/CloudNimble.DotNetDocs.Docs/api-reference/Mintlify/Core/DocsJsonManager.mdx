@@ -367,6 +367,86 @@ public static bool Equals(object objA, object objB)
 
 Type: `bool`
 
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> FindMissingPages
+
+Finds the navigation entries in a configuration that have no matching page file.
+
+#### Syntax
+
+```csharp
+public static System.Collections.Generic.IReadOnlyList<string> FindMissingPages(Mintlify.Core.Models.DocsJsonConfig config, string documentationRootPath)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `config` | `Mintlify.Core.Models.DocsJsonConfig` | The configuration whose navigation is checked. |
+| `documentationRootPath` | `string` | The folder that page paths are resolved against, normally the folder that holds docs.json. |
+
+#### Returns
+
+Type: `System.Collections.Generic.IReadOnlyList<string>`
+The navigation entries, as written, whose page file was not found. Each entry appears once.
+
+#### Exceptions
+
+| Exception | Description |
+|-----------|-------------|
+| `ArgumentNullException` | Thrown when *config* is null. |
+| `ArgumentException` | Thrown when *documentationRootPath* is null or whitespace. |
+
+#### Examples
+
+```csharp
+var missingPages = DocsJsonManager.FindMissingPages(manager.Configuration, "docs");
+foreach (var page in missingPages)
+{
+    Console.WriteLine(DocsJsonManager.GetMissingPageMessage(page));
+}
+```
+
+#### Remarks
+
+Every navigation container is checked, including group root pages. Links, git source mounts, and OpenAPI
+operation entries are skipped because they do not point to a page file. A leading slash is ignored. An entry
+that ends in .mdx or .md must exist exactly as written; any other entry is found when either
+`{entry}.mdx` or `{entry}.md` exists.
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> FindMissingPages
+
+Finds the navigation entries in a docs.json file that have no matching page file.
+
+#### Syntax
+
+```csharp
+public static System.Collections.Generic.IReadOnlyList<string> FindMissingPages(string docsJsonPath)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `docsJsonPath` | `string` | The path to the docs.json file. Page paths are resolved against its folder. |
+
+#### Returns
+
+Type: `System.Collections.Generic.IReadOnlyList<string>`
+The navigation entries, as written, whose page file was not found. Each entry appears once.
+
+#### Exceptions
+
+| Exception | Description |
+|-----------|-------------|
+| `ArgumentException` | Thrown when *docsJsonPath* is null, whitespace, or does not exist. |
+| `InvalidOperationException` | Thrown when the file does not contain a docs.json configuration. |
+| `JsonException` | Thrown when the file is not valid JSON. |
+
+#### Remarks
+
+Use this overload when only the file is available. During a build, prefer
+`String)` with the loaded [DocsJsonManager.Configuration](/api-reference/Mintlify/Core/DocsJsonManager#configuration).
+
 ### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> FindOrCreateGroup
 
 Finds or creates a group with the specified name in the pages collection.
@@ -402,6 +482,40 @@ public virtual int GetHashCode()
 #### Returns
 
 Type: `int`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetMissingPageMessage
+
+Describes a navigation entry whose page file was not found.
+
+#### Syntax
+
+```csharp
+public static string GetMissingPageMessage(string pagePath)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `pagePath` | `string` | The navigation entry returned by `String)`. |
+
+#### Returns
+
+Type: `string`
+A message naming the entry and the files that were looked for.
+
+#### Exceptions
+
+| Exception | Description |
+|-----------|-------------|
+| `ArgumentException` | Thrown when *pagePath* is null or whitespace. |
+
+#### Examples
+
+```csharp
+// docs.json navigation lists 'guides/setup', but guides/setup.mdx or guides/setup.md were not found
+var message = DocsJsonManager.GetMissingPageMessage("guides/setup");
+```
 
 ### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetType <Badge color="gray">Inherited</Badge>
 

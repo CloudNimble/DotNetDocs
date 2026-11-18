@@ -5368,7 +5368,7 @@ namespaces:
     typeKind: Error
     isExternalReference: true
     displayName: System.Collections.Generic.List<T>
-    remarks: See [Microsoft documentation](https://learn.microsoft.com/dotnet/api/system.collections.generic.list{t}) for more information about the rest of the API.
+    remarks: See <see href="https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1">Microsoft documentation</see> for more information about the rest of the API.
     summary: This type is defined in System.Collections.
   displayName: System.Collections.Generic
 - name: System
@@ -5465,7 +5465,7 @@ namespaces:
     typeKind: Class
     isExternalReference: true
     displayName: string
-    remarks: See [Microsoft documentation](https://learn.microsoft.com/dotnet/api/system.string) for more information about the rest of the API.
+    remarks: See <see href="https://learn.microsoft.com/dotnet/api/system.string">Microsoft documentation</see> for more information about the rest of the API.
     summary: This type is defined in System.Private.CoreLib.
   displayName: System
 version: 1.1.0.0

@@ -360,7 +360,62 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Configuration
 
         #endregion
 
+        #region Registration Parity Tests
+
+        [TestMethod]
+        public void UseMarkdownRenderer_RegistersSameServicesAs_AddMarkdownRenderer()
+        {
+            var builderServices = new ServiceCollection().AddDotNetDocsPipeline(pipeline => pipeline.UseMarkdownRenderer());
+            var directServices = new ServiceCollection().AddMarkdownRenderer();
+
+            GetPipelineRegistrations(builderServices).Should().BeEquivalentTo(GetPipelineRegistrations(directServices));
+            GetPipelineRegistrations(builderServices).Should().Contain((typeof(IDocReferenceHandler), typeof(MarkdownDocReferenceHandler)),
+                "the builder path must register the reference handler, not only the renderer and transformer");
+        }
+
+        [TestMethod]
+        public void UseJsonRenderer_RegistersSameServicesAs_AddJsonRenderer()
+        {
+            var builderServices = new ServiceCollection().AddDotNetDocsPipeline(pipeline => pipeline.UseJsonRenderer());
+            var directServices = new ServiceCollection().AddJsonRenderer();
+
+            GetPipelineRegistrations(builderServices).Should().BeEquivalentTo(GetPipelineRegistrations(directServices));
+        }
+
+        [TestMethod]
+        public void UseYamlRenderer_RegistersSameServicesAs_AddYamlRenderer()
+        {
+            var builderServices = new ServiceCollection().AddDotNetDocsPipeline(pipeline => pipeline.UseYamlRenderer());
+            var directServices = new ServiceCollection().AddYamlRenderer();
+
+            GetPipelineRegistrations(builderServices).Should().BeEquivalentTo(GetPipelineRegistrations(directServices));
+        }
+
+        [TestMethod]
+        public void AddDotNetDocs_RegistersEachRendererThroughItsOwnRegistration()
+        {
+            var allServices = new ServiceCollection().AddDotNetDocs();
+            var individualServices = new ServiceCollection().AddMarkdownRenderer().AddJsonRenderer().AddYamlRenderer();
+
+            GetPipelineRegistrations(allServices).Should().BeEquivalentTo(GetPipelineRegistrations(individualServices),
+                "AddDotNetDocs must not register transformers or handlers that its renderers do not bring themselves");
+        }
+
+        #endregion
+
         #region Test Helpers
+
+        /// <summary>
+        /// Gets the renderer, transformer, and reference handler registrations, which define what a documentation run produces.
+        /// </summary>
+        private static (Type ServiceType, Type? ImplementationType)[] GetPipelineRegistrations(IServiceCollection services) =>
+        [
+            .. services
+                .Where(descriptor => descriptor.ServiceType == typeof(IDocRenderer)
+                    || descriptor.ServiceType == typeof(IDocTransformer)
+                    || descriptor.ServiceType == typeof(IDocReferenceHandler))
+                .Select(descriptor => (descriptor.ServiceType, descriptor.ImplementationType))
+        ];
 
         private class TestRenderer : IDocRenderer
         {

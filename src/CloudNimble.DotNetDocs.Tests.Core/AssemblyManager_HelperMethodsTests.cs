@@ -290,104 +290,46 @@ namespace Test
 
         #endregion
 
-        #region Tests - GetMicrosoftDocsUrl
+        #region Tests - GetLearnTypeName
 
         [TestMethod]
-        public void GetMicrosoftDocsUrl_SystemType_ReturnsCorrectUrl()
+        public void GetLearnTypeName_NonGenericType_ReturnsFullName()
         {
-            // Arrange
-            var source = "public class Test { }";
-            var compilation = CreateCompilation(source);
+            var compilation = CreateCompilation("public class Test { }");
             var stringType = compilation.GetSpecialType(SpecialType.System_String);
 
-            // Act
-            var url = AssemblyManager.GetMicrosoftDocsUrl(stringType);
-
-            // Assert
-            url.Should().NotBeNullOrEmpty();
-            url.Should().StartWith("https://learn.microsoft.com/dotnet/api/");
-            url.Should().Contain("system.string");
+            AssemblyManager.GetLearnTypeName(stringType).Should().Be("System.String");
         }
 
         [TestMethod]
-        public void GetMicrosoftDocsUrl_MicrosoftType_ReturnsCorrectUrl()
+        [DataRow("System.Collections.Generic.List<int>", "System.Collections.Generic.List`1")]
+        [DataRow("System.Collections.Generic.Dictionary<string, int>", "System.Collections.Generic.Dictionary`2")]
+        [DataRow("System.Collections.Generic.Dictionary<string, int>.KeyCollection", "System.Collections.Generic.Dictionary`2.KeyCollection")]
+        public void GetLearnTypeName_ConstructedGenericType_UsesArityOfDefinition(string propertyType, string expected)
         {
-            // Arrange
-            var testAssemblyPath = typeof(SimpleClass).Assembly.Location;
-            var testXmlPath = System.IO.Path.ChangeExtension(testAssemblyPath, ".xml");
-            var source = @"
-using System.Collections.Generic;
-public class Test
-{
-    public List<int> Items { get; set; }
-}";
-            var compilation = CreateCompilation(source);
-            var testType = compilation.GetTypeByMetadataName("Test")!;
-            var itemsProperty = (IPropertySymbol)testType.GetMembers("Items").First();
-            var listType = itemsProperty.Type;
+            var compilation = CreateCompilation($"public class Test {{ public {propertyType} Items {{ get; set; }} }}");
+            var itemsType = ((IPropertySymbol)compilation.GetTypeByMetadataName("Test")!.GetMembers("Items").First()).Type;
 
-            // Act
-            var url = AssemblyManager.GetMicrosoftDocsUrl((ITypeSymbol)listType);
-
-            // Assert
-            url.Should().NotBeNullOrEmpty();
-            url.Should().StartWith("https://learn.microsoft.com/dotnet/api/");
-            url.Should().Contain("system.collections.generic.list");
+            AssemblyManager.GetLearnTypeName(itemsType).Should().Be(expected, "Microsoft Learn pages are named by generic arity, so type arguments in braces would link to a page that does not exist");
         }
 
         [TestMethod]
-        public void GetMicrosoftDocsUrl_GenericType_ConvertsAngleBrackets()
+        public void GetLearnTypeName_UnresolvedType_StripsErrorPrefix()
         {
-            // Arrange
-            var source = @"
-using System.Collections.Generic;
-public class Test
-{
-    public List<int> Items { get; set; }
-}";
-            var compilation = CreateCompilation(source);
-            var testType = compilation.GetTypeByMetadataName("Test")!;
-            var itemsProperty = (IPropertySymbol)testType.GetMembers("Items").First();
-            var listType = itemsProperty.Type;
+            var compilation = CSharpCompilation.Create("NoReferences", [CSharpSyntaxTree.ParseText("public class Test { public List<int> Items { get; set; } }")]);
+            var itemsType = ((IPropertySymbol)compilation.GetTypeByMetadataName("Test")!.GetMembers("Items").First()).Type;
 
-            // Act
-            var url = AssemblyManager.GetMicrosoftDocsUrl((ITypeSymbol)listType);
-
-            // Assert
-            url.Should().NotContain("<", "Angle brackets should be converted");
-            url.Should().NotContain(">", "Angle brackets should be converted");
-            url.Should().Contain("{", "Should use curly braces for generics");
-            url.Should().Contain("}", "Should use curly braces for generics");
+            itemsType.TypeKind.Should().Be(TypeKind.Error);
+            AssemblyManager.GetLearnTypeName(itemsType).Should().Be("List`1", "unresolved types have the '!:' prefix instead of 'T:'");
         }
 
         [TestMethod]
-        public void GetMicrosoftDocsUrl_NonMicrosoftType_ReturnsEmptyString()
+        public void GetLearnTypeName_UnresolvedNestedTypeOfConstructedType_ReturnsNull()
         {
-            // Arrange
-            var source = "namespace Custom { public class MyType { } }";
-            var compilation = CreateCompilation(source);
-            var customType = compilation.GetTypeByMetadataName("Custom.MyType")!;
+            var compilation = CSharpCompilation.Create("NoReferences", [CSharpSyntaxTree.ParseText("public class Test { public Dictionary<string, int>.KeyCollection Keys { get; set; } }")]);
+            var keysType = ((IPropertySymbol)compilation.GetTypeByMetadataName("Test")!.GetMembers("Keys").First()).Type;
 
-            // Act
-            var url = AssemblyManager.GetMicrosoftDocsUrl(customType);
-
-            // Assert
-            url.Should().BeEmpty("Non-Microsoft types should return empty string");
-        }
-
-        [TestMethod]
-        public void GetMicrosoftDocsUrl_UrlIsLowerCase()
-        {
-            // Arrange
-            var source = "public class Test { }";
-            var compilation = CreateCompilation(source);
-            var stringType = compilation.GetSpecialType(SpecialType.System_String);
-
-            // Act
-            var url = AssemblyManager.GetMicrosoftDocsUrl(stringType);
-
-            // Assert
-            url.Should().Be(url.ToLowerInvariant(), "URLs should be lowercase for MS docs");
+            AssemblyManager.GetLearnTypeName(keysType).Should().BeNull("an ID that still contains type arguments cannot be turned into a Microsoft Learn page name");
         }
 
         #endregion

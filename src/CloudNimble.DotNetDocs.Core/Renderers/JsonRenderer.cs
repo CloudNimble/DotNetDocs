@@ -22,15 +22,6 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
 
         #endregion
 
-        #region Properties
-
-        /// <summary>
-        /// Gets the JsonSerializerOptions used by this renderer.
-        /// </summary>
-        internal JsonSerializerOptions SerializerOptions => _options.SerializerOptions;
-
-        #endregion
-
         #region Constructors
 
         /// <summary>
