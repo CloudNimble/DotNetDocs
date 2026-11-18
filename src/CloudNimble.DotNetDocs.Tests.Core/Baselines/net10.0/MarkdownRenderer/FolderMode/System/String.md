@@ -18,7 +18,7 @@ This type is defined in System.Private.CoreLib.
 
 ## Remarks
 
-See [Microsoft documentation](https://learn.microsoft.com/dotnet/api/system.string) for more information about the rest of the API.
+See <see href="https://learn.microsoft.com/dotnet/api/system.string">Microsoft documentation</see> for more information about the rest of the API.
 
 ## Methods
 

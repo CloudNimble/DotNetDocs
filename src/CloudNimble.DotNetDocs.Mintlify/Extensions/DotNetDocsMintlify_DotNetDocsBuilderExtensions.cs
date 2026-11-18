@@ -28,6 +28,8 @@ namespace CloudNimble.DotNetDocs.Core.Configuration
         /// <item><description>DocsJsonManager for manipulating docs.json files</description></item>
         /// <item><description>DocsJsonValidator to ensure correct structures</description></item>
         /// <item><description>MarkdownXmlTransformer for processing XML documentation tags</description></item>
+        /// <item><description>MintlifyMarkdownTransformer for converting HTML comments to JSX comments</description></item>
+        /// <item><description>MintlifyDocReferenceHandler for processing DocumentationReferences</description></item>
         /// </list>
         /// </remarks>
         /// <example>
@@ -60,6 +62,8 @@ namespace CloudNimble.DotNetDocs.Core.Configuration
         /// <item><description>DocsJsonValidator to ensure correct structures</description></item>
         /// <item><description>MintlifyOptions configuration</description></item>
         /// <item><description>MarkdownXmlTransformer for processing XML documentation tags</description></item>
+        /// <item><description>MintlifyMarkdownTransformer for converting HTML comments to JSX comments</description></item>
+        /// <item><description>MintlifyDocReferenceHandler for processing DocumentationReferences</description></item>
         /// </list>
         /// </remarks>
         /// <example>
@@ -96,6 +100,8 @@ namespace CloudNimble.DotNetDocs.Core.Configuration
         /// <item><description>DocsJsonManager for manipulating docs.json files</description></item>
         /// <item><description>DocsJsonValidator to ensure correct structures</description></item>
         /// <item><description>MarkdownXmlTransformer for processing XML documentation tags</description></item>
+        /// <item><description>MintlifyMarkdownTransformer for converting HTML comments to JSX comments</description></item>
+        /// <item><description>MintlifyDocReferenceHandler for processing DocumentationReferences</description></item>
         /// </list>
         /// </remarks>
         /// <example>
@@ -130,6 +136,8 @@ namespace CloudNimble.DotNetDocs.Core.Configuration
         /// <item><description>DocsJsonValidator to ensure correct structures</description></item>
         /// <item><description>MintlifyOptions configuration</description></item>
         /// <item><description>MarkdownXmlTransformer for processing XML documentation tags</description></item>
+        /// <item><description>MintlifyMarkdownTransformer for converting HTML comments to JSX comments</description></item>
+        /// <item><description>MintlifyDocReferenceHandler for processing DocumentationReferences</description></item>
         /// </list>
         /// </remarks>
         /// <example>
@@ -155,14 +163,10 @@ namespace CloudNimble.DotNetDocs.Core.Configuration
             // Configure options if provided
             builder._services.Configure(configureMintlify);
 
-            // Register all Mintlify services (DocsJsonManager, DocsJsonValidator, MarkdownXmlTransformer)
-            // These are ALWAYS needed when using any Mintlify renderer
-            builder._services.TryAddScoped<DocsJsonManager>();
-            builder._services.TryAddScoped<DocsJsonValidator>();
-            builder.AddTransformer<MarkdownXmlTransformer>();
+            // Register the same services as the IServiceCollection path, so both ways of adding a Mintlify renderer behave the same.
+            builder._services.AddMintlifyRenderer<TRenderer>();
 
-            // Add the custom renderer using the builder's AddRenderer method
-            return builder.AddRenderer<TRenderer>();
+            return builder;
         }
 
         #endregion

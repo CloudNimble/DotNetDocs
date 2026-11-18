@@ -46,13 +46,13 @@ items:
   href: CloudNimble-DotNetDocs-Tests-Shared-Enums.yaml
   types:
   - name: ByteEnum
-    kind: Class
+    kind: Enum
   - name: FlagsEnum
-    kind: Class
+    kind: Enum
   - name: LongEnum
-    kind: Class
+    kind: Enum
   - name: SimpleEnum
-    kind: Class
+    kind: Enum
 - name: CloudNimble.DotNetDocs.Tests.Shared.Parameters
   href: CloudNimble-DotNetDocs-Tests-Shared-Parameters.yaml
   types:
@@ -62,7 +62,7 @@ items:
   href: System-Collections-Generic.yaml
   types:
   - name: List
-    kind: Error
+    kind: Class
 - name: System
   href: System.yaml
   types:

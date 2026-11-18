@@ -9,6 +9,7 @@ using CloudNimble.Breakdance.Assemblies;
 using CloudNimble.DotNetDocs.Core;
 using CloudNimble.DotNetDocs.Core.Configuration;
 using CloudNimble.DotNetDocs.Mintlify;
+using CloudNimble.DotNetDocs.Tests.Core.Helpers;
 using CloudNimble.DotNetDocs.Tests.Shared;
 using CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios;
 using FluentAssertions;
@@ -602,7 +603,9 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
         #region Folder Structure Baseline Tests
 
         [TestMethod]
-        public async Task RenderAsync_WithFolderMode_MatchesFolderStructureBaseline()
+        [DataRow(false, DisplayName = "Public members")]
+        [DataRow(true, DisplayName = "Public and internal members")]
+        public async Task RenderAsync_WithFolderMode_MatchesFolderStructureBaseline(bool includeInternals)
         {
             // Arrange
             var testOutputPath = Path.Combine(Path.GetTempPath(), $"MintlifyFolderBaseline_{Guid.NewGuid()}");
@@ -623,7 +626,7 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
                 var assemblyPath = typeof(SampleClass).Assembly.Location;
                 var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
                 using var manager = new AssemblyManager(assemblyPath, xmlPath);
-                var projectContext = new ProjectContext([Accessibility.Public, Accessibility.Internal])
+                var projectContext = new ProjectContext(BaselinePermutations.GetIncludedMembers(includeInternals))
                 {
                     ShowPlaceholders = false,
                     FileNamingOptions = new FileNamingOptions(NamespaceMode.Folder),
@@ -659,14 +662,8 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
                 File.Exists(Path.Combine(basicScenariosDir, "index.mdx")).Should().BeTrue();
                 File.Exists(Path.Combine(basicScenariosDir, "SimpleClass.mdx")).Should().BeTrue();
 
-                // Compare specific files with baselines
-                await CompareWithFolderBaseline(
-                    Path.Combine(sharedDir, "index.mdx"),
-                    "CloudNimble/DotNetDocs/Tests/Shared/index.mdx");
-
-                await CompareWithFolderBaseline(
-                    Path.Combine(basicScenariosDir, "SimpleClass.mdx"),
-                    "CloudNimble/DotNetDocs/Tests/Shared/BasicScenarios/SimpleClass.mdx");
+                // Compare every rendered file with the FolderMode baselines, reporting all differences at once
+                BaselineAssert.DirectoryMatches(Path.Combine(projectPath, "Baselines", framework, "MintlifyRenderer", BaselinePermutations.GetName("FolderMode", includeInternals)), testOutputPath);
             }
             finally
             {
@@ -676,43 +673,6 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
                     Directory.Delete(testOutputPath, true);
                 }
             }
-        }
-
-        private async Task CompareWithFolderBaseline(string actualFilePath, string baselineRelativePath)
-        {
-            // Read actual file
-            var actualContent = await File.ReadAllTextAsync(actualFilePath, TestContext.CancellationToken);
-            
-            // Construct baseline path
-            var baselineDir = Path.Combine(
-                Directory.GetCurrentDirectory(),
-                "Baselines",
-                framework,
-                "MintlifyRenderer",
-                "FolderMode");
-            var baselinePath = Path.Combine(baselineDir, baselineRelativePath);
-            
-            // If baseline doesn't exist, create it for first run
-            if (!File.Exists(baselinePath))
-            {
-                var directory = Path.GetDirectoryName(baselinePath);
-                if (!string.IsNullOrEmpty(directory))
-                {
-                    Directory.CreateDirectory(directory);
-                }
-                await File.WriteAllTextAsync(baselinePath, actualContent, TestContext.CancellationToken);
-                Assert.Inconclusive($"Baseline created at: {baselinePath}. Re-run test to verify.");
-            }
-            
-            // Compare with baseline - normalize line endings for cross-platform compatibility
-            var baselineContent = await File.ReadAllTextAsync(baselinePath, TestContext.CancellationToken);
-            
-            // Normalize both to Environment.NewLine to handle any line ending differences
-            var normalizedActual = actualContent.ReplaceLineEndings(Environment.NewLine);
-            var normalizedBaseline = baselineContent.ReplaceLineEndings(Environment.NewLine);
-            
-            normalizedActual.Should().Be(normalizedBaseline, 
-                $"Output should match baseline at {baselinePath}");
         }
 
         #endregion
@@ -1513,6 +1473,60 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
         }
 
         [TestMethod]
+        public void CombineReferencedNavigation_AddToTabs_CopiesGraphqlAndMcp()
+        {
+            var context = GetService<ProjectContext>();
+            var options = Options.Create(new MintlifyRendererOptions());
+            var docsJsonManager = new DocsJsonManager();
+
+            var collectionConfig = new DocsJsonConfig
+            {
+                Name = "Collection",
+                Navigation = new NavigationConfig
+                {
+                    Pages = ["introduction"]
+                }
+            };
+            docsJsonManager.Load(JsonSerializer.Serialize(collectionConfig, MintlifyConstants.JsonSerializerOptions));
+
+            var renderer = new MintlifyRenderer(context, options, docsJsonManager);
+
+            var refDocsPath = Path.Combine(context.DocumentationRootPath, "ref_graphql_docs.json");
+            var refConfig = new DocsJsonConfig
+            {
+                Name = "GraphQL Service",
+                Navigation = new NavigationConfig
+                {
+                    Graphql = new SpecRefConfig { Source = "schema.graphql", Directory = "api/graphql" },
+                    Mcp = new SpecRefConfig { Source = "mcp.json" },
+                    Pages = ["overview"]
+                }
+            };
+            File.WriteAllText(refDocsPath, JsonSerializer.Serialize(refConfig, MintlifyConstants.JsonSerializerOptions));
+
+            context.DocumentationReferences.Clear();
+            context.DocumentationReferences.Add(new DocumentationReference
+            {
+                ProjectPath = "GraphqlService.docsproj",
+                DocumentationType = SupportedDocumentationType.Mintlify,
+                NavigationFilePath = refDocsPath,
+                DestinationPath = "services/graphql",
+                IntegrationType = "Tabs",
+                Name = "GraphQL"
+            });
+
+            renderer.CombineReferencedNavigation();
+
+            var tab = renderer._docsJsonManager!.Configuration!.Navigation!.Tabs.Should().ContainSingle().Subject;
+            tab.Tab.Should().Be("GraphQL");
+            tab.Graphql.Should().NotBeNull();
+            tab.Graphql!.Source.Should().Be("schema.graphql");
+            tab.Graphql.Directory.Should().Be("api/graphql");
+            tab.Mcp.Should().NotBeNull();
+            tab.Mcp!.Source.Should().Be("mcp.json");
+        }
+
+        [TestMethod]
         public void CombineReferencedNavigation_AddToProducts_CombinesNavigationCorrectly()
         {
             var context = GetService<ProjectContext>();
@@ -1739,21 +1753,139 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             VerifyPagePrefixes(tab.Pages, "services/service-a/");
         }
 
+        [TestMethod]
+        public void ApplyTabPositions_AppendsTrailingTabsAfterReferencedTabs()
+        {
+            var context = GetService<ProjectContext>();
+            var options = Options.Create(new MintlifyRendererOptions
+            {
+                Navigation = new DocsNavigationConfig
+                {
+                    TrailingTabs =
+                    [
+                        new TabConfig { Tab = "Core Framework", Href = "https://easyaf.dev" }
+                    ]
+                }
+            });
+            var docsJsonManager = new DocsJsonManager();
+
+            var collectionConfig = new DocsJsonConfig
+            {
+                Name = "Collection",
+                Navigation = new NavigationConfig
+                {
+                    Pages = ["introduction"]
+                }
+            };
+            var collectionJson = JsonSerializer.Serialize(collectionConfig, MintlifyConstants.JsonSerializerOptions);
+            docsJsonManager.Load(collectionJson);
+
+            var renderer = new MintlifyRenderer(context, options, docsJsonManager);
+
+            var refDocsPath = Path.Combine(context.DocumentationRootPath, "ref_docs.json");
+            var refConfig = new DocsJsonConfig
+            {
+                Name = "Service A",
+                Navigation = new NavigationConfig { Pages = ["overview"] }
+            };
+            var refJson = JsonSerializer.Serialize(refConfig, MintlifyConstants.JsonSerializerOptions);
+            File.WriteAllText(refDocsPath, refJson);
+
+            context.DocumentationReferences.Clear();
+            context.DocumentationReferences.Add(new DocumentationReference
+            {
+                ProjectPath = "ServiceA.docsproj",
+                DocumentationType = SupportedDocumentationType.Mintlify,
+                NavigationFilePath = refDocsPath,
+                DestinationPath = "services/service-a",
+                IntegrationType = "Tabs",
+                Name = "MCP Essentials"
+            });
+
+            renderer.CombineReferencedNavigation();
+            renderer.ApplyTabPositions();
+
+            var tabs = renderer._docsJsonManager!.Configuration!.Navigation!.Tabs;
+            tabs.Should().HaveCount(2);
+            tabs![0].Tab.Should().Be("MCP Essentials");
+            tabs[1].Tab.Should().Be("Core Framework");
+            tabs[1].Href.Should().Be("https://easyaf.dev");
+            tabs[1].Pages.Should().BeNull();
+        }
+
+        [TestMethod]
+        public void ApplyTabPositions_HrefOnlyTrailingTab_OmitsPagesInJson()
+        {
+            var context = GetService<ProjectContext>();
+            var options = Options.Create(new MintlifyRendererOptions
+            {
+                Navigation = new DocsNavigationConfig
+                {
+                    TrailingTabs =
+                    [
+                        new TabConfig { Tab = "Core Framework", Href = "https://easyaf.dev" }
+                    ]
+                }
+            });
+            var docsJsonManager = new DocsJsonManager();
+            var collectionConfig = new DocsJsonConfig
+            {
+                Name = "Collection",
+                Navigation = new NavigationConfig { Pages = ["introduction"] }
+            };
+            docsJsonManager.Load(JsonSerializer.Serialize(collectionConfig, MintlifyConstants.JsonSerializerOptions));
+
+            var renderer = new MintlifyRenderer(context, options, docsJsonManager);
+            renderer.ApplyTabPositions();
+
+            var tab = renderer._docsJsonManager!.Configuration!.Navigation!.Tabs.Should().ContainSingle().Subject;
+            var json = JsonSerializer.Serialize(tab, MintlifyConstants.JsonSerializerOptions);
+
+            json.Should().Contain("Core Framework");
+            json.Should().Contain("https://easyaf.dev");
+            json.Should().NotContain("\"pages\"");
+            json.Should().NotContain("position");
+        }
+
+        [TestMethod]
+        public void ApplyTabPositions_NoTrailingTabs_DoesNotThrow()
+        {
+            var context = GetService<ProjectContext>();
+            var options = Options.Create(new MintlifyRendererOptions());
+            var docsJsonManager = new DocsJsonManager();
+            var collectionConfig = new DocsJsonConfig
+            {
+                Name = "Collection",
+                Navigation = new NavigationConfig { Pages = ["introduction"] }
+            };
+            docsJsonManager.Load(JsonSerializer.Serialize(collectionConfig, MintlifyConstants.JsonSerializerOptions));
+
+            var renderer = new MintlifyRenderer(context, options, docsJsonManager);
+
+            Action act = () => renderer.ApplyTabPositions();
+
+            act.Should().NotThrow();
+            renderer._docsJsonManager!.Configuration!.Navigation!.Tabs.Should().BeNull();
+        }
+
         #endregion
 
         #region Baseline Generation
 
         /// <summary>
-        /// Generates baseline files for the MintlifyRenderer in both FileMode and FolderMode.
+        /// Generates FolderMode baseline files for the MintlifyRenderer, once for public members and once for public and internal
+        /// members.
         /// This method is marked with [BreakdanceManifestGenerator] and is called by the Breakdance tool
         /// to generate baseline files for comparison in unit tests.
         /// </summary>
         /// <param name="projectPath">The root path of the test project where baselines will be stored.</param>
         /// <remarks>
         /// This method uses Dependency Injection to get the ProjectContext and MintlifyRenderer instances.
-        /// It modifies the context properties to configure the output location and file naming options,
+        /// It modifies the context properties to configure the output location, file naming options, and documented members,
         /// then uses the renderer from DI (which ensures all dependencies are properly injected,
         /// including MintlifyRendererOptions and DocsJsonManager).
+        ///
+        /// Only FolderMode is generated because Mintlify does not support FileMode.
         ///
         /// The baseline generation intentionally does NOT use DocumentationManager.ProcessAsync because
         /// these are unit test baselines for the renderer itself, not integration test baselines.
@@ -1764,79 +1896,50 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
         [BreakdanceManifestGenerator]
         public async Task GenerateMintlifyBaselines(string projectPath)
         {
-            await GenerateFileModeBaselines(projectPath);
-            await GenerateFolderModeBaselines(projectPath);
+            foreach (var includeInternals in new[] { false, true })
+            {
+                await GenerateFolderModeBaselinesAsync(projectPath, includeInternals);
+            }
         }
 
         /// <summary>
-        /// Generates baseline files for MintlifyRenderer in FileMode configuration.
+        /// Generates the MintlifyRenderer FolderMode baseline files for one member visibility.
         /// </summary>
         /// <param name="projectPath">The root path of the test project where baselines will be stored.</param>
+        /// <param name="includeInternals">Whether internal members are documented along with public ones.</param>
         /// <remarks>
         /// This method:
-        /// 1. Gets the ProjectContext from DI to ensure consistent configuration
-        /// 2. Modifies the context properties for FileMode output
-        /// 3. Gets the MintlifyRenderer from DI with all dependencies properly injected
+        /// 1. Clears the permutation's baseline folder, "FolderMode" or "FolderModeWithInternals"
+        /// 2. Creates a DI scope so each permutation gets its own MintlifyRenderer and DocsJsonManager; a shared DocsJsonManager
+        ///    keeps the navigation of the previous render and writes it into the next docs.json
+        /// 3. Sets every ProjectContext property the permutation depends on
         /// 4. Uses AssemblyManager directly (not DocumentationManager) to generate documentation
         ///    without transformers, as these are unit test baselines for the renderer alone
-        /// 5. Does not restore context values since this runs in an isolated Breakdance process
         /// </remarks>
-        private async Task GenerateFileModeBaselines(string projectPath)
+        private async Task GenerateFolderModeBaselinesAsync(string projectPath, bool includeInternals)
         {
-            var baselinesDir = Path.Combine(projectPath, "Baselines", framework, "MintlifyRenderer", "FileMode");
+            var baselinesDir = Path.Combine(projectPath, "Baselines", framework, "MintlifyRenderer", BaselinePermutations.GetName("FolderMode", includeInternals));
             if (Directory.Exists(baselinesDir))
             {
                 Directory.Delete(baselinesDir, true);
             }
             Directory.CreateDirectory(baselinesDir);
 
-            var context = GetService<ProjectContext>();
-            context.FileNamingOptions = new FileNamingOptions(NamespaceMode.File, '-');
-            context.DocumentationRootPath = baselinesDir;
-
-            var renderer = GetMintlifyRenderer();
-
-            var assemblyPath = typeof(SimpleClass).Assembly.Location;
-            var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
-            var manager = new AssemblyManager(assemblyPath, xmlPath);
-            var assembly = await manager.DocumentAsync(context);
-
-            await renderer.RenderAsync(assembly);
-        }
-
-        /// <summary>
-        /// Generates baseline files for MintlifyRenderer in FolderMode configuration.
-        /// </summary>
-        /// <param name="projectPath">The root path of the test project where baselines will be stored.</param>
-        /// <remarks>
-        /// This method:
-        /// 1. Gets the ProjectContext from DI to ensure consistent configuration
-        /// 2. Modifies the context properties for FolderMode output
-        /// 3. Gets the MintlifyRenderer from DI with all dependencies properly injected
-        /// 4. Uses AssemblyManager directly (not DocumentationManager) to generate documentation
-        ///    without transformers, as these are unit test baselines for the renderer alone
-        /// 5. Does not restore context values since this runs in an isolated Breakdance process
-        /// </remarks>
-        private async Task GenerateFolderModeBaselines(string projectPath)
-        {
-            var baselinesDir = Path.Combine(projectPath, "Baselines", framework, "MintlifyRenderer", "FolderMode");
-            if (Directory.Exists(baselinesDir))
-            {
-                Directory.Delete(baselinesDir, true);
-            }
-            Directory.CreateDirectory(baselinesDir);
+            using var scope = TestHost.Services.CreateScope();
 
             // Get context from DI and modify it for baseline generation
-            var context = GetService<ProjectContext>();
+            var context = scope.ServiceProvider.GetRequiredService<ProjectContext>();
             context.FileNamingOptions = new FileNamingOptions(NamespaceMode.Folder, '-');
             context.DocumentationRootPath = baselinesDir;
+            context.ApiReferencePath = string.Empty;
+            context.IncludedMembers = BaselinePermutations.GetIncludedMembers(includeInternals);
 
             // Get renderer from DI to ensure all dependencies are properly injected
-            var renderer = GetMintlifyRenderer();
+            var renderer = scope.ServiceProvider.GetServices<IDocRenderer>().OfType<MintlifyRenderer>().Single();
 
             var assemblyPath = typeof(SimpleClass).Assembly.Location;
             var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
-            var manager = new AssemblyManager(assemblyPath, xmlPath);
+            using var manager = new AssemblyManager(assemblyPath, xmlPath);
             var assembly = await manager.DocumentAsync(context);
 
             await renderer.RenderAsync(assembly);

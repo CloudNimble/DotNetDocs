@@ -2,7 +2,7 @@
 title: DocumentationManager
 description: "Orchestrates the documentation pipeline for one or more assemblies."
 icon: file-brackets-curly
-keywords: ['DocumentationManager', 'CloudNimble.DotNetDocs.Core.DocumentationManager', 'CloudNimble.DotNetDocs.Core', 'class', 'System.Object', 'System.IDisposable']
+keywords: ['DocumentationManager', 'CloudNimble.DotNetDocs.Core.DocumentationManager', 'CloudNimble.DotNetDocs.Core', 'class', 'System.IDisposable']
 ---
 
 ## Definition
@@ -10,8 +10,6 @@ keywords: ['DocumentationManager', 'CloudNimble.DotNetDocs.Core.DocumentationMan
 **Assembly:** CloudNimble.DotNetDocs.Core.dll
 
 **Namespace:** CloudNimble.DotNetDocs.Core
-
-**Inheritance:** System.Object
 
 ## Syntax
 
@@ -26,8 +24,8 @@ Orchestrates the documentation pipeline for one or more assemblies.
 ## Remarks
 
 This class manages the complete documentation lifecycle including enrichment,
-            transformation, and rendering. It handles [AssemblyManager](/api-reference/CloudNimble/DotNetDocs/Core/AssemblyManager) creation,
-            usage, and disposal for processing assemblies.
+transformation, and rendering. It handles [AssemblyManager](/api-reference/CloudNimble/DotNetDocs/Core/AssemblyManager) creation,
+usage, and disposal for processing assemblies.
 
 ## Constructors
 
@@ -54,7 +52,7 @@ public DocumentationManager(CloudNimble.DotNetDocs.Core.ProjectContext projectCo
 #### Remarks
 
 This constructor is designed to work with dependency injection containers.
-            All parameters accept IEnumerable collections that are typically injected by the DI container.
+All parameters accept IEnumerable collections that are typically injected by the DI container.
 
 ### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor <Badge color="gray">Inherited</Badge>
 
@@ -97,19 +95,34 @@ Creates placeholder conceptual documentation files for multiple assemblies.
 #### Syntax
 
 ```csharp
-public System.Threading.Tasks.Task CreateConceptualFilesAsync(System.Collections.Generic.IEnumerable<(string, string)> assemblies)
+public System.Threading.Tasks.Task CreateConceptualFilesAsync(System.Collections.Generic.IEnumerable<(string assemblyPath, string xmlPath)> assemblies)
 ```
 
 #### Parameters
 
 | Name | Type | Description |
 |------|------|-------------|
-| `assemblies` | `System.Collections.Generic.IEnumerable<(string, string)>` | The collection of assembly and XML path pairs. |
+| `assemblies` | `System.Collections.Generic.IEnumerable<(string assemblyPath, string xmlPath)>` | The collection of assembly and XML path pairs. |
 
 #### Returns
 
 Type: `System.Threading.Tasks.Task`
 A task representing the asynchronous operation.
+
+#### Exceptions
+
+| Exception | Description |
+|-----------|-------------|
+| `InvalidOperationException` | The project context has no [ProjectContext.ConceptualPath](/api-reference/CloudNimble/DotNetDocs/Core/ProjectContext#conceptualpath). |
+
+#### Remarks
+
+The assemblies are documented and merged the same way [DocumentationManager.ProcessAsync](/api-reference/CloudNimble/DotNetDocs/Core/DocumentationManager#processasync)
+does it, and then [DocumentationManager.GeneratePlaceholdersAsync](/api-reference/CloudNimble/DotNetDocs/Core/DocumentationManager#generateplaceholdersasync) writes the placeholders. Nothing is rendered.
+This method always writes placeholders, regardless of [ProjectContext.ConceptualDocsEnabled](/api-reference/CloudNimble/DotNetDocs/Core/ProjectContext#conceptualdocsenabled): that
+setting controls the full pipeline, and calling this method is an explicit request for placeholders.
+The documented models are cached, so a later call to [DocumentationManager.ProcessAsync](/api-reference/CloudNimble/DotNetDocs/Core/DocumentationManager#processasync)
+with the same assemblies doesn't document them again.
 
 ### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Dispose
 
@@ -161,6 +174,49 @@ public static bool Equals(object objA, object objB)
 #### Returns
 
 Type: `bool`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GeneratePlaceholdersAsync
+
+Writes placeholder conceptual documentation files for every namespace and type in a documentation model.
+
+#### Syntax
+
+```csharp
+public System.Threading.Tasks.Task GeneratePlaceholdersAsync(CloudNimble.DotNetDocs.Core.DocAssembly model)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `model` | `CloudNimble.DotNetDocs.Core.DocAssembly` | The documentation model to write placeholders for, usually the merged model of a run. |
+
+#### Returns
+
+Type: `System.Threading.Tasks.Task`
+A task representing the asynchronous operation.
+
+#### Exceptions
+
+| Exception | Description |
+|-----------|-------------|
+| `ArgumentNullException` | *model* is null. |
+| `InvalidOperationException` | The project context has no [ProjectContext.ConceptualPath](/api-reference/CloudNimble/DotNetDocs/Core/ProjectContext#conceptualpath). |
+
+#### Examples
+
+```csharp
+var model = await assemblyManager.DocumentAsync(projectContext);
+await documentationManager.GeneratePlaceholdersAsync(model);
+```
+
+#### Remarks
+
+Each namespace folder gets summary, usage, examples, best practices, patterns, considerations, and related APIs files,
+and each type folder gets the same files except summary, at the locations [ProjectContext.GetConceptualNamespacePath](/api-reference/CloudNimble/DotNetDocs/Core/ProjectContext#getconceptualnamespacepath)
+and [ProjectContext.GetConceptualTypePath](/api-reference/CloudNimble/DotNetDocs/Core/ProjectContext#getconceptualtypepath) return. A file that already exists is never
+overwritten, so edited content is safe. After the built-in placeholders are written, each registered renderer's
+[IDocRenderer.RenderPlaceholdersAsync](/api-reference/CloudNimble/DotNetDocs/Core/IDocRenderer#renderplaceholdersasync) runs, one at a time, so a renderer can add files of its own.
 
 ### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetHashCode <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
 
@@ -233,14 +289,14 @@ Processes multiple assemblies through the documentation pipeline.
 #### Syntax
 
 ```csharp
-public System.Threading.Tasks.Task ProcessAsync(System.Collections.Generic.IEnumerable<(string, string)> assemblies)
+public System.Threading.Tasks.Task ProcessAsync(System.Collections.Generic.IEnumerable<(string assemblyPath, string xmlPath)> assemblies)
 ```
 
 #### Parameters
 
 | Name | Type | Description |
 |------|------|-------------|
-| `assemblies` | `System.Collections.Generic.IEnumerable<(string, string)>` | The collection of assembly and XML path pairs. |
+| `assemblies` | `System.Collections.Generic.IEnumerable<(string assemblyPath, string xmlPath)>` | The collection of assembly and XML path pairs. |
 
 #### Returns
 

@@ -2,7 +2,6 @@
   "name": "CloudNimble.DotNetDocs.Tests.Shared.Parameters",
   "types": [
     {
-      "baseType": "System.Object",
       "members": [
         {
           "accessibility": "public",
@@ -69,7 +68,7 @@
           "declaringTypeName": "CloudNimble.DotNetDocs.Tests.Shared.Parameters.ParameterVariations",
           "isExtensionMethod": false,
           "displayName": "CloudNimble.DotNetDocs.Tests.Shared.Parameters.ParameterVariations.MethodWithOptionalParam(string, int)",
-          "examples": "\u003Ccode\u003E\r\n            var result1 = MethodWithOptionalParam(\u0022test\u0022);      // Uses default value 42\r\n            var result2 = MethodWithOptionalParam(\u0022test\u0022, 100); // Uses provided value\r\n            \u003C/code\u003E",
+          "examples": "\u003Ccode\u003E\r\nvar result1 = MethodWithOptionalParam(\u0022test\u0022);      // Uses default value 42\r\nvar result2 = MethodWithOptionalParam(\u0022test\u0022, 100); // Uses provided value\r\n\u003C/code\u003E",
           "returns": "A formatted string combining both parameters.",
           "summary": "A method with an optional parameter."
         },
@@ -117,7 +116,7 @@
           "declaringTypeName": "CloudNimble.DotNetDocs.Tests.Shared.Parameters.ParameterVariations",
           "isExtensionMethod": false,
           "displayName": "CloudNimble.DotNetDocs.Tests.Shared.Parameters.ParameterVariations.MethodWithParams(params int[])",
-          "examples": "\u003Ccode\u003E\r\n            var sum1 = MethodWithParams(1, 2, 3);        // Returns 6\r\n            var sum2 = MethodWithParams(new[] { 1, 2 }); // Returns 3\r\n            \u003C/code\u003E",
+          "examples": "\u003Ccode\u003E\r\nvar sum1 = MethodWithParams(1, 2, 3);        // Returns 6\r\nvar sum2 = MethodWithParams(new[] { 1, 2 }); // Returns 3\r\n\u003C/code\u003E",
           "returns": "The sum of all provided values.",
           "summary": "A method with a params array."
         },
@@ -271,7 +270,7 @@
           "declaringTypeName": "CloudNimble.DotNetDocs.Tests.Shared.Parameters.ParameterVariations",
           "isExtensionMethod": false,
           "displayName": "CloudNimble.DotNetDocs.Tests.Shared.Parameters.ParameterVariations.GenericMethod\u003CT\u003E(T)",
-          "examples": "\u003Ccode\u003E\r\n            var result1 = GenericMethod\u0026lt;int\u0026gt;(42);\r\n            var result2 = GenericMethod(\u0022hello\u0022);\r\n            \u003C/code\u003E",
+          "examples": "\u003Ccode\u003E\r\nvar result1 = GenericMethod\u0026lt;int\u0026gt;(42);\r\nvar result2 = GenericMethod(\u0022hello\u0022);\r\n\u003C/code\u003E",
           "returns": "The string representation of the value.",
           "summary": "A generic method with a type parameter.",
           "typeParameters": [
@@ -328,11 +327,11 @@
           ],
           "returnType": {
             "members": [],
-            "assemblyName": "System.Runtime",
+            "assemblyName": "System.Private.CoreLib",
             "fullName": "System.Collections.Generic.KeyValuePair\u003CTKey, TValue\u003E",
             "name": "KeyValuePair",
             "signature": "System.Collections.Generic.KeyValuePair\u003CTKey, TValue\u003E",
-            "typeKind": "error",
+            "typeKind": "struct",
             "isExternalReference": true,
             "displayName": "System.Collections.Generic.KeyValuePair\u003CTKey, TValue\u003E"
           },
@@ -371,16 +370,16 @@
               "name": "nullableInt",
               "parameterType": {
                 "members": [],
-                "assemblyName": "System.Runtime",
-                "fullName": "System.Nullable\u003Cint\u003E",
+                "assemblyName": "System.Private.CoreLib",
+                "fullName": "int?",
                 "name": "Nullable",
-                "signature": "System.Nullable\u003Cint\u003E",
-                "typeKind": "error",
+                "signature": "int?",
+                "typeKind": "struct",
                 "isExternalReference": true,
-                "displayName": "System.Nullable\u003Cint\u003E"
+                "displayName": "int?"
               },
-              "typeName": "System.Nullable\u003Cint\u003E",
-              "displayName": "System.Nullable\u003Cint\u003E nullableInt",
+              "typeName": "int?",
+              "displayName": "int? nullableInt",
               "usage": "An optional nullable integer."
             },
             {
@@ -414,14 +413,14 @@
             "displayName": "string"
           },
           "returnTypeName": "string",
-          "signature": "public string MethodWithNullables(System.Nullable\u003Cint\u003E nullableInt, string nullableString)",
+          "signature": "public string MethodWithNullables(int? nullableInt, string nullableString)",
           "isInherited": false,
           "isOverride": false,
           "isVirtual": false,
           "isAbstract": false,
           "declaringTypeName": "CloudNimble.DotNetDocs.Tests.Shared.Parameters.ParameterVariations",
           "isExtensionMethod": false,
-          "displayName": "CloudNimble.DotNetDocs.Tests.Shared.Parameters.ParameterVariations.MethodWithNullables(System.Nullable\u003Cint\u003E, string?)",
+          "displayName": "CloudNimble.DotNetDocs.Tests.Shared.Parameters.ParameterVariations.MethodWithNullables(int?, string?)",
           "returns": "A description of the provided values.",
           "summary": "A method with nullable parameters."
         },

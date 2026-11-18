@@ -43,7 +43,7 @@ namespace CloudNimble.DotNetDocs.Sdk.Tasks
         /// <summary>
         /// Gets or sets the target framework to use when evaluating projects.
         /// </summary>
-        public string TargetFramework { get; set; } = "net8.0";
+        public string TargetFramework { get; set; } = "net10.0";
 
         /// <summary>
         /// Gets or sets the exclude patterns for projects that should not be documented.

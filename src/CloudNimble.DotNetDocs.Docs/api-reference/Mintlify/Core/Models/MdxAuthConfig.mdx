@@ -2,7 +2,7 @@
 title: MdxAuthConfig
 description: "Represents the authentication configuration for MDX-based API documentation."
 icon: file-brackets-curly
-keywords: ['MdxAuthConfig', 'Mintlify.Core.Models.MdxAuthConfig', 'Mintlify.Core.Models', 'class', 'System.Object']
+keywords: ['MdxAuthConfig', 'Mintlify.Core.Models.MdxAuthConfig', 'Mintlify.Core.Models', 'class']
 ---
 
 ## Definition
@@ -10,8 +10,6 @@ keywords: ['MdxAuthConfig', 'Mintlify.Core.Models.MdxAuthConfig', 'Mintlify.Core
 **Assembly:** Mintlify.Core.dll
 
 **Namespace:** Mintlify.Core.Models
-
-**Inheritance:** System.Object
 
 ## Syntax
 
@@ -26,7 +24,7 @@ Represents the authentication configuration for MDX-based API documentation.
 ## Remarks
 
 Specifies how API requests should be authenticated when using the interactive
-            playground in MDX-generated API documentation pages.
+playground in MDX-generated API documentation pages.
 
 ## Constructors
 
@@ -75,10 +73,10 @@ Type: `string?`
 #### Remarks
 
 Valid values are: "bearer", "basic", "key", "cobo".
-            - bearer: Bearer token authentication (Authorization: Bearer TOKEN)
-            - basic: Basic authentication (Authorization: Basic BASE64)
-            - key: API key authentication (custom header)
-            - cobo: Cobo-specific authentication
+- bearer: Bearer token authentication (Authorization: Bearer TOKEN)
+- basic: Basic authentication (Authorization: Basic BASE64)
+- key: API key authentication (custom header)
+- cobo: Cobo-specific authentication
 
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Name
 
@@ -106,7 +104,7 @@ Type: `string?`
 #### Remarks
 
 For "key" authentication method, this specifies the header name (e.g., "x-api-key").
-            For other methods, this may specify additional configuration parameters.
+For other methods, this may specify additional configuration parameters.
 
 ## Methods
 

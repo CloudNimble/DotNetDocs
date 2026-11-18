@@ -30,7 +30,8 @@
       "WebFetch(domain:www.nuget.org)",
       "WebFetch(domain:www.anthropic.com)",
       "Bash(gh run:*)",
-      "Bash(gh workflow:*)"
+      "Bash(gh workflow:*)",
+      "Bash(git rev-list *)"
     ],
     "deny": [],
     "ask": [],

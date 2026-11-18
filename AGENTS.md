@@ -8,7 +8,7 @@
 - **Pack**: `dotnet pack src/CloudNimble.DotNetDocs.slnx --configuration Release --output ./artifacts`
 
 ## Code Style Guidelines
-- **C# Version**: Use C# 14 (global.json targets .NET 10.0)
+- **C# Version**: Use C# 15 (global.json targets .NET 11.0)
 - **Formatting**: Follow .editorconfig - 4-space indent, newlines before braces, block-scoped namespaces
 - **Imports**: Single-line using directives, sorted system-first
 - **Regions**: #regions in order: Fields, Properties, Constructors, Public Methods, Private Methods

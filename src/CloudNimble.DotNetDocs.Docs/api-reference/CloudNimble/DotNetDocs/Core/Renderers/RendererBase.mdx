@@ -3,7 +3,7 @@ title: RendererBase
 description: "Base class for documentation renderers providing common functionality."
 icon: shapes
 tag: "ABSTRACT"
-keywords: ['RendererBase', 'CloudNimble.DotNetDocs.Core.Renderers.RendererBase', 'CloudNimble.DotNetDocs.Core.Renderers', 'class', 'System.Object']
+keywords: ['RendererBase', 'CloudNimble.DotNetDocs.Core.Renderers.RendererBase', 'CloudNimble.DotNetDocs.Core.Renderers', 'class']
 ---
 
 ## Definition
@@ -11,8 +11,6 @@ keywords: ['RendererBase', 'CloudNimble.DotNetDocs.Core.Renderers.RendererBase',
 **Assembly:** CloudNimble.DotNetDocs.Core.dll
 
 **Namespace:** CloudNimble.DotNetDocs.Core.Renderers
-
-**Inheritance:** System.Object
 
 ## Syntax
 
@@ -170,33 +168,6 @@ public System.Type GetType()
 
 Type: `System.Type`
 
-### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetTypeFileName
-
-Gets a safe file name for a type, suitable for use in file systems.
-
-#### Syntax
-
-```csharp
-public string GetTypeFileName(CloudNimble.DotNetDocs.Core.DocType type, CloudNimble.DotNetDocs.Core.DocNamespace ns, string extension)
-```
-
-#### Parameters
-
-| Name | Type | Description |
-|------|------|-------------|
-| `type` | `CloudNimble.DotNetDocs.Core.DocType` | The type to get the file name for. |
-| `ns` | `CloudNimble.DotNetDocs.Core.DocNamespace` | The namespace containing the type. |
-| `extension` | `string` | The file extension (without the dot). |
-
-#### Returns
-
-Type: `string`
-A safe file name for the type.
-
-#### Remarks
-
-This method is deprecated. Use GetTypeFilePath instead.
-
 ### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> MemberwiseClone <Badge color="gray">Inherited</Badge>
 
 <Note>Inherited from `object`</Note>
@@ -231,6 +202,93 @@ public static bool ReferenceEquals(object objA, object objB)
 #### Returns
 
 Type: `bool`
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> RenderPlaceholdersAsync <Badge color="orange">Virtual</Badge>
+
+Adds this renderer's own files to the conceptual content folder. The default implementation does nothing.
+
+#### Syntax
+
+```csharp
+public virtual System.Threading.Tasks.Task RenderPlaceholdersAsync(CloudNimble.DotNetDocs.Core.DocAssembly model)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `model` | `CloudNimble.DotNetDocs.Core.DocAssembly` | The documentation model that placeholders are being generated for. |
+
+#### Returns
+
+Type: `System.Threading.Tasks.Task`
+A completed task.
+
+#### Examples
+
+`DocumentationManager` writes the standard placeholders for every namespace and type. Members don't get any, so a renderer that wants member-level placeholders can add them by overriding `RenderPlaceholdersAsync`. This one adds an examples file for every method:
+
+```csharp
+public class MyRenderer : RendererBase, IDocRenderer
+{
+    public MyRenderer(ProjectContext context) : base(context)
+    {
+    }
+
+    public Task RenderAsync(DocAssembly? model)
+    {
+        // Write the output format here.
+        return Task.CompletedTask;
+    }
+
+    public override async Task RenderPlaceholdersAsync(DocAssembly model)
+    {
+        foreach (var ns in model.Namespaces)
+        {
+            foreach (var type in ns.Types)
+            {
+                foreach (var member in type.Members.Where(m => m.MemberKind == SymbolKind.Method))
+                {
+                    var folder = Context.GetConceptualMemberPath(ns.Name, type.Name, member.Name);
+                    var path = Path.Combine(folder, DocConstants.ExamplesFileName);
+
+                    // Never overwrite a file someone may have edited.
+                    if (File.Exists(path))
+                    {
+                        continue;
+                    }
+
+                    Directory.CreateDirectory(folder);
+                    await File.WriteAllTextAsync(path, $"""
+                        <!-- TODO: REMOVE THIS COMMENT AFTER YOU CUSTOMIZE THIS CONTENT -->
+                        Show an example of calling `{member.Name}` here.
+                        """);
+                }
+            }
+        }
+    }
+}
+```
+
+Register the renderer as usual. `CreateConceptualFilesAsync` and `ProcessAsync` then write the method placeholders after the standard ones. `ProcessAsync` loads them into each member's `Examples` in the same run.
+
+#### Remarks
+
+[DocumentationManager.GeneratePlaceholdersAsync](/api-reference/CloudNimble/DotNetDocs/Core/DocumentationManager#generateplaceholdersasync) writes the standard namespace and type
+placeholders, then calls this method on each registered renderer. Override it to add files that a renderer needs
+beyond the standard placeholders; files written into the conceptual folder are loaded with the rest of the content.
+
+#### Considerations
+
+- **When it runs.** `GeneratePlaceholdersAsync` writes the standard namespace and type placeholders first, then calls each registered renderer's `RenderPlaceholdersAsync` one at a time, in registration order.
+  - `CreateConceptualFilesAsync` and `GeneratePlaceholdersAsync` always call it.
+  - `ProcessAsync` calls it only when `ConceptualDocsEnabled` is true, before conceptual content is loaded, so files written here show up in the same run.
+  - `ConceptualPath` is always set by the time it's called.
+- **What gets loaded.** Conceptual content is read only from the folders that `GetConceptualNamespacePath`, `GetConceptualTypePath` and `GetConceptualMemberPath` return, and only from files with the `DocConstants` names: `summary.mdz` (namespaces only), `usage.mdz`, `examples.mdz`, `best-practices.mdz`, `patterns.mdz`, `considerations.mdz` and `related-apis.mdz`. The loader ignores any other file, which suits files that only your renderer reads in `RenderAsync`.
+- **Don't overwrite.** A file that already exists may hold hand-written content, so check for it first, as `DocumentationManager` does.
+- **Mark placeholders.** Start each placeholder with `<!-- TODO: REMOVE THIS COMMENT AFTER YOU CUSTOMIZE THIS CONTENT -->`. Projects that set `ShowPlaceholders` to `false` then leave it out of the output until someone edits it.
+- **Don't change the model.** `model` is the merged model the whole run renders from, so treat it as read-only here.
+- **You don't need to override it.** The default implementation does nothing, and renderers that only write output don't need to change it.
 
 ### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ToString <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
 

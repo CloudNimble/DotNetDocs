@@ -30,6 +30,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <item><description>DocsJsonValidator to ensure correct structures</description></item>
         /// <item><description>MarkdownXmlTransformer for processing XML documentation tags</description></item>
         /// <item><description>MintlifyMarkdownTransformer for converting HTML comments to JSX comments</description></item>
+        /// <item><description>MintlifyDocReferenceHandler for processing DocumentationReferences</description></item>
         /// </list>
         /// </remarks>
         /// <example>
@@ -56,6 +57,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <item><description>DocsJsonValidator to ensure correct structures</description></item>
         /// <item><description>MarkdownXmlTransformer for processing XML documentation tags</description></item>
         /// <item><description>MintlifyMarkdownTransformer for converting HTML comments to JSX comments</description></item>
+        /// <item><description>MintlifyDocReferenceHandler for processing DocumentationReferences</description></item>
         /// </list>
         /// </remarks>
         /// <example>
@@ -83,6 +85,8 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <item><description>DocsJsonValidator to ensure correct structures</description></item>
         /// <item><description>MintlifyOptions configuration</description></item>
         /// <item><description>MarkdownXmlTransformer for processing XML documentation tags</description></item>
+        /// <item><description>MintlifyMarkdownTransformer for converting HTML comments to JSX comments</description></item>
+        /// <item><description>MintlifyDocReferenceHandler for processing DocumentationReferences</description></item>
         /// </list>
         /// </remarks>
         /// <example>
@@ -120,6 +124,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <item><description>DocsJsonManager for manipulating docs.json files</description></item>
         /// <item><description>DocsJsonValidator to ensure correct structures</description></item>
         /// <item><description>MarkdownXmlTransformer for processing XML documentation tags</description></item>
+        /// <item><description>MintlifyMarkdownTransformer for converting HTML comments to JSX comments</description></item>
         /// <item><description>MintlifyDocReferenceHandler for processing DocumentationReferences</description></item>
         /// </list>
         /// </remarks>

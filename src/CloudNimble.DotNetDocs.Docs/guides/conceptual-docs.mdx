@@ -202,7 +202,7 @@ DotNetDocs supports seven distinct conceptual sections, each with a specific pur
     ## Performance Considerations
 
     - Assembly loading is expensive; use `GetOrCreateAssemblyManager` for caching
-    - Conceptual file loading happens in parallel per assembly for better performance
+    - Conceptual files are loaded once for the merged model, not once per assembly
     - Large assemblies may benefit from setting `ConceptualDocsEnabled = false`
 
     ## Security Considerations
@@ -271,7 +271,10 @@ The `DocumentationManager` constructs file paths based on the fully qualified na
 
 <Note>
   Dots in namespace names are converted to directory separators. For example, `System.Text.Json` becomes `conceptual/System/Text/Json/`.
+  Types in the global namespace go under `conceptual/global/`.
 </Note>
+
+This layout is the same whether your API reference uses `NamespaceMode.File` or `NamespaceMode.Folder`. Placeholder generation and content loading both use it, so content is always read from the folder it was generated in.
 
 ## Placeholders and the ShowPlaceholders Property
 
@@ -703,15 +706,15 @@ var context = new ProjectContext
 
 var manager = new DocumentationManager(context);
 
-// This generates placeholder files for all types and members
+// This generates placeholder files for every namespace and type
 await manager.ProcessAsync("MyAssembly.dll", "MyAssembly.xml");
 ```
 
-After running, you'll find a complete folder structure in your `conceptual/` directory with placeholders for all sections.
+After running, you'll find a complete folder structure in your `conceptual/` directory with placeholders for all sections. Existing files are never overwritten. Members don't get placeholders, but member folders you create yourself are loaded.
 
 ### Manual Placeholder Generation
 
-Generate placeholders without running the full pipeline:
+Generate placeholders without running the full pipeline. These methods always write placeholders, whatever `ConceptualDocsEnabled` is set to, because calling them is an explicit request:
 
 ```csharp
 // Only create placeholder files, don't run full pipeline
@@ -723,7 +726,12 @@ await manager.CreateConceptualFilesAsync(new[]
     ("Core.dll", "Core.xml"),
     ("Extensions.dll", "Extensions.xml")
 });
+
+// If you already have a documentation model
+await manager.GeneratePlaceholdersAsync(model);
 ```
+
+Both methods throw an `InvalidOperationException` when `ConceptualPath` is empty. A custom renderer can add its own files to the conceptual folder by overriding `RenderPlaceholdersAsync`, which runs after the standard placeholders are written.
 
 ### Customizing Conceptual Content
 

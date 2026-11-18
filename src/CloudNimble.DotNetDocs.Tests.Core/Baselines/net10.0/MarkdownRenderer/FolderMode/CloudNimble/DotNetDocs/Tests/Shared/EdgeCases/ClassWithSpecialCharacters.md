@@ -6,8 +6,6 @@
 
 **Namespace:** CloudNimble.DotNetDocs.Tests.Shared.EdgeCases
 
-**Inheritance:** System.Object
-
 ## Syntax
 
 ```csharp
@@ -21,7 +19,7 @@ A class with special characters in documentation: &lt;, &gt;, &amp;, ", '.
 ## Remarks
 
 This tests handling of XML special characters like &lt;tag&gt; and &amp;entity;.
-            Also tests "quotes" and 'apostrophes'.
+Also tests "quotes" and 'apostrophes'.
 
 ## Examples
 

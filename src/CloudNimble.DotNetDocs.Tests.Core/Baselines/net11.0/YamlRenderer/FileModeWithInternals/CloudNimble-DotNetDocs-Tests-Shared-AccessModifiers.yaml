@@ -1,0 +1,679 @@
+name: CloudNimble.DotNetDocs.Tests.Shared.AccessModifiers
+types:
+- members:
+  - accessibility: Public
+    memberKind: Method
+    methodKind: PropertyGet
+    name: get_Name
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: string
+      name: String
+      signature: string
+      typeKind: Class
+      isExternalReference: true
+      displayName: string
+    returnTypeName: string
+    signature: public string Name.get
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.AccessModifiers.InternalClass
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.AccessModifiers.InternalClass.Name.get
+  - accessibility: Public
+    memberKind: Method
+    methodKind: PropertySet
+    name: set_Name
+    parameters:
+    - name: value
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: string
+        name: String
+        signature: string
+        typeKind: Class
+        isExternalReference: true
+        displayName: string
+      typeName: string
+      displayName: string value
+    returnTypeName: void
+    signature: public void Name.set
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.AccessModifiers.InternalClass
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.AccessModifiers.InternalClass.Name.set
+  - accessibility: Internal
+    memberKind: Method
+    methodKind: PropertyGet
+    name: get_InternalValue
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: int
+      name: Int32
+      signature: int
+      typeKind: Struct
+      isExternalReference: true
+      displayName: int
+    returnTypeName: int
+    signature: internal int InternalValue.get
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.AccessModifiers.InternalClass
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.AccessModifiers.InternalClass.InternalValue.get
+  - accessibility: Internal
+    memberKind: Method
+    methodKind: PropertySet
+    name: set_InternalValue
+    parameters:
+    - name: value
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: int
+        name: Int32
+        signature: int
+        typeKind: Struct
+        isExternalReference: true
+        displayName: int
+      typeName: int
+      displayName: int value
+    returnTypeName: void
+    signature: internal void InternalValue.set
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.AccessModifiers.InternalClass
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.AccessModifiers.InternalClass.InternalValue.set
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: GetDescription
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: string
+      name: String
+      signature: string
+      typeKind: Class
+      isExternalReference: true
+      displayName: string
+    returnTypeName: string
+    signature: public string GetDescription()
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.AccessModifiers.InternalClass
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.AccessModifiers.InternalClass.GetDescription()
+    returns: A description string.
+    summary: A public method in an internal class.
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Constructor
+    name: .ctor
+    returnTypeName: void
+    signature: public InternalClass()
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.AccessModifiers.InternalClass
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.AccessModifiers.InternalClass.InternalClass()
+  - accessibility: Public
+    memberKind: Property
+    name: Name
+    returnTypeName: string
+    signature: public string Name { get; set; }
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.AccessModifiers.InternalClass
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.AccessModifiers.InternalClass.Name
+    summary: Gets or sets the name.
+  - accessibility: Internal
+    memberKind: Property
+    name: InternalValue
+    returnTypeName: int
+    signature: internal int InternalValue { get; set; }
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.AccessModifiers.InternalClass
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.AccessModifiers.InternalClass.InternalValue
+    summary: Gets or sets the internal value.
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: GetType
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: System.Type
+      name: Type
+      signature: System.Type
+      typeKind: Class
+      isExternalReference: true
+      displayName: System.Type
+    returnTypeName: System.Type
+    signature: public System.Type GetType()
+    isInherited: true
+    declaringTypeName: object
+    displayName: object.GetType()
+  - accessibility: ProtectedOrInternal
+    memberKind: Method
+    methodKind: Ordinary
+    name: MemberwiseClone
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: object
+      name: Object
+      signature: object
+      typeKind: Class
+      isExternalReference: true
+      displayName: object
+    returnTypeName: object
+    signature: protected internal object MemberwiseClone()
+    isInherited: true
+    declaringTypeName: object
+    displayName: object.MemberwiseClone()
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Constructor
+    name: .ctor
+    returnTypeName: void
+    signature: public Object()
+    isInherited: true
+    declaringTypeName: object
+    displayName: object.Object()
+  - accessibility: Protected
+    memberKind: Method
+    methodKind: Destructor
+    name: Finalize
+    returnTypeName: void
+    signature: protected ~Object()
+    isInherited: true
+    declaringTypeName: object
+    displayName: object.~Object()
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: ToString
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: string?
+      name: String
+      signature: string?
+      typeKind: Class
+      isExternalReference: true
+      displayName: string?
+    returnTypeName: string?
+    signature: public virtual string ToString()
+    isInherited: true
+    isVirtual: true
+    declaringTypeName: object
+    displayName: object.ToString()
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: Equals
+    parameters:
+    - name: obj
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: object?
+        name: Object
+        signature: object?
+        typeKind: Class
+        isExternalReference: true
+        displayName: object?
+      typeName: object?
+      displayName: object? obj
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: bool
+      name: Boolean
+      signature: bool
+      typeKind: Struct
+      isExternalReference: true
+      displayName: bool
+    returnTypeName: bool
+    signature: public virtual bool Equals(object obj)
+    isInherited: true
+    isVirtual: true
+    declaringTypeName: object
+    displayName: object.Equals(object?)
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: Equals
+    parameters:
+    - name: objA
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: object?
+        name: Object
+        signature: object?
+        typeKind: Class
+        isExternalReference: true
+        displayName: object?
+      typeName: object?
+      displayName: object? objA
+    - name: objB
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: object?
+        name: Object
+        signature: object?
+        typeKind: Class
+        isExternalReference: true
+        displayName: object?
+      typeName: object?
+      displayName: object? objB
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: bool
+      name: Boolean
+      signature: bool
+      typeKind: Struct
+      isExternalReference: true
+      displayName: bool
+    returnTypeName: bool
+    signature: public static bool Equals(object objA, object objB)
+    isInherited: true
+    declaringTypeName: object
+    displayName: object.Equals(object?, object?)
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: ReferenceEquals
+    parameters:
+    - name: objA
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: object?
+        name: Object
+        signature: object?
+        typeKind: Class
+        isExternalReference: true
+        displayName: object?
+      typeName: object?
+      displayName: object? objA
+    - name: objB
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: object?
+        name: Object
+        signature: object?
+        typeKind: Class
+        isExternalReference: true
+        displayName: object?
+      typeName: object?
+      displayName: object? objB
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: bool
+      name: Boolean
+      signature: bool
+      typeKind: Struct
+      isExternalReference: true
+      displayName: bool
+    returnTypeName: bool
+    signature: public static bool ReferenceEquals(object objA, object objB)
+    isInherited: true
+    declaringTypeName: object
+    displayName: object.ReferenceEquals(object?, object?)
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: GetHashCode
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: int
+      name: Int32
+      signature: int
+      typeKind: Struct
+      isExternalReference: true
+      displayName: int
+    returnTypeName: int
+    signature: public virtual int GetHashCode()
+    isInherited: true
+    isVirtual: true
+    declaringTypeName: object
+    displayName: object.GetHashCode()
+  assemblyName: CloudNimble.DotNetDocs.Tests.Shared
+  fullName: CloudNimble.DotNetDocs.Tests.Shared.AccessModifiers.InternalClass
+  name: InternalClass
+  signature: CloudNimble.DotNetDocs.Tests.Shared.AccessModifiers.InternalClass
+  typeKind: Class
+  displayName: CloudNimble.DotNetDocs.Tests.Shared.AccessModifiers.InternalClass
+  remarks: This class should only be visible when internal members are included.
+  summary: An internal class for testing internal type visibility.
+- members:
+  - accessibility: Public
+    memberKind: Field
+    name: PublicField
+    returnTypeName: string
+    signature: public string PublicField
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.AccessModifiers.MixedAccessClass
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.AccessModifiers.MixedAccessClass.PublicField
+    summary: A public field.
+  - accessibility: Internal
+    memberKind: Field
+    name: InternalField
+    returnTypeName: string
+    signature: internal string InternalField
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.AccessModifiers.MixedAccessClass
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.AccessModifiers.MixedAccessClass.InternalField
+    summary: An internal field.
+  - accessibility: Public
+    memberKind: Method
+    methodKind: PropertyGet
+    name: get_PublicProperty
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: string
+      name: String
+      signature: string
+      typeKind: Class
+      isExternalReference: true
+      displayName: string
+    returnTypeName: string
+    signature: public string PublicProperty.get
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.AccessModifiers.MixedAccessClass
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.AccessModifiers.MixedAccessClass.PublicProperty.get
+  - accessibility: Public
+    memberKind: Method
+    methodKind: PropertySet
+    name: set_PublicProperty
+    parameters:
+    - name: value
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: string
+        name: String
+        signature: string
+        typeKind: Class
+        isExternalReference: true
+        displayName: string
+      typeName: string
+      displayName: string value
+    returnTypeName: void
+    signature: public void PublicProperty.set
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.AccessModifiers.MixedAccessClass
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.AccessModifiers.MixedAccessClass.PublicProperty.set
+  - accessibility: Internal
+    memberKind: Method
+    methodKind: PropertyGet
+    name: get_InternalProperty
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: string
+      name: String
+      signature: string
+      typeKind: Class
+      isExternalReference: true
+      displayName: string
+    returnTypeName: string
+    signature: internal string InternalProperty.get
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.AccessModifiers.MixedAccessClass
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.AccessModifiers.MixedAccessClass.InternalProperty.get
+  - accessibility: Internal
+    memberKind: Method
+    methodKind: PropertySet
+    name: set_InternalProperty
+    parameters:
+    - name: value
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: string
+        name: String
+        signature: string
+        typeKind: Class
+        isExternalReference: true
+        displayName: string
+      typeName: string
+      displayName: string value
+    returnTypeName: void
+    signature: internal void InternalProperty.set
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.AccessModifiers.MixedAccessClass
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.AccessModifiers.MixedAccessClass.InternalProperty.set
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: PublicMethod
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: string
+      name: String
+      signature: string
+      typeKind: Class
+      isExternalReference: true
+      displayName: string
+    returnTypeName: string
+    signature: public string PublicMethod()
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.AccessModifiers.MixedAccessClass
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.AccessModifiers.MixedAccessClass.PublicMethod()
+    returns: A string indicating this is a public method.
+    summary: A public method.
+  - accessibility: Internal
+    memberKind: Method
+    methodKind: Ordinary
+    name: InternalMethod
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: string
+      name: String
+      signature: string
+      typeKind: Class
+      isExternalReference: true
+      displayName: string
+    returnTypeName: string
+    signature: internal string InternalMethod()
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.AccessModifiers.MixedAccessClass
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.AccessModifiers.MixedAccessClass.InternalMethod()
+    returns: A string indicating this is an internal method.
+    summary: An internal method.
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Constructor
+    name: .ctor
+    returnTypeName: void
+    signature: public MixedAccessClass()
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.AccessModifiers.MixedAccessClass
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.AccessModifiers.MixedAccessClass.MixedAccessClass()
+  - accessibility: Public
+    memberKind: Property
+    name: PublicProperty
+    returnTypeName: string
+    signature: public string PublicProperty { get; set; }
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.AccessModifiers.MixedAccessClass
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.AccessModifiers.MixedAccessClass.PublicProperty
+    summary: Gets or sets the public property.
+  - accessibility: Internal
+    memberKind: Property
+    name: InternalProperty
+    returnTypeName: string
+    signature: internal string InternalProperty { get; set; }
+    declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.AccessModifiers.MixedAccessClass
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.AccessModifiers.MixedAccessClass.InternalProperty
+    summary: Gets or sets the internal property.
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: GetType
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: System.Type
+      name: Type
+      signature: System.Type
+      typeKind: Class
+      isExternalReference: true
+      displayName: System.Type
+    returnTypeName: System.Type
+    signature: public System.Type GetType()
+    isInherited: true
+    declaringTypeName: object
+    displayName: object.GetType()
+  - accessibility: ProtectedOrInternal
+    memberKind: Method
+    methodKind: Ordinary
+    name: MemberwiseClone
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: object
+      name: Object
+      signature: object
+      typeKind: Class
+      isExternalReference: true
+      displayName: object
+    returnTypeName: object
+    signature: protected internal object MemberwiseClone()
+    isInherited: true
+    declaringTypeName: object
+    displayName: object.MemberwiseClone()
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Constructor
+    name: .ctor
+    returnTypeName: void
+    signature: public Object()
+    isInherited: true
+    declaringTypeName: object
+    displayName: object.Object()
+  - accessibility: Protected
+    memberKind: Method
+    methodKind: Destructor
+    name: Finalize
+    returnTypeName: void
+    signature: protected ~Object()
+    isInherited: true
+    declaringTypeName: object
+    displayName: object.~Object()
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: ToString
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: string?
+      name: String
+      signature: string?
+      typeKind: Class
+      isExternalReference: true
+      displayName: string?
+    returnTypeName: string?
+    signature: public virtual string ToString()
+    isInherited: true
+    isVirtual: true
+    declaringTypeName: object
+    displayName: object.ToString()
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: Equals
+    parameters:
+    - name: obj
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: object?
+        name: Object
+        signature: object?
+        typeKind: Class
+        isExternalReference: true
+        displayName: object?
+      typeName: object?
+      displayName: object? obj
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: bool
+      name: Boolean
+      signature: bool
+      typeKind: Struct
+      isExternalReference: true
+      displayName: bool
+    returnTypeName: bool
+    signature: public virtual bool Equals(object obj)
+    isInherited: true
+    isVirtual: true
+    declaringTypeName: object
+    displayName: object.Equals(object?)
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: Equals
+    parameters:
+    - name: objA
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: object?
+        name: Object
+        signature: object?
+        typeKind: Class
+        isExternalReference: true
+        displayName: object?
+      typeName: object?
+      displayName: object? objA
+    - name: objB
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: object?
+        name: Object
+        signature: object?
+        typeKind: Class
+        isExternalReference: true
+        displayName: object?
+      typeName: object?
+      displayName: object? objB
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: bool
+      name: Boolean
+      signature: bool
+      typeKind: Struct
+      isExternalReference: true
+      displayName: bool
+    returnTypeName: bool
+    signature: public static bool Equals(object objA, object objB)
+    isInherited: true
+    declaringTypeName: object
+    displayName: object.Equals(object?, object?)
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: ReferenceEquals
+    parameters:
+    - name: objA
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: object?
+        name: Object
+        signature: object?
+        typeKind: Class
+        isExternalReference: true
+        displayName: object?
+      typeName: object?
+      displayName: object? objA
+    - name: objB
+      parameterType:
+        assemblyName: System.Private.CoreLib
+        fullName: object?
+        name: Object
+        signature: object?
+        typeKind: Class
+        isExternalReference: true
+        displayName: object?
+      typeName: object?
+      displayName: object? objB
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: bool
+      name: Boolean
+      signature: bool
+      typeKind: Struct
+      isExternalReference: true
+      displayName: bool
+    returnTypeName: bool
+    signature: public static bool ReferenceEquals(object objA, object objB)
+    isInherited: true
+    declaringTypeName: object
+    displayName: object.ReferenceEquals(object?, object?)
+  - accessibility: Public
+    memberKind: Method
+    methodKind: Ordinary
+    name: GetHashCode
+    returnType:
+      assemblyName: System.Private.CoreLib
+      fullName: int
+      name: Int32
+      signature: int
+      typeKind: Struct
+      isExternalReference: true
+      displayName: int
+    returnTypeName: int
+    signature: public virtual int GetHashCode()
+    isInherited: true
+    isVirtual: true
+    declaringTypeName: object
+    displayName: object.GetHashCode()
+  assemblyName: CloudNimble.DotNetDocs.Tests.Shared
+  fullName: CloudNimble.DotNetDocs.Tests.Shared.AccessModifiers.MixedAccessClass
+  name: MixedAccessClass
+  signature: CloudNimble.DotNetDocs.Tests.Shared.AccessModifiers.MixedAccessClass
+  typeKind: Class
+  displayName: CloudNimble.DotNetDocs.Tests.Shared.AccessModifiers.MixedAccessClass
+  remarks: This class tests the IncludedMembers filtering functionality.
+  summary: A class with members of various access modifiers for testing filtering.
+displayName: CloudNimble.DotNetDocs.Tests.Shared.AccessModifiers

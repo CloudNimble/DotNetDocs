@@ -33,16 +33,10 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             public new string GetNamespaceFilePath(DocNamespace ns, string outputPath, string extension) => base.GetNamespaceFilePath(ns, outputPath, extension);
             public new string GetTypeFilePath(DocType type, DocNamespace ns, string outputPath, string extension) => base.GetTypeFilePath(type, ns, outputPath, extension);
             public new string GetNamespaceFileName(DocNamespace ns, string extension) => base.GetNamespaceFileName(ns, extension);
-            public new string GetTypeFileName(DocType type, DocNamespace ns, string extension) => base.GetTypeFileName(type, ns, extension);
-            public new string GetAccessModifier(Accessibility accessibility) => base.GetAccessModifier(accessibility);
-            public new string GetMemberSignature(DocMember member) => base.GetMemberSignature(member);
-            public new string GetMethodSignature(IMethodSymbol method) => base.GetMethodSignature(method);
-            public new string GetPropertySignature(IPropertySymbol property) => base.GetPropertySignature(property);
-            public new string GetFieldSignature(IFieldSymbol field) => base.GetFieldSignature(field);
-            public new string GetEventSignature(IEventSymbol evt) => base.GetEventSignature(evt);
-            public new string GetTypeSignature(DocType type) => base.GetTypeSignature(type);
             public new ProjectContext Context => base.Context;
             public new FileNamingOptions FileNamingOptions => base.FileNamingOptions;
+            public static string EscapeXmlTags(string? value) => EscapeXmlTagsInString(value);
+            public new string GetNamespaceLink(DocNamespace ns, string extension, bool omitIndexFile = false) => base.GetNamespaceLink(ns, extension, omitIndexFile);
         }
 
         #endregion
@@ -115,6 +109,51 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
 
             // Assert
             result.Should().Be(ns.Name);
+        }
+
+        [TestMethod]
+        [DataRow("")]
+        [DataRow("   ")]
+        public void GetSafeNamespaceName_WithGlobalNamespace_ReturnsGlobal(string name)
+        {
+            var globalNamespace = new DocNamespace(Microsoft.CodeAnalysis.CSharp.CSharpCompilation.Create("Empty").GlobalNamespace) { Name = name };
+
+            _renderer.GetSafeNamespaceName(globalNamespace).Should().Be("global");
+        }
+
+        #endregion
+
+        #region EscapeXmlTagsInString Tests
+
+        [TestMethod]
+        [DataRow(null, "")]
+        [DataRow("", "")]
+        [DataRow("   ", "   ")]
+        [DataRow("List<int>", "List&lt;int&gt;")]
+        [DataRow("Dictionary<string, List<int>>", "Dictionary&lt;string, List&lt;int&gt;&gt;")]
+        [DataRow("<see cref=\"Widget\"/>", "&lt;see cref=\"Widget\"/&gt;")]
+        [DataRow("a > b && c < d", "a &gt; b && c &lt; d")]
+        [DataRow("No brackets here", "No brackets here")]
+        public void EscapeXmlTagsInString_EscapesAngleBracketsOnly(string? input, string expected)
+        {
+            TestRenderer.EscapeXmlTags(input).Should().Be(expected);
+        }
+
+        #endregion
+
+        #region GetNamespaceLink Tests
+
+        [TestMethod]
+        [DataRow(NamespaceMode.File, false, "CloudNimble-DotNetDocs-Tests-Shared.md")]
+        [DataRow(NamespaceMode.File, true, "CloudNimble-DotNetDocs-Tests-Shared.md")]
+        [DataRow(NamespaceMode.Folder, false, "CloudNimble/DotNetDocs/Tests/Shared/index.md")]
+        [DataRow(NamespaceMode.Folder, true, "CloudNimble/DotNetDocs/Tests/Shared")]
+        public void GetNamespaceLink_ReturnsForwardSlashLinkForEachMode(NamespaceMode mode, bool omitIndexFile, string expected)
+        {
+            var renderer = new TestRenderer(new ProjectContext { FileNamingOptions = new FileNamingOptions(mode) });
+            var ns = _testAssembly.Namespaces.First(n => n.Name == "CloudNimble.DotNetDocs.Tests.Shared");
+
+            renderer.GetNamespaceLink(ns, "md", omitIndexFile).Should().Be(expected);
         }
 
         #endregion
@@ -242,441 +281,6 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
 
             // Assert
             result.Should().Be(Path.Combine("output", "CloudNimble", "DotNetDocs", "Tests", "Shared", "BasicScenarios", "SimpleClass.md"));
-        }
-
-        #endregion
-
-        #region GetAccessModifier Tests
-
-        [TestMethod]
-        public void GetAccessModifier_ReturnsCorrectStrings()
-        {
-            // Arrange & Act & Assert
-            _renderer.GetAccessModifier(Accessibility.Public).Should().Be("public");
-            _renderer.GetAccessModifier(Accessibility.Protected).Should().Be("protected");
-            _renderer.GetAccessModifier(Accessibility.Internal).Should().Be("internal");
-            _renderer.GetAccessModifier(Accessibility.ProtectedOrInternal).Should().Be("protected internal");
-            _renderer.GetAccessModifier(Accessibility.ProtectedAndInternal).Should().Be("private protected");
-            _renderer.GetAccessModifier(Accessibility.Private).Should().Be("private");
-            _renderer.GetAccessModifier(Accessibility.NotApplicable).Should().Be("");
-        }
-
-        #endregion
-
-        #region GetMethodSignature Tests
-
-        // Method signature tests removed - use GetMemberSignature tests with real assembly data
-
-        #endregion
-
-        #region RemoveIndentation Tests
-
-        [TestMethod]
-        public void RemoveIndentation_WithNullText_ReturnsNull()
-        {
-            // Act
-            var result = RendererBase.RemoveIndentation(null!);
-
-            // Assert
-            result.Should().BeNull();
-        }
-
-        [TestMethod]
-        public void RemoveIndentation_WithEmptyText_ReturnsEmpty()
-        {
-            // Act
-            var result = RendererBase.RemoveIndentation(string.Empty);
-
-            // Assert
-            result.Should().BeEmpty();
-        }
-
-        [TestMethod]
-        public void RemoveIndentation_WithWhitespaceOnlyText_ReturnsWhitespace()
-        {
-            // Act
-            var result = RendererBase.RemoveIndentation("   ");
-
-            // Assert
-            result.Should().Be("   ");
-        }
-
-        [TestMethod]
-        public void RemoveIndentation_WithSimpleCodeBlock_RemovesIndentation()
-        {
-            // Arrange
-            var input = """
-                var simple = new SimpleClass();
-                            simple.DoWork();
-                """;
-
-            var expected = """
-                var simple = new SimpleClass();
-                simple.DoWork();
-                """;
-
-            // Act
-            var result = RendererBase.RemoveIndentation(input);
-
-            // Assert
-            result.Should().Be(expected);
-        }
-
-        [TestMethod]
-        public void RemoveIndentation_WithComplexCodeBlock_PreservesRelativeIndentation()
-        {
-            // Arrange
-            var input = """
-                var fullDocs = new ClassWithFullDocs();
-                            if (fullDocs is not null)
-                            {
-                                fullDocs.ComplexMethod("test", 42);
-                                Console.WriteLine("Done");
-                            }
-                """;
-
-            var expected = """
-                var fullDocs = new ClassWithFullDocs();
-                if (fullDocs is not null)
-                {
-                    fullDocs.ComplexMethod("test", 42);
-                    Console.WriteLine("Done");
-                }
-                """;
-
-            // Act
-            var result = RendererBase.RemoveIndentation(input);
-
-            // Assert
-            result.Should().Be(expected);
-        }
-
-        [TestMethod]
-        public void RemoveIndentation_WithMixedTabsAndSpaces_RemovesCorrectly()
-        {
-            // Arrange
-            var input = """
-                using (var disposable = new DisposableClass())
-                		{
-                		    disposable.UseResource();
-                		}
-                """;
-
-            var expected = """
-                using (var disposable = new DisposableClass())
-                {
-                    disposable.UseResource();
-                }
-                """;
-
-            // Act
-            var result = RendererBase.RemoveIndentation(input);
-
-            // Assert
-            result.Should().Be(expected);
-        }
-
-        [TestMethod]
-        public void RemoveIndentation_WithBlankLinesInMiddle_PreservesBlankLines()
-        {
-            var input = """
-                var example = new Example();
-                            example.Initialize();
-
-                            // After some processing
-                            example.Process();
-                            example.Cleanup();
-                """;
-
-            var expected = new StringBuilder()
-                .AppendLine("var example = new Example();")
-                .AppendLine("example.Initialize();")
-                .AppendLine()
-                .AppendLine("// After some processing")
-                .AppendLine("example.Process();")
-                .Append("example.Cleanup();");
-
-            var result = RendererBase.RemoveIndentation(input);
-
-            // Assert
-            result.Should().Be(expected.ToString());
-        }
-
-        [TestMethod]
-        public void RemoveIndentation_WithNestedStructures_MaintainsNesting()
-        {
-            // Arrange
-            var input = """
-                public class Example
-                            {
-                                public void Method()
-                                {
-                                    for (int i = 0; i < 10; i++)
-                                    {
-                                        if (i % 2 == 0)
-                                        {
-                                            Console.WriteLine($"Even: {i}");
-                                        }
-                                        else
-                                        {
-                                            Console.WriteLine($"Odd: {i}");
-                                        }
-                                    }
-                                }
-                            }
-                """;
-
-            var expected = """
-                public class Example
-                {
-                    public void Method()
-                    {
-                        for (int i = 0; i < 10; i++)
-                        {
-                            if (i % 2 == 0)
-                            {
-                                Console.WriteLine($"Even: {i}");
-                            }
-                            else
-                            {
-                                Console.WriteLine($"Odd: {i}");
-                            }
-                        }
-                    }
-                }
-                """;
-
-            // Act
-            var result = RendererBase.RemoveIndentation(input);
-
-            // Assert
-            result.Should().Be(expected);
-        }
-
-        [TestMethod]
-        public void RemoveIndentation_WithXmlComments_PreservesCommentStructure()
-        {
-            // Arrange
-            var input = """
-                /// <summary>
-                            /// This is a summary comment.
-                            /// </summary>
-                            /// <param name="value">The value parameter.</param>
-                            /// <returns>The result.</returns>
-                            public string Process(string value)
-                            {
-                                return value.ToUpper();
-                            }
-                """;
-
-            var expected = """
-                /// <summary>
-                /// This is a summary comment.
-                /// </summary>
-                /// <param name="value">The value parameter.</param>
-                /// <returns>The result.</returns>
-                public string Process(string value)
-                {
-                    return value.ToUpper();
-                }
-                """;
-
-            // Act
-            var result = RendererBase.RemoveIndentation(input);
-
-            // Assert
-            result.Should().Be(expected);
-        }
-
-        [TestMethod]
-        public void RemoveIndentation_WithLambdaExpressions_PreservesFormatting()
-        {
-            // Arrange
-            var input = """
-                var numbers = Enumerable.Range(1, 10)
-                                .Where(x => x % 2 == 0)
-                                .Select(x => new
-                                {
-                                    Number = x,
-                                    Square = x * x,
-                                    Cube = x * x * x
-                                })
-                                .ToList();
-                """;
-
-            var expected = """
-                var numbers = Enumerable.Range(1, 10)
-                    .Where(x => x % 2 == 0)
-                    .Select(x => new
-                    {
-                        Number = x,
-                        Square = x * x,
-                        Cube = x * x * x
-                    })
-                    .ToList();
-                """;
-
-            // Act
-            var result = RendererBase.RemoveIndentation(input);
-
-            // Assert
-            result.Should().Be(expected);
-        }
-
-        [TestMethod]
-        public void RemoveIndentation_WithStringInterpolation_PreservesContent()
-        {
-            // Arrange
-            var input = """
-                var name = "World";
-                            var message = $@"Hello, {name}!
-                                This is a multiline
-                                interpolated string.";
-                            Console.WriteLine(message);
-                """;
-
-            var expected = """
-                var name = "World";
-                var message = $@"Hello, {name}!
-                    This is a multiline
-                    interpolated string.";
-                Console.WriteLine(message);
-                """;
-
-            // Act
-            var result = RendererBase.RemoveIndentation(input);
-
-            // Assert
-            result.Should().Be(expected);
-        }
-
-        [TestMethod]
-        public void RemoveIndentation_WithNoIndentation_ReturnsOriginal()
-        {
-            // Arrange
-            var input = """
-                var x = 1;
-                var y = 2;
-                var z = x + y;
-                """;
-
-            // Act
-            var result = RendererBase.RemoveIndentation(input);
-
-            // Assert
-            result.Should().Be(input);
-        }
-
-
-        [TestMethod]
-        public void RemoveIndentation_WithAsyncAwaitPattern_PreservesStructure()
-        {
-            // Arrange
-            var input = """
-                public async Task<string> ProcessAsync()
-                            {
-                                try
-                                {
-                                    var result = await GetDataAsync();
-                                    return await TransformAsync(result);
-                                }
-                                catch (Exception ex)
-                                {
-                                    Logger.LogError(ex, "Processing failed");
-                                    throw;
-                                }
-                            }
-                """;
-
-            var expected = """
-                public async Task<string> ProcessAsync()
-                {
-                    try
-                    {
-                        var result = await GetDataAsync();
-                        return await TransformAsync(result);
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.LogError(ex, "Processing failed");
-                        throw;
-                    }
-                }
-                """;
-
-            // Act
-            var result = RendererBase.RemoveIndentation(input);
-
-            // Assert
-            result.Should().Be(expected);
-        }
-
-        [TestMethod]
-        public void RemoveIndentation_WithSwitchExpression_MaintainsAlignment()
-        {
-            // Arrange
-            var input = """
-                var result = operation switch
-                            {
-                                "add" => x + y,
-                                "subtract" => x - y,
-                                "multiply" => x * y,
-                                "divide" when y != 0 => x / y,
-                                _ => throw new ArgumentException("Invalid operation")
-                            };
-                """;
-
-            var expected = """
-                var result = operation switch
-                {
-                    "add" => x + y,
-                    "subtract" => x - y,
-                    "multiply" => x * y,
-                    "divide" when y != 0 => x / y,
-                    _ => throw new ArgumentException("Invalid operation")
-                };
-                """;
-
-            // Act
-            var result = RendererBase.RemoveIndentation(input);
-
-            // Assert
-            result.Should().Be(expected);
-        }
-
-        [TestMethod]
-        public void RemoveIndentation_WithLinqQuery_PreservesQueryStructure()
-        {
-            // Arrange
-            var input = """
-                var query = from person in people
-                            where person.Age >= 18
-                            orderby person.LastName, person.FirstName
-                            select new
-                            {
-                                FullName = $"{person.FirstName} {person.LastName}",
-                                person.Age,
-                                IsAdult = true
-                            };
-                """;
-
-            var expected = """
-                var query = from person in people
-                where person.Age >= 18
-                orderby person.LastName, person.FirstName
-                select new
-                {
-                    FullName = $"{person.FirstName} {person.LastName}",
-                    person.Age,
-                    IsAdult = true
-                };
-                """;
-
-            // Act
-            var result = RendererBase.RemoveIndentation(input);
-
-            // Assert
-            result.Should().Be(expected);
         }
 
         #endregion

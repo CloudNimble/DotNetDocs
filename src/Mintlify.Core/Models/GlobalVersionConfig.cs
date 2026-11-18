@@ -38,6 +38,14 @@ namespace Mintlify.Core.Models
         public bool? Default { get; set; }
 
         /// <summary>
+        /// Gets or sets the directory layout for this version.
+        /// </summary>
+        /// <remarks>
+        /// Valid values are <c>none</c>, <c>accordion</c>, and <c>card</c>.
+        /// </remarks>
+        public string? Directory { get; set; }
+
+        /// <summary>
         /// Gets or sets whether this version option is hidden by default.
         /// </summary>
         /// <remarks>
@@ -56,6 +64,25 @@ namespace Mintlify.Core.Models
         /// (e.g., "https://v2.docs.example.com/").
         /// </remarks>
         public string? Href { get; set; }
+
+        /// <summary>
+        /// Gets or sets the SDK documentation artifact used to auto-populate pages.
+        /// </summary>
+        public SdkRefConfig? Sdk { get; set; }
+
+        /// <summary>
+        /// Gets or sets a short tag shown on the version selector.
+        /// </summary>
+        /// <remarks>
+        /// Badge label displayed next to the version, such as <c>Latest</c>,
+        /// <c>Recommended</c>, or <c>Beta</c>.
+        /// </remarks>
+        public string? Tag { get; set; }
+
+        /// <summary>
+        /// Gets or sets thumbnail overrides for this version.
+        /// </summary>
+        public NavThumbnailConfig? Thumbnail { get; set; }
 
         #endregion
 

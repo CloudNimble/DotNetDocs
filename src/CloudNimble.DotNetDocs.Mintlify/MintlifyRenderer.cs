@@ -165,6 +165,9 @@ namespace CloudNimble.DotNetDocs.Mintlify
                 // Fourth: Combine referenced navigation
                 CombineReferencedNavigation();
 
+                // Fifth: Append template tabs marked Position="End"
+                ApplyTabPositions();
+
                 // Write docs.json to the DocumentationRootPath (only once, with everything combined)
                 var docsJsonPath = Path.Combine(Context.DocumentationRootPath, "docs.json");
                 _docsJsonManager.Save(docsJsonPath);
@@ -264,7 +267,7 @@ namespace CloudNimble.DotNetDocs.Mintlify
             foreach (var ns in model.Namespaces.OrderBy(n => n.Name))
             {
                 // Find or create namespace group - preserve existing template groups
-                var namespaceDisplayName = ns.Name ?? "global";
+                var namespaceDisplayName = GetSafeNamespaceName(ns);
                 var existingGroup = pages.OfType<GroupConfig>()
                     .FirstOrDefault(g => g.Group == namespaceDisplayName);
 
@@ -330,7 +333,7 @@ namespace CloudNimble.DotNetDocs.Mintlify
             {
                 var group = new GroupConfig
                 {
-                    Group = ns.Name ?? "global",
+                    Group = GetSafeNamespaceName(ns),
                     Icon = _options.IncludeIcons ? MintlifyIcons.GetIconForNamespace(ns) : null,
                     Pages = []
                 };
@@ -720,7 +723,7 @@ namespace CloudNimble.DotNetDocs.Mintlify
                     sb.AppendLine(header);
                     sb.AppendLine();
                 }
-                sb.AppendLine(RemoveIndentation(assembly.Examples));
+                sb.AppendLine(assembly.Examples);
                 sb.AppendLine();
             }
 
@@ -785,26 +788,8 @@ namespace CloudNimble.DotNetDocs.Mintlify
             sb.AppendLine();
             foreach (var ns in assembly.Namespaces)
             {
-                // Get the safe namespace name
-                var namespaceName = GetSafeNamespaceName(ns);
-                // Get the folder path for the namespace
-                var folderPath = Context.GetNamespaceFolderPath(namespaceName);
-
-                // Build the link based on the namespace mode
-                string link;
-                if (FileNamingOptions.NamespaceMode == NamespaceMode.Folder)
-                {
-                    // For folder mode, link to the folder (Mintlify will automatically find index.mdx)
-                    // Remove trailing slash if present to ensure clean links
-                    link = folderPath.Replace('\\', '/').TrimEnd('/');
-                }
-                else
-                {
-                    // For file mode, use the file name with the separator
-                    link = $"{namespaceName.Replace('.', FileNamingOptions.NamespaceSeparator)}.mdx";
-                }
-
-                sb.AppendLine($"- [{ns.Name}]({link})");
+                // Mintlify resolves a folder link to its index.mdx, so Folder mode links to the folder itself.
+                sb.AppendLine($"- [{ns.Name}]({GetNamespaceLink(ns, "mdx", omitIndexFile: true)})");
             }
 
             var filePath = Path.Combine(outputPath, "index.mdx");
@@ -856,7 +841,7 @@ namespace CloudNimble.DotNetDocs.Mintlify
                     sb.AppendLine(header);
                     sb.AppendLine();
                 }
-                sb.AppendLine(RemoveIndentation(ns.Examples));
+                sb.AppendLine(ns.Examples);
                 sb.AppendLine();
             }
 
@@ -1054,8 +1039,8 @@ namespace CloudNimble.DotNetDocs.Mintlify
             if (!string.IsNullOrWhiteSpace(type.BaseType))
             {
                 sb.AppendLine();
-                // Escape angle brackets for generic types to prevent MDX parsing errors
-                sb.AppendLine($"**Inheritance:** {type.BaseType.Replace("<", "&lt;").Replace(">", "&gt;")}");
+                // Outside a code span, MDX would parse generic brackets (e.g. List<T>) as JSX tags, so they must be escaped.
+                sb.AppendLine($"**Inheritance:** {EscapeXmlTagsInString(type.BaseType)}");
             }
 
             // TODO: Add interface information when available in DocType
@@ -1126,7 +1111,7 @@ namespace CloudNimble.DotNetDocs.Mintlify
                     sb.AppendLine(header);
                     sb.AppendLine();
                 }
-                sb.AppendLine(RemoveIndentation(type.Examples));
+                sb.AppendLine(type.Examples);
                 sb.AppendLine();
             }
 
@@ -1366,6 +1351,7 @@ namespace CloudNimble.DotNetDocs.Mintlify
                 sb.AppendLine("|------|------|-------------|");
                 foreach (var param in member.Parameters)
                 {
+                    // Rendered inside a backtick code span, which MDX shows literally; do not escape with EscapeXmlTagsInString or "&lt;" appears in the output.
                     var paramType = param.TypeName ?? "unknown";
                     var description = !string.IsNullOrWhiteSpace(param.Usage) ? param.Usage : param.Summary ?? "-";
                     sb.AppendLine($"| `{param.Name}` | `{paramType}` | {description} |");
@@ -1379,6 +1365,7 @@ namespace CloudNimble.DotNetDocs.Mintlify
             {
                 sb.AppendLine("#### Returns");
                 sb.AppendLine();
+                // Code span: leave unescaped (see the parameter table above).
                 sb.AppendLine($"Type: `{member.ReturnTypeName}`");
                 if (!string.IsNullOrWhiteSpace(member.Returns))
                 {
@@ -1392,6 +1379,7 @@ namespace CloudNimble.DotNetDocs.Mintlify
             {
                 sb.AppendLine("#### Property Value");
                 sb.AppendLine();
+                // Code span: leave unescaped (see the parameter table above).
                 sb.AppendLine($"Type: `{member.ReturnTypeName}`");
                 if (!string.IsNullOrWhiteSpace(member.Value))
                 {
@@ -1432,7 +1420,7 @@ namespace CloudNimble.DotNetDocs.Mintlify
             {
                 sb.AppendLine("#### Examples");
                 sb.AppendLine();
-                sb.AppendLine(RemoveIndentation(member.Examples));
+                sb.AppendLine(member.Examples);
                 sb.AppendLine();
             }
 
@@ -1685,11 +1673,14 @@ namespace CloudNimble.DotNetDocs.Mintlify
         {
             _docsJsonManager!.Configuration!.Navigation!.Tabs ??= [];
 
+            var sourceNav = source.Configuration!.Navigation!;
             _docsJsonManager.Configuration.Navigation.Tabs.Add(new TabConfig
             {
                 Tab = !string.IsNullOrWhiteSpace(reference.Name) ? reference.Name : GetProjectName(reference.ProjectPath),
                 Href = reference.DestinationPath,
-                Pages = source.Configuration!.Navigation!.Pages
+                Pages = sourceNav.Pages,
+                Graphql = sourceNav.Graphql,
+                Mcp = sourceNav.Mcp
             });
         }
 
@@ -1702,12 +1693,15 @@ namespace CloudNimble.DotNetDocs.Mintlify
         {
             _docsJsonManager!.Configuration!.Navigation!.Products ??= [];
 
+            var sourceNav = source.Configuration!.Navigation!;
             _docsJsonManager.Configuration.Navigation.Products.Add(new ProductConfig
             {
                 Product = !string.IsNullOrWhiteSpace(reference.Name) ? reference.Name : GetProjectName(reference.ProjectPath),
                 Href = reference.DestinationPath,
-                Pages = source.Configuration!.Navigation!.Pages,
-                Groups = source.Configuration.Navigation.Groups
+                Pages = sourceNav.Pages,
+                Groups = sourceNav.Groups,
+                Graphql = sourceNav.Graphql,
+                Mcp = sourceNav.Mcp
             });
         }
 
@@ -1719,6 +1713,33 @@ namespace CloudNimble.DotNetDocs.Mintlify
         internal string GetProjectName(string projectPath)
         {
             return Path.GetFileNameWithoutExtension(projectPath);
+        }
+
+        /// <summary>
+        /// Appends template tabs that were declared with <c>Position="End"</c> after
+        /// DocumentationReference tabs.
+        /// </summary>
+        /// <remarks>
+        /// Called after <see cref="ApplyNavigationType"/> and <see cref="CombineReferencedNavigation"/>
+        /// so trailing href tabs (for example a sibling product site) appear at the end of the tab bar.
+        /// </remarks>
+        internal void ApplyTabPositions()
+        {
+            if (_docsJsonManager is null ||
+                !_docsJsonManager.IsLoaded ||
+                _docsJsonManager.Configuration?.Navigation is null)
+            {
+                return;
+            }
+
+            var trailingTabs = _options.Navigation.TrailingTabs;
+            if (trailingTabs.Count == 0)
+            {
+                return;
+            }
+
+            _docsJsonManager.Configuration.Navigation.Tabs ??= [];
+            _docsJsonManager.Configuration.Navigation.Tabs.AddRange(trailingTabs);
         }
 
         /// <summary>
@@ -1749,9 +1770,11 @@ namespace CloudNimble.DotNetDocs.Mintlify
                 return;
             }
 
+            var navigation = _docsJsonManager.Configuration.Navigation;
+
             // Get the current pages and groups to move
-            var currentPages = _docsJsonManager.Configuration.Navigation.Pages;
-            var currentGroups = _docsJsonManager.Configuration.Navigation.Groups;
+            var currentPages = navigation.Pages;
+            var currentGroups = navigation.Groups;
 
             // Determine the name for the root project
             var rootName = !string.IsNullOrWhiteSpace(_options.Navigation.Name)
@@ -1762,200 +1785,38 @@ namespace CloudNimble.DotNetDocs.Mintlify
             if (navigationType == NavigationType.Tabs)
             {
                 // Initialize Tabs if needed
-                _docsJsonManager.Configuration.Navigation.Tabs ??= [];
+                navigation.Tabs ??= [];
 
-                // Add root content as a new tab
-                _docsJsonManager.Configuration.Navigation.Tabs.Add(new TabConfig
+                // Add root content as a new tab, carrying GraphQL/MCP spec refs with the content
+                navigation.Tabs.Add(new TabConfig
                 {
                     Tab = rootName,
-                    Pages = currentPages
+                    Pages = currentPages,
+                    Graphql = navigation.Graphql,
+                    Mcp = navigation.Mcp
                 });
 
                 // Clear the Pages array since content is now in Tabs
-                _docsJsonManager.Configuration.Navigation.Pages = [];
+                navigation.Pages = [];
             }
             else if (navigationType == NavigationType.Products)
             {
                 // Initialize Products if needed
-                _docsJsonManager.Configuration.Navigation.Products ??= [];
+                navigation.Products ??= [];
 
-                // Add root content as a new product
-                _docsJsonManager.Configuration.Navigation.Products.Add(new ProductConfig
+                // Add root content as a new product, carrying GraphQL/MCP spec refs with the content
+                navigation.Products.Add(new ProductConfig
                 {
                     Product = rootName,
                     Pages = currentPages,
-                    Groups = currentGroups
+                    Groups = currentGroups,
+                    Graphql = navigation.Graphql,
+                    Mcp = navigation.Mcp
                 });
 
                 // Clear the Pages and Groups arrays since content is now in Products
-                _docsJsonManager.Configuration.Navigation.Pages = [];
-                _docsJsonManager.Configuration.Navigation.Groups = null;
-            }
-        }
-
-        #endregion
-
-        #region Private Methods - Placeholder Generation
-
-        /// <summary>
-        /// Renders placeholder conceptual content files for the documentation assembly.
-        /// </summary>
-        /// <param name="model">The documentation assembly to generate placeholders for.</param>
-        /// <returns>A task representing the asynchronous placeholder rendering operation.</returns>
-        public async Task RenderPlaceholdersAsync(DocAssembly model)
-        {
-            ArgumentNullException.ThrowIfNull(model);
-
-            var conceptualPath = Context.ConceptualPath;
-            if (string.IsNullOrWhiteSpace(conceptualPath))
-            {
-                return;
-            }
-
-            // Ensure conceptual directory exists
-            Directory.CreateDirectory(conceptualPath);
-
-            // Generate placeholders for assembly-level conceptual content
-            await GenerateAssemblyPlaceholdersAsync(model, conceptualPath);
-
-            // Generate placeholders for namespace-level conceptual content
-            foreach (var ns in model.Namespaces)
-            {
-                await GenerateNamespacePlaceholdersAsync(ns, conceptualPath);
-            }
-
-            // Generate placeholders for type-level conceptual content
-            foreach (var ns in model.Namespaces)
-            {
-                foreach (var type in ns.Types)
-                {
-                    await GenerateTypePlaceholdersAsync(type, ns, conceptualPath);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Generates placeholder files for assembly-level conceptual content.
-        /// </summary>
-        /// <param name="assembly">The assembly to generate placeholders for.</param>
-        /// <param name="conceptualPath">The base conceptual content path.</param>
-        /// <returns>A task representing the asynchronous operation.</returns>
-        private Task GenerateAssemblyPlaceholdersAsync(DocAssembly assembly, string conceptualPath)
-        {
-            // Assembly-level placeholders would go in the root conceptual directory
-            // For now, we'll focus on type-level placeholders as requested
-            return Task.CompletedTask;
-        }
-
-        /// <summary>
-        /// Generates placeholder files for namespace-level conceptual content.
-        /// </summary>
-        /// <param name="ns">The namespace to generate placeholders for.</param>
-        /// <param name="conceptualPath">The base conceptual content path.</param>
-        /// <returns>A task representing the asynchronous operation.</returns>
-        private async Task GenerateNamespacePlaceholdersAsync(DocNamespace ns, string conceptualPath)
-        {
-            // Build the namespace directory path
-            var namespacePath = Context.GetNamespaceFolderPath(ns.Name ?? "global");
-            var namespaceDir = Path.Combine(conceptualPath, namespacePath);
-
-            Console.WriteLine($"📝 Generating namespace placeholders for: {ns.Name} at {namespaceDir}");
-            Directory.CreateDirectory(namespaceDir);
-
-            // Generate individual placeholder files
-            var summaryPath = Path.Combine(namespaceDir, DocConstants.SummaryFileName);
-            if (!File.Exists(summaryPath))
-            {
-                await File.WriteAllTextAsync(summaryPath, GetSummaryTemplate(ns.Name ?? "global"));
-            }
-
-            var usagePath = Path.Combine(namespaceDir, DocConstants.UsageFileName);
-            if (!File.Exists(usagePath))
-            {
-                await File.WriteAllTextAsync(usagePath, GetUsageTemplate(ns.Name ?? "global"));
-            }
-
-            var examplesPath = Path.Combine(namespaceDir, DocConstants.ExamplesFileName);
-            if (!File.Exists(examplesPath))
-            {
-                await File.WriteAllTextAsync(examplesPath, GetExamplesTemplate(ns.Name ?? "global"));
-            }
-
-            var bestPracticesPath = Path.Combine(namespaceDir, DocConstants.BestPracticesFileName);
-            if (!File.Exists(bestPracticesPath))
-            {
-                await File.WriteAllTextAsync(bestPracticesPath, GetBestPracticesTemplate(ns.Name ?? "global"));
-            }
-
-            var patternsPath = Path.Combine(namespaceDir, DocConstants.PatternsFileName);
-            if (!File.Exists(patternsPath))
-            {
-                await File.WriteAllTextAsync(patternsPath, GetPatternsTemplate(ns.Name ?? "global"));
-            }
-
-            var considerationsPath = Path.Combine(namespaceDir, DocConstants.ConsiderationsFileName);
-            if (!File.Exists(considerationsPath))
-            {
-                await File.WriteAllTextAsync(considerationsPath, GetConsiderationsTemplate(ns.Name ?? "global"));
-            }
-
-            var relatedApisPath = Path.Combine(namespaceDir, DocConstants.RelatedApisFileName);
-            if (!File.Exists(relatedApisPath))
-            {
-                await File.WriteAllTextAsync(relatedApisPath, GetRelatedApisTemplate(ns.Name ?? "global"));
-            }
-        }
-
-        /// <summary>
-        /// Generates placeholder files for type-level conceptual content.
-        /// </summary>
-        /// <param name="type">The type to generate placeholders for.</param>
-        /// <param name="ns">The namespace containing the type.</param>
-        /// <param name="conceptualPath">The base conceptual content path.</param>
-        /// <returns>A task representing the asynchronous operation.</returns>
-        private async Task GenerateTypePlaceholdersAsync(DocType type, DocNamespace ns, string conceptualPath)
-        {
-            // Build the type directory path
-            var namespacePath = Context.GetNamespaceFolderPath(ns.Name ?? "global");
-            var typeDir = Path.Combine(conceptualPath, namespacePath, type.Name);
-
-            Directory.CreateDirectory(typeDir);
-
-            // Generate individual placeholder files
-            var usagePath = Path.Combine(typeDir, DocConstants.UsageFileName);
-            if (!File.Exists(usagePath))
-            {
-                await File.WriteAllTextAsync(usagePath, GetUsageTemplate(type.Name));
-            }
-
-            var examplesPath = Path.Combine(typeDir, DocConstants.ExamplesFileName);
-            if (!File.Exists(examplesPath))
-            {
-                await File.WriteAllTextAsync(examplesPath, GetExamplesTemplate(type.Name));
-            }
-
-            var bestPracticesPath = Path.Combine(typeDir, DocConstants.BestPracticesFileName);
-            if (!File.Exists(bestPracticesPath))
-            {
-                await File.WriteAllTextAsync(bestPracticesPath, GetBestPracticesTemplate(type.Name));
-            }
-
-            var patternsPath = Path.Combine(typeDir, DocConstants.PatternsFileName);
-            if (!File.Exists(patternsPath))
-            {
-                await File.WriteAllTextAsync(patternsPath, GetPatternsTemplate(type.Name));
-            }
-
-            var considerationsPath = Path.Combine(typeDir, DocConstants.ConsiderationsFileName);
-            if (!File.Exists(considerationsPath))
-            {
-                await File.WriteAllTextAsync(considerationsPath, GetConsiderationsTemplate(type.Name));
-            }
-
-            var relatedApisPath = Path.Combine(typeDir, DocConstants.RelatedApisFileName);
-            if (!File.Exists(relatedApisPath))
-            {
-                await File.WriteAllTextAsync(relatedApisPath, GetRelatedApisTemplate(type.Name));
+                navigation.Pages = [];
+                navigation.Groups = null;
             }
         }
 

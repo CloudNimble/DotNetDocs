@@ -1,18 +1,22 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFrameworks>net10.0;net9.0;net8.0</TargetFrameworks>
+        <TargetFrameworks>net11.0;net10.0</TargetFrameworks>
         <IsPackable>false</IsPackable>
     </PropertyGroup>
-
-    <ItemGroup>
-        <!--<PackageReference Include="Breakdance.Assemblies" Version="7.*-*" />-->
-    </ItemGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\CloudNimble.DotNetDocs.Core\CloudNimble.DotNetDocs.Core.csproj" />
         <ProjectReference Include="..\CloudNimble.DotNetDocs.Mintlify\CloudNimble.DotNetDocs.Mintlify.csproj" />
         <ProjectReference Include="..\CloudNimble.DotNetDocs.Tests.Shared\CloudNimble.DotNetDocs.Tests.Shared.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Compile Include="..\CloudNimble.DotNetDocs.Tests.Core\Helpers\BaselineAssert.cs" Link="Helpers\BaselineAssert.cs" />
+        <Compile Include="..\CloudNimble.DotNetDocs.Tests.Core\Helpers\BaselinePermutations.cs" Link="Helpers\BaselinePermutations.cs" />
+        <Compile Include="..\CloudNimble.DotNetDocs.Tests.Core\Helpers\ConceptualRoundTrip.cs" Link="Helpers\ConceptualRoundTrip.cs" />
+        <Compile Include="..\CloudNimble.DotNetDocs.Tests.Core\Helpers\IndentationSamples.cs" Link="Helpers\IndentationSamples.cs" />
+        <Compile Include="..\CloudNimble.DotNetDocs.Tests.Core\Helpers\RenderedOutputInspector.cs" Link="Helpers\RenderedOutputInspector.cs" />
     </ItemGroup>
 
     <ItemGroup>

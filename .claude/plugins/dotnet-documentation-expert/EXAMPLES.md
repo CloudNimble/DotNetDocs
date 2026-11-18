@@ -545,7 +545,7 @@ namespace MyApp.Abstractions
 
 ### Example: usage.mdz
 
-**File**: `conceptual/MyApp.Services/UserService/usage.mdz`
+**File**: `conceptual/MyApp/Services/UserService/usage.mdz`
 
 ```markdown
 # Using UserService

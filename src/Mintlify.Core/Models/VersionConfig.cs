@@ -31,8 +31,19 @@ namespace Mintlify.Core.Models
         /// <summary>
         /// Gets or sets whether this version is the default version.
         /// </summary>
+        /// <remarks>
+        /// When omitted, the first version in the array is the default.
+        /// </remarks>
         [JsonPropertyName("default")]
         public bool? Default { get; set; }
+
+        /// <summary>
+        /// Gets or sets the directory layout for this version and its descendants.
+        /// </summary>
+        /// <remarks>
+        /// Valid values are <c>none</c>, <c>accordion</c>, and <c>card</c>.
+        /// </remarks>
+        public string? Directory { get; set; }
 
         /// <summary>
         /// Gets or sets the dropdowns for the version.
@@ -76,9 +87,29 @@ namespace Mintlify.Core.Models
         public List<object>? Pages { get; set; }
 
         /// <summary>
+        /// Gets or sets the SDK documentation artifact used to auto-populate pages.
+        /// </summary>
+        public SdkRefConfig? Sdk { get; set; }
+
+        /// <summary>
         /// Gets or sets the tabs for the version.
         /// </summary>
         public List<TabConfig>? Tabs { get; set; }
+
+        /// <summary>
+        /// Gets or sets a short tag shown on the version selector.
+        /// </summary>
+        /// <remarks>
+        /// Badge label displayed next to the version, such as <c>Latest</c>,
+        /// <c>Recommended</c>, or <c>Beta</c>.
+        /// See https://www.mintlify.com/docs/organize/settings-structure#navigation-versions.
+        /// </remarks>
+        public string? Tag { get; set; }
+
+        /// <summary>
+        /// Gets or sets thumbnail overrides for this version.
+        /// </summary>
+        public NavThumbnailConfig? Thumbnail { get; set; }
 
         /// <summary>
         /// Gets or sets the name of the version.

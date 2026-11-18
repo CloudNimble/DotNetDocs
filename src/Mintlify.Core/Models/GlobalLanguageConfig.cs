@@ -28,6 +28,14 @@ namespace Mintlify.Core.Models
         public string Language { get; set; } = string.Empty;
 
         /// <summary>
+        /// Gets or sets a banner specific to this language.
+        /// </summary>
+        /// <remarks>
+        /// Accepts the same options as the top-level <c>banner</c> field.
+        /// </remarks>
+        public BannerConfig? Banner { get; set; }
+
+        /// <summary>
         /// Gets or sets whether this language is the default language for the documentation.
         /// </summary>
         /// <remarks>
@@ -38,6 +46,14 @@ namespace Mintlify.Core.Models
         public bool? Default { get; set; }
 
         /// <summary>
+        /// Gets or sets the directory layout for this language.
+        /// </summary>
+        /// <remarks>
+        /// Valid values are <c>none</c>, <c>accordion</c>, and <c>card</c>.
+        /// </remarks>
+        public string? Directory { get; set; }
+
+        /// <summary>
         /// Gets or sets whether this language option is hidden by default.
         /// </summary>
         /// <remarks>
@@ -46,6 +62,27 @@ namespace Mintlify.Core.Models
         /// or not ready for public access.
         /// </remarks>
         public bool? Hidden { get; set; }
+
+        /// <summary>
+        /// Gets or sets a footer specific to this language.
+        /// </summary>
+        /// <remarks>
+        /// Accepts the same options as the top-level <c>footer</c> field.
+        /// </remarks>
+        public FooterConfig? Footer { get; set; }
+
+        /// <summary>
+        /// Gets or sets a navbar specific to this language.
+        /// </summary>
+        /// <remarks>
+        /// Accepts the same options as the top-level <c>navbar</c> field.
+        /// </remarks>
+        public NavbarConfig? Navbar { get; set; }
+
+        /// <summary>
+        /// Gets or sets thumbnail overrides for this language.
+        /// </summary>
+        public NavThumbnailConfig? Thumbnail { get; set; }
 
         /// <summary>
         /// Gets or sets the URL or path for this language version.

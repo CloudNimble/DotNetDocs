@@ -56,6 +56,34 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Transformers
         #region Code Tag Tests
 
         [TestMethod]
+        [DataRow("<code>var even = numbers.Where(x =&gt; x % 2 == 0);</code>", "```csharp\nvar even = numbers.Where(x => x % 2 == 0);\n```")]
+        [DataRow("<code>var map = new Dictionary&lt;string, List&lt;int&gt;&gt;();</code>", "```csharp\nvar map = new Dictionary<string, List<int>>();\n```")]
+        [DataRow("<code>if (a &amp;&amp; b) { }</code>", "```csharp\nif (a && b) { }\n```")]
+        [DataRow("<code>var text = \"&amp;lt;\";</code>", "```csharp\nvar text = \"&lt;\";\n```")]
+        [DataRow("Returns <c>Task&lt;bool&gt;</c>.", "Returns `Task<bool>`.")]
+        [DataRow("Use <c>a =&gt; b</c> here.", "Use `a => b` here.")]
+        public async Task TransformAsync_DecodesXmlEntitiesInCode(string xml, string expected)
+        {
+            var testType = await GetFirstCoreTypeAsync();
+            testType.Examples = xml;
+
+            await _transformer.TransformAsync(testType);
+
+            testType.Examples.Should().Be(expected, "the XML file stores <, > and & as entities, and code must show the characters");
+        }
+
+        [TestMethod]
+        public async Task TransformAsync_LeavesCDataCodeAsWritten()
+        {
+            var testType = await GetFirstCoreTypeAsync();
+            testType.Examples = "<code><![CDATA[var html = \"&lt;b&gt;\" + (x => x);]]></code>";
+
+            await _transformer.TransformAsync(testType);
+
+            testType.Examples.Should().Be("```csharp\nvar html = \"&lt;b&gt;\" + (x => x);\n```", "CDATA content isn't entity-encoded, so decoding it would change what the author wrote");
+        }
+
+        [TestMethod]
         public async Task TransformAsync_RemovesCodeTagsFromExamples()
         {
             // Arrange
@@ -1254,17 +1282,23 @@ instance.DoWork();
                 .SelectMany(n => n.Types)
                 .First();
 
-            // Simulates what ExtractInnerXml produces from a multi-line <summary> with no XML tags.
-            // The 12-space indent on the second line is an artifact of the XML file formatting.
-            testType.Summary = "Represents the input parameters for the AskUserQuestion tool.\n            The AskUserQuestion tool presents structured multiple-choice questions to the user.";
+            // A multi-line <summary> with no XML tags, indented the way the compiler writes it into the XML file.
+            var memberXml = System.Xml.Linq.XDocument.Parse("""
+                <member name="T:Example">
+                    <summary>
+                    Represents the input parameters for the AskUserQuestion tool.
+                    The AskUserQuestion tool presents structured multiple-choice questions to the user.
+                    </summary>
+                </member>
+                """);
+            testType.Summary = manager.ExtractSummary(memberXml);
 
             await _transformer.TransformAsync(testType);
 
-            testType.Summary.Should().NotBeNull();
-            // The XML file indentation should be stripped
-            testType.Summary.Should().NotContain("\n            The");
-            testType.Summary.Should().Contain("Represents the input parameters");
-            testType.Summary.Should().Contain("The AskUserQuestion tool presents");
+            testType.Summary.Should().Be(string.Join(Environment.NewLine,
+                "Represents the input parameters for the AskUserQuestion tool.",
+                "The AskUserQuestion tool presents structured multiple-choice questions to the user."),
+                "extraction removes the XML file's indentation and the transformer leaves the result as it is");
         }
 
         #endregion
@@ -1859,6 +1893,25 @@ instance.DoWork();
             testType.Examples.Should().NotBeNull();
             testType.Examples.Should().Contain("&lt;test/&gt;");
             testType.Examples.Should().NotContain("```");
+        }
+
+        [TestMethod]
+        [DataRow("<a/>```noescape```", "&lt;a/&gt;")]
+        [DataRow("<a/>```noescape\r```", "&lt;a/&gt;")]
+        [DataRow("<a/>```noescape\n```", "&lt;a/&gt;")]
+        [DataRow("<a/>```noescape<b/>```", "&lt;a/&gt;<b/>")]
+        [DataRow("<a/>```noescape\r\n<b/>\r\n```<c/>", "&lt;a/&gt;<b/>\r\n&lt;c/&gt;")]
+        public async Task TransformAsync_NoEscapeBlockAtFenceBoundaries_KeepsOnlyItsContent(string examples, string expected)
+        {
+            var assemblyPath = typeof(NamespaceMode).Assembly.Location;
+            using var manager = new AssemblyManager(assemblyPath, System.IO.Path.ChangeExtension(assemblyPath, ".xml"));
+            var assembly = await manager.DocumentAsync();
+            var testType = assembly.Namespaces.SelectMany(n => n.Types).First();
+            testType.Examples = examples;
+
+            await _transformer.TransformAsync(testType);
+
+            testType.Examples.Should().Be(expected);
         }
 
         [TestMethod]
@@ -2818,6 +2871,21 @@ instance.DoWork();
             var secondRef = namespaceMode.SeeAlso!.Last();
             secondRef.IsResolved.Should().BeTrue();
             secondRef.ReferenceType.Should().Be(ReferenceType.Framework);
+        }
+
+        #endregion
+
+        #region Helper Methods
+
+        /// <summary>
+        /// Gets a real type from CloudNimble.DotNetDocs.Core to hold test content.
+        /// </summary>
+        private static async Task<DocType> GetFirstCoreTypeAsync()
+        {
+            var assemblyPath = typeof(NamespaceMode).Assembly.Location;
+            using var manager = new AssemblyManager(assemblyPath, System.IO.Path.ChangeExtension(assemblyPath, ".xml"));
+            var assembly = await manager.DocumentAsync();
+            return assembly.Namespaces.SelectMany(n => n.Types).First();
         }
 
         #endregion

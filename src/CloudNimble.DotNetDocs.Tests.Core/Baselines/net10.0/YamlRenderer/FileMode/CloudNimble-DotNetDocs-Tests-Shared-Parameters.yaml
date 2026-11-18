@@ -1,7 +1,6 @@
 name: CloudNimble.DotNetDocs.Tests.Shared.Parameters
 types:
-- baseType: System.Object
-  members:
+- members:
   - accessibility: Public
     memberKind: Method
     methodKind: Ordinary
@@ -48,9 +47,12 @@ types:
     displayName: CloudNimble.DotNetDocs.Tests.Shared.Parameters.ParameterVariations.MethodWithOptionalParam(string, int)
     examples: >-
       <code>
-                  var result1 = MethodWithOptionalParam("test");      // Uses default value 42
-                  var result2 = MethodWithOptionalParam("test", 100); // Uses provided value
-                  </code>
+
+      var result1 = MethodWithOptionalParam("test");      // Uses default value 42
+
+      var result2 = MethodWithOptionalParam("test", 100); // Uses provided value
+
+      </code>
     returns: A formatted string combining both parameters.
     summary: A method with an optional parameter.
   - accessibility: Public
@@ -83,9 +85,12 @@ types:
     displayName: CloudNimble.DotNetDocs.Tests.Shared.Parameters.ParameterVariations.MethodWithParams(params int[])
     examples: >-
       <code>
-                  var sum1 = MethodWithParams(1, 2, 3);        // Returns 6
-                  var sum2 = MethodWithParams(new[] { 1, 2 }); // Returns 3
-                  </code>
+
+      var sum1 = MethodWithParams(1, 2, 3);        // Returns 6
+
+      var sum2 = MethodWithParams(new[] { 1, 2 }); // Returns 3
+
+      </code>
     returns: The sum of all provided values.
     summary: A method with a params array.
   - accessibility: Public
@@ -185,9 +190,12 @@ types:
     displayName: CloudNimble.DotNetDocs.Tests.Shared.Parameters.ParameterVariations.GenericMethod<T>(T)
     examples: >-
       <code>
-                  var result1 = GenericMethod&lt;int&gt;(42);
-                  var result2 = GenericMethod("hello");
-                  </code>
+
+      var result1 = GenericMethod&lt;int&gt;(42);
+
+      var result2 = GenericMethod("hello");
+
+      </code>
     returns: The string representation of the value.
     summary: A generic method with a type parameter.
     typeParameters:
@@ -223,11 +231,11 @@ types:
       displayName: TValue value
       usage: The value.
     returnType:
-      assemblyName: System.Runtime
+      assemblyName: System.Private.CoreLib
       fullName: System.Collections.Generic.KeyValuePair<TKey, TValue>
       name: KeyValuePair
       signature: System.Collections.Generic.KeyValuePair<TKey, TValue>
-      typeKind: Error
+      typeKind: Struct
       isExternalReference: true
       displayName: System.Collections.Generic.KeyValuePair<TKey, TValue>
     returnTypeName: System.Collections.Generic.KeyValuePair<TKey, TValue>
@@ -248,15 +256,15 @@ types:
     parameters:
     - name: nullableInt
       parameterType:
-        assemblyName: System.Runtime
-        fullName: System.Nullable<int>
+        assemblyName: System.Private.CoreLib
+        fullName: int?
         name: Nullable
-        signature: System.Nullable<int>
-        typeKind: Error
+        signature: int?
+        typeKind: Struct
         isExternalReference: true
-        displayName: System.Nullable<int>
-      typeName: System.Nullable<int>
-      displayName: System.Nullable<int> nullableInt
+        displayName: int?
+      typeName: int?
+      displayName: int? nullableInt
       usage: An optional nullable integer.
     - name: nullableString
       parameterType:
@@ -279,9 +287,9 @@ types:
       isExternalReference: true
       displayName: string
     returnTypeName: string
-    signature: public string MethodWithNullables(System.Nullable<int> nullableInt, string nullableString)
+    signature: public string MethodWithNullables(int? nullableInt, string nullableString)
     declaringTypeName: CloudNimble.DotNetDocs.Tests.Shared.Parameters.ParameterVariations
-    displayName: CloudNimble.DotNetDocs.Tests.Shared.Parameters.ParameterVariations.MethodWithNullables(System.Nullable<int>, string?)
+    displayName: CloudNimble.DotNetDocs.Tests.Shared.Parameters.ParameterVariations.MethodWithNullables(int?, string?)
     returns: A description of the provided values.
     summary: A method with nullable parameters.
   - accessibility: Public

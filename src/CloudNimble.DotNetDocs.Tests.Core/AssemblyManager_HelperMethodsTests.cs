@@ -1,4 +1,5 @@
 using System.Linq;
+using System.Threading.Tasks;
 using CloudNimble.DotNetDocs.Core;
 using CloudNimble.DotNetDocs.Tests.Shared;
 using CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios;
@@ -290,104 +291,241 @@ namespace Test
 
         #endregion
 
-        #region Tests - GetMicrosoftDocsUrl
+        #region Tests - GetLearnTypeName
 
         [TestMethod]
-        public void GetMicrosoftDocsUrl_SystemType_ReturnsCorrectUrl()
+        public void GetLearnTypeName_NonGenericType_ReturnsFullName()
         {
-            // Arrange
-            var source = "public class Test { }";
-            var compilation = CreateCompilation(source);
+            var compilation = CreateCompilation("public class Test { }");
             var stringType = compilation.GetSpecialType(SpecialType.System_String);
 
-            // Act
-            var url = AssemblyManager.GetMicrosoftDocsUrl(stringType);
-
-            // Assert
-            url.Should().NotBeNullOrEmpty();
-            url.Should().StartWith("https://learn.microsoft.com/dotnet/api/");
-            url.Should().Contain("system.string");
+            AssemblyManager.GetLearnTypeName(stringType).Should().Be("System.String");
         }
 
         [TestMethod]
-        public void GetMicrosoftDocsUrl_MicrosoftType_ReturnsCorrectUrl()
+        [DataRow("System.Collections.Generic.List<int>", "System.Collections.Generic.List`1")]
+        [DataRow("System.Collections.Generic.Dictionary<string, int>", "System.Collections.Generic.Dictionary`2")]
+        [DataRow("System.Collections.Generic.Dictionary<string, int>.KeyCollection", "System.Collections.Generic.Dictionary`2.KeyCollection")]
+        public void GetLearnTypeName_ConstructedGenericType_UsesArityOfDefinition(string propertyType, string expected)
         {
-            // Arrange
-            var testAssemblyPath = typeof(SimpleClass).Assembly.Location;
-            var testXmlPath = System.IO.Path.ChangeExtension(testAssemblyPath, ".xml");
-            var source = @"
-using System.Collections.Generic;
-public class Test
-{
-    public List<int> Items { get; set; }
-}";
-            var compilation = CreateCompilation(source);
-            var testType = compilation.GetTypeByMetadataName("Test")!;
-            var itemsProperty = (IPropertySymbol)testType.GetMembers("Items").First();
-            var listType = itemsProperty.Type;
+            var compilation = CreateCompilation($"public class Test {{ public {propertyType} Items {{ get; set; }} }}");
+            var itemsType = ((IPropertySymbol)compilation.GetTypeByMetadataName("Test")!.GetMembers("Items").First()).Type;
 
-            // Act
-            var url = AssemblyManager.GetMicrosoftDocsUrl((ITypeSymbol)listType);
-
-            // Assert
-            url.Should().NotBeNullOrEmpty();
-            url.Should().StartWith("https://learn.microsoft.com/dotnet/api/");
-            url.Should().Contain("system.collections.generic.list");
+            AssemblyManager.GetLearnTypeName(itemsType).Should().Be(expected, "Microsoft Learn pages are named by generic arity, so type arguments in braces would link to a page that does not exist");
         }
 
         [TestMethod]
-        public void GetMicrosoftDocsUrl_GenericType_ConvertsAngleBrackets()
+        public void GetLearnTypeName_UnresolvedType_StripsErrorPrefix()
         {
-            // Arrange
-            var source = @"
-using System.Collections.Generic;
-public class Test
-{
-    public List<int> Items { get; set; }
-}";
-            var compilation = CreateCompilation(source);
-            var testType = compilation.GetTypeByMetadataName("Test")!;
-            var itemsProperty = (IPropertySymbol)testType.GetMembers("Items").First();
-            var listType = itemsProperty.Type;
+            var compilation = CSharpCompilation.Create("NoReferences", [CSharpSyntaxTree.ParseText("public class Test { public List<int> Items { get; set; } }")]);
+            var itemsType = ((IPropertySymbol)compilation.GetTypeByMetadataName("Test")!.GetMembers("Items").First()).Type;
 
-            // Act
-            var url = AssemblyManager.GetMicrosoftDocsUrl((ITypeSymbol)listType);
-
-            // Assert
-            url.Should().NotContain("<", "Angle brackets should be converted");
-            url.Should().NotContain(">", "Angle brackets should be converted");
-            url.Should().Contain("{", "Should use curly braces for generics");
-            url.Should().Contain("}", "Should use curly braces for generics");
+            itemsType.TypeKind.Should().Be(TypeKind.Error);
+            AssemblyManager.GetLearnTypeName(itemsType).Should().Be("List`1", "unresolved types have the '!:' prefix instead of 'T:'");
         }
 
         [TestMethod]
-        public void GetMicrosoftDocsUrl_NonMicrosoftType_ReturnsEmptyString()
+        public void GetLearnTypeName_UnresolvedNestedTypeOfConstructedType_ReturnsNull()
         {
-            // Arrange
-            var source = "namespace Custom { public class MyType { } }";
-            var compilation = CreateCompilation(source);
-            var customType = compilation.GetTypeByMetadataName("Custom.MyType")!;
+            var compilation = CSharpCompilation.Create("NoReferences", [CSharpSyntaxTree.ParseText("public class Test { public Dictionary<string, int>.KeyCollection Keys { get; set; } }")]);
+            var keysType = ((IPropertySymbol)compilation.GetTypeByMetadataName("Test")!.GetMembers("Keys").First()).Type;
 
-            // Act
-            var url = AssemblyManager.GetMicrosoftDocsUrl(customType);
+            AssemblyManager.GetLearnTypeName(keysType).Should().BeNull("an ID that still contains type arguments cannot be turned into a Microsoft Learn page name");
+        }
 
-            // Assert
-            url.Should().BeEmpty("Non-Microsoft types should return empty string");
+        #endregion
+
+        #region Tests - IsMicrosoftAssembly
+
+        [TestMethod]
+        [DataRow("System", true)]
+        [DataRow("mscorlib", true)]
+        [DataRow("netstandard", true)]
+        [DataRow("System.Runtime", true)]
+        [DataRow("System.Private.CoreLib", true)]
+        [DataRow("Microsoft.Extensions.Logging", true)]
+        [DataRow("SystemsCorp.Tools", false)]
+        [DataRow("Systemd", false)]
+        [DataRow("MicrosoftFan.Library", false)]
+        [DataRow("system.runtime", false)]
+        [DataRow("MSTest.TestFramework", false)]
+        [DataRow("", false)]
+        [DataRow(null, false)]
+        public void IsMicrosoftAssembly_MatchesWholeNameSegments(string? assemblyName, bool expected)
+        {
+            AssemblyManager.IsMicrosoftAssembly(assemblyName).Should().Be(expected);
+        }
+
+        #endregion
+
+        #region Tests - Documentation Extraction
+
+        [TestMethod]
+        public void ExtractParameterDocumentation_IgnoresParamWithoutName_AndReturnsEmptyWhenNotFound()
+        {
+            using var manager = CreateManager();
+            var doc = System.Xml.Linq.XDocument.Parse("<member><param>No name.</param><param name=\"value\">The <c>value</c>.</param></member>");
+
+            manager.ExtractParameterDocumentation(doc, "value").Should().Be("The <c>value</c>.");
+            manager.ExtractParameterDocumentation(doc, "missing").Should().BeEmpty();
+            manager.ExtractParameterDocumentation(null, "value").Should().BeEmpty();
         }
 
         [TestMethod]
-        public void GetMicrosoftDocsUrl_UrlIsLowerCase()
+        public void ExtractExceptions_SkipsExceptionsWithoutCref_AndAllowsEmptyDescriptions()
         {
-            // Arrange
-            var source = "public class Test { }";
-            var compilation = CreateCompilation(source);
-            var stringType = compilation.GetSpecialType(SpecialType.System_String);
+            using var manager = CreateManager();
+            var doc = System.Xml.Linq.XDocument.Parse("""
+                <member>
+                    <exception>No type.</exception>
+                    <exception cref="T:System.ArgumentNullException">When <paramref name="value"/> is null.</exception>
+                    <exception cref="T:System.InvalidOperationException"/>
+                </member>
+                """);
 
-            // Act
-            var url = AssemblyManager.GetMicrosoftDocsUrl(stringType);
+            var exceptions = manager.ExtractExceptions(doc);
 
-            // Assert
-            url.Should().Be(url.ToLowerInvariant(), "URLs should be lowercase for MS docs");
+            exceptions.Should().NotBeNull();
+            exceptions!.Select(e => (e.Type, e.Description)).Should().Equal(
+                ("ArgumentNullException", "When <paramref name=\"value\" /> is null."),
+                ("InvalidOperationException", string.Empty));
+        }
+
+        [TestMethod]
+        public void ExtractExceptions_ReturnsNull_WhenNoExceptionHasAType()
+        {
+            using var manager = CreateManager();
+
+            manager.ExtractExceptions(System.Xml.Linq.XDocument.Parse("<member><exception>No type.</exception></member>")).Should().BeNull();
+            manager.ExtractExceptions(null).Should().BeNull();
+        }
+
+        [TestMethod]
+        public void ExtractTypeParameters_SkipsTypeParametersWithoutName_AndAllowsEmptyDescriptions()
+        {
+            using var manager = CreateManager();
+            var doc = System.Xml.Linq.XDocument.Parse("<member><typeparam>No name.</typeparam><typeparam name=\"T\">The item type.</typeparam><typeparam name=\"TKey\"/></member>");
+
+            var typeParameters = manager.ExtractTypeParameters(doc);
+
+            typeParameters.Should().NotBeNull();
+            typeParameters!.Select(p => (p.Name, p.Description)).Should().Equal(("T", "The item type."), ("TKey", string.Empty));
+            manager.ExtractTypeParameters(System.Xml.Linq.XDocument.Parse("<member><typeparam>No name.</typeparam></member>")).Should().BeNull();
+        }
+
+        [TestMethod]
+        public void ExtractSeeAlso_SkipsEntriesWithoutCref()
+        {
+            using var manager = CreateManager();
+            var doc = System.Xml.Linq.XDocument.Parse("<member><seealso href=\"https://example.com\">Example</seealso><seealso cref=\"\"/><seealso cref=\"T:Widget\"/></member>");
+
+            var seeAlso = manager.ExtractSeeAlso(doc);
+
+            seeAlso.Should().NotBeNull();
+            seeAlso!.Select(s => s.RawReference).Should().Equal("T:Widget");
+            manager.ExtractSeeAlso(System.Xml.Linq.XDocument.Parse("<member><seealso href=\"https://example.com\"/></member>")).Should().BeNull();
+        }
+
+        [TestMethod]
+        public void ExtractInnerXmlExcluding_RemovesExcludedTags_AndReturnsNullWhenNothingIsLeft()
+        {
+            using var manager = CreateManager();
+            var withText = System.Xml.Linq.XElement.Parse("<summary>Keeps <c>this</c>.<seealso cref=\"T:Widget\"/></summary>");
+            var onlyExcluded = System.Xml.Linq.XElement.Parse("<summary> <seealso cref=\"T:Widget\"/> </summary>");
+
+            manager.ExtractInnerXmlExcluding(withText, "seealso").Should().Be("Keeps <c>this</c>.");
+            withText.Descendants("seealso").Should().ContainSingle("the original element must not be modified");
+            manager.ExtractInnerXmlExcluding(onlyExcluded, "seealso").Should().BeNull();
+            manager.ExtractInnerXmlExcluding(null, "seealso").Should().BeNull();
+        }
+
+        #endregion
+
+        #region Tests - Indentation Normalization
+
+        [TestMethod]
+        public void ExtractRemarks_RemovesTheXmlFileIndentationFromContinuationLines()
+        {
+            using var manager = CreateManager();
+            var doc = System.Xml.Linq.XDocument.Parse("""
+                <member>
+                    <remarks>
+                    These are remarks about the SimpleClass. They provide additional context
+                    and information beyond what's in the summary.
+                    </remarks>
+                </member>
+                """);
+
+            var remarks = manager.ExtractRemarks(doc);
+
+            remarks.Should().Be(string.Join(System.Environment.NewLine,
+                "These are remarks about the SimpleClass. They provide additional context",
+                "and information beyond what's in the summary."));
+        }
+
+        [TestMethod]
+        public void ExtractExamples_KeepsRelativeIndentationInsideCode()
+        {
+            using var manager = CreateManager();
+            var doc = System.Xml.Linq.XDocument.Parse("""
+                <member>
+                    <example>
+                    <code>
+                    if (ready)
+                    {
+                        Go();
+                    }
+                    </code>
+                    </example>
+                </member>
+                """);
+
+            var examples = manager.ExtractExamples(doc);
+
+            examples.Should().Be(string.Join(System.Environment.NewLine,
+                "<code>",
+                "if (ready)",
+                "{",
+                "    Go();",
+                "}",
+                "</code>"), "only the indentation shared by every line comes from the XML file");
+        }
+
+        [TestMethod]
+        public async Task DocumentAsync_ExtractsMultiLineRemarksWithoutDocCommentIndentation()
+        {
+            using var manager = CreateManager();
+
+            var assembly = await manager.DocumentAsync(new ProjectContext());
+
+            assembly.Namespaces.SelectMany(n => n.Types).Single(t => t.Name == nameof(SimpleClass)).Remarks
+                .Should().Be(string.Join(System.Environment.NewLine,
+                    "These are remarks about the SimpleClass. They provide additional context",
+                    "and information beyond what's in the summary."));
+        }
+
+        #endregion
+
+        #region Tests - BuildModel
+
+        [TestMethod]
+        public void BuildModel_ThrowsWhenCompilationDoesNotReferenceTheTargetAssembly()
+        {
+            using var manager = CreateManager();
+
+            var act = () => manager.BuildModel(CSharpCompilation.Create("Unrelated"), null);
+
+            act.Should().Throw<System.InvalidOperationException>().WithMessage("Target assembly reference not found in compilation.");
+        }
+
+        #endregion
+
+        #region Helper Methods - Manager
+
+        private static AssemblyManager CreateManager()
+        {
+            var assemblyPath = typeof(SampleClass).Assembly.Location;
+            return new AssemblyManager(assemblyPath, System.IO.Path.ChangeExtension(assemblyPath, ".xml"));
         }
 
         #endregion

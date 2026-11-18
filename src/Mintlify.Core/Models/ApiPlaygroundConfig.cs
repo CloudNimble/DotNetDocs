@@ -16,12 +16,20 @@ namespace Mintlify.Core.Models
         #region Properties
 
         /// <summary>
+        /// Gets or sets whether the playground sends cookies and stored credentials
+        /// when <see cref="Proxy"/> is false.
+        /// </summary>
+        [JsonPropertyName("credentials")]
+        public bool? Credentials { get; set; }
+
+        /// <summary>
         /// Gets or sets the display mode of the API playground.
         /// </summary>
         /// <remarks>
         /// Valid values are:
         /// - "interactive": Full interactive playground with request/response testing
         /// - "simple": Copyable endpoint with no interactive features
+        /// - "auth": Show authentication controls without a full playground
         /// - "none": Hide the playground completely
         /// Defaults to "interactive" when not specified.
         /// </remarks>

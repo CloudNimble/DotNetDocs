@@ -44,7 +44,8 @@ namespace Mintlify.Core.Converters
             return reader.TokenType switch
             {
                 JsonTokenType.String => reader.GetString(),
-                JsonTokenType.StartObject => JsonSerializer.Deserialize<GroupConfig>(ref reader, options),
+                JsonTokenType.StartObject => ReadObject(ref reader, options),
+                JsonTokenType.Null => null,
                 _ => throw new JsonException($"Unexpected token type for navigation page: {reader.TokenType}")
             };
         }
@@ -68,10 +69,46 @@ namespace Mintlify.Core.Converters
                     JsonSerializer.Serialize(writer, groupValue, options);
                     break;
 
+                case NavigationLinkConfig linkValue:
+                    JsonSerializer.Serialize(writer, linkValue, options);
+                    break;
+
+                case SourceRefConfig sourceRefValue:
+                    JsonSerializer.Serialize(writer, sourceRefValue, options);
+                    break;
+
                 default:
                     throw new JsonException(
-                        $"Unsupported navigation page value type. Expected string or GroupConfig.");
+                        $"Unsupported navigation page value type. Expected string, GroupConfig, NavigationLinkConfig, or SourceRefConfig.");
             }
+        }
+
+        #endregion
+
+        #region Private Methods
+
+        private static object ReadObject(ref Utf8JsonReader reader, JsonSerializerOptions options)
+        {
+            using var document = JsonDocument.ParseValue(ref reader);
+            var root = document.RootElement;
+
+            if (root.TryGetProperty("group", out _))
+            {
+                return root.Deserialize<GroupConfig>(options)!;
+            }
+
+            if (root.TryGetProperty("sourceRef", out var sourceRefElement))
+            {
+                return new SourceRefConfig { SourceRef = sourceRefElement.GetString() };
+            }
+
+            if (root.TryGetProperty("type", out var typeElement) &&
+                string.Equals(typeElement.GetString(), "link", StringComparison.OrdinalIgnoreCase))
+            {
+                return root.Deserialize<NavigationLinkConfig>(options)!;
+            }
+
+            return root.Deserialize<GroupConfig>(options)!;
         }
 
         #endregion

@@ -13,7 +13,7 @@ If you create any temporary new files, scripts, or helper files for iteration, c
 ## Guidelines
 
 * Make only high confidence suggestions when reviewing code changes.
-* Always use the latest version C#. When global.json targets .NET 8, use C# 12. When it targets .NET 9.0, use C# 13. When it uses .NET 10.0, target C# 14.
+* Always use the latest version C#. When global.json targets .NET 8, use C# 12. When it targets .NET 9.0, use C# 13. When it uses .NET 10.0, target C# 14. When it uses .NET 11.0, target C# 15.
 * Never change global.json unless explicitly asked to.
 * Always prefer `.IsNullOrWhiteSpace()` over `.IsNullOrEmpty()` for strings.
 * Always prefer `ArgumentException.ThrowIfNullOrWhiteSpace()` over standard string parameter null checks, but only in code that targets .NET 8 or later.

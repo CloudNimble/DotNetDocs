@@ -33,10 +33,15 @@ namespace CloudNimble.DotNetDocs.Core
         Task RenderAsync(DocAssembly? model);
 
         /// <summary>
-        /// Renders placeholder conceptual content files for the documentation assembly.
+        /// Adds this renderer's own files to the conceptual content folder.
         /// </summary>
-        /// <param name="model">The documentation assembly to generate placeholders for.</param>
+        /// <param name="model">The documentation model that placeholders are being generated for.</param>
         /// <returns>A task representing the asynchronous placeholder rendering operation.</returns>
+        /// <remarks>
+        /// <see cref="DocumentationManager.GeneratePlaceholdersAsync(DocAssembly)"/> writes the standard namespace and type
+        /// placeholders itself, then calls this method on each registered renderer, one at a time. Use it only for files the
+        /// standard placeholders don't cover; <see cref="Renderers.RendererBase"/> provides an implementation that does nothing.
+        /// </remarks>
         Task RenderPlaceholdersAsync(DocAssembly model);
 
         #endregion

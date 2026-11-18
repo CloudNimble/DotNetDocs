@@ -154,7 +154,7 @@ namespace Mintlify.Core
         public bool AppearanceStrict { get; set; }
 
         /// <summary>
-        /// Gets or sets the icon library to use (fontawesome, lucide).
+        /// Gets or sets the icon library to use (fontawesome, lucide, tabler).
         /// </summary>
         public string IconLibrary { get; set; } = "fontawesome";
 
@@ -262,7 +262,7 @@ namespace Mintlify.Core
                 }
             }
 
-            var validThemes = new[] { "mint", "maple", "palm", "willow", "linden", "almond", "aspen" };
+            var validThemes = new[] { "mint", "maple", "palm", "willow", "linden", "almond", "aspen", "sequoia", "luma" };
             if (!string.IsNullOrWhiteSpace(Theme) && !validThemes.Contains(Theme, StringComparer.OrdinalIgnoreCase))
             {
                 throw new ArgumentException($"Invalid theme '{Theme}'. Valid themes are: {string.Join(", ", validThemes)}", nameof(Theme));
@@ -274,7 +274,7 @@ namespace Mintlify.Core
                 throw new ArgumentException($"Invalid appearance mode '{AppearanceDefault}'. Valid modes are: {string.Join(", ", validAppearanceModes)}", nameof(AppearanceDefault));
             }
 
-            var validIconLibraries = new[] { "fontawesome", "lucide" };
+            var validIconLibraries = new[] { "fontawesome", "lucide", "tabler" };
             if (!string.IsNullOrWhiteSpace(IconLibrary) && !validIconLibraries.Contains(IconLibrary, StringComparer.OrdinalIgnoreCase))
             {
                 throw new ArgumentException($"Invalid icon library '{IconLibrary}'. Valid libraries are: {string.Join(", ", validIconLibraries)}", nameof(IconLibrary));

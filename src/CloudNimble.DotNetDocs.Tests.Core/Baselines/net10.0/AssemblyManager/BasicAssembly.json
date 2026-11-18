@@ -167,7 +167,6 @@
           "relatedApis": []
         },
         {
-          "baseType": "System.Object",
           "members": [
             {
               "accessibility": "public",
@@ -862,7 +861,6 @@
       "name": "CloudNimble.DotNetDocs.Tests.Shared.AccessModifiers",
       "types": [
         {
-          "baseType": "System.Object",
           "members": [
             {
               "accessibility": "public",
@@ -1333,7 +1331,6 @@
       "name": "CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios",
       "types": [
         {
-          "baseType": "System.Object",
           "members": [
             {
               "accessibility": "public",
@@ -1799,7 +1796,6 @@
           "summary": "A base class for testing inheritance documentation."
         },
         {
-          "baseType": "System.Object",
           "members": [
             {
               "accessibility": "public",
@@ -1865,7 +1861,7 @@
               "declaringTypeName": "CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ClassWithMethods",
               "isExtensionMethod": false,
               "displayName": "CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ClassWithMethods.Calculate(int, int)",
-              "examples": "<code>\r\n            var result = Calculate(3, 4); // Returns 7\r\n            </code>",
+              "examples": "<code>\r\nvar result = Calculate(3, 4); // Returns 7\r\n</code>",
               "returns": "The sum of a and b.",
               "summary": "Calculates the sum of two numbers."
             },
@@ -2326,13 +2322,12 @@
           "typeKind": "class",
           "isExternalReference": false,
           "displayName": "CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ClassWithMethods",
-          "examples": "<code>\r\n            var obj = new ClassWithMethods();\r\n            var result = obj.Calculate(5, 10);\r\n            </code>",
+          "examples": "<code>\r\nvar obj = new ClassWithMethods();\r\nvar result = obj.Calculate(5, 10);\r\n</code>",
           "relatedApis": [],
           "remarks": "Contains methods with different signatures, parameters, and return types.",
           "summary": "A class demonstrating various method documentation scenarios."
         },
         {
-          "baseType": "System.Object",
           "members": [
             {
               "accessibility": "public",
@@ -3561,13 +3556,12 @@
           "typeKind": "class",
           "isExternalReference": false,
           "displayName": "CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass",
-          "examples": "<code>\r\n            var derived = new DerivedClass();\r\n            var result = derived.VirtualMethod();\r\n            </code>",
+          "examples": "<code>\r\nvar derived = new DerivedClass();\r\nvar result = derived.VirtualMethod();\r\n</code>",
           "relatedApis": [],
           "remarks": "This class inherits from BaseClass and overrides some members.",
           "summary": "A derived class for testing inheritance documentation."
         },
         {
-          "baseType": "System.Object",
           "members": [
             {
               "accessibility": "public",
@@ -4024,7 +4018,7 @@
           "typeKind": "class",
           "isExternalReference": false,
           "displayName": "CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DisposableClass",
-          "examples": "<code>\r\n            using (var disposable = new DisposableClass())\r\n            {\r\n                disposable.UseResource();\r\n            }\r\n            </code>",
+          "examples": "<code>\r\nusing (var disposable = new DisposableClass())\r\n{\r\n    disposable.UseResource();\r\n}\r\n</code>",
           "relatedApis": [
             "System.IDisposable"
           ],
@@ -4139,7 +4133,7 @@
               "isExtensionMethod": true,
               "extendedTypeName": "CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ITestInterface",
               "displayName": "CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.TestsShared_ITestInterfaceExtensions.GetFormattedValue(CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ITestInterface)",
-              "examples": "<code>\r\n            ITestInterface test = new TestImplementation();\r\n            var formatted = test.GetFormattedValue();\r\n            </code>",
+              "examples": "<code>\r\nITestInterface test = new TestImplementation();\r\nvar formatted = test.GetFormattedValue();\r\n</code>",
               "returns": "A formatted string containing the test value.",
               "summary": "Gets a formatted string from the interface."
             },
@@ -4202,11 +4196,10 @@
           "isExternalReference": false,
           "displayName": "CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ITestInterface",
           "relatedApis": [],
-          "remarks": "This interface is used to test extension methods on interfaces and to verify\r\n            that inherited members from interfaces are properly documented.",
+          "remarks": "This interface is used to test extension methods on interfaces and to verify\r\nthat inherited members from interfaces are properly documented.",
           "summary": "A test interface for demonstrating interface inheritance and extension methods."
         },
         {
-          "baseType": "System.Object",
           "members": [
             {
               "accessibility": "public",
@@ -4600,7 +4593,7 @@
               "isExtensionMethod": true,
               "extendedTypeName": "CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.SimpleClass",
               "displayName": "CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.TestsShared_SimpleClassExtensions.ToDisplayString(CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.SimpleClass)",
-              "examples": "<code>\r\n            var simple = new SimpleClass();\r\n            var display = simple.ToDisplayString();\r\n            </code>",
+              "examples": "<code>\r\nvar simple = new SimpleClass();\r\nvar display = simple.ToDisplayString();\r\n</code>",
               "returns": "A formatted string representation.",
               "summary": "Converts a SimpleClass instance to a display string."
             },
@@ -4662,13 +4655,12 @@
           "typeKind": "class",
           "isExternalReference": false,
           "displayName": "CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.SimpleClass",
-          "examples": "<code>\r\n            var simple = new SimpleClass();\r\n            simple.DoWork();\r\n            </code>",
+          "examples": "<code>\r\nvar simple = new SimpleClass();\r\nsimple.DoWork();\r\n</code>",
           "relatedApis": [],
-          "remarks": "These are remarks about the SimpleClass. They provide additional context\r\n            and information beyond what's in the summary.",
+          "remarks": "These are remarks about the SimpleClass. They provide additional context\r\nand information beyond what's in the summary.",
           "summary": "A simple class for testing basic documentation extraction."
         },
         {
-          "baseType": "System.Object",
           "members": [
             {
               "accessibility": "public",
@@ -5085,7 +5077,7 @@
           "relatedApis": [
             "CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ITestInterface"
           ],
-          "remarks": "This class implements ITestInterface to demonstrate interface member inheritance\r\n            in documentation generation.",
+          "remarks": "This class implements ITestInterface to demonstrate interface member inheritance\r\nin documentation generation.",
           "summary": "A test implementation of ITestInterface."
         }
       ],
@@ -5095,7 +5087,6 @@
       "name": "CloudNimble.DotNetDocs.Tests.Shared.EdgeCases",
       "types": [
         {
-          "baseType": "System.Object",
           "members": [
             {
               "accessibility": "public",
@@ -5532,7 +5523,6 @@
           "summary": "A class with minimal documentation."
         },
         {
-          "baseType": "System.Object",
           "members": [
             {
               "accessibility": "public",
@@ -5966,7 +5956,6 @@
           "relatedApis": []
         },
         {
-          "baseType": "System.Object",
           "members": [
             {
               "accessibility": "public",
@@ -6353,13 +6342,12 @@
           "typeKind": "class",
           "isExternalReference": false,
           "displayName": "CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithSpecialCharacters",
-          "examples": "<code>\r\n            // Using generics: List&lt;string&gt;\r\n            var list = new List&lt;string&gt;();\r\n            if (x &gt; 0 &amp;&amp; y &lt; 10) { }\r\n            </code>",
+          "examples": "<code>\r\n// Using generics: List&lt;string&gt;\r\nvar list = new List&lt;string&gt;();\r\nif (x &gt; 0 &amp;&amp; y &lt; 10) { }\r\n</code>",
           "relatedApis": [],
-          "remarks": "This tests handling of XML special characters like &lt;tag&gt; and &amp;entity;.\r\n            Also tests \"quotes\" and 'apostrophes'.",
+          "remarks": "This tests handling of XML special characters like &lt;tag&gt; and &amp;entity;.\r\nAlso tests \"quotes\" and 'apostrophes'.",
           "summary": "A class with special characters in documentation: &lt;, &gt;, &amp;, \", '."
         },
         {
-          "baseType": "System.Object",
           "members": [
             {
               "accessibility": "public",
@@ -6497,8 +6485,8 @@
                   "type": "ArgumentOutOfRangeException"
                 }
               ],
-              "examples": "<code>\r\n            var result = ComplexMethod(\"hello\", 5);\r\n            Console.WriteLine(result);\r\n            </code>",
-              "remarks": "<para>This method performs complex processing.</para><list type=\"bullet\">\r\n  <item>\r\n    <description>First, it validates the input.</description>\r\n  </item>\r\n  <item>\r\n    <description>Then, it processes the data.</description>\r\n  </item>\r\n  <item>\r\n    <description>Finally, it returns the result.</description>\r\n  </item>\r\n</list>",
+              "examples": "<code>\r\nvar result = ComplexMethod(\"hello\", 5);\r\nConsole.WriteLine(result);\r\n</code>",
+              "remarks": "<para>This method performs complex processing.</para><list type=\"bullet\">\r\n<item>\r\n  <description>First, it validates the input.</description>\r\n</item>\r\n<item>\r\n  <description>Then, it processes the data.</description>\r\n</item>\r\n<item>\r\n  <description>Finally, it returns the result.</description>\r\n</item>\r\n</list>",
               "returns": "A processed result string.",
               "seeAlso": [
                 {
@@ -6517,11 +6505,11 @@
               "parameters": [],
               "returnType": {
                 "members": [],
-                "assemblyName": "System.Runtime",
+                "assemblyName": "System.Private.CoreLib",
                 "fullName": "System.Collections.Generic.IEnumerable<object>",
                 "name": "IEnumerable",
                 "signature": "System.Collections.Generic.IEnumerable<object>",
-                "typeKind": "error",
+                "typeKind": "interface",
                 "isExternalReference": true,
                 "displayName": "System.Collections.Generic.IEnumerable<object>"
               },
@@ -6534,7 +6522,7 @@
               "declaringTypeName": "CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithFullDocs",
               "isExtensionMethod": false,
               "displayName": "CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithFullDocs.ProcessNumbers()",
-              "examples": "<code>\r\n            var numbers = Enumerable.Range(1, 10)\r\n                .Where(x =&gt; x % 2 == 0)\r\n                .Select(x =&gt; new\r\n                {\r\n                    Number = x,\r\n                    Square = x * x,\r\n                    Cube = x * x * x\r\n                })\r\n                .ToList();\r\n            </code>",
+              "examples": "<code>\r\nvar numbers = Enumerable.Range(1, 10)\r\n    .Where(x =&gt; x % 2 == 0)\r\n    .Select(x =&gt; new\r\n    {\r\n        Number = x,\r\n        Square = x * x,\r\n        Cube = x * x * x\r\n    })\r\n    .ToList();\r\n</code>",
               "returns": "A collection of transformed numbers.",
               "summary": "Filters and transforms a collection of numbers."
             },
@@ -6892,7 +6880,7 @@
           "typeKind": "class",
           "isExternalReference": false,
           "displayName": "CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithFullDocs",
-          "examples": "<code>\r\n            var fullDocs = new ClassWithFullDocs();\r\n            fullDocs.ComplexMethod(\"test\", 42);\r\n            </code>",
+          "examples": "<code>\r\nvar fullDocs = new ClassWithFullDocs();\r\nfullDocs.ComplexMethod(\"test\", 42);\r\n</code>",
           "relatedApis": [],
           "remarks": "<para>This class demonstrates all available XML documentation tags.</para><para>It includes multiple paragraphs in the remarks section.</para>",
           "seeAlso": [
@@ -6917,439 +6905,75 @@
       "types": [
         {
           "baseType": "System.Enum",
-          "members": [
-            {
-              "accessibility": "public",
-              "memberKind": "field",
-              "name": "value__",
-              "parameters": [],
-              "returnTypeName": "byte",
-              "signature": "public byte value__",
-              "isInherited": false,
-              "isOverride": false,
-              "isVirtual": false,
-              "isAbstract": false,
-              "declaringTypeName": "CloudNimble.DotNetDocs.Tests.Shared.Enums.ByteEnum",
-              "isExtensionMethod": false,
-              "displayName": "CloudNimble.DotNetDocs.Tests.Shared.Enums.ByteEnum.value__"
-            },
-            {
-              "accessibility": "public",
-              "memberKind": "field",
-              "name": "Min",
-              "parameters": [],
-              "returnTypeName": "CloudNimble.DotNetDocs.Tests.Shared.Enums.ByteEnum",
-              "signature": "public const CloudNimble.DotNetDocs.Tests.Shared.Enums.ByteEnum Min",
-              "isInherited": false,
-              "isOverride": false,
-              "isVirtual": false,
-              "isAbstract": false,
-              "declaringTypeName": "CloudNimble.DotNetDocs.Tests.Shared.Enums.ByteEnum",
-              "isExtensionMethod": false,
-              "displayName": "CloudNimble.DotNetDocs.Tests.Shared.Enums.ByteEnum.Min",
-              "summary": "Minimum value."
-            },
-            {
-              "accessibility": "public",
-              "memberKind": "field",
-              "name": "Low",
-              "parameters": [],
-              "returnTypeName": "CloudNimble.DotNetDocs.Tests.Shared.Enums.ByteEnum",
-              "signature": "public const CloudNimble.DotNetDocs.Tests.Shared.Enums.ByteEnum Low",
-              "isInherited": false,
-              "isOverride": false,
-              "isVirtual": false,
-              "isAbstract": false,
-              "declaringTypeName": "CloudNimble.DotNetDocs.Tests.Shared.Enums.ByteEnum",
-              "isExtensionMethod": false,
-              "displayName": "CloudNimble.DotNetDocs.Tests.Shared.Enums.ByteEnum.Low",
-              "summary": "Low value."
-            },
-            {
-              "accessibility": "public",
-              "memberKind": "field",
-              "name": "Medium",
-              "parameters": [],
-              "returnTypeName": "CloudNimble.DotNetDocs.Tests.Shared.Enums.ByteEnum",
-              "signature": "public const CloudNimble.DotNetDocs.Tests.Shared.Enums.ByteEnum Medium",
-              "isInherited": false,
-              "isOverride": false,
-              "isVirtual": false,
-              "isAbstract": false,
-              "declaringTypeName": "CloudNimble.DotNetDocs.Tests.Shared.Enums.ByteEnum",
-              "isExtensionMethod": false,
-              "displayName": "CloudNimble.DotNetDocs.Tests.Shared.Enums.ByteEnum.Medium",
-              "summary": "Medium value."
-            },
-            {
-              "accessibility": "public",
-              "memberKind": "field",
-              "name": "High",
-              "parameters": [],
-              "returnTypeName": "CloudNimble.DotNetDocs.Tests.Shared.Enums.ByteEnum",
-              "signature": "public const CloudNimble.DotNetDocs.Tests.Shared.Enums.ByteEnum High",
-              "isInherited": false,
-              "isOverride": false,
-              "isVirtual": false,
-              "isAbstract": false,
-              "declaringTypeName": "CloudNimble.DotNetDocs.Tests.Shared.Enums.ByteEnum",
-              "isExtensionMethod": false,
-              "displayName": "CloudNimble.DotNetDocs.Tests.Shared.Enums.ByteEnum.High",
-              "summary": "High value."
-            },
-            {
-              "accessibility": "public",
-              "memberKind": "field",
-              "name": "Max",
-              "parameters": [],
-              "returnTypeName": "CloudNimble.DotNetDocs.Tests.Shared.Enums.ByteEnum",
-              "signature": "public const CloudNimble.DotNetDocs.Tests.Shared.Enums.ByteEnum Max",
-              "isInherited": false,
-              "isOverride": false,
-              "isVirtual": false,
-              "isAbstract": false,
-              "declaringTypeName": "CloudNimble.DotNetDocs.Tests.Shared.Enums.ByteEnum",
-              "isExtensionMethod": false,
-              "displayName": "CloudNimble.DotNetDocs.Tests.Shared.Enums.ByteEnum.Max",
-              "summary": "Maximum value for byte."
-            }
-          ],
+          "members": [],
           "assemblyName": "CloudNimble.DotNetDocs.Tests.Shared",
           "fullName": "CloudNimble.DotNetDocs.Tests.Shared.Enums.ByteEnum",
           "name": "ByteEnum",
           "signature": "CloudNimble.DotNetDocs.Tests.Shared.Enums.ByteEnum",
-          "typeKind": "class",
+          "typeKind": "enum",
           "isExternalReference": false,
           "displayName": "CloudNimble.DotNetDocs.Tests.Shared.Enums.ByteEnum",
-          "relatedApis": [],
-          "remarks": "This enum uses a byte as its underlying type to save memory.\r\n            Values are limited to 0-255.",
+          "relatedApis": [
+            "System.IComparable",
+            "System.ISpanFormattable",
+            "System.IFormattable",
+            "System.IConvertible"
+          ],
+          "remarks": "This enum uses a byte as its underlying type to save memory.\r\nValues are limited to 0-255.",
           "summary": "An enum with byte underlying type."
         },
         {
           "baseType": "System.Enum",
-          "members": [
-            {
-              "accessibility": "public",
-              "memberKind": "field",
-              "name": "value__",
-              "parameters": [],
-              "returnTypeName": "int",
-              "signature": "public int value__",
-              "isInherited": false,
-              "isOverride": false,
-              "isVirtual": false,
-              "isAbstract": false,
-              "declaringTypeName": "CloudNimble.DotNetDocs.Tests.Shared.Enums.FlagsEnum",
-              "isExtensionMethod": false,
-              "displayName": "CloudNimble.DotNetDocs.Tests.Shared.Enums.FlagsEnum.value__"
-            },
-            {
-              "accessibility": "public",
-              "memberKind": "field",
-              "name": "None",
-              "parameters": [],
-              "returnTypeName": "CloudNimble.DotNetDocs.Tests.Shared.Enums.FlagsEnum",
-              "signature": "public const CloudNimble.DotNetDocs.Tests.Shared.Enums.FlagsEnum None",
-              "isInherited": false,
-              "isOverride": false,
-              "isVirtual": false,
-              "isAbstract": false,
-              "declaringTypeName": "CloudNimble.DotNetDocs.Tests.Shared.Enums.FlagsEnum",
-              "isExtensionMethod": false,
-              "displayName": "CloudNimble.DotNetDocs.Tests.Shared.Enums.FlagsEnum.None",
-              "summary": "No permissions."
-            },
-            {
-              "accessibility": "public",
-              "memberKind": "field",
-              "name": "Read",
-              "parameters": [],
-              "returnTypeName": "CloudNimble.DotNetDocs.Tests.Shared.Enums.FlagsEnum",
-              "signature": "public const CloudNimble.DotNetDocs.Tests.Shared.Enums.FlagsEnum Read",
-              "isInherited": false,
-              "isOverride": false,
-              "isVirtual": false,
-              "isAbstract": false,
-              "declaringTypeName": "CloudNimble.DotNetDocs.Tests.Shared.Enums.FlagsEnum",
-              "isExtensionMethod": false,
-              "displayName": "CloudNimble.DotNetDocs.Tests.Shared.Enums.FlagsEnum.Read",
-              "summary": "Read permission."
-            },
-            {
-              "accessibility": "public",
-              "memberKind": "field",
-              "name": "Write",
-              "parameters": [],
-              "returnTypeName": "CloudNimble.DotNetDocs.Tests.Shared.Enums.FlagsEnum",
-              "signature": "public const CloudNimble.DotNetDocs.Tests.Shared.Enums.FlagsEnum Write",
-              "isInherited": false,
-              "isOverride": false,
-              "isVirtual": false,
-              "isAbstract": false,
-              "declaringTypeName": "CloudNimble.DotNetDocs.Tests.Shared.Enums.FlagsEnum",
-              "isExtensionMethod": false,
-              "displayName": "CloudNimble.DotNetDocs.Tests.Shared.Enums.FlagsEnum.Write",
-              "summary": "Write permission."
-            },
-            {
-              "accessibility": "public",
-              "memberKind": "field",
-              "name": "Execute",
-              "parameters": [],
-              "returnTypeName": "CloudNimble.DotNetDocs.Tests.Shared.Enums.FlagsEnum",
-              "signature": "public const CloudNimble.DotNetDocs.Tests.Shared.Enums.FlagsEnum Execute",
-              "isInherited": false,
-              "isOverride": false,
-              "isVirtual": false,
-              "isAbstract": false,
-              "declaringTypeName": "CloudNimble.DotNetDocs.Tests.Shared.Enums.FlagsEnum",
-              "isExtensionMethod": false,
-              "displayName": "CloudNimble.DotNetDocs.Tests.Shared.Enums.FlagsEnum.Execute",
-              "summary": "Execute permission."
-            },
-            {
-              "accessibility": "public",
-              "memberKind": "field",
-              "name": "Delete",
-              "parameters": [],
-              "returnTypeName": "CloudNimble.DotNetDocs.Tests.Shared.Enums.FlagsEnum",
-              "signature": "public const CloudNimble.DotNetDocs.Tests.Shared.Enums.FlagsEnum Delete",
-              "isInherited": false,
-              "isOverride": false,
-              "isVirtual": false,
-              "isAbstract": false,
-              "declaringTypeName": "CloudNimble.DotNetDocs.Tests.Shared.Enums.FlagsEnum",
-              "isExtensionMethod": false,
-              "displayName": "CloudNimble.DotNetDocs.Tests.Shared.Enums.FlagsEnum.Delete",
-              "summary": "Delete permission."
-            },
-            {
-              "accessibility": "public",
-              "memberKind": "field",
-              "name": "All",
-              "parameters": [],
-              "returnTypeName": "CloudNimble.DotNetDocs.Tests.Shared.Enums.FlagsEnum",
-              "signature": "public const CloudNimble.DotNetDocs.Tests.Shared.Enums.FlagsEnum All",
-              "isInherited": false,
-              "isOverride": false,
-              "isVirtual": false,
-              "isAbstract": false,
-              "declaringTypeName": "CloudNimble.DotNetDocs.Tests.Shared.Enums.FlagsEnum",
-              "isExtensionMethod": false,
-              "displayName": "CloudNimble.DotNetDocs.Tests.Shared.Enums.FlagsEnum.All",
-              "summary": "All permissions combined."
-            }
-          ],
+          "members": [],
           "assemblyName": "CloudNimble.DotNetDocs.Tests.Shared",
           "fullName": "CloudNimble.DotNetDocs.Tests.Shared.Enums.FlagsEnum",
           "name": "FlagsEnum",
           "signature": "CloudNimble.DotNetDocs.Tests.Shared.Enums.FlagsEnum",
-          "typeKind": "class",
+          "typeKind": "enum",
           "isExternalReference": false,
           "displayName": "CloudNimble.DotNetDocs.Tests.Shared.Enums.FlagsEnum",
-          "relatedApis": [],
+          "relatedApis": [
+            "System.IComparable",
+            "System.ISpanFormattable",
+            "System.IFormattable",
+            "System.IConvertible"
+          ],
           "summary": "A flags enum for bitwise operations."
         },
         {
           "baseType": "System.Enum",
-          "members": [
-            {
-              "accessibility": "public",
-              "memberKind": "field",
-              "name": "value__",
-              "parameters": [],
-              "returnTypeName": "long",
-              "signature": "public long value__",
-              "isInherited": false,
-              "isOverride": false,
-              "isVirtual": false,
-              "isAbstract": false,
-              "declaringTypeName": "CloudNimble.DotNetDocs.Tests.Shared.Enums.LongEnum",
-              "isExtensionMethod": false,
-              "displayName": "CloudNimble.DotNetDocs.Tests.Shared.Enums.LongEnum.value__"
-            },
-            {
-              "accessibility": "public",
-              "memberKind": "field",
-              "name": "Small",
-              "parameters": [],
-              "returnTypeName": "CloudNimble.DotNetDocs.Tests.Shared.Enums.LongEnum",
-              "signature": "public const CloudNimble.DotNetDocs.Tests.Shared.Enums.LongEnum Small",
-              "isInherited": false,
-              "isOverride": false,
-              "isVirtual": false,
-              "isAbstract": false,
-              "declaringTypeName": "CloudNimble.DotNetDocs.Tests.Shared.Enums.LongEnum",
-              "isExtensionMethod": false,
-              "displayName": "CloudNimble.DotNetDocs.Tests.Shared.Enums.LongEnum.Small",
-              "summary": "Small value."
-            },
-            {
-              "accessibility": "public",
-              "memberKind": "field",
-              "name": "Million",
-              "parameters": [],
-              "returnTypeName": "CloudNimble.DotNetDocs.Tests.Shared.Enums.LongEnum",
-              "signature": "public const CloudNimble.DotNetDocs.Tests.Shared.Enums.LongEnum Million",
-              "isInherited": false,
-              "isOverride": false,
-              "isVirtual": false,
-              "isAbstract": false,
-              "declaringTypeName": "CloudNimble.DotNetDocs.Tests.Shared.Enums.LongEnum",
-              "isExtensionMethod": false,
-              "displayName": "CloudNimble.DotNetDocs.Tests.Shared.Enums.LongEnum.Million",
-              "summary": "Large value in millions."
-            },
-            {
-              "accessibility": "public",
-              "memberKind": "field",
-              "name": "Billion",
-              "parameters": [],
-              "returnTypeName": "CloudNimble.DotNetDocs.Tests.Shared.Enums.LongEnum",
-              "signature": "public const CloudNimble.DotNetDocs.Tests.Shared.Enums.LongEnum Billion",
-              "isInherited": false,
-              "isOverride": false,
-              "isVirtual": false,
-              "isAbstract": false,
-              "declaringTypeName": "CloudNimble.DotNetDocs.Tests.Shared.Enums.LongEnum",
-              "isExtensionMethod": false,
-              "displayName": "CloudNimble.DotNetDocs.Tests.Shared.Enums.LongEnum.Billion",
-              "summary": "Large value in billions."
-            },
-            {
-              "accessibility": "public",
-              "memberKind": "field",
-              "name": "VeryLarge",
-              "parameters": [],
-              "returnTypeName": "CloudNimble.DotNetDocs.Tests.Shared.Enums.LongEnum",
-              "signature": "public const CloudNimble.DotNetDocs.Tests.Shared.Enums.LongEnum VeryLarge",
-              "isInherited": false,
-              "isOverride": false,
-              "isVirtual": false,
-              "isAbstract": false,
-              "declaringTypeName": "CloudNimble.DotNetDocs.Tests.Shared.Enums.LongEnum",
-              "isExtensionMethod": false,
-              "displayName": "CloudNimble.DotNetDocs.Tests.Shared.Enums.LongEnum.VeryLarge",
-              "summary": "Very large value."
-            }
-          ],
+          "members": [],
           "assemblyName": "CloudNimble.DotNetDocs.Tests.Shared",
           "fullName": "CloudNimble.DotNetDocs.Tests.Shared.Enums.LongEnum",
           "name": "LongEnum",
           "signature": "CloudNimble.DotNetDocs.Tests.Shared.Enums.LongEnum",
-          "typeKind": "class",
+          "typeKind": "enum",
           "isExternalReference": false,
           "displayName": "CloudNimble.DotNetDocs.Tests.Shared.Enums.LongEnum",
-          "relatedApis": [],
+          "relatedApis": [
+            "System.IComparable",
+            "System.ISpanFormattable",
+            "System.IFormattable",
+            "System.IConvertible"
+          ],
           "summary": "An enum with long underlying type for large values."
         },
         {
           "baseType": "System.Enum",
-          "members": [
-            {
-              "accessibility": "public",
-              "memberKind": "field",
-              "name": "value__",
-              "parameters": [],
-              "returnTypeName": "int",
-              "signature": "public int value__",
-              "isInherited": false,
-              "isOverride": false,
-              "isVirtual": false,
-              "isAbstract": false,
-              "declaringTypeName": "CloudNimble.DotNetDocs.Tests.Shared.Enums.SimpleEnum",
-              "isExtensionMethod": false,
-              "displayName": "CloudNimble.DotNetDocs.Tests.Shared.Enums.SimpleEnum.value__"
-            },
-            {
-              "accessibility": "public",
-              "memberKind": "field",
-              "name": "None",
-              "parameters": [],
-              "returnTypeName": "CloudNimble.DotNetDocs.Tests.Shared.Enums.SimpleEnum",
-              "signature": "public const CloudNimble.DotNetDocs.Tests.Shared.Enums.SimpleEnum None",
-              "isInherited": false,
-              "isOverride": false,
-              "isVirtual": false,
-              "isAbstract": false,
-              "declaringTypeName": "CloudNimble.DotNetDocs.Tests.Shared.Enums.SimpleEnum",
-              "isExtensionMethod": false,
-              "displayName": "CloudNimble.DotNetDocs.Tests.Shared.Enums.SimpleEnum.None",
-              "summary": "No value specified."
-            },
-            {
-              "accessibility": "public",
-              "memberKind": "field",
-              "name": "First",
-              "parameters": [],
-              "returnTypeName": "CloudNimble.DotNetDocs.Tests.Shared.Enums.SimpleEnum",
-              "signature": "public const CloudNimble.DotNetDocs.Tests.Shared.Enums.SimpleEnum First",
-              "isInherited": false,
-              "isOverride": false,
-              "isVirtual": false,
-              "isAbstract": false,
-              "declaringTypeName": "CloudNimble.DotNetDocs.Tests.Shared.Enums.SimpleEnum",
-              "isExtensionMethod": false,
-              "displayName": "CloudNimble.DotNetDocs.Tests.Shared.Enums.SimpleEnum.First",
-              "summary": "First option."
-            },
-            {
-              "accessibility": "public",
-              "memberKind": "field",
-              "name": "Second",
-              "parameters": [],
-              "returnTypeName": "CloudNimble.DotNetDocs.Tests.Shared.Enums.SimpleEnum",
-              "signature": "public const CloudNimble.DotNetDocs.Tests.Shared.Enums.SimpleEnum Second",
-              "isInherited": false,
-              "isOverride": false,
-              "isVirtual": false,
-              "isAbstract": false,
-              "declaringTypeName": "CloudNimble.DotNetDocs.Tests.Shared.Enums.SimpleEnum",
-              "isExtensionMethod": false,
-              "displayName": "CloudNimble.DotNetDocs.Tests.Shared.Enums.SimpleEnum.Second",
-              "summary": "Second option."
-            },
-            {
-              "accessibility": "public",
-              "memberKind": "field",
-              "name": "Third",
-              "parameters": [],
-              "returnTypeName": "CloudNimble.DotNetDocs.Tests.Shared.Enums.SimpleEnum",
-              "signature": "public const CloudNimble.DotNetDocs.Tests.Shared.Enums.SimpleEnum Third",
-              "isInherited": false,
-              "isOverride": false,
-              "isVirtual": false,
-              "isAbstract": false,
-              "declaringTypeName": "CloudNimble.DotNetDocs.Tests.Shared.Enums.SimpleEnum",
-              "isExtensionMethod": false,
-              "displayName": "CloudNimble.DotNetDocs.Tests.Shared.Enums.SimpleEnum.Third",
-              "summary": "Third option with explicit value."
-            },
-            {
-              "accessibility": "public",
-              "memberKind": "field",
-              "name": "Fourth",
-              "parameters": [],
-              "returnTypeName": "CloudNimble.DotNetDocs.Tests.Shared.Enums.SimpleEnum",
-              "signature": "public const CloudNimble.DotNetDocs.Tests.Shared.Enums.SimpleEnum Fourth",
-              "isInherited": false,
-              "isOverride": false,
-              "isVirtual": false,
-              "isAbstract": false,
-              "declaringTypeName": "CloudNimble.DotNetDocs.Tests.Shared.Enums.SimpleEnum",
-              "isExtensionMethod": false,
-              "displayName": "CloudNimble.DotNetDocs.Tests.Shared.Enums.SimpleEnum.Fourth",
-              "summary": "Fourth option continues from Third."
-            }
-          ],
+          "members": [],
           "assemblyName": "CloudNimble.DotNetDocs.Tests.Shared",
           "fullName": "CloudNimble.DotNetDocs.Tests.Shared.Enums.SimpleEnum",
           "name": "SimpleEnum",
           "signature": "CloudNimble.DotNetDocs.Tests.Shared.Enums.SimpleEnum",
-          "typeKind": "class",
+          "typeKind": "enum",
           "isExternalReference": false,
           "displayName": "CloudNimble.DotNetDocs.Tests.Shared.Enums.SimpleEnum",
-          "relatedApis": [],
+          "relatedApis": [
+            "System.IComparable",
+            "System.ISpanFormattable",
+            "System.IFormattable",
+            "System.IConvertible"
+          ],
           "summary": "A simple enum with default int underlying type."
         }
       ],
@@ -7359,7 +6983,6 @@
       "name": "CloudNimble.DotNetDocs.Tests.Shared.Parameters",
       "types": [
         {
-          "baseType": "System.Object",
           "members": [
             {
               "accessibility": "public",
@@ -7426,7 +7049,7 @@
               "declaringTypeName": "CloudNimble.DotNetDocs.Tests.Shared.Parameters.ParameterVariations",
               "isExtensionMethod": false,
               "displayName": "CloudNimble.DotNetDocs.Tests.Shared.Parameters.ParameterVariations.MethodWithOptionalParam(string, int)",
-              "examples": "<code>\r\n            var result1 = MethodWithOptionalParam(\"test\");      // Uses default value 42\r\n            var result2 = MethodWithOptionalParam(\"test\", 100); // Uses provided value\r\n            </code>",
+              "examples": "<code>\r\nvar result1 = MethodWithOptionalParam(\"test\");      // Uses default value 42\r\nvar result2 = MethodWithOptionalParam(\"test\", 100); // Uses provided value\r\n</code>",
               "returns": "A formatted string combining both parameters.",
               "summary": "A method with an optional parameter."
             },
@@ -7474,7 +7097,7 @@
               "declaringTypeName": "CloudNimble.DotNetDocs.Tests.Shared.Parameters.ParameterVariations",
               "isExtensionMethod": false,
               "displayName": "CloudNimble.DotNetDocs.Tests.Shared.Parameters.ParameterVariations.MethodWithParams(params int[])",
-              "examples": "<code>\r\n            var sum1 = MethodWithParams(1, 2, 3);        // Returns 6\r\n            var sum2 = MethodWithParams(new[] { 1, 2 }); // Returns 3\r\n            </code>",
+              "examples": "<code>\r\nvar sum1 = MethodWithParams(1, 2, 3);        // Returns 6\r\nvar sum2 = MethodWithParams(new[] { 1, 2 }); // Returns 3\r\n</code>",
               "returns": "The sum of all provided values.",
               "summary": "A method with a params array."
             },
@@ -7628,7 +7251,7 @@
               "declaringTypeName": "CloudNimble.DotNetDocs.Tests.Shared.Parameters.ParameterVariations",
               "isExtensionMethod": false,
               "displayName": "CloudNimble.DotNetDocs.Tests.Shared.Parameters.ParameterVariations.GenericMethod<T>(T)",
-              "examples": "<code>\r\n            var result1 = GenericMethod&lt;int&gt;(42);\r\n            var result2 = GenericMethod(\"hello\");\r\n            </code>",
+              "examples": "<code>\r\nvar result1 = GenericMethod&lt;int&gt;(42);\r\nvar result2 = GenericMethod(\"hello\");\r\n</code>",
               "returns": "The string representation of the value.",
               "summary": "A generic method with a type parameter.",
               "typeParameters": [
@@ -7685,11 +7308,11 @@
               ],
               "returnType": {
                 "members": [],
-                "assemblyName": "System.Runtime",
+                "assemblyName": "System.Private.CoreLib",
                 "fullName": "System.Collections.Generic.KeyValuePair<TKey, TValue>",
                 "name": "KeyValuePair",
                 "signature": "System.Collections.Generic.KeyValuePair<TKey, TValue>",
-                "typeKind": "error",
+                "typeKind": "struct",
                 "isExternalReference": true,
                 "displayName": "System.Collections.Generic.KeyValuePair<TKey, TValue>"
               },
@@ -7728,16 +7351,16 @@
                   "name": "nullableInt",
                   "parameterType": {
                     "members": [],
-                    "assemblyName": "System.Runtime",
-                    "fullName": "System.Nullable<int>",
+                    "assemblyName": "System.Private.CoreLib",
+                    "fullName": "int?",
                     "name": "Nullable",
-                    "signature": "System.Nullable<int>",
-                    "typeKind": "error",
+                    "signature": "int?",
+                    "typeKind": "struct",
                     "isExternalReference": true,
-                    "displayName": "System.Nullable<int>"
+                    "displayName": "int?"
                   },
-                  "typeName": "System.Nullable<int>",
-                  "displayName": "System.Nullable<int> nullableInt",
+                  "typeName": "int?",
+                  "displayName": "int? nullableInt",
                   "usage": "An optional nullable integer."
                 },
                 {
@@ -7771,14 +7394,14 @@
                 "displayName": "string"
               },
               "returnTypeName": "string",
-              "signature": "public string MethodWithNullables(System.Nullable<int> nullableInt, string nullableString)",
+              "signature": "public string MethodWithNullables(int? nullableInt, string nullableString)",
               "isInherited": false,
               "isOverride": false,
               "isVirtual": false,
               "isAbstract": false,
               "declaringTypeName": "CloudNimble.DotNetDocs.Tests.Shared.Parameters.ParameterVariations",
               "isExtensionMethod": false,
-              "displayName": "CloudNimble.DotNetDocs.Tests.Shared.Parameters.ParameterVariations.MethodWithNullables(System.Nullable<int>, string?)",
+              "displayName": "CloudNimble.DotNetDocs.Tests.Shared.Parameters.ParameterVariations.MethodWithNullables(int?, string?)",
               "returns": "A description of the provided values.",
               "summary": "A method with nullable parameters."
             },
@@ -8197,11 +7820,11 @@
                   "name": "list",
                   "parameterType": {
                     "members": [],
-                    "assemblyName": "System.Collections",
+                    "assemblyName": "System.Private.CoreLib",
                     "fullName": "System.Collections.Generic.List<T>",
                     "name": "List",
                     "signature": "System.Collections.Generic.List<T>",
-                    "typeKind": "error",
+                    "typeKind": "class",
                     "isExternalReference": true,
                     "displayName": "System.Collections.Generic.List<T>"
                   },
@@ -8230,7 +7853,7 @@
               "isExtensionMethod": true,
               "extendedTypeName": "System.Collections.Generic.List<T>",
               "displayName": "System.Collections.Generic.TestsShared_ListExtensions.IsNullOrEmpty<T>(System.Collections.Generic.List<T>)",
-              "examples": "<code>\r\n            var numbers = new List&lt;int&gt;();\r\n            if (numbers.IsNullOrEmpty())\r\n            {\r\n                // Handle empty list\r\n            }\r\n            </code>",
+              "examples": "<code>\r\nvar numbers = new List&lt;int&gt;();\r\nif (numbers.IsNullOrEmpty())\r\n{\r\n    // Handle empty list\r\n}\r\n</code>",
               "returns": "True if the list is null or empty, otherwise false.",
               "summary": "Checks if a list is null or empty.",
               "typeParameters": [
@@ -8253,11 +7876,11 @@
                   "name": "list",
                   "parameterType": {
                     "members": [],
-                    "assemblyName": "System.Collections",
+                    "assemblyName": "System.Private.CoreLib",
                     "fullName": "System.Collections.Generic.List<T>",
                     "name": "List",
                     "signature": "System.Collections.Generic.List<T>",
-                    "typeKind": "error",
+                    "typeKind": "class",
                     "isExternalReference": true,
                     "displayName": "System.Collections.Generic.List<T>"
                   },
@@ -8286,11 +7909,11 @@
               ],
               "returnType": {
                 "members": [],
-                "assemblyName": "System.Collections",
+                "assemblyName": "System.Private.CoreLib",
                 "fullName": "System.Collections.Generic.List<T>",
                 "name": "List",
                 "signature": "System.Collections.Generic.List<T>",
-                "typeKind": "error",
+                "typeKind": "class",
                 "isExternalReference": true,
                 "displayName": "System.Collections.Generic.List<T>"
               },
@@ -8304,7 +7927,7 @@
               "isExtensionMethod": true,
               "extendedTypeName": "System.Collections.Generic.List<T>",
               "displayName": "System.Collections.Generic.TestsShared_ListExtensions.AddMultiple<T>(System.Collections.Generic.List<T>, params T[])",
-              "examples": "<code>\r\n            var numbers = new List&lt;int&gt;()\r\n                .AddMultiple(1, 2, 3, 4, 5);\r\n            </code>",
+              "examples": "<code>\r\nvar numbers = new List&lt;int&gt;()\r\n    .AddMultiple(1, 2, 3, 4, 5);\r\n</code>",
               "returns": "The list for fluent chaining.",
               "summary": "Adds multiple items to a list in one call.",
               "typeParameters": [
@@ -8327,11 +7950,11 @@
                   "name": "list",
                   "parameterType": {
                     "members": [],
-                    "assemblyName": "System.Collections",
+                    "assemblyName": "System.Private.CoreLib",
                     "fullName": "System.Collections.Generic.List<T>",
                     "name": "List",
                     "signature": "System.Collections.Generic.List<T>",
-                    "typeKind": "error",
+                    "typeKind": "class",
                     "isExternalReference": true,
                     "displayName": "System.Collections.Generic.List<T>"
                   },
@@ -8342,11 +7965,11 @@
               ],
               "returnType": {
                 "members": [],
-                "assemblyName": "System.Collections",
+                "assemblyName": "System.Private.CoreLib",
                 "fullName": "System.Collections.Generic.List<T>",
                 "name": "List",
                 "signature": "System.Collections.Generic.List<T>",
-                "typeKind": "error",
+                "typeKind": "class",
                 "isExternalReference": true,
                 "displayName": "System.Collections.Generic.List<T>"
               },
@@ -8371,15 +7994,15 @@
               ]
             }
           ],
-          "assemblyName": "System.Collections",
+          "assemblyName": "System.Private.CoreLib",
           "fullName": "System.Collections.Generic.List<T>",
           "name": "List",
           "signature": "System.Collections.Generic.List<T>",
-          "typeKind": "error",
+          "typeKind": "class",
           "isExternalReference": true,
           "displayName": "System.Collections.Generic.List<T>",
-          "remarks": "See [Microsoft documentation](https://learn.microsoft.com/dotnet/api/system.collections.generic.list{t}) for more information about the rest of the API.",
-          "summary": "This type is defined in System.Collections."
+          "remarks": "See <see href=\"https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1\">Microsoft documentation</see> for more information about the rest of the API.",
+          "summary": "This type is defined in System.Private.CoreLib."
         }
       ],
       "displayName": "System.Collections.Generic"
@@ -8435,7 +8058,7 @@
               "isExtensionMethod": true,
               "extendedTypeName": "string",
               "displayName": "CloudNimble.DotNetDocs.Tests.Shared.Extensions.StringExtensions.Reverse(string)",
-              "examples": "<code>\r\n             using CloudNimble.DotNetDocs.Tests.Shared.Extensions;\r\n            \r\n             var result = \"hello\".Reverse();\r\n             // result = \"olleh\"\r\n             </code>",
+              "examples": "<code>\r\nusing CloudNimble.DotNetDocs.Tests.Shared.Extensions;\r\n\r\nvar result = \"hello\".Reverse();\r\n// result = \"olleh\"\r\n</code>",
               "returns": "The reversed string.",
               "summary": "Reverses the characters in a string."
             },
@@ -8504,7 +8127,7 @@
               "isExtensionMethod": true,
               "extendedTypeName": "string",
               "displayName": "CloudNimble.DotNetDocs.Tests.Shared.Extensions.StringExtensions.Repeat(string, int)",
-              "examples": "<code>\r\n            var result = \"ha\".Repeat(3);\r\n            // result = \"hahaha\"\r\n            </code>",
+              "examples": "<code>\r\nvar result = \"ha\".Repeat(3);\r\n// result = \"hahaha\"\r\n</code>",
               "returns": "The repeated string.",
               "summary": "Repeats a string a specified number of times."
             }
@@ -8516,13 +8139,13 @@
           "typeKind": "class",
           "isExternalReference": true,
           "displayName": "string",
-          "remarks": "See [Microsoft documentation](https://learn.microsoft.com/dotnet/api/system.string) for more information about the rest of the API.",
+          "remarks": "See <see href=\"https://learn.microsoft.com/dotnet/api/system.string\">Microsoft documentation</see> for more information about the rest of the API.",
           "summary": "This type is defined in System.Private.CoreLib."
         }
       ],
       "displayName": "System"
     }
   ],
-  "version": "1.1.0.0",
-  "displayName": "CloudNimble.DotNetDocs.Tests.Shared, Version=1.1.0.0, Culture=neutral, PublicKeyToken=null"
+  "version": "2.0.0.0",
+  "displayName": "CloudNimble.DotNetDocs.Tests.Shared, Version=2.0.0.0, Culture=neutral, PublicKeyToken=null"
 }

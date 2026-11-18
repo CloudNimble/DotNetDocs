@@ -2,3 +2,7 @@
 
 ## Types
 
+### Classes
+
+- [List](List.md)
+

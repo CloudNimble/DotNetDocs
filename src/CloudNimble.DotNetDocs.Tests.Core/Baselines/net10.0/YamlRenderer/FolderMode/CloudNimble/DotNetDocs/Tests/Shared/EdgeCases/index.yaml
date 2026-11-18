@@ -1,7 +1,6 @@
 name: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases
 types:
-- baseType: System.Object
-  members:
+- members:
   - accessibility: Public
     memberKind: Method
     methodKind: PropertyGet
@@ -268,8 +267,7 @@ types:
   typeKind: Class
   displayName: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithMinimalDocs
   summary: A class with minimal documentation.
-- baseType: System.Object
-  members:
+- members:
   - accessibility: Public
     memberKind: Method
     methodKind: PropertyGet
@@ -533,8 +531,7 @@ types:
   signature: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithNoDocs
   typeKind: Class
   displayName: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithNoDocs
-- baseType: System.Object
-  members:
+- members:
   - accessibility: Public
     memberKind: Method
     methodKind: Ordinary
@@ -781,16 +778,20 @@ types:
   displayName: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithSpecialCharacters
   examples: >-
     <code>
-                // Using generics: List&lt;string&gt;
-                var list = new List&lt;string&gt;();
-                if (x &gt; 0 &amp;&amp; y &lt; 10) { }
-                </code>
+
+    // Using generics: List&lt;string&gt;
+
+    var list = new List&lt;string&gt;();
+
+    if (x &gt; 0 &amp;&amp; y &lt; 10) { }
+
+    </code>
   remarks: >-
     This tests handling of XML special characters like &lt;tag&gt; and &amp;entity;.
-                Also tests "quotes" and 'apostrophes'.
+
+    Also tests "quotes" and 'apostrophes'.
   summary: "A class with special characters in documentation: &lt;, &gt;, &amp;, \", '."
-- baseType: System.Object
-  members:
+- members:
   - accessibility: Public
     memberKind: Method
     methodKind: PropertyGet
@@ -875,20 +876,27 @@ types:
       type: ArgumentOutOfRangeException
     examples: >-
       <code>
-                  var result = ComplexMethod("hello", 5);
-                  Console.WriteLine(result);
-                  </code>
+
+      var result = ComplexMethod("hello", 5);
+
+      Console.WriteLine(result);
+
+      </code>
     remarks: >-
       <para>This method performs complex processing.</para><list type="bullet">
-        <item>
-          <description>First, it validates the input.</description>
-        </item>
-        <item>
-          <description>Then, it processes the data.</description>
-        </item>
-        <item>
-          <description>Finally, it returns the result.</description>
-        </item>
+
+      <item>
+        <description>First, it validates the input.</description>
+      </item>
+
+      <item>
+        <description>Then, it processes the data.</description>
+      </item>
+
+      <item>
+        <description>Finally, it returns the result.</description>
+      </item>
+
       </list>
     returns: A processed result string.
     seeAlso:
@@ -900,11 +908,11 @@ types:
     methodKind: Ordinary
     name: ProcessNumbers
     returnType:
-      assemblyName: System.Runtime
+      assemblyName: System.Private.CoreLib
       fullName: System.Collections.Generic.IEnumerable<object>
       name: IEnumerable
       signature: System.Collections.Generic.IEnumerable<object>
-      typeKind: Error
+      typeKind: Interface
       isExternalReference: true
       displayName: System.Collections.Generic.IEnumerable<object>
     returnTypeName: System.Collections.Generic.IEnumerable<object>
@@ -913,16 +921,17 @@ types:
     displayName: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithFullDocs.ProcessNumbers()
     examples: >-
       <code>
-                  var numbers = Enumerable.Range(1, 10)
-                      .Where(x =&gt; x % 2 == 0)
-                      .Select(x =&gt; new
-                      {
-                          Number = x,
-                          Square = x * x,
-                          Cube = x * x * x
-                      })
-                      .ToList();
-                  </code>
+
+      var numbers = Enumerable.Range(1, 10)
+          .Where(x =&gt; x % 2 == 0)
+          .Select(x =&gt; new
+          {
+              Number = x,
+              Square = x * x,
+              Cube = x * x * x
+          })
+          .ToList();
+      </code>
     returns: A collection of transformed numbers.
     summary: Filters and transforms a collection of numbers.
   - accessibility: Public
@@ -1149,9 +1158,12 @@ types:
   displayName: CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithFullDocs
   examples: >-
     <code>
-                var fullDocs = new ClassWithFullDocs();
-                fullDocs.ComplexMethod("test", 42);
-                </code>
+
+    var fullDocs = new ClassWithFullDocs();
+
+    fullDocs.ComplexMethod("test", 42);
+
+    </code>
   remarks: <para>This class demonstrates all available XML documentation tags.</para><para>It includes multiple paragraphs in the remarks section.</para>
   seeAlso:
   - rawReference: T:CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithMinimalDocs

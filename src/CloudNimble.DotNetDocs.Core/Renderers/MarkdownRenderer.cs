@@ -104,7 +104,7 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
             {
                 sb.AppendLine("## Examples");
                 sb.AppendLine();
-                sb.AppendLine(RemoveIndentation(assembly.Examples));
+                sb.AppendLine(assembly.Examples);
                 sb.AppendLine();
             }
 
@@ -157,8 +157,8 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
             sb.AppendLine();
             foreach (var ns in assembly.Namespaces)
             {
-                var nsFileName = Path.GetFileName(GetNamespaceFilePath(ns, outputPath, "md"));
-                sb.AppendLine($"- [{ns.Name}]({nsFileName})");
+                // Plain Markdown viewers don't resolve a folder link to its index file, so link to the file itself.
+                sb.AppendLine($"- [{ns.Name}]({GetNamespaceLink(ns, "md")})");
             }
 
             var filePath = Path.Combine(outputPath, "index.md");
@@ -192,7 +192,7 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
             {
                 sb.AppendLine("## Examples");
                 sb.AppendLine();
-                sb.AppendLine(RemoveIndentation(ns.Examples));
+                sb.AppendLine(ns.Examples);
                 sb.AppendLine();
             }
 
@@ -396,7 +396,7 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
             {
                 sb.AppendLine("## Examples");
                 sb.AppendLine();
-                sb.AppendLine(RemoveIndentation(type.Examples));
+                sb.AppendLine(type.Examples);
                 sb.AppendLine();
             }
 
@@ -661,7 +661,7 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
             {
                 sb.AppendLine("#### Examples");
                 sb.AppendLine();
-                sb.AppendLine(RemoveIndentation(member.Examples));
+                sb.AppendLine(member.Examples);
                 sb.AppendLine();
             }
 
@@ -714,151 +714,6 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
         }
 
         // All signature and file name methods are now inherited from RendererBase
-
-        #endregion
-
-        #region IDocRenderer Implementation
-
-        /// <summary>
-        /// Renders placeholder conceptual content files for the documentation assembly.
-        /// </summary>
-        /// <param name="model">The documentation assembly to generate placeholders for.</param>
-        /// <returns>A task representing the asynchronous placeholder rendering operation.</returns>
-        public async Task RenderPlaceholdersAsync(DocAssembly model)
-        {
-            ArgumentNullException.ThrowIfNull(model);
-
-            var conceptualPath = Context.ConceptualPath;
-            if (string.IsNullOrWhiteSpace(conceptualPath))
-            {
-                return;
-            }
-
-            // Ensure conceptual directory exists
-            Directory.CreateDirectory(conceptualPath);
-
-            // Generate placeholders for namespace-level and type-level conceptual content
-            foreach (var ns in model.Namespaces)
-            {
-                await GenerateNamespacePlaceholdersAsync(ns, conceptualPath);
-
-                foreach (var type in ns.Types)
-                {
-                    await GenerateTypePlaceholdersAsync(type, ns, conceptualPath);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Generates placeholder files for namespace-level conceptual content.
-        /// </summary>
-        /// <param name="ns">The namespace to generate placeholders for.</param>
-        /// <param name="conceptualPath">The base conceptual content path.</param>
-        /// <returns>A task representing the asynchronous operation.</returns>
-        private async Task GenerateNamespacePlaceholdersAsync(DocNamespace ns, string conceptualPath)
-        {
-            // Build the namespace directory path
-            var namespacePath = Context.GetNamespaceFolderPath(ns.Name ?? "global");
-            var namespaceDir = Path.Combine(conceptualPath, namespacePath);
-
-            Directory.CreateDirectory(namespaceDir);
-
-            // Generate individual placeholder files
-            var summaryPath = Path.Combine(namespaceDir, DocConstants.SummaryFileName);
-            if (!File.Exists(summaryPath))
-            {
-                await File.WriteAllTextAsync(summaryPath, GetSummaryTemplate(ns.Name ?? "global"));
-            }
-
-            var usagePath = Path.Combine(namespaceDir, DocConstants.UsageFileName);
-            if (!File.Exists(usagePath))
-            {
-                await File.WriteAllTextAsync(usagePath, GetUsageTemplate(ns.Name ?? "global"));
-            }
-
-            var examplesPath = Path.Combine(namespaceDir, DocConstants.ExamplesFileName);
-            if (!File.Exists(examplesPath))
-            {
-                await File.WriteAllTextAsync(examplesPath, GetExamplesTemplate(ns.Name ?? "global"));
-            }
-
-            var bestPracticesPath = Path.Combine(namespaceDir, DocConstants.BestPracticesFileName);
-            if (!File.Exists(bestPracticesPath))
-            {
-                await File.WriteAllTextAsync(bestPracticesPath, GetBestPracticesTemplate(ns.Name ?? "global"));
-            }
-
-            var patternsPath = Path.Combine(namespaceDir, DocConstants.PatternsFileName);
-            if (!File.Exists(patternsPath))
-            {
-                await File.WriteAllTextAsync(patternsPath, GetPatternsTemplate(ns.Name ?? "global"));
-            }
-
-            var considerationsPath = Path.Combine(namespaceDir, DocConstants.ConsiderationsFileName);
-            if (!File.Exists(considerationsPath))
-            {
-                await File.WriteAllTextAsync(considerationsPath, GetConsiderationsTemplate(ns.Name ?? "global"));
-            }
-
-            var relatedApisPath = Path.Combine(namespaceDir, DocConstants.RelatedApisFileName);
-            if (!File.Exists(relatedApisPath))
-            {
-                await File.WriteAllTextAsync(relatedApisPath, GetRelatedApisTemplate(ns.Name ?? "global"));
-            }
-        }
-
-        /// <summary>
-        /// Generates placeholder files for type-level conceptual content.
-        /// </summary>
-        /// <param name="type">The type to generate placeholders for.</param>
-        /// <param name="ns">The namespace containing the type.</param>
-        /// <param name="conceptualPath">The base conceptual content path.</param>
-        /// <returns>A task representing the asynchronous operation.</returns>
-        private async Task GenerateTypePlaceholdersAsync(DocType type, DocNamespace ns, string conceptualPath)
-        {
-            // Build the type directory path
-            var namespacePath = Context.GetNamespaceFolderPath(ns.Name ?? "global");
-            var typeDir = Path.Combine(conceptualPath, namespacePath, type.Name);
-
-            Directory.CreateDirectory(typeDir);
-
-            // Generate individual placeholder files
-            var usagePath = Path.Combine(typeDir, DocConstants.UsageFileName);
-            if (!File.Exists(usagePath))
-            {
-                await File.WriteAllTextAsync(usagePath, GetUsageTemplate(type.Name));
-            }
-
-            var examplesPath = Path.Combine(typeDir, DocConstants.ExamplesFileName);
-            if (!File.Exists(examplesPath))
-            {
-                await File.WriteAllTextAsync(examplesPath, GetExamplesTemplate(type.Name));
-            }
-
-            var bestPracticesPath = Path.Combine(typeDir, DocConstants.BestPracticesFileName);
-            if (!File.Exists(bestPracticesPath))
-            {
-                await File.WriteAllTextAsync(bestPracticesPath, GetBestPracticesTemplate(type.Name));
-            }
-
-            var patternsPath = Path.Combine(typeDir, DocConstants.PatternsFileName);
-            if (!File.Exists(patternsPath))
-            {
-                await File.WriteAllTextAsync(patternsPath, GetPatternsTemplate(type.Name));
-            }
-
-            var considerationsPath = Path.Combine(typeDir, DocConstants.ConsiderationsFileName);
-            if (!File.Exists(considerationsPath))
-            {
-                await File.WriteAllTextAsync(considerationsPath, GetConsiderationsTemplate(type.Name));
-            }
-
-            var relatedApisPath = Path.Combine(typeDir, DocConstants.RelatedApisFileName);
-            if (!File.Exists(relatedApisPath))
-            {
-                await File.WriteAllTextAsync(relatedApisPath, GetRelatedApisTemplate(type.Name));
-            }
-        }
 
         #endregion
 

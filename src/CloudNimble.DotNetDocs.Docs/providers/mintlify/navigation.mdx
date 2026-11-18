@@ -11,7 +11,7 @@ navigation sources without duplication.
 
 ## Overview
 
-Navigation generation happens in five distinct phases:
+Navigation generation happens in six distinct phases:
 
 <Steps>
   <Step title="Load Template Navigation">
@@ -28,6 +28,9 @@ Navigation generation happens in five distinct phases:
   </Step>
   <Step title="Combine Documentation References">
     If `DocumentationReference` items are defined, external documentation is copied and merged into the navigation structure.
+  </Step>
+  <Step title="Apply Tab Positions">
+    Template tabs declared with `Position="End"` are appended after the root tab and every `DocumentationReference` tab.
   </Step>
 </Steps>
 
@@ -275,6 +278,18 @@ When you build a project with DocumentationReferences:
 2. **File Copying**: Content files (`.mdx`, images, snippets) are copied to `DestinationPath`
 3. **Navigation files excluded**: Root navigation files (`docs.json`) are automatically excluded
 4. **Navigation Integration**: Referenced navigation is merged into the parent project's `docs.json`
+
+### Tab Position
+
+Template `<Tab>` elements can set `Position="End"` so they appear after every `DocumentationReference` tab. Use this for outbound href tabs, for example a sibling product site:
+
+```xml
+<Tabs>
+    <Tab Name="Core Framework" Href="https://easyaf.dev" Position="End" />
+</Tabs>
+```
+
+`Position` is not part of the Mintlify `docs.json` schema. The renderer holds those tabs until after `CombineReferencedNavigation`, then appends them. `Start` is the default. Several `End` tabs keep their declaration order.
 
 ### Integration Types
 

@@ -4,13 +4,43 @@
 
 This document specifies how XML documentation tags are transformed into Markdown format by the `MarkdownXmlTransformer` class. The transformation occurs after XML extraction but before rendering, allowing different renderers to work with clean Markdown-formatted text.
 
+## Architecture
+
+XML documentation conversion is split into a format-neutral base class and one subclass per output format:
+
+| Class | Responsibility |
+|-------|----------------|
+| `XmlTransformerBase` | Walks the documentation model, decides which strings contain tags, normalizes XML file indentation, indexes every entity so `cref` references resolve, resolves `seealso` references, and builds Microsoft Learn URLs for framework types and C# keywords. |
+| `MarkdownXmlTransformer` | Writes each tag as Markdown. It is the only class that knows the output syntax. |
+
+A transformer for another format, such as HTML, derives from `XmlTransformerBase` and implements `ConvertXml(string text, bool skipEscaping)`. It gets reference resolution, traversal, and Learn URLs without reimplementing them.
+
+The model is transformed in place once per run, before any renderer runs, so a run produces one markup format. Data renderers carry whatever format the run's transformer produced:
+
+- **JSON or YAML next to a Markdown or Mintlify renderer:** their string fields contain Markdown.
+- **JSON or YAML on their own:** they register no transformer, so their string fields contain the original XML documentation tags.
+
+### Registration
+
+Each renderer's registration method registers the transformer and reference handler it needs. The `DotNetDocsBuilder` methods delegate to the same `IServiceCollection` methods, so both ways of adding a renderer register the same services.
+
+| Registration | Renderer | Transformers | Reference handler |
+|--------------|----------|--------------|-------------------|
+| `AddMarkdownRenderer` / `UseMarkdownRenderer` | `MarkdownRenderer` | `MarkdownXmlTransformer` | `MarkdownDocReferenceHandler` |
+| `AddMintlifyRenderer` / `UseMintlifyRenderer` | `MintlifyRenderer` | `MarkdownXmlTransformer`, `MintlifyMarkdownTransformer` | `MintlifyDocReferenceHandler` |
+| `AddJsonRenderer` / `UseJsonRenderer` | `JsonRenderer` | none | none |
+| `AddYamlRenderer` / `UseYamlRenderer` | `YamlRenderer` | none | none |
+| `AddDotNetDocs` | Markdown, JSON, and YAML | whatever `AddMarkdownRenderer`, `AddJsonRenderer`, and `AddYamlRenderer` register | the same |
+
+A new output format follows the same pattern: its registration method registers its renderer together with its `XmlTransformerBase` subclass.
+
 ## Performance Optimization
 
 The transformer uses a performance-optimized approach:
 
 1. **Pre-check Strategy**: Uses compiled regex to detect if any XML tags are present before processing
 2. **Skip Rate**: Expected to skip ~80% of strings that contain no XML documentation tags
-3. **Single Pass**: Builds reference dictionary while transforming in a single recursive traversal
+3. **Single Pass**: Indexes the assembly into a reference map once, then transforms every entity in a single recursive traversal
 4. **Compiled Regex**: All patterns are pre-compiled for maximum performance
 
 ### Detection Pattern
@@ -129,7 +159,7 @@ Description 2
 
 ### Type Resolution
 
-The transformer generates Microsoft Learn documentation URLs for .NET Framework types:
+`XmlTransformerBase.GetFrameworkDocumentationUrl` is the only builder of Microsoft Learn type URLs. It takes a documentation ID without its prefix, so generic types are named by arity (`List`1`), which Learn writes as `-1`. `AssemblyManager` uses the same method for the remarks of external type references, which it writes as a `<see href>` tag so each format's transformer decides how the link is written.
 
 | Type | Generated URL |
 |------|---------------|
@@ -176,19 +206,32 @@ The transformer generates Microsoft Learn documentation URLs for .NET Framework 
 
 ## Extensibility
 
-All transformation methods in `MarkdownXmlTransformer` are `protected virtual` to allow override in derived classes:
+### `XmlTransformerBase`
 
-- `ConvertXmlToMarkdown` - Main orchestrator
+| Member | Kind | Purpose |
+|--------|------|---------|
+| `ConvertXml(string text, bool skipEscaping)` | `protected abstract` | Converts a string that contains tags into the output format. The text is never null or whitespace and its indentation is already normalized. |
+| `ConvertText(string? text, bool skipEscaping)` | `protected virtual` | Skips null, whitespace, and tag-free strings, normalizes indentation, then calls `ConvertXml`. |
+| `TransformEntityRecursive(DocEntity entity)` | `protected virtual` | Decides which properties are converted and walks the children. |
+| `UpdateCurrentPath(DocEntity entity)` | `protected virtual` | Tracks the page of the entity being transformed, exposed as `CurrentPath`. |
+| `GetLanguageKeywordUrl(string keyword)` | `protected virtual` | Microsoft Learn URL for a C# keyword. |
+| `GetRelativePath(string fromPath, string toPath)` | `protected internal virtual` | Link path to another page. Override it for document-relative links or file extensions. |
+| `ResolveReference(string rawReference, string currentPath)` | `protected internal` | Turns a `cref` into a `DocReference` with its path, anchor, and display name. |
+| `RemoveCommonIndentation(string code)` | `protected internal static` | Removes the indentation every line of a block shares. |
+
+### `MarkdownXmlTransformer`
+
+Each Markdown conversion step is `protected virtual`, so a derived class can change one tag without reimplementing the rest:
+
+- `ConvertXml` - Runs the steps below in order
 - `ConvertSeeReferences` - Handle `<see>` tags
 - `ConvertCodeTags` - Handle `<c>` and `<code>`
-- `ConvertFormattingTags` - Handle text formatting
 - `ConvertReferenceParams` - Handle parameter references
+- `ConvertFormattingTags` - Handle text formatting
 - `ConvertLists` - Handle list structures
-- `ResolveTypeReference` - Resolve type to URL
-- `GetMicrosoftDocsUrl` - Generate Microsoft Learn URLs
 - `EscapeRemainingXmlTags` - Final cleanup
 
-This allows creation of specialized transformers like `MintlifyXmlTransformer` that can override specific behaviors while reusing the base implementation.
+Transformers that post-process Markdown rather than XML, such as `MintlifyMarkdownTransformer`, implement `IDocTransformer` directly and run after `MarkdownXmlTransformer`.
 
 ## Implementation Notes
 
@@ -212,16 +255,10 @@ And these collection items:
 
 ### Performance Metrics
 
-The transformer can optionally collect metrics:
-- Total strings processed
-- Strings with XML tags detected
-- Strings skipped (no transformation needed)
-- Average transformation time per string
+`XmlTransformerBase` counts the strings it processes and the strings it skips because they have nothing to convert, and writes them to the console after each transformation:
 
-Example output:
 ```
 XML Transform Stats: 823/1029 strings skipped (80.0%)
-Average transform time: 0.12ms per string with tags
 ```
 
 ## Testing Coverage

@@ -20,7 +20,7 @@
         <UsingMicrosoftNoTargetsSdk>true</UsingMicrosoftNoTargetsSdk>
 
         <!-- Default target framework -->
-        <TargetFramework Condition="'$(TargetFramework)' == ''">net8.0</TargetFramework>
+        <TargetFramework Condition="'$(TargetFramework)' == ''">net10.0</TargetFramework>
         
         <!-- Suppress all NuGet warnings about vulnerable packages and framework references -->
         <NoWarn>$(NoWarn);NU1903;NU1902;NU1901;NU1604;NU1603;NU1605</NoWarn>
@@ -93,7 +93,8 @@
         <None Include="$(DocumentationRoot)**/*.mdx" />
         <None Include="$(DocumentationRoot)**/*.md" />
         <None Include="$(DocumentationRoot)api-reference/**/*" />
-        <None Include="$(DocumentationRoot)conceptual/**/*" />
+        <!-- Items evaluate after all properties, so this sees a ConceptualPath set in the .docsproj. Path.Combine keeps absolute paths as-is. -->
+        <None Include="$([System.IO.Path]::Combine('$(DocumentationRoot)', '$(ConceptualPath)'))/**/*" />
         <None Include="$(DocumentationRoot)overrides/**/*" />
         <None Include="$(DocumentationRoot)guides/**/*" />
         <None Include="$(DocumentationRoot)images/**/*" />

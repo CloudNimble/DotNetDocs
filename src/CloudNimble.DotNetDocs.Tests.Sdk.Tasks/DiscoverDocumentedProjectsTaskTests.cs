@@ -225,7 +225,7 @@ namespace CloudNimble.DotNetDocs.Tests.Sdk.Tasks
         public void TaskProperties_HaveCorrectDefaults()
         {
             _task.Configuration.Should().Be("Release");
-            _task.TargetFramework.Should().Be("net8.0");
+            _task.TargetFramework.Should().Be("net10.0");
             _task.DocumentedProjects.Should().BeEmpty();
         }
 
@@ -237,12 +237,12 @@ namespace CloudNimble.DotNetDocs.Tests.Sdk.Tasks
         {
             _task.SolutionDir = "C:\\TestSolution";
             _task.Configuration = "Debug";
-            _task.TargetFramework = "net9.0";
+            _task.TargetFramework = "net11.0";
             _task.ExcludePatterns = new[] { "Tests" };
 
             _task.SolutionDir.Should().Be("C:\\TestSolution");
             _task.Configuration.Should().Be("Debug");
-            _task.TargetFramework.Should().Be("net9.0");
+            _task.TargetFramework.Should().Be("net11.0");
             _task.ExcludePatterns.Should().ContainSingle("Tests");
         }
 

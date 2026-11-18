@@ -24,7 +24,7 @@ Defines a renderer for documentation output generation.
 ## Remarks
 
 Implementations of this interface generate specific output formats (Markdown, JSON, YAML, etc.)
-            from the documentation model after all transformations have been applied.
+from the documentation model after all transformations have been applied.
 
 ## Methods
 
@@ -51,25 +51,15 @@ A task representing the asynchronous rendering operation.
 
 #### Remarks
 
+When model is null, the renderer should skip API reference generation but still process
+any other operations like navigation file merging (e.g., combining DocumentationReferences).
 
-
-
-            When model is null, the renderer should skip API reference generation but still process
-            any other operations like navigation file merging (e.g., combining DocumentationReferences).
-            
-
-
-
-
-            Renderers that support navigation combining (e.g., Mintlify) should access
-            Context.DocumentationReferences and combine navigation before saving their configuration.
-            
-
-
+Renderers that support navigation combining (e.g., Mintlify) should access
+Context.DocumentationReferences and combine navigation before saving their configuration.
 
 ### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> RenderPlaceholdersAsync <Badge color="orange">Abstract</Badge>
 
-Renders placeholder conceptual content files for the documentation assembly.
+Adds this renderer's own files to the conceptual content folder.
 
 #### Syntax
 
@@ -81,10 +71,16 @@ System.Threading.Tasks.Task RenderPlaceholdersAsync(CloudNimble.DotNetDocs.Core.
 
 | Name | Type | Description |
 |------|------|-------------|
-| `model` | `CloudNimble.DotNetDocs.Core.DocAssembly` | The documentation assembly to generate placeholders for. |
+| `model` | `CloudNimble.DotNetDocs.Core.DocAssembly` | The documentation model that placeholders are being generated for. |
 
 #### Returns
 
 Type: `System.Threading.Tasks.Task`
 A task representing the asynchronous placeholder rendering operation.
+
+#### Remarks
+
+[DocumentationManager.GeneratePlaceholdersAsync](/api-reference/CloudNimble/DotNetDocs/Core/DocumentationManager#generateplaceholdersasync) writes the standard namespace and type
+placeholders itself, then calls this method on each registered renderer, one at a time. Use it only for files the
+standard placeholders don't cover; [RendererBase](/api-reference/CloudNimble/DotNetDocs/Core/Renderers/RendererBase) provides an implementation that does nothing.
 

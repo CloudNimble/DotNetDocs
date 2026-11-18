@@ -35,24 +35,18 @@ namespace Microsoft.Extensions.DependencyInjection
         /// This method registers:
         /// - ProjectContext as Singleton
         /// - DocumentationManager as Scoped
-        /// - All built-in renderers (Markdown, JSON, YAML) as Scoped
-        /// - MarkdownXmlTransformer for processing XML documentation tags
+        /// - All built-in renderers (Markdown, JSON, YAML) as Scoped, each through its own registration method,
+        ///   so each renderer brings the services it needs, such as the MarkdownXmlTransformer and MarkdownDocReferenceHandler
+        ///   from <see cref="AddMarkdownRenderer(IServiceCollection)"/>
         /// </remarks>
         public static IServiceCollection AddDotNetDocs(this IServiceCollection services,
             Action<ProjectContext>? configureContext = null)
         {
             services.AddDotNetDocsCore(configureContext);
 
-            // Register all built-in renderers (only if not already registered)
-            services.TryAddEnumerable(ServiceDescriptor.Scoped<IDocRenderer, MarkdownRenderer>());
-            services.TryAddEnumerable(ServiceDescriptor.Scoped<IDocRenderer, JsonRenderer>());
-            services.TryAddEnumerable(ServiceDescriptor.Scoped<IDocRenderer, YamlRenderer>());
-
-            // Register the MarkdownXmlTransformer for processing XML documentation tags
-            services.TryAddEnumerable(ServiceDescriptor.Scoped<IDocTransformer, MarkdownXmlTransformer>());
-
-            // Register the MarkdownDocReferenceHandler for processing DocumentationReferences
-            services.TryAddEnumerable(ServiceDescriptor.Scoped<IDocReferenceHandler, MarkdownDocReferenceHandler>());
+            services.AddMarkdownRenderer();
+            services.AddJsonRenderer();
+            services.AddYamlRenderer();
 
             return services;
         }

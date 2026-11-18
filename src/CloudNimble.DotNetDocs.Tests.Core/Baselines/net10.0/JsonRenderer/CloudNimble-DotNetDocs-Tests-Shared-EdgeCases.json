@@ -2,7 +2,6 @@
   "name": "CloudNimble.DotNetDocs.Tests.Shared.EdgeCases",
   "types": [
     {
-      "baseType": "System.Object",
       "members": [
         {
           "accessibility": "public",
@@ -439,7 +438,6 @@
       "summary": "A class with minimal documentation."
     },
     {
-      "baseType": "System.Object",
       "members": [
         {
           "accessibility": "public",
@@ -873,7 +871,6 @@
       "relatedApis": []
     },
     {
-      "baseType": "System.Object",
       "members": [
         {
           "accessibility": "public",
@@ -1260,13 +1257,12 @@
       "typeKind": "class",
       "isExternalReference": false,
       "displayName": "CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithSpecialCharacters",
-      "examples": "\u003Ccode\u003E\r\n            // Using generics: List\u0026lt;string\u0026gt;\r\n            var list = new List\u0026lt;string\u0026gt;();\r\n            if (x \u0026gt; 0 \u0026amp;\u0026amp; y \u0026lt; 10) { }\r\n            \u003C/code\u003E",
+      "examples": "\u003Ccode\u003E\r\n// Using generics: List\u0026lt;string\u0026gt;\r\nvar list = new List\u0026lt;string\u0026gt;();\r\nif (x \u0026gt; 0 \u0026amp;\u0026amp; y \u0026lt; 10) { }\r\n\u003C/code\u003E",
       "relatedApis": [],
-      "remarks": "This tests handling of XML special characters like \u0026lt;tag\u0026gt; and \u0026amp;entity;.\r\n            Also tests \u0022quotes\u0022 and \u0027apostrophes\u0027.",
+      "remarks": "This tests handling of XML special characters like \u0026lt;tag\u0026gt; and \u0026amp;entity;.\r\nAlso tests \u0022quotes\u0022 and \u0027apostrophes\u0027.",
       "summary": "A class with special characters in documentation: \u0026lt;, \u0026gt;, \u0026amp;, \u0022, \u0027."
     },
     {
-      "baseType": "System.Object",
       "members": [
         {
           "accessibility": "public",
@@ -1404,8 +1400,8 @@
               "type": "ArgumentOutOfRangeException"
             }
           ],
-          "examples": "\u003Ccode\u003E\r\n            var result = ComplexMethod(\u0022hello\u0022, 5);\r\n            Console.WriteLine(result);\r\n            \u003C/code\u003E",
-          "remarks": "\u003Cpara\u003EThis method performs complex processing.\u003C/para\u003E\u003Clist type=\u0022bullet\u0022\u003E\r\n  \u003Citem\u003E\r\n    \u003Cdescription\u003EFirst, it validates the input.\u003C/description\u003E\r\n  \u003C/item\u003E\r\n  \u003Citem\u003E\r\n    \u003Cdescription\u003EThen, it processes the data.\u003C/description\u003E\r\n  \u003C/item\u003E\r\n  \u003Citem\u003E\r\n    \u003Cdescription\u003EFinally, it returns the result.\u003C/description\u003E\r\n  \u003C/item\u003E\r\n\u003C/list\u003E",
+          "examples": "\u003Ccode\u003E\r\nvar result = ComplexMethod(\u0022hello\u0022, 5);\r\nConsole.WriteLine(result);\r\n\u003C/code\u003E",
+          "remarks": "\u003Cpara\u003EThis method performs complex processing.\u003C/para\u003E\u003Clist type=\u0022bullet\u0022\u003E\r\n\u003Citem\u003E\r\n  \u003Cdescription\u003EFirst, it validates the input.\u003C/description\u003E\r\n\u003C/item\u003E\r\n\u003Citem\u003E\r\n  \u003Cdescription\u003EThen, it processes the data.\u003C/description\u003E\r\n\u003C/item\u003E\r\n\u003Citem\u003E\r\n  \u003Cdescription\u003EFinally, it returns the result.\u003C/description\u003E\r\n\u003C/item\u003E\r\n\u003C/list\u003E",
           "returns": "A processed result string.",
           "seeAlso": [
             {
@@ -1424,11 +1420,11 @@
           "parameters": [],
           "returnType": {
             "members": [],
-            "assemblyName": "System.Runtime",
+            "assemblyName": "System.Private.CoreLib",
             "fullName": "System.Collections.Generic.IEnumerable\u003Cobject\u003E",
             "name": "IEnumerable",
             "signature": "System.Collections.Generic.IEnumerable\u003Cobject\u003E",
-            "typeKind": "error",
+            "typeKind": "interface",
             "isExternalReference": true,
             "displayName": "System.Collections.Generic.IEnumerable\u003Cobject\u003E"
           },
@@ -1441,7 +1437,7 @@
           "declaringTypeName": "CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithFullDocs",
           "isExtensionMethod": false,
           "displayName": "CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithFullDocs.ProcessNumbers()",
-          "examples": "\u003Ccode\u003E\r\n            var numbers = Enumerable.Range(1, 10)\r\n                .Where(x =\u0026gt; x % 2 == 0)\r\n                .Select(x =\u0026gt; new\r\n                {\r\n                    Number = x,\r\n                    Square = x * x,\r\n                    Cube = x * x * x\r\n                })\r\n                .ToList();\r\n            \u003C/code\u003E",
+          "examples": "\u003Ccode\u003E\r\nvar numbers = Enumerable.Range(1, 10)\r\n    .Where(x =\u0026gt; x % 2 == 0)\r\n    .Select(x =\u0026gt; new\r\n    {\r\n        Number = x,\r\n        Square = x * x,\r\n        Cube = x * x * x\r\n    })\r\n    .ToList();\r\n\u003C/code\u003E",
           "returns": "A collection of transformed numbers.",
           "summary": "Filters and transforms a collection of numbers."
         },
@@ -1799,7 +1795,7 @@
       "typeKind": "class",
       "isExternalReference": false,
       "displayName": "CloudNimble.DotNetDocs.Tests.Shared.EdgeCases.ClassWithFullDocs",
-      "examples": "\u003Ccode\u003E\r\n            var fullDocs = new ClassWithFullDocs();\r\n            fullDocs.ComplexMethod(\u0022test\u0022, 42);\r\n            \u003C/code\u003E",
+      "examples": "\u003Ccode\u003E\r\nvar fullDocs = new ClassWithFullDocs();\r\nfullDocs.ComplexMethod(\u0022test\u0022, 42);\r\n\u003C/code\u003E",
       "relatedApis": [],
       "remarks": "\u003Cpara\u003EThis class demonstrates all available XML documentation tags.\u003C/para\u003E\u003Cpara\u003EIt includes multiple paragraphs in the remarks section.\u003C/para\u003E",
       "seeAlso": [

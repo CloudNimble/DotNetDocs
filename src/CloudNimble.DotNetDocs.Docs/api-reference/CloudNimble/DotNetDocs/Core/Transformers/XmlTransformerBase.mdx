@@ -1,0 +1,195 @@
+---
+title: XmlTransformerBase
+description: "Provides the format-neutral foundation for transformers that convert XML documentation comments into an output format."
+icon: shapes
+tag: "ABSTRACT"
+keywords: ['XmlTransformerBase', 'CloudNimble.DotNetDocs.Core.Transformers.XmlTransformerBase', 'CloudNimble.DotNetDocs.Core.Transformers', 'class', 'CloudNimble.DotNetDocs.Core.IDocTransformer']
+---
+
+## Definition
+
+**Assembly:** CloudNimble.DotNetDocs.Core.dll
+
+**Namespace:** CloudNimble.DotNetDocs.Core.Transformers
+
+## Syntax
+
+```csharp
+CloudNimble.DotNetDocs.Core.Transformers.XmlTransformerBase
+```
+
+## Summary
+
+Provides the format-neutral foundation for transformers that convert XML documentation comments into an output format.
+
+## Remarks
+
+This class owns everything that does not depend on the output format: walking the documentation model, deciding which
+strings contain XML documentation tags, normalizing the indentation inherited from the XML documentation file, indexing
+every entity so `cref` references can be resolved, and building Microsoft Learn URLs for framework types and C# keywords.
+
+Derived classes implement [XmlTransformerBase.ConvertXml](/api-reference/CloudNimble/DotNetDocs/Core/Transformers/MarkdownXmlTransformer#convertxml) to turn the XML tags into their own format, such as
+Markdown or HTML, and call [XmlTransformerBase.ResolveReference](/api-reference/CloudNimble/DotNetDocs/Core/Transformers/MarkdownXmlTransformer#resolvereference) to turn a `cref` into a [DocReference](/api-reference/CloudNimble/DotNetDocs/Core/DocReference).
+
+## Constructors
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public Object()
+```
+
+## Methods
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Equals <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual bool Equals(object obj)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `obj` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Equals <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public static bool Equals(object objA, object objB)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `objA` | `object?` | - |
+| `objB` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetHashCode <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual int GetHashCode()
+```
+
+#### Returns
+
+Type: `int`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetType <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public System.Type GetType()
+```
+
+#### Returns
+
+Type: `System.Type`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> MemberwiseClone <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+protected internal object MemberwiseClone()
+```
+
+#### Returns
+
+Type: `object`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ReferenceEquals <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public static bool ReferenceEquals(object objA, object objB)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `objA` | `object?` | - |
+| `objB` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ToString <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual string ToString()
+```
+
+#### Returns
+
+Type: `string?`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> TransformAsync
+
+Transforms a documentation entity and all of its children by converting their XML documentation tags.
+
+#### Syntax
+
+```csharp
+public System.Threading.Tasks.Task TransformAsync(CloudNimble.DotNetDocs.Core.DocEntity entity)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `entity` | `CloudNimble.DotNetDocs.Core.DocEntity` | The documentation entity to transform. |
+
+#### Returns
+
+Type: `System.Threading.Tasks.Task`
+A task representing the asynchronous transformation operation.
+
+#### Remarks
+
+When *entity* is a [DocAssembly](/api-reference/CloudNimble/DotNetDocs/Core/DocAssembly), the reference map is rebuilt from it first, so
+`cref` references resolve against the assembly being transformed.
+
+## Related APIs
+
+- CloudNimble.DotNetDocs.Core.IDocTransformer
+

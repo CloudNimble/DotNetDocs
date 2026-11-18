@@ -1,5 +1,6 @@
 using CloudNimble.DotNetDocs.Core;
 using CloudNimble.DotNetDocs.Core.Configuration;
+using CloudNimble.DotNetDocs.Core.Renderers;
 using CloudNimble.DotNetDocs.Tests.Shared;
 using CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios;
 using FluentAssertions;
@@ -1261,83 +1262,290 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
         #region CreateConceptualFilesAsync Tests
 
         [TestMethod]
-        public async Task CreateConceptualFilesAsync_SingleAssembly_CreatesPlaceholders()
+        public async Task CreateConceptualFilesAsync_SingleAssembly_WritesThePlaceholderForEveryNamespaceAndType()
         {
             var manager = GetDocumentationManager();
             var context = GetService<ProjectContext>();
-            context.ConceptualDocsEnabled = true;
 
             await manager.CreateConceptualFilesAsync(_testAssemblyPath!, _testXmlPath!);
 
-            manager.Should().NotBeNull();
+            var model = await GetSingleTestAssembly();
+            GetConceptualFiles(context).Should().BeEquivalentTo(GetExpectedPlaceholderFiles(context, model));
         }
 
         [TestMethod]
-        public async Task CreateConceptualFilesAsync_MultipleAssemblies_CreatesAllPlaceholders()
+        public async Task CreateConceptualFilesAsync_IgnoresConceptualDocsEnabled()
         {
             var manager = GetDocumentationManager();
             var context = GetService<ProjectContext>();
-            context.ConceptualDocsEnabled = true;
+            context.ConceptualDocsEnabled = false;
 
-            var assemblies = new[]
-            {
-                (_testAssemblyPath!, _testXmlPath!),
-                (_testAssemblyPath!, _testXmlPath!)
-            };
+            await manager.CreateConceptualFilesAsync(_testAssemblyPath!, _testXmlPath!);
 
-            await manager.CreateConceptualFilesAsync(assemblies);
-
-            manager.Should().NotBeNull();
+            GetConceptualFiles(context).Should().NotBeEmpty("calling the method is an explicit request, so the pipeline switch doesn't apply");
         }
 
         [TestMethod]
-        public async Task CreateConceptualFilesAsync_EmptyAssemblyList_CompletesWithoutError()
+        public async Task CreateConceptualFilesAsync_SameAssemblyTwice_WritesOneSetOfPlaceholders()
+        {
+            var manager = GetDocumentationManager();
+            var context = GetService<ProjectContext>();
+
+            await manager.CreateConceptualFilesAsync([(_testAssemblyPath!, _testXmlPath!), (_testAssemblyPath!, _testXmlPath!)]);
+
+            var model = await GetSingleTestAssembly();
+            GetConceptualFiles(context).Should().BeEquivalentTo(GetExpectedPlaceholderFiles(context, model));
+        }
+
+        [TestMethod]
+        public async Task CreateConceptualFilesAsync_EmptyAssemblyList_WritesNothing()
+        {
+            var manager = GetDocumentationManager();
+            var context = GetService<ProjectContext>();
+
+            await manager.CreateConceptualFilesAsync(Array.Empty<(string assemblyPath, string xmlPath)>());
+
+            Directory.Exists(context.GetFullConceptualPath()).Should().BeFalse();
+        }
+
+        [TestMethod]
+        public async Task CreateConceptualFilesAsync_NullAssemblyList_Throws()
         {
             var manager = GetDocumentationManager();
 
-            var emptyAssemblies = Array.Empty<(string assemblyPath, string xmlPath)>();
+            var act = () => manager.CreateConceptualFilesAsync(null!);
 
-            await manager.CreateConceptualFilesAsync(emptyAssemblies);
-
-            manager.Should().NotBeNull();
+            await act.Should().ThrowAsync<ArgumentNullException>().WithParameterName("assemblies");
         }
 
         [TestMethod]
-        public async Task CreateConceptualFilesAsync_InvalidAssemblyPath_ThrowsException()
+        public async Task CreateConceptualFilesAsync_InvalidAssemblyPath_ThrowsFileNotFound()
         {
             var manager = GetDocumentationManager();
 
             Func<Task> act = async () => await manager.CreateConceptualFilesAsync("nonexistent.dll", "nonexistent.xml");
 
-            await act.Should().ThrowAsync<Exception>();
+            await act.Should().ThrowAsync<FileNotFoundException>();
         }
 
         [TestMethod]
-        public async Task CreateConceptualFilesAsync_UsesAssemblyManagerCache()
+        public async Task CreateConceptualFilesAsync_ThenProcessAsync_LoadsEditedContentWithoutDocumentingAgain()
         {
-            var manager = GetDocumentationManager();
             var context = GetService<ProjectContext>();
-            context.ConceptualDocsEnabled = true;
-
+            var manager = new DocumentationManager(context, renderers: [new TestRenderer("TestRenderer", context)]);
             await manager.CreateConceptualFilesAsync(_testAssemblyPath!, _testXmlPath!);
-            await manager.CreateConceptualFilesAsync(_testAssemblyPath!, _testXmlPath!);
+            var documented = manager.GetOrCreateAssemblyManager(_testAssemblyPath!, _testXmlPath!).Document;
+            var usagePath = Path.Combine(context.GetConceptualTypePath("CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios", "SimpleClass"), DocConstants.UsageFileName);
+            await File.WriteAllTextAsync(usagePath, "Edited usage for SimpleClass.");
 
-            var cachedManager = manager.GetOrCreateAssemblyManager(_testAssemblyPath!, _testXmlPath!);
-            cachedManager.Should().NotBeNull("assembly manager should be cached");
+            await manager.ProcessAsync(_testAssemblyPath!, _testXmlPath!);
+
+            var assemblyManager = manager.GetOrCreateAssemblyManager(_testAssemblyPath!, _testXmlPath!);
+            assemblyManager.Document.Should().BeSameAs(documented, "the model built by CreateConceptualFilesAsync is reused");
+            assemblyManager.Document!.Namespaces.SelectMany(ns => ns.Types).Single(t => t.Name == "SimpleClass").Usage
+                .Should().Be("Edited usage for SimpleClass.");
+        }
+
+        #endregion
+
+        #region GeneratePlaceholdersAsync Tests
+
+        [TestMethod]
+        [DataRow(NamespaceMode.File)]
+        [DataRow(NamespaceMode.Folder)]
+        public async Task GeneratePlaceholdersAsync_WritesTheSameNestedLayoutInEveryNamespaceMode(NamespaceMode mode)
+        {
+            var context = GetService<ProjectContext>();
+            context.FileNamingOptions = new FileNamingOptions(mode);
+            var manager = GetDocumentationManager();
+            var model = await GetSingleTestAssembly();
+
+            await manager.GeneratePlaceholdersAsync(model);
+
+            GetConceptualFiles(context).Should().BeEquivalentTo(GetExpectedPlaceholderFiles(context, model),
+                "conceptual files are a source tree that doesn't depend on how the output is laid out");
         }
 
         [TestMethod]
-        public async Task CreateConceptualFilesAsync_ParallelExecution_CompletesSuccessfully()
+        public async Task GeneratePlaceholdersAsync_WritesRelativeConceptualPathUnderTheDocumentationRoot()
+        {
+            var context = GetService<ProjectContext>();
+            context.ConceptualPath = "conceptual";
+            var manager = GetDocumentationManager();
+
+            await manager.GeneratePlaceholdersAsync(await GetSingleTestAssembly());
+
+            Directory.EnumerateFiles(Path.Combine(context.DocumentationRootPath, "conceptual"), "*", SearchOption.AllDirectories)
+                .Should().NotBeEmpty("a relative ConceptualPath resolves against DocumentationRootPath, not the working directory");
+        }
+
+        [TestMethod]
+        public async Task GeneratePlaceholdersAsync_WritesTheTemplateTextForNamespacesAndTypes()
+        {
+            var context = GetService<ProjectContext>();
+            var manager = GetDocumentationManager();
+
+            await manager.GeneratePlaceholdersAsync(await GetSingleTestAssembly());
+
+            var namespaceSummary = await File.ReadAllTextAsync(Path.Combine(context.GetConceptualNamespacePath("CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios"), DocConstants.SummaryFileName));
+            namespaceSummary.Should().Be("""
+                <!-- TODO: REMOVE THIS COMMENT AFTER YOU CUSTOMIZE THIS CONTENT -->
+                # Summary
+
+                Describe the purpose and overview of `CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios` here.
+
+
+                """.ReplaceLineEndings());
+            var typeUsage = await File.ReadAllTextAsync(Path.Combine(context.GetConceptualTypePath("CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios", "SimpleClass"), DocConstants.UsageFileName));
+            typeUsage.Should().Be("""
+                <!-- TODO: REMOVE THIS COMMENT AFTER YOU CUSTOMIZE THIS CONTENT -->
+                # Usage
+
+                Describe how to use `SimpleClass` here.
+
+
+                """.ReplaceLineEndings());
+            DocumentationManager.IsTodoPlaceholderFile(typeUsage).Should().BeTrue("ShowPlaceholders = false must be able to recognize every generated file");
+        }
+
+        [TestMethod]
+        public async Task GeneratePlaceholdersAsync_NamesTheGlobalNamespaceGlobal()
+        {
+            var context = GetService<ProjectContext>();
+            var manager = GetDocumentationManager();
+            var model = new DocAssembly(Microsoft.CodeAnalysis.CSharp.CSharpCompilation.Create("Empty").Assembly);
+            model.Namespaces.Add(new DocNamespace(Microsoft.CodeAnalysis.CSharp.CSharpCompilation.Create("Empty").GlobalNamespace) { Name = string.Empty });
+
+            await manager.GeneratePlaceholdersAsync(model);
+
+            var summary = await File.ReadAllTextAsync(Path.Combine(context.GetFullConceptualPath(), "global", DocConstants.SummaryFileName));
+            summary.Should().Contain("Describe the purpose and overview of `global` here.");
+        }
+
+        [TestMethod]
+        public async Task GeneratePlaceholdersAsync_NeverOverwritesExistingFiles()
+        {
+            var context = GetService<ProjectContext>();
+            var manager = GetDocumentationManager();
+            var model = await GetSingleTestAssembly();
+            var typeFolder = context.GetConceptualTypePath("CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios", "SimpleClass");
+            Directory.CreateDirectory(typeFolder);
+            var usagePath = Path.Combine(typeFolder, DocConstants.UsageFileName);
+            await File.WriteAllTextAsync(usagePath, "Hand-written usage.");
+
+            await manager.GeneratePlaceholdersAsync(model);
+            await manager.GeneratePlaceholdersAsync(model);
+
+            (await File.ReadAllTextAsync(usagePath)).Should().Be("Hand-written usage.");
+            File.Exists(Path.Combine(typeFolder, DocConstants.ExamplesFileName)).Should().BeTrue("missing files next to an edited one are still created");
+        }
+
+        [TestMethod]
+        public async Task GeneratePlaceholdersAsync_ConcurrentCalls_WriteEachFileOnce()
+        {
+            var context = GetService<ProjectContext>();
+            var manager = GetDocumentationManager();
+            var model = await GetSingleTestAssembly();
+
+            var act = () => Task.WhenAll(Enumerable.Range(0, 8).Select(_ => manager.GeneratePlaceholdersAsync(model)));
+
+            await act.Should().NotThrowAsync();
+            GetConceptualFiles(context).Should().BeEquivalentTo(GetExpectedPlaceholderFiles(context, model));
+        }
+
+        [TestMethod]
+        public async Task GeneratePlaceholdersAsync_NullModel_Throws()
         {
             var manager = GetDocumentationManager();
+
+            var act = () => manager.GeneratePlaceholdersAsync(null!);
+
+            await act.Should().ThrowAsync<ArgumentNullException>().WithParameterName("model");
+        }
+
+        [TestMethod]
+        [DataRow("")]
+        [DataRow("   ")]
+        public async Task GeneratePlaceholdersAsync_WithoutConceptualPath_Throws(string conceptualPath)
+        {
             var context = GetService<ProjectContext>();
-            context.ConceptualDocsEnabled = true;
+            context.ConceptualPath = conceptualPath;
+            var manager = GetDocumentationManager();
+            var model = await GetSingleTestAssembly();
 
-            var assemblies = Enumerable.Repeat((_testAssemblyPath!, _testXmlPath!), 5);
+            var act = () => manager.GeneratePlaceholdersAsync(model);
 
-            await manager.CreateConceptualFilesAsync(assemblies);
+            await act.Should().ThrowAsync<InvalidOperationException>().WithMessage("*ConceptualPath is not set*");
+            Directory.EnumerateFileSystemEntries(_tempDirectory!, "*", SearchOption.AllDirectories).Should().BeEmpty();
+        }
 
-            manager.Should().NotBeNull();
+        [TestMethod]
+        public async Task GeneratePlaceholdersAsync_RunsRendererOverridesAfterTheBuiltInFiles()
+        {
+            var context = GetService<ProjectContext>();
+            var first = new MemberNotesRenderer(context, "First");
+            var second = new MemberNotesRenderer(context, "Second");
+            var manager = new DocumentationManager(context, renderers: [first, second]);
+            var model = await GetSingleTestAssembly();
+
+            await manager.GeneratePlaceholdersAsync(model);
+
+            first.BuiltInFilesExisted.Should().BeTrue("renderers run after the standard placeholders are written");
+            second.BuiltInFilesExisted.Should().BeTrue();
+            (await File.ReadAllTextAsync(MemberNotesRenderer.GetNotesPath(context))).Should().Be("First", "renderers run one at a time, in registration order, and the first file written is kept");
+        }
+
+        [TestMethod]
+        public async Task ProcessAsync_LoadsFilesWrittenByRendererOverrides()
+        {
+            var context = GetService<ProjectContext>();
+            var manager = new DocumentationManager(context, renderers: [new MemberNotesRenderer(context, "Notes from a renderer.")]);
+
+            await manager.ProcessAsync(_testAssemblyPath!, _testXmlPath!);
+
+            var model = manager.GetOrCreateAssemblyManager(_testAssemblyPath!, _testXmlPath!).Document!;
+            model.Namespaces.SelectMany(ns => ns.Types).Single(t => t.Name == "SimpleClass")
+                .Members.Single(m => m.Name == MemberNotesRenderer.MemberName).Usage.Should().Be("Notes from a renderer.");
+        }
+
+        [TestMethod]
+        public async Task ProcessAsync_WithMarkdownAndJsonRenderers_WritesOneSetOfPlaceholders()
+        {
+            var context = GetService<ProjectContext>();
+            var manager = new DocumentationManager(context, renderers: [new MarkdownRenderer(context), new JsonRenderer(context)]);
+
+            await manager.ProcessAsync(_testAssemblyPath!, _testXmlPath!);
+
+            var model = await GetSingleTestAssembly();
+            GetConceptualFiles(context).Should().BeEquivalentTo(GetExpectedPlaceholderFiles(context, model),
+                "placeholders no longer depend on which renderers are registered, so JSON gets namespace files and two renderers can't collide");
+        }
+
+        [TestMethod]
+        public async Task ProcessAsync_WithOnlyJsonRenderer_WritesNamespacePlaceholders()
+        {
+            var context = GetService<ProjectContext>();
+            var manager = new DocumentationManager(context, renderers: [new JsonRenderer(context)]);
+
+            await manager.ProcessAsync(_testAssemblyPath!, _testXmlPath!);
+
+            var model = await GetSingleTestAssembly();
+            GetConceptualFiles(context).Should().BeEquivalentTo(GetExpectedPlaceholderFiles(context, model),
+                "a JSON-only run used to get type placeholders but no namespace placeholders");
+        }
+
+        [TestMethod]
+        [DataRow("")]
+        [DataRow("   ")]
+        public async Task ProcessAsync_WithoutConceptualPath_SkipsPlaceholders(string conceptualPath)
+        {
+            var context = GetService<ProjectContext>();
+            context.ConceptualPath = conceptualPath;
+            var manager = new DocumentationManager(context, renderers: [new MemberNotesRenderer(context, "Unused")]);
+
+            await manager.ProcessAsync(_testAssemblyPath!, _testXmlPath!);
+
+            Directory.EnumerateFiles(_tempDirectory!, "*", SearchOption.AllDirectories).Should().BeEmpty();
         }
 
         #endregion
@@ -1476,21 +1684,6 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
         }
 
         [TestMethod]
-        public async Task CreateConceptualFilesAsync_ThenProcessAsync_DoesNotDuplicate()
-        {
-            var context = GetService<ProjectContext>();
-            context.ConceptualDocsEnabled = true;
-
-            var renderer = new TestRenderer("TestRenderer", context);
-            var manager = new DocumentationManager(context, renderers: [renderer]);
-
-            await manager.CreateConceptualFilesAsync(_testAssemblyPath!, _testXmlPath!);
-            await manager.ProcessAsync(_testAssemblyPath!, _testXmlPath!);
-
-            Directory.Exists(context.DocumentationRootPath).Should().BeTrue();
-        }
-
-        [TestMethod]
         public async Task ProcessAsync_WithConceptualDisabled_SkipsConceptual()
         {
             var manager = GetDocumentationManager();
@@ -1499,7 +1692,7 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
 
             await manager.ProcessAsync(_testAssemblyPath!, _testXmlPath!);
 
-            manager.Should().NotBeNull("ProcessAsync should complete even with conceptual disabled");
+            Directory.Exists(context.GetFullConceptualPath()).Should().BeFalse("the pipeline writes no placeholders when conceptual docs are disabled");
         }
 
         #endregion
@@ -1716,6 +1909,40 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
             var context = GetService<ProjectContext>();
             using var assemblyManager = new AssemblyManager(_testAssemblyPath!, _testXmlPath!);
             return await assemblyManager.DocumentAsync(context);
+        }
+
+        /// <summary>
+        /// Lists every file under the conceptual folder.
+        /// </summary>
+        private static List<string> GetConceptualFiles(ProjectContext context)
+        {
+            var conceptualPath = context.GetFullConceptualPath();
+            return Directory.Exists(conceptualPath) ? [.. Directory.EnumerateFiles(conceptualPath, "*", SearchOption.AllDirectories)] : [];
+        }
+
+        /// <summary>
+        /// Lists the files the placeholder contract promises: seven per namespace (summary plus the shared six) and six per type.
+        /// </summary>
+        private static List<string> GetExpectedPlaceholderFiles(ProjectContext context, DocAssembly model)
+        {
+            string[] shared = [DocConstants.UsageFileName, DocConstants.ExamplesFileName, DocConstants.BestPracticesFileName,
+                DocConstants.PatternsFileName, DocConstants.ConsiderationsFileName, DocConstants.RelatedApisFileName];
+
+            var expected = new List<string>();
+            foreach (var ns in model.Namespaces)
+            {
+                var namespaceFolder = context.GetConceptualNamespacePath(ns.Name);
+                expected.Add(Path.Combine(namespaceFolder, DocConstants.SummaryFileName));
+                expected.AddRange(shared.Select(file => Path.Combine(namespaceFolder, file)));
+
+                foreach (var type in ns.Types)
+                {
+                    var typeFolder = context.GetConceptualTypePath(ns.Name, type.Name);
+                    expected.AddRange(shared.Select(file => Path.Combine(typeFolder, file)));
+                }
+            }
+
+            return expected;
         }
 
         #endregion
@@ -2282,6 +2509,33 @@ CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass";
             public Task CombineReferencedNavigationAsync(List<DocumentationReference> references)
             {
                 return Task.CompletedTask;
+            }
+        }
+
+        /// <summary>
+        /// A renderer that adds a member-level usage file, the way a third-party renderer extends the standard placeholders.
+        /// </summary>
+        private sealed class MemberNotesRenderer(ProjectContext context, string notes) : RendererBase(context), IDocRenderer
+        {
+            public const string MemberName = "DoWork";
+
+            public bool BuiltInFilesExisted { get; private set; }
+
+            public static string GetNotesPath(ProjectContext context) =>
+                Path.Combine(context.GetConceptualMemberPath("CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios", "SimpleClass", MemberName), DocConstants.UsageFileName);
+
+            public Task RenderAsync(DocAssembly? model) => Task.CompletedTask;
+
+            public override async Task RenderPlaceholdersAsync(DocAssembly model)
+            {
+                BuiltInFilesExisted = File.Exists(Path.Combine(Context.GetConceptualTypePath("CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios", "SimpleClass"), DocConstants.UsageFileName));
+
+                var notesPath = GetNotesPath(Context);
+                if (!File.Exists(notesPath))
+                {
+                    Directory.CreateDirectory(Path.GetDirectoryName(notesPath)!);
+                    await File.WriteAllTextAsync(notesPath, notes);
+                }
             }
         }
 

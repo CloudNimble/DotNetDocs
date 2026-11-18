@@ -2,7 +2,7 @@
 title: MarkdownXmlTransformer
 description: "Transforms XML documentation tags in DocEntity properties to Markdown format."
 icon: file-brackets-curly
-keywords: ['MarkdownXmlTransformer', 'CloudNimble.DotNetDocs.Core.Transformers.MarkdownXmlTransformer', 'CloudNimble.DotNetDocs.Core.Transformers', 'class', 'System.Object', 'CloudNimble.DotNetDocs.Core.IDocTransformer']
+keywords: ['MarkdownXmlTransformer', 'CloudNimble.DotNetDocs.Core.Transformers.MarkdownXmlTransformer', 'CloudNimble.DotNetDocs.Core.Transformers', 'class', 'CloudNimble.DotNetDocs.Core.Transformers.XmlTransformerBase', 'CloudNimble.DotNetDocs.Core.IDocTransformer']
 ---
 
 ## Definition
@@ -11,7 +11,7 @@ keywords: ['MarkdownXmlTransformer', 'CloudNimble.DotNetDocs.Core.Transformers.M
 
 **Namespace:** CloudNimble.DotNetDocs.Core.Transformers
 
-**Inheritance:** System.Object
+**Inheritance:** CloudNimble.DotNetDocs.Core.Transformers.XmlTransformerBase
 
 ## Syntax
 
@@ -25,9 +25,9 @@ Transforms XML documentation tags in DocEntity properties to Markdown format.
 
 ## Remarks
 
-This transformer processes all string properties in the DocEntity object graph,
-            converting XML documentation tags to their Markdown equivalents. It uses performance-optimized
-            regex patterns to skip strings without XML tags and builds cross-references in a single pass.
+This transformer converts XML documentation tags to their Markdown equivalents. The traversal of the documentation
+model, the skipping of strings without tags, and the resolution of `cref` references come from
+[XmlTransformerBase](/api-reference/CloudNimble/DotNetDocs/Core/Transformers/XmlTransformerBase); this class only decides how each tag is written in Markdown.
 
 ## Constructors
 
@@ -49,6 +49,24 @@ public MarkdownXmlTransformer(CloudNimble.DotNetDocs.Core.ProjectContext project
 
 ### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor <Badge color="gray">Inherited</Badge>
 
+<Note>Inherited from `CloudNimble.DotNetDocs.Core.Transformers.XmlTransformerBase`</Note>
+
+Initializes a new instance of the [XmlTransformerBase](/api-reference/CloudNimble/DotNetDocs/Core/Transformers/XmlTransformerBase) class.
+
+#### Syntax
+
+```csharp
+protected XmlTransformerBase(CloudNimble.DotNetDocs.Core.ProjectContext projectContext)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `projectContext` | `CloudNimble.DotNetDocs.Core.ProjectContext` | The project context for configuration and file naming. |
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor <Badge color="gray">Inherited</Badge>
+
 <Note>Inherited from `object`</Note>
 
 #### Syntax
@@ -57,7 +75,137 @@ public MarkdownXmlTransformer(CloudNimble.DotNetDocs.Core.ProjectContext project
 public Object()
 ```
 
+## Properties
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> CurrentPath <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Core.Transformers.XmlTransformerBase`</Note>
+
+Gets the path of the documentation page for the entity currently being transformed.
+
+#### Syntax
+
+```csharp
+protected string CurrentPath { get; private set; }
+```
+
+#### Property Value
+
+Type: `string`
+
+#### Remarks
+
+The path is updated when the transformer reaches a namespace or a type. Members and parameters keep the path of the
+type that contains them, because they are rendered on the same page.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ProjectContext <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Core.Transformers.XmlTransformerBase`</Note>
+
+Gets the project context that supplies the configuration and file naming options.
+
+#### Syntax
+
+```csharp
+protected CloudNimble.DotNetDocs.Core.ProjectContext ProjectContext { get; }
+```
+
+#### Property Value
+
+Type: `CloudNimble.DotNetDocs.Core.ProjectContext`
+
 ## Methods
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> AddToReferenceMap <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Core.Transformers.XmlTransformerBase`</Note>
+
+Adds an entity to the reference map with its documentation ID and path.
+
+#### Syntax
+
+```csharp
+internal void AddToReferenceMap(CloudNimble.DotNetDocs.Core.DocEntity entity, string id, string path)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `entity` | `CloudNimble.DotNetDocs.Core.DocEntity` | The entity to add to the map. |
+| `id` | `string` | The documentation ID for the entity. |
+| `path` | `string` | The relative path to the entity's documentation. |
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> BuildReferenceMap <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Core.Transformers.XmlTransformerBase`</Note>
+
+Rebuilds the reference map from a documentation assembly.
+
+#### Syntax
+
+```csharp
+internal void BuildReferenceMap(CloudNimble.DotNetDocs.Core.DocAssembly assembly)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `assembly` | `CloudNimble.DotNetDocs.Core.DocAssembly` | The documentation assembly to index. |
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ConvertText <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Core.Transformers.XmlTransformerBase`</Note>
+
+Converts a documentation string, skipping the conversion when the string has nothing to convert.
+
+#### Syntax
+
+```csharp
+protected virtual string ConvertText(string text, bool skipEscaping = false)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `text` | `string?` | The text to convert. |
+| `skipEscaping` | `bool` | When true, the text is conceptual content that is already in the output format. |
+
+#### Returns
+
+Type: `string?`
+The converted text, or the original text when it is null, whitespace, or contains no tags.
+
+#### Remarks
+
+Indentation is left as it is. [AssemblyManager](/api-reference/CloudNimble/DotNetDocs/Core/AssemblyManager) already removed the XML documentation file's indentation
+when it extracted the text, and conceptual content is indented on purpose, for example in code blocks and nested lists.
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ConvertXml <Badge color="gray">Inherited</Badge> <Badge color="orange">Abstract</Badge>
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Core.Transformers.XmlTransformerBase`</Note>
+
+Converts the XML documentation tags in a string into the output format.
+
+#### Syntax
+
+```csharp
+protected abstract string ConvertXml(string text, bool skipEscaping)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `text` | `string` | The text to convert. It is never null or whitespace and contains at least one tag. Text extracted by [AssemblyManager](/api-reference/CloudNimble/DotNetDocs/Core/AssemblyManager) has no XML file indentation. |
+| `skipEscaping` | `bool` | When true, the text is conceptual content that is already in the output format, so tags that were not converted must be left as they are. |
+
+#### Returns
+
+Type: `string`
+The converted text.
 
 ### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Equals <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
 
@@ -100,6 +248,109 @@ public static bool Equals(object objA, object objB)
 
 Type: `bool`
 
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetAnchor <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Core.Transformers.XmlTransformerBase`</Note>
+
+Gets the anchor for a resolved documentation reference.
+
+#### Syntax
+
+```csharp
+internal string GetAnchor(CloudNimble.DotNetDocs.Core.DocEntity entity)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `entity` | `CloudNimble.DotNetDocs.Core.DocEntity` | The resolved entity. |
+
+#### Returns
+
+Type: `string?`
+The lowercase member name for members, or null for assemblies, namespaces, and types, which have their own pages,
+and for enum values, which are rows in their enum's table.
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetAssemblyDocumentationId <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Core.Transformers.XmlTransformerBase`</Note>
+
+Gets the documentation ID for an assembly using the A: prefix.
+
+#### Syntax
+
+```csharp
+internal string GetAssemblyDocumentationId(CloudNimble.DotNetDocs.Core.DocAssembly assembly)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `assembly` | `CloudNimble.DotNetDocs.Core.DocAssembly` | The assembly to get the ID for. |
+
+#### Returns
+
+Type: `string`
+The documentation ID in the format "A:AssemblyName".
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetDisplayName <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Core.Transformers.XmlTransformerBase`</Note>
+
+Gets a human-readable display name for a documentation reference.
+
+#### Syntax
+
+```csharp
+internal string GetDisplayName(string reference, CloudNimble.DotNetDocs.Core.DocEntity entity)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `reference` | `string` | The raw reference string. |
+| `entity` | `CloudNimble.DotNetDocs.Core.DocEntity` | The resolved entity. |
+
+#### Returns
+
+Type: `string`
+A display name suitable for rendering in documentation.
+
+#### Remarks
+
+Members and enum values include their type's simple name for clarity, such as `NamespaceMode.File`.
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetFrameworkDocumentationUrl <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Core.Transformers.XmlTransformerBase`</Note>
+
+Generates a Microsoft Learn documentation URL for a .NET type.
+
+#### Syntax
+
+```csharp
+internal static string GetFrameworkDocumentationUrl(string typeName)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `typeName` | `string` | The type's documentation ID without its `T:` prefix, such as `System.Collections.Generic.List`1`. |
+
+#### Returns
+
+Type: `string`
+The URL to the type's documentation on Microsoft Learn.
+
+#### Remarks
+
+Microsoft Learn writes the generic arity as `-1` instead of ``1` and nested types with a dot, so
+`System.Collections.Generic.List`1` becomes `system.collections.generic.list-1`.
+
 ### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetHashCode <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
 
 <Note>Inherited from `object`</Note>
@@ -113,6 +364,150 @@ public virtual int GetHashCode()
 #### Returns
 
 Type: `int`
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetLanguageKeywordUrl <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Core.Transformers.XmlTransformerBase`</Note>
+
+Gets the Microsoft Learn URL for a C# language keyword.
+
+#### Syntax
+
+```csharp
+protected virtual string GetLanguageKeywordUrl(string keyword)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `keyword` | `string` | The lowercase keyword, such as `null` or `async`. |
+
+#### Returns
+
+Type: `string?`
+The URL for the keyword, or null when the keyword has no dedicated page.
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetMemberDocumentationId <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Core.Transformers.XmlTransformerBase`</Note>
+
+Gets the documentation ID for a member using the appropriate prefix (F:, P:, M:, E:).
+
+#### Syntax
+
+```csharp
+internal string GetMemberDocumentationId(CloudNimble.DotNetDocs.Core.DocMember member, CloudNimble.DotNetDocs.Core.DocType parentType)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `member` | `CloudNimble.DotNetDocs.Core.DocMember` | The member to get the ID for. |
+| `parentType` | `CloudNimble.DotNetDocs.Core.DocType` | The parent type containing the member. |
+
+#### Returns
+
+Type: `string`
+The documentation ID in the format "Prefix:TypeName.MemberName".
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetNamespaceDocumentationId <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Core.Transformers.XmlTransformerBase`</Note>
+
+Gets the documentation ID for a namespace using the N: prefix.
+
+#### Syntax
+
+```csharp
+internal string GetNamespaceDocumentationId(CloudNimble.DotNetDocs.Core.DocNamespace ns)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `ns` | `CloudNimble.DotNetDocs.Core.DocNamespace` | The namespace to get the ID for. |
+
+#### Returns
+
+Type: `string`
+The documentation ID in the format "N:NamespaceName".
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetNamespacePath <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Core.Transformers.XmlTransformerBase`</Note>
+
+Gets the documentation page path for a namespace.
+
+#### Syntax
+
+```csharp
+internal string GetNamespacePath(CloudNimble.DotNetDocs.Core.DocNamespace ns)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `ns` | `CloudNimble.DotNetDocs.Core.DocNamespace` | The namespace to get the path for. |
+
+#### Returns
+
+Type: `string`
+The relative path to the namespace documentation page.
+
+#### Remarks
+
+Uses [ProjectContext.GetNamespacePagePath](/api-reference/CloudNimble/DotNetDocs/Core/ProjectContext#getnamespacepagepath), the same source the renderers use to write the page.
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetRelativePath <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Core.Transformers.XmlTransformerBase`</Note>
+
+Gets a root-relative path from one document to another, including the API reference path prefix.
+
+#### Syntax
+
+```csharp
+protected internal virtual string GetRelativePath(string fromPath, string toPath)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `fromPath` | `string` | The current document path. Root-relative paths do not depend on it, but an override that builds document-relative links can use it. |
+| `toPath` | `string` | The target document path. |
+
+#### Returns
+
+Type: `string`
+A root-relative path including the API reference path prefix.
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetSimpleTypeName <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Core.Transformers.XmlTransformerBase`</Note>
+
+Gets the simple name of a type by removing its namespace.
+
+#### Syntax
+
+```csharp
+internal string GetSimpleTypeName(string typeName)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `typeName` | `string` | The fully qualified type name. |
+
+#### Returns
+
+Type: `string`
+The type name without its namespace.
 
 ### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetType <Badge color="gray">Inherited</Badge>
 
@@ -128,6 +523,161 @@ public System.Type GetType()
 
 Type: `System.Type`
 
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetTypeDocumentationId <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Core.Transformers.XmlTransformerBase`</Note>
+
+Gets the documentation ID for a type using the T: prefix.
+
+#### Syntax
+
+```csharp
+internal string GetTypeDocumentationId(CloudNimble.DotNetDocs.Core.DocType type)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `type` | `CloudNimble.DotNetDocs.Core.DocType` | The type to get the ID for. |
+
+#### Returns
+
+Type: `string`
+The documentation ID in the format "T:FullTypeName".
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetTypePath <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Core.Transformers.XmlTransformerBase`</Note>
+
+Gets the documentation page path for a type.
+
+#### Syntax
+
+```csharp
+internal string GetTypePath(CloudNimble.DotNetDocs.Core.DocType type, CloudNimble.DotNetDocs.Core.DocNamespace ns)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `type` | `CloudNimble.DotNetDocs.Core.DocType` | The type to get the path for. |
+| `ns` | `CloudNimble.DotNetDocs.Core.DocNamespace` | The parent namespace of the type. |
+
+#### Returns
+
+Type: `string`
+The relative path to the type documentation page.
+
+#### Remarks
+
+Uses [ProjectContext.GetTypePagePath](/api-reference/CloudNimble/DotNetDocs/Core/ProjectContext#gettypepagepath), the same source the renderers use to write the page.
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> IndexEnumValue <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Core.Transformers.XmlTransformerBase`</Note>
+
+Indexes an enum value in the reference map as `F:Enum.Value` and `Enum.Value`.
+
+#### Syntax
+
+```csharp
+internal void IndexEnumValue(CloudNimble.DotNetDocs.Core.DocEnumValue value, CloudNimble.DotNetDocs.Core.DocEnum parentEnum, CloudNimble.DotNetDocs.Core.DocNamespace ns)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `value` | `CloudNimble.DotNetDocs.Core.DocEnumValue` | The enum value to index. |
+| `parentEnum` | `CloudNimble.DotNetDocs.Core.DocEnum` | The enum that declares the value. |
+| `ns` | `CloudNimble.DotNetDocs.Core.DocNamespace` | The namespace containing the enum. |
+
+#### Remarks
+
+Enum values are rendered in a table on the enum's page, so they resolve to that page with no anchor.
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> IndexMember <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Core.Transformers.XmlTransformerBase`</Note>
+
+Indexes a member in the reference map by its type-qualified name and by its Roslyn documentation ID.
+
+#### Syntax
+
+```csharp
+internal void IndexMember(CloudNimble.DotNetDocs.Core.DocMember member, CloudNimble.DotNetDocs.Core.DocType parentType, CloudNimble.DotNetDocs.Core.DocNamespace ns)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `member` | `CloudNimble.DotNetDocs.Core.DocMember` | The member to index. |
+| `parentType` | `CloudNimble.DotNetDocs.Core.DocType` | The parent type containing the member. |
+| `ns` | `CloudNimble.DotNetDocs.Core.DocNamespace` | The namespace containing the parent type. |
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> IndexNamespace <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Core.Transformers.XmlTransformerBase`</Note>
+
+Indexes a namespace and all its types in the reference map.
+
+#### Syntax
+
+```csharp
+internal void IndexNamespace(CloudNimble.DotNetDocs.Core.DocNamespace ns)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `ns` | `CloudNimble.DotNetDocs.Core.DocNamespace` | The namespace to index. |
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> IndexType <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Core.Transformers.XmlTransformerBase`</Note>
+
+Indexes a type and all its members in the reference map.
+
+#### Syntax
+
+```csharp
+internal void IndexType(CloudNimble.DotNetDocs.Core.DocType type, CloudNimble.DotNetDocs.Core.DocNamespace ns)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `type` | `CloudNimble.DotNetDocs.Core.DocType` | The type to index. |
+| `ns` | `CloudNimble.DotNetDocs.Core.DocNamespace` | The parent namespace of the type. |
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> IsFrameworkType <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Core.Transformers.XmlTransformerBase`</Note>
+
+Determines whether a type name belongs to a .NET, Microsoft, or Windows namespace.
+
+#### Syntax
+
+```csharp
+internal bool IsFrameworkType(string typeName)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `typeName` | `string` | The type name to check. |
+
+#### Returns
+
+Type: `bool`
+True if the type is in a System, Microsoft, or Windows namespace; otherwise, false.
+
 ### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> MemberwiseClone <Badge color="gray">Inherited</Badge>
 
 <Note>Inherited from `object`</Note>
@@ -141,6 +691,37 @@ protected internal object MemberwiseClone()
 #### Returns
 
 Type: `object`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> NormalizeXmlDocIndentation <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Core.Transformers.XmlTransformerBase`</Note>
+
+Normalizes indentation artifacts from XML documentation file formatting.
+
+#### Syntax
+
+```csharp
+internal static string NormalizeXmlDocIndentation(string text)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `text` | `string` | The text to normalize. |
+
+#### Returns
+
+Type: `string`
+The text with XML file indentation removed from all lines.
+
+#### Remarks
+
+[AssemblyManager](/api-reference/CloudNimble/DotNetDocs/Core/AssemblyManager) calls this when it extracts text. Trimming the extracted string strips the first line's
+          leading whitespace but leaves continuation lines with their XML file indentation.
+          [XmlTransformerBase.RemoveCommonIndentation](/api-reference/CloudNimble/DotNetDocs/Core/Transformers/MarkdownXmlTransformer#removecommonindentation) handles the uniform case (all lines indented);
+          this method handles the mixed case where the first line has indent 0 but the
+          rest share a common indent from the XML file structure.
 
 ### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ReferenceEquals <Badge color="gray">Inherited</Badge>
 
@@ -163,6 +744,127 @@ public static bool ReferenceEquals(object objA, object objB)
 
 Type: `bool`
 
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> RemoveCommonIndentation <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Core.Transformers.XmlTransformerBase`</Note>
+
+Removes the leading whitespace that every non-empty line of a block shares.
+
+#### Syntax
+
+```csharp
+protected internal static string RemoveCommonIndentation(string code)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `code` | `string` | The block to process. |
+
+#### Returns
+
+Type: `string`
+The block with the common indentation removed and the result trimmed.
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ResolveReference <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Core.Transformers.XmlTransformerBase`</Note>
+
+Resolves a documentation reference to a [DocReference](/api-reference/CloudNimble/DotNetDocs/Core/DocReference) with its path, anchor, and display name.
+
+#### Syntax
+
+```csharp
+protected internal CloudNimble.DotNetDocs.Core.DocReference ResolveReference(string rawReference, string currentPath)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `rawReference` | `string` | The raw reference string, such as `T:System.String` or `F:NamespaceMode.File`. |
+| `currentPath` | `string` | The current document path for calculating relative paths. |
+
+#### Returns
+
+Type: `CloudNimble.DotNetDocs.Core.DocReference`
+A [DocReference](/api-reference/CloudNimble/DotNetDocs/Core/DocReference) that is resolved when the target is in the reference map, is a framework type, or is a URL.
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ResolveReferences <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Core.Transformers.XmlTransformerBase`</Note>
+
+Resolves every reference in a collection of raw reference strings.
+
+#### Syntax
+
+```csharp
+protected internal System.Collections.Generic.ICollection<CloudNimble.DotNetDocs.Core.DocReference> ResolveReferences(System.Collections.Generic.IEnumerable<string> rawReferences, string currentPath)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `rawReferences` | `System.Collections.Generic.IEnumerable<string>` | The raw reference strings. |
+| `currentPath` | `string` | The current document path for calculating relative paths. |
+
+#### Returns
+
+Type: `System.Collections.Generic.ICollection<CloudNimble.DotNetDocs.Core.DocReference>`
+The resolved references, in the same order as *rawReferences*.
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> StripParameters <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Core.Transformers.XmlTransformerBase`</Note>
+
+Removes the parameter list from a method or indexer reference.
+
+#### Syntax
+
+```csharp
+internal static string StripParameters(string reference)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `reference` | `string` | The reference, such as `M:System.String.Format(System.String,System.Object)`. |
+
+#### Returns
+
+Type: `string`
+The reference up to its parameter list, such as `M:System.String.Format`, or the reference unchanged when it has none.
+
+#### Remarks
+
+Parameter types contain dots, so names must be split only after the parameter list is removed.
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> StripPrefix <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Core.Transformers.XmlTransformerBase`</Note>
+
+Strips the documentation prefix (T:, M:, F:, P:, E:, N:, A:) from a reference string.
+
+#### Syntax
+
+```csharp
+internal string StripPrefix(string reference)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `reference` | `string` | The reference string that may contain a prefix. |
+
+#### Returns
+
+Type: `string`
+The reference string without the prefix.
+
 ### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ToString <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
 
 <Note>Inherited from `object`</Note>
@@ -177,9 +879,11 @@ public virtual string ToString()
 
 Type: `string?`
 
-### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> TransformAsync
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> TransformAsync <Badge color="gray">Inherited</Badge>
 
-Transforms a documentation entity by converting XML tags to Markdown.
+<Note>Inherited from `CloudNimble.DotNetDocs.Core.Transformers.XmlTransformerBase`</Note>
+
+Transforms a documentation entity and all of its children by converting their XML documentation tags.
 
 #### Syntax
 
@@ -197,6 +901,52 @@ public System.Threading.Tasks.Task TransformAsync(CloudNimble.DotNetDocs.Core.Do
 
 Type: `System.Threading.Tasks.Task`
 A task representing the asynchronous transformation operation.
+
+#### Remarks
+
+When *entity* is a [DocAssembly](/api-reference/CloudNimble/DotNetDocs/Core/DocAssembly), the reference map is rebuilt from it first, so
+`cref` references resolve against the assembly being transformed.
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> TransformEntityRecursive <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Core.Transformers.XmlTransformerBase`</Note>
+
+Transforms an entity's documentation strings, resolves its `seealso` references, and then transforms its children.
+
+#### Syntax
+
+```csharp
+protected virtual System.Threading.Tasks.Task TransformEntityRecursive(CloudNimble.DotNetDocs.Core.DocEntity entity)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `entity` | `CloudNimble.DotNetDocs.Core.DocEntity` | The entity to transform. |
+
+#### Returns
+
+Type: `System.Threading.Tasks.Task`
+A task representing the asynchronous transformation operation.
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> UpdateCurrentPath <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `CloudNimble.DotNetDocs.Core.Transformers.XmlTransformerBase`</Note>
+
+Updates [XmlTransformerBase.CurrentPath](/api-reference/CloudNimble/DotNetDocs/Core/Transformers/MarkdownXmlTransformer#currentpath) when the transformer reaches a namespace or a type.
+
+#### Syntax
+
+```csharp
+protected virtual void UpdateCurrentPath(CloudNimble.DotNetDocs.Core.DocEntity entity)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `entity` | `CloudNimble.DotNetDocs.Core.DocEntity` | The entity being transformed. |
 
 ## Related APIs
 

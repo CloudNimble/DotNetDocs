@@ -20,8 +20,13 @@
         <!-- Suppress dependencies when packing - NoTargets is bundled, not a runtime dependency -->
         <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
 
-        <!-- Use TargetsForTfmSpecificContentInPackage to add NoTargets files at the right time -->
-        <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);IncludeNoTargetsInPackage</TargetsForTfmSpecificContentInPackage>
+        <!-- Use TargetsForTfmSpecificContentInPackage to add NoTargets files and task assemblies at the right time: Pack runs
+             these targets while it collects the package's files, before the .nupkg is written. -->
+        <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);IncludeNoTargetsInPackage;IncludeTaskAssembliesInPackage</TargetsForTfmSpecificContentInPackage>
+
+        <!-- The task assemblies come from the Sdk.Tasks build output, one folder per framework. -->
+        <DotNetDocsTasksProject>$(MSBuildThisFileDirectory)..\CloudNimble.DotNetDocs.Sdk.Tasks\CloudNimble.DotNetDocs.Sdk.Tasks.csproj</DotNetDocsTasksProject>
+        <DotNetDocsTasksOutputPath>$(MSBuildThisFileDirectory)..\CloudNimble.DotNetDocs.Sdk.Tasks\bin\$(Configuration)\</DotNetDocsTasksOutputPath>
     </PropertyGroup>
 
     <ItemGroup>
@@ -33,54 +38,42 @@
     </ItemGroup>
 
     <ItemGroup>
+        <!-- The frameworks the task assemblies are built for. Each one becomes a tasks\<framework> folder in the package. -->
+        <DotNetDocsTaskFramework Include="net10.0;net11.0;net472" />
+    </ItemGroup>
+
+    <ItemGroup>
         <!-- Pack the SDK files -->
         <None Include="Sdk\**" Pack="true" PackagePath="Sdk" />
         <None Include="build\**" Pack="true" PackagePath="build" />
-        
-        <!-- Include pre-built task assemblies directly (only during packaging) -->
-        <!-- .NET 8.0 tasks -->
-        <None Include="..\CloudNimble.DotNetDocs.Sdk.Tasks\bin\$(Configuration)\net8.0\*.dll"
-              Pack="true"
-              PackagePath="tasks\net8.0"
-              Visible="false" />
-              
-        <!-- .NET 9.0 tasks -->
-        <None Include="..\CloudNimble.DotNetDocs.Sdk.Tasks\bin\$(Configuration)\net9.0\*.dll"
-              Pack="true"
-              PackagePath="tasks\net9.0"
-              Visible="false" />
-              
-        <!-- .NET 10.0 tasks -->
-        <None Include="..\CloudNimble.DotNetDocs.Sdk.Tasks\bin\$(Configuration)\net10.0\*.dll"
-              Pack="true"
-              PackagePath="tasks\net10.0"
-              Visible="false" />
-              
-        <!-- .NET Framework 4.7.2 tasks -->
-        <None Include="..\CloudNimble.DotNetDocs.Sdk.Tasks\bin\$(Configuration)\net472\*.dll"
-              Pack="true"
-              PackagePath="tasks\net472"
-              Visible="false" />
     </ItemGroup>
-    
-    <!-- Build the tasks project before packing this SDK (but not when NoBuild is set) -->
-    <Target Name="BuildTasksProject" BeforeTargets="Pack" Condition="'$(NoBuild)' != 'true'">
-        <MSBuild Projects="..\CloudNimble.DotNetDocs.Sdk.Tasks\CloudNimble.DotNetDocs.Sdk.Tasks.csproj"
+
+    <!--
+        Build the task assemblies and add them to the package while Pack collects its files.
+        Pack runs its dependencies, including the step that writes the .nupkg, before any BeforeTargets="Pack" target, so building
+        the tasks there packed the previous build. Wildcards in a project-level item are also expanded when the project loads,
+        before anything is built, so a framework with no build output yet was left out of the package. Both happen here instead,
+        in that order. When NoBuild is set, as the no-build option of dotnet pack does, the existing build output is packed.
+    -->
+    <Target Name="IncludeTaskAssembliesInPackage">
+        <MSBuild Projects="$(DotNetDocsTasksProject)"
                  Targets="Build"
-                 Properties="Configuration=$(Configuration)" />
-        <Message Text="Built CloudNimble.DotNetDocs.Sdk.Tasks" Importance="high" />
-    </Target>
+                 Properties="Configuration=$(Configuration)"
+                 Condition="'$(NoBuild)' != 'true'" />
+        <Message Text="Built CloudNimble.DotNetDocs.Sdk.Tasks" Importance="high" Condition="'$(NoBuild)' != 'true'" />
+        <Message Text="Using pre-built task assemblies from bin folder (NoBuild=true)" Importance="high" Condition="'$(NoBuild)' == 'true'" />
 
-    <!-- When NoBuild is set, verify task assemblies exist from previous build -->
-    <Target Name="VerifyTaskAssemblies" BeforeTargets="Pack" Condition="'$(NoBuild)' == 'true'">
+        <Error Text="The CloudNimble.DotNetDocs.Sdk.Tasks build output for %(DotNetDocsTaskFramework.Identity) wasn't found in $(DotNetDocsTasksOutputPath). Build the Tasks project before packing the SDK with --no-build."
+               Condition="!Exists('$(DotNetDocsTasksOutputPath)%(DotNetDocsTaskFramework.Identity)\CloudNimble.DotNetDocs.Sdk.Tasks.dll')" />
+
         <ItemGroup>
-            <RequiredTaskFiles Include="..\CloudNimble.DotNetDocs.Sdk.Tasks\bin\$(Configuration)\**\*.dll" />
+            <DotNetDocsTaskAssembly Include="$(DotNetDocsTasksOutputPath)%(DotNetDocsTaskFramework.Identity)\*.dll">
+                <TaskFramework>%(DotNetDocsTaskFramework.Identity)</TaskFramework>
+            </DotNetDocsTaskAssembly>
+            <TfmSpecificPackageFile Include="@(DotNetDocsTaskAssembly)">
+                <PackagePath>tasks\%(DotNetDocsTaskAssembly.TaskFramework)\%(DotNetDocsTaskAssembly.Filename)%(DotNetDocsTaskAssembly.Extension)</PackagePath>
+            </TfmSpecificPackageFile>
         </ItemGroup>
-
-        <Error Text="Task assemblies not found in bin folder. The Tasks project must be built before packing the SDK with --no-build."
-               Condition="!Exists('@(RequiredTaskFiles)')" />
-
-        <Message Text="Using pre-built task assemblies from bin folder (NoBuild=true)" Importance="high" />
     </Target>
 
     <!-- Automatically push SDK package to local feed after pack -->

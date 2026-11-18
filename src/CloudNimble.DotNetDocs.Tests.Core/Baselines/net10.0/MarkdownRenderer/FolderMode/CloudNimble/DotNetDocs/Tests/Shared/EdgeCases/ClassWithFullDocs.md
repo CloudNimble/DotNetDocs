@@ -6,8 +6,6 @@
 
 **Namespace:** CloudNimble.DotNetDocs.Tests.Shared.EdgeCases
 
-**Inheritance:** System.Object
-
 ## Syntax
 
 ```csharp
@@ -109,15 +107,15 @@ Console.WriteLine(result);
 #### Remarks
 
 <para>This method performs complex processing.</para><list type="bullet">
-  <item>
-    <description>First, it validates the input.</description>
-  </item>
-  <item>
-    <description>Then, it processes the data.</description>
-  </item>
-  <item>
-    <description>Finally, it returns the result.</description>
-  </item>
+<item>
+  <description>First, it validates the input.</description>
+</item>
+<item>
+  <description>Then, it processes the data.</description>
+</item>
+<item>
+  <description>Finally, it returns the result.</description>
+</item>
 </list>
 
 #### See Also

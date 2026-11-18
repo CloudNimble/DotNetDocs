@@ -10,36 +10,90 @@
     <!-- Using direct import to avoid SDK resolution issues -->
     <Import Project="$(MSBuildThisFileDirectory)NoTargets\Sdk.targets" />
     
-    <!-- Determine which task assembly to load based on MSBuild runtime -->
+    <!--
+        Determine which task assembly to load, and how.
+
+        - Core MSBuild (dotnet build): the .NET tasks load in-proc, matched to the MSBuild runtime's major version.
+        - Full MSBuild 18.0+ (Visual Studio 2026, msbuild.exe): the .NET tasks run out-of-proc in the .NET TaskHost
+          (UsingTask Runtime="NET"). The TaskHost runs on the runtime of the project's resolved .NET SDK (global.json), not
+          the newest runtime installed, so the task TFM is matched to $(NETCoreSdkVersion).
+        - Full MSBuild before 18.0 (Visual Studio 2022): Runtime="NET" is not supported, so the net472 tasks load in-proc.
+          Documentation generation is unavailable there; GenerateDocumentationTask warns and asks the user to upgrade.
+    -->
     <PropertyGroup>
-        <_DotNetDocsTaskFramework Condition="'$(MSBuildRuntimeType)' == 'Full'">net472</_DotNetDocsTaskFramework>
+        <_DotNetDocsUseNetTaskHost Condition="'$(MSBuildRuntimeType)' == 'Full' AND '$(NETCoreSdkVersion)' != '' AND $([MSBuild]::VersionGreaterThanOrEquals('$(MSBuildVersion)', '18.0'))">true</_DotNetDocsUseNetTaskHost>
 
-        <!-- For .NET Core MSBuild, match task TFM to the runtime major version -->
         <_DotNetDocsRuntimeMajor Condition="'$(MSBuildRuntimeType)' == 'Core'">$([System.Environment]::Version.Major)</_DotNetDocsRuntimeMajor>
-        <_DotNetDocsTaskFramework Condition="'$(MSBuildRuntimeType)' == 'Core'">net$(_DotNetDocsRuntimeMajor).0</_DotNetDocsTaskFramework>
+        <_DotNetDocsRuntimeMajor Condition="'$(_DotNetDocsUseNetTaskHost)' == 'true'">$([System.Text.RegularExpressions.Regex]::Match('$(NETCoreSdkVersion)', '^\d+').Value)</_DotNetDocsRuntimeMajor>
 
-        <!-- Fallback if runtime detection fails -->
-        <_DotNetDocsTaskFramework Condition="'$(_DotNetDocsTaskFramework)' == ''">net8.0</_DotNetDocsTaskFramework>
+        <_DotNetDocsTaskFramework Condition="'$(_DotNetDocsRuntimeMajor)' != ''">net$(_DotNetDocsRuntimeMajor).0</_DotNetDocsTaskFramework>
+        <_DotNetDocsTaskFramework Condition="'$(_DotNetDocsRuntimeMajor)' == '' AND '$(MSBuildRuntimeType)' == 'Full'">net472</_DotNetDocsTaskFramework>
+
+        <!-- Fallback if runtime detection fails: the lowest supported runtime loads on every supported MSBuild -->
+        <_DotNetDocsTaskFramework Condition="'$(_DotNetDocsTaskFramework)' == ''">net10.0</_DotNetDocsTaskFramework>
 
         <!-- Tasks are always loaded from the packaged location -->
-        <_DotNetDocsTasksFolder>$(MSBuildThisFileDirectory)..\tasks\$(_DotNetDocsTaskFramework)</_DotNetDocsTasksFolder>
-        <_DotNetDocsTasksAssembly>$(_DotNetDocsTasksFolder)\CloudNimble.DotNetDocs.Sdk.Tasks.dll</_DotNetDocsTasksAssembly>
-
-        <!-- If version-matched tasks don't exist, fall back to net8.0 -->
-        <_DotNetDocsTasksFolder Condition="!Exists('$(_DotNetDocsTasksAssembly)')">$(MSBuildThisFileDirectory)..\tasks\net8.0</_DotNetDocsTasksFolder>
-        <_DotNetDocsTasksAssembly Condition="!Exists('$(_DotNetDocsTasksAssembly)')">$(_DotNetDocsTasksFolder)\CloudNimble.DotNetDocs.Sdk.Tasks.dll</_DotNetDocsTasksAssembly>
+        <_DotNetDocsTasksRoot>$(MSBuildThisFileDirectory)..\tasks\</_DotNetDocsTasksRoot>
+        <_DotNetDocsTasksAssembly>$(_DotNetDocsTasksRoot)$(_DotNetDocsTaskFramework)\CloudNimble.DotNetDocs.Sdk.Tasks.dll</_DotNetDocsTasksAssembly>
     </PropertyGroup>
-    
-    <!-- Load compiled MSBuild tasks when they exist -->
-    <UsingTask TaskName="CloudNimble.DotNetDocs.Sdk.Tasks.DiscoverDocumentedProjectsTask" 
+
+    <!--
+        Folder searched for documented projects. Solution builds and Visual Studio set SolutionDir, so use it when MSBuild knows it.
+        Otherwise fall back to the folder above the .docsproj, which is where a docs project usually sits in a solution.
+    -->
+    <PropertyGroup>
+        <_DotNetDocsSolutionDir Condition="'$(SolutionDir)' != '' AND '$(SolutionDir)' != '*Undefined*'">$(SolutionDir)</_DotNetDocsSolutionDir>
+        <_DotNetDocsSolutionDir Condition="'$(_DotNetDocsSolutionDir)' == ''">$(MSBuildProjectDirectory)\..</_DotNetDocsSolutionDir>
+    </PropertyGroup>
+
+    <!-- A runtime newer than the newest packaged tasks (e.g. .NET 12) rolls forward onto the net11.0 tasks -->
+    <PropertyGroup Condition="!Exists('$(_DotNetDocsTasksAssembly)') AND '$(_DotNetDocsRuntimeMajor)' != '' AND $([MSBuild]::VersionGreaterThan('$(_DotNetDocsRuntimeMajor)', '11'))">
+        <_DotNetDocsTaskFramework>net11.0</_DotNetDocsTaskFramework>
+        <_DotNetDocsTasksAssembly>$(_DotNetDocsTasksRoot)$(_DotNetDocsTaskFramework)\CloudNimble.DotNetDocs.Sdk.Tasks.dll</_DotNetDocsTasksAssembly>
+    </PropertyGroup>
+
+    <!-- Visual Studio 2026 with an older .NET SDK pinned (no matching .NET tasks): fall back to the in-proc net472 tasks -->
+    <PropertyGroup Condition="!Exists('$(_DotNetDocsTasksAssembly)') AND '$(_DotNetDocsUseNetTaskHost)' == 'true'">
+        <_DotNetDocsUseNetTaskHost>false</_DotNetDocsUseNetTaskHost>
+        <_DotNetDocsRuntimeMajor></_DotNetDocsRuntimeMajor>
+        <_DotNetDocsTaskFramework>net472</_DotNetDocsTaskFramework>
+        <_DotNetDocsTasksAssembly>$(_DotNetDocsTasksRoot)$(_DotNetDocsTaskFramework)\CloudNimble.DotNetDocs.Sdk.Tasks.dll</_DotNetDocsTasksAssembly>
+    </PropertyGroup>
+
+    <!--
+        Load compiled MSBuild tasks when they exist. The first UsingTask that applies to a TaskName wins, so each task has a
+        .NET TaskHost registration (Visual Studio 2026+) followed by an in-proc registration (dotnet build, Visual Studio 2022).
+        Architecture="*" lets an x86 msbuild.exe use the x64/arm64 .NET TaskHost that the SDK ships (dotnet/msbuild#13739).
+    -->
+    <UsingTask TaskName="CloudNimble.DotNetDocs.Sdk.Tasks.DiscoverDocumentedProjectsTask"
                AssemblyFile="$(_DotNetDocsTasksAssembly)"
-               Condition="Exists('$(_DotNetDocsTasksAssembly)') AND '$(GenerateDocumentation)' == 'true'" />
+               Runtime="NET"
+               Architecture="*"
+               TaskFactory="TaskHostFactory"
+               Condition="'$(_DotNetDocsUseNetTaskHost)' == 'true' AND Exists('$(_DotNetDocsTasksAssembly)') AND '$(GenerateDocumentation)' == 'true'" />
+    <UsingTask TaskName="CloudNimble.DotNetDocs.Sdk.Tasks.DiscoverDocumentedProjectsTask"
+               AssemblyFile="$(_DotNetDocsTasksAssembly)"
+               Condition="'$(_DotNetDocsUseNetTaskHost)' != 'true' AND Exists('$(_DotNetDocsTasksAssembly)') AND '$(GenerateDocumentation)' == 'true'" />
+
     <UsingTask TaskName="CloudNimble.DotNetDocs.Sdk.Tasks.GenerateDocumentationTask"
                AssemblyFile="$(_DotNetDocsTasksAssembly)"
-               Condition="Exists('$(_DotNetDocsTasksAssembly)') AND '$(GenerateDocumentation)' == 'true'" />
+               Runtime="NET"
+               Architecture="*"
+               TaskFactory="TaskHostFactory"
+               Condition="'$(_DotNetDocsUseNetTaskHost)' == 'true' AND Exists('$(_DotNetDocsTasksAssembly)') AND '$(GenerateDocumentation)' == 'true'" />
+    <UsingTask TaskName="CloudNimble.DotNetDocs.Sdk.Tasks.GenerateDocumentationTask"
+               AssemblyFile="$(_DotNetDocsTasksAssembly)"
+               Condition="'$(_DotNetDocsUseNetTaskHost)' != 'true' AND Exists('$(_DotNetDocsTasksAssembly)') AND '$(GenerateDocumentation)' == 'true'" />
+
     <UsingTask TaskName="CloudNimble.DotNetDocs.Sdk.Tasks.DocumentationReferenceResolverTask"
                AssemblyFile="$(_DotNetDocsTasksAssembly)"
-               Condition="Exists('$(_DotNetDocsTasksAssembly)')" />
+               Runtime="NET"
+               Architecture="*"
+               TaskFactory="TaskHostFactory"
+               Condition="'$(_DotNetDocsUseNetTaskHost)' == 'true' AND Exists('$(_DotNetDocsTasksAssembly)')" />
+    <UsingTask TaskName="CloudNimble.DotNetDocs.Sdk.Tasks.DocumentationReferenceResolverTask"
+               AssemblyFile="$(_DotNetDocsTasksAssembly)"
+               Condition="'$(_DotNetDocsUseNetTaskHost)' != 'true' AND Exists('$(_DotNetDocsTasksAssembly)')" />
 
     <!-- Clean up any implicit package references that might cause warnings -->
     <Target Name="RemoveImplicitPackageReferences" BeforeTargets="CollectPackageReferences">
@@ -51,7 +105,8 @@
 
     <!-- Documentation project validation and information -->
     <Target Name="ValidateDocumentationProject" BeforeTargets="Build">
-        <Message Text="🔧 DotNetDocs SDK task runtime: .NET $(_DotNetDocsRuntimeMajor) → $(_DotNetDocsTaskFramework)" Importance="high" Condition="'$(_DotNetDocsRuntimeMajor)' != ''" />
+        <Message Text="🔧 DotNetDocs SDK task runtime: .NET $(_DotNetDocsRuntimeMajor) → $(_DotNetDocsTaskFramework)" Importance="high" Condition="'$(_DotNetDocsRuntimeMajor)' != '' AND '$(_DotNetDocsUseNetTaskHost)' != 'true'" />
+        <Message Text="🔧 DotNetDocs SDK task runtime: .NET $(_DotNetDocsRuntimeMajor) TaskHost (MSBuild $(MSBuildVersion)) → $(_DotNetDocsTaskFramework)" Importance="high" Condition="'$(_DotNetDocsUseNetTaskHost)' == 'true'" />
         <Message Text="🔧 DotNetDocs SDK task runtime: .NET Framework → $(_DotNetDocsTaskFramework)" Importance="high" Condition="'$(_DotNetDocsRuntimeMajor)' == ''" />
         <Message Text="✅ Documentation project: $(MSBuildProjectName)" Importance="high" />
         <Message Text="📄 Documentation type: $(DocumentationType)" Importance="high" />
@@ -82,7 +137,7 @@
 
         <!-- Use compiled task to discover projects -->
         <CloudNimble.DotNetDocs.Sdk.Tasks.DiscoverDocumentedProjectsTask
-            SolutionDir="$(MSBuildProjectDirectory)\.."
+            SolutionDir="$(_DotNetDocsSolutionDir)"
             ExcludePatterns="$(ExcludePatterns)">
             <Output TaskParameter="DocumentedProjects" ItemName="DocumentedProjects" />
         </CloudNimble.DotNetDocs.Sdk.Tasks.DiscoverDocumentedProjectsTask>
@@ -129,12 +184,6 @@
         <!-- Debug: Show assembly paths -->
         <Message Text="   Assembly: %(AssemblyPaths.Identity)" Importance="normal" />
 
-        <!-- Call DocumentationManager to process assemblies -->
-        <PropertyGroup>
-            <DocumentationRootPath>$(MSBuildProjectDirectory)</DocumentationRootPath>
-            <NamespaceModeProperty>$(NamespaceMode)</NamespaceModeProperty>
-        </PropertyGroup>
-
         <!-- Create assembly list file for DocumentationManager (for debugging) -->
         <WriteLinesToFile File="$(MSBuildProjectDirectory)\assembly-list.txt"
                          Lines="@(AssemblyPaths)"
@@ -145,12 +194,15 @@
         <Message Text="🔧 Calling GenerateDocumentationTask with @(AssemblyPaths->Count()) assemblies" Importance="high" />
 
         <!-- Use compiled task to generate documentation -->
+        <!-- DocumentationRoot is the root of the docs site: docs.json, ApiReferencePath and ConceptualPath all resolve from it,
+             matching the detection, template lookup and project includes in Sdk.props. MSBuildProjectDirectory is only for build artifacts. -->
         <CloudNimble.DotNetDocs.Sdk.Tasks.GenerateDocumentationTask
             Assemblies="@(AssemblyPaths)"
-            OutputPath="$(DocumentationRootPath)"
+            OutputPath="$(DocumentationRoot)"
             DocumentationType="$(DocumentationType)"
             NamespaceMode="$(NamespaceMode)"
             ApiReferencePath="$(ApiReferencePath)"
+            ConceptualPath="$(ConceptualPath)"
             MintlifyNavigationMode="$(MintlifyNavigationMode)"
             MintlifyUnifiedGroupName="$(MintlifyUnifiedGroupName)"
             DocsJsonTemplatePath="$(DocsJsonTemplatePath)"

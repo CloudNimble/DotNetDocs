@@ -431,17 +431,19 @@ private DocType CreateExternalTypeReference(
         IncludedMembers = projectContext?.IncludedMembers ?? [Accessibility.Public]
     };
 
-    // Add helpful summary linking to official docs
+    docType.Summary = $"This type is defined in {typeSymbol.ContainingAssembly?.Name ?? "external assembly"}.";
+
+    // Link Microsoft types to Microsoft Learn. The remarks are an XML documentation tag, so the
+    // transformer for the output format decides how the link is written.
     if (typeSymbol.ContainingAssembly?.Name?.StartsWith("System") == true ||
         typeSymbol.ContainingAssembly?.Name?.StartsWith("Microsoft") == true)
     {
-        var docsUrl = GetMicrosoftDocsUrl(typeSymbol);
-        docType.Summary = $"This type is defined in {typeSymbol.ContainingAssembly.Name}. " +
-                         $"See [Microsoft documentation]({docsUrl}) for complete API reference.";
-    }
-    else
-    {
-        docType.Summary = $"This type is defined in {typeSymbol.ContainingAssembly?.Name ?? "external assembly"}.";
+        var learnTypeName = GetLearnTypeName(typeSymbol);
+        if (learnTypeName is not null)
+        {
+            var docsUrl = XmlTransformerBase.GetFrameworkDocumentationUrl(learnTypeName);
+            docType.Remarks = $"See <see href=\"{docsUrl}\">Microsoft documentation</see> for more information about the rest of the API.";
+        }
     }
 
     ns.Types.Add(docType);
@@ -452,7 +454,7 @@ private DocType CreateExternalTypeReference(
 **Key Features:**
 1. Creates minimal DocType with only essential properties
 2. Finds or creates namespace as needed
-3. Adds helpful summary with link to Microsoft docs
+3. Adds a summary naming the defining assembly, and for Microsoft types, remarks with a `<see href>` link to Microsoft Learn
 4. Marks as `IsExternalReference = true`
 
 #### New Helper Methods
@@ -486,32 +488,32 @@ private static bool IsAccessibleInDerivedType(ISymbol member, ITypeSymbol derive
 }
 
 /// <summary>
-/// Generates a Microsoft Learn documentation URL for a type.
+/// Gets the name Microsoft Learn uses to identify a type: its documentation ID without the prefix.
 /// </summary>
 /// <param name="typeSymbol">The type symbol.</param>
-/// <returns>A URL to the Microsoft Learn documentation, or empty string if not applicable.</returns>
-private static string GetMicrosoftDocsUrl(ITypeSymbol typeSymbol)
+/// <returns>The type's name with generic arity, such as <c>System.Collections.Generic.List`1</c>, or null when the symbol has no usable documentation ID.</returns>
+internal static string? GetLearnTypeName(ITypeSymbol typeSymbol)
 {
-    if (typeSymbol.ContainingAssembly?.Name?.StartsWith("System") != true &&
-        typeSymbol.ContainingAssembly?.Name?.StartsWith("Microsoft") != true)
+    var documentationId = typeSymbol.OriginalDefinition.GetDocumentationCommentId();
+    if (string.IsNullOrWhiteSpace(documentationId))
     {
-        return "";
+        return null;
     }
 
-    var fullName = typeSymbol.ToDisplayString()
-        .Replace('<', '{')
-        .Replace('>', '}')
-        .ToLowerInvariant();
+    var typeName = documentationId[(documentationId.IndexOf(':') + 1)..];
 
-    return $"https://learn.microsoft.com/dotnet/api/{fullName}";
+    return string.IsNullOrWhiteSpace(typeName) || typeName.Contains('{') ? null : typeName;
 }
 ```
 
 **Key Features:**
 1. `IsAccessibleInDerivedType()` properly handles all accessibility levels
 2. Supports cross-assembly `internal` visibility rules
-3. `GetMicrosoftDocsUrl()` generates correct learn.microsoft.com URLs
-4. Handles generic types with proper URL encoding
+3. `GetLearnTypeName()` reads the documentation ID of the type's original definition, because a constructed type such as `List<int>` has the ID `List{System.Int32}`, which is not a Microsoft Learn page
+4. Unresolved types have the `!:` prefix instead of `T:`, and are handled the same way
+5. The URL itself comes from `XmlTransformerBase.GetFrameworkDocumentationUrl()`, the only Learn URL builder, which turns `List`1` into `system.collections.generic.list-1`
+
+> An earlier version built the URL from the display string and replaced `<>` with `{}`, producing URLs such as `system.collections.generic.list{t}`. Microsoft Learn returns 404 for those.
 
 #### Integration Point
 
@@ -949,7 +951,7 @@ namespace TestNamespace
 
         listType.Should().NotBeNull();
         listType!.Members.Should().Contain(m => m.Name == "MyExtension" && m.IsExtensionMethod);
-        listType.Summary.Should().Contain("Microsoft documentation");
+        listType.Remarks.Should().Contain("<see href=\"https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1\">");
     }
 
     [TestMethod]
@@ -1254,7 +1256,7 @@ The string "Woof!"
 - [x] Add `AssemblyManager.RelocateExtensionMethods()` method
 - [x] Add `AssemblyManager.CreateExternalTypeReference()` method
 - [x] Add `AssemblyManager.IsAccessibleInDerivedType()` helper
-- [x] Add `AssemblyManager.GetMicrosoftDocsUrl()` helper
+- [x] Add `AssemblyManager.GetLearnTypeName()` helper, using `XmlTransformerBase.GetFrameworkDocumentationUrl()` for the URL
 - [x] Update `MintlifyRenderer.RenderMember()` with badges
 - [x] Update `MintlifyRenderer.RenderTypeAsync()` for external types
 - [ ] Create `InheritedMembersTests.cs` test file

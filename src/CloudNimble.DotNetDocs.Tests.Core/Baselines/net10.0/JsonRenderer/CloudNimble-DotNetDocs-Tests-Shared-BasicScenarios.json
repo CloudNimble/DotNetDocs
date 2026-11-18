@@ -2,7 +2,6 @@
   "name": "CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios",
   "types": [
     {
-      "baseType": "System.Object",
       "members": [
         {
           "accessibility": "public",
@@ -468,7 +467,6 @@
       "summary": "A base class for testing inheritance documentation."
     },
     {
-      "baseType": "System.Object",
       "members": [
         {
           "accessibility": "public",
@@ -534,7 +532,7 @@
           "declaringTypeName": "CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ClassWithMethods",
           "isExtensionMethod": false,
           "displayName": "CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ClassWithMethods.Calculate(int, int)",
-          "examples": "\u003Ccode\u003E\r\n            var result = Calculate(3, 4); // Returns 7\r\n            \u003C/code\u003E",
+          "examples": "\u003Ccode\u003E\r\nvar result = Calculate(3, 4); // Returns 7\r\n\u003C/code\u003E",
           "returns": "The sum of a and b.",
           "summary": "Calculates the sum of two numbers."
         },
@@ -995,13 +993,12 @@
       "typeKind": "class",
       "isExternalReference": false,
       "displayName": "CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ClassWithMethods",
-      "examples": "\u003Ccode\u003E\r\n            var obj = new ClassWithMethods();\r\n            var result = obj.Calculate(5, 10);\r\n            \u003C/code\u003E",
+      "examples": "\u003Ccode\u003E\r\nvar obj = new ClassWithMethods();\r\nvar result = obj.Calculate(5, 10);\r\n\u003C/code\u003E",
       "relatedApis": [],
       "remarks": "Contains methods with different signatures, parameters, and return types.",
       "summary": "A class demonstrating various method documentation scenarios."
     },
     {
-      "baseType": "System.Object",
       "members": [
         {
           "accessibility": "public",
@@ -2230,13 +2227,12 @@
       "typeKind": "class",
       "isExternalReference": false,
       "displayName": "CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DerivedClass",
-      "examples": "\u003Ccode\u003E\r\n            var derived = new DerivedClass();\r\n            var result = derived.VirtualMethod();\r\n            \u003C/code\u003E",
+      "examples": "\u003Ccode\u003E\r\nvar derived = new DerivedClass();\r\nvar result = derived.VirtualMethod();\r\n\u003C/code\u003E",
       "relatedApis": [],
       "remarks": "This class inherits from BaseClass and overrides some members.",
       "summary": "A derived class for testing inheritance documentation."
     },
     {
-      "baseType": "System.Object",
       "members": [
         {
           "accessibility": "public",
@@ -2693,7 +2689,7 @@
       "typeKind": "class",
       "isExternalReference": false,
       "displayName": "CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.DisposableClass",
-      "examples": "\u003Ccode\u003E\r\n            using (var disposable = new DisposableClass())\r\n            {\r\n                disposable.UseResource();\r\n            }\r\n            \u003C/code\u003E",
+      "examples": "\u003Ccode\u003E\r\nusing (var disposable = new DisposableClass())\r\n{\r\n    disposable.UseResource();\r\n}\r\n\u003C/code\u003E",
       "relatedApis": [
         "System.IDisposable"
       ],
@@ -2808,7 +2804,7 @@
           "isExtensionMethod": true,
           "extendedTypeName": "CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ITestInterface",
           "displayName": "CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.TestsShared_ITestInterfaceExtensions.GetFormattedValue(CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ITestInterface)",
-          "examples": "\u003Ccode\u003E\r\n            ITestInterface test = new TestImplementation();\r\n            var formatted = test.GetFormattedValue();\r\n            \u003C/code\u003E",
+          "examples": "\u003Ccode\u003E\r\nITestInterface test = new TestImplementation();\r\nvar formatted = test.GetFormattedValue();\r\n\u003C/code\u003E",
           "returns": "A formatted string containing the test value.",
           "summary": "Gets a formatted string from the interface."
         },
@@ -2871,11 +2867,10 @@
       "isExternalReference": false,
       "displayName": "CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ITestInterface",
       "relatedApis": [],
-      "remarks": "This interface is used to test extension methods on interfaces and to verify\r\n            that inherited members from interfaces are properly documented.",
+      "remarks": "This interface is used to test extension methods on interfaces and to verify\r\nthat inherited members from interfaces are properly documented.",
       "summary": "A test interface for demonstrating interface inheritance and extension methods."
     },
     {
-      "baseType": "System.Object",
       "members": [
         {
           "accessibility": "public",
@@ -3269,7 +3264,7 @@
           "isExtensionMethod": true,
           "extendedTypeName": "CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.SimpleClass",
           "displayName": "CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.TestsShared_SimpleClassExtensions.ToDisplayString(CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.SimpleClass)",
-          "examples": "\u003Ccode\u003E\r\n            var simple = new SimpleClass();\r\n            var display = simple.ToDisplayString();\r\n            \u003C/code\u003E",
+          "examples": "\u003Ccode\u003E\r\nvar simple = new SimpleClass();\r\nvar display = simple.ToDisplayString();\r\n\u003C/code\u003E",
           "returns": "A formatted string representation.",
           "summary": "Converts a SimpleClass instance to a display string."
         },
@@ -3331,13 +3326,12 @@
       "typeKind": "class",
       "isExternalReference": false,
       "displayName": "CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.SimpleClass",
-      "examples": "\u003Ccode\u003E\r\n            var simple = new SimpleClass();\r\n            simple.DoWork();\r\n            \u003C/code\u003E",
+      "examples": "\u003Ccode\u003E\r\nvar simple = new SimpleClass();\r\nsimple.DoWork();\r\n\u003C/code\u003E",
       "relatedApis": [],
-      "remarks": "These are remarks about the SimpleClass. They provide additional context\r\n            and information beyond what\u0027s in the summary.",
+      "remarks": "These are remarks about the SimpleClass. They provide additional context\r\nand information beyond what\u0027s in the summary.",
       "summary": "A simple class for testing basic documentation extraction."
     },
     {
-      "baseType": "System.Object",
       "members": [
         {
           "accessibility": "public",
@@ -3754,7 +3748,7 @@
       "relatedApis": [
         "CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios.ITestInterface"
       ],
-      "remarks": "This class implements ITestInterface to demonstrate interface member inheritance\r\n            in documentation generation.",
+      "remarks": "This class implements ITestInterface to demonstrate interface member inheritance\r\nin documentation generation.",
       "summary": "A test implementation of ITestInterface."
     }
   ],

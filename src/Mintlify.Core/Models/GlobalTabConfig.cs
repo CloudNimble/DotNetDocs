@@ -27,6 +27,14 @@ namespace Mintlify.Core.Models
         public string Tab { get; set; } = string.Empty;
 
         /// <summary>
+        /// Gets or sets tab alignment in the navigation bar.
+        /// </summary>
+        /// <remarks>
+        /// Valid values are <c>start</c> and <c>end</c>.
+        /// </remarks>
+        public string? Align { get; set; }
+
+        /// <summary>
         /// Gets or sets the icon to display alongside the tab name.
         /// </summary>
         /// <remarks>

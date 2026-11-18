@@ -2,7 +2,7 @@
 title: TelemetryConfig
 description: "Represents the configuration for telemetry and feedback functionality."
 icon: file-brackets-curly
-keywords: ['TelemetryConfig', 'Mintlify.Core.Models.Integrations.TelemetryConfig', 'Mintlify.Core.Models.Integrations', 'class', 'System.Object']
+keywords: ['TelemetryConfig', 'Mintlify.Core.Models.Integrations.TelemetryConfig', 'Mintlify.Core.Models.Integrations', 'class']
 ---
 
 ## Definition
@@ -10,8 +10,6 @@ keywords: ['TelemetryConfig', 'Mintlify.Core.Models.Integrations.TelemetryConfig
 **Assembly:** Mintlify.Core.dll
 
 **Namespace:** Mintlify.Core.Models.Integrations
-
-**Inheritance:** System.Object
 
 ## Syntax
 
@@ -26,8 +24,8 @@ Represents the configuration for telemetry and feedback functionality.
 ## Remarks
 
 This configuration controls whether telemetry and user feedback features are
-            enabled on documentation pages, allowing collection of usage data and reader
-            feedback to improve documentation quality.
+enabled on documentation pages, allowing collection of usage data and reader
+feedback to improve documentation quality.
 
 ## Constructors
 
@@ -58,18 +56,18 @@ Gets or sets whether telemetry and feedback collection is enabled.
 #### Syntax
 
 ```csharp
-public System.Nullable<bool> Enabled { get; set; }
+public bool? Enabled { get; set; }
 ```
 
 #### Property Value
 
-Type: `System.Nullable<bool>`
+Type: `bool?`
 
 #### Remarks
 
 When enabled, documentation pages will include telemetry tracking and
-            feedback collection mechanisms. This allows documentation maintainers
-            to gather insights about how readers interact with the content.
+feedback collection mechanisms. This allows documentation maintainers
+to gather insights about how readers interact with the content.
 
 ## Methods
 

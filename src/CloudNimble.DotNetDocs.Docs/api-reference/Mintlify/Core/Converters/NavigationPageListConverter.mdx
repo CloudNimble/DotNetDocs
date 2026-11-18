@@ -26,7 +26,7 @@ Handles JSON conversion for lists of navigation page items that can be either st
 ## Remarks
 
 This converter uses a static NavigationPageConverter instance for efficient conversion of all items
-            in the list without creating new converter instances for each item.
+in the list without creating new converter instances for each item.
 
 ## Constructors
 
@@ -38,7 +38,194 @@ This converter uses a static NavigationPageConverter instance for efficient conv
 public NavigationPageListConverter()
 ```
 
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `System.Text.Json.Serialization.JsonConverter<System.Collections.Generic.List<object>>`</Note>
+
+#### Syntax
+
+```csharp
+protected internal JsonConverter()
+```
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public Object()
+```
+
+## Properties
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> HandleNull <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `System.Text.Json.Serialization.JsonConverter<System.Collections.Generic.List<object>>`</Note>
+
+#### Syntax
+
+```csharp
+public virtual bool HandleNull { get; }
+```
+
+#### Property Value
+
+Type: `bool`
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Type <Badge color="blue">Override</Badge>
+
+<Note>Inherited from `System.Text.Json.Serialization.JsonConverter<System.Collections.Generic.List<object>>`</Note>
+
+#### Syntax
+
+```csharp
+public override sealed System.Type Type { get; }
+```
+
+#### Property Value
+
+Type: `System.Type`
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Type <Badge color="gray">Inherited</Badge> <Badge color="orange">Abstract</Badge>
+
+<Note>Inherited from `System.Text.Json.Serialization.JsonConverter`</Note>
+
+#### Syntax
+
+```csharp
+public abstract System.Type Type { get; }
+```
+
+#### Property Value
+
+Type: `System.Type?`
+
 ## Methods
+
+### <Icon icon="code-merge" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> CanConvert <Badge color="blue">Override</Badge>
+
+<Note>Inherited from `System.Text.Json.Serialization.JsonConverter<System.Collections.Generic.List<object>>`</Note>
+
+#### Syntax
+
+```csharp
+public override bool CanConvert(System.Type typeToConvert)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `typeToConvert` | `System.Type` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> CanConvert <Badge color="gray">Inherited</Badge> <Badge color="orange">Abstract</Badge>
+
+<Note>Inherited from `System.Text.Json.Serialization.JsonConverter`</Note>
+
+#### Syntax
+
+```csharp
+public abstract bool CanConvert(System.Type typeToConvert)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `typeToConvert` | `System.Type` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Equals <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual bool Equals(object obj)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `obj` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Equals <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public static bool Equals(object objA, object objB)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `objA` | `object?` | - |
+| `objB` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetHashCode <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual int GetHashCode()
+```
+
+#### Returns
+
+Type: `int`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetType <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public System.Type GetType()
+```
+
+#### Returns
+
+Type: `System.Type`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> MemberwiseClone <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+protected internal object MemberwiseClone()
+```
+
+#### Returns
+
+Type: `object`
 
 ### <Icon icon="code-merge" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Read <Badge color="blue">Override</Badge>
 
@@ -69,6 +256,85 @@ A list containing string and GroupConfig objects.
 |-----------|-------------|
 | `JsonException` | Thrown when the JSON token is not a StartArray. |
 
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Read <Badge color="gray">Inherited</Badge> <Badge color="orange">Abstract</Badge>
+
+<Note>Inherited from `System.Text.Json.Serialization.JsonConverter<System.Collections.Generic.List<object>>`</Note>
+
+#### Syntax
+
+```csharp
+public abstract System.Collections.Generic.List<object> Read(ref System.Text.Json.Utf8JsonReader reader, System.Type typeToConvert, System.Text.Json.JsonSerializerOptions options)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `reader` | `System.Text.Json.Utf8JsonReader` | - |
+| `typeToConvert` | `System.Type` | - |
+| `options` | `System.Text.Json.JsonSerializerOptions` | - |
+
+#### Returns
+
+Type: `System.Collections.Generic.List<object>?`
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ReadAsPropertyName <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `System.Text.Json.Serialization.JsonConverter<System.Collections.Generic.List<object>>`</Note>
+
+#### Syntax
+
+```csharp
+public virtual System.Collections.Generic.List<object> ReadAsPropertyName(ref System.Text.Json.Utf8JsonReader reader, System.Type typeToConvert, System.Text.Json.JsonSerializerOptions options)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `reader` | `System.Text.Json.Utf8JsonReader` | - |
+| `typeToConvert` | `System.Type` | - |
+| `options` | `System.Text.Json.JsonSerializerOptions` | - |
+
+#### Returns
+
+Type: `System.Collections.Generic.List<object>`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ReferenceEquals <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public static bool ReferenceEquals(object objA, object objB)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `objA` | `object?` | - |
+| `objB` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ToString <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual string ToString()
+```
+
+#### Returns
+
+Type: `string?`
+
 ### <Icon icon="code-merge" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Write <Badge color="blue">Override</Badge>
 
 Writes the list of navigation page objects to JSON array.
@@ -86,4 +352,40 @@ public override void Write(System.Text.Json.Utf8JsonWriter writer, System.Collec
 | `writer` | `System.Text.Json.Utf8JsonWriter` | The JSON writer. |
 | `value` | `System.Collections.Generic.List<object>` | The list of navigation page objects to write. |
 | `options` | `System.Text.Json.JsonSerializerOptions` | The serializer options. |
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Write <Badge color="gray">Inherited</Badge> <Badge color="orange">Abstract</Badge>
+
+<Note>Inherited from `System.Text.Json.Serialization.JsonConverter<System.Collections.Generic.List<object>>`</Note>
+
+#### Syntax
+
+```csharp
+public abstract void Write(System.Text.Json.Utf8JsonWriter writer, System.Collections.Generic.List<object> value, System.Text.Json.JsonSerializerOptions options)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `writer` | `System.Text.Json.Utf8JsonWriter` | - |
+| `value` | `System.Collections.Generic.List<object>` | - |
+| `options` | `System.Text.Json.JsonSerializerOptions` | - |
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> WriteAsPropertyName <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `System.Text.Json.Serialization.JsonConverter<System.Collections.Generic.List<object>>`</Note>
+
+#### Syntax
+
+```csharp
+public virtual void WriteAsPropertyName(System.Text.Json.Utf8JsonWriter writer, System.Collections.Generic.List<object> value, System.Text.Json.JsonSerializerOptions options)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `writer` | `System.Text.Json.Utf8JsonWriter` | - |
+| `value` | `System.Collections.Generic.List<object>` | - |
+| `options` | `System.Text.Json.JsonSerializerOptions` | - |
 

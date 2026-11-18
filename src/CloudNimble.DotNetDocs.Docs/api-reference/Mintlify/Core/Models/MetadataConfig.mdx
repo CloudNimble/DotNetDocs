@@ -2,7 +2,7 @@
 title: MetadataConfig
 description: "Represents the metadata configuration for the Mintlify documentation site."
 icon: file-brackets-curly
-keywords: ['MetadataConfig', 'Mintlify.Core.Models.MetadataConfig', 'Mintlify.Core.Models', 'class', 'System.Object']
+keywords: ['MetadataConfig', 'Mintlify.Core.Models.MetadataConfig', 'Mintlify.Core.Models', 'class']
 ---
 
 ## Definition
@@ -10,8 +10,6 @@ keywords: ['MetadataConfig', 'Mintlify.Core.Models.MetadataConfig', 'Mintlify.Co
 **Assembly:** Mintlify.Core.dll
 
 **Namespace:** Mintlify.Core.Models
-
-**Inheritance:** System.Object
 
 ## Syntax
 
@@ -26,7 +24,7 @@ Represents the metadata configuration for the Mintlify documentation site.
 ## Remarks
 
 This configuration controls metadata-related settings for documentation pages,
-            including whether timestamps are displayed showing the last modified date.
+including whether timestamps are displayed showing the last modified date.
 
 ## Constructors
 
@@ -57,18 +55,18 @@ Gets or sets whether to show the last modified date on pages.
 #### Syntax
 
 ```csharp
-public System.Nullable<bool> Timestamp { get; set; }
+public bool? Timestamp { get; set; }
 ```
 
 #### Property Value
 
-Type: `System.Nullable<bool>`
+Type: `bool?`
 
 #### Remarks
 
 When enabled, each documentation page will display a timestamp indicating
-            when the page was last modified. This helps readers assess the freshness
-            of the content.
+when the page was last modified. This helps readers assess the freshness
+of the content.
 
 ## Methods
 

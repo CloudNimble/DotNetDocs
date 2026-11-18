@@ -26,8 +26,8 @@ Command-line tool for creating and adding a documentation project to a solution 
 ## Remarks
 
 This command creates a .docsproj file configured for the specified documentation type (defaults to Mintlify)
-            and adds it to the specified solution file (.sln or .slnx). The project is automatically added to a "Docs" solution folder.
-            For .slnx files, the command post-processes the XML to add Type="C#" attributes to .docsproj nodes.
+and adds it to the specified solution file (.sln or .slnx). The project is automatically added to a "Docs" solution folder.
+For .slnx files, the command post-processes the XML to add Type="C#" attributes to .docsproj nodes.
 
 ## Constructors
 
@@ -294,14 +294,14 @@ public System.Threading.Tasks.Task<int> OnExecute(McMaster.Extensions.CommandLin
 
 Type: `System.Threading.Tasks.Task<int>`
 A task that represents the asynchronous operation. The task result is 0 if the documentation project is
-            created and added successfully; otherwise, 1.
+created and added successfully; otherwise, 1.
 
 #### Remarks
 
 If the solution file is not specified, the method attempts to locate one in the
-            current directory. The documentation project is created in the specified output directory or, if not
-            provided, in a default location based on the solution file. Any errors encountered during execution are
-            reported to the console, and a nonzero exit code is returned.
+current directory. The documentation project is created in the specified output directory or, if not
+provided, in a default location based on the solution file. Any errors encountered during execution are
+reported to the console, and a nonzero exit code is returned.
 
 ### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ReferenceEquals <Badge color="gray">Inherited</Badge>
 
@@ -353,6 +353,6 @@ public static void WriteHeader()
 #### Remarks
 
 This method displays a multi-line ASCII art logo combining the DotNetDocs branding with
-            version and attribution information. The output uses console colors to create an eye-catching
-            header for CLI operations.
+version and attribution information. The output uses console colors to create an eye-catching
+header for CLI operations.
 

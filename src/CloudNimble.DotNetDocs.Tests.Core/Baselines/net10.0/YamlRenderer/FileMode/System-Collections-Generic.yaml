@@ -8,11 +8,11 @@ types:
     parameters:
     - name: list
       parameterType:
-        assemblyName: System.Collections
+        assemblyName: System.Private.CoreLib
         fullName: System.Collections.Generic.List<T>
         name: List
         signature: System.Collections.Generic.List<T>
-        typeKind: Error
+        typeKind: Class
         isExternalReference: true
         displayName: System.Collections.Generic.List<T>
       typeName: System.Collections.Generic.List<T>
@@ -34,12 +34,16 @@ types:
     displayName: System.Collections.Generic.TestsShared_ListExtensions.IsNullOrEmpty<T>(System.Collections.Generic.List<T>)
     examples: >-
       <code>
-                  var numbers = new List&lt;int&gt;();
-                  if (numbers.IsNullOrEmpty())
-                  {
-                      // Handle empty list
-                  }
-                  </code>
+
+      var numbers = new List&lt;int&gt;();
+
+      if (numbers.IsNullOrEmpty())
+
+      {
+          // Handle empty list
+      }
+
+      </code>
     returns: True if the list is null or empty, otherwise false.
     summary: Checks if a list is null or empty.
     typeParameters:
@@ -52,11 +56,11 @@ types:
     parameters:
     - name: list
       parameterType:
-        assemblyName: System.Collections
+        assemblyName: System.Private.CoreLib
         fullName: System.Collections.Generic.List<T>
         name: List
         signature: System.Collections.Generic.List<T>
-        typeKind: Error
+        typeKind: Class
         isExternalReference: true
         displayName: System.Collections.Generic.List<T>
       typeName: System.Collections.Generic.List<T>
@@ -74,11 +78,11 @@ types:
       displayName: params T[] items
       usage: The items to add.
     returnType:
-      assemblyName: System.Collections
+      assemblyName: System.Private.CoreLib
       fullName: System.Collections.Generic.List<T>
       name: List
       signature: System.Collections.Generic.List<T>
-      typeKind: Error
+      typeKind: Class
       isExternalReference: true
       displayName: System.Collections.Generic.List<T>
     returnTypeName: System.Collections.Generic.List<T>
@@ -89,9 +93,10 @@ types:
     displayName: System.Collections.Generic.TestsShared_ListExtensions.AddMultiple<T>(System.Collections.Generic.List<T>, params T[])
     examples: >-
       <code>
-                  var numbers = new List&lt;int&gt;()
-                      .AddMultiple(1, 2, 3, 4, 5);
-                  </code>
+
+      var numbers = new List&lt;int&gt;()
+          .AddMultiple(1, 2, 3, 4, 5);
+      </code>
     returns: The list for fluent chaining.
     summary: Adds multiple items to a list in one call.
     typeParameters:
@@ -104,22 +109,22 @@ types:
     parameters:
     - name: list
       parameterType:
-        assemblyName: System.Collections
+        assemblyName: System.Private.CoreLib
         fullName: System.Collections.Generic.List<T>
         name: List
         signature: System.Collections.Generic.List<T>
-        typeKind: Error
+        typeKind: Class
         isExternalReference: true
         displayName: System.Collections.Generic.List<T>
       typeName: System.Collections.Generic.List<T>
       displayName: System.Collections.Generic.List<T> list
       usage: The list to shuffle.
     returnType:
-      assemblyName: System.Collections
+      assemblyName: System.Private.CoreLib
       fullName: System.Collections.Generic.List<T>
       name: List
       signature: System.Collections.Generic.List<T>
-      typeKind: Error
+      typeKind: Class
       isExternalReference: true
       displayName: System.Collections.Generic.List<T>
     returnTypeName: System.Collections.Generic.List<T>
@@ -134,13 +139,13 @@ types:
     typeParameters:
     - description: The type of elements in the list.
       name: T
-  assemblyName: System.Collections
+  assemblyName: System.Private.CoreLib
   fullName: System.Collections.Generic.List<T>
   name: List
   signature: System.Collections.Generic.List<T>
-  typeKind: Error
+  typeKind: Class
   isExternalReference: true
   displayName: System.Collections.Generic.List<T>
-  remarks: See [Microsoft documentation](https://learn.microsoft.com/dotnet/api/system.collections.generic.list{t}) for more information about the rest of the API.
-  summary: This type is defined in System.Collections.
+  remarks: See <see href="https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1">Microsoft documentation</see> for more information about the rest of the API.
+  summary: This type is defined in System.Private.CoreLib.
 displayName: System.Collections.Generic

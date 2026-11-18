@@ -98,9 +98,9 @@ dotnet docs build -a assemblies.txt -o ./docs --type Json
 Create a text file with one assembly path per line:
 
 ```text
-bin/Release/net8.0/MyProject.Core.dll
-bin/Release/net8.0/MyProject.Extensions.dll
-bin/Release/net8.0/MyProject.Utilities.dll
+bin/Release/net10.0/MyProject.Core.dll
+bin/Release/net10.0/MyProject.Extensions.dll
+bin/Release/net10.0/MyProject.Utilities.dll
 ```
 
 **Note:** Only assemblies with corresponding XML documentation files (`.xml`) will be processed.
@@ -127,7 +127,7 @@ dotnet docs add
 dotnet build --configuration Release
 
 # 3. Create an assembly list file
-echo "bin/Release/net8.0/MyProject.dll" > assemblies.txt
+echo "bin/Release/net10.0/MyProject.dll" > assemblies.txt
 
 # 4. Generate documentation
 dotnet docs build -a assemblies.txt -o ./docs --type Mintlify
@@ -147,7 +147,7 @@ mint dev
 
 ## Requirements
 
-- .NET 8.0+, .NET 9.0+, or .NET 10.0+
+- .NET 10.0+ or .NET 11.0+
 
 ## License
 

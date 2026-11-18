@@ -164,7 +164,6 @@
       "relatedApis": []
     },
     {
-      "baseType": "System.Object",
       "members": [
         {
           "accessibility": "public",

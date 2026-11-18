@@ -26,12 +26,32 @@ namespace Mintlify.Core.Models
         public string? Directory { get; set; }
 
         /// <summary>
+        /// Gets or sets OpenAPI overlay files applied to <see cref="Source"/>.
+        /// </summary>
+        /// <remarks>
+        /// An empty list disables auto-discovered overlays. Overlay paths are relative
+        /// to the specification file.
+        /// </remarks>
+        public List<string>? Overlays { get; set; }
+
+        /// <summary>
         /// Gets or sets the source URL or path for API specifications.
         /// </summary>
         /// <remarks>
         /// Can be an absolute URL or relative path to an API specification file.
         /// </remarks>
         public string? Source { get; set; }
+
+        /// <summary>
+        /// Gets or sets mixed array entries when OpenAPI is specified as an array of
+        /// strings and objects.
+        /// </summary>
+        /// <remarks>
+        /// Used internally by <see cref="Converters.ApiConfigConverter"/>. Not serialized
+        /// as a named JSON property.
+        /// </remarks>
+        [JsonIgnore]
+        public List<ApiSpecConfig>? Specs { get; set; }
 
         /// <summary>
         /// Gets or sets the list of URLs when multiple specifications are provided.

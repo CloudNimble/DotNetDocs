@@ -83,15 +83,84 @@ namespace CloudNimble.DotNetDocs.Core
         /// </summary>
         /// <param name="assemblies">The collection of assembly and XML path pairs.</param>
         /// <returns>A task representing the asynchronous operation.</returns>
+        /// <exception cref="InvalidOperationException">The project context has no <see cref="ProjectContext.ConceptualPath"/>.</exception>
+        /// <remarks>
+        /// The assemblies are documented and merged the same way <see cref="ProcessAsync(IEnumerable{ValueTuple{string, string}})"/>
+        /// does it, and then <see cref="GeneratePlaceholdersAsync(DocAssembly)"/> writes the placeholders. Nothing is rendered.
+        /// This method always writes placeholders, regardless of <see cref="ProjectContext.ConceptualDocsEnabled"/>: that
+        /// setting controls the full pipeline, and calling this method is an explicit request for placeholders.
+        /// The documented models are cached, so a later call to <see cref="ProcessAsync(IEnumerable{ValueTuple{string, string}})"/>
+        /// with the same assemblies doesn't document them again.
+        /// </remarks>
         public async Task CreateConceptualFilesAsync(IEnumerable<(string assemblyPath, string xmlPath)> assemblies)
         {
-            var tasks = assemblies.Select(async pair =>
-            {
-                var manager = GetOrCreateAssemblyManager(pair.assemblyPath, pair.xmlPath);
-                var model = await manager.DocumentAsync(projectContext);
-            });
+            ArgumentNullException.ThrowIfNull(assemblies);
 
-            await Task.WhenAll(tasks);
+            var mergedModel = await BuildMergedModelAsync([.. assemblies]);
+            if (mergedModel is null)
+            {
+                return;
+            }
+
+            await GeneratePlaceholdersAsync(mergedModel);
+        }
+
+        /// <summary>
+        /// Writes placeholder conceptual documentation files for every namespace and type in a documentation model.
+        /// </summary>
+        /// <param name="model">The documentation model to write placeholders for, usually the merged model of a run.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="model"/> is null.</exception>
+        /// <exception cref="InvalidOperationException">The project context has no <see cref="ProjectContext.ConceptualPath"/>.</exception>
+        /// <example>
+        /// <code>
+        /// <![CDATA[
+        /// var model = await assemblyManager.DocumentAsync(projectContext);
+        /// await documentationManager.GeneratePlaceholdersAsync(model);
+        /// ]]>
+        /// </code>
+        /// </example>
+        /// <remarks>
+        /// Each namespace folder gets summary, usage, examples, best practices, patterns, considerations, and related APIs files,
+        /// and each type folder gets the same files except summary, at the locations <see cref="ProjectContext.GetConceptualNamespacePath(string?)"/>
+        /// and <see cref="ProjectContext.GetConceptualTypePath(string?, string)"/> return. A file that already exists is never
+        /// overwritten, so edited content is safe. After the built-in placeholders are written, each registered renderer's
+        /// <see cref="IDocRenderer.RenderPlaceholdersAsync(DocAssembly)"/> runs, one at a time, so a renderer can add files of its own.
+        /// </remarks>
+        public async Task GeneratePlaceholdersAsync(DocAssembly model)
+        {
+            ArgumentNullException.ThrowIfNull(model);
+
+            if (string.IsNullOrWhiteSpace(projectContext.ConceptualPath))
+            {
+                throw new InvalidOperationException($"Placeholders can't be generated because {nameof(ProjectContext)}.{nameof(ProjectContext.ConceptualPath)} is not set.");
+            }
+
+            Directory.CreateDirectory(projectContext.GetFullConceptualPath());
+
+            foreach (var ns in model.Namespaces)
+            {
+                var namespaceName = ProjectContext.IsGlobalNamespaceName(ns.Name) ? ProjectContext.GlobalNamespaceName : ns.Name;
+                var namespaceDirectory = projectContext.GetConceptualNamespacePath(ns.Name);
+                Directory.CreateDirectory(namespaceDirectory);
+
+                await WriteFileIfMissingAsync(namespaceDirectory, DocConstants.SummaryFileName, GetSummaryTemplate(namespaceName));
+                await WritePlaceholderSetAsync(namespaceDirectory, namespaceName);
+
+                foreach (var type in ns.Types)
+                {
+                    var typeDirectory = projectContext.GetConceptualTypePath(ns.Name, type.Name);
+                    Directory.CreateDirectory(typeDirectory);
+
+                    await WritePlaceholderSetAsync(typeDirectory, type.Name);
+                }
+            }
+
+            // Renderers run one at a time, after the built-in files exist, so they can't race each other or the files above.
+            foreach (var renderer in renderers)
+            {
+                await renderer.RenderPlaceholdersAsync(model);
+            }
         }
 
         /// <summary>
@@ -138,26 +207,17 @@ namespace CloudNimble.DotNetDocs.Core
                 return;
             }
 
-            // STEP 1: Collect all DocAssembly models
-            var docAssemblies = new List<DocAssembly>();
-            foreach (var (assemblyPath, xmlPath) in assemblyList)
-            {
-                var manager = GetOrCreateAssemblyManager(assemblyPath, xmlPath);
-                var model = await manager.DocumentAsync(projectContext);
-                docAssemblies.Add(model);
-            }
-
-            // STEP 2: Merge all DocAssembly models BEFORE placeholder generation
-            // This ensures only one shadow class exists per external type, preventing race conditions
-            // when multiple assemblies extend the same external type (e.g., IServiceCollection)
-            var mergedModel = await MergeDocAssembliesAsync(docAssemblies);
+            // STEPS 1-2: Document every assembly and merge the models, shared with CreateConceptualFilesAsync
+            var mergedModel = await BuildMergedModelAsync(assemblyList);
 
             if (mergedModel is not null && projectContext.ConceptualDocsEnabled)
             {
-                // STEP 3: Generate placeholder files for merged model with all renderers
-                // No longer per-assembly, so shadow classes are deduplicated
-                var placeholderTasks = renderers.Select(renderer => renderer.RenderPlaceholdersAsync(mergedModel));
-                await Task.WhenAll(placeholderTasks);
+                // STEP 3: Generate placeholder files once for the merged model, so shadow classes are deduplicated.
+                // Without a ConceptualPath there is nowhere to write them, so the pipeline skips this step.
+                if (!string.IsNullOrWhiteSpace(projectContext.ConceptualPath))
+                {
+                    await GeneratePlaceholdersAsync(mergedModel);
+                }
 
                 // STEP 4: Load conceptual content for merged model (after placeholders exist)
                 await LoadConceptualAsync(mergedModel);
@@ -194,6 +254,30 @@ namespace CloudNimble.DotNetDocs.Core
         #endregion
 
         #region Internal Methods
+
+        /// <summary>
+        /// Documents each assembly and merges the results into one model.
+        /// </summary>
+        /// <param name="assemblies">The assembly and XML path pairs to document.</param>
+        /// <returns>The merged model, or null when no assemblies are provided.</returns>
+        /// <remarks>
+        /// The assemblies are documented one at a time with cached <see cref="AssemblyManager"/> instances and merged before
+        /// anything else runs. When several assemblies extend the same external type, merging leaves one shadow class for it,
+        /// so its placeholders are written once.
+        /// </remarks>
+        internal async Task<DocAssembly?> BuildMergedModelAsync(IReadOnlyList<(string assemblyPath, string xmlPath)> assemblies)
+        {
+            ArgumentNullException.ThrowIfNull(assemblies);
+
+            var docAssemblies = new List<DocAssembly>();
+            foreach (var (assemblyPath, xmlPath) in assemblies)
+            {
+                var manager = GetOrCreateAssemblyManager(assemblyPath, xmlPath);
+                docAssemblies.Add(await manager.DocumentAsync(projectContext));
+            }
+
+            return await MergeDocAssembliesAsync(docAssemblies);
+        }
 
         /// <summary>
         /// Merges multiple DocAssembly models into a single unified model.
@@ -363,14 +447,12 @@ namespace CloudNimble.DotNetDocs.Core
                 return;
             }
 
-            var showPlaceholders = projectContext?.ShowPlaceholders ?? true;
+            var showPlaceholders = projectContext.ShowPlaceholders;
 
             foreach (var ns in assembly.Namespaces)
             {
-                // Load namespace-level conceptual content
-                var namespacePath = ns.Symbol.IsGlobalNamespace
-                    ? conceptualPath
-                    : Path.Combine(conceptualPath, ns.Symbol.ToDisplayString().Replace('.', Path.DirectorySeparatorChar));
+                // Load namespace-level conceptual content from the same folder the renderers write placeholders to
+                var namespacePath = projectContext.GetConceptualNamespacePath(ns.Name);
 
                 if (Directory.Exists(namespacePath))
                 {
@@ -406,8 +488,8 @@ namespace CloudNimble.DotNetDocs.Core
 
                 foreach (var type in ns.Types)
                 {
-                    // Build type path like /conceptual/System/Text/Json/JsonSerializer/
-                    var typeDir = Path.Combine(namespacePath ?? "", type.Symbol.Name);
+                    // Type folders look like {conceptual}/System/Text/Json/JsonSerializer
+                    var typeDir = projectContext.GetConceptualTypePath(ns.Name, type.Name);
 
                     if (Directory.Exists(typeDir))
                     {
@@ -444,7 +526,7 @@ namespace CloudNimble.DotNetDocs.Core
                         // Load member-specific conceptual content
                         foreach (var member in type.Members)
                         {
-                            var memberDir = Path.Combine(typeDir, member.Symbol.Name);
+                            var memberDir = projectContext.GetConceptualMemberPath(ns.Name, type.Name, member.Name);
                             if (Directory.Exists(memberDir))
                             {
                                 await LoadConceptualFileAsync(memberDir, DocConstants.UsageFileName, content => member.Usage = content, showPlaceholders);
@@ -568,6 +650,183 @@ namespace CloudNimble.DotNetDocs.Core
                     await handler.ProcessAsync(reference, projectContext.DocumentationRootPath);
                 }
             }
+        }
+
+        #endregion
+
+        #region Private Methods
+
+        /// <summary>
+        /// Gets the placeholder template for best practices documentation.
+        /// </summary>
+        /// <param name="entityName">The name of the namespace or type.</param>
+        /// <returns>The placeholder content.</returns>
+        private static string GetBestPracticesTemplate(string entityName)
+        {
+            return $"""
+                <!-- TODO: REMOVE THIS COMMENT AFTER YOU CUSTOMIZE THIS CONTENT -->
+                # Best Practices
+
+                Document best practices for `{entityName}` here.
+
+
+                """;
+        }
+
+        /// <summary>
+        /// Gets the placeholder template for considerations documentation.
+        /// </summary>
+        /// <param name="entityName">The name of the namespace or type.</param>
+        /// <returns>The placeholder content.</returns>
+        private static string GetConsiderationsTemplate(string entityName)
+        {
+            return $"""
+                <!-- TODO: REMOVE THIS COMMENT AFTER YOU CUSTOMIZE THIS CONTENT -->
+                # Considerations
+
+                Document considerations for `{entityName}` here.
+
+
+                """;
+        }
+
+        /// <summary>
+        /// Gets the placeholder template for examples documentation.
+        /// </summary>
+        /// <param name="entityName">The name of the namespace or type.</param>
+        /// <returns>The placeholder content.</returns>
+        private static string GetExamplesTemplate(string entityName)
+        {
+            return $"""
+                <!-- TODO: REMOVE THIS COMMENT AFTER YOU CUSTOMIZE THIS CONTENT -->
+                # Examples
+
+                Provide examples of using `{entityName}` here.
+
+                ```csharp
+                // Example code here
+                ```
+
+
+                """;
+        }
+
+        /// <summary>
+        /// Gets the placeholder template for patterns documentation.
+        /// </summary>
+        /// <param name="entityName">The name of the namespace or type.</param>
+        /// <returns>The placeholder content.</returns>
+        private static string GetPatternsTemplate(string entityName)
+        {
+            return $"""
+                <!-- TODO: REMOVE THIS COMMENT AFTER YOU CUSTOMIZE THIS CONTENT -->
+                # Patterns
+
+                Document common patterns for `{entityName}` here.
+
+
+                """;
+        }
+
+        /// <summary>
+        /// Gets the placeholder template for related APIs documentation.
+        /// </summary>
+        /// <param name="entityName">The name of the namespace or type.</param>
+        /// <returns>The placeholder content.</returns>
+        private static string GetRelatedApisTemplate(string entityName)
+        {
+            return $"""
+                <!-- TODO: REMOVE THIS COMMENT AFTER YOU CUSTOMIZE THIS CONTENT -->
+                # Related APIs
+
+                - API 1
+                - API 2
+
+
+                """;
+        }
+
+        /// <summary>
+        /// Gets the placeholder template for summary documentation.
+        /// </summary>
+        /// <param name="entityName">The name of the namespace.</param>
+        /// <returns>The placeholder content.</returns>
+        private static string GetSummaryTemplate(string entityName)
+        {
+            return $"""
+                <!-- TODO: REMOVE THIS COMMENT AFTER YOU CUSTOMIZE THIS CONTENT -->
+                # Summary
+
+                Describe the purpose and overview of `{entityName}` here.
+
+
+                """;
+        }
+
+        /// <summary>
+        /// Gets the placeholder template for usage documentation.
+        /// </summary>
+        /// <param name="entityName">The name of the namespace or type.</param>
+        /// <returns>The placeholder content.</returns>
+        private static string GetUsageTemplate(string entityName)
+        {
+            return $"""
+                <!-- TODO: REMOVE THIS COMMENT AFTER YOU CUSTOMIZE THIS CONTENT -->
+                # Usage
+
+                Describe how to use `{entityName}` here.
+
+
+                """;
+        }
+
+        /// <summary>
+        /// Writes a file unless it already exists.
+        /// </summary>
+        /// <param name="directory">The folder to write the file in.</param>
+        /// <param name="fileName">The file name.</param>
+        /// <param name="content">The content to write, as UTF-8 without a byte order mark.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        /// <remarks>
+        /// <para>
+        /// <see cref="FileMode.CreateNew"/> checks and creates the file in one step, so concurrent callers can't both write it.
+        /// The caller that loses gets an <see cref="IOException"/> for an existing file and leaves that file alone.
+        /// </para>
+        /// <para>
+        /// Line endings are converted to <see cref="Environment.NewLine"/>. A string literal takes its line endings from the
+        /// source file, which depend on how the repository was checked out, so the written files don't.
+        /// </para>
+        /// </remarks>
+        private static async Task WriteFileIfMissingAsync(string directory, string fileName, string content)
+        {
+            var path = Path.Combine(directory, fileName);
+
+            try
+            {
+                await using var stream = new FileStream(path, FileMode.CreateNew, FileAccess.Write, FileShare.Read);
+                await using var writer = new StreamWriter(stream);
+                await writer.WriteAsync(content.ReplaceLineEndings());
+            }
+            catch (IOException) when (File.Exists(path))
+            {
+                // The file already exists, either from an earlier run or from a concurrent caller, and is never overwritten.
+            }
+        }
+
+        /// <summary>
+        /// Writes the placeholders that namespaces and types share: usage, examples, best practices, patterns, considerations, and related APIs.
+        /// </summary>
+        /// <param name="directory">The conceptual folder of the namespace or type.</param>
+        /// <param name="entityName">The name shown in the placeholder text.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        private static async Task WritePlaceholderSetAsync(string directory, string entityName)
+        {
+            await WriteFileIfMissingAsync(directory, DocConstants.UsageFileName, GetUsageTemplate(entityName));
+            await WriteFileIfMissingAsync(directory, DocConstants.ExamplesFileName, GetExamplesTemplate(entityName));
+            await WriteFileIfMissingAsync(directory, DocConstants.BestPracticesFileName, GetBestPracticesTemplate(entityName));
+            await WriteFileIfMissingAsync(directory, DocConstants.PatternsFileName, GetPatternsTemplate(entityName));
+            await WriteFileIfMissingAsync(directory, DocConstants.ConsiderationsFileName, GetConsiderationsTemplate(entityName));
+            await WriteFileIfMissingAsync(directory, DocConstants.RelatedApisFileName, GetRelatedApisTemplate(entityName));
         }
 
         #endregion

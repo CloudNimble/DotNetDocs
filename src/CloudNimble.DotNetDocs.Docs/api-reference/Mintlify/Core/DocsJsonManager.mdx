@@ -2,7 +2,7 @@
 title: DocsJsonManager
 description: "Loads and manages Mintlify docs.json configuration files with navigation manipulation capabilities."
 icon: file-brackets-curly
-keywords: ['DocsJsonManager', 'Mintlify.Core.DocsJsonManager', 'Mintlify.Core', 'class', 'System.Object']
+keywords: ['DocsJsonManager', 'Mintlify.Core.DocsJsonManager', 'Mintlify.Core', 'class']
 ---
 
 ## Definition
@@ -10,8 +10,6 @@ keywords: ['DocsJsonManager', 'Mintlify.Core.DocsJsonManager', 'Mintlify.Core', 
 **Assembly:** Mintlify.Core.dll
 
 **Namespace:** Mintlify.Core
-
-**Inheritance:** System.Object
 
 ## Syntax
 
@@ -26,8 +24,8 @@ Loads and manages Mintlify docs.json configuration files with navigation manipul
 ## Remarks
 
 This class provides comprehensive support for loading, validating, and modifying Mintlify
-            documentation configuration files. It handles serialization using the standard Mintlify
-            JSON options and provides APIs for navigation manipulation.
+documentation configuration files. It handles serialization using the standard Mintlify
+JSON options and provides APIs for navigation manipulation.
 
 ## Constructors
 
@@ -96,7 +94,7 @@ public Mintlify.Core.Models.DocsJsonConfig Configuration { get; internal set; }
 
 Type: `Mintlify.Core.Models.DocsJsonConfig?`
 The [DocsJsonConfig](/api-reference/Mintlify/Core/Models/DocsJsonConfig) instance loaded from the file system or string content.
-            Returns null if no configuration has been loaded or if loading failed.
+Returns null if no configuration has been loaded or if loading failed.
 
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ConfigurationErrors
 
@@ -112,7 +110,7 @@ public System.Collections.Generic.List<System.CodeDom.Compiler.CompilerError> Co
 
 Type: `System.Collections.Generic.List<System.CodeDom.Compiler.CompilerError>`
 A collection of [CompilerError](https://learn.microsoft.com/dotnet/api/system.codedom.compiler.compilererror) instances representing validation errors,
-            parsing failures, or other issues encountered during configuration loading.
+parsing failures, or other issues encountered during configuration loading.
 
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> FilePath
 
@@ -128,7 +126,7 @@ public string FilePath { get; private set; }
 
 Type: `string?`
 The full path to the docs.json file that was loaded. Returns null if the configuration
-            was loaded from string content rather than a file.
+was loaded from string content rather than a file.
 
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> IsLoaded
 
@@ -295,8 +293,8 @@ public void ApplyUrlPrefix(string prefix)
 #### Remarks
 
 This method recursively traverses the entire navigation structure and prepends the
-            specified prefix to all page URLs, href attributes, and root paths. The prefix is
-            normalized to ensure proper URL formatting (e.g., trailing slashes are handled).
+specified prefix to all page URLs, href attributes, and root paths. The prefix is
+normalized to ensure proper URL formatting (e.g., trailing slashes are handled).
 
 ### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> CreateDefault
 
@@ -367,6 +365,86 @@ public static bool Equals(object objA, object objB)
 
 Type: `bool`
 
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> FindMissingPages
+
+Finds the navigation entries in a configuration that have no matching page file.
+
+#### Syntax
+
+```csharp
+public static System.Collections.Generic.IReadOnlyList<string> FindMissingPages(Mintlify.Core.Models.DocsJsonConfig config, string documentationRootPath)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `config` | `Mintlify.Core.Models.DocsJsonConfig` | The configuration whose navigation is checked. |
+| `documentationRootPath` | `string` | The folder that page paths are resolved against, normally the folder that holds docs.json. |
+
+#### Returns
+
+Type: `System.Collections.Generic.IReadOnlyList<string>`
+The navigation entries, as written, whose page file was not found. Each entry appears once.
+
+#### Exceptions
+
+| Exception | Description |
+|-----------|-------------|
+| `ArgumentNullException` | Thrown when *config* is null. |
+| `ArgumentException` | Thrown when *documentationRootPath* is null or whitespace. |
+
+#### Examples
+
+```csharp
+var missingPages = DocsJsonManager.FindMissingPages(manager.Configuration, "docs");
+foreach (var page in missingPages)
+{
+    Console.WriteLine(DocsJsonManager.GetMissingPageMessage(page));
+}
+```
+
+#### Remarks
+
+Every navigation container is checked, including group root pages. Links, git source mounts, and OpenAPI
+operation entries are skipped because they do not point to a page file. A leading slash is ignored. An entry
+that ends in .mdx or .md must exist exactly as written; any other entry is found when either
+`{entry}.mdx` or `{entry}.md` exists.
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> FindMissingPages
+
+Finds the navigation entries in a docs.json file that have no matching page file.
+
+#### Syntax
+
+```csharp
+public static System.Collections.Generic.IReadOnlyList<string> FindMissingPages(string docsJsonPath)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `docsJsonPath` | `string` | The path to the docs.json file. Page paths are resolved against its folder. |
+
+#### Returns
+
+Type: `System.Collections.Generic.IReadOnlyList<string>`
+The navigation entries, as written, whose page file was not found. Each entry appears once.
+
+#### Exceptions
+
+| Exception | Description |
+|-----------|-------------|
+| `ArgumentException` | Thrown when *docsJsonPath* is null, whitespace, or does not exist. |
+| `InvalidOperationException` | Thrown when the file does not contain a docs.json configuration. |
+| `JsonException` | Thrown when the file is not valid JSON. |
+
+#### Remarks
+
+Use this overload when only the file is available. During a build, prefer
+[DocsJsonManager.FindMissingPages](/api-reference/Mintlify/Core/DocsJsonManager#findmissingpages) with the loaded [DocsJsonManager.Configuration](/api-reference/Mintlify/Core/DocsJsonManager#configuration).
+
 ### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> FindOrCreateGroup
 
 Finds or creates a group with the specified name in the pages collection.
@@ -402,6 +480,40 @@ public virtual int GetHashCode()
 #### Returns
 
 Type: `int`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetMissingPageMessage
+
+Describes a navigation entry whose page file was not found.
+
+#### Syntax
+
+```csharp
+public static string GetMissingPageMessage(string pagePath)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `pagePath` | `string` | The navigation entry returned by [DocsJsonManager.FindMissingPages](/api-reference/Mintlify/Core/DocsJsonManager#findmissingpages). |
+
+#### Returns
+
+Type: `string`
+A message naming the entry and the files that were looked for.
+
+#### Exceptions
+
+| Exception | Description |
+|-----------|-------------|
+| `ArgumentException` | Thrown when *pagePath* is null or whitespace. |
+
+#### Examples
+
+```csharp
+// docs.json navigation lists 'guides/setup', but guides/setup.mdx or guides/setup.md were not found
+var message = DocsJsonManager.GetMissingPageMessage("guides/setup");
+```
 
 ### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetType <Badge color="gray">Inherited</Badge>
 
@@ -495,8 +607,8 @@ public void Load(Mintlify.Core.Models.DocsJsonConfig config)
 #### Remarks
 
 This method replaces any existing configuration and clears previous configuration
-            errors. After loading, the configuration is validated and navigation groups are cleaned to ensure
-            consistency.
+errors. After loading, the configuration is validated and navigation groups are cleaned to ensure
+consistency.
 
 ### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> MemberwiseClone <Badge color="gray">Inherited</Badge>
 
@@ -540,7 +652,7 @@ public void Merge(Mintlify.Core.Models.DocsJsonConfig other, bool combineBasePro
 #### Remarks
 
 This method performs a shallow merge, with the other configuration taking precedence
-            for non-null values. Navigation structures are combined intelligently.
+for non-null values. Navigation structures are combined intelligently.
 
 ### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> MergeNavigation
 
@@ -569,8 +681,8 @@ public void MergeNavigation(Mintlify.Core.Models.NavigationConfig sourceNavigati
 #### Remarks
 
 This method intelligently merges navigation structures, combining groups with the same name
-            and deduplicating page references. Use the MergeOptions parameter to control specific
-            behaviors like how empty groups are handled.
+and deduplicating page references. Use the MergeOptions parameter to control specific
+behaviors like how empty groups are handled.
 
 ### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> MergeNavigation
 
@@ -600,8 +712,8 @@ public void MergeNavigation(string filePath, Mintlify.Core.Models.MergeOptions o
 #### Remarks
 
 This method loads navigation from an external docs.json file and merges it into the
-            current configuration. Only the navigation structure is merged; other configuration
-            properties are not affected.
+current configuration. Only the navigation structure is merged; other configuration
+properties are not affected.
 
 ### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> PopulateNavigationFromPath
 
@@ -634,18 +746,14 @@ public void PopulateNavigationFromPath(string path, string[] fileExtensions = nu
 
 #### Remarks
 
-
-
 This method scans the specified directory recursively and builds a navigation structure
-            based on the folder hierarchy and MDX files found. The method includes several advanced features:
+          based on the folder hierarchy and MDX files found. The method includes several advanced features:
 
 
 
 
 The method preserves the directory structure in the navigation while applying these intelligent
-            processing rules to create clean, organized documentation.
-
-
+          processing rules to create clean, organized documentation.
 
 ### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ReferenceEquals <Badge color="gray">Inherited</Badge>
 

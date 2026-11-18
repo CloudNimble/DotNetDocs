@@ -7,7 +7,7 @@
         <IsSampleProject Condition="$(MSBuildProjectName.ToLower().Contains('.samples.'))">true</IsSampleProject>
         <IsTemplateProject Condition="$(MSBuildProjectName.ToLower().Contains('.templates.'))">true</IsTemplateProject>
         <IsTemplatePackageProject Condition="$(MSBuildProjectName.ToLower().Contains('.templates.package'))">true</IsTemplatePackageProject>
-        <IsNetCore Condition="$([System.Text.RegularExpressions.Regex]::IsMatch('$(TargetFramework)', '^net([8-9]|[1-3][0-9])\.'))">true</IsNetCore>
+        <IsNetCore Condition="$([System.Text.RegularExpressions.Regex]::IsMatch('$(TargetFramework)', '^net[1-9][0-9]\.'))">true</IsNetCore>
         <IsPrimaryProject Condition=" ('$(IsBenchmarkProject)' != 'true' And '$(IsTestProject)' != 'true' And '$(IsTestAssetProject)' != 'true' And '$(IsSampleProject)' != 'true') or '$(IsTemplatePackageProject)' == 'true' ">true</IsPrimaryProject>
         <IncludeReadmeFile Condition="Exists('$(MSBuildProjectDirectory)\readme.md')">true</IncludeReadmeFile>
 
@@ -31,8 +31,9 @@
     <PropertyGroup>
         <PackageId>$(MSBuildProjectName.Replace('CloudNimble.', ''))</PackageId>
         <Product>DotNetDocs</Product>
-        <AssemblyVersion>1.1.0.0</AssemblyVersion>
-        <PackageVersion Condition="'$(PackageVersion)' == ''">1.5.0-preview.1</PackageVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <DotNetDocsPackageVersion Condition="'$(DotNetDocsPackageVersion)' == ''">2.0.0-preview.1</DotNetDocsPackageVersion>
+        <MintlifyPackageVersion Condition="'$(MintlifyPackageVersion)' == ''">2.0.0-preview.1</MintlifyPackageVersion>
         <Authors>CloudNimble</Authors>
         <Company>CloudNimble, Inc.</Company>
         <RpmPackageVendor>CloudNimble</RpmPackageVendor>
@@ -64,6 +65,20 @@
         <RepositoryType>git</RepositoryType>
     </PropertyGroup>
 
+    <!-- Mintlify.Core tracks the docs.json schema and versions independently of DotNetDocs.
+         CI must pass DotNetDocsPackageVersion and MintlifyPackageVersion. Do not pass
+         PackageVersion or Version on the command line; those global properties would stamp
+         one number on every project. -->
+    <PropertyGroup Condition="$([MSBuild]::ValueOrDefault('$(MSBuildProjectName)', '').StartsWith('Mintlify.'))">
+        <PackageVersion>$(MintlifyPackageVersion)</PackageVersion>
+        <Version>$(MintlifyPackageVersion)</Version>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="!$([MSBuild]::ValueOrDefault('$(MSBuildProjectName)', '').StartsWith('Mintlify.'))">
+        <PackageVersion>$(DotNetDocsPackageVersion)</PackageVersion>
+        <Version>$(DotNetDocsPackageVersion)</Version>
+    </PropertyGroup>
+
     <!-- Compilation options -->
     <PropertyGroup>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
@@ -83,7 +98,7 @@
     </PropertyGroup>
 
     <PropertyGroup>
-        <StandardTestTfms>net10.0;net9.0;net8.0</StandardTestTfms>
+        <StandardTestTfms>net11.0;net10.0</StandardTestTfms>
     </PropertyGroup>
 
     <PropertyGroup>
@@ -97,6 +112,11 @@
         <TestingPlatformShowTestsFailure>true</TestingPlatformShowTestsFailure>
         <TestingPlatformCommandLineArguments>$(TestingPlatformCommandLineArguments) --ignore-exit-code 8</TestingPlatformCommandLineArguments>
 
+        <!-- Collect code coverage with Microsoft.Testing.Extensions.CodeCoverage, which the MSTest package brings in.
+             Every test project shares the test results directory (src/TestResults when run from src), so the report name
+             includes the project and target framework to keep runs from overwriting each other. -->
+        <TestingPlatformCommandLineArguments>$(TestingPlatformCommandLineArguments) --coverage --coverage-output-format cobertura --coverage-output "$(MSBuildProjectName).$(TargetFramework).cobertura.xml" --coverage-settings "$(MSBuildThisFileDirectory)coverage.config"</TestingPlatformCommandLineArguments>
+
         <IsPackable>false</IsPackable>
     </PropertyGroup>
 
@@ -108,16 +128,9 @@
         <SuppressNETCoreSdkPreviewMessage>true</SuppressNETCoreSdkPreviewMessage>
     </PropertyGroup>
 
-    <PropertyGroup Condition=" $(IsPrimaryProject) == 'true' ">
-        <CollectCoverage>true</CollectCoverage>
-        <CoverletOutputFormat>opencover</CoverletOutputFormat>
-        <CoverletOutput>$(MSBuildProjectDirectory)/Coverage/</CoverletOutput>
-        <Exclude>[*.Tests.*]*,[*]*.Program,[*]*Migrations*</Exclude>
-    </PropertyGroup>
-
     <PropertyGroup Condition=" $(IsPrimaryProject) == 'true' and '$(IsTemplateProject)' != 'true' ">
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
-        <DocumentationFile>bin\$(Configuration)\$(TargetFramework)</DocumentationFile>
+        <!-- RWM: DocumentationFile is set in Directory.Build.targets, where AssemblyName is available. -->
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     </PropertyGroup>
 
@@ -135,12 +148,11 @@
     </ItemGroup>
 
     <ItemGroup Condition=" $(IsTestProject) == 'true' and $(IsSampleProject) != 'true' ">
-        <PackageReference Include="coverlet.collector" Version="6.*" PrivateAssets="All" />
         <PackageReference Include="FluentAssertions" Version="6.*" PrivateAssets="All" />
         <PackageReference Include="FluentAssertions.Analyzers" Version="0.*" PrivateAssets="All" />
         <PackageReference Include="MSTest" Version="4.*" />
         <PackageReference Include="MSTest.TestFramework" Version="4.*" />
-        <PackageReference Include="Breakdance.Extensions.MSTest2" Version="8.*-*" />
+        <PackageReference Include="Breakdance.Extensions.MSTest2" Version="9.*" />
 
         <!-- Enable parallel test execution in MSTest 3 and later. -->
         <AssemblyAttribute Include="Microsoft.VisualStudio.TestTools.UnitTesting.Parallelize">

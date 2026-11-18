@@ -16,11 +16,11 @@
               "name": "list",
               "parameterType": {
                 "members": [],
-                "assemblyName": "System.Collections",
+                "assemblyName": "System.Private.CoreLib",
                 "fullName": "System.Collections.Generic.List\u003CT\u003E",
                 "name": "List",
                 "signature": "System.Collections.Generic.List\u003CT\u003E",
-                "typeKind": "error",
+                "typeKind": "class",
                 "isExternalReference": true,
                 "displayName": "System.Collections.Generic.List\u003CT\u003E"
               },
@@ -49,7 +49,7 @@
           "isExtensionMethod": true,
           "extendedTypeName": "System.Collections.Generic.List\u003CT\u003E",
           "displayName": "System.Collections.Generic.TestsShared_ListExtensions.IsNullOrEmpty\u003CT\u003E(System.Collections.Generic.List\u003CT\u003E)",
-          "examples": "\u003Ccode\u003E\r\n            var numbers = new List\u0026lt;int\u0026gt;();\r\n            if (numbers.IsNullOrEmpty())\r\n            {\r\n                // Handle empty list\r\n            }\r\n            \u003C/code\u003E",
+          "examples": "\u003Ccode\u003E\r\nvar numbers = new List\u0026lt;int\u0026gt;();\r\nif (numbers.IsNullOrEmpty())\r\n{\r\n    // Handle empty list\r\n}\r\n\u003C/code\u003E",
           "returns": "True if the list is null or empty, otherwise false.",
           "summary": "Checks if a list is null or empty.",
           "typeParameters": [
@@ -72,11 +72,11 @@
               "name": "list",
               "parameterType": {
                 "members": [],
-                "assemblyName": "System.Collections",
+                "assemblyName": "System.Private.CoreLib",
                 "fullName": "System.Collections.Generic.List\u003CT\u003E",
                 "name": "List",
                 "signature": "System.Collections.Generic.List\u003CT\u003E",
-                "typeKind": "error",
+                "typeKind": "class",
                 "isExternalReference": true,
                 "displayName": "System.Collections.Generic.List\u003CT\u003E"
               },
@@ -105,11 +105,11 @@
           ],
           "returnType": {
             "members": [],
-            "assemblyName": "System.Collections",
+            "assemblyName": "System.Private.CoreLib",
             "fullName": "System.Collections.Generic.List\u003CT\u003E",
             "name": "List",
             "signature": "System.Collections.Generic.List\u003CT\u003E",
-            "typeKind": "error",
+            "typeKind": "class",
             "isExternalReference": true,
             "displayName": "System.Collections.Generic.List\u003CT\u003E"
           },
@@ -123,7 +123,7 @@
           "isExtensionMethod": true,
           "extendedTypeName": "System.Collections.Generic.List\u003CT\u003E",
           "displayName": "System.Collections.Generic.TestsShared_ListExtensions.AddMultiple\u003CT\u003E(System.Collections.Generic.List\u003CT\u003E, params T[])",
-          "examples": "\u003Ccode\u003E\r\n            var numbers = new List\u0026lt;int\u0026gt;()\r\n                .AddMultiple(1, 2, 3, 4, 5);\r\n            \u003C/code\u003E",
+          "examples": "\u003Ccode\u003E\r\nvar numbers = new List\u0026lt;int\u0026gt;()\r\n    .AddMultiple(1, 2, 3, 4, 5);\r\n\u003C/code\u003E",
           "returns": "The list for fluent chaining.",
           "summary": "Adds multiple items to a list in one call.",
           "typeParameters": [
@@ -146,11 +146,11 @@
               "name": "list",
               "parameterType": {
                 "members": [],
-                "assemblyName": "System.Collections",
+                "assemblyName": "System.Private.CoreLib",
                 "fullName": "System.Collections.Generic.List\u003CT\u003E",
                 "name": "List",
                 "signature": "System.Collections.Generic.List\u003CT\u003E",
-                "typeKind": "error",
+                "typeKind": "class",
                 "isExternalReference": true,
                 "displayName": "System.Collections.Generic.List\u003CT\u003E"
               },
@@ -161,11 +161,11 @@
           ],
           "returnType": {
             "members": [],
-            "assemblyName": "System.Collections",
+            "assemblyName": "System.Private.CoreLib",
             "fullName": "System.Collections.Generic.List\u003CT\u003E",
             "name": "List",
             "signature": "System.Collections.Generic.List\u003CT\u003E",
-            "typeKind": "error",
+            "typeKind": "class",
             "isExternalReference": true,
             "displayName": "System.Collections.Generic.List\u003CT\u003E"
           },
@@ -190,15 +190,15 @@
           ]
         }
       ],
-      "assemblyName": "System.Collections",
+      "assemblyName": "System.Private.CoreLib",
       "fullName": "System.Collections.Generic.List\u003CT\u003E",
       "name": "List",
       "signature": "System.Collections.Generic.List\u003CT\u003E",
-      "typeKind": "error",
+      "typeKind": "class",
       "isExternalReference": true,
       "displayName": "System.Collections.Generic.List\u003CT\u003E",
-      "remarks": "See [Microsoft documentation](https://learn.microsoft.com/dotnet/api/system.collections.generic.list{t}) for more information about the rest of the API.",
-      "summary": "This type is defined in System.Collections."
+      "remarks": "See \u003Csee href=\u0022https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1\u0022\u003EMicrosoft documentation\u003C/see\u003E for more information about the rest of the API.",
+      "summary": "This type is defined in System.Private.CoreLib."
     }
   ],
   "displayName": "System.Collections.Generic"

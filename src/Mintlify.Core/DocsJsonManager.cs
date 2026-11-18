@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using CloudNimble.EasyAF.Core;
 using Mintlify.Core.Models;
 
@@ -34,7 +35,21 @@ namespace Mintlify.Core
         /// The comparison is case-insensitive to handle different filesystem conventions.
         /// Common exclusions include package directories, internal documentation, and build artifacts.
         /// </remarks>
-        private static readonly string[] ExcludedDirectories = { "node_modules", "conceptual", "overrides" };
+        private static readonly HashSet<string> ExcludedDirectories = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            "node_modules",
+            "conceptual",
+            "overrides"
+        };
+
+        /// <summary>
+        /// Matches navigation entries that reference an OpenAPI operation or webhook instead of a page file.
+        /// </summary>
+        /// <remarks>
+        /// Mintlify accepts "/path/openapi.json GET /users" and, under a group that sets an OpenAPI spec, "GET /users".
+        /// The method must be uppercase and followed by a target.
+        /// </remarks>
+        private static readonly Regex OpenApiEntryRegex = new(@"(^|\s)(GET|POST|PUT|PATCH|DELETE|HEAD|OPTIONS|TRACE|webhook)\s+\S", RegexOptions.CultureInvariant);
 
         /// <summary>
         /// Stores the set of page paths that are recognized as known within the application.
@@ -166,11 +181,12 @@ namespace Mintlify.Core
             ConfigurationErrors.Clear();
             Configuration = config;
 
-            // Populate known page paths from the loaded configuration
+            // Rebuild known page paths from the loaded configuration
             // Allow duplicates in loaded data (assume user intent), but track them for future additions
-            if (Configuration.Navigation?.Pages is not null)
+            _knownPagePaths.Clear();
+            if (Configuration.Navigation is not null)
             {
-                PopulateKnownPaths(Configuration.Navigation.Pages);
+                PopulateKnownPaths(Configuration.Navigation);
             }
         }
 
@@ -210,6 +226,105 @@ namespace Mintlify.Core
 
             var json = JsonSerializer.Serialize(Configuration, MintlifyConstants.JsonSerializerOptions);
             File.WriteAllText(filePath, json);
+        }
+
+        /// <summary>
+        /// Finds the navigation entries in a configuration that have no matching page file.
+        /// </summary>
+        /// <param name="config">The configuration whose navigation is checked.</param>
+        /// <param name="documentationRootPath">The folder that page paths are resolved against, normally the folder that holds docs.json.</param>
+        /// <returns>The navigation entries, as written, whose page file was not found. Each entry appears once.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="config"/> is null.</exception>
+        /// <exception cref="ArgumentException">Thrown when <paramref name="documentationRootPath"/> is null or whitespace.</exception>
+        /// <example>
+        /// <code>
+        /// var missingPages = DocsJsonManager.FindMissingPages(manager.Configuration, "docs");
+        /// foreach (var page in missingPages)
+        /// {
+        ///     Console.WriteLine(DocsJsonManager.GetMissingPageMessage(page));
+        /// }
+        /// </code>
+        /// </example>
+        /// <remarks>
+        /// Every navigation container is checked, including group root pages. Links, git source mounts, and OpenAPI
+        /// operation entries are skipped because they do not point to a page file. A leading slash is ignored. An entry
+        /// that ends in .mdx or .md must exist exactly as written; any other entry is found when either
+        /// <c>{entry}.mdx</c> or <c>{entry}.md</c> exists.
+        /// </remarks>
+        public static IReadOnlyList<string> FindMissingPages(DocsJsonConfig config, string documentationRootPath)
+        {
+            Ensure.ArgumentNotNull(config, nameof(config));
+            Ensure.ArgumentNotNullOrWhiteSpace(documentationRootPath, nameof(documentationRootPath));
+
+            var pagePaths = new List<string>();
+            CollectPagePaths(config.Navigation, pagePaths);
+
+            var checkedPagePaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            var missingPages = new List<string>();
+            foreach (var pagePath in pagePaths)
+            {
+                if (!checkedPagePaths.Add(pagePath) || OpenApiEntryRegex.IsMatch(pagePath))
+                {
+                    continue;
+                }
+
+                if (!GetPageFileCandidates(pagePath).Any(candidate => File.Exists(Path.Combine(documentationRootPath, candidate))))
+                {
+                    missingPages.Add(pagePath);
+                }
+            }
+
+            return missingPages;
+        }
+
+        /// <summary>
+        /// Finds the navigation entries in a docs.json file that have no matching page file.
+        /// </summary>
+        /// <param name="docsJsonPath">The path to the docs.json file. Page paths are resolved against its folder.</param>
+        /// <returns>The navigation entries, as written, whose page file was not found. Each entry appears once.</returns>
+        /// <exception cref="ArgumentException">Thrown when <paramref name="docsJsonPath"/> is null, whitespace, or does not exist.</exception>
+        /// <exception cref="InvalidOperationException">Thrown when the file does not contain a docs.json configuration.</exception>
+        /// <exception cref="JsonException">Thrown when the file is not valid JSON.</exception>
+        /// <remarks>
+        /// Use this overload when only the file is available. During a build, prefer
+        /// <see cref="FindMissingPages(DocsJsonConfig, string)"/> with the loaded <see cref="Configuration"/>.
+        /// </remarks>
+        public static IReadOnlyList<string> FindMissingPages(string docsJsonPath)
+        {
+            Ensure.ArgumentNotNullOrWhiteSpace(docsJsonPath, nameof(docsJsonPath));
+
+            var fullPath = Path.GetFullPath(docsJsonPath);
+            if (!File.Exists(fullPath))
+            {
+                throw new ArgumentException("The docsJsonPath specified does not exist.", nameof(docsJsonPath));
+            }
+
+            var config = JsonSerializer.Deserialize<DocsJsonConfig>(File.ReadAllText(fullPath), MintlifyConstants.JsonSerializerOptions)
+                ?? throw new InvalidOperationException($"'{fullPath}' does not contain a docs.json configuration.");
+
+            return FindMissingPages(config, Path.GetDirectoryName(fullPath)!);
+        }
+
+        /// <summary>
+        /// Describes a navigation entry whose page file was not found.
+        /// </summary>
+        /// <param name="pagePath">The navigation entry returned by <see cref="FindMissingPages(DocsJsonConfig, string)"/>.</param>
+        /// <returns>A message naming the entry and the files that were looked for.</returns>
+        /// <exception cref="ArgumentException">Thrown when <paramref name="pagePath"/> is null or whitespace.</exception>
+        /// <example>
+        /// <code>
+        /// // docs.json navigation lists 'guides/setup', but guides/setup.mdx or guides/setup.md were not found
+        /// var message = DocsJsonManager.GetMissingPageMessage("guides/setup");
+        /// </code>
+        /// </example>
+        public static string GetMissingPageMessage(string pagePath)
+        {
+            Ensure.ArgumentNotNullOrWhiteSpace(pagePath, nameof(pagePath));
+
+            var candidates = GetPageFileCandidates(pagePath);
+            var notFound = candidates.Count == 1 ? $"{candidates[0]} was not found" : $"{string.Join(" or ", candidates)} were not found";
+
+            return $"docs.json navigation lists '{pagePath}', but {notFound}";
         }
 
         /// <summary>
@@ -288,6 +403,52 @@ namespace Mintlify.Core
                     Configuration.Logo = other.Logo;
                 if (other.Footer is not null)
                     Configuration.Footer = other.Footer;
+                if (other.Public.HasValue)
+                    Configuration.Public = other.Public;
+                if (other.ThemeVersion.HasValue)
+                    Configuration.ThemeVersion = other.ThemeVersion;
+                if (other.Variables is not null)
+                    Configuration.Variables = other.Variables;
+                if (other.Markdown is not null)
+                    Configuration.Markdown = other.Markdown;
+                if (other.Packages is not null)
+                    Configuration.Packages = other.Packages;
+                if (other.Api is not null)
+                    Configuration.Api = other.Api;
+                if (other.Appearance is not null)
+                    Configuration.Appearance = other.Appearance;
+                if (other.Background is not null)
+                    Configuration.Background = other.Background;
+                if (other.Banner is not null)
+                    Configuration.Banner = other.Banner;
+                if (other.Contextual is not null)
+                    Configuration.Contextual = other.Contextual;
+                if (other.Errors is not null)
+                    Configuration.Errors = other.Errors;
+                if (other.Favicon is not null)
+                    Configuration.Favicon = other.Favicon;
+                if (other.Fonts is not null)
+                    Configuration.Fonts = other.Fonts;
+                if (other.Icons is not null)
+                    Configuration.Icons = other.Icons;
+                if (other.Integrations is not null)
+                    Configuration.Integrations = other.Integrations;
+                if (other.Interaction is not null)
+                    Configuration.Interaction = other.Interaction;
+                if (other.Navbar is not null)
+                    Configuration.Navbar = other.Navbar;
+                if (other.Redirects is not null)
+                    Configuration.Redirects = other.Redirects;
+                if (other.Search is not null)
+                    Configuration.Search = other.Search;
+                if (other.Seo is not null)
+                    Configuration.Seo = other.Seo;
+                if (other.Styling is not null)
+                    Configuration.Styling = other.Styling;
+                if (other.Thumbnails is not null)
+                    Configuration.Thumbnails = other.Thumbnails;
+                if (other.Metadata is not null)
+                    Configuration.Metadata = other.Metadata;
             }
 
             // Always merge navigation
@@ -335,10 +496,11 @@ namespace Mintlify.Core
             {
                 Configuration.Navigation = defaults.Navigation;
 
-                // Add discovered navigation paths to _knownPagePaths
-                if (Configuration.Navigation?.Pages is not null)
+                // The previous navigation was replaced, so rebuild _knownPagePaths from the default navigation
+                _knownPagePaths.Clear();
+                if (Configuration.Navigation is not null)
                 {
-                    PopulateKnownPaths(Configuration.Navigation.Pages);
+                    PopulateKnownPaths(Configuration.Navigation);
                 }
             }
 
@@ -643,10 +805,7 @@ namespace Mintlify.Core
                     {
                         // Add new group and track all its pages
                         pages.Add(group);
-                        if (group.Pages is not null)
-                        {
-                            PopulateKnownPaths(group.Pages);
-                        }
+                        PopulateKnownPaths(group);
                         return true;
                     }
 
@@ -724,27 +883,233 @@ namespace Mintlify.Core
         #region Private Methods
 
         /// <summary>
-        /// Recursively populates the _knownPagePaths hashset from a navigation structure.
+        /// Adds every page path in a navigation structure to the _knownPagePaths hashset.
         /// </summary>
-        /// <param name="pages">The pages list to extract page paths from.</param>
-        internal void PopulateKnownPaths(List<object> pages)
+        /// <param name="navigation">The navigation to extract page paths from.</param>
+        /// <remarks>
+        /// Walks every navigation container Mintlify supports: pages, groups (including their root pages), tabs,
+        /// menus, anchors, dropdowns, products, versions, and languages.
+        /// </remarks>
+        internal void PopulateKnownPaths(NavigationConfig navigation)
         {
+            CollectPagePaths(navigation, _knownPagePaths);
+        }
+
+        /// <summary>
+        /// Adds the root page and every nested page path of a group to the _knownPagePaths hashset.
+        /// </summary>
+        /// <param name="group">The group to extract page paths from.</param>
+        internal void PopulateKnownPaths(GroupConfig group)
+        {
+            CollectPagePaths(group, _knownPagePaths);
+        }
+
+        // Removed RefreshKnownPagePaths - we now maintain _knownPagePaths incrementally
+        // through AddPage, AddPageToGroup, and AddNavigationItem methods
+
+        /// <summary>
+        /// Collects every page path in a navigation structure.
+        /// </summary>
+        /// <param name="navigation">The navigation to walk.</param>
+        /// <param name="paths">The collection that receives the page paths.</param>
+        private static void CollectPagePaths(NavigationConfig navigation, ICollection<string> paths)
+        {
+            CollectPagePaths(navigation.Pages, paths);
+            CollectPagePaths(navigation.Groups, paths);
+            CollectPagePaths(navigation.Tabs, paths);
+            CollectPagePaths(navigation.Anchors, paths);
+            CollectPagePaths(navigation.Dropdowns, paths);
+            CollectPagePaths(navigation.Products, paths);
+            CollectPagePaths(navigation.Versions, paths);
+            CollectPagePaths(navigation.Languages, paths);
+        }
+
+        /// <summary>
+        /// Collects every page path in a pages list, descending into nested groups.
+        /// </summary>
+        /// <param name="pages">The pages list to walk.</param>
+        /// <param name="paths">The collection that receives the page paths.</param>
+        /// <remarks>
+        /// Link entries and git source mounts are skipped because they do not reference a page in this site.
+        /// </remarks>
+        private static void CollectPagePaths(List<object>? pages, ICollection<string> paths)
+        {
+            if (pages is null)
+            {
+                return;
+            }
+
             foreach (var page in pages)
             {
                 switch (page)
                 {
-                    case string stringPage:
-                        _knownPagePaths.Add(stringPage);
+                    case string stringPage when !string.IsNullOrWhiteSpace(stringPage):
+                        paths.Add(stringPage);
                         break;
-                    case GroupConfig groupConfig when groupConfig.Pages is not null:
-                        PopulateKnownPaths(groupConfig.Pages);
+                    case GroupConfig group:
+                        CollectPagePaths(group, paths);
                         break;
                 }
             }
         }
 
-        // Removed RefreshKnownPagePaths - we now maintain _knownPagePaths incrementally
-        // through AddPage, AddPageToGroup, and AddNavigationItem methods
+        /// <summary>
+        /// Collects the root page and every nested page path of a group.
+        /// </summary>
+        /// <param name="group">The group to walk.</param>
+        /// <param name="paths">The collection that receives the page paths.</param>
+        private static void CollectPagePaths(GroupConfig group, ICollection<string> paths)
+        {
+            if (!string.IsNullOrWhiteSpace(group.Root))
+            {
+                paths.Add(group.Root!);
+            }
+
+            CollectPagePaths(group.Pages, paths);
+        }
+
+        /// <summary>
+        /// Collects every page path in a list of navigation containers, such as tabs, anchors, dropdowns, or products.
+        /// </summary>
+        /// <typeparam name="TContainer">The navigation container type.</typeparam>
+        /// <param name="containers">The containers to walk.</param>
+        /// <param name="paths">The collection that receives the page paths.</param>
+        private static void CollectPagePaths<TContainer>(List<TContainer>? containers, ICollection<string> paths)
+            where TContainer : NavigationContainerBase
+        {
+            if (containers is null)
+            {
+                return;
+            }
+
+            foreach (var container in containers)
+            {
+                CollectPagePaths(container.Pages, paths);
+                CollectPagePaths(container.Groups, paths);
+
+                if (container is NavigationSectionBase section)
+                {
+                    CollectPagePaths(section.Dropdowns, paths);
+                    CollectPagePaths(section.Languages, paths);
+                    CollectPagePaths(section.Versions, paths);
+                }
+
+                switch (container)
+                {
+                    case TabConfig tab:
+                        CollectPagePaths(tab.Anchors, paths);
+                        CollectPagePaths(tab.Menu, paths);
+                        break;
+                    case AnchorConfig anchor:
+                        CollectPagePaths(anchor.Tabs, paths);
+                        break;
+                    case DropdownConfig dropdown:
+                        CollectPagePaths(dropdown.Anchors, paths);
+                        CollectPagePaths(dropdown.Tabs, paths);
+                        break;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Collects every page path in a list of groups.
+        /// </summary>
+        /// <param name="groups">The groups to walk.</param>
+        /// <param name="paths">The collection that receives the page paths.</param>
+        private static void CollectPagePaths(List<GroupConfig>? groups, ICollection<string> paths)
+        {
+            if (groups is null)
+            {
+                return;
+            }
+
+            foreach (var group in groups)
+            {
+                CollectPagePaths(group, paths);
+            }
+        }
+
+        /// <summary>
+        /// Collects every page path in a list of languages.
+        /// </summary>
+        /// <param name="languages">The languages to walk.</param>
+        /// <param name="paths">The collection that receives the page paths.</param>
+        private static void CollectPagePaths(List<LanguageConfig>? languages, ICollection<string> paths)
+        {
+            if (languages is null)
+            {
+                return;
+            }
+
+            foreach (var language in languages)
+            {
+                CollectPagePaths(language.Pages, paths);
+                CollectPagePaths(language.Groups, paths);
+                CollectPagePaths(language.Tabs, paths);
+                CollectPagePaths(language.Anchors, paths);
+                CollectPagePaths(language.Dropdowns, paths);
+                CollectPagePaths(language.Versions, paths);
+            }
+        }
+
+        /// <summary>
+        /// Collects every page path in a list of tab menu items.
+        /// </summary>
+        /// <param name="menu">The menu items to walk.</param>
+        /// <param name="paths">The collection that receives the page paths.</param>
+        private static void CollectPagePaths(List<MenuConfig>? menu, ICollection<string> paths)
+        {
+            if (menu is null)
+            {
+                return;
+            }
+
+            foreach (var item in menu)
+            {
+                CollectPagePaths(item.Pages, paths);
+                CollectPagePaths(item.Groups, paths);
+            }
+        }
+
+        /// <summary>
+        /// Collects every page path in a list of versions.
+        /// </summary>
+        /// <param name="versions">The versions to walk.</param>
+        /// <param name="paths">The collection that receives the page paths.</param>
+        private static void CollectPagePaths(List<VersionConfig>? versions, ICollection<string> paths)
+        {
+            if (versions is null)
+            {
+                return;
+            }
+
+            foreach (var version in versions)
+            {
+                CollectPagePaths(version.Pages, paths);
+                CollectPagePaths(version.Groups, paths);
+                CollectPagePaths(version.Tabs, paths);
+                CollectPagePaths(version.Anchors, paths);
+                CollectPagePaths(version.Dropdowns, paths);
+                CollectPagePaths(version.Languages, paths);
+            }
+        }
+
+        /// <summary>
+        /// Gets the files, relative to the documentation root, that can satisfy a navigation entry.
+        /// </summary>
+        /// <param name="pagePath">The navigation entry.</param>
+        /// <returns>The entry itself when it ends in .mdx or .md; otherwise the entry with .mdx and with .md appended.</returns>
+        private static IReadOnlyList<string> GetPageFileCandidates(string pagePath)
+        {
+            var relativePath = pagePath.TrimStart('/');
+
+            if (relativePath.EndsWith(".mdx", StringComparison.OrdinalIgnoreCase) || relativePath.EndsWith(".md", StringComparison.OrdinalIgnoreCase))
+            {
+                return [relativePath];
+            }
+
+            return [$"{relativePath}.mdx", $"{relativePath}.md"];
+        }
 
         #endregion
 
@@ -757,6 +1122,7 @@ namespace Mintlify.Core
         internal void LoadInternal(string content)
         {
             ConfigurationErrors.Clear();
+            _knownPagePaths.Clear();
 
             try
             {
@@ -770,6 +1136,12 @@ namespace Mintlify.Core
 
                 // Remove null groups that would cause Mintlify to reject the configuration
                 RemoveNullGroups();
+
+                // Track the loaded navigation pages so later additions do not duplicate them
+                if (Configuration.Navigation is not null)
+                {
+                    PopulateKnownPaths(Configuration.Navigation);
+                }
 
                 // Apply validation using injected DocsJsonValidator
                 var validationErrors = _validator.Validate(Configuration);
@@ -944,6 +1316,43 @@ namespace Mintlify.Core
 
             if (source.Global is not null)
                 target.Global = source.Global;
+            if (source.Graphql is not null)
+                target.Graphql = source.Graphql;
+            if (source.Mcp is not null)
+                target.Mcp = source.Mcp;
+            if (source.Sdk is not null)
+                target.Sdk = source.Sdk;
+            if (!string.IsNullOrWhiteSpace(source.Directory))
+                target.Directory = source.Directory;
+
+            // Track every page merged into the loaded configuration so later additions do not duplicate them
+            if (ReferenceEquals(target, Configuration?.Navigation))
+            {
+                PopulateKnownPaths(target);
+            }
+        }
+
+        private static void MergeNavigationItemExtras(NavigationItemBase target, NavigationItemBase source)
+        {
+            if (source.Sdk is not null)
+            {
+                target.Sdk = source.Sdk;
+            }
+
+            if (!string.IsNullOrWhiteSpace(source.Directory))
+            {
+                target.Directory = source.Directory;
+            }
+
+            if (source.Searchable.HasValue)
+            {
+                target.Searchable = source.Searchable;
+            }
+
+            if (source.Thumbnail is not null)
+            {
+                target.Thumbnail = source.Thumbnail;
+            }
         }
 
         /// <summary>
@@ -987,11 +1396,8 @@ namespace Mintlify.Core
                         {
                             groupsByName[groupConfig.Group] = groupConfig;
                             processedPages.Add(groupConfig);
-                            // Track pages in this group
-                            if (groupConfig.Pages is not null)
-                            {
-                                PopulateKnownPaths(groupConfig.Pages);
-                            }
+                            // Track the root and pages in this group
+                            PopulateKnownPaths(groupConfig);
                         }
                         break;
                     case GroupConfig groupConfig when string.IsNullOrWhiteSpace(groupConfig.Group):
@@ -1003,6 +1409,8 @@ namespace Mintlify.Core
                             {
                                 groupsByName[string.Empty] = groupConfig;
                                 processedPages.Add(groupConfig);
+                                // Track the root and pages in this group
+                                PopulateKnownPaths(groupConfig);
                             }
                             else
                             {
@@ -1014,11 +1422,8 @@ namespace Mintlify.Core
                         {
                             // Keep empty groups separate (default Mintlify behavior)
                             processedPages.Add(groupConfig);
-                            // Track pages in this group
-                            if (groupConfig.Pages is not null)
-                            {
-                                PopulateKnownPaths(groupConfig.Pages);
-                            }
+                            // Track the root and pages in this group
+                            PopulateKnownPaths(groupConfig);
                         }
                         break;
                     default:
@@ -1033,21 +1438,20 @@ namespace Mintlify.Core
                 switch (page)
                 {
                     case string stringPage:
-                        if (!seenPagePaths.Contains(stringPage))
+                        // Only deduplicate against the list being merged into. Mintlify allows the same page in more
+                        // than one section, so a page listed elsewhere in the navigation is still added here.
+                        if (seenPagePaths.Add(stringPage))
                         {
                             // Check if we should add this to "Getting Started" instead of root level
                             if (options?.AddRootPagesToGettingStarted == true && groupsByName.TryGetValue("Getting Started", out var gettingStartedGroup))
                             {
                                 // Add to Getting Started group instead of root level
-                                AddPageToGroup(gettingStartedGroup, stringPage);
+                                AddPageToGroup(gettingStartedGroup, stringPage, allowDuplicatePaths: true);
                             }
                             else
                             {
                                 // Use AddPage to properly track the page
-                                if (AddPage(processedPages, stringPage))
-                                {
-                                    seenPagePaths.Add(stringPage);
-                                }
+                                AddPage(processedPages, stringPage, allowDuplicatePaths: true);
                             }
                         }
                         break;
@@ -1099,27 +1503,6 @@ namespace Mintlify.Core
             targetPages.AddRange(processedPages);
         }
 
-        /// <summary>
-        /// Collects all page paths from a navigation structure into a hashset.
-        /// This includes both root-level string pages and pages within groups.
-        /// </summary>
-        /// <param name="pages">The pages list to collect paths from.</param>
-        /// <param name="pagePaths">The hashset to add page paths to.</param>
-        internal void CollectPagePaths(List<object> pages, HashSet<string> pagePaths)
-        {
-            foreach (var page in pages)
-            {
-                switch (page)
-                {
-                    case string stringPage:
-                        pagePaths.Add(stringPage);
-                        break;
-                    case GroupConfig groupConfig when groupConfig.Pages is not null:
-                        CollectPagePaths(groupConfig.Pages, pagePaths);
-                        break;
-                }
-            }
-        }
 
         /// <summary>
         /// Merges two GroupConfig objects with the same group name.
@@ -1142,6 +1525,11 @@ namespace Mintlify.Core
                 target.AsyncApi = source.AsyncApi;
             if (source.OpenApi is not null)
                 target.OpenApi = source.OpenApi;
+            if (source.Graphql is not null)
+                target.Graphql = source.Graphql;
+            if (source.Mcp is not null)
+                target.Mcp = source.Mcp;
+            MergeNavigationItemExtras(target, source);
 
             // Merge pages recursively
             if (source.Pages is not null)
@@ -1325,6 +1713,13 @@ namespace Mintlify.Core
                 target.OpenApi = source.OpenApi;
             if (source.Global is not null)
                 target.Global = source.Global;
+            if (source.Graphql is not null)
+                target.Graphql = source.Graphql;
+            if (source.Mcp is not null)
+                target.Mcp = source.Mcp;
+            MergeNavigationItemExtras(target, source);
+            if (!string.IsNullOrWhiteSpace(source.Align))
+                target.Align = source.Align;
 
             // Merge pages recursively
             if (source.Pages is not null)
@@ -1418,11 +1813,8 @@ namespace Mintlify.Core
                     if (customGroup is not null)
                     {
                         pages.Add(customGroup);
-                        // Populate known page paths from the custom navigation group
-                        if (customGroup.Pages is not null)
-                        {
-                            PopulateKnownPaths(customGroup.Pages);
-                        }
+                        // Populate known page paths from the custom navigation group, including its root page
+                        PopulateKnownPaths(customGroup);
                         return; // User controls this directory and all subdirectories completely
                     }
                     else
@@ -1461,7 +1853,7 @@ namespace Mintlify.Core
             {
                 var extension = Path.GetExtension(file);
 
-                if (fileExtensions.Any(ext => extension.Equals(ext, StringComparison.OrdinalIgnoreCase)))
+                if (HasExtension(fileExtensions, extension))
                 {
                     entries.Add((Path.GetFileNameWithoutExtension(file), file, false));
                 }
@@ -1481,13 +1873,8 @@ namespace Mintlify.Core
                 var dirName = Path.GetFileName(directory);
                 // Skip hidden directories, excluded directories, and optionally api-reference
                 if (!dirName.StartsWith(".") &&
-#if NETSTANDARD2_0
-                    !ExcludedDirectories.Any(excluded => string.Equals(excluded, dirName, StringComparison.OrdinalIgnoreCase)) &&
-                    (excludeDirectories is null || !excludeDirectories.Any(excluded => string.Equals(excluded, dirName, StringComparison.OrdinalIgnoreCase))) &&
-#else
-                    !ExcludedDirectories.Contains(dirName, StringComparer.OrdinalIgnoreCase) &&
-                    (excludeDirectories is null || !excludeDirectories.Contains(dirName, StringComparer.OrdinalIgnoreCase)) &&
-#endif
+                    !ExcludedDirectories.Contains(dirName) &&
+                    !ContainsDirectoryName(excludeDirectories, dirName) &&
                     (includeApiReference || !string.Equals(dirName, "api-reference", StringComparison.OrdinalIgnoreCase))
                     )
                 {
@@ -1497,13 +1884,9 @@ namespace Mintlify.Core
 
             // Multi-level sorting: index files first, then files before directories, then alphabetical
             entries = entries
-                .OrderBy(e => e.name.Equals("index", StringComparison.OrdinalIgnoreCase) ? 0 : 1) // Index files first
-                .ThenBy(e => e.isDirectory ? 1 : 0) // Files before directories
-#if NETSTANDARD2_0
-                .ThenBy(e => e.name.ToLowerInvariant()) // Alphabetical (case-insensitive for .NET Standard 2.0)
-#else
-                .ThenBy(e => e.name, StringComparer.OrdinalIgnoreCase) // Alphabetical (case-insensitive)
-#endif
+                .OrderBy(e => e.name.Equals("index", StringComparison.OrdinalIgnoreCase) ? 0 : 1)
+                .ThenBy(e => e.isDirectory ? 1 : 0)
+                .ThenBy(e => e.name, StringComparer.OrdinalIgnoreCase)
                 .ToList();
 
             foreach (var (name, path, isDirectory) in entries)
@@ -1513,7 +1896,7 @@ namespace Mintlify.Core
                     var subPages = new List<object>();
                     PopulateNavigationFromDirectory(path, subPages, rootPath, fileExtensions, includeApiReference, false, allowDuplicatePaths, excludeDirectories);
 
-                    if (subPages.Any())
+                    if (subPages.Count > 0)
                     {
                         // Check if the first item is already a GroupConfig (from navigation.json override)
                         if (subPages.Count == 1 && subPages[0] is GroupConfig existingGroup)
@@ -1700,6 +2083,37 @@ namespace Mintlify.Core
                     ApplyUrlPrefixToTab(tab, prefix);
                 }
             }
+        }
+
+        private static bool ContainsDirectoryName(string[]? names, string dirName)
+        {
+            if (names is null)
+            {
+                return false;
+            }
+
+            for (var i = 0; i < names.Length; i++)
+            {
+                if (string.Equals(names[i], dirName, StringComparison.OrdinalIgnoreCase))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private static bool HasExtension(string[] extensions, string extension)
+        {
+            for (var i = 0; i < extensions.Length; i++)
+            {
+                if (extension.Equals(extensions[i], StringComparison.OrdinalIgnoreCase))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         #endregion

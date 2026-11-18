@@ -26,7 +26,7 @@ Represents documentation for a .NET type.
 ## Remarks
 
 Contains metadata about a type (class, interface, struct, enum, delegate) and its members,
-            extracted from Roslyn symbols and enhanced with conceptual documentation.
+extracted from Roslyn symbols and enhanced with conceptual documentation.
 
 ## Constructors
 
@@ -255,13 +255,13 @@ public bool IsExternalReference { get; set; }
 
 Type: `bool`
 `true` if this type is not part of the documented assembly but was created
-            to show extension methods that apply to it; otherwise `false`.
+to show extension methods that apply to it; otherwise `false`.
 
 #### Remarks
 
 External references are minimal [DocType](/api-reference/CloudNimble/DotNetDocs/Core/DocType) instances created when
-            extension methods target types outside the current assembly. These types link to
-            official documentation rather than duplicating external API documentation.
+extension methods target types outside the current assembly. These types link to
+official documentation rather than duplicating external API documentation.
 
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Members
 

@@ -21,7 +21,7 @@ An enum with byte underlying type.
 ## Remarks
 
 This enum uses a byte as its underlying type to save memory.
-            Values are limited to 0-255.
+Values are limited to 0-255.
 
 **Underlying Type:** byte
 
@@ -34,4 +34,11 @@ This enum uses a byte as its underlying type to save memory.
 | `Medium` | 100 | Medium value. |
 | `High` | 200 | High value. |
 | `Max` | 255 | Maximum value for byte. |
+
+## Related APIs
+
+- System.IComparable
+- System.ISpanFormattable
+- System.IFormattable
+- System.IConvertible
 

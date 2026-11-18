@@ -65,6 +65,12 @@ The SDK automatically detects your documentation type based on configuration fil
 | **Hugo** | `hugo.toml` | `content/**`, `layouts/**`, `static/**`, `themes/**` |
 | **Generic** | *fallback* | `*.md`, `*.rst`, `docs/**`, common formats |
 
+## MintlifyTemplate
+
+Mintlify projects can embed `docs.json` settings in `<MintlifyTemplate>` inside the `.docsproj`. The parser is forgiving (legacy `<Proxy>`, boolean `Expanded`, repeated `<OpenApi>` elements). Generated `docs.json` always uses the current Mintlify schema.
+
+See [docsproj.mdx](https://dotnetdocs.com/guides/reference/docsproj) for the full element list (`Api`, `Seo`, `Banner`, `Styling`/`Codeblocks`, GraphQL/MCP, links/`SourceRef`, directory/searchable/thumbnails). The `sdk` navigation property is modeled in Mintlify.Core for load/save of existing `docs.json` files; it is **not** parsed from `<MintlifyTemplate>`.
+
 ## Configuration Options
 
 ### Basic Options
@@ -214,9 +220,9 @@ dotnet build -t:GenerateDocumentation
 
 ## Requirements
 
-- .NET SDK 8.0 or later
-- MSBuild 16.0 or later
-- Visual Studio 2019 or later (for full IDE support)
+- .NET SDK 10.0 or later
+- Visual Studio 2026 (MSBuild 18.0) or later to generate documentation inside Visual Studio
+  - Visual Studio 2022 can open and edit `.docsproj` files, but its .NET Framework MSBuild can't run the DotNetDocs tasks, so documentation generation is skipped with a warning there. Use `dotnet build` instead, or upgrade to Visual Studio 2026.
 
 ## See Also
 

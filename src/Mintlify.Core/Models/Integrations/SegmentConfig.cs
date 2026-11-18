@@ -16,6 +16,17 @@ namespace Mintlify.Core.Models.Integrations
         #region Properties
 
         /// <summary>
+        /// Gets or sets a custom CDN URL for loading the Segment script.
+        /// </summary>
+        /// <remarks>
+        /// Use this if you configure a custom domain in Segment to serve analytics from
+        /// your own subdomain, which helps avoid ad blockers that block <c>cdn.segment.com</c>.
+        /// Must be an HTTPS URL without query parameters or fragments. Defaults to
+        /// <c>https://cdn.segment.com</c>. See https://www.mintlify.com/docs/integrations/analytics/segment.
+        /// </remarks>
+        public string? CdnUrl { get; set; }
+
+        /// <summary>
         /// Gets or sets the Segment write key.
         /// </summary>
         /// <remarks>

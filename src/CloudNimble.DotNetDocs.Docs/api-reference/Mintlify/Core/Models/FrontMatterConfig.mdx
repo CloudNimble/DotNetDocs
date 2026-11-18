@@ -2,7 +2,7 @@
 title: FrontMatterConfig
 description: "Represents frontmatter configuration for Mintlify documentation pages."
 icon: file-brackets-curly
-keywords: ['FrontMatterConfig', 'Mintlify.Core.Models.FrontMatterConfig', 'Mintlify.Core.Models', 'class', 'System.Object']
+keywords: ['FrontMatterConfig', 'Mintlify.Core.Models.FrontMatterConfig', 'Mintlify.Core.Models', 'class']
 ---
 
 ## Definition
@@ -10,8 +10,6 @@ keywords: ['FrontMatterConfig', 'Mintlify.Core.Models.FrontMatterConfig', 'Mintl
 **Assembly:** Mintlify.Core.dll
 
 **Namespace:** Mintlify.Core.Models
-
-**Inheritance:** System.Object
 
 ## Syntax
 
@@ -26,8 +24,8 @@ Represents frontmatter configuration for Mintlify documentation pages.
 ## Remarks
 
 This class contains all the documented frontmatter properties supported by Mintlify.
-            These properties control page appearance, navigation, and behavior in the Mintlify documentation site.
-            For more information, see the Mintlify documentation at https://mintlify.com/docs/content/overview.
+These properties control page appearance, navigation, and behavior in the Mintlify documentation site.
+For more information, see the Mintlify documentation at https://mintlify.com/docs/content/overview.
 
 ## Constructors
 
@@ -112,12 +110,12 @@ Gets or sets a value indicating whether the page is deprecated.
 #### Syntax
 
 ```csharp
-public System.Nullable<bool> Deprecated { get; set; }
+public bool? Deprecated { get; set; }
 ```
 
 #### Property Value
 
-Type: `System.Nullable<bool>`
+Type: `bool?`
 
 #### Remarks
 
@@ -166,12 +164,12 @@ Gets or sets a value indicating whether the page should be hidden from navigatio
 #### Syntax
 
 ```csharp
-public System.Nullable<bool> Hidden { get; set; }
+public bool? Hidden { get; set; }
 ```
 
 #### Property Value
 
-Type: `System.Nullable<bool>`
+Type: `bool?`
 
 #### Remarks
 
@@ -194,7 +192,7 @@ Type: `string`
 #### Remarks
 
 Can be a FontAwesome icon name, Lucide icon name, or a custom icon path.
-            Examples: "cube", "book", "settings", "star".
+Examples: "cube", "book", "settings", "star".
 
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> IconType
 
@@ -311,12 +309,12 @@ Gets or sets the navigation order.
 #### Syntax
 
 ```csharp
-public System.Nullable<int> Order { get; set; }
+public int? Order { get; set; }
 ```
 
 #### Property Value
 
-Type: `System.Nullable<int>`
+Type: `int?`
 
 #### Remarks
 
@@ -329,12 +327,12 @@ Gets or sets a value indicating whether the page is public.
 #### Syntax
 
 ```csharp
-public System.Nullable<bool> Public { get; set; }
+public bool? Public { get; set; }
 ```
 
 #### Property Value
 
-Type: `System.Nullable<bool>`
+Type: `bool?`
 
 #### Remarks
 

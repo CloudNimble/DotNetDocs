@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using CloudNimble.DotNetDocs.Core.Configuration;
 using Microsoft.CodeAnalysis;
 
@@ -27,6 +28,15 @@ namespace CloudNimble.DotNetDocs.Core
     /// </remarks>
     public class ProjectContext
     {
+
+        #region Fields
+
+        /// <summary>
+        /// The name used for the global namespace in file and folder paths.
+        /// </summary>
+        internal const string GlobalNamespaceName = "global";
+
+        #endregion
 
         #region Properties
 
@@ -232,6 +242,81 @@ namespace CloudNimble.DotNetDocs.Core
         #region Public Methods
 
         /// <summary>
+        /// Gets the full path to the conceptual content folder for a member.
+        /// </summary>
+        /// <param name="namespaceName">The namespace containing the member's type, or <see langword="null"/> or empty for the global namespace.</param>
+        /// <param name="typeName">The simple name of the type containing the member.</param>
+        /// <param name="memberName">The simple name of the member. Overloads share a folder.</param>
+        /// <returns>The member's folder inside its type's conceptual folder.</returns>
+        /// <example>
+        /// <code>
+        /// context.GetConceptualMemberPath("System.Text.Json", "JsonSerializer", "Serialize");
+        /// // Returns "{conceptual}/System/Text/Json/JsonSerializer/Serialize"
+        /// </code>
+        /// </example>
+        /// <remarks>
+        /// See <see cref="GetConceptualNamespacePath(string?)"/> for how the conceptual layout is structured.
+        /// </remarks>
+        public string GetConceptualMemberPath(string? namespaceName, string typeName, string memberName)
+        {
+            ArgumentException.ThrowIfNullOrWhiteSpace(memberName);
+
+            return Path.Combine(GetConceptualTypePath(namespaceName, typeName), GetSafeFileName(memberName));
+        }
+
+        /// <summary>
+        /// Gets the full path to the conceptual content folder for a namespace.
+        /// </summary>
+        /// <param name="namespaceName">The namespace name, or <see langword="null"/> or empty for the global namespace.</param>
+        /// <returns>
+        /// A nested folder with one level per namespace segment under <see cref="GetFullConceptualPath"/>,
+        /// or a <c>global</c> folder for the global namespace.
+        /// </returns>
+        /// <example>
+        /// <code>
+        /// context.GetConceptualNamespacePath("System.Text.Json"); // Returns "{conceptual}/System/Text/Json"
+        /// context.GetConceptualNamespacePath(string.Empty);       // Returns "{conceptual}/global"
+        /// </code>
+        /// </example>
+        /// <remarks>
+        /// Conceptual content is a source tree that people edit, not rendered output, so it always uses this nested layout
+        /// regardless of <see cref="FileNamingOptions.NamespaceMode"/>. Placeholder generation and
+        /// <see cref="DocumentationManager"/> both resolve folders through these methods, so content is always read from
+        /// where it was written.
+        /// </remarks>
+        public string GetConceptualNamespacePath(string? namespaceName)
+        {
+            if (IsGlobalNamespaceName(namespaceName))
+            {
+                return Path.Combine(GetFullConceptualPath(), GlobalNamespaceName);
+            }
+
+            return Path.Combine([GetFullConceptualPath(), .. namespaceName!.Split('.').Select(GetSafeFileName)]);
+        }
+
+        /// <summary>
+        /// Gets the full path to the conceptual content folder for a type.
+        /// </summary>
+        /// <param name="namespaceName">The namespace containing the type, or <see langword="null"/> or empty for the global namespace.</param>
+        /// <param name="typeName">The simple name of the type.</param>
+        /// <returns>The type's folder inside its namespace's conceptual folder.</returns>
+        /// <example>
+        /// <code>
+        /// context.GetConceptualTypePath("System.Text.Json", "JsonSerializer");
+        /// // Returns "{conceptual}/System/Text/Json/JsonSerializer"
+        /// </code>
+        /// </example>
+        /// <remarks>
+        /// See <see cref="GetConceptualNamespacePath(string?)"/> for how the conceptual layout is structured.
+        /// </remarks>
+        public string GetConceptualTypePath(string? namespaceName, string typeName)
+        {
+            ArgumentException.ThrowIfNullOrWhiteSpace(typeName);
+
+            return Path.Combine(GetConceptualNamespacePath(namespaceName), GetSafeFileName(typeName));
+        }
+
+        /// <summary>
         /// Gets the full path to the conceptual documentation folder.
         /// </summary>
         /// <returns>
@@ -296,6 +381,33 @@ namespace CloudNimble.DotNetDocs.Core
         }
 
         /// <summary>
+        /// Gets the path of a namespace's documentation page, relative to the API reference output folder and without an extension.
+        /// </summary>
+        /// <param name="namespaceName">The namespace name, or <see langword="null"/> or empty for the global namespace.</param>
+        /// <returns>The page path for the configured <see cref="FileNamingOptions"/>.</returns>
+        /// <example>
+        /// <code>
+        /// // NamespaceMode.File with separator '-':
+        /// context.GetNamespacePagePath("System.Text.Json"); // Returns "System-Text-Json"
+        ///
+        /// // NamespaceMode.Folder:
+        /// context.GetNamespacePagePath("System.Text.Json"); // Returns "System/Text/Json/index"
+        /// </code>
+        /// </example>
+        /// <remarks>
+        /// This is the single source of truth for namespace page locations. Renderers use it to decide where pages are written
+        /// and <see cref="Transformers.XmlTransformerBase"/> uses it to build links to them, so the two always agree.
+        /// </remarks>
+        public string GetNamespacePagePath(string? namespaceName)
+        {
+            var safeNamespaceName = IsGlobalNamespaceName(namespaceName) ? GlobalNamespaceName : namespaceName!;
+
+            return FileNamingOptions.NamespaceMode == NamespaceMode.Folder
+                ? Path.Combine(GetNamespaceFolderPath(safeNamespaceName), "index")
+                : safeNamespaceName.Replace('.', FileNamingOptions.NamespaceSeparator);
+        }
+
+        /// <summary>
         /// Gets the full file path for a type, including namespace folder structure if in Folder mode.
         /// </summary>
         /// <param name="fullyQualifiedTypeName">The fully qualified type name (e.g., "System.Text.Json.JsonSerializer").</param>
@@ -344,6 +456,36 @@ namespace CloudNimble.DotNetDocs.Core
         }
 
         /// <summary>
+        /// Gets the path of a type's documentation page, relative to the API reference output folder and without an extension.
+        /// </summary>
+        /// <param name="namespaceName">The namespace containing the type, or <see langword="null"/> or empty for the global namespace.</param>
+        /// <param name="typeName">The simple name of the type.</param>
+        /// <returns>The page path for the configured <see cref="FileNamingOptions"/>.</returns>
+        /// <example>
+        /// <code>
+        /// // NamespaceMode.File with separator '-':
+        /// context.GetTypePagePath("System.Text.Json", "JsonSerializer"); // Returns "System-Text-Json.JsonSerializer"
+        ///
+        /// // NamespaceMode.Folder:
+        /// context.GetTypePagePath("System.Text.Json", "JsonSerializer"); // Returns "System/Text/Json/JsonSerializer"
+        /// </code>
+        /// </example>
+        /// <remarks>
+        /// This is the single source of truth for type page locations. See <see cref="GetNamespacePagePath(string?)"/>.
+        /// </remarks>
+        public string GetTypePagePath(string? namespaceName, string typeName)
+        {
+            ArgumentException.ThrowIfNullOrWhiteSpace(typeName);
+
+            var safeNamespaceName = IsGlobalNamespaceName(namespaceName) ? GlobalNamespaceName : namespaceName!;
+            var safeTypeName = GetSafeFileName(typeName);
+
+            return FileNamingOptions.NamespaceMode == NamespaceMode.Folder
+                ? Path.Combine(GetNamespaceFolderPath(safeNamespaceName), safeTypeName)
+                : $"{safeNamespaceName.Replace('.', FileNamingOptions.NamespaceSeparator)}.{safeTypeName}";
+        }
+
+        /// <summary>
         /// Gets the safe namespace name for a given namespace symbol.
         /// </summary>
         /// <param name="namespaceSymbol">The namespace symbol.</param>
@@ -360,20 +502,40 @@ namespace CloudNimble.DotNetDocs.Core
         /// <returns>True if the type should be excluded; otherwise, false.</returns>
         public bool IsTypeExcluded(string fullyQualifiedTypeName)
         {
-            if (ExcludedTypes is null || ExcludedTypes.Count == 0)
-            {
-                return false;
-            }
+            ArgumentException.ThrowIfNullOrWhiteSpace(fullyQualifiedTypeName);
 
-            foreach (var pattern in ExcludedTypes)
-            {
-                if (MatchesPattern(fullyQualifiedTypeName, pattern))
-                {
-                    return true;
-                }
-            }
+            return ExcludedTypes.Any(pattern => MatchesPattern(fullyQualifiedTypeName, pattern));
+        }
 
-            return false;
+        /// <summary>
+        /// Replaces characters that are invalid or unsafe in file and folder names.
+        /// </summary>
+        /// <param name="name">The name to make safe.</param>
+        /// <returns>The name with angle brackets, backticks, path separators, and other invalid characters replaced by underscores.</returns>
+        internal static string GetSafeFileName(string name)
+        {
+            // Angle brackets come from <Module> and generic types; the rest are invalid on at least one file system.
+            return name
+                .Replace('<', '_')
+                .Replace('>', '_')
+                .Replace('`', '_')
+                .Replace('/', '_')
+                .Replace('\\', '_')
+                .Replace(':', '_')
+                .Replace('*', '_')
+                .Replace('?', '_')
+                .Replace('"', '_')
+                .Replace('|', '_');
+        }
+
+        /// <summary>
+        /// Determines whether a namespace name refers to the global namespace.
+        /// </summary>
+        /// <param name="namespaceName">The namespace name to check.</param>
+        /// <returns><see langword="true"/> for <see langword="null"/>, empty, whitespace, or <c>global</c>; otherwise, <see langword="false"/>.</returns>
+        internal static bool IsGlobalNamespaceName(string? namespaceName)
+        {
+            return string.IsNullOrWhiteSpace(namespaceName) || namespaceName == GlobalNamespaceName;
         }
 
         /// <summary>

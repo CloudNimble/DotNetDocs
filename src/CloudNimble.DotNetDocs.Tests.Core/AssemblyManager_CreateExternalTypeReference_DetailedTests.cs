@@ -2,10 +2,12 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using CloudNimble.DotNetDocs.Core;
+using CloudNimble.DotNetDocs.Core.Configuration;
 using CloudNimble.DotNetDocs.Tests.Shared;
 using CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios;
 using FluentAssertions;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace CloudNimble.DotNetDocs.Tests.Core
@@ -58,6 +60,27 @@ namespace CloudNimble.DotNetDocs.Tests.Core
             systemNamespace.Should().NotBeNull("Should create namespace for external type");
             systemNamespace!.Name.Should().Be("System.Collections.Generic");
             systemNamespace.DisplayName.Should().Be("System.Collections.Generic");
+        }
+
+        [TestMethod]
+        [DataRow(NamespaceMode.File, "global.GlobalWidget")]
+        [DataRow(NamespaceMode.Folder, "global/GlobalWidget")]
+        public void CreateExternalTypeReference_WithGlobalNamespaceType_UsesEmptyNamespaceName(NamespaceMode mode, string expectedPagePath)
+        {
+            var compilation = CSharpCompilation.Create("ExternalLibrary", [CSharpSyntaxTree.ParseText("public class GlobalWidget { }")]);
+            var globalType = compilation.GetTypeByMetadataName("GlobalWidget")!;
+            var testAssemblyPath = typeof(SimpleClass).Assembly.Location;
+            using var manager = new AssemblyManager(testAssemblyPath, System.IO.Path.ChangeExtension(testAssemblyPath, ".xml"));
+            var docAssembly = new DocAssembly(compilation.Assembly);
+            var context = new ProjectContext { FileNamingOptions = new FileNamingOptions(mode, '-') };
+
+            var docType = manager.CreateExternalTypeReference(globalType, docAssembly, [], context);
+
+            var ns = docAssembly.Namespaces.Should().ContainSingle().Subject;
+            ns.Name.Should().BeEmpty("Roslyn's \"<global namespace>\" display string must not be used as a namespace name");
+            ns.Types.Should().ContainSingle().Which.Should().BeSameAs(docType);
+            context.GetTypePagePath(ns.Name, docType.Name)
+                .Should().Be(expectedPagePath.Replace('/', System.IO.Path.DirectorySeparatorChar), "the page should go in the global location, with no angle brackets in the path");
         }
 
         #endregion
@@ -161,8 +184,23 @@ namespace CloudNimble.DotNetDocs.Tests.Core
                 .FirstOrDefault(t => t.Name == "List" && t.IsExternalReference);
 
             listType.Should().NotBeNull();
-            listType!.Remarks.Should().Contain("Microsoft documentation", "Should link to MS docs for System types");
-            listType.Remarks.Should().Contain("https://learn.microsoft.com/dotnet/api/");
+            listType!.Remarks.Should().Be(
+                "See <see href=\"https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1\">Microsoft documentation</see> for more information about the rest of the API.",
+                "the link must be an XML documentation tag that the output format's transformer converts, and must use the Microsoft Learn page name for List`1");
+        }
+
+        [TestMethod]
+        public void CreateExternalTypeReference_LeavesRemarksEmpty_ForNonMicrosoftAssembly()
+        {
+            var compilation = CSharpCompilation.Create("ExternalLibrary", [CSharpSyntaxTree.ParseText("namespace External { public class Widget { } }")]);
+            var widgetType = compilation.GetTypeByMetadataName("External.Widget")!;
+            var testAssemblyPath = typeof(SimpleClass).Assembly.Location;
+            using var manager = new AssemblyManager(testAssemblyPath, System.IO.Path.ChangeExtension(testAssemblyPath, ".xml"));
+
+            var docType = manager.CreateExternalTypeReference(widgetType, new DocAssembly(compilation.Assembly), [], new ProjectContext());
+
+            docType.Summary.Should().Be("This type is defined in ExternalLibrary.");
+            docType.Remarks.Should().BeNull("only Microsoft types have a Microsoft Learn page to link to");
         }
 
         [TestMethod]

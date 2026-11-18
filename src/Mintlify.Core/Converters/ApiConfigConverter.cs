@@ -73,7 +73,7 @@ namespace Mintlify.Core.Converters
             return reader.TokenType switch
             {
                 JsonTokenType.String => new ApiSpecConfig { Source = reader.GetString() },
-                JsonTokenType.StartArray => new ApiSpecConfig { Urls = JsonSerializer.Deserialize<List<string>>(ref reader, OptionsWithoutThis) },
+                JsonTokenType.StartArray => ReadArray(ref reader),
                 JsonTokenType.StartObject => JsonSerializer.Deserialize<ApiSpecConfig>(ref reader, OptionsWithoutThis),
                 JsonTokenType.Null => null,
                 _ => throw new JsonException($"Unexpected token type for API configuration: {reader.TokenType}")
@@ -94,23 +94,108 @@ namespace Mintlify.Core.Converters
                 return;
             }
 
-            // If URLs list is set, write as array
-            if (value.Urls is not null)
+            if (value.Specs is not null)
+            {
+                WriteMixedArray(writer, value.Specs);
+            }
+            else if (value.Urls is not null)
             {
                 JsonSerializer.Serialize(writer, value.Urls, OptionsWithoutThis);
             }
-            // If only Source is set (simple API config), write as string
-            else if (!string.IsNullOrWhiteSpace(value.Source) &&
-                     string.IsNullOrWhiteSpace(value.Directory))
+            else if (IsSimpleSource(value))
             {
                 writer.WriteStringValue(value.Source);
             }
             else
             {
-                // Write as object for complex configurations
-                // Use options without this converter to avoid infinite recursion
                 JsonSerializer.Serialize(writer, value, OptionsWithoutThis);
             }
+        }
+
+        #endregion
+
+        #region Private Methods
+
+        private static bool IsSimpleSource(ApiSpecConfig value)
+        {
+            return !string.IsNullOrWhiteSpace(value.Source) &&
+                   string.IsNullOrWhiteSpace(value.Directory) &&
+                   value.Overlays is null;
+        }
+
+        private static ApiSpecConfig ReadArray(ref Utf8JsonReader reader)
+        {
+            List<string>? urls = null;
+            List<ApiSpecConfig>? specs = null;
+
+            while (reader.Read() && reader.TokenType != JsonTokenType.EndArray)
+            {
+                switch (reader.TokenType)
+                {
+                    case JsonTokenType.String:
+                        var url = reader.GetString();
+                        if (url is not null && !string.IsNullOrWhiteSpace(url))
+                        {
+                            if (specs is not null)
+                            {
+                                specs.Add(new ApiSpecConfig { Source = url });
+                            }
+                            else
+                            {
+                                urls ??= [];
+                                urls.Add(url);
+                            }
+                        }
+                        break;
+                    case JsonTokenType.StartObject:
+                        if (specs is null)
+                        {
+                            specs = [];
+                            if (urls is not null)
+                            {
+                                foreach (var existing in urls)
+                                {
+                                    specs.Add(new ApiSpecConfig { Source = existing });
+                                }
+
+                                urls = null;
+                            }
+                        }
+
+                        var spec = JsonSerializer.Deserialize<ApiSpecConfig>(ref reader, OptionsWithoutThis);
+                        if (spec is not null)
+                        {
+                            specs.Add(spec);
+                        }
+                        break;
+                    default:
+                        throw new JsonException($"Unexpected token type in API specification array: {reader.TokenType}");
+                }
+            }
+
+            if (specs is not null)
+            {
+                return new ApiSpecConfig { Specs = specs };
+            }
+
+            return new ApiSpecConfig { Urls = urls ?? [] };
+        }
+
+        private static void WriteMixedArray(Utf8JsonWriter writer, List<ApiSpecConfig> specs)
+        {
+            writer.WriteStartArray();
+            foreach (var spec in specs)
+            {
+                if (IsSimpleSource(spec))
+                {
+                    writer.WriteStringValue(spec.Source);
+                }
+                else
+                {
+                    JsonSerializer.Serialize(writer, spec, OptionsWithoutThis);
+                }
+            }
+            writer.WriteEndArray();
         }
 
         #endregion

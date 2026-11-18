@@ -12,6 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Mintlify.Core;
 using Mintlify.Core.Models;
+using Mintlify.Core.Models.Integrations;
 
 namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
 {
@@ -510,6 +511,127 @@ namespace CloudNimble.DotNetDocs.Tests.Mintlify.Renderers
             config.Navigation.Products![0].Product.Should().Be("Core SDK");
             config.Navigation.Products![1].Product.Should().Be("Extensions");
             config.Navigation.Pages.Should().BeNull("explicit products navigation must not produce a spurious pages block");
+        }
+
+        #endregion
+
+        #region Schema Gap 2026 Generator Tests
+
+        /// <summary>
+        /// Tests that additive template properties are written through to the generated docs.json.
+        /// </summary>
+        [TestMethod]
+        public async Task RenderAsync_WithNewTemplateProperties_WritesThemToDocsJson()
+        {
+            ConfigureTestWithTemplate(
+                new DocsJsonConfig
+                {
+                    Name = "Example",
+                    Theme = "mint",
+                    ThemeVersion = 2,
+                    Public = true,
+                    Colors = new ColorsConfig { Primary = "#419AC5" },
+                    Markdown = new MarkdownConfig { Schema = false, Instructions = ["Always cite the API version."] },
+                    Packages = new PackagesConfig { Ssr = false },
+                    Banner = new BannerConfig { Type = "warning", Content = "Scheduled maintenance." },
+                    Seo = new SeoConfig { TrailingSlash = true },
+                    Thumbnails = new ThumbnailsConfig { Preset = "headline", Surface = "brand" },
+                    Integrations = new IntegrationsConfig
+                    {
+                        Mixpanel = new MixpanelConfig { ProjectToken = "token", Region = "eu" }
+                    },
+                    Api = new ApiConfig
+                    {
+                        Optional = "collapsed",
+                        Params = new ApiParamsConfig { Expanded = "all", Post = ["payload"] },
+                        Playground = new ApiPlaygroundConfig { Display = "auth", Credentials = true, Proxy = false },
+                        OpenApi = new ApiSpecConfig
+                        {
+                            Source = "openapi.yaml",
+                            Overlays = ["overlay.json"]
+                        }
+                    },
+                    Navigation = new NavigationConfig
+                    {
+                        Graphql = new SpecRefConfig { Source = "schema.graphql" },
+                        Pages = ["index"]
+                    }
+                },
+                contentOnly: true);
+
+            var documentationManager = GetService<DocumentationManager>();
+
+            await documentationManager.ProcessAsync([]);
+
+            var json = File.ReadAllText(Path.Combine(_testOutputPath, "docs.json"));
+            var config = JsonSerializer.Deserialize<DocsJsonConfig>(json, MintlifyConstants.JsonSerializerOptions);
+
+            config.Should().NotBeNull();
+            config!.Public.Should().BeTrue();
+            config.ThemeVersion.Should().Be(2);
+            config.Markdown.Should().NotBeNull();
+            config.Markdown!.Schema.Should().BeFalse();
+            config.Markdown.Instructions.Should().Equal("Always cite the API version.");
+            config.Packages!.Ssr.Should().BeFalse();
+            config.Banner!.Type.Should().Be("warning");
+            config.Seo!.TrailingSlash.Should().BeTrue();
+            config.Thumbnails!.Preset.Should().Be("headline");
+            config.Thumbnails.Surface.Should().Be("brand");
+            config.Integrations!.Mixpanel!.Region.Should().Be("eu");
+            config.Navigation.Graphql!.Source.Should().Be("schema.graphql");
+            config.Api!.Optional.Should().Be("collapsed");
+            config.Api.Params!.Expanded.Should().Be("all");
+            config.Api.Params.Post.Should().Equal("payload");
+            config.Api.Playground!.Display.Should().Be("auth");
+            config.Api.Playground.Credentials.Should().BeTrue();
+            config.Api.Playground.Proxy.Should().BeFalse();
+            config.Api.OpenApi!.Source.Should().Be("openapi.yaml");
+            config.Api.OpenApi.Overlays.Should().Equal("overlay.json");
+            json.Should().NotContain("\"expanded\": true");
+            json.Should().NotContain("\"api\": {\"proxy\"");
+        }
+
+        /// <summary>
+        /// Tests that GraphQL and MCP spec refs on navigation are copied onto the generated tab.
+        /// </summary>
+        [TestMethod]
+        public async Task ApplyNavigationType_WithTabs_CopiesGraphqlAndMcpOntoTab()
+        {
+            ConfigureTestWithTemplate(
+                new DocsJsonConfig
+                {
+                    Name = "GraphQL API",
+                    Theme = "mint",
+                    Colors = new ColorsConfig { Primary = "#000000" },
+                    Navigation = new NavigationConfig
+                    {
+                        Graphql = new SpecRefConfig { Source = "schema.graphql", Directory = "api/graphql" },
+                        Mcp = new SpecRefConfig { Source = "mcp.json" },
+                        Pages = ["index"]
+                    }
+                },
+                new DocsNavigationConfig
+                {
+                    Type = NavigationType.Tabs
+                });
+
+            var assemblyPath = typeof(SimpleClass).Assembly.Location;
+            var xmlPath = Path.ChangeExtension(assemblyPath, ".xml");
+            var documentationManager = GetService<DocumentationManager>();
+
+            await documentationManager.ProcessAsync(assemblyPath, xmlPath);
+
+            var json = File.ReadAllText(Path.Combine(_testOutputPath, "docs.json"));
+            var config = JsonSerializer.Deserialize<DocsJsonConfig>(json, MintlifyConstants.JsonSerializerOptions);
+
+            config.Should().NotBeNull();
+            config!.Navigation.Tabs.Should().NotBeNullOrEmpty();
+            var tab = config.Navigation.Tabs![0];
+            tab.Graphql.Should().NotBeNull();
+            tab.Graphql!.Source.Should().Be("schema.graphql");
+            tab.Graphql.Directory.Should().Be("api/graphql");
+            tab.Mcp.Should().NotBeNull();
+            tab.Mcp!.Source.Should().Be("mcp.json");
         }
 
         #endregion

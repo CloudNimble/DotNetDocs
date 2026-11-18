@@ -26,8 +26,8 @@ Handles JSON conversion for background image properties that can be either strin
 ## Remarks
 
 Background image configurations in Mintlify can be specified as:
-            - String: Single image URL (e.g., "https://example.com/image.png")
-            - Object: Light/dark mode specific images with "light" and "dark" properties
+- String: Single image URL (e.g., "https://example.com/image.png")
+- Object: Light/dark mode specific images with "light" and "dark" properties
 
 ## Constructors
 
@@ -38,6 +38,70 @@ Background image configurations in Mintlify can be specified as:
 ```csharp
 public BackgroundImageConverter()
 ```
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `System.Text.Json.Serialization.JsonConverter<Mintlify.Core.Models.BackgroundImageConfig>`</Note>
+
+#### Syntax
+
+```csharp
+protected internal JsonConverter()
+```
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public Object()
+```
+
+## Properties
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> HandleNull <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `System.Text.Json.Serialization.JsonConverter<Mintlify.Core.Models.BackgroundImageConfig>`</Note>
+
+#### Syntax
+
+```csharp
+public virtual bool HandleNull { get; }
+```
+
+#### Property Value
+
+Type: `bool`
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Type <Badge color="blue">Override</Badge>
+
+<Note>Inherited from `System.Text.Json.Serialization.JsonConverter<Mintlify.Core.Models.BackgroundImageConfig>`</Note>
+
+#### Syntax
+
+```csharp
+public override sealed System.Type Type { get; }
+```
+
+#### Property Value
+
+Type: `System.Type`
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Type <Badge color="gray">Inherited</Badge> <Badge color="orange">Abstract</Badge>
+
+<Note>Inherited from `System.Text.Json.Serialization.JsonConverter`</Note>
+
+#### Syntax
+
+```csharp
+public abstract System.Type Type { get; }
+```
+
+#### Property Value
+
+Type: `System.Type?`
 
 ## Methods
 
@@ -61,6 +125,129 @@ public override bool CanConvert(System.Type typeToConvert)
 
 Type: `bool`
 True if the type is BackgroundImageConfig; otherwise, false.
+
+### <Icon icon="code-merge" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> CanConvert <Badge color="blue">Override</Badge>
+
+<Note>Inherited from `System.Text.Json.Serialization.JsonConverter<Mintlify.Core.Models.BackgroundImageConfig>`</Note>
+
+#### Syntax
+
+```csharp
+public override bool CanConvert(System.Type typeToConvert)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `typeToConvert` | `System.Type` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> CanConvert <Badge color="gray">Inherited</Badge> <Badge color="orange">Abstract</Badge>
+
+<Note>Inherited from `System.Text.Json.Serialization.JsonConverter`</Note>
+
+#### Syntax
+
+```csharp
+public abstract bool CanConvert(System.Type typeToConvert)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `typeToConvert` | `System.Type` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Equals <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual bool Equals(object obj)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `obj` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Equals <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public static bool Equals(object objA, object objB)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `objA` | `object?` | - |
+| `objB` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetHashCode <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual int GetHashCode()
+```
+
+#### Returns
+
+Type: `int`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetType <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public System.Type GetType()
+```
+
+#### Returns
+
+Type: `System.Type`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> MemberwiseClone <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+protected internal object MemberwiseClone()
+```
+
+#### Returns
+
+Type: `object`
 
 ### <Icon icon="code-merge" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Read <Badge color="blue">Override</Badge>
 
@@ -91,6 +278,85 @@ A BackgroundImageConfig for both simple URLs and theme-specific configurations.
 |-----------|-------------|
 | `JsonException` | Thrown when the JSON token type is not supported. |
 
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Read <Badge color="gray">Inherited</Badge> <Badge color="orange">Abstract</Badge>
+
+<Note>Inherited from `System.Text.Json.Serialization.JsonConverter<Mintlify.Core.Models.BackgroundImageConfig>`</Note>
+
+#### Syntax
+
+```csharp
+public abstract Mintlify.Core.Models.BackgroundImageConfig Read(ref System.Text.Json.Utf8JsonReader reader, System.Type typeToConvert, System.Text.Json.JsonSerializerOptions options)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `reader` | `System.Text.Json.Utf8JsonReader` | - |
+| `typeToConvert` | `System.Type` | - |
+| `options` | `System.Text.Json.JsonSerializerOptions` | - |
+
+#### Returns
+
+Type: `Mintlify.Core.Models.BackgroundImageConfig?`
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ReadAsPropertyName <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `System.Text.Json.Serialization.JsonConverter<Mintlify.Core.Models.BackgroundImageConfig>`</Note>
+
+#### Syntax
+
+```csharp
+public virtual Mintlify.Core.Models.BackgroundImageConfig ReadAsPropertyName(ref System.Text.Json.Utf8JsonReader reader, System.Type typeToConvert, System.Text.Json.JsonSerializerOptions options)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `reader` | `System.Text.Json.Utf8JsonReader` | - |
+| `typeToConvert` | `System.Type` | - |
+| `options` | `System.Text.Json.JsonSerializerOptions` | - |
+
+#### Returns
+
+Type: `Mintlify.Core.Models.BackgroundImageConfig`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ReferenceEquals <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public static bool ReferenceEquals(object objA, object objB)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `objA` | `object?` | - |
+| `objB` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ToString <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual string ToString()
+```
+
+#### Returns
+
+Type: `string?`
+
 ### <Icon icon="code-merge" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Write <Badge color="blue">Override</Badge>
 
 Writes the BackgroundImageConfig object to JSON.
@@ -108,4 +374,40 @@ public override void Write(System.Text.Json.Utf8JsonWriter writer, Mintlify.Core
 | `writer` | `System.Text.Json.Utf8JsonWriter` | The JSON writer. |
 | `value` | `Mintlify.Core.Models.BackgroundImageConfig?` | The BackgroundImageConfig value to write. |
 | `options` | `System.Text.Json.JsonSerializerOptions` | The serializer options. |
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Write <Badge color="gray">Inherited</Badge> <Badge color="orange">Abstract</Badge>
+
+<Note>Inherited from `System.Text.Json.Serialization.JsonConverter<Mintlify.Core.Models.BackgroundImageConfig>`</Note>
+
+#### Syntax
+
+```csharp
+public abstract void Write(System.Text.Json.Utf8JsonWriter writer, Mintlify.Core.Models.BackgroundImageConfig value, System.Text.Json.JsonSerializerOptions options)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `writer` | `System.Text.Json.Utf8JsonWriter` | - |
+| `value` | `Mintlify.Core.Models.BackgroundImageConfig` | - |
+| `options` | `System.Text.Json.JsonSerializerOptions` | - |
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> WriteAsPropertyName <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `System.Text.Json.Serialization.JsonConverter<Mintlify.Core.Models.BackgroundImageConfig>`</Note>
+
+#### Syntax
+
+```csharp
+public virtual void WriteAsPropertyName(System.Text.Json.Utf8JsonWriter writer, Mintlify.Core.Models.BackgroundImageConfig value, System.Text.Json.JsonSerializerOptions options)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `writer` | `System.Text.Json.Utf8JsonWriter` | - |
+| `value` | `Mintlify.Core.Models.BackgroundImageConfig` | - |
+| `options` | `System.Text.Json.JsonSerializerOptions` | - |
 

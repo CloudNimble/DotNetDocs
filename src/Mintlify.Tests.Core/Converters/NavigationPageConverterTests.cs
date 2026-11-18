@@ -74,6 +74,37 @@ namespace Mintlify.Tests.Core.Converters
             nestedGroup!.Pages!.Should().HaveCount(2);
         }
 
+        /// <summary>
+        /// Tests that link and sourceRef page objects deserialize.
+        /// </summary>
+        [TestMethod]
+        public void NavigationPageConverter_DeserializeLinkAndSourceRef_ReturnsTypedObjects()
+        {
+            var json = """
+            {
+                "group": "Parent Group",
+                "pages": [
+                    {
+                        "type": "link",
+                        "href": "https://example.com",
+                        "title": "Example"
+                    },
+                    {
+                        "sourceRef": "docs-src"
+                    }
+                ]
+            }
+            """;
+
+            var result = JsonSerializer.Deserialize<GroupConfig>(json, _jsonOptions);
+
+            result!.Pages.Should().HaveCount(2);
+            var link = result.Pages![0].Should().BeOfType<NavigationLinkConfig>().Subject;
+            link.Type.Should().Be("link");
+            link.Href.Should().Be("https://example.com");
+            result.Pages[1].Should().BeOfType<SourceRefConfig>().Which.SourceRef.Should().Be("docs-src");
+        }
+
         #endregion
 
         #region Serialization Tests
@@ -107,6 +138,29 @@ namespace Mintlify.Tests.Core.Converters
 
             json.Should().Contain("\"group\": \"CLI Tools\"");
             json.Should().Contain("\"pages\"");
+        }
+
+        /// <summary>
+        /// Tests that link and sourceRef pages serialize to the schema shapes.
+        /// </summary>
+        [TestMethod]
+        public void NavigationPageConverter_SerializeLinkAndSourceRef_WritesSchemaShapes()
+        {
+            var value = new GroupConfig
+            {
+                Group = "Parent",
+                Pages =
+                [
+                    new NavigationLinkConfig { Href = "https://example.com", Title = "Example" },
+                    new SourceRefConfig { SourceRef = "docs-src" }
+                ]
+            };
+
+            var json = JsonSerializer.Serialize(value, _jsonOptions);
+
+            json.Should().Contain("\"type\": \"link\"");
+            json.Should().Contain("\"href\": \"https://example.com\"");
+            json.Should().Contain("\"sourceRef\": \"docs-src\"");
         }
 
         #endregion

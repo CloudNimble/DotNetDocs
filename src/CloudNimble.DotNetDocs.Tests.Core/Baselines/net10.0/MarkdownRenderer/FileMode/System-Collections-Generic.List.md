@@ -2,7 +2,7 @@
 
 ## Definition
 
-**Assembly:** System.Collections.dll
+**Assembly:** System.Private.CoreLib.dll
 
 **Namespace:** System.Collections.Generic
 
@@ -14,11 +14,11 @@ System.Collections.Generic.List<T>
 
 ## Summary
 
-This type is defined in System.Collections.
+This type is defined in System.Private.CoreLib.
 
 ## Remarks
 
-See [Microsoft documentation](https://learn.microsoft.com/dotnet/api/system.collections.generic.list{t}) for more information about the rest of the API.
+See <see href="https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1">Microsoft documentation</see> for more information about the rest of the API.
 
 ## Methods
 

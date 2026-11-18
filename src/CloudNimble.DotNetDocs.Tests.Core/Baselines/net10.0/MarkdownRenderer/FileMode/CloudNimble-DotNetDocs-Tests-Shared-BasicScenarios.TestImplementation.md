@@ -6,8 +6,6 @@
 
 **Namespace:** CloudNimble.DotNetDocs.Tests.Shared.BasicScenarios
 
-**Inheritance:** System.Object
-
 ## Syntax
 
 ```csharp
@@ -21,7 +19,7 @@ A test implementation of ITestInterface.
 ## Remarks
 
 This class implements ITestInterface to demonstrate interface member inheritance
-            in documentation generation.
+in documentation generation.
 
 ## Constructors
 

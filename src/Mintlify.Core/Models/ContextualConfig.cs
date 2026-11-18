@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Text.Json.Serialization;
+using Mintlify.Core.Converters;
 
 namespace Mintlify.Core.Models
 {
@@ -19,18 +21,16 @@ namespace Mintlify.Core.Models
         /// Gets or sets the list of contextual options to enable.
         /// </summary>
         /// <remarks>
-        /// Valid options include:
-        /// - "copy": Shows a copy button for code blocks and other copyable content
-        /// - "view": Provides view source or view raw options for content
-        /// - "chatgpt": Enables ChatGPT integration for AI assistance
-        /// - "claude": Enables Claude AI integration for AI assistance
-        /// - "perplexity": Enables Perplexity AI integration for AI assistance
-        /// - "mcp": Provides details for connecting any AI to the documentation through the MCP protocol
-        /// - "cursor": Enables Cursor integration for AI assistance
-        /// - "vscode": Enables VS Code integration for AI assistance
-        /// These options enhance user interaction with the documentation content.
+        /// The first option in the array appears as the default action. Built-in options:
+        /// <c>copy</c>, <c>view</c>, <c>assistant</c>, <c>chatgpt</c>, <c>claude</c>,
+        /// <c>perplexity</c>, <c>grok</c>, <c>aistudio</c>, <c>devin</c>, <c>windsurf</c>,
+        /// <c>download-pdf</c>, <c>download-spec</c>, <c>mcp</c>, <c>add-mcp</c>,
+        /// <c>cursor</c>, <c>vscode</c>, and <c>devin-mcp</c>. Custom objects use
+        /// <c>title</c>, <c>description</c>, <c>icon</c>, and <c>href</c>.
+        /// See https://www.mintlify.com/docs/ai/contextual-menu.
         /// </remarks>
-        public List<string>? Options { get; set; }
+        [JsonConverter(typeof(ContextualOptionListConverter))]
+        public List<object>? Options { get; set; }
 
         /// <summary>
         /// Gets or sets the display location of the contextual menu.

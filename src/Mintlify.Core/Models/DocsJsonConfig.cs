@@ -116,6 +116,16 @@ namespace Mintlify.Core.Models
         public LogoConfig? Logo { get; set; }
 
         /// <summary>
+        /// Gets or sets settings for the Markdown that Mintlify serves to AI tools and agents.
+        /// </summary>
+        /// <remarks>
+        /// Controls Markdown export used by <c>.md</c> URLs, <c>llms.txt</c>, and AI agents.
+        /// See https://www.mintlify.com/docs/ai/markdown-export.
+        /// </remarks>
+        [JsonPropertyName("markdown")]
+        public MarkdownConfig? Markdown { get; set; }
+
+        /// <summary>
         /// Gets or sets the name of the project, organization, or product.
         /// </summary>
         /// <remarks>
@@ -140,6 +150,22 @@ namespace Mintlify.Core.Models
         [JsonPropertyName("navigation")]
         [NotNull]
         public NavigationConfig Navigation { get; set; } = new NavigationConfig();
+
+        /// <summary>
+        /// Gets or sets third-party npm package configuration for MDX pages and snippets.
+        /// </summary>
+        /// <remarks>
+        /// Adding this object, even empty, turns on third-party libraries. Requires a
+        /// lockfile next to <c>docs.json</c>. See https://www.mintlify.com/docs/customize/third-party-libraries.
+        /// </remarks>
+        [JsonPropertyName("packages")]
+        public PackagesConfig? Packages { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether the documentation is publicly accessible by default.
+        /// </summary>
+        [JsonPropertyName("public")]
+        public bool? Public { get; set; }
 
         /// <summary>
         /// Gets or sets the redirects.
@@ -175,11 +201,22 @@ namespace Mintlify.Core.Models
         /// Gets or sets the theme name.
         /// </summary>
         /// <remarks>
-        /// This is a required field. Valid values are: mint, maple, palm, willow, linden, almond, aspen.
+        /// This is a required field. Valid values are: mint, maple, palm, willow, linden, almond, aspen, sequoia, luma.
+        /// See https://www.mintlify.com/docs/customize/themes.
         /// </remarks>
         [JsonPropertyName("theme")]
         [NotNull]
         public string Theme { get; set; } = "mint";
+
+        /// <summary>
+        /// Gets or sets the version of the theme to use.
+        /// </summary>
+        /// <remarks>
+        /// Integer from 1 to 2. Defaults to 1, the original version. This property applies
+        /// to the mint theme.
+        /// </remarks>
+        [JsonPropertyName("themeVersion")]
+        public int? ThemeVersion { get; set; }
 
         /// <summary>
         /// Gets or sets the thumbnails configuration.
@@ -200,6 +237,18 @@ namespace Mintlify.Core.Models
         /// </remarks>
         [JsonPropertyName("metadata")]
         public MetadataConfig? Metadata { get; set; }
+
+        /// <summary>
+        /// Gets or sets global content variables replaced at build time.
+        /// </summary>
+        /// <remarks>
+        /// Keys are variable names (alphanumeric and hyphens only) and values are replacement
+        /// strings. Use <c>{{variableName}}</c> in MDX pages and snippets. Substitution does
+        /// not apply to OpenAPI specification files or other static assets.
+        /// See https://www.mintlify.com/docs/organize/settings-reference#variables.
+        /// </remarks>
+        [JsonPropertyName("variables")]
+        public Dictionary<string, string>? Variables { get; set; }
 
         #endregion
 
