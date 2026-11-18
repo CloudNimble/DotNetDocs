@@ -916,6 +916,59 @@ namespace CloudNimble.DotNetDocs.Tests.Core
 
         #endregion
 
+        #region IsTypeExcluded Tests
+
+        [TestMethod]
+        [DataRow(null)]
+        [DataRow("")]
+        [DataRow("   ")]
+        public void IsTypeExcluded_ThrowsForMissingTypeName(string? typeName)
+        {
+            var context = new ProjectContext();
+
+            Action act = () => context.IsTypeExcluded(typeName!);
+
+            act.Should().Throw<ArgumentException>().WithParameterName("fullyQualifiedTypeName");
+        }
+
+        [TestMethod]
+        [DataRow("MyApp.MicrosoftTestingPlatformEntryPoint", true)]
+        [DataRow("MyApp.Tests.SelfRegisteredExtensions", true)]
+        [DataRow("MicrosoftTestingPlatformEntryPoint", false)]
+        [DataRow("MyApp.MicrosoftTestingPlatformEntryPointHelper", false)]
+        [DataRow("MyApp.Widget", false)]
+        public void IsTypeExcluded_UsesDefaultTestFrameworkPatterns(string typeName, bool expected)
+        {
+            var context = new ProjectContext();
+
+            context.IsTypeExcluded(typeName).Should().Be(expected);
+        }
+
+        [TestMethod]
+        public void IsTypeExcluded_ReturnsFalse_WhenNoPatternsAreConfigured()
+        {
+            var context = new ProjectContext { ExcludedTypes = [] };
+
+            context.IsTypeExcluded("MyApp.MicrosoftTestingPlatformEntryPoint").Should().BeFalse();
+        }
+
+        [TestMethod]
+        [DataRow("MyApp.Internal.Widget", "MyApp.Internal.*", true)]
+        [DataRow("MyApp.Internal", "MyApp.Internal.*", false)]
+        [DataRow("MyApp.Widget", "MyApp.Widget", true)]
+        [DataRow("MyApp.Widgets", "MyApp.Widget", false)]
+        [DataRow("MyAppXWidget", "MyApp.Widget", false)]
+        [DataRow("MyApp.Widget`1", "MyApp.Widget`1", true)]
+        [DataRow("MyApp.Widget+Nested", "*+Nested", true)]
+        public void IsTypeExcluded_MatchesWholeNameWithWildcardsAndLiteralCharacters(string typeName, string pattern, bool expected)
+        {
+            var context = new ProjectContext { ExcludedTypes = [pattern] };
+
+            context.IsTypeExcluded(typeName).Should().Be(expected);
+        }
+
+        #endregion
+
     }
 
 }

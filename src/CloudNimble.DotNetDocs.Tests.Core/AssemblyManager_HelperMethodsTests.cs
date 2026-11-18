@@ -334,6 +334,136 @@ namespace Test
 
         #endregion
 
+        #region Tests - IsMicrosoftAssembly
+
+        [TestMethod]
+        [DataRow("System", true)]
+        [DataRow("mscorlib", true)]
+        [DataRow("netstandard", true)]
+        [DataRow("System.Runtime", true)]
+        [DataRow("System.Private.CoreLib", true)]
+        [DataRow("Microsoft.Extensions.Logging", true)]
+        [DataRow("SystemsCorp.Tools", false)]
+        [DataRow("Systemd", false)]
+        [DataRow("MicrosoftFan.Library", false)]
+        [DataRow("system.runtime", false)]
+        [DataRow("MSTest.TestFramework", false)]
+        [DataRow("", false)]
+        [DataRow(null, false)]
+        public void IsMicrosoftAssembly_MatchesWholeNameSegments(string? assemblyName, bool expected)
+        {
+            AssemblyManager.IsMicrosoftAssembly(assemblyName).Should().Be(expected);
+        }
+
+        #endregion
+
+        #region Tests - Documentation Extraction
+
+        [TestMethod]
+        public void ExtractParameterDocumentation_IgnoresParamWithoutName_AndReturnsEmptyWhenNotFound()
+        {
+            using var manager = CreateManager();
+            var doc = System.Xml.Linq.XDocument.Parse("<member><param>No name.</param><param name=\"value\">The <c>value</c>.</param></member>");
+
+            manager.ExtractParameterDocumentation(doc, "value").Should().Be("The <c>value</c>.");
+            manager.ExtractParameterDocumentation(doc, "missing").Should().BeEmpty();
+            manager.ExtractParameterDocumentation(null, "value").Should().BeEmpty();
+        }
+
+        [TestMethod]
+        public void ExtractExceptions_SkipsExceptionsWithoutCref_AndAllowsEmptyDescriptions()
+        {
+            using var manager = CreateManager();
+            var doc = System.Xml.Linq.XDocument.Parse("""
+                <member>
+                    <exception>No type.</exception>
+                    <exception cref="T:System.ArgumentNullException">When <paramref name="value"/> is null.</exception>
+                    <exception cref="T:System.InvalidOperationException"/>
+                </member>
+                """);
+
+            var exceptions = manager.ExtractExceptions(doc);
+
+            exceptions.Should().NotBeNull();
+            exceptions!.Select(e => (e.Type, e.Description)).Should().Equal(
+                ("ArgumentNullException", "When <paramref name=\"value\" /> is null."),
+                ("InvalidOperationException", string.Empty));
+        }
+
+        [TestMethod]
+        public void ExtractExceptions_ReturnsNull_WhenNoExceptionHasAType()
+        {
+            using var manager = CreateManager();
+
+            manager.ExtractExceptions(System.Xml.Linq.XDocument.Parse("<member><exception>No type.</exception></member>")).Should().BeNull();
+            manager.ExtractExceptions(null).Should().BeNull();
+        }
+
+        [TestMethod]
+        public void ExtractTypeParameters_SkipsTypeParametersWithoutName_AndAllowsEmptyDescriptions()
+        {
+            using var manager = CreateManager();
+            var doc = System.Xml.Linq.XDocument.Parse("<member><typeparam>No name.</typeparam><typeparam name=\"T\">The item type.</typeparam><typeparam name=\"TKey\"/></member>");
+
+            var typeParameters = manager.ExtractTypeParameters(doc);
+
+            typeParameters.Should().NotBeNull();
+            typeParameters!.Select(p => (p.Name, p.Description)).Should().Equal(("T", "The item type."), ("TKey", string.Empty));
+            manager.ExtractTypeParameters(System.Xml.Linq.XDocument.Parse("<member><typeparam>No name.</typeparam></member>")).Should().BeNull();
+        }
+
+        [TestMethod]
+        public void ExtractSeeAlso_SkipsEntriesWithoutCref()
+        {
+            using var manager = CreateManager();
+            var doc = System.Xml.Linq.XDocument.Parse("<member><seealso href=\"https://example.com\">Example</seealso><seealso cref=\"\"/><seealso cref=\"T:Widget\"/></member>");
+
+            var seeAlso = manager.ExtractSeeAlso(doc);
+
+            seeAlso.Should().NotBeNull();
+            seeAlso!.Select(s => s.RawReference).Should().Equal("T:Widget");
+            manager.ExtractSeeAlso(System.Xml.Linq.XDocument.Parse("<member><seealso href=\"https://example.com\"/></member>")).Should().BeNull();
+        }
+
+        [TestMethod]
+        public void ExtractInnerXmlExcluding_RemovesExcludedTags_AndReturnsNullWhenNothingIsLeft()
+        {
+            using var manager = CreateManager();
+            var withText = System.Xml.Linq.XElement.Parse("<summary>Keeps <c>this</c>.<seealso cref=\"T:Widget\"/></summary>");
+            var onlyExcluded = System.Xml.Linq.XElement.Parse("<summary> <seealso cref=\"T:Widget\"/> </summary>");
+
+            manager.ExtractInnerXmlExcluding(withText, "seealso").Should().Be("Keeps <c>this</c>.");
+            withText.Descendants("seealso").Should().ContainSingle("the original element must not be modified");
+            manager.ExtractInnerXmlExcluding(onlyExcluded, "seealso").Should().BeNull();
+            manager.ExtractInnerXmlExcluding(null, "seealso").Should().BeNull();
+        }
+
+        #endregion
+
+        #region Tests - BuildModel
+
+        [TestMethod]
+        public void BuildModel_ThrowsWhenCompilationDoesNotReferenceTheTargetAssembly()
+        {
+            using var manager = CreateManager();
+
+            var act = () => manager.BuildModel(CSharpCompilation.Create("Unrelated"), null);
+
+            act.Should().Throw<System.InvalidOperationException>().WithMessage("Target assembly reference not found in compilation.");
+        }
+
+        #endregion
+
+        #region Helper Methods - Manager
+
+        private static AssemblyManager CreateManager()
+        {
+            var assemblyPath = typeof(SampleClass).Assembly.Location;
+            return new AssemblyManager(assemblyPath, System.IO.Path.ChangeExtension(assemblyPath, ".xml"));
+        }
+
+        #endregion
+
     }
 
 }

@@ -35,6 +35,24 @@ namespace CloudNimble.DotNetDocs.Core.Transformers
         private int _stringsSkipped;
 
         /// <summary>
+        /// Microsoft Learn pages for the C# keywords that <c>&lt;see langword="..."/&gt;</c> commonly names, keyed by lowercase keyword.
+        /// </summary>
+        private static readonly Dictionary<string, string> LanguageKeywordUrls = new(StringComparer.Ordinal)
+        {
+            ["null"] = "https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null",
+            ["true"] = "https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool",
+            ["false"] = "https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool",
+            ["void"] = "https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/void",
+            ["async"] = "https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/async",
+            ["await"] = "https://learn.microsoft.com/dotnet/csharp/language-reference/operators/await",
+            ["static"] = "https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/static",
+            ["abstract"] = "https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/abstract",
+            ["virtual"] = "https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/virtual",
+            ["override"] = "https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/override",
+            ["sealed"] = "https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/sealed"
+        };
+
+        /// <summary>
         /// Pattern for the generic arity suffix in a documentation ID, such as the <c>`1</c> in <c>List`1</c>.
         /// </summary>
         [GeneratedRegex(@"`(\d+)")]
@@ -162,20 +180,7 @@ namespace CloudNimble.DotNetDocs.Core.Transformers
         /// <returns>The URL for the keyword, or null when the keyword has no dedicated page.</returns>
         protected virtual string? GetLanguageKeywordUrl(string keyword)
         {
-            return keyword switch
-            {
-                "null" => "https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null",
-                "true" or "false" => "https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool",
-                "void" => "https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/void",
-                "async" => "https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/async",
-                "await" => "https://learn.microsoft.com/dotnet/csharp/language-reference/operators/await",
-                "static" => "https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/static",
-                "abstract" => "https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/abstract",
-                "virtual" => "https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/virtual",
-                "override" => "https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/override",
-                "sealed" => "https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/sealed",
-                _ => null
-            };
+            return LanguageKeywordUrls.GetValueOrDefault(keyword);
         }
 
         /// <summary>
@@ -775,13 +780,7 @@ namespace CloudNimble.DotNetDocs.Core.Transformers
         /// <returns>The number of leading whitespace characters.</returns>
         private static int GetIndentation(string line)
         {
-            var indent = 0;
-            while (indent < line.Length && line[indent] is ' ' or '\t')
-            {
-                indent++;
-            }
-
-            return indent;
+            return line.Length - line.AsSpan().TrimStart(" \t").Length;
         }
 
         /// <summary>

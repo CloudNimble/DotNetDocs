@@ -57,6 +57,8 @@ namespace CloudNimble.DotNetDocs.Core
             typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces,
             genericsOptions: SymbolDisplayGenericsOptions.IncludeTypeParameters |
                              SymbolDisplayGenericsOptions.IncludeTypeConstraints,
+            // IncludeMemberKeyword adds "event" to event signatures; other members have no member keyword.
+            kindOptions: SymbolDisplayKindOptions.IncludeMemberKeyword,
             miscellaneousOptions: SymbolDisplayMiscellaneousOptions.UseSpecialTypes);
 
         /// <summary>
@@ -205,7 +207,7 @@ namespace CloudNimble.DotNetDocs.Core
         /// <returns>The parsed XML document, or null if no documentation exists.</returns>
         internal XDocument? ExtractDocumentationXml(ISymbol symbol)
         {
-            var xml = symbol.GetDocumentationCommentXml() ?? string.Empty;
+            var xml = symbol.GetDocumentationCommentXml();
             return string.IsNullOrWhiteSpace(xml) ? null : XDocument.Parse(xml);
         }
 
@@ -221,7 +223,7 @@ namespace CloudNimble.DotNetDocs.Core
 
             // Get all nodes and concatenate them, preserving XML tags
             var innerXml = string.Concat(element.Nodes().Select(n => n.ToString()));
-            var trimmed = innerXml?.Trim();
+            var trimmed = innerXml.Trim();
             return string.IsNullOrWhiteSpace(trimmed) ? null : trimmed;
         }
 
@@ -247,7 +249,7 @@ namespace CloudNimble.DotNetDocs.Core
 
             // Get all nodes and concatenate them, preserving XML tags
             var innerXml = string.Concat(cloned.Nodes().Select(n => n.ToString()));
-            var trimmed = innerXml?.Trim();
+            var trimmed = innerXml.Trim();
             return string.IsNullOrWhiteSpace(trimmed) ? null : trimmed;
         }
 
@@ -303,7 +305,7 @@ namespace CloudNimble.DotNetDocs.Core
             var exceptions = doc?.Descendants("exception")
                 .Select(e => new DocException
                 {
-                    Type = e.Attribute("cref")?.Value?.Replace("T:", "")?.Split('.').LastOrDefault(),
+                    Type = e.Attribute("cref")?.Value.Replace("T:", "").Split('.').LastOrDefault(),
                     Description = ExtractInnerXml(e) ?? string.Empty
                 })
                 .Where(e => !string.IsNullOrWhiteSpace(e.Type))
@@ -422,7 +424,8 @@ namespace CloudNimble.DotNetDocs.Core
                     DisplayName = type.ToDisplayString(),
                     Signature = type.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat),
                     TypeKind = type.TypeKind,
-                    AssemblyName = type.ContainingAssembly?.Name,
+                    // An enum is always a named type declared in an assembly.
+                    AssemblyName = type.ContainingAssembly!.Name,
                     Summary = ExtractSummary(doc),
                     Returns = ExtractReturns(doc),
                     Exceptions = ExtractExceptions(doc),
@@ -438,16 +441,14 @@ namespace CloudNimble.DotNetDocs.Core
                     .Any(a => a.AttributeClass?.ToDisplayString() == "System.FlagsAttribute");
 
                 // Every enum symbol is a named type with an underlying type.
-                if (type is INamedTypeSymbol { EnumUnderlyingType: { } underlyingType })
+                var underlyingType = ((INamedTypeSymbol)type).EnumUnderlyingType!;
+                docEnum.UnderlyingType = new DocReference
                 {
-                    docEnum.UnderlyingType = new DocReference
-                    {
-                        RawReference = $"T:{underlyingType.ToDisplayString()}",
-                        DisplayName = GetFriendlyTypeName(underlyingType),
-                        IsResolved = true,
-                        ReferenceType = ReferenceType.Framework
-                    };
-                }
+                    RawReference = $"T:{underlyingType.ToDisplayString()}",
+                    DisplayName = GetFriendlyTypeName(underlyingType),
+                    IsResolved = true,
+                    ReferenceType = ReferenceType.Framework
+                };
 
                 // Extract enum values
                 foreach (var member in type.GetMembers().OfType<IFieldSymbol>().Where(f => f.IsConst))
@@ -457,7 +458,8 @@ namespace CloudNimble.DotNetDocs.Core
                     {
                         Name = member.Name,
                         DisplayName = member.ToDisplayString(),
-                        NumericValue = member.ConstantValue?.ToString(),
+                        // Enum members are constants, so they always have a value.
+                        NumericValue = member.ConstantValue!.ToString(),
                         Summary = ExtractSummary(memberDoc),
                         Remarks = ExtractRemarks(memberDoc),
                         Examples = ExtractExamples(memberDoc),
@@ -909,7 +911,8 @@ namespace CloudNimble.DotNetDocs.Core
 
                     var docNs = new DocNamespace(ns)
                     {
-                        Name = ns.IsGlobalNamespace ? string.Empty : ns.ToDisplayString(),
+                        // Only child namespaces are walked, so this is never the global namespace (see specs/old/remove-globals.md).
+                        Name = ns.ToDisplayString(),
                         DisplayName = ns.ToDisplayString(),
                         Summary = ExtractSummary(nsDoc),
                         SeeAlso = ExtractSeeAlso(nsDoc),
@@ -961,7 +964,15 @@ namespace CloudNimble.DotNetDocs.Core
             foreach (var extMethod in extensionMethods)
             {
                 var methodSymbol = (IMethodSymbol)extMethod.Symbol;
-                var extendedType = methodSymbol.Parameters.First().Type;
+                var parameterType = methodSymbol.Parameters.First().Type;
+
+                // Arrays, pointers, and type parameters (this T[], this T) have no page of their own to move the method to,
+                // so the method stays on the static class that declares it.
+                if (parameterType is not INamedTypeSymbol extendedType)
+                {
+                    continue;
+                }
+
                 var extendedTypeKey = extendedType.ToDisplayString();
                 var declaringType = methodSymbol.ContainingType;
 
@@ -1030,28 +1041,29 @@ namespace CloudNimble.DotNetDocs.Core
         /// <param name="typeMap">Map of type names to DocType instances for type resolution.</param>
         /// <param name="projectContext">The project context.</param>
         /// <returns>A new DocType marked as an external reference.</returns>
+        /// <remarks>
+        /// A named type always has a containing namespace and assembly. That includes an unresolved type from a missing
+        /// reference, which Roslyn places in a placeholder for the missing assembly.
+        /// </remarks>
         internal DocType CreateExternalTypeReference(
-            ITypeSymbol typeSymbol,
+            INamedTypeSymbol typeSymbol,
             DocAssembly assembly,
             Dictionary<string, DocType> typeMap,
             ProjectContext? projectContext)
         {
-            // If we have an error type, we can't create a proper external reference
-            // This typically happens due to reference assembly conflicts (e.g., System.Runtime vs System.Private.CoreLib)
-            // For now, we'll use the error type as-is, but note this in the summary
             var resolvedSymbol = typeSymbol;
+            var containingNamespace = resolvedSymbol.ContainingNamespace!;
+            var assemblyName = resolvedSymbol.ContainingAssembly!.Name;
 
             // Roslyn displays the global namespace as "<global namespace>", so map it to string.Empty like ProcessNamespaceRecursive does.
             // The path helpers then treat it as the global namespace instead of putting angle brackets in file names.
-            var nsName = resolvedSymbol.ContainingNamespace is { IsGlobalNamespace: false } containingNamespace
-                ? containingNamespace.ToDisplayString()
-                : string.Empty;
+            var nsName = containingNamespace.IsGlobalNamespace ? string.Empty : containingNamespace.ToDisplayString();
 
             // Find or create namespace
             var ns = assembly.Namespaces.FirstOrDefault(n => n.Name == nsName);
             if (ns is null)
             {
-                ns = new DocNamespace(resolvedSymbol.ContainingNamespace!)
+                ns = new DocNamespace(containingNamespace)
                 {
                     Name = nsName,
                     DisplayName = nsName,
@@ -1068,16 +1080,15 @@ namespace CloudNimble.DotNetDocs.Core
                 DisplayName = resolvedSymbol.ToDisplayString(),
                 Signature = resolvedSymbol.ToDisplayString(DocumentationSignatureFormat),
                 TypeKind = resolvedSymbol.TypeKind,
-                AssemblyName = resolvedSymbol.ContainingAssembly?.Name,
+                AssemblyName = assemblyName,
                 IsExternalReference = true,
                 IncludedMembers = projectContext?.IncludedMembers ?? [Accessibility.Public],
-                Summary = $"This type is defined in {resolvedSymbol.ContainingAssembly?.Name ?? "external assembly"}."
+                Summary = $"This type is defined in {assemblyName}."
             };
 
             // Link Microsoft types to Microsoft Learn. The remarks are written as an XML documentation tag, like every other
             // documentation string at this stage, so the transformer for the output format decides how the link is written.
-            if (resolvedSymbol.ContainingAssembly?.Name?.StartsWith("System") == true ||
-                resolvedSymbol.ContainingAssembly?.Name?.StartsWith("Microsoft") == true)
+            if (IsMicrosoftAssembly(assemblyName))
             {
                 var learnTypeName = GetLearnTypeName(resolvedSymbol);
                 if (learnTypeName is not null)
@@ -1167,18 +1178,45 @@ namespace CloudNimble.DotNetDocs.Core
         /// </summary>
         /// <returns>The managed assembly paths, or an empty list when the runtime's location is unknown.</returns>
         /// <remarks>
-        /// The runtime directory also contains native libraries such as <c>coreclr.dll</c>, which Roslyn rejects with CS0009,
-        /// so only files with .NET metadata are returned. The location is empty when the runtime is bundled into a single file.
+        /// The location is empty when the runtime is bundled into a single file.
         /// </remarks>
         internal static IReadOnlyList<string> GetFrameworkReferencePaths()
         {
-            var runtimeDirectory = Path.GetDirectoryName(typeof(object).Assembly.Location);
-            if (string.IsNullOrWhiteSpace(runtimeDirectory) || !Directory.Exists(runtimeDirectory))
+            return GetManagedAssemblyPaths(Path.GetDirectoryName(typeof(object).Assembly.Location));
+        }
+
+        /// <summary>
+        /// Gets the paths of the managed assemblies in a directory, sorted by path.
+        /// </summary>
+        /// <param name="directory">The directory to search, which may be null or empty when its location is unknown.</param>
+        /// <returns>The managed assembly paths, or an empty list when the directory is missing or does not exist.</returns>
+        /// <remarks>
+        /// The runtime directory also contains native libraries such as <c>coreclr.dll</c>, which Roslyn rejects with CS0009,
+        /// so only files with .NET metadata are returned.
+        /// </remarks>
+        internal static IReadOnlyList<string> GetManagedAssemblyPaths(string? directory)
+        {
+            if (string.IsNullOrWhiteSpace(directory) || !Directory.Exists(directory))
             {
                 return [];
             }
 
-            return [.. Directory.EnumerateFiles(runtimeDirectory, "*.dll").Where(IsManagedAssembly).Order(StringComparer.OrdinalIgnoreCase)];
+            return [.. Directory.EnumerateFiles(directory, "*.dll").Where(IsManagedAssembly).Order(StringComparer.OrdinalIgnoreCase)];
+        }
+
+        /// <summary>
+        /// Determines whether an assembly is part of .NET or a Microsoft library, whose types are documented on Microsoft Learn.
+        /// </summary>
+        /// <param name="assemblyName">The assembly's simple name, or null when the symbol has no containing assembly.</param>
+        /// <returns>True for <c>System</c>, <c>mscorlib</c>, <c>netstandard</c>, and names starting with <c>System.</c> or <c>Microsoft.</c>; otherwise, false.</returns>
+        /// <remarks>
+        /// The match is on whole name segments, so a third-party assembly such as <c>SystemsCorp.Tools</c> is not treated as Microsoft's.
+        /// </remarks>
+        internal static bool IsMicrosoftAssembly(string? assemblyName)
+        {
+            return assemblyName is "System" or "mscorlib" or "netstandard"
+                || (assemblyName is not null
+                    && (assemblyName.StartsWith("System.", StringComparison.Ordinal) || assemblyName.StartsWith("Microsoft.", StringComparison.Ordinal)));
         }
 
         /// <summary>

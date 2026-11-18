@@ -1862,6 +1862,25 @@ instance.DoWork();
         }
 
         [TestMethod]
+        [DataRow("<a/>```noescape```", "&lt;a/&gt;")]
+        [DataRow("<a/>```noescape\r```", "&lt;a/&gt;")]
+        [DataRow("<a/>```noescape\n```", "&lt;a/&gt;")]
+        [DataRow("<a/>```noescape<b/>```", "&lt;a/&gt;<b/>")]
+        [DataRow("<a/>```noescape\r\n<b/>\r\n```<c/>", "&lt;a/&gt;<b/>\r\n&lt;c/&gt;")]
+        public async Task TransformAsync_NoEscapeBlockAtFenceBoundaries_KeepsOnlyItsContent(string examples, string expected)
+        {
+            var assemblyPath = typeof(NamespaceMode).Assembly.Location;
+            using var manager = new AssemblyManager(assemblyPath, System.IO.Path.ChangeExtension(assemblyPath, ".xml"));
+            var assembly = await manager.DocumentAsync();
+            var testType = assembly.Namespaces.SelectMany(n => n.Types).First();
+            testType.Examples = examples;
+
+            await _transformer.TransformAsync(testType);
+
+            testType.Examples.Should().Be(expected);
+        }
+
+        [TestMethod]
         public async Task TransformAsync_HandlesNoEscapeBlockWithMultipleBlankLines()
         {
             var assemblyPath = typeof(NamespaceMode).Assembly.Location;

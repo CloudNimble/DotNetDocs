@@ -372,9 +372,10 @@ namespace CloudNimble.DotNetDocs.Core.Transformers
                     if (isNoEscape)
                     {
                         // Extract the content without the delimiters or escaping, skipping "noescape" (8 chars) and the newline after it.
+                        // The closing fence comes after "noescape", so these reads stay inside the text.
                         var contentStart = fenceStart + 8;
-                        if (contentStart < text.Length && text[contentStart] == '\r') contentStart++;
-                        if (contentStart < text.Length && text[contentStart] == '\n') contentStart++;
+                        if (text[contentStart] == '\r') contentStart++;
+                        if (text[contentStart] == '\n') contentStart++;
 
                         result.Append(text[contentStart..closingPos]);
                     }

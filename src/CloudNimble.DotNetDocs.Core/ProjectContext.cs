@@ -502,20 +502,9 @@ namespace CloudNimble.DotNetDocs.Core
         /// <returns>True if the type should be excluded; otherwise, false.</returns>
         public bool IsTypeExcluded(string fullyQualifiedTypeName)
         {
-            if (ExcludedTypes is null || ExcludedTypes.Count == 0)
-            {
-                return false;
-            }
+            ArgumentException.ThrowIfNullOrWhiteSpace(fullyQualifiedTypeName);
 
-            foreach (var pattern in ExcludedTypes)
-            {
-                if (MatchesPattern(fullyQualifiedTypeName, pattern))
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            return ExcludedTypes.Any(pattern => MatchesPattern(fullyQualifiedTypeName, pattern));
         }
 
         /// <summary>

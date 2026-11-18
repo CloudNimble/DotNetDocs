@@ -82,7 +82,7 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
         /// <returns>A safe namespace name, using "global" for the global namespace.</returns>
         public string GetSafeNamespaceName(DocNamespace ns)
         {
-            return string.IsNullOrEmpty(ns.Name) ? "global" : ns.Name;
+            return string.IsNullOrWhiteSpace(ns.Name) ? "global" : ns.Name;
         }
 
         /// <summary>
@@ -138,7 +138,8 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
 
             if (omitIndexFile && FileNamingOptions.NamespaceMode == NamespaceMode.Folder)
             {
-                relativePath = Path.GetDirectoryName(relativePath) ?? string.Empty;
+                // A Folder-mode namespace page is always "<folder>/index.<extension>", so it always has a directory.
+                relativePath = Path.GetDirectoryName(relativePath)!;
             }
 
             return relativePath.Replace('\\', '/');
@@ -200,11 +201,9 @@ namespace CloudNimble.DotNetDocs.Core.Renderers
                     start = i + 1;
                 }
             }
+            // The text has a non-whitespace character, so at least one line was found.
             if (start < span.Length)
                 lines.Add(start..span.Length);
-
-            if (lines.Count == 0)
-                return text;
 
             // Step 1: Count leading whitespace in first line
             ReadOnlySpan<char> firstLine = span[lines[0]].TrimEnd("\r\n");

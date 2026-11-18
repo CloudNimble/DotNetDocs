@@ -128,6 +128,22 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Transformers
         }
 
         [TestMethod]
+        public void ResolveReference_WithEnumMissingFullName_IndexesValuesUnderTheEnumName()
+        {
+            var assembly = GetTestsDotSharedAssembly();
+            var simpleEnum = assembly.Namespaces.SelectMany(ns => ns.Types).OfType<DocEnum>().Single(type => type.Name == "SimpleEnum");
+            simpleEnum.FullName = null;
+            _resolver.BuildReferenceMap(assembly);
+
+            var reference = _resolver.ResolveReference("F:SimpleEnum.Second", "");
+
+            reference.IsResolved.Should().BeTrue();
+            reference.TargetEntity.Should().BeSameAs(simpleEnum.Values.Single(v => v.Name == "Second"));
+            reference.DisplayName.Should().Be("SimpleEnum.Second");
+            reference.RelativePath.Should().Be("/api-reference/CloudNimble/DotNetDocs/Tests/Shared/Enums/SimpleEnum");
+        }
+
+        [TestMethod]
         public async Task ResolveReference_WithUnknownEnumValue_IsNotResolved()
         {
             var assemblyPath = typeof(NamespaceMode).Assembly.Location;
@@ -695,6 +711,7 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Transformers
         [DataRow("sealed", "[`sealed`](https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/sealed)")]
         [DataRow("NULL", "[`null`](https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null)")]
         [DataRow("readonly", "`readonly`")]
+        [DataRow("nulls", "`nulls`")]
         [DataRow("", "&lt;see langword=\"\"/&gt;")]
         public async Task TransformAsync_ConvertsLangwordToKeywordLink(string keyword, string expected)
         {
@@ -745,6 +762,23 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Transformers
         public void NormalizeXmlDocIndentation_WithNoIndentedLines_TrimsText()
         {
             XmlTransformerBase.NormalizeXmlDocIndentation("first\nsecond\n").Should().Be("first\nsecond");
+        }
+
+        [TestMethod]
+        public void NormalizeXmlDocIndentation_WithMixedTabsAndSpaces_RemovesTheSmallestIndentation()
+        {
+            var result = XmlTransformerBase.NormalizeXmlDocIndentation("first\n\t  second\n\t    third\n\n  fourth");
+
+            result.Should().Be(string.Join(Environment.NewLine, "first", " second", "   third", string.Empty, "fourth"),
+                "indentation is counted in characters, so the two-space line sets the amount and a tab counts as one character");
+        }
+
+        [TestMethod]
+        public void RemoveCommonIndentation_WithWhitespaceOnlyLines_IgnoresThemWhenMeasuring()
+        {
+            var result = XmlTransformerBase.RemoveCommonIndentation("    one\n \n    two");
+
+            result.Should().Be(string.Join(Environment.NewLine, "one", string.Empty, "two"));
         }
 
         [TestMethod]

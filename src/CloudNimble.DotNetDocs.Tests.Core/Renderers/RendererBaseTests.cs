@@ -35,6 +35,8 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
             public new string GetNamespaceFileName(DocNamespace ns, string extension) => base.GetNamespaceFileName(ns, extension);
             public new ProjectContext Context => base.Context;
             public new FileNamingOptions FileNamingOptions => base.FileNamingOptions;
+            public static string EscapeXmlTags(string? value) => EscapeXmlTagsInString(value);
+            public new string GetNamespaceLink(DocNamespace ns, string extension, bool omitIndexFile = false) => base.GetNamespaceLink(ns, extension, omitIndexFile);
         }
 
         #endregion
@@ -107,6 +109,51 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
 
             // Assert
             result.Should().Be(ns.Name);
+        }
+
+        [TestMethod]
+        [DataRow("")]
+        [DataRow("   ")]
+        public void GetSafeNamespaceName_WithGlobalNamespace_ReturnsGlobal(string name)
+        {
+            var globalNamespace = new DocNamespace(Microsoft.CodeAnalysis.CSharp.CSharpCompilation.Create("Empty").GlobalNamespace) { Name = name };
+
+            _renderer.GetSafeNamespaceName(globalNamespace).Should().Be("global");
+        }
+
+        #endregion
+
+        #region EscapeXmlTagsInString Tests
+
+        [TestMethod]
+        [DataRow(null, "")]
+        [DataRow("", "")]
+        [DataRow("   ", "   ")]
+        [DataRow("List<int>", "List&lt;int&gt;")]
+        [DataRow("Dictionary<string, List<int>>", "Dictionary&lt;string, List&lt;int&gt;&gt;")]
+        [DataRow("<see cref=\"Widget\"/>", "&lt;see cref=\"Widget\"/&gt;")]
+        [DataRow("a > b && c < d", "a &gt; b && c &lt; d")]
+        [DataRow("No brackets here", "No brackets here")]
+        public void EscapeXmlTagsInString_EscapesAngleBracketsOnly(string? input, string expected)
+        {
+            TestRenderer.EscapeXmlTags(input).Should().Be(expected);
+        }
+
+        #endregion
+
+        #region GetNamespaceLink Tests
+
+        [TestMethod]
+        [DataRow(NamespaceMode.File, false, "CloudNimble-DotNetDocs-Tests-Shared.md")]
+        [DataRow(NamespaceMode.File, true, "CloudNimble-DotNetDocs-Tests-Shared.md")]
+        [DataRow(NamespaceMode.Folder, false, "CloudNimble/DotNetDocs/Tests/Shared/index.md")]
+        [DataRow(NamespaceMode.Folder, true, "CloudNimble/DotNetDocs/Tests/Shared")]
+        public void GetNamespaceLink_ReturnsForwardSlashLinkForEachMode(NamespaceMode mode, bool omitIndexFile, string expected)
+        {
+            var renderer = new TestRenderer(new ProjectContext { FileNamingOptions = new FileNamingOptions(mode) });
+            var ns = _testAssembly.Namespaces.First(n => n.Name == "CloudNimble.DotNetDocs.Tests.Shared");
+
+            renderer.GetNamespaceLink(ns, "md", omitIndexFile).Should().Be(expected);
         }
 
         #endregion
@@ -646,6 +693,45 @@ namespace CloudNimble.DotNetDocs.Tests.Core.Renderers
 
             // Assert
             result.Should().Be(expected);
+        }
+
+        [TestMethod]
+        [DataRow("    var x = 1;", "var x = 1;")]
+        [DataRow("\t\tvar x = 1;", "var x = 1;")]
+        [DataRow("  \tvar x = 1;   ", "var x = 1;")]
+        public void RemoveIndentation_WithIndentedSingleLine_RemovesLeadingAndTrailingWhitespace(string input, string expected)
+        {
+            RendererBase.RemoveIndentation(input).Should().Be(expected);
+        }
+
+        [TestMethod]
+        public void RemoveIndentation_WithIndentedFirstLine_RemovesThatIndentFromEveryLine()
+        {
+            var input = "    if (ready)\n    {\n        Go();\n    }";
+
+            RendererBase.RemoveIndentation(input).Should().Be("if (ready)\n{\n    Go();\n}".Replace("\n", System.Environment.NewLine));
+        }
+
+        [TestMethod]
+        public void RemoveIndentation_WithWhitespaceOnlyFirstLine_KeepsFollowingLinesRelativeToIt()
+        {
+            var input = "   \n   Go();";
+
+            RendererBase.RemoveIndentation(input).Should().Be($"{System.Environment.NewLine}Go();");
+        }
+
+        [TestMethod]
+        public void RemoveIndentation_WithLineIndentedLessThanFirstLine_KeepsThatLineUnchanged()
+        {
+            var input = "        First();\n  x\n        Last();";
+
+            RendererBase.RemoveIndentation(input).Should().Be($"First();{System.Environment.NewLine}  x{System.Environment.NewLine}Last();");
+        }
+
+        [TestMethod]
+        public void RemoveIndentation_WithTrailingNewline_DropsTheEmptyFinalLine()
+        {
+            RendererBase.RemoveIndentation("    Go();\n").Should().Be("Go();");
         }
 
         #endregion
