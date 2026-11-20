@@ -523,9 +523,14 @@ namespace CloudNimble.DotNetDocs.Core
                     ? [type]
                     : GetBaseTypesAndThis(type).ToList();
 
+                // Members the compiler generates are real members in metadata, so IsImplicitlyDeclared is false for them when the
+                // symbols come from an assembly. Their names, such as a record's <Clone>$ or a property's <Id>k__BackingField,
+                // can't be written in C#, so they can't be referenced by name. Constructors, operators and indexers can't either,
+                // so only fields and ordinary methods are checked.
                 var allMembers = allTypesInChain
                     .SelectMany(t => t.GetMembers())
                     .Where(m => !m.IsImplicitlyDeclared)
+                    .Where(m => m is not (IFieldSymbol or IMethodSymbol { MethodKind: MethodKind.Ordinary }) || m.CanBeReferencedByName)
                     .ToList();
 
                 foreach (var member in allMembers)

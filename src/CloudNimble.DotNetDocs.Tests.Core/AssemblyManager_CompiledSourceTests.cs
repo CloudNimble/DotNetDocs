@@ -318,6 +318,36 @@ namespace CloudNimble.DotNetDocs.Tests.Core
         }
 
         [TestMethod]
+        public async Task DocumentAsync_Record_SkipsCompilerGeneratedMembers()
+        {
+            var (assemblyPath, xmlPath) = EmitAssembly("Records", """
+                namespace Coverage.Records
+                {
+                    /// <summary>A package reference.</summary>
+                    /// <param name="Id">The package ID.</param>
+                    /// <param name="Version">The package version.</param>
+                    public sealed record Package(string Id, string Version);
+
+                    /// <summary>A point.</summary>
+                    public record struct Point(int X, int Y);
+                }
+                """);
+            using var manager = new AssemblyManager(assemblyPath, xmlPath);
+
+            var assembly = await manager.DocumentAsync(new ProjectContext([Accessibility.Public, Accessibility.Protected, Accessibility.Internal, Accessibility.Private]));
+
+            var memberNames = assembly.Namespaces.SelectMany(n => n.Types).SelectMany(t => t.Members).Select(m => m.Name).ToList();
+            memberNames.Should().NotContain(name => name.Contains('<') || name.Contains('>'),"the compiler's own members, such as <Clone>$ and property backing fields, can't be called by name");
+            var package = assembly.Namespaces.SelectMany(n => n.Types).Single(t => t.Name == "Package");
+            package.Members.Should().Contain(m => m.Name == "Id");
+            package.Members.Should().Contain(m => m.Name == "Version");
+            package.Members.Should().Contain(m => m.Name == "Deconstruct");
+            package.Members.Should().Contain(m => m.Name == "EqualityContract");
+            package.Members.Should().Contain(m => m.Name == ".ctor");
+            package.Members.Should().Contain(m => m.Name == "op_Equality");
+        }
+
+        [TestMethod]
         public async Task DocumentAsync_WithFileThatIsNotAnAssembly_Throws()
         {
             var assemblyPath = Path.Combine(_tempDirectory, "Corrupt.dll");
