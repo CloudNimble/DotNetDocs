@@ -13,7 +13,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Pastel" Version="7.*" />
+        <PackageReference Include="Pastel" Version="8.*" />
         <PackageReference Include="McMaster.Extensions.Hosting.CommandLine" Version="5.*" />
     </ItemGroup>
 
